@@ -25,11 +25,10 @@ ZmShareSearchDialog = function(params) {
     // NOTE: that it is available when we initialize the email
     // NOTE: input field.
     var acparams = {
-        dataClass:		  appCtxt.getAutocompleter(),
-        matchValue:		  ZmAutocomplete.AC_VALUE_EMAIL,
-        keyUpCallback:	  this._acKeyUpListener.bind(this),
-		contextId:		  this.toString(),
-		autocompleteType: "all"
+        dataClass:		appCtxt.getAutocompleter(),
+        matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
+        keyUpCallback:	this._acKeyUpListener.bind(this),
+		contextId:		this.toString()
     };
     this._acAddrSelectList = new ZmAutocompleteListView(acparams);
     
@@ -94,7 +93,7 @@ ZmShareSearchDialog.prototype._collectShares = function(treeView, node, shares) 
         // NOTE: is not visible even if the user had checked it before
         // NOTE: applying a filter. Otherwise they would be left
         // NOTE: wondering why it was mounted.
-        if (treeItem && treeItem.getChecked() && treeItem.getVisible()) {
+        if (treeItem.getChecked() && treeItem.getVisible()) {
             shares.push(node.shareInfo);
         }
     }
@@ -114,31 +113,28 @@ ZmShareSearchDialog.prototype._filterResults = function() {
 };
 
 ZmShareSearchDialog.prototype._filterNode = function(treeView, node, text) {
-	var nodeItem = treeView.getTreeItemById(node.id);
-	if (!nodeItem) {
-		return false;
-	}
     // process children
     var count = node.children.size();
     var app = this._form.getValue("APP") || "";
-	var matches = false;
     if (count > 0) {
-		//this node has children.
+        var filtered = 0;
         for (var i = 0; i < count; i++) {
             var child = node.children.get(i);
-            matches = this._filterNode(treeView, child, text) || matches; //order is important! (need to call _filterNode always
+            filtered += this._filterNode(treeView, child, text) ? 1 : 0;
         }
+        var parentItem = treeView.getTreeItemById(node.id);
+        parentItem.setVisible(node.id == ZmOrganizer.ID_ROOT || filtered > 0);
+        return parentItem.getVisible();
     }
-	else {
-		//this is a leaf node
-		var isInfoNode = String(node.id).match(/^-/);
-		var textMatches = !text || node.name.toLowerCase().indexOf(text) !== -1;
-		var appMatches = !app || node.shareInfo && node.shareInfo.view === app;
-		matches = !isInfoNode && textMatches && appMatches;
-	}
-	matches = matches || node.id == ZmOrganizer.ID_ROOT;
-	nodeItem.setVisible(matches);
-	return matches;
+
+    // filter child node
+    var isInfoNode = String(node.id).match(/^-/);
+    var textMatches = !text || (node.name.toLowerCase().indexOf(text) != -1);
+    var appMatches = !app || (node.shareInfo && node.shareInfo.view == app);
+    var matches = !isInfoNode && textMatches && appMatches;
+    var childItem = treeView.getTreeItemById(node.id);
+    childItem.setVisible(matches);
+    return matches;
 };
 
 ZmShareSearchDialog.prototype._createOrganizer = function(parent, id, name) {
@@ -163,20 +159,35 @@ ZmShareSearchDialog.prototype._resetTree = function() {
     treeItem.showCheckBox(false);
 };
 
-// Fix for bug: 79402. Passing extra param for wide search.
-ZmShareSearchDialog.prototype._doUserSearch = function(emails, isWideSearch) {
+ZmShareSearchDialog.prototype._doGroupSearch = function() {
+    this._setSearching(true);
+    this._appendInfoNode(ZmOrganizer.ID_ROOT, ZmShareProxy.ID_LOADING, ZmMsg.sharedFoldersLoading);
+
+    // perform group search
+    var params = {
+        jsonObj: {
+            GetShareInfoRequest: {
+                _jsns: "urn:zimbraAccount",
+                includeSelf: 0,
+                grantee: { type: "grp" }
+            }
+        },
+        asyncMode: true,
+        callback: new AjxCallback(this, this._handleGroupSearchResults),
+        errorCallback: new AjxCallback(this, this._handleGroupSearchError)
+    };
+    appCtxt.getAppController().sendRequest(params);
+};
+
+ZmShareSearchDialog.prototype._doUserSearch = function(emails) {
     this._resetTree();
     // collect unique email addresses
     emails = emails.split(/\s*[;,]\s*/);
     var emailMap = {};
     for (var i = 0; i < emails.length; i++) {
         var email = AjxStringUtil.trim(emails[i]);
-        if (!email) {
-            continue;
-        }
-        if (email === appCtxt.get(ZmSetting.USERNAME)) {
-            continue;
-        }
+        if (!email) continue;
+        if (email == appCtxt.get(ZmSetting.USERNAME)) continue;
         emailMap[email.toLowerCase()] = email;
     }
 
@@ -206,16 +217,6 @@ ZmShareSearchDialog.prototype._doUserSearch = function(emails, isWideSearch) {
         i++;
     }
 
-    // Fix for bug: 79402. Replaces _doGroupSearch.
-    if (isWideSearch) {
-        this._appendInfoNode(ZmOrganizer.ID_ROOT, ZmShareProxy.ID_LOADING, ZmMsg.sharedFoldersLoading);
-
-        requests.push({
-            _jsns: "urn:zimbraAccount",
-            includeSelf: 0
-        });
-    }
-
     // anything to do?
     if (requests.length == 0) {
         return;
@@ -241,9 +242,48 @@ ZmShareSearchDialog.prototype._setSearching = function(searching) {
     this._form.setEnabled(!searching);
 };
 
-ZmShareSearchDialog.prototype._handleUserSearchResults = function(emailMap, requestIdMap, resp) {
+ZmShareSearchDialog.prototype._handleGroupSearchResults = function(resp) {
     this._setSearching(false);
 
+    // remove loading node
+    this._removeNode(ZmShareProxy.ID_LOADING);
+
+    // add shares
+    var shares = AjxUtil.get(resp.getResponse(), "GetShareInfoResponse", "share");
+    if (shares && shares.length > 0) {
+        // get list of owners with their shares, in alphabetical order
+        var owners = {};
+        this._addToOwnerMap(owners, shares);
+        owners = AjxUtil.values(owners);
+        owners.sort(ZmShareSearchDialog.__byOwnerName);
+
+        // add nodes for shares
+        this._appendShareNodes(owners);
+
+        // search for individual shares from these users
+        var emails = new Array(shares.length);
+        for (var i = 0; i < shares.length; i++) {
+            emails[i] = shares[i].ownerEmail;
+        }
+        this._doUserSearch(emails.join(";"));
+    }
+
+    // no shares found
+    else {
+        this._appendInfoNode(ZmOrganizer.ID_ROOT, ZmShareProxy.ID_NONE_FOUND, ZmMsg.sharedFoldersNoGroupsFound);
+    }
+};
+
+ZmShareSearchDialog.prototype._handleGroupSearchError = function(resp) {
+    this._setSearching(false);
+    this._removeNode(ZmShareProxy.ID_LOADING);
+    var treeItem = this._appendInfoNode(ZmOrganizer.ID_ROOT, ZmShareProxy.ID_ERROR, ZmMsg.sharedFoldersError);
+//    treeItem.setToolTipContent("[Error tooltip]"); // TODO
+};
+
+ZmShareSearchDialog.prototype._handleUserSearchResults = function(emailMap, requestIdMap, resp) {
+    this._setSearching(false);
+	
     // remove placeholder nodes
     for (var email in emailMap) {
         this._removeNode(emailMap[email]);
@@ -361,9 +401,8 @@ ZmShareSearchDialog.prototype._appendShareNodes = function(owners) {
                 if (this._getNode(shareId) != null) continue;
 
                  // NOTE: strip the leading slash from folder path
-				var folderPath = share.folderPath;
-                var shareFullPathName = folderPath.substr(1);
-                var shareNode = this._createOrganizer(parentNode, shareId, shareFullPathName);
+                var shareName = share.folderPath.substr(1).replace(/\//g, " ");
+                var shareNode = this._createOrganizer(parentNode, shareId, shareName);
                 shareNode.shareInfo = share;
 
                 // augment share info
@@ -373,14 +412,8 @@ ZmShareSearchDialog.prototype._appendShareNodes = function(owners) {
                 share.roleActions = ZmShare.getRoleActions(share.role);
                 share.normalizedOwnerName = share.ownerName || share.ownerEmail;
                 share.normalizedGranteeName = share.granteeDisplayName || share.granteeName;
-                share.normalizedFolderPath = shareFullPathName;
-				share.name = folderPath.substr(folderPath.lastIndexOf("/") + 1);
-				var ownerName = share.normalizedOwnerName;
-				var indexOfAtSign = ownerName.indexOf('@');
-				if (indexOfAtSign > -1) {
-					ownerName = ownerName.substr(0, indexOfAtSign)
-				}
-                share.defaultMountpointName = ZmShare.getDefaultMountpointName(ownerName, share.name);
+                share.normalizedFolderPath = shareName;
+                share.defaultMountpointName = ZmShare.getDefaultMountpointName(share.normalizedOwnerName, share.normalizedFolderPath);
 
                 // set tooltip
                 var tooltip = AjxTemplate.expand(shareNode.TOOLTIP_TEMPLATE, share);
@@ -432,8 +465,7 @@ ZmShareSearchDialog.prototype.popup = function(organizerType, addCallback, cance
     form.setEnabled("SEARCH", false);   //disable search button by default
     this._selectApplicationOption();
     this._resetTree();
-    // Fix for bug: 79402. Do wide search.
-    this._doUserSearch("", true);
+    this._doGroupSearch();
 
     DwtDialog.prototype.popup.call(this);
 

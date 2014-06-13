@@ -141,21 +141,14 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
             selectorStore;
 
         // Prepare a store for the folder-selector list
-        var selectorRoot = ZCS.session.getOrganizerRoot(null);
-        
-        selectorStore = Ext.create('ZCS.store.ZtOrganizerStore', {
-            storeId:    'foldereditlocationselector',
-            root:       selectorRoot
-        });
-
-        //Make sure the store doesn't thrash any as we set it up.
-        selectorStore.data._autoSort = false;
-        selectorStore.suspendEvents();
-        selectorStore.filter(function (item) {
+        selectorData = ZCS.session.getOrganizerData(null, null, listType);
+        selectorData = selectorData.filter(function (item) {
             return item.type === 'folder' && !item.isMountpoint;
         });
-
-        selectorStore.doDefaultSorting();
+        selectorStore = Ext.create('ZCS.store.ZtOrganizerStore', {
+            storeId:    'foldereditlocationselector',
+            data:       { items: selectorData }
+        });
 
         // Create the nested folder-selector list and add it to its card
         var selectorList = Ext.create('ZCS.view.ZtOrganizerList', {
@@ -163,7 +156,7 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
             displayField:       'displayName',
             store:              selectorStore,
             grouped:            true,
-            infinite:           true,
+            editing:            true,
             title:              ZtMsg.folderLocationLabel,
             toolbar: {
                 items : [{
@@ -178,10 +171,7 @@ Ext.define('ZCS.view.ZtOrganizerEdit', {
             useTitleAsBackText: false,
             type:               listType
         });
-        
-	    selectorList.editing = true;
-	    selectorList.getBackButton().setText('');
-	    folderLocationSelector.add(selectorList);
+        folderLocationSelector.add(selectorList);
 
         this.setDimensions();
         this.callParent(arguments);

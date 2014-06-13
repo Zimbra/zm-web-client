@@ -524,7 +524,7 @@ Ext.define('Ext.ux.TouchCalendarView', {
 		this.refresh();
 		
 		var minMaxDate = this.getPeriodMinMaxDate();
-
+		
 		this.fireEvent('periodchange', this, minMaxDate.min.get('date'), minMaxDate.max.get('date'), (delta > 0 ? 'forward' : 'back'));
 	},
 	
@@ -597,11 +597,7 @@ Ext.define('Ext.ux.TouchCalendarView', {
 		    // don't fire the event if the values are the same
 		    if(newDate.getTime() !== previousValue.getTime()){
 	            this.setValue(newDate);
-            }
 
-		    // Add a hack to fire selectionchange only for month view. If fired for day view
-		    // then repaints view and page scrolls to top.
-		    if (this.getViewMode().toLowerCase() === 'month') {
 	            this.fireEvent('selectionchange', this, newDate, previousValue);
 		    }
 	    }
@@ -939,16 +935,11 @@ Ext.define('Ext.ux.TouchCalendarView', {
                                     '<th class="{[this.me.getPrevPeriodCls()]} style="display: block;">',
                                     '</th>',
                                     '<th>',
-                                        '<span>{[Ext.Date.format(values[0].date, ZtMsg.dayViewDateFormat)]}</span>',
+                                        '<span>{[Ext.Date.format(values[0].date, "D jS M Y")]}</span>',
                                     '</th>',
                                     '<th class="{[this.me.getNextPeriodCls()]} style="display: block;"">',
                                     '</th>',
                                 '</tr>',
-								'<tr class="allDayApptRow" style="display:none;">',
-									'<td colspan="3">',
-										'<div class="allDayApptDiv event-wrapper" style="width: 100%;"></div>',
-									'</td>',
-								'</tr>',
                             '</thead>',
 							'<tbody>',
 								'<tr>',

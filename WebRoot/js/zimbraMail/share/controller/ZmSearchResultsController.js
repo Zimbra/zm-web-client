@@ -50,8 +50,8 @@ ZmSearchResultsController.prototype.toString = function() { return "ZmSearchResu
 ZmSearchResultsController.DEFAULT_TAB_TEXT = ZmMsg.search;
 
 ZmSearchResultsController.getDefaultViewType =
-function() {
-	return ZmId.VIEW_SEARCH_RESULTS;
+function(params) {
+	return (params && params.appName) ? [ZmId.VIEW_SEARCH_RESULTS, params.appName].join("-") : ZmId.VIEW_SEARCH_RESULTS;
 };
 ZmSearchResultsController.prototype.getDefaultViewType = ZmSearchResultsController.getDefaultViewType;
 
@@ -64,35 +64,15 @@ ZmSearchResultsController.prototype.show =
 function(results, resultsCtlr) {
 	var resultsType = results.type;
 	results.search.sessionId = this.sessionId;	// in case we reuse this search (eg view switch)
-	var app = this._resultsApp = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
 	if (!resultsCtlr) {
+		var app = this._resultsApp = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
 		app.showSearchResults(results, this._displayResults.bind(this, results.search), this);
 	}
 	else {
 		this._displayResults(results.search, resultsCtlr);
 	}
-	appCtxt.searchAppName = app.getName();
 	this._curSearch = results.search;
 	this.inactive = true;	// search tabs can always be reused (unless pinned)
-};
-
-/**
- * Shows the overview or the filter panel, and the mini-calendar. The overview is shown during a DnD operation.
- *
- * @param {Boolean}     show    if true, show the overview; if false, show the filter panel
- */
-ZmSearchResultsController.prototype.showOverview =
-function(show) {
-
-	var overview = this._resultsApp.getOverview(),
-		avm = appCtxt.getAppViewMgr();
-
-	if (overview) {
-		var treeComp = {};
-		treeComp[ZmAppViewMgr.C_TREE] = show ? overview : this._filterPanel;
-		avm.setViewComponents(this.viewId, treeComp, true);
-		avm.displayComponent(ZmAppViewMgr.C_TREE_FOOTER, show, true);
-	}
 };
 
 // creates the toolbar and filter panel
@@ -126,66 +106,65 @@ function() {
  */
 ZmSearchResultsController.prototype._displayResults =
 function(search, resultsCtlr) {
-
-	var resultsApp = resultsCtlr.getApp().getName();
-	if (!this._filterPanel || this._filterPanel._resultsApp !== resultsApp) {
+	
+	if (!this._filterPanel) {
 		this._filterPanel = new ZmSearchResultsFilterPanel({
 					parent:		this._container,
 					controller:	this,
 					id:			DwtId.makeId(ZmId.SEARCHRESULTS_PANEL, this._currentViewId),
-					resultsApp:	resultsApp
+					resultsApp:	resultsCtlr.getApp().getName()
 				});
 	}
-
 	this._resultsController = resultsCtlr;
-
-	var elements = {};
-	elements[ZmAppViewMgr.C_TREE] = this._filterPanel;
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = resultsCtlr.getCurrentToolbar();
-	elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getViewMgr ? resultsCtlr.getViewMgr() : resultsCtlr.getCurrentView();
-
 	if (appCtxt.getCurrentViewId().indexOf(this._currentViewId) !== -1) {
+		var elements = {};
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = resultsCtlr.getCurrentToolbar();
+		elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getViewMgr ? resultsCtlr.getViewMgr() : resultsCtlr.getCurrentView();
 		appCtxt.getAppViewMgr().setViewComponents(this._currentViewId, elements, true);
 	}
 	else {
-
-		var callbacks = {};
-		callbacks[ZmAppViewMgr.CB_POST_REMOVE]	= this._postRemoveCallback.bind(this);
-		callbacks[ZmAppViewMgr.CB_POST_SHOW]    = this._postShowCallback.bind(this);
+		
+		var elements = {};
 		elements[ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR] = this._toolbar;
-
+		elements[ZmAppViewMgr.C_TREE] = this._filterPanel;
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = resultsCtlr.getCurrentToolbar();
+		elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getViewMgr ? resultsCtlr.getViewMgr() : resultsCtlr.getCurrentView();
+		
 		this._app.createView({	viewId:		this._currentViewId,
 								viewType:	this._currentViewType,
 								elements:	elements,
-								callbacks:	callbacks,
 								controller:	this,
 								hide:		[ ZmAppViewMgr.C_TREE_FOOTER ],
 								tabParams:	this._getTabParams()});
 		this._app.pushView(this._currentViewId);
 		this._filterPanel.reset();
-
-		if (!this._button) {
-			this._button = appCtxt.getAppChooser().getButton(this.tabId);
-			Dwt.addClass(this._button.getHtmlElement(), "SearchTabButton");
-			this._button.addSelectionListener(this._pinnedListener.bind(this));
-		}
-	}
-
-	if (search && search.query) {
-		this._filterPanel.resetBasicFiltersToQuery(search.query);
+		// search tab button menu
+		var button = appCtxt.getAppChooser().getButton(this.tabId);
+		var menu = new DwtMenu({ parent: button	});
+		button.setMenu(menu);
+		var menuItem;
+		menuItem = new DwtMenuItem({ parent:menu });
+		menuItem.setText(ZmMsg.saveCurrentSearch);
+		menuItem.addSelectionListener(this._saveListener.bind(this));
+		menuItem = new DwtMenuItem({ parent:menu });
+		menuItem.setText(ZmMsg.close);
+		menuItem.addSelectionListener(this._closeListener.bind(this));
+		menuItem = new DwtMenuItem({ parent:menu, style: DwtMenuItem.SEPARATOR_STYLE });
+		menuItem = new DwtMenuItem({ parent:menu, style:DwtMenuItem.CHECK_STYLE });
+		menuItem.setText(ZmMsg.pinned);
+		menuItem.addSelectionListener(this._pinnedListener.bind(this));
 	}
 	
 	if (search && search.origin == ZmId.SEARCH) {
 		this._toolbar.setSearch(search);
 	}
-
 	// Tell the user how many results were found
 	var searchResult = resultsCtlr.getCurrentSearchResults && resultsCtlr.getCurrentSearchResults();
 	var results = (searchResult && searchResult.getResults()) || resultsCtlr.getList();
 	var size = results && results.size && results.size();
 	var plus = (results && results.hasMore && results.hasMore()) ? "+" : "";
 	var label = size ? AjxMessageFormat.format(ZmMsg.searchResultsLabel, [size, plus]) :
-					   search.isEmpty ? ZmMsg.searchResultsEnterSearch : ZmMsg.searchResultsLabelNone;
+					   ZmMsg.searchResultsLabelNone;
 	this._toolbar.setLabel(label, false);
     if (resultsCtlr && resultsCtlr.updateTimeIndicator) {
         resultsCtlr.updateTimeIndicator();
@@ -197,34 +176,17 @@ ZmSearchResultsController.prototype._postHideCallback =
 function() {
 };
 
-ZmSearchResultsController.prototype._postRemoveCallback =
-function() {
-	this._app.deleteSessionController({
-		appName:	this._resultsApp.getName(),
-		controllerClass: "ZmSearchResultsController",
-		sessionId:	this.sessionId
-	});
-};
-
-ZmSearchResultsController.prototype._postShowCallback =
-function() {
-	if (appCtxt.isWebClientOfflineSupported) {
-		this.getApp().resetWebClientOfflineOperations(this);
-	}
-};
-
 // returns params for the search tab button
 ZmSearchResultsController.prototype._getTabParams =
 function() {
 	return {
-		id:					this.tabId,
-		leftImage:			"Pin",
-		rightImage:			"CloseGray",
-        rightHoverImage:	"Close",
-		text:				ZmSearchResultsController.DEFAULT_TAB_TEXT,
-		textPrecedence:		90,
-		tooltip:			ZmSearchResultsController.DEFAULT_TAB_TEXT,
-		style:          	DwtLabel.IMAGE_BOTH
+		id:				this.tabId,
+		image:          "CloseGray",
+        hoverImage:     "Close",
+		text:			ZmSearchResultsController.DEFAULT_TAB_TEXT,
+		textPrecedence:	90,
+		tooltip:		ZmSearchResultsController.DEFAULT_TAB_TEXT,
+        style:          DwtLabel.IMAGE_RIGHT
 	};
 };
 
@@ -263,38 +225,21 @@ function(ev, zimletEvent) {
 
 // Note the error and then eat it - we don't want to show toast or clear out results
 ZmSearchResultsController.prototype._errorCallback =
-function(ex) {
-	var msg = ZmCsfeException.getErrorMsg(ex.code);
-	msg = msg || ZmMsg.unknownError;
-	this._toolbar.setLabel(msg, true);
+function(ev) {
+	this._toolbar.setLabel(ZmMsg.invalidSearch, true);
 	return true;
 };
 
 // pops up a dialog to save the search
 ZmSearchResultsController.prototype._saveListener =
 function(ev) {
-
-	var stc = appCtxt.getOverviewController().getTreeController(ZmOrganizer.SEARCH);
-	if (!stc._newCb) {
-		stc._newCb = stc._newCallback.bind(stc);
-	}
-
-	var params = {
-		search: this._curSearch,
-		appName: this._resultsApp.getName()
-	};
-	ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
+	appCtxt.getSearchController()._saveButtonListener(ev);
 };
 
 // toggles the pinned state of this tab
 ZmSearchResultsController.prototype._pinnedListener =
 function(ev) {
-	if (!Dwt.hasClass(ev.target, "ImgPin") && !Dwt.hasClass(ev.target, "ImgUnpin")) {
-		return;
-	}
 	this.isPinned = !this.isPinned;
-	var button = appCtxt.getAppChooser().getButton(this.tabId);
-	button.setImage(this.isPinned ? "Unpin" : "Pin", DwtLabel.LEFT);
 };
 
 ZmSearchResultsController.prototype._closeListener =

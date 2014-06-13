@@ -81,7 +81,7 @@
                 <contains string="${mobile.packager.platform}" substring="iOS"/>
                 <then>
                     <copy todir="${build.dir}">
-                        <fileset dir="${app.dir}/../img/logo" includes="Icon*.png"/>
+                        <fileset dir="${app.dir}/resources/icons" includes="**/*"/>
                         <fileset dir="${app.dir}/resources/loading" includes="**/*"/>
                     </copy>
                 </then>

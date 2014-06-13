@@ -276,7 +276,8 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	},
 
 	/**
-	 * Returns the original content of this message.
+	 * Returns the original content of this message, fetching it from the cache if this message
+	 * has already been processed.
 	 *
 	 * @param {String}      content     content
 	 * @param {ZtMimePart}  bodyPart    body part
@@ -285,11 +286,16 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 	getOriginalContent: function(content, bodyPart) {
 
 		var contentType = bodyPart.get('contentType'),
-			id = this.getId();
+			id = this.getId(),
+			cacheKey = [ id, bodyPart.get('part') ].join('|'),
+			origContent = ZCS.cache.get(cacheKey);
 
-		var	origContent = ZCS.quoted.getOriginalContent(content, contentType === ZCS.mime.TEXT_HTML);
-		if (origContent.length !== content.length) {
-			ZCS.model.mail.ZtMailMsg.hasQuotedContent[id] = true;
+		if (!origContent) {
+			origContent = ZCS.quoted.getOriginalContent(content, contentType === ZCS.mime.TEXT_HTML);
+			if (origContent.length !== content.length) {
+				ZCS.cache.set(cacheKey, origContent);
+				ZCS.model.mail.ZtMailMsg.hasQuotedContent[id] = true;
+			}
 		}
 
 		return origContent;
@@ -403,7 +409,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			return '';
 		}
 
-		key = ZCS.constant.HDR_KEY[header] + ': ';
+		key = ZCS.constant.HDR_KEY[header] + ' ';
 		key = '<b>' + key + '</b>';
 		value = ZCS.mailutil.textToHtml(value);
 
@@ -565,7 +571,7 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 				var info = {},
 					filename = attachment.get('name') || attachment.get('fileName') || Ext.String.format(ZtMsg.unknownAttType, type);
 
-				info.label = Ext.String.htmlEncode(ZCS.util.trimFileName(filename, 30));
+				info.label = ZCS.util.trimFileName(filename, 30);
 				info.icon = ZCS.mime.getIconClass(type);
 				info.size = ZCS.util.formatFileSize(attachment.get('size'));
 				info.url = (!part || ZCS.constant.REGEX_URL.test(contentLocation)) ? contentLocation : this.getPartUrl(part);
@@ -609,6 +615,10 @@ Ext.define('ZCS.model.mail.ZtMailMsg', {
 			}
 		}
 		return false;
+	},
+
+	getConv: function() {
+		return ZCS.cache.get(this.get('convId'));
 	}
 },
 	function (thisClass) {

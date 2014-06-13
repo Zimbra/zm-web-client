@@ -102,7 +102,7 @@ action_stop                         stop checkbox (true)
             <td><fmt:message key="EFILT_ALLCOND_PRE"/></td>
             <td>
                 <select name="allof">
-                    <option <c:if test="${zm:boolean(rule.allConditions)}">selected</c:if> value="all"><fmt:message key="EFILT_all"/>
+                    <option <c:if test="${rule.allConditions}">selected</c:if> value="all"><fmt:message key="EFILT_all"/>
                     <option <c:if test="${not rule.allConditions}">selected</c:if> value="any"><fmt:message key="EFILT_any"/>
                 </select>
             </td>

@@ -144,14 +144,14 @@ ZmMobileDeviceListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 
 	if (field == ZmMobileDeviceListView.F_DEVICE) {
-		html[idx++] = '<span style="white-space:nowrap">';
+		html[idx++] = "<nobr>";
 		html[idx++] = item.type;
 		if (item.ua) {
 			html[idx++] = " (";
 			html[idx++] = item.ua;
 			html[idx++] = ")";
 		}
-		html[idx++] = "</span>";
+		html[idx++] = "</nobr>";
 	} else if (field == ZmMobileDeviceListView.F_STATUS) {
 		html[idx++] = item.getStatusString();
 	} else if (field == ZmMobileDeviceListView.F_ID) {

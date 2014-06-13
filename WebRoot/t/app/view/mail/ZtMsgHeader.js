@@ -61,12 +61,7 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		var data = msg.getData(),
 			tpl = ZCS.view.mail.ZtMsgHeader.TEMPLATE[state];
 
-		if (ZCS.session.getSetting(ZCS.constant.SETTING_TAGGING_ENABLED)) {
-			data.tags = ZCS.model.ZtItem.getTagData(data.tags);
-		}
-		else {
-			data.tags = null;
-		}
+		data.tags = ZCS.model.ZtItem.getTagData(data.tags);
 
 		this.setMsg(msg);
 
@@ -104,25 +99,15 @@ Ext.define('ZCS.view.mail.ZtMsgHeader', {
 		data.byWayOfName = (byWayOf && byWayOf.address !== from.address) ? byWayOf.name : '';
 		data.byWayOfNameId = data.byWayOfNameName ? byWayOfName.id : '';
 
-		function getAddressList(addrs) {
-			return addrs ? Ext.Array.map(addrs, function(addr) {
+		if (state === ZCS.constant.HDR_EXPANDED || state === ZCS.constant.HDR_DETAILED) {
+			data.recipients = Ext.Array.map(Ext.Array.clean([].concat(data.addrs.to, data.addrs.cc)), function(addr) {
 				return addr.name;
-			}).join(', ') : '';
-		}
-
-		if (state === ZCS.constant.HDR_EXPANDED) {
-			data.recipients = getAddressList(Ext.Array.clean([].concat(data.addrs.to, data.addrs.cc)));
-		}
-		else if (state === ZCS.constant.HDR_DETAILED) {
-			data.toList = getAddressList(data.addrs.to);
-			data.ccList = getAddressList(data.addrs.cc);
+			}).join(', ');
 		}
 
 		// Get contact image if it has one
-		var imageUrl;
-		if (from && from.address) {
-			imageUrl = ZCS.app.getContactListController().getDataFieldByEmail(from.address, 'image');
-		}
+        var contact = ZCS.cache.get(from && from.address, 'email'),
+            imageUrl = contact && ZCS.model.contacts.ZtContact.getImageUrl(contact, contact.getId());
 
         data.imageStyle = imageUrl ? 'background-image: url(' + imageUrl + ')' : '';
 

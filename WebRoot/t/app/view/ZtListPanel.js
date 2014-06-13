@@ -48,8 +48,7 @@ Ext.define('ZCS.view.ZtListPanel', {
 
 		this.callParent(arguments);
 
-		var app = this.getApp(),
-            newButtonId = [ app, 'newButton' ].join('-');
+		var app = this.getApp();
 
 		var listToolbar = {
 			docked: 'top',
@@ -69,7 +68,6 @@ Ext.define('ZCS.view.ZtListPanel', {
 				{
 					xtype: 'button',
 					cls: 'zcs-flat',
-                    itemId: newButtonId,
 					handler: function() {
 						this.up('listpanel').fireEvent('newItem');
 					},

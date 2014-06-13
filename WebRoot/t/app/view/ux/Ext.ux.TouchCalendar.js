@@ -102,6 +102,36 @@ Ext.define('Ext.ux.TouchCalendar',{
 		}
 	},
 
+    setCustomView: function(viewConfig) {
+
+        this.viewConfig = Ext.applyIf(viewConfig || {}, this.defaultViewConfig);
+
+        this.setViewMode(this.viewConfig.viewMode.toUpperCase());
+
+        this.initViews();
+
+        Ext.apply(this, {
+            cls: 'touch-calendar',
+            activeItem: (this.getEnableSwipeNavigate() ? 1: 0),
+            direction: 'horizontal'
+        });
+
+        this.setIndicator(false); // for some reason, indicator: false is not being applied unless explicitly set.
+
+        if (this.getEnableSwipeNavigate()) {
+            // Bind the required listeners
+            this.on(this.element, {
+                drag: this.onDrag,
+                dragThreshold: 5,
+                dragend: this.onDragEnd,
+                direction: this.direction,
+                scope: this
+            });
+
+            this.element.addCls(this.baseCls + '-' + this.direction);
+        }
+    },
+
 	/**
 	* Builds the necessary configuration object for the creation of the TouchCalendarView.
 	* @param {Date} viewValue The date Value that the new TouchCalendarView will have
@@ -197,13 +227,13 @@ Ext.define('Ext.ux.TouchCalendar',{
 	* @method
 	* @returns {void}
 	*/
-	updateViewMode: function(mode, date){
+	updateViewMode: function(mode){
 		this.viewConfig = this.viewConfig || {};
 		this.viewConfig.viewMode = mode;
 
 		if(this.view){
 			Ext.each(this.getInnerItems(), function(view, index){
-				view.currentDate = this.getViewDate(Ext.Date.clone(date), index-1);
+				view.currentDate = this.getViewDate(Ext.Date.clone(this.view.currentDate), index-1);
 
 				view.setViewMode(mode, true);
 				view.refresh();
@@ -258,11 +288,8 @@ Ext.define('Ext.ux.TouchCalendar',{
 
 			this.view = newCard;
 
-            //Call refreshDelta() which evetually fires the 'periodchange' event
-            this.view.refreshDelta(0);
-
-//			var dateRange = this.view.getPeriodMinMaxDate();
-//			this.fireEvent('periodchange', this.view, dateRange.min.get('date'), dateRange.max.get('date'), direction);
+			var dateRange = this.view.getPeriodMinMaxDate();
+			this.fireEvent('periodchange', this.view, dateRange.min.get('date'), dateRange.max.get('date'), direction);
 		}
 	}
     

@@ -134,33 +134,30 @@ ZmTagMenu.prototype._getAddRemove =
 function(items, tagList) {
 	// find out how many times each tag shows up in the items
 	var tagCount = {};
-	var tagRemoveHash = {};
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		if (!item.tags) {
+		if (!item || !item.tags || !item.tags.length) {
 			continue;
 		}
 		for (var j = 0; j < item.tags.length; j++) {
 			var tagName = item.tags[j];
 			tagCount[tagName] = tagCount[tagName] || 0;
-			tagRemoveHash[tagName]  = true;
-			//NOTE hasTag and canAddTag are not interchangeable - for Conv it's possible you can both add the tag and remove (if only some messages are tagged)
-			if (!item.canAddTag(tagName)) {
-				tagCount[tagName] += 1;
-			}
+			tagCount[tagName] += 1;
 		}
 	}
-	var remove = AjxUtil.keys(tagRemoveHash);
-
-	var add = [];
+	var add = {};
+	var remove = [];
 	// any tag held by fewer than all the items can be added
 	var a = tagList.children.getArray();
-	for (i = 0; i < a.length; i++) {
-		var tag = a[i];
-		tagName = tag.name;
+	for (var i = 0; i < a.length; i++) {
+		var tagName = a[i].name;
 		if (!tagCount[tagName] || (tagCount[tagName] < items.length)) {
-			add.push(tagName);
+			add[tagName] = true;
 		}
+	}
+	// any tag we saw can be removed
+	for (var tagName in tagCount) {
+		remove.push(tagName);
 	}
 
 	return {add: add, remove: remove};
@@ -171,12 +168,17 @@ function(items, tagList) {
 ZmTagMenu.prototype._render =
 function(tagList, addRemove) {
 
-	for (var i = 0; i < addRemove.add.length; i++) {
-		var tagName = addRemove.add[i];
-		this._addNewTag(this, tagName, tagList, true, null, this._addHash);
+	var sz = tagList.size();
+	var a = tagList.children.getArray();
+	for (var i = 0; i < sz; i++) {
+		var tag = a[i];
+		var tagName = tag.name;
+		if (addRemove.add[tagName]) {
+			this._addNewTag(this, tag, true, null, this._addHash);
+		}
 	}
 
-	if (addRemove.add.length) {
+	if (this._tagList.size()) {
 		new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});
 	}
 
@@ -191,7 +193,6 @@ function(tagList, addRemove) {
 	miNew.setShortcut(appCtxt.getShortcutHint(this._keyMap, ZmKeyMap.NEW_TAG));
 	miNew.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_CREATE);
 	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
-	miNew.setEnabled(!appCtxt.isWebClientOffline());
 
 	// add static "Remove Tag" menu item
 	var miRemove = this._menuItems[ZmTagMenu.MENU_ITEM_REM_ID] = new DwtMenuItem({parent:this, id: removeid});
@@ -210,9 +211,9 @@ function(tagList, addRemove) {
 					miRemove.setMenu(removeMenu);
                     removeMenu.setHtmlElementId('REMOVE_TAG_MENU_' + this.getHTMLElId());
 				}
-				var tagName = removeList[i];
+				var tag = tagList.getByNameOrRemote(removeList[i]);
                 var tagHtmlId = 'Remove_tag_' + i;
-				this._addNewTag(removeMenu, tagName, tagList, false, null, this._removeHash, tagHtmlId);
+				this._addNewTag(removeMenu, tag, false, null, this._removeHash, tagHtmlId);
 			}
 			// if multiple removable tags, offer "Remove All"
 			new DwtMenuItem({parent:removeMenu, style:DwtMenuItem.SEPARATOR_STYLE});
@@ -237,8 +238,7 @@ function(tagList, addRemove) {
 
 ZmTagMenu.tagNameLength = 20;
 ZmTagMenu.prototype._addNewTag =
-function(menu, newTagName, tagList, add, index, tagHash, tagHtmlId) {
-	var newTag = tagList.getByNameOrRemote(newTagName);
+function(menu, newTag, add, index, tagHash, tagHtmlId) {
 	var mi = new DwtMenuItem({parent:menu, index:index, id:tagHtmlId});
     var tagName = AjxStringUtil.clipByLength(newTag.getName(false),ZmTagMenu.tagNameLength);
 	var nameText = newTag.notLocal ? AjxMessageFormat.format(ZmMsg.tagNotLocal, tagName) : tagName;

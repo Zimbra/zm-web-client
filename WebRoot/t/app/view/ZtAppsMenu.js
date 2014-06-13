@@ -26,29 +26,23 @@ Ext.define('ZCS.view.ZtAppsMenu', {
 
         // Prepare menu items
         Ext.each(ZCS.constant.APPS, function(app) {
-            if (ZCS.util.isAppEnabled(app)) {
-                menuItems.push({
-                    app:        app,
-                    text:       ZCS.constant.APP_NAME[app],
-                    group:      ZtMsg.applicationsGroup,
-                    groupOrder: 1
-                });
-            }
+                if (ZCS.util.isAppEnabled(app)) {
+                    menuItems.push({
+                        app:    app,
+                        text:   ZCS.constant.APP_NAME[app],
+                        group:  ZtMsg.applicationsGroup
+                    });
+                }
         });
 
-        menuItems.push({
-        /*
-	            app:        'settings',
-	            text:       ZtMsg.settings,
-	            group:      ZtMsg.otherGroup,
-	            groupOrder: 2
-            },
-         */
-            app:        'signout',
-            text:       ZtMsg.logout,
-            //Use zero width unicode character to keep the section divider, but without visible label
-            group:      '\u200C',
-	        groupOrder: 3
+        menuItems.push(/*{
+            app: 'settings',
+            text: ZtMsg.settings,
+            group: ZtMsg.otherGroup
+        }, */{
+            app: 'signout',
+            text: ZtMsg.logout,
+            group: ZtMsg.otherGroup
         });
 
         this.add([{
@@ -65,8 +59,7 @@ Ext.define('ZCS.view.ZtAppsMenu', {
                 grouper: {
                     groupFn: function (item) {
                         return item.get('group');
-                    },
-	                sortProperty: 'groupOrder'
+                    }
                 }
             }
         }]);

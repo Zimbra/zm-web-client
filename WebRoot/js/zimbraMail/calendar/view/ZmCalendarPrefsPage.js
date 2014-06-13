@@ -508,7 +508,8 @@ ZmWorkHours.prototype.reset =
 function() {
     if (!this.isDirty()) { return; }
     var i,
-        workHours = this._workHours;
+        workHours = this._workHours,
+        startTime = new Date();
 
     this._startTimeSelect.set(this._startTime);
     this._endTimeSelect.set(this._endTime);
@@ -516,8 +517,6 @@ function() {
     for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
         this._workDaysCheckBox[i].setSelected(workHours[i].isWorkingDay);
     }
-
-	this._radioGroup.setSelectedId(this._isCustom ? this._radioCustomId : this._radioNormalId);
 };
 
 ZmWorkHours.prototype.isDirty =
@@ -548,7 +547,7 @@ function() {
         isDirty = this._customDlg.isDirty();
     }
 
-    if (!isCustom && this._isCustom) { //switching to normal should trigger dirty anyway.
+    if(isCustom != this._isCustom) {
         isDirty = true;
     }
 
@@ -727,13 +726,13 @@ function(templateId) {
     this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#"+templateId, {id:this._htmlElId});
     //fill the containers for the work days and work time
     el = document.getElementById(this._htmlElId + "_CAL_WORKING_START_TIME");
-    startTimeSelect = new DwtTimeInput(this, DwtTimeInput.START, el);
+    startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START, el);
     startTimeSelect.set(this._startTime);
     startTimeSelect.setEnabled(!isCustom);
     this._startTimeSelect = startTimeSelect;
 
     el = document.getElementById(this._htmlElId + "_CAL_WORKING_END_TIME");
-    endTimeSelect = new DwtTimeInput(this, DwtTimeInput.END, el);
+    endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END, el);
     endTimeSelect.set(this._endTime);
     endTimeSelect.setEnabled(!isCustom);
     this._endTimeSelect = endTimeSelect;
@@ -746,22 +745,17 @@ function(templateId) {
 
     radioNormal = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_NORMAL")});
     radioNormal.setSelected(!isCustom);
-	var radioNormalId = radioNormal.getInputElement().id;
-	radioIds[radioNormalId] = radioNormal;
+    radioIds[radioNormal.getInputElement().id] = radioNormal;
     
     radioCustom = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_CUSTOM")});
     radioCustom.setSelected(isCustom);
-	var radioCustomId = radioCustom.getInputElement().id;
-	radioIds[radioCustomId] = radioCustom;
+    radioIds[radioCustom.getInputElement().id] = radioCustom;
 
-	radioGroup = new DwtRadioButtonGroup(radioIds, isCustom ? radioCustomId : radioNormalId);
+    radioGroup = new DwtRadioButtonGroup(radioIds, isCustom ? radioCustom.getInputElement().id : radioNormal.getInputElement().id );
     
     radioGroup.addSelectionListener(new AjxListener(this, this._toggleNormalCustom));
     this._radioCustom = radioCustom;
     this._radioNormal = radioNormal;
-	this._radioGroup = radioGroup;
-	this._radioCustomId = radioCustomId;
-	this._radioNormalId = radioNormalId;
     for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
         checkbox = new DwtCheckbox({parent:this, parentElement:(this._htmlElId + "_CAL_WORKING_DAY_" + i)});
         checkbox.setText(AjxDateUtil.WEEKDAY_MEDIUM[i]);
@@ -806,7 +800,7 @@ ZmCustomWorkHoursDlg.prototype.initialize = function(workHours) {
     for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
         //fill the containers for the work days and work time
         el = document.getElementById(this._htmlElId + "_CAL_WORKING_START_TIME_"+i);
-        startTimeSelect = new DwtTimeInput(this, DwtTimeInput.START, el);
+        startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START, el);
         inputTime = new Date();
         inputTime.setHours(workHours[i].startTime/100, workHours[i].startTime%100, 0);
         startTimeSelect.set(inputTime);
@@ -817,7 +811,7 @@ ZmCustomWorkHoursDlg.prototype.initialize = function(workHours) {
         inputTime = new Date();
         inputTime.setHours(workHours[i].endTime/100, workHours[i].endTime%100, 0);
         el = document.getElementById(this._htmlElId + "_CAL_WORKING_END_TIME_"+i);
-        endTimeSelect = new DwtTimeInput(this, DwtTimeInput.END, el);
+        endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END, el);
         endTimeSelect.set(inputTime);
         endTimeSelect.setEnabled(workHours[i].isWorkingDay);
         this._endTimeSelect.push(endTimeSelect);

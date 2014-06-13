@@ -64,8 +64,8 @@ ZmController.prototype._setView = function() {};
 /**
  * Returns the default view type
  */
-ZmController.getDefaultViewType = function() {};	// needed by ZmApp::getSessionController
-ZmController.prototype.getDefaultViewType = function() {};
+ZmController.getDefaultViewType	= function() {};	// needed by ZmApp::getSessionController
+ZmController.prototype.getDefaultViewType	= function() {};
 
 // _defaultView is DEPRECATED in 8.0
 ZmController.prototype._defaultView = ZmController.prototype.getDefaultViewType;
@@ -231,50 +231,6 @@ function(msg, ex, noExecReset, hideReportButton, expanded, noEncoding) {
 		errorDialog.showDetail();
 };
 
-/**
- * Pops-up an error dialog describing an upload error.
- *
- * @param	{constant}	type		the type of the uploaded item, e.g. <code>ZmItem.MSG</code>.
- * @param	{Number}	respCode		the HTTP reponse status code
- * @param	{String}	extraMsg		optional message to append to the status
- */
-ZmController.prototype.popupUploadErrorDialog =
-function(type, respCode, extraMsg) {
-    var warngDlg = appCtxt.getMsgDialog();
-    var style = DwtMessageDialog.CRITICAL_STYLE;
-    var msg;
-
-    switch (respCode) {
-    case AjxPost.SC_OK:
-        return true;
-
-    case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE:
-        var basemsg =
-            type && ZmMsg['attachmentSizeError_' + type] ||
-            ZmMsg.attachmentSizeError;
-        var sizelimit =
-            AjxUtil.formatSize(appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT));
-		msg = AjxMessageFormat.format(basemsg, sizelimit);
-
-        break;
-
-    default:
-        var basemsg =
-            type && ZmMsg['errorAttachment_' + type] ||
-            ZmMsg.errorAttachment;
-        msg = AjxMessageFormat.format(basemsg, respCode || AjxPost.SC_NO_CONTENT);
-
-        break;
-    }
-
-    if (extraMsg) {
-        msg += '<br /><br />';
-        msg += extraMsg;
-    }
-    warngDlg.setMessage(msg, style);
-    warngDlg.popup();
-};
-
 ZmController.handleScriptError =
 function(ex) {
 
@@ -356,27 +312,20 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.NEW_FOLDER:
 		case ZmKeyMap.NEW_TAG:
-            if (isExternalAccount || appCtxt.isWebClientOffline()) { break; }
+            if (isExternalAccount) { break; }
 			var op = ZmApp.ACTION_CODES[actionCode];
 			if (op) {
 				this._newListener(null, op);
 			}
 			break;
 
-	    case ZmKeyMap.NEW_SEARCH: {
-		    appCtxt.getSearchController().openNewSearchTab();
-		    break;
-	    }
-
 		case ZmKeyMap.SAVED_SEARCH:
             if (isExternalAccount) { break; }
 			var searches = appCtxt.getFolderTree().getByType(ZmOrganizer.SEARCH);
 			if (searches && searches.length > 0) {
 				var dlg = appCtxt.getChooseFolderDialog();
-				// include app name in ID so we have one overview per app to show only its saved searches
 				var params = {treeIds:		[ZmOrganizer.SEARCH],
-							  overviewId:	dlg.getOverviewId(ZmOrganizer.SEARCH, this._app._name),
-							  appName:      this._app._name,
+							  overviewId:	dlg.getOverviewId(ZmOrganizer.SEARCH),
 							  title:		ZmMsg.selectSearch};
 				ZmController.showDialog(dlg, new AjxCallback(null, ZmController._searchSelectionCallback, [dlg]), params);
 			}
@@ -388,7 +337,6 @@ function(actionCode, ev) {
 			var params = {treeIds:		[orgType],
 						  overviewId:	dlg.getOverviewId(ZmOrganizer.APP[orgType]),
 						  appName:		this._app._name,
-						  noRootSelect: true,
 						  title:		AjxMessageFormat.format(ZmMsg.goToFolder, ZmMsg[ZmOrganizer.MSG_KEY[orgType]])};
 			ZmController.showDialog(dlg, new AjxCallback(null, ZmController._visitOrgCallback, [dlg, orgType]), params);
 			break;
@@ -452,7 +400,10 @@ function(ev, op) {
 		// new organizers
 		case ZmOperation.NEW_FOLDER: {
 			// note that this shortcut only happens if mail app is around - it means "new mail folder"
-			ZmController.showDialog(appCtxt.getNewFolderDialog(), this.getNewFolderCallback());
+			var treeCtlr = appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
+			var treeView = treeCtlr && treeCtlr.getTreeView(appCtxt.getApp(ZmApp.MAIL).getOverviewId());
+			var currentFolder = treeView && treeView.getSelected();
+			ZmController.showDialog(appCtxt.getNewFolderDialog(), this.getNewFolderCallback(), currentFolder);
 			break;
 		}
 		case ZmOperation.NEW_TAG: {
@@ -758,3 +709,28 @@ function(oldView, newView) {
 	return false;
 };
 
+/**
+ * If the skin asks (via hint) to not display the search toolbar in compose view (also compose appt view), we hide or display it based on the visible param.
+ *
+ * @param	{Boolean}	visible		should it be visible now?
+ */
+ZmController.prototype._setSearchToolbarVisibilityPerSkin =
+function(visible) {
+
+	if (!appCtxt.getSkinHint("hideSearchInCompose")) {
+		return;
+	}
+
+	//todo - returning now since we are moving the search toolbar to the header anyway, and it causes weird stuff with my new layout.
+	//todo - remove the rest later when moving the search toolbar up.
+	return;
+
+	var tb = document.getElementById(ZmId.SEARCH_TOOLBAR);
+
+	if (!tb) {
+		return;
+	}
+
+	tb.style.display = visible ? "block" : "none";
+
+};

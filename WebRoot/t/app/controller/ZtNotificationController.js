@@ -27,7 +27,6 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 
 	launch: function() {
 		ZCS.app.on('notify', this.doNotify, this);
-		ZCS.app.on('notifyOrganizerNotifications', this.doOrganizerNotify, this);
 	},
 
 	/**
@@ -49,9 +48,8 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 			return;
 		}
 
-		var itemType = notification.itemType = ZCS.constant.NODE_ITEM[notification.nodeType] || notification.nodeType;
-
 		if (notification.type === ZCS.constant.NOTIFY_CREATE) {
+			var itemType = notification.itemType = ZCS.constant.NODE_ITEM[notification.nodeType] || notification.nodeType;
 			if (itemType) {
 				var eventName = 'notify' + Ext.String.capitalize(itemType) + notification.type;
 				//<debug>
@@ -61,8 +59,7 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 			}
 		}
 		else {
-			// get organizers from the session, items from store
-			var result = ZCS.session.getOrganizerModel(notification.id) || ZCS.util.findItemInActiveStore(itemType, notification.id);
+			var result = ZCS.cache.get(notification.id, null, true);
 			if (result) {
 				var items = Array.isArray(result) ? result : [ result ],
 					item = items[0],
@@ -74,19 +71,11 @@ Ext.define('ZCS.controller.ZtNotificationController', {
 						//<debug>
 						Ext.Logger.info('Notification: ' + eventName);
 						//</debug>
-						Ext.Function.defer(function () {
-							ZCS.app.fireEvent(eventName, item, notification);
-						}, 250);
+						ZCS.app.fireEvent(eventName, item, notification);
 					}, this);
 				}
 			}
 		}
-	},
-
-	doOrganizerNotify: function (notifications) {
-		notifications = Ext.Array.filter(notifications, this.handleNotification);
-
-		ZCS.app.fireEvent('notifyOrganizerNotificationBatch', notifications);
 	},
 
 	// Returns true if we should handle the notification. We don't want to handle empty folder change notifications.

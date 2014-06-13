@@ -52,7 +52,7 @@
 */
 
 .DwtShell, .MainShell {
-	@FullSize@
+    @FullSize@
 }
 
 
@@ -72,7 +72,7 @@
 	font-size:11px;
 }
 
-.ZaStatusView { background-color:#EEE; }
+.ZaStatusView {background-color:#EEE; }
 
 .DwtMsgDialog {
 	padding:10px;
@@ -98,7 +98,7 @@
 	margin-left:6px;
 }
 
-.currentAppLabel TD {
+.currentAppLabel td {
 	@FontSize-big@
 	font-weight:bold; 
 	line-height:18px;
@@ -125,16 +125,16 @@
 }
 
 .StatsDiv {
-	padding:0px 10px;
+	padding:0 10px;
 }
 
 .StatsImageTitle {
 	@FontSize-biggest@
-	padding:3px 0px;
+	padding:3px 0;
 }
 
 .StatsImage {
-	padding:3px 0px 18px;
+	padding:3px 0 18px;
 }
 
 .ChartSettings {
@@ -178,7 +178,7 @@
 	width:180px;
 	height:200px;
 	border:1px solid black;
-	margin:10px 10px 0px;
+	margin:10px 10px 0;
 	background-color:transparent;
 	overflow:auto;
 }
@@ -188,7 +188,7 @@
 	width:100%;
 	height:100%;
 	border-style:solid;
-	border-width:0px 0px 1px;
+	border-width:0 0 1px;
 	border-color:@darken(AppC,55)@;
 }
 
@@ -245,9 +245,6 @@
 	width:60px;
 }
 
-.DwtTimeSelect .ZSelectAutoSizingContainer {
-	height: auto;
-}
 
 .admin_xform_number_input {
 	width:5em;
@@ -259,7 +256,7 @@
 	color:@AppC+60@;
 }
 
-INPUT.admin_xform_name_input_disabled {
+input.admin_xform_name_input_disabled {
 	@InputField-disabled@
 }
 .admin_xform_name_input {
@@ -281,8 +278,8 @@ INPUT.admin_xform_name_input_disabled {
 	width:100%;
 	@ChromeBg@
 	border-style:solid;
-	border-width:0px 0px 2px;
-	border-bottom-color:#777;
+	border-width:0 0 2px;
+	border-bottom-color:#777;	
 }
 
 
@@ -298,7 +295,7 @@ INPUT.admin_xform_name_input_disabled {
 }
 
 .SearchToolBar .ZToolbarTable {
-	width:100%;
+	width:100%	
 }
 
 .SearchTBSearchField {
@@ -316,7 +313,7 @@ INPUT.admin_xform_name_input_disabled {
 
 /* Override so first level of the tree does not indent */
 .DwtTreeItemLevel1ChildDiv {
-	padding-left:0px;
+	padding-left:0;
 }
 
 
@@ -342,13 +339,13 @@ INPUT.admin_xform_name_input_disabled {
 }
 
 .MBXList{
-	height:100%;
+	height:100%;	
 }
 
 .ZaFullPageXFormListView {
 	border-left:none;
 	border-right:none;
-	height:100%;
+	height:100%;	
 	width:auto;
 	@ListBg@
 }
@@ -384,7 +381,7 @@ INPUT.admin_xform_name_input_disabled {
 .ZaServicesListView,
 .ZaClusterServicesListView { 
 	width:100%;
- 	background-color:rgb(255,255,255);
+ 	background-color:rgb(255,255,255)
 }
 
 .ZaServicesListView_table , .ZaServicesListView_server_table,
@@ -400,7 +397,7 @@ INPUT.admin_xform_name_input_disabled {
 }
 
 .ZaServicesListView_table TD, .ZaServicesListView_server_table TD,
-.ZaClusterServicesListView_table TD, .ZaClusterServicesListView_server_table TD {
+.ZaClusterServicesListView_table TD, .ZaClusterServicesListView_server_table TD {  
 	padding:2px;
 }
 
@@ -472,40 +469,46 @@ INPUT.admin_xform_name_input_disabled {
 	background-color:#CCC;
 }
 
-.mbxprogressused,
-.mbxprogressusedWarning,
-.mbxprogressusedCritical {
-	height:8px;
-	margin:1px 0px;
-#IFDEF MSIE_LOWER_THAN_9
-	font-size:0px;
+
+.mbxprogressused {
+	height:8px; 
+	background-color:green;
+	margin:1px 0;
+#IFDEF MSIE
+    font-size: 0px;
 #ENDIF
 }
 
-.mbxprogressused {
-	background-color:green;
-}
-
 .mbxprogressusedWarning {
+	height:8px; 
 	background-color:orange;
+	margin:1px 0;
+#IFDEF MSIE
+    font-size: 0px;
+#ENDIF
 }
 
 .mbxprogressusedCritical {
+	height:8px; 
 	background-color:red;
+	margin:1px 0;
+#IFDEF MSIE
+    font-size: 0px;
+#ENDIF
 }
 
 .mbxprogressbar {
-	background-color:white;
 	border:1px solid grey;
+	width:100px; 
 	height:10px;
-	width:100px;
-#IFDEF MSIE_LOWER_THAN_9
-	font-size:0px;
+	background-color:white;
+#IFDEF MSIE
+    font-size: 0px;
 #ENDIF
 }
 
 .ImgAppBanner {
-	background-position:17px 0px;
+	background-position:17px 0;
 	cursor:pointer;
 }
 
@@ -632,7 +635,7 @@ INPUT.admin_xform_name_input_disabled {
 .AllScreenGrouperBorder {
 	@FieldSet@
 	padding-top:7px;
-	padding-left:5px;
+	padding-left:5px;	
 	padding-right:5px;
 	margin-left:7px;
 	margin-right:7px;
@@ -693,7 +696,7 @@ INPUT.admin_xform_name_input_disabled {
 }
 
 .ZaShowSavedSearchArrowButton .ZWidgetTitle {
-	padding:0px;
+	padding:0;
 }
 
 .ZaShowSavedSearchArrowButton .ZWidgetTable .ZLeftIcon DIV, .ZaShowSavedSearchArrowButton .ZWidgetTable .ZLeftIcon IMG {
@@ -703,7 +706,7 @@ INPUT.admin_xform_name_input_disabled {
 .ZaSearchOptionViewSubHeader {
 	background-color:#F9F6F0;
 	border:thin solid;
-	margin:0px 0px 2px 2px;
+	margin:0 0 2px 2px;
 	text-align:center;
 }
 
@@ -717,19 +720,19 @@ INPUT.admin_xform_name_input_disabled {
 
 /* Set the height of the advanced search button arbitrary */
 DIV.ZaAdvancedSearchButton TABLE, 
-DIV.ZaSearchBuilderOptionRemoveAll TABLE {
+DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
+	height:22px ;	
 #IFDEF MSIE
-	height:20px;
-#ELSE
-	height:22px;
+	height:20px ;
 #ENDIF
 }
 
-#IFDEF MSIE_LOWER_THAN_9
 .ZaSearchResultCountLabel {
-	margin-top:5px;
+	#IFDEF MSIE
+		margin-top:5px;
+	#ENDIF
 }
-#ENDIF
+
 
 /* Search builder outer container */
 .ZaXMbxSearchBuilder {
@@ -820,14 +823,21 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE {
 	text-decoration:underline;
 }
 .AboutScreen {}
-.AboutScreen H1 {
-	margin:0px 20px;
+.AboutScreen H1 {	
+	margin:0 20px;
 }
 .AboutScreen .ImgLoginBanner, 
 .AboutScreen .ImgAppBanner {
 	cursor:pointer;
 	display:block;
 	background-repeat:no-repeat;
+}
+.AboutScreen .ImgAltBanner {
+	margin:20px 0 0 20px;
+	width:71px;
+	height:11px;
+	background-image:url("@LogoImgDir@/AltBanner.png?v=@jsVersion@");
+	background-repeat:repeat-x;
 }
 
 
@@ -862,21 +872,21 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE {
  * here we set to fixed width to get layout 	
  *
  ************/ 
-#IFDEF MSIE_LOWER_THAN_9
+#IFDEF MSIE
 	width:400px; 
 #ENDIF
 	word-wrap:break-word;
 	@ToastText@
 }
 
-.ZaToastText A.undo {
+.ZaToastText a.undo {
 	font-size:0.75em;
 	margin-left:20px;
 }
 
 .ZaToastBG {	@ToastContainer@	}
 
-#IFNDEF MSIE_LOWER_THAN_9
+#IFNDEF  MSIE
 TABLE {	border-collapse:separate;	}
 #ENDIF
 

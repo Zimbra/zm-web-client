@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -61,18 +61,13 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
             {
                 xtype: 'panel',
                 layout: {
-                    type: 'hbox',
-                    align: 'center'
+                    type: 'hbox'
                 },
                 items: [
                     {
                         xtype: 'button',
-                        itemId: 'monthBtn',
-                        cls: 'x-button-pressed',
-                        text: ZtMsg.calMonthLabel,
-                        handler: function() {
-                            ZCS.app.getCalendarController().toggleCalView('month');
-                        }
+                        text: ZtMsg.calTodayLabel,
+                        disabled: true
                     },
                     {
                         xtype: 'button',
@@ -81,36 +76,43 @@ Ext.define('ZCS.view.calendar.ZtCalendarToolbar', {
                         handler: function() {
                             ZCS.app.getCalendarController().toggleCalView('day');
                         }
-                    }
-                ]
-            },
-            {
-                xtype: 'panel',
-                align: 'right',
-                items: [
+                    },
                     {
                         xtype: 'button',
-                        cls: 'zcs-flat',
+                        text: ZtMsg.calWorkWeekLabel,
+                        disabled: true
+                    },
+                    {
+                        xtype: 'button',
+                        itemId: 'weekBtn',
+                        text: ZtMsg.calWeekLabel,
+                        disabled: true,
                         handler: function() {
-                            ZCS.app.getCalendarController().goToday();
-                        },
-                        iconCls: 'today',
-                        iconMask: true
+                            ZCS.app.getCalendarController().toggleCalView('week');
+                        }
+                    },
+                    {
+                        xtype: 'button',
+                        itemId: 'monthBtn',
+                        cls: 'x-button-pressed',
+                        text: ZtMsg.calMonthLabel,
+                        handler: function() {
+                            ZCS.app.getCalendarController().toggleCalView('month');
+                        }
                     }
                 ]
             },
             {
                 xtype: 'panel',
-                align: 'right',
                 items: [
                     {
                         xtype: 'button',
                         cls: 'zcs-flat',
+                        iconCls: this.getNewButtonIcon(),
+                        iconMask: true,
                         handler: function() {
                             ZCS.app.getAppointmentController().showNewApptForm();
-                        },
-                        iconCls: this.getNewButtonIcon(),
-                        iconMask: true
+                        }
                     }
                 ]
             }

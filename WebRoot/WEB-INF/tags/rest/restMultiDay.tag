@@ -44,7 +44,7 @@
         </c:choose>
     <c:set var="workDays" value="${zm:getWorkDays(wdays)}"/>
     <c:choose>
-        <c:when test="${zm:boolean(equestScope.zimbra_freebusy)}">
+        <c:when test="${requestScope.zimbra_freebusy}">
             <zm:getFreeBusyAppointments box="${mailbox}"
                                         email="${requestScope.zimbra_target_account_name}"
                                         var="appts"
@@ -70,16 +70,6 @@
             var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}" wdays="${wdays}" weekStart="${firstDOW}"
             hourstart="${requestScope.zimbra_target_account_prefCalendarDayHourStart}" hourend="${requestScope.zimbra_target_account_prefCalendarDayHourEnd}"/>
 </rest:handleError>
-
-<c:choose>
-    <c:when test="${param.view eq 'day'}">
-        <c:set var="layoutRows" value="${layout.rowsSeperatedByDays}"/>
-        <c:set var="rows" value="${layoutRows[0]}"/>
-    </c:when>
-    <c:otherwise>
-        <c:set var="rows" value="${layout.rows}"/>
-    </c:otherwise>
-</c:choose>
 
 <table class='ZhCalDayGrid' width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; height:100%;'>
 <tr class='ZhCalMonthHeaderRow'>
@@ -181,7 +171,7 @@
         </c:if>
     </c:forEach>
 </tr>
-<c:forEach var="row" items="${rows}">
+<c:forEach var="row" items="${layout.rows}">
     <tr style='height:100%'>
         <c:if test="${row.rowNum % 4 eq 0}">
             <td valign="top" class='ZhCalDayHour' nowrap width="1%" rowspan="4" style='border-left:none'>

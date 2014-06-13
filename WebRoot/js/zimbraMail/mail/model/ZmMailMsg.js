@@ -1,3 +1,4 @@
+
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
@@ -176,13 +177,11 @@ function(params) {
 		var newParams = {
 			jsonObj:		jsonObj,
 			asyncMode:		true,
-            offlineCache:   true,
 			callback:		ZmMailMsg._handleResponseFetchMsg.bind(null, params.callback),
 			errorCallback:	params.errorCallback,
 			noBusyOverlay:	params.noBusyOverlay,
 			accountName:	params.accountName
 		};
-        newParams.offlineCallback = ZmMailMsg._handleOfflineResponseFetchMsg.bind(null, m.id, newParams.callback);
 		params.sender.sendRequest(newParams);
 	}
 };
@@ -192,24 +191,6 @@ function(callback, result) {
 	if (callback) {
 		callback.run(result);
 	}
-};
-
-ZmMailMsg._handleOfflineResponseFetchMsg =
-function(msgId, callback) {
-    var getItemCallback = ZmMailMsg._handleOfflineResponseFetchMsgCallback.bind(null, callback);
-    ZmOfflineDB.getItem(msgId, ZmApp.MAIL, getItemCallback);
-};
-
-ZmMailMsg._handleOfflineResponseFetchMsgCallback =
-function(callback, result) {
-    var response = {
-        GetMsgResponse : {
-            m : result
-        }
-    };
-    if (callback) {
-        callback(new ZmCsfeResult(response));
-    }
 };
 
 ZmMailMsg.stripSubjectPrefixes =
@@ -398,7 +379,7 @@ function(hdr, htmlMode) {
 ZmMailMsg.prototype.isHtmlMail =
 function() {
     if (this.isInvite()) {
-		return this.invite.isHtmlInvite();
+        return this.invite.getComponentDescriptionHtml() != null;
     }
     else {
         return this.getBodyPart(ZmMimeTable.TEXT_HTML) != null;
@@ -525,17 +506,14 @@ function(id) {
  * @param	{String}	cid		the content id
  * @param	{String}	aid		the attachment id
  * @param	{String}	part		the part
- * @param	{Boolean}	ismsg		if true, aid is a message id
  */
 ZmMailMsg.prototype.addInlineAttachmentId =
-function (cid, aid, part, ismsg) {
+function (cid, aid, part) {
 	if (!this._inlineAtts) {
 		this._inlineAtts = [];
 	}
 	this._onChange("inlineAttachments",aid);
-	if (ismsg && aid && part) {
-		this._inlineAtts.push({"cid":cid, "mid":aid, "part": part});
-	} else if (aid) {
+	if (aid) {
 		this._inlineAtts.push({"cid":cid, "aid":aid});
 	} else if (part) {
 		this._inlineAtts.push({"cid":cid, "part":part});
@@ -740,7 +718,7 @@ function(params) {
 		params.getHtml = params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		params.sender = appCtxt.getAppController();
 		params.msgId = this.id;
-		params.partId = this.partId;
+        params.partId = this.partId;
 		params.callback = respCallback;
 		var errorCallback = this._handleResponseLoadFail.bind(this, params, params.errorCallback);
 		params.errorCallback = errorCallback;
@@ -765,11 +743,8 @@ function(params, callback, result) {
 
 	this._loadFromDom(response.m[0]);
 	if (!this.isReadOnly() && params.markRead) {
-        this.markRead();
-	} else {
-        // Setup the _evt.item field and list._evt.item in order to insure proper notifications.
-        this._setupNotify();
-    }
+		this._markReadLocal(true);
+	}
 	this.findAttsFoundInMsgBody();
 
 	this._loading = false;
@@ -784,44 +759,12 @@ function(params, callback, result) {
 	}
 };
 
-ZmMailMsg.prototype.markRead = function() {
-	if (!this.isReadOnly()) {
-		//For offline mode keep isUnread property as true so that additional MsgActionRequest gets fired.
-		//MsgActionRequest also gets stored in outbox queue and it also sends notify header for reducing the folder unread count.
-		this._markReadLocal(!appCtxt.isWebClientOffline());
-	}
-};
-
 ZmMailMsg.prototype._handleResponseLoadFail =
 function(params, callback, result) {
-    this._loading = false;
+	this._loading = false;
 	if (callback) {
 		return callback.run(result);
 	}
-};
-
-ZmMailMsg.prototype._handleIndexedDBResponse =
-function(params, requestParams, result) {
-
-    var obj = result[0],
-        msgNode,
-        data = {},
-        methodName = requestParams.methodName;
-
-    if (obj) {
-        msgNode = obj[obj.methodName]["m"];
-        if (msgNode) {
-            msgNode.su = msgNode.su._content;
-            msgNode.fr = msgNode.mp[0].content._content;
-            msgNode.mp[0].content = msgNode.fr;
-            if (msgNode.fr) {
-                msgNode.mp[0].body = true;
-            }
-            data[methodName.replace("Request", "Response")] = { "m" : [msgNode] };
-            var csfeResult = new ZmCsfeResult(data);
-            this._handleResponseLoad(params, params.callback, csfeResult);
-        }
-    }
 };
 
 ZmMailMsg.prototype.isLoaded =
@@ -1231,28 +1174,13 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 
 	var inv = this._origMsg.invite;
 	//update the ptst to new one (we currently don't use the rest of the info in "replies" so it's ok to remove it for now)
-	//note - this updated value is used later in _handleResponseSendInviteReply, and also in the list view when
-	// re-displaying the message (not reloaded from server)
+	//note - this updated value is used later in _handleResponseSendInviteReply, and also in the list view when re-displaying the message (not reloaded from server)
 	if (newPtst) {
 		inv.replies = [{
 			reply: [{
 				ptst: newPtst
 			}]
 		}];
-		if (appCtxt.isWebClientOffline()) {
-			// Update the offline entry and appt too.  Depending upon whether this is invoked from mail or appointments,
-			// msgId will either be a single id, or the composite msg-appt id
-			var msgId = inv.getMessageId();
-			var invId = msgId;
-			if (msgId.indexOf("-") >= 0) {
-				// Composite id
-				msgId = msgId.split("-")[1];
-			} else {
-				invId = [inv.getAppointmentId(), msgId].join("-");
-			}
-			var inviteUpdateCallback = this.applyPtstOffline.bind(this, msgId, newPtst);
-			appCtxt.updateOfflineAppt(invId, "ptst", newPtst, null, inviteUpdateCallback);
-		}
 	}
 	if (this.getAddress(AjxEmailAddress.TO) == null && !inv.isOrganizer()) {
 		var to = inv.getOrganizerEmail() || inv.getSentBy();
@@ -1296,39 +1224,6 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
     if(ignoreNotify) needsRsvp = false;
 	this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName, toastMessage);
 };
-
-ZmMailMsg.prototype.applyPtstOffline = function(msgId, newPtst) {
-	var applyPtstOfflineCallback = this._applyPtstOffline.bind(this, newPtst);
-	ZmOfflineDB.getItem(msgId, ZmApp.MAIL, applyPtstOfflineCallback);
-};
-ZmMailMsg.prototype._applyPtstOffline = function(newPtst, result) {
-	if (result && result[0] && result[0].inv && result[0].inv[0]) {
-		var inv = result[0].inv[0];
-		if (!inv.replies) {
-			// See _sendInviteReply - patch the invite status
-			inv.replies = [{
-				reply: [{
-					ptst: newPtst
-				}]
-			}];
-		} else {
-			inv.replies[0].reply[0].ptst = newPtst;
-		}
-		// Finally, Alter the offline folder - upon accepting an invite, it moves to the Trash folder
-		result[0].l = ZmFolder.ID_TRASH;
-		ZmOfflineDB.setItem(result, ZmApp.MAIL);
-
-		// With the Ptst of an invite altered offline, move the message to trash locally
-		var originalMsg = this._origMsg;
-		originalMsg.moveLocal(ZmFolder.ID_TRASH);
-		if (originalMsg.list) {
-			originalMsg.list.moveLocal([originalMsg], ZmFolder.ID_TRASH);
-		}
-		var details = {oldFolderId:originalMsg.folderId};
-		originalMsg._notify(ZmEvent.E_MOVE, details);
-
-	}
-}
 
 ZmMailMsg.prototype._sendInviteReplyContinue =
 function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate, accountName, toastMessage) {
@@ -1510,11 +1405,10 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			accountName: aName,
 			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
 			errorCallback: errorCallback,
-			batchCmd: batchCmd,
-            skipOfflineCheck: true
+			batchCmd: batchCmd
 		};
         this._sendMessage(params);
-    }
+	}
 };
 
 ZmMailMsg.prototype._handleResponseSend =
@@ -1613,13 +1507,6 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 	if (this.isPriority) {
 	    msgNode.f = ZmItem.FLAG_PRIORITY;			
 	}
-
-    if (this.isOfflineCreated) {
-        msgNode.f = msgNode.f || "";
-        if (msgNode.f.indexOf(ZmItem.FLAG_OFFLINE_CREATED) === -1) {
-            msgNode.f = msgNode.f + ZmItem.FLAG_OFFLINE_CREATED;
-        }
-    }
 	
 	var addrNodes = msgNode.e = [];
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
@@ -1677,8 +1564,7 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 							if (inlineAtts[j].aid) {
 								attachNode.aid = inlineAtts[j].aid;
 							} else {
-								var id = inlineAtts[j].mid
-									|| (isDraft || this.isDraft)
+								var id = (isDraft || this.isDraft)
 									? (oboDraftMsgId || this.id || this.origId)
 									: (this.origId || this.id);
 
@@ -1803,8 +1689,7 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
  */
 ZmMailMsg.prototype._sendMessage =
 function(params) {
-	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params]),
-        offlineCallback = this._handleOfflineResponseSendMessage.bind(this, params);
+	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params]);
     /* bug fix 63798 removing sync request and making it async
 	// bug fix #4325 - its safer to make sync request when dealing w/ new window
 	if (window.parentController) {
@@ -1837,7 +1722,6 @@ function(params) {
 												noBusyOverlay:params.isDraft && params.isAutoSave,
 												callback:respCallback,
 												errorCallback:params.errorCallback,
-                                                offlineCallback:offlineCallback,
 												accountName:params.accountName,
                                                 timeout: ( ( params.isDraft && this.attId ) ? 0 : null )
                                                 });
@@ -1859,153 +1743,6 @@ function(params, result) {
 	}
 };
 
-ZmMailMsg.prototype._handleOfflineResponseSendMessage =
-function(params) {
-
-    var jsonObj = $.extend(true, {}, params.jsonObj),//Always clone the object
-        methodName = Object.keys(jsonObj)[0],
-        msgNode = jsonObj[methodName].m,
-        msgNodeAttach = msgNode.attach,
-        origMsg = this._origMsg,
-        currentTime = new Date().getTime(),
-        callback,
-        aid = [];
-
-    jsonObj.methodName = methodName;
-    msgNode.d = currentTime; //for displaying date and time in the outbox/Drafts folder
-
-    if (msgNodeAttach && msgNodeAttach.aid) {
-        var msgNodeAttachIds = msgNodeAttach.aid.split(",");
-        for (var i = 0; i < msgNodeAttachIds.length; i++) {
-            var msgNodeAttachId = msgNodeAttachIds[i];
-            if (msgNodeAttachId) {
-                aid.push(msgNodeAttachId);
-                msgNodeAttach[msgNodeAttachId] = appCtxt.getById(msgNodeAttachId);
-                appCtxt.cacheRemove(msgNodeAttachId);
-            }
-        }
-    }
-
-    if (origMsg && origMsg.hasAttach) {//Always append origMsg attachments for offline handling
-        var origMsgAttachments = origMsg.attachments;
-        if (msgNodeAttach) {
-            delete msgNodeAttach.mp;//Have to rewrite the code for including original attachments
-        } else {
-            msgNodeAttach = msgNode.attach = {};
-        }
-        for (var j = 0; j < origMsgAttachments.length; j++) {
-            var node = origMsgAttachments[j].node;
-            if (node && node.isOfflineUploaded) {
-                aid.push(node.aid);
-                msgNodeAttach[node.aid] = node;
-            }
-        }
-    }
-
-    if (msgNodeAttach) {
-        msgNodeAttach.aid = aid.join();
-    }
-
-    // Checking for inline Attachment
-    if (this.getInlineAttachments().length > 0 || (origMsg && origMsg.getInlineAttachments().length > 0)) {
-        msgNode.isInlineAttachment = true;
-    }
-
-    callback = this._handleOfflineResponseSendMessageCallback.bind(this, params, jsonObj);
-
-    if (msgNode.id) { //Existing drafts created online or offline
-        jsonObj.id = msgNode.id;
-        var value = {
-            update : true,
-            methodName : methodName,
-            id : msgNode.id,
-            value : jsonObj
-        };
-        ZmOfflineDB.setItemInRequestQueue(value, callback);
-    }
-    else {
-        jsonObj.id = msgNode.id = currentTime.toString(); //Id should be string
-        msgNode.f = (msgNode.f || "").replace(ZmItem.FLAG_OFFLINE_CREATED, "").concat(ZmItem.FLAG_OFFLINE_CREATED);
-        ZmOfflineDB.setItemInRequestQueue(jsonObj, callback);
-    }
-};
-
-ZmMailMsg.prototype._handleOfflineResponseSendMessageCallback =
-function(params, jsonObj) {
-
-	var m = ZmOffline.generateMsgResponse(jsonObj);
-    var data = {},
-        header = this._generateOfflineHeader(params, jsonObj, m),
-        notify = header.context.notify[0],
-        result;
-	if (!params.isInvite) {
-		// If existing invite message - do not overwrite it.  The online code does not reload
-		// the invite msg, it just patches it in-memory.  When the cal item ptst is patched in the db, it will
-		// make a call to patch the invite too.
-		ZmOfflineDB.setItem(m, ZmApp.MAIL);
-	}
-
-    data[jsonObj.methodName.replace("Request", "Response")] = notify.modified;
-    result = new ZmCsfeResult(data, false, header);
-    this._handleResponseSendMessage(params, result);
-    appCtxt.getRequestMgr()._notifyHandler(notify);
-
-    if (!params.isDraft && !params.isInvite) {
-        var key = {
-            methodName : "SaveDraftRequest",
-            id : jsonObj[jsonObj.methodName].m.id
-        };
-        ZmOfflineDB.deleteItemInRequestQueue(key);//Delete any drafts for this message id
-    }
-};
-
-ZmMailMsg.prototype._generateOfflineHeader =
-function(params, jsonObj, m) {
-
-    var folderArray = [],
-        header = {
-            context : {
-                notify : [{
-                    created : {
-                        m : m
-                    },
-                    modified : {
-                        folder : folderArray,
-                        m : m
-                    }
-                }]
-            }
-        };
-
-	if (!params.isInvite) {
-		var folderId = this.getFolderId();
-		if (params.isDraft || params.isAutoSave) {
-			//For new auto save or draft folderId will not be equal to ZmFolder.ID_DRAFTS
-			if (folderId != ZmFolder.ID_DRAFTS) {
-				folderArray.push({
-					id : ZmFolder.ID_DRAFTS,
-					n : appCtxt.getById(ZmFolder.ID_DRAFTS).numTotal + 1
-				});
-			}
-		}
-		else {
-			if (folderId != ZmFolder.ID_OUTBOX) {
-				folderArray.push({
-					id : ZmFolder.ID_OUTBOX,
-					n : appCtxt.getById(ZmFolder.ID_OUTBOX).numTotal + 1
-				});
-			}
-			if (folderId == ZmFolder.ID_DRAFTS) {
-				folderArray.push({
-					id : ZmFolder.ID_DRAFTS,
-					n : appCtxt.getById(ZmFolder.ID_DRAFTS).numTotal - 1
-				});
-			}
-		}
-	}
-    return header;
-};
-
 ZmMailMsg.prototype._notifySendListeners =
 function() {
 	var flag, msg;
@@ -2024,20 +1761,6 @@ function() {
 		}
 	}
 };
-
-/**
- * from a child window - since we clone the message, the cloned message needs to listen to changes on the original (parent window) message.
- * @param ev
- */
-ZmMailMsg.prototype.detachedChangeListener =
-function(ev) {
-	var parentWindowMsg = ev.item;
-	//for now I only need it for keeping up with the isUnread and isFlagged status of the detached message. Keep it simple.
-	this.isUnread = parentWindowMsg.isUnread;
-	this.isFlagged = parentWindowMsg.isFlagged;
-};
-
-
 
 ZmMailMsg.prototype.isRealAttachment =
 function(attachment) {
@@ -2215,7 +1938,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				}
 
 				var folder = appCtxt.getById(this.folderId);
-				if ((attach.name || attach.fileName) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
+				if ((attach.name || attach.fileName) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) && (folder && !folder.isRemote())) {
 					if (!useCL) {
 						props.links.briefcase = true;
 					}
@@ -2237,8 +1960,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					}
 					else {
 						// set the objectify flag
-						var contentType = attach.contentType;
-						props.objectify = contentType && contentType.match(/^image/) && !contentType.match(/tif/); //see bug 82807 - Tiffs are not really supported by browsers, so don't objectify.
+						props.objectify = attach.contentType && attach.contentType.match(/^image/);
 					}
 				} else {
 					props.url = url;
@@ -2267,16 +1989,12 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				props.part = attach.cachekey;
 			}
 			if (!useCL) {
-                if (attach.node && attach.node.isOfflineUploaded) { //for offline upload attachments
-                    props.url = attach.node.data;
-                } else {
-                    props.url = [
-                        appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI),
-                        "&loc=", AjxEnv.DEFAULT_LOCALE,
-                        "&id=", this.id,
-                        "&part=", attach.part
-                    ].join("");
-			}
+				props.url = [
+					appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI),
+					"&loc=", AjxEnv.DEFAULT_LOCALE,
+					"&id=", this.id,
+					"&part=", attach.part
+				].join("");
 			}
 			if (attach.contentId || (includeInlineImages && attach.contentDisposition == "inline")) {  // bug: 28741
 				props.ci = true;
@@ -2325,7 +2043,7 @@ function(msgNode) {
 	// this method could potentially be called twice (SearchConvResponse and
 	// GetMsgResponse) so always check param before setting!
 	if (msgNode.id)		{ this.id = msgNode.id; }
-	if (msgNode.part)	{ this.partId = msgNode.part; }
+    if (msgNode.part)	{ this.partId = msgNode.part; }
 	if (msgNode.cid) 	{ this.cid = msgNode.cid; }
 	if (msgNode.s) 		{ this.size = msgNode.s; }
 	if (msgNode.d) 		{ this.date = msgNode.d; }
@@ -2602,7 +2320,7 @@ function(addrNodes, type, isDraft) {
 	var num = addrs.size();
 	var contactsApp;
 	if (num) {
-		if (appCtxt.isOffline) {
+	 if (appCtxt.isOffline) {
             contactsApp = appCtxt.getApp(ZmApp.CONTACTS)
         } else {
 		    contactsApp = appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.getApp(ZmApp.CONTACTS);
@@ -2807,7 +2525,7 @@ function(attach) {
 
 ZmMailMsg.prototype._onChange =
 function(what, a, b, c) {
-	if (this.onChange) {
+	if (this.onChange && this.onChange instanceof AjxCallback) {
 		this.onChange.run(what, a, b, c);
 	}
 };
@@ -2859,12 +2577,7 @@ function() {
 	if (this.isUnread)		{ status.push(ZmMsg.unread); }
 	if (this.isReplied)		{ status.push(ZmMsg.replied); }
 	if (this.isForwarded)	{ status.push(ZmMsg.forwarded); }
-	if (this.isDraft) {
-		status.push(ZmMsg.draft);
-	}
-	else if (this.isSent) {
-		status.push(ZmMsg.sentAt); //sentAt is for some reason "sent", which is what we need.
-	}
+	if (this.isSent && !this.isDraft) { status.push(ZmMsg.sentAt); }
 	if (status.length == 0) {
 		status = [ZmMsg.read];
 	}
@@ -2955,27 +2668,12 @@ function(addrs, callback) {
 
 ZmMailMsg.prototype.doDelete =
 function() {
-	var params = {jsonObj:{MsgActionRequest:{_jsns:"urn:zimbraMail",action:{id:this.id, op:"delete"}}}, asyncMode:true};
 
-	// Bug 84549: The params object is a property of the child window, because it
-	// was constructed using this window's Object constructor. But when the child
-	// window closes immediately after the request is sent, the object would be 
-	// garbage-collected by the browser (or otherwise become invalid).
-	// Therefore, we need to pass an object that is native to the parent window
-	if (appCtxt.isChildWindow && AjxEnv.isIE) {
-		var cp = function(from){
-			var to = window.opener.Object();
-			for (var key in from) {
-				var value = from[key];
-				to[key] = (AjxUtil.isObject(value)) ? cp(value) : value;
-			}
-			return to;
-		};
-		params = cp(params);
-	}
-
+	var jsonObj = {MsgActionRequest:{_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.MsgActionRequest;
+	request.action = {id:this.id, op:"delete"};
 	var ac = window.parentAppCtxt || window.appCtxt;
-	ac.getRequestMgr().sendRequest(params);
+	ac.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true});
 };
 
 /**
@@ -3060,3 +2758,4 @@ function(req) {
 		}
 	}
 };
+

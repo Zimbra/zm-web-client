@@ -29,6 +29,10 @@ $linkTextSize: 0.9em;
 	}
 }
 
+.x-portrait .zcs-msglist .x-list-emptytext {
+	margin-left: 220px;
+}
+
 .zcs-msg-body-text {
 	font-size: 1em;
 	font-family: sans-serif;
@@ -42,15 +46,13 @@ $linkTextSize: 0.9em;
 }
 
 /**
- * Helper classes to maintain vertical rhythm, considering 0.5em as a multiple
+ * Making sure the disclosure icon for browser to sub folders is big enough
+ * so that it is easily tappable on smaller form factors.
  */
-
-.row-space-1{
-  margin-top: 0.5rem;
-}
-.row-space-2{
-  margin-top: 1rem;
-}
-.row-space-3{
-  margin-top: 1.5rem;
+.zcs-organizer-list{
+ 	.x-list-disclosure{
+ 		height: 100%;
+ 		min-width: 49px;
+ 		margin: 10px 0px 10px;
+ 	}
 }

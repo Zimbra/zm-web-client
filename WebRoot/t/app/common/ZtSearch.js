@@ -32,33 +32,6 @@ Ext.define('ZCS.common.ZtSearch', {
 	statics: {
 
 		/**
-		 * For simple in: and tag: searches, make it so that the term is quoted only if needed.
-		 *
-		 * @param   {String}    query   search string
-		 * @returns {String}    search string with quotes possibly removed from the term
-		 */
-		normalizeQuery: function(query) {
-
-			if (!query) {
-				return '';
-			}
-
-			var q = Ext.String.trim(query),
-				m = q.match(/^(in|tag):(.*)\s*$/),
-				op = m && m[1],
-				term = m && m[2];
-
-			if (term) {
-				var term1 = ZCS.util.unquote(term);
-				if (/^\w+$/.test(term1)) {
-					q = op + ':' + term1;
-				}
-			}
-
-			return q;
-		},
-
-		/**
 		 * Parses the given query into a list of search tokens.
 		 *
 		 * @param {String}  query   search query
@@ -92,9 +65,7 @@ Ext.define('ZCS.common.ZtSearch', {
 			}
 
 			function fail(reason, query) {
-				//<debug>
 				Ext.Logger.warn('ZmParsedQuery failure: ' + reason + '; query: [' + query + ']');
-				//</debug>
 				return null;
 			}
 
@@ -219,8 +190,8 @@ Ext.define('ZCS.common.ZtSearch', {
 
 			// remove unnecessary enclosing parens from when a single compound term is expanded, for example when
 			// "subject:(foo bar)" is expanded into "(subject:foo subject:bar)"
-			if (tokens.length >= 3 && numParens === 1 && tokens[0].getOp() === ZCS.constant.SEARCH_GROUP_OPEN &&
-				tokens[tokens.length - 1].getOp() === ZCS.constant.SEARCH_GROUP_CLOSE) {
+			if (tokens.length >= 3 && numParens === 1 && tokens[0].op === ZCS.constant.SEARCH_GROUP_OPEN &&
+				tokens[tokens.length - 1].op === ZCS.constant.SEARCH_GROUP_CLOSE) {
 
 				tokens.shift();
 				tokens.pop();
@@ -243,7 +214,6 @@ Ext.define('ZCS.common.ZtSearch', {
 
 		this.initConfig(config);
 
-		this.setQuery(ZCS.common.ZtSearch.normalizeQuery(this.getQuery()));
 		this.setTokens(ZCS.common.ZtSearch.parseQuery(this.getQuery()));
 		this.generateMatchFunction();
 	},
@@ -291,7 +261,7 @@ Ext.define('ZCS.common.ZtSearch', {
 				if (op === 'in' || op === 'inid') {
 					folderId = arg;
 					if (op === 'in') {
-						folder = ZCS.session.findOrganizerByAttribute('path', ZCS.model.ZtOrganizer.getNormalizedPath({path:arg}));
+						folder = ZCS.cache.get(arg, 'path');
 						folderId = folder ? folder.get('zcsId') : null;
 					}
 					if (folderId) {
@@ -299,7 +269,7 @@ Ext.define('ZCS.common.ZtSearch', {
 					}
 				}
 				else if (op === 'tag') {
-					tag = ZCS.session.findOrganizerByAttribute('tagName', arg);
+					tag = ZCS.cache.get(arg, 'tagName');
 					tagId = tag ? tag.get('zcsId') : null;
 					if (tagId) {
 						func.push("item.hasTag('" + arg + "')");
@@ -321,7 +291,7 @@ Ext.define('ZCS.common.ZtSearch', {
 
 				// resolve implied "and"
 				var next = tokens[i + 1];
-				if (next && (next.getType() === ZCS.constant.SEARCH_TERM || next.getOp() === ZCS.constant.SEARCH_COND_OP[ZCS.constant.SEARCH_COND_NOT] || next.getOp() === ZCS.constant.SEARCH_GROUP_CLOSE)) {
+				if (next && (next.type === ZCS.constant.SEARCH_TERM || next === ZCS.constant.SEARCH_COND_OP[ZCS.constant.SEARCH_COND_NOT] || next === ZCS.constant.SEARCH_GROUP_CLOSE)) {
 					func.push(ZCS.constant.SEARCH_COND_OP[ZCS.constant.SEARCH_COND_AND]);
 				}
 			}
@@ -343,8 +313,6 @@ Ext.define('ZCS.common.ZtSearch', {
 		}
 
 		try {
-			// Since we aren't able to parse every kind of search, some searches cannot
-			// be turned into a function and will throw a JS error here.
 			this.setMatchFunction(new Function('item', func.join('')));
 		} catch(ex) {}
 	}

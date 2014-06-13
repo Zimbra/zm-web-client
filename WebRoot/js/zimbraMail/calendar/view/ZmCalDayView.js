@@ -533,7 +533,8 @@ function() {
         allDaySepEl = document.getElementById(this._allDaySepDivId),
         allDayDivEl = document.getElementById(this._allDayDivId),
         cal,
-         calColor,
+        calName,
+        calColor,
         mergedCal,
         calMergerdTabColor,
         col,
@@ -617,13 +618,26 @@ function() {
         // Fix for bug: 66603. The class adjusts width of calendar title bubbles
         div = this._createDivForColumn(col.titleId, titleParentEl, this._mergedView ? "" : "ZmCalDayTab ZmCalDayMerged", calColor, calColor);
         div.style.top = ZmCalDayTabView._TAB_BORDER_WIDTH + 'px';
-
-        // Fix for bug: 84268. Removed calendar titles from the merged view.
-        if (!this._mergedView) {
+		if (this._mergedView) {
+            //var div = this._createDivForColumn(Dwt.getNextId(), titleParentEl, "ZmCalDayTab", calColor, calColor);
+            html = ["<table border=0><tr>"];
+            for (k=0; k<this._calendars.length; k++) {
+                mergedCal = this._calendars[k];
+                calMergerdTabColor = mergedCal.rgb;
+                calName = AjxStringUtil.clipByLength(mergedCal.getName(), ZmCalDayTabView._TAB_TITLE_MAX_LENGTH);
+                // Fix for bug: 66603. The class adjusts width of calendar title bubbles
+                html.push('<td class="ZmCalDayTab ZmCalDaySplit" style="background-color: ', calMergerdTabColor, ';" valign="top">');
+                html.push(calName);
+                html.push('</td>');
+                html.push('<td>&nbsp;</td>');
+            }
+            html.push('</tr</table>');
+            div.innerHTML = html.join("");
+		} else {
+            calName = AjxStringUtil.clipByLength(cal.getName(), ZmCalDayTabView._TAB_TITLE_MAX_LENGTH);
             div.style.top = ZmCalDayTabView._TAB_BORDER_WIDTH + 'px';
-			div.style.color = AjxUtil.getForegroundColor(calColor);
-            div.innerHTML = cal.getName();
-        }
+			div.innerHTML = calName;
+		}
 
         this._createDivForColumn(col.borderLeftAllDayDivId, allDayDivEl, "ZmDayTabSeparator", calColor, calColor);
         this._createDivForColumn(col.borderTopAllDayDivId, allDayDivEl, "ZmDayTabSeparator", calColor, calColor);
@@ -670,7 +684,7 @@ function() {
                     if (!this._mergedView) {
                         var cal = this._getColForFolderId(appt.folderId);
                         this._positionAppt(div, cal.allDayX+0, rowY);
-                        this._sizeAppt(div, (cal.allDayWidth + this._daySepWidth) - this._daySepWidth - 1 - ZmCalDayTabView._TAB_SEP_WIDTH,
+                        this._sizeAppt(div, ((cal.allDayWidth + this._daySepWidth) * slot.data.numDays) - this._daySepWidth - 1 - ZmCalDayTabView._TAB_SEP_WIDTH,
                                      ZmCalColView._ALL_DAY_APPT_HEIGHT);
                     } else {
                         this._positionAppt(div, this._columns[j].allDayX+0, rowY);

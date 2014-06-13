@@ -34,11 +34,11 @@
 	%>
 
 	<zm:getInfoJSON var="getInfoJSON" authtoken="<%= auth %>" dosearch="true" itemsperpage="20" types="conversation"
-					folderpath="${path}" sortby="dateDesc" fullconversation="true"/>
+					folderpath="${path}" sortby="dateDesc"/>
 </c:catch>
 <c:if test="${not empty exception}">
 	<zm:getException var="error" exception="${exception}"/>
-	<c:redirect url="/?loginOp=relogin&loginErrorCode=${error.code}"/>
+	<c:redirect url="/?loginOp=relogin&client=touch&loginErrorCode=${error.code}"/>
 </c:if>
 
 <!DOCTYPE HTML>
@@ -89,31 +89,12 @@
 			response:batchInfoResponse.Body.BatchResponse,
 			debugLevel:debugLevel
 		};
-
-        function detectUserAgent() {
-            var isiOS = ${ua.isTouchiPad or ua.isiPod or ua.isiPhone},
-                    isAndroid = ${ua.isOsAndroid},
-                    isTablet = ${ua.isTouchiPad or (ua.isOsAndroid and not ua.isMobile)},
-                    isPhone = ${ua.isiPod or ua.isiPhone or (ua.isOsAndroid and ua.isMobile)};
-
-            if (isiOS) {
-                document.body.className = "x-ios";
-            } else if (isAndroid) {
-                document.body.className = "x-android";
-            }
-
-            if (isTablet) {
-                document.body.className += " x-tablet";
-            } else if (isPhone) {
-                document.body.className += " x-phone";
-            }
-        }
-    </script>
+	</script>
 
 	<%-- The line below must be kept intact for Sencha Command to build your application --%>
 	<script id="microloader" type="text/javascript" src="touch/microloader/development.js"></script>
 </head>
-<body onload="detectUserAgent()">
+<body>
 
 <%-- BEGIN SPLASH SCREEN --%>
 <div id='appLoadingIndicator' class='SplashScreen'>

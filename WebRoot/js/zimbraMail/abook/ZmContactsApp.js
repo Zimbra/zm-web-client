@@ -60,7 +60,6 @@ ZmEvent.S_CONTACT				= ZmId.ITEM_CONTACT;
 ZmEvent.S_GROUP					= ZmId.ITEM_GROUP;
 ZmItem.CONTACT					= ZmEvent.S_CONTACT;
 ZmItem.GROUP					= ZmEvent.S_GROUP;
-ZmItem.GAL						= ZmId.ITEM_GAL_CONTACT;
 /**
  * Defines the "address book" organizer.
  */
@@ -238,6 +237,7 @@ function() {
 	ZmItem.registerItem(ZmItem.CONTACT,
 						{app:			ZmApp.CONTACTS,
 						 nameKey:		"contact",
+						 countKey:  	"typeContact",
 						 icon:			"Contact",
 						 soapCmd:		"ContactAction",
 						 itemClass:		"ZmContact",
@@ -254,11 +254,10 @@ function() {
 
 	ZmItem.registerItem(ZmItem.GROUP,
 						{nameKey:	"group",
+						 countKey:	"typeContactGroup",
 						 icon:		"Group",
 						 soapCmd:	"ContactAction"
 						});
-
-	ZmItem.registerItem(ZmItem.GAL, {app: ZmApp.CONTACTS});
 };
 
 /**
@@ -278,7 +277,7 @@ function() {
 							 orgClass:			"ZmAddrBook",
 							 orgPackage:		"ContactsCore",
 							 treeController:	"ZmAddrBookTreeController",
-							 labelKey:			"contactLists",
+							 labelKey:			"addressBooks",
 							 itemsKey:			"contacts",
 							 hasColor:			true,
 							 defaultColor:		ZmOrganizer.C_NONE,
@@ -286,7 +285,7 @@ function() {
 							 treeType:			ZmOrganizer.FOLDER,
 							 dropTargets:		[ZmOrganizer.ADDRBOOK],
 							 views:				["contact"],
-							 folderKey:			"contactsFolder",
+							 folderKey:			"addressBook",
 							 mountKey:			"mountAddrBook",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmAddrBook.sortCompare",
@@ -314,8 +313,7 @@ function() {
 								 tooltipKey:	"searchGALContacts",
 								 icon:			"GAL",
 								 setting:		ZmSetting.GAL_ENABLED,
-								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_GAL),
-								 disableOffline:true
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_GAL)
 								});
 };
 
@@ -390,8 +388,6 @@ function(creates, force) {
 				} else if (name == "link") {
 					this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
 				} else if (name == "cn") {
-					//note- this is updating the view list. The canonical is upadated
-					// in ZmContact.prototype._handleResponseCreate. See bug 81055
 					var clc = AjxDispatcher.run("GetContactListController");
 					if (clc._folderId == ZmFolder.ID_DLS) {
 						//the simplest solution I could think of to the messy problem that the clcList in this case is GAL and thus
@@ -437,21 +433,19 @@ function(notify) {
  */
 ZmContactsApp.prototype.handleOp =
 function(op) {
-	if (!appCtxt.isWebClientOffline()) {
-		switch (op) {
-			case ZmOperation.NEW_CONTACT:
-			case ZmOperation.NEW_DISTRIBUTION_LIST:
-			case ZmOperation.NEW_GROUP: {
-				var type = (op == ZmOperation.NEW_CONTACT) ? null : ZmItem.GROUP;
-				var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [type, op == ZmOperation.NEW_DISTRIBUTION_LIST]);
-				AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
-				break;
-			}
-			case ZmOperation.NEW_ADDRBOOK: {
-				var loadCallback = new AjxCallback(this, this._handleLoadNewAddrBook);
-				AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
-				break;
-			}
+	switch (op) {
+		case ZmOperation.NEW_CONTACT:
+		case ZmOperation.NEW_DISTRIBUTION_LIST:
+		case ZmOperation.NEW_GROUP: {
+			var type = (op == ZmOperation.NEW_CONTACT) ? null : ZmItem.GROUP;
+			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [type, op == ZmOperation.NEW_DISTRIBUTION_LIST]);
+			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
+			break;
+		}
+		case ZmOperation.NEW_ADDRBOOK: {
+			var loadCallback = new AjxCallback(this, this._handleLoadNewAddrBook);
+			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
+			break;
 		}
 	}
 };
@@ -1048,7 +1042,7 @@ function(callback) {
 	var acctId = appCtxt.getActiveAccount().id;
 	this.contactsLoaded[acctId] = true;
 
-	if (callback) {
+	if (callback && callback.isAjxCallback) {
 		callback.run(this._contactList[acctId]);
 	}
 };
@@ -1142,23 +1136,5 @@ function(contact, doDelete) {
 	}
 	else {
 		delete hash[id];
-	}
-};
-
-/**
- * Online to Offline or Offline to Online; Called from ZmApp.activate and from ZmOffline.enableApps, disableApps
- */
-ZmContactsApp.prototype.resetWebClientOfflineOperations =
-function() {
-	ZmApp.prototype.resetWebClientOfflineOperations.apply(this);
-	var contactListController = this.getContactListController();
-    var currentToolbar = contactListController && contactListController.getCurrentToolbar();
-    if (contactListController && currentToolbar) {
-	    contactListController._resetOperations(currentToolbar);
-    }
-	var overview = this.getOverview();
-	var distributionList = overview && overview.getTreeItemById(ZmFolder.ID_DLS);// Distribution Lists folder Id
-	if (distributionList) {
-		distributionList.setVisible(!appCtxt.isWebClientOffline());
 	}
 };

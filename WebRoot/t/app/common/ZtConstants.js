@@ -87,24 +87,23 @@ ZCS.constant.IS_APP = ZCS.util.arrayAsLookupHash(ZCS.constant.APPS);
 ZCS.constant.EDITABLE_OVERVIEW_APPS = [
     ZCS.constant.APP_MAIL,
 	ZCS.constant.APP_CONTACTS
-//	ZCS.constant.APP_CALENDAR
 ];
 
 // Turn features on/off
 ZCS.constant.FEATURE_ADD_ATTACHMENT = 'add_attachment'; // attach file when composing
 ZCS.constant.FEATURE_QUICK_REPLY    = 'quick_reply';    // quick reply area for conv panel
-ZCS.constant.FEATURE_FIND_OBJECTS   = 'find_objects';   // look for objects (eg URLs) in msg body, make them actionable
-ZCS.constant.FEATURE_FIND_EMAILS    = 'find_emails';    // look for email addresses in msg body
+ZCS.constant.FEATURE_FIND_OBJECTS   = 'find_objects';   // look for URLs and email addrs in msg body, make them actionable
 
 // Global way to turn features on/off, regardless of user settings
 ZCS.constant.IS_ENABLED = {};
 ZCS.constant.IS_ENABLED[ZCS.constant.APP_MAIL]                  = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.APP_CONTACTS]              = true;
-ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]              = true;
+ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]              = false;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT]    = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_QUICK_REPLY]       = true;
 ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]      = true;
-ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_EMAILS]       = false;
+// Keep calendar disabled by default ref Bug: 83049
+ZCS.constant.IS_ENABLED[ZCS.constant.APP_CALENDAR]  = false;
 
 // Text to show in overview toolbar if we're showing search results (not a folder, saved search, or tag)
 ZCS.constant.DEFAULT_OVERVIEW_TITLE = ZtMsg.searchResults;
@@ -113,7 +112,7 @@ ZCS.constant.DEFAULT_OVERVIEW_TITLE = ZtMsg.searchResults;
 ZCS.constant.OVERVIEW_TITLE = {};
 ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_MAIL]       = ZtMsg.folders;
 ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CONTACTS]   = ZtMsg.addrbooks;
-ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CALENDAR]   = ZtMsg.calendars;
+ZCS.constant.OVERVIEW_TITLE[ZCS.constant.APP_CALENDAR]   = ZtMsg.calendar;
 
 // Icon for button that creates a new item
 ZCS.constant.NEW_ITEM_ICON = {};
@@ -138,33 +137,25 @@ ZCS.constant.MENU_ADDRESS   = 'addressActions';
 ZCS.constant.MENU_CONTACT   = 'contactActions';
 ZCS.constant.MENU_ORIG_ATT  = 'originalAttachment';
 ZCS.constant.MENU_RECIPIENT = 'recipientActions';
-ZCS.constant.MENU_CALENDAR_ADDRESS   = 'calendarAddressActions';
-ZCS.constant.MENU_INVITE_ACTIONS = 'inviteReplyActions';
-ZCS.constant.MENU_APPT_ACTIONS = 'apptActions';
 
 // Operations (generally tied to dropdown menu items)
-ZCS.constant.OP_ADD_CONTACT = 'ADD_CONTACT';
 ZCS.constant.OP_COMPOSE     = 'COMPOSE';
 ZCS.constant.OP_DELETE      = 'DELETE';
-ZCS.constant.OP_EDIT        = 'EDIT';
-ZCS.constant.OP_FLAG        = 'FLAG';
 ZCS.constant.OP_FORWARD     = 'FORWARD';
 ZCS.constant.OP_LOGOUT      = 'LOGOUT';
 ZCS.constant.OP_MARK_READ   = 'MARK_READ';
-ZCS.constant.OP_MENU        = 'MENU';
-ZCS.constant.OP_MOVE        = 'MOVE';
-ZCS.constant.OP_REMOVE_ATT  = 'REMOVE_ATT';
-ZCS.constant.OP_REMOVE_TAG  = 'REMOVE_TAG';
 ZCS.constant.OP_REPLY       = 'REPLY';
 ZCS.constant.OP_REPLY_ALL   = 'REPLY_ALL';
-ZCS.constant.OP_SEARCH      = 'SEARCH';
 ZCS.constant.OP_SPAM        = 'SPAM';
+ZCS.constant.OP_MOVE        = 'MOVE';
+ZCS.constant.OP_FLAG        = 'FLAG';
 ZCS.constant.OP_TAG         = 'TAG';
-
-// Invite response operations
-ZCS.constant.OP_ACCEPT      = 'ACCEPT';
-ZCS.constant.OP_DECLINE     = 'DECLINE';
-ZCS.constant.OP_TENTATIVE   = 'TENTATIVE';
+ZCS.constant.OP_REMOVE_TAG  = 'REMOVE_TAG';
+ZCS.constant.OP_REMOVE_ATT  = 'REMOVE_ATT';
+ZCS.constant.OP_ADD_CONTACT = 'ADD_CONTACT';
+ZCS.constant.OP_EDIT        = 'EDIT';
+ZCS.constant.OP_MENU        = 'MENU';
+ZCS.constant.OP_SEARCH      = 'SEARCH';
 
 // Buttons in toolbar at top of item panel
 ZCS.constant.ITEM_BUTTONS = {};
@@ -197,6 +188,7 @@ ZCS.constant.ITEM_CONVERSATION      = 'conversation';
 ZCS.constant.ITEM_MESSAGE           = 'message';
 ZCS.constant.ITEM_CONTACT           = 'contact';
 ZCS.constant.ITEM_APPOINTMENT       = 'appointment';
+ZCS.constant.ITEM_CALENDAR          = 'calendar';   // TODO: organizer, not item
 ZCS.constant.ITEM_MATCH             = 'match';      // autocomplete response JSON
 
 // Contact types
@@ -219,17 +211,10 @@ ZCS.constant.ORG_SEARCH         = 'search';
 ZCS.constant.ORG_TAG            = 'tag';
 ZCS.constant.ORG_MOUNTPOINT     = 'link';
 
-ZCS.constant.IS_ORGANIZER_TYPE = ZCS.util.arrayAsLookupHash([
-	ZCS.constant.ORG_FOLDER,
-	ZCS.constant.ORG_SEARCH,
-	ZCS.constant.ORG_TAG,
-	ZCS.constant.ORG_MOUNTPOINT
-]);
-
 // Folder sub-types
 ZCS.constant.ORG_MAIL_FOLDER        = 'mailFolder';
 ZCS.constant.ORG_ADDRESS_BOOK       = 'addressBook';
-ZCS.constant.ORG_CALENDAR           = 'calendarFolder';
+ZCS.constant.ORG_CALENDAR           = 'calendar';
 
 // Organizer list types
 ZCS.constant.ORG_LIST_OVERVIEW      = 'overview';
@@ -241,7 +226,7 @@ ZCS.constant.APP_FOR_TYPE = {};
 ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION]  = ZCS.constant.APP_MAIL;
 ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]       = ZCS.constant.APP_MAIL;
 ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_CONTACT]       = ZCS.constant.APP_CONTACTS;
-ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_APPOINTMENT]   = ZCS.constant.APP_CALENDAR;
+ZCS.constant.APP_FOR_TYPE[ZCS.constant.ITEM_CALENDAR]      = ZCS.constant.APP_CALENDAR;
 
 // Model class for each item type
 ZCS.constant.CLASS_FOR_TYPE = {};
@@ -249,12 +234,10 @@ ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION] = 'ZCS.model.mail.Zt
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]      = 'ZCS.model.mail.ZtMailMsg';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONTACT]      = 'ZCS.model.contacts.ZtContact';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MATCH]        = 'ZCS.model.address.ZtAutoComplete';
-ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_APPOINTMENT]     = 'ZCS.model.calendar.ZtCalendar';
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CALENDAR]     = 'ZCS.model.calendar.ZtCalendar';
 
 ZCS.constant.ORG_NODE_FIELD_HASH = ZCS.util.arrayAsLookupHash([
-//	'name', 'absFolderPath', 'color', 'rgb', 'l', 'n', 'u', 'url', 'query', 'types'
-	// handle notifications only if one of following fields has changed; these affect display of organizer item
-	'name', 'absFolderPath', 'l', 'u'
+	'name', 'absFolderPath', 'color', 'rgb', 'l', 'n', 'u', 'url', 'query', 'types'
 ]);
 
 // Organizer name constraints
@@ -270,7 +253,6 @@ ZCS.constant.NODES = [
 	ZCS.constant.NODE_CONVERSATION,
 	ZCS.constant.NODE_MESSAGE,
 	ZCS.constant.NODE_CONTACT,
-    ZCS.constant.NODE_CALENDAR,
 	ZCS.constant.ORG_FOLDER,
 	ZCS.constant.ORG_SEARCH,
 	ZCS.constant.ORG_TAG,
@@ -282,29 +264,28 @@ ZCS.constant.NOTIFY_DELETE  = 'Delete';
 ZCS.constant.NOTIFY_CREATE  = 'Create';
 ZCS.constant.NOTIFY_CHANGE  = 'Change';
 
-// JSON node name for each item type (organizers have the same name for the node as our constants, eg 'folder')
+// JSON node name for each item/org type
 ZCS.constant.ITEM_NODE = {};
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONVERSATION]      = ZCS.constant.NODE_CONVERSATION;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MESSAGE]           = ZCS.constant.NODE_MESSAGE;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CONTACT]           = ZCS.constant.NODE_CONTACT;
 ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_MATCH]             = ZCS.constant.NODE_MATCH;
-ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_APPOINTMENT]       = ZCS.constant.NODE_CALENDAR;
+ZCS.constant.ITEM_NODE[ZCS.constant.ITEM_CALENDAR]          = ZCS.constant.NODE_CALENDAR;
 
 // Item type based on JSON node name
 ZCS.constant.NODE_ITEM = ZCS.util.getBackMap(ZCS.constant.ITEM_NODE);
+
+// Controller that handles create for each item type
+ZCS.constant.LIST_CONTROLLER = {};
+ZCS.constant.LIST_CONTROLLER[ZCS.constant.ITEM_CONVERSATION]    = 'ZCS.controller.mail.ZtConvListController';
+ZCS.constant.LIST_CONTROLLER[ZCS.constant.ITEM_MESSAGE]         = 'ZCS.controller.mail.ZtConvController';
+ZCS.constant.LIST_CONTROLLER[ZCS.constant.ITEM_CONTACT]         = 'ZCS.controller.contacts.ZtContactListController';
 
 // Store that holds items for list view
 ZCS.constant.STORE = {};
 ZCS.constant.STORE[ZCS.constant.APP_MAIL]       = 'ZtConvStore';
 ZCS.constant.STORE[ZCS.constant.APP_CONTACTS]   = 'ZtContactStore';
 ZCS.constant.STORE[ZCS.constant.APP_CALENDAR]   = 'ZtCalendarStore';
-
-// Store that holds each type of item
-ZCS.constant.ITEM_STORE = {};
-ZCS.constant.ITEM_STORE[ZCS.constant.ITEM_CONVERSATION] = 'ZtConvStore';
-ZCS.constant.ITEM_STORE[ZCS.constant.ITEM_MESSAGE]      = 'ZtMsgStore';
-ZCS.constant.ITEM_STORE[ZCS.constant.ITEM_CONTACT]      = 'ZtContactStore';
-ZCS.constant.ITEM_STORE[ZCS.constant.ITEM_APPOINTMENT]  = 'ZtCalendarStore';
 
 // App based on folder type
 ZCS.constant.FOLDER_APP = {};
@@ -319,9 +300,7 @@ ZCS.constant.APP_FOLDER = ZCS.util.getBackMap(ZCS.constant.FOLDER_APP);
 ZCS.constant.FOLDER_VIEW = {};
 ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_MAIL]     = 'message';
 ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CONTACTS] = 'contact';
-ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CALENDAR] = 'appointment';
-
-ZCS.constant.VIEW_APP = ZCS.util.getBackMap(ZCS.constant.FOLDER_VIEW);
+ZCS.constant.FOLDER_VIEW[ZCS.constant.APP_CALENDAR] = 'calendar';
 
 // Folder type by organizer view (from JSON)
 ZCS.constant.FOLDER_TYPE = {};
@@ -335,22 +314,13 @@ ZCS.constant.ORG_NAME[ZCS.constant.ORG_MAIL_FOLDER]     = ZtMsg.folders;
 ZCS.constant.ORG_NAME[ZCS.constant.ORG_ADDRESS_BOOK]    = ZtMsg.addressBooks;
 ZCS.constant.ORG_NAME[ZCS.constant.ORG_SEARCH]          = ZtMsg.searches;
 ZCS.constant.ORG_NAME[ZCS.constant.ORG_TAG]             = ZtMsg.tags;
-ZCS.constant.ORG_NAME[ZCS.constant.ORG_CALENDAR]        = ZtMsg.calendars;
+ZCS.constant.ORG_NAME[ZCS.constant.ORG_CALENDAR]        = ZtMsg.calendar;
 
 // Order in which organizers should appear grouped in overview
 ZCS.constant.ORG_SORT_VALUE = {};
 ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_FOLDER]        = 1;
 ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_SEARCH]        = 2;
 ZCS.constant.ORG_SORT_VALUE[ZCS.constant.ORG_TAG]           = 3;
-
-// Organizer permissions
-ZCS.constant.PERM_READ      = 'r';
-ZCS.constant.PERM_WRITE     = 'w';
-ZCS.constant.PERM_INSERT    = 'i';
-ZCS.constant.PERM_DELETE    = 'd';
-ZCS.constant.PERM_ADMIN     = 'a';
-ZCS.constant.PERM_WORKFLOW  = 'x';
-ZCS.constant.PERM_PRIVATE   = 'p';
 
 // System folder IDs
 ZCS.constant.ID_ROOT        = '1';
@@ -479,7 +449,6 @@ ZCS.constant.TYPE_NUMBER    = 'number';
 ZCS.constant.TYPE_BOOLEAN   = 'boolean';
 ZCS.constant.TYPE_ARRAY     = 'array';
 ZCS.constant.TYPE_HASH      = 'hash';
-ZCS.constant.TYPE_LDAP_TIME = 'ldap_time';
 
 // Content types
 ZCS.constant.TEXT_PLAIN = 'text/plain';
@@ -488,13 +457,10 @@ ZCS.constant.TEXT_HTML  = 'text/html';
 // Names of user settings (LDAP attribute names)
 
 // General
-ZCS.constant.SETTING_FLAGGING_ENABLED   = 'zimbraFeatureFlaggingEnabled';
 ZCS.constant.SETTING_JSLOGGING_ENABLED  = 'zimbraTouchJSErrorTrackingEnabled';  // third-party logging service
 ZCS.constant.SETTING_JSLOGGING_KEY      = 'zimbraTouchJSErrorTrackingKey';      // third-party logging service
 ZCS.constant.SETTING_LOCALE             = 'zimbraPrefLocale';
 ZCS.constant.SETTING_SHOW_SEARCH        = 'zimbraPrefShowSearchString';
-ZCS.constant.SETTING_SPAM_ENABLED       = 'zimbraFeatureAntispamEnabled';
-ZCS.constant.SETTING_TAGGING_ENABLED    = 'zimbraFeatureTaggingEnabled';
 ZCS.constant.SETTING_TIMEZONE           = 'zimbraPrefTimeZoneId';
 
 // Mail
@@ -512,18 +478,14 @@ ZCS.constant.SETTING_REPLY_PREFIX       = 'zimbraPrefForwardReplyPrefixChar';
 ZCS.constant.SETTING_SIGNATURE_ID       = 'zimbraPrefDefaultSignatureId';
 ZCS.constant.SETTING_REPLY_SIGNATURE_ID = 'zimbraPrefForwardReplySignatureId';
 ZCS.constant.SETTING_SIGNATURE_STYLE    = 'zimbraPrefMailSignatureStyle';
-ZCS.constant.SETTING_SIGNATURES_ENABLED = 'zimbraFeatureSignaturesEnabled';
 ZCS.constant.SETTING_TRUSTED_SENDERS    = 'zimbraPrefMailTrustedSenderList';
-ZCS.constant.SETTING_AUTO_SAVE_INTERVAL = 'zimbraPrefAutoSaveDraftInterval';
 
 // Contacts
 ZCS.constant.SETTING_CONTACTS_ENABLED   = 'zimbraFeatureContactsEnabled';
 ZCS.constant.SETTING_SHOW_DL_FOLDER     = 'zimbraFeatureDistributionListFolderEnabled';
 
 // Calendar
-ZCS.constant.SETTING_CALENDAR_ENABLED       = 'zimbraFeatureCalendarEnabled';
-ZCS.constant.SETTING_GROUP_CALENDAR_ENABLED = 'zimbraFeatureGroupCalendarEnabled';
-ZCS.constant.SETTING_REMINDER_TIME          = 'zimbraPrefCalendarApptReminderWarningTime';
+ZCS.constant.SETTING_CALENDAR_ENABLED   = 'zimbraFeatureCalendarEnabled';
 
 // Internal settings
 ZCS.constant.SETTING_CUR_SEARCH                 = 'CUR_SEARCH';
@@ -554,16 +516,10 @@ ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]      = ZC
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SHOW_DL_FOLDER]              = ZCS.constant.TYPE_BOOLEAN;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_CUR_SEARCH]                  = ZCS.constant.TYPE_HASH;
 ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_CUR_SEARCH_ID]               = ZCS.constant.TYPE_HASH;
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_AUTO_SAVE_INTERVAL]          = ZCS.constant.TYPE_LDAP_TIME;
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_FLAGGING_ENABLED]            = ZCS.constant.TYPE_BOOLEAN;
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_TAGGING_ENABLED]             = ZCS.constant.TYPE_BOOLEAN;
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SPAM_ENABLED]                = ZCS.constant.TYPE_BOOLEAN;
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_SIGNATURES_ENABLED]          = ZCS.constant.TYPE_BOOLEAN;
-ZCS.constant.SETTING_TYPE[ZCS.constant.SETTING_GROUP_CALENDAR_ENABLED]      = ZCS.constant.TYPE_BOOLEAN;
 
 // Forced setting values, which override user setting
 ZCS.constant.SETTING_VALUE = {};
-//ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
+ZCS.constant.SETTING_VALUE[ZCS.constant.SETTING_SHOW_SEARCH] = 'false';
 
 // Default values for settings
 ZCS.constant.SETTING_DEFAULT = {};
@@ -571,13 +527,6 @@ ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_LOCALE]                   = 'e
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_GET_NAME_FROM_CONTACTS]   = true; // see bug 81656
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_SHOW_DL_FOLDER]           = true;
 ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_CONVERSATION_ORDER]       = ZCS.constant.DATE_DESC;
-ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_AUTO_SAVE_INTERVAL]       = 15;
-ZCS.constant.SETTING_DEFAULT[ZCS.constant.SETTING_REMINDER_TIME]            = 5;
-
-ZCS.constant.OP_PRECONDITION = {};
-ZCS.constant.OP_PRECONDITION[ZCS.constant.OP_FLAG]  = ZCS.constant.SETTING_FLAGGING_ENABLED;
-ZCS.constant.OP_PRECONDITION[ZCS.constant.OP_SPAM]  = ZCS.constant.SETTING_SPAM_ENABLED;
-ZCS.constant.OP_PRECONDITION[ZCS.constant.OP_TAG]   = ZCS.constant.SETTING_TAGGING_ENABLED;
 
 // Signature styles
 ZCS.constant.SIG_INTERNET   = 'internet';
@@ -674,7 +623,6 @@ ZCS.constant.REGEX_EMAIL                = /(\s+href=["']mailto:)?\b([A-Z0-9\._%+
 ZCS.constant.REGEX_FOLDER_TAG_SEARCH    = /^(in|tag):["']?([^\x00-\x1F\x7F:\"]+)["']?$/;
 ZCS.constant.REGEX_CONTACT_ATTR         = /^([a-z]+)([a-zA-Z]+)(\d*)$/;
 ZCS.constant.REGEX_CONTACT_FIELD        = /^([a-z][a-zA-Z]+)(\d*)$/;
-ZCS.constant.REGEX_DOC_TAG              = /<\/?(html|head|body)>/gi;
 
 ZCS.constant.ORIGINAL_SRC_ATTRIBUTE = 'origSrc';
 
@@ -733,10 +681,10 @@ ZCS.constant.NUM_AUTOCOMPLETE_MATCHES = 20;
 // Invite-related constants
 ZCS.constant.INVITE_NOTES_SEPARATOR = '*~*~*~*~*~*~*~*~*~*';
 
-ZCS.constant.INVITE_REPLY_PREFIX = {};
-ZCS.constant.INVITE_REPLY_PREFIX[ZCS.constant.OP_ACCEPT]    = ZtMsg.acceptAction;
-ZCS.constant.INVITE_REPLY_PREFIX[ZCS.constant.OP_TENTATIVE]      = ZtMsg.tentativeAction;
-ZCS.constant.INVITE_REPLY_PREFIX[ZCS.constant.OP_DECLINE]      = ZtMsg.declineAction;
+// Invite response actions
+ZCS.constant.OP_ACCEPT      = 'ACCEPT';
+ZCS.constant.OP_TENTATIVE   = 'TENTATIVE';
+ZCS.constant.OP_DECLINE     = 'DECLINE';
 
 // Participation status (there are others we can add if needed)
 ZCS.constant.PSTATUS_ACCEPTED   = 'AC';
@@ -755,13 +703,6 @@ ZCS.constant.INVITE_REPLY_TEXT = {};
 ZCS.constant.INVITE_REPLY_TEXT[ZCS.constant.OP_ACCEPT]      = ZtMsg.invReplyAcceptText;
 ZCS.constant.INVITE_REPLY_TEXT[ZCS.constant.OP_TENTATIVE]   = ZtMsg.invReplyTentativeText;
 ZCS.constant.INVITE_REPLY_TEXT[ZCS.constant.OP_DECLINE]     = ZtMsg.invReplyDeclineText;
-
-ZCS.constant.SHOWAS_OPTIONS = [
-	{ label: ZtMsg.free, 				value: "F", 	selected: false },
-	{ label: ZtMsg.tentative, 			value: "T", 	selected: false },
-	{ label: ZtMsg.busy, 				value: "B", 	selected: true  },
-	{ label: ZtMsg.outOfOffice,			value: "O", 	selected: false }
-];
 
 // Invite attendee (calendar user) types
 ZCS.constant.CUTYPE_INDIVIDUAL	= 'IND';
@@ -784,19 +725,19 @@ ZCS.constant.QUICK_REPLY_LARGE  = 80;
 ZCS.constant.CONTACT_TEMPLATE_FIELDS = [
 	'isGroup', 'isDistributionList', 'isMultiple',
 	'nameLastFirst', 'fullName', 'nickname', 'email', 'phone',
-	'address', 'URL', 'jobTitle', 'company', 'tags',
+	'address', 'url', 'jobTitle', 'company', 'tags',
 	'members', 'isOwner', 'isMember'
 ];
 
 // Contact fields that appear on the form
 ZCS.constant.CONTACT_FORM_FIELDS = [
-	'email', 'phone', 'address', 'URL', 'name', 'company'
+	'email', 'phone', 'address', 'url', 'name', 'company'
 ];
 ZCS.constant.IS_CONTACT_FORM_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.CONTACT_FORM_FIELDS);
 
 // Contact fields that can have multiple values
 ZCS.constant.CONTACT_MULTI_FIELDS = [
-	'email', 'phone', 'address', 'URL'
+	'email', 'phone', 'address', 'url'
 ];
 ZCS.constant.IS_CONTACT_MULTI_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.CONTACT_MULTI_FIELDS);
 
@@ -808,13 +749,8 @@ ZCS.constant.IS_ADDRESS_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.ADDRESS_
 
 // Contact attributes that have variable type (home, work, etc)
 ZCS.constant.IS_PARSED_ATTR_FIELD = ZCS.util.arrayAsLookupHash([
-	'email', 'phone', 'URL'
+	'email', 'phone', 'url'
 ]);
-
-// Contact fields we use from the initial REST load of all local contacts, which is stored as JSON data
-ZCS.constant.CONTACT_DATA_FIELDS = [
-	'id', 'firstName', 'lastName', 'nickname', 'imagepart'
-];
 
 // Ordering for display of attribute types
 ZCS.constant.ATTR_TYPE_SORT_VALUE = {
@@ -846,12 +782,11 @@ ZCS.constant.CALENDAR_FIELDS = [
     'location',
     'start',
     'end',
+    'startAllDay',
+    'endAllDay',
     'isAllDay',
     'repeat',
-    'reminderAlert',
-    'apptFolderId',
-    'fb',
-    'attendee',
+    'reminder',
     'notes'
 ];
 
@@ -879,7 +814,7 @@ ZCS.constant.EXTRA_JOB_FIELDS = [
 ZCS.constant.COMPANY_FIELDS_ORDER = {
 	'jobTitle': 1,
 	'department': 2,
-	'company': 3
+	'company': 3,
 };
 
 ZCS.constant.IS_EXTRA_JOB_FIELD = ZCS.util.arrayAsLookupHash(ZCS.constant.EXTRA_JOB_FIELDS);
@@ -915,7 +850,7 @@ ZCS.constant.SIDE_MENU_CONFIG = {
             itemNavigationReservesSpace: false,
             itemNavigationAlwaysShown: false,
             hasOverviewNavigation: true,
-            navigationWidth: 1.0
+            navigationWidth: 0.8
 	    },
 	    portrait: {
             itemNavigationReservesSpace: false,
@@ -974,141 +909,3 @@ ZCS.constant.SEARCH_FLAG['sent']		= "item.get('isSent')";
 ZCS.constant.SEARCH_FLAG['draft']		= "item.get('isDraft')";
 ZCS.constant.SEARCH_FLAG['replied']		= "item.get('isReplied')";
 ZCS.constant.SEARCH_FLAG['unreplied']	= "!item.get('isReplied')";
-
-// color constants (server stores a number)
-ZCS.constant.C_NONE				= 0;
-ZCS.constant.C_BLUE				= 1;
-ZCS.constant.C_CYAN				= 2;
-ZCS.constant.C_GREEN			= 3;
-ZCS.constant.C_PURPLE			= 4;
-ZCS.constant.C_RED				= 5;
-ZCS.constant.C_YELLOW			= 6;
-ZCS.constant.C_PINK				= 7;
-ZCS.constant.C_GRAY				= 8;
-ZCS.constant.C_ORANGE			= 9;
-ZCS.constant.ORG_DEFAULT_COLOR 	= ZCS.constant.C_GRAY;
-
-// rgb codes for folder colors
-ZCS.constant.COLOR_BLUE   = "#5b9bf2"
-ZCS.constant.COLOR_CYAN   = "#43eded"
-ZCS.constant.COLOR_GREEN  = "#6acb9e"
-ZCS.constant.COLOR_PURPLE = "#ba86e5"
-ZCS.constant.COLOR_RED    = "#f66666"
-ZCS.constant.COLOR_YELLOW = "#f8fa33"
-ZCS.constant.COLOR_PINK   = "#fe98d3"
-ZCS.constant.COLOR_GRAY   = "#bebebe"
-ZCS.constant.COLOR_ORANGE = "#fdbc55"
-
-ZCS.constant.COLOR_VALUES = [
-	null,
-    ZCS.constant.COLOR_BLUE,
-    ZCS.constant.COLOR_CYAN,
-    ZCS.constant.COLOR_GREEN,
-    ZCS.constant.COLOR_PURPLE,
-    ZCS.constant.COLOR_RED,
-    ZCS.constant.COLOR_YELLOW,
-    ZCS.constant.COLOR_PINK,
-    ZCS.constant.COLOR_GRAY,
-    ZCS.constant.COLOR_ORANGE
-];
-
-// Configs for each app's floating menus
-ZCS.constant.MENU_CONFIGS = {
-	mail: {
-		msgActions: [
-			{ label: ZtMsg.markRead,    action: ZCS.constant.OP_MARK_READ,  handlerName: 'doMarkRead' },
-			{ label: ZtMsg.flag,        action: ZCS.constant.OP_FLAG,       handlerName: 'doFlag' },
-			{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       handlerName: 'doMove' },
-			{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        handlerName: 'doTag' },
-			{ label: ZtMsg.markSpam,    action: ZCS.constant.OP_SPAM,       handlerName: 'doSpam' }
-		],
-		msgReplyActions: [
-			{ label: ZtMsg.reply,       action: ZCS.constant.OP_REPLY,      handlerName: 'doReply' },
-			{ label: ZtMsg.replyAll,    action: ZCS.constant.OP_REPLY_ALL,  handlerName: 'doReplyAll' },
-			{ label: ZtMsg.forward,     action: ZCS.constant.OP_FORWARD,    handlerName: 'doForward' }
-		],
-		addressActions: [
-			{ label: ZtMsg.editContact, action: ZCS.constant.OP_EDIT,           handlerName:   'doEditContact'},
-			{ label: ZtMsg.addContact,  action: ZCS.constant.OP_ADD_CONTACT,    handlerName:   'doAddContact'},
-			{ label: ZtMsg.newMessage,  action: ZCS.constant.OP_COMPOSE,        handlerName:   'doCompose' },
-			{ label: ZtMsg.search,      action: ZCS.constant.OP_SEARCH,         handlerName:   'doSearch' }
-		],
-		convActions: [
-			{ label: ZtMsg.convMarkRead,    action: ZCS.constant.OP_MARK_READ,  handlerName: 'doMarkRead' },
-			{ label: ZtMsg.convFlag,        action: ZCS.constant.OP_FLAG,       handlerName: 'doFlag' },
-			{ label: ZtMsg.convMove,        action: ZCS.constant.OP_MOVE,       handlerName: 'doMove' },
-			{ label: ZtMsg.convTag,         action: ZCS.constant.OP_TAG,        handlerName: 'doTag' }
-		],
-		convReplyActions: [
-			{ label: ZtMsg.reply,       action: ZCS.constant.OP_REPLY,      handlerName: 'doReply' },
-			{ label: ZtMsg.replyAll,    action: ZCS.constant.OP_REPLY_ALL,  handlerName: 'doReplyAll' },
-			{ label: ZtMsg.forward,     action: ZCS.constant.OP_FORWARD,    handlerName: 'doForward' }
-		],
-		tagActions: [
-			{ label: ZtMsg.removeTag, action: ZCS.constant.OP_REMOVE_TAG,       handlerName: 'doRemoveTag' }
-		],
-		originalAttachment: [
-			{ label: ZtMsg.removeAttachment, action: ZCS.constant.OP_REMOVE_ATT, handlerName: 'doRemoveAttachment' }
-		],
-		settings: [
-			{ label: ZtMsg.logout, action: ZCS.constant.OP_LOGOUT, handlerName: 'doLogout' }
-		],
-		recipientActions: [
-			{ label: 'Remove', handlerName: 'doRemoveRecipient' }
-		]
-	},
-	contacts: {
-		contactActions: [
-			{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       handlerName: 'doMove' },
-			{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        handlerName: 'doTag' },
-			{ label: ZtMsg.del,         action: ZCS.constant.OP_DELETE,     handlerName: 'doDelete' }
-		]
-	},
-	calendar: {
-		calendarAddressActions: [
-			{ label: ZtMsg.editContact, action: ZCS.constant.OP_EDIT,           handlerName:   'doEditContact'},
-			{ label: ZtMsg.addContact,  action: ZCS.constant.OP_ADD_CONTACT,    handlerName:   'doAddContact'},
-			{ label: ZtMsg.newMessage,  action: ZCS.constant.OP_COMPOSE,        handlerName:   'doCompose' }
-		],
-		inviteReplyActions: [
-			{ label: ZtMsg.acceptAction,      action: ZCS.constant.OP_ACCEPT,      handlerName: 'doAccept' },
-			{ label: ZtMsg.tentativeAction,   action: ZCS.constant.OP_TENTATIVE,  handlerName: 'doTentative' },
-			{ label: ZtMsg.declineAction,     action: ZCS.constant.OP_DECLINE,    handlerName: 'doDecline' }
-		],
-		apptActions: [
-			{ label: ZtMsg.move,        action: ZCS.constant.OP_MOVE,       handlerName: 'doMove' },
-			{ label: ZtMsg.tag,         action: ZCS.constant.OP_TAG,        handlerName: 'doTag' },
-			{ label: ZtMsg.del,    action: ZCS.constant.OP_DELETE,       handlerName: 'doDelete' }
-		]
-	}
-};
-
-ZCS.constant.reminderTimeDisplayMsgs = [
-    ZtMsg.apptRemindNever,
-    ZtMsg.apptRemindNMinutesBefore,
-    ZtMsg.apptRemindNMinutesBefore,
-    ZtMsg.apptRemindNMinutesBefore,
-    ZtMsg.apptRemindNMinutesBefore,
-    ZtMsg.apptRemindNMinutesBefore,
-    ZtMsg.apptRemindNMinutesBefore,
-    ZtMsg.apptRemindNMinutesBefore,
-    ZtMsg.apptRemindNHoursBefore,
-    ZtMsg.apptRemindNHoursBefore,
-    ZtMsg.apptRemindNHoursBefore,
-    ZtMsg.apptRemindNHoursBefore,
-    ZtMsg.apptRemindNHoursBefore,
-    ZtMsg.apptRemindNDaysBefore,
-    ZtMsg.apptRemindNDaysBefore,
-    ZtMsg.apptRemindNDaysBefore,
-    ZtMsg.apptRemindNDaysBefore,
-    ZtMsg.apptRemindNWeeksBefore,
-    ZtMsg.apptRemindNWeeksBefore
-];
-
-ZCS.constant.reminderTimeValues =
-    [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080, 1440, 2880, 4320, 5760, 10080, 20160];
-
-ZCS.constant.reminderTimeLabels =
-    [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
-
-ZCS.constant.MAX_URL_LENGTH = 30;

@@ -29,8 +29,7 @@
 */
 ZmTaskView = function(parent, posStyle, controller) {
 
-	var id = ZmId.getViewId(ZmId.VIEW_TASK, null, parent._htmlElId);
-	ZmCalItemView.call(this, parent, posStyle, controller, id);
+	ZmCalItemView.call(this, parent, posStyle, controller);
 };
 
 ZmTaskView.prototype = new ZmCalItemView;
@@ -67,7 +66,7 @@ function(calItem) {
 	var status = calItem.status ? ZmCalItem.getLabelForStatus(calItem.status) : null;
 	var pComplete = calItem.pComplete;
 	var recurStr = calItem.isRecurring() ? calItem.getRecurBlurb() : null;
-	var attachStr = this._getAttachString(calItem);
+	var attachStr = ZmCalItemView._getAttachString(calItem);
     var alarm = calItem.alarm;
     var remindDate = calItem.remindDate ? AjxDateFormat.getDateInstance().format(calItem.remindDate) : null;
     var remindTime = calItem.remindDate ? AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT).format(calItem.remindDate) : "";
@@ -154,3 +153,24 @@ function(ev){
     }
 };
 
+ZmTaskView.prototype._tagChangeListener =
+function(ev){
+    if(ev.event == ZmEvent.E_TAGS || ev.type == ZmEvent.S_TAG) {
+        this._setTags(this._calItem);
+    }
+};
+
+
+ZmTaskView.prototype._getTagHtml =
+function(tag, html, i) {
+    var tagClick = ['ZmMailMsgView._tagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.name), '");'].join("");
+    var removeClick = ['ZmTaskView._removeTagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.name), '");'].join("");
+    return this._getTagHtmlElements(tag, html, i, tagClick, removeClick);
+};
+
+ZmTaskView._removeTagClick =
+function(myId, tagName) {
+        var tag = ZmMailMsgView._getTagClicked(tagName);
+        var dwtObj = DwtControl.fromElementId(myId);
+        ZmListController.prototype._doTag.call(dwtObj._controller, dwtObj._calItem, tag, false);
+};

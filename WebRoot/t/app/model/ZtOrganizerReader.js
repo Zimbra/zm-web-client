@@ -25,10 +25,6 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 
 	alias: 'reader.organizerreader',
 
-	config: {
-		model: 'ZCS.model.ZtOrganizer'
-	},
-	
 	/**
 	 * Returns an anonymous object that can used to create a ZtOrganizer instance based
 	 * on the given JSON node. At this point, the only ID is the ZCS ID which the server
@@ -41,18 +37,16 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 	 */
 	getDataFromNode: function(node, type) {
 
-		var isMountpoint = false,
-			remoteId;
+		// give mountpoint a real type
+		var isFolder = (type === ZCS.constant.ORG_FOLDER),
+			isMountpoint = false;
 
 		if (type === ZCS.constant.ORG_MOUNTPOINT) {
-			// give mountpoint a real type
 			type = ZCS.constant.ORG_FOLDER;
 			isMountpoint = true;
-			remoteId = [ node.zid, node.rid ].join(':');
 		}
 
-		var isFolder = (type === ZCS.constant.ORG_FOLDER),
-			localId = ZCS.util.parseId(node.id).localId,
+		var localId = ZCS.util.parseId(node.id).localId,
 			key = ZCS.constant.MSG_KEY[localId],
 			orgName = key ? ZtMsg[key] : node.name;
 
@@ -75,9 +69,7 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 			// shared folders
 			isMountpoint:       isMountpoint,
 			remoteAccountId:    node.zid,
-			remoteFolderId:     node.rid ? String(node.rid) : '',
-			remoteId:           remoteId,
-			permissions:        node.perm,
+			remoteFolderId:     node.rid,
 
 			// other
 			url:                node.url,   // feeds

@@ -26,11 +26,6 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
 	extend: 'Ext.data.Model',
 
-	requires: [
-		'ZCS.model.calendar.ZtCalendarReader',
-		'ZCS.model.calendar.ZtCalendarWriter'
-	],
-
 	config: {
 
 		fields: [
@@ -55,35 +50,9 @@ Ext.define('ZCS.model.mail.ZtInvite', {
             { name: 'timezone',             type: 'string' },
             { name: 'attendeeResponse',     type: 'string' },
             { name: 'attendeeResponseMsg',  type: 'string' },
-            { name: 'reminderAlert',        type: 'string' },
-            { name: 'recurrence',           type: 'string' },
-			{ name:	'fb', 					type: 'string' },
-            { name: 'isException',          type: 'boolean'},
-            { name: 'ms',                   type: 'int'},
-            { name: 'rev',                  type: 'int'},
-            //Needed in case of edit appointment
-            { name: 'recur',                type: 'auto' },
-            { name: 'startTime',            type: 'auto' },
-            { name: 'endTime',              type: 'auto' },
-			{ name: 'class',                type: 'string' },
-			{ name: 'uid',                  type: 'string' },
-			{ name: 'alarmData',            type: 'auto' },
-			{ name: 'transp',               type: 'string' },
-			{ name: 'isHtml',               type: 'boolean' },
-            { name: 'oldCalFolderId',       type: 'string'} //Remember the folder the appt belonged to before moving
+            { name: 'reminderAlert',        type: 'string'},
+            { name: 'recurrence',           type: 'string' }
 		],
-
-        proxy: {
-            type: 'soapproxy',
-            api: {
-                read: urlBase + 'SearchRequest',
-                create: urlBase + 'CreateAppointmentRequest',
-                update  : urlBase + 'ModifyAppointmentRequest'
-            },
-
-            reader: 'calendarreader',
-            writer: 'calendarwriter'
-        },
 
 		msgId: ''
 	},
@@ -104,35 +73,29 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
 			var invite = new ZCS.model.mail.ZtInvite({
 				id:             comp.apptId,
-				subject:        comp.name,
+				subject:        Ext.String.htmlEncode(comp.name), //Fix for bug: 83580. Prevents XSS attacks.
 				isOrganizer:    !!comp.isOrg,
 				location:       comp.loc,
 				isAllDay:       !!comp.allDay,
 				method:         comp.method,
-				apptFolderId:   comp.ciFolder,
-				fb:				comp.fb
+				apptFolderId:   comp.ciFolder
 			});
 
 			var	start = comp.s && comp.s[0],
 				end = comp.e && comp.e[0],
-				organizer,
+				organizer = ZCS.model.mail.ZtEmailAddress.fromInviteNode(comp.or),
                 defaultTz = ZCS.timezone.getServerId(ZCS.timezone.DEFAULT_TZ),
                 timezone = ZCS.timezone.getMediumName(defaultTz);
 
 			// Use HTML description if available
 			invite.set('notes', this.getNotes(comp));
 
-			// Set content type
-			invite.set('isHtml', !!(comp.descHtml && comp.descHtml[0] && comp.descHtml[0]._content));
-
 			if (start) {
 				invite.set('start', ZCS.model.mail.ZtInvite.getDateFromJson(start));
-                invite.set('startTime', ZCS.model.mail.ZtInvite.getDateFromJson(start));
 			}
 			if (end) {
 				invite.set('end', ZCS.model.mail.ZtInvite.getDateFromJson(end));
-                invite.set('endTime', ZCS.model.mail.ZtInvite.getDateFromJson(end));
-            }
+			}
 
             if (timezone) {
                 invite.set('timezone', timezone);
@@ -141,42 +104,33 @@ Ext.define('ZCS.model.mail.ZtInvite', {
             if (comp.recur) {
                 //Fix for bug: 82159
                 invite.set('recurrence', ZCS.recur.getBlurb(comp));
-                invite.set('recur', comp.recur)
-            }
-
-            if (comp.ex) {
-                invite.set('isException', true);
             }
 
 			if (comp.or) {
-                organizer = ZCS.model.mail.ZtEmailAddress.fromInviteNode(comp.or);
-                invite.set('organizer', organizer);
+				invite.set('organizer', organizer);
 				if (comp.or.sentBy) {
 					invite.set('sentBy', ZCS.model.mail.ZtEmailAddress.fromEmail(comp.or.sentBy));
 				}
 			}
 
-            if (comp.alarm) {
-                invite.set('reminderAlert',comp.alarm && comp.alarm[0] && comp.alarm[0].trigger[0].rel[0].m);
-            }
-
-            if (comp.at && comp.at.length) {
+			if (comp.at && comp.at.length) {
                 var attendees = [],
 					optAttendees = [],
 					ln = comp.at.length, i, att, attList, email;
 
 				for (i = 0; i < ln; i++) {
 					att = comp.at[i];
-					if (!att.cutype || (att.cutype === ZCS.constant.CUTYPE_INDIVIDUAL
-                        || att.cutype === ZCS.constant.CUTYPE_RESOURCE || att.cutype === ZCS.constant.CUTYPE_ROOM)) {
+					if (!att.cutype || att.cutype === ZCS.constant.CUTYPE_INDIVIDUAL) {
 						attList = (att.role === ZCS.constant.ROLE_OPTIONAL) ? optAttendees : attendees;
 						email = ZCS.model.mail.ZtEmailAddress.fromInviteNode(att);
                         email.ptst = att.ptst;
                         attList.push(email);
-                    }
+					}
 				}
 				invite.set('attendees', attendees);
 				invite.set('optAttendees', optAttendees);
+
+                invite.set('reminderAlert',comp.alarm && comp.alarm[0] && comp.alarm[0].trigger[0].rel[0].m);
 
                 if (comp.method == "REPLY" && invite.get('isOrganizer')) {
                     var attendeeResponse = comp.at[0].ptst,
@@ -197,26 +151,6 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
                     invite.set('attendeeResponseMsg', Ext.String.format(inviteMsg, comp.at[0].d || comp.at[0].a)); // show address if display name is unavailable
                 }
-			}
-
-			if (comp.status) {
-				invite.set('status', comp.status);
-			}
-
-			if (comp['class']) { // using ['class'] to avoid build error as class is reserved word
-				invite.set('class', comp['class']);
-			}
-
-			if (comp.uid) {
-				invite.set('uid', comp.uid);
-			}
-
-			if (comp.alarm && comp.alarm.length) {
-				invite.set('alarmData', comp.alarm);
-			}
-
-			if (comp.transp) {
-				invite.set('transp', comp.transp);
 			}
 
 			var myResponse = node.replies && node.replies[0].reply[0].ptst;
@@ -308,7 +242,7 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 				sentBy:         ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('sentBy')),
 				attendees:      ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('attendees')),
 				optAttendees:   ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('optAttendees')),
-				intendedFor:    ZCS.model.mail.ZtMailItem.convertAddressModelToObject(this.get('calendarIntendedFor')),
+				intendedFor:    this.get('calendarIntendedFor'),
                 timezone:       this.get('timezone'),
                 recurrence:     this.get('recurrence'),
                 isOrganizer:    this.get('isOrganizer'),

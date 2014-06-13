@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -60,19 +60,7 @@ Ext.define('ZCS.common.ZtMenu', {
 		actionParams: null
 	},
 
-	constructor: function (config) {
-        if (this.config.showCancelButton) {
-            config.data.push({
-                label: ZtMsg.cancel,
-                action : '',
-                handler : ''
-            });
-        }
-
-       this.callParent(arguments);
-	},
-
-	initialize: function () {
+	initialize: function() {
 		var me = this;
 
         if (Ext.os.deviceType === "Phone") {
@@ -85,7 +73,15 @@ Ext.define('ZCS.common.ZtMenu', {
 		}, this);
 
 		me.callParent(arguments);
-
+		if (me.config.showCancelButton) {
+			me.add({
+				xtype: 'button',
+				text: ZtMsg.cancel,
+				handler: function () {
+					me.hide();
+				}
+			});
+		}
 	},
 
 	/**

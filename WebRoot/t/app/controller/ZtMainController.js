@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -62,18 +62,27 @@ Ext.define('ZCS.controller.ZtMainController', {
 		Ext.Viewport.add(Ext.create('ZCS.view.ZtMain'));
 		ZCS.app.on('serverError', this.handleError, this);
 		window.onbeforeunload = this.unloadHandler;
+
+		// handle organizer notifications
+		ZCS.app.on('notifyFolderCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifySearchCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifyTagCreate', this.handleOrganizerCreate, this);
+
+		ZCS.app.on('notifyFolderDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifySearchDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifyTagDelete', this.handleOrganizerDelete, this);
+
+		ZCS.app.on('notifyFolderChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifySearchChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifyTagChange', this.handleOrganizerChange, this);
+
+		ZCS.app.on('notifyRefresh', this.handleRefresh, this);
 	},
 
 	/**
 	 * Logs off the application
 	 */
 	doLogout: function() {
-
-		if (!window.navigator.onLine) {
-			this.handleError({ logoutNetworkError: true });
-			return;
-		}
-
         var qs = location.search;
         var pairs = [];
         var j = 0;
@@ -125,9 +134,8 @@ Ext.define('ZCS.controller.ZtMainController', {
         //</debug>
 		var server = Ext.getStore('ZtConvStore').getProxy(),
 			options = {
-				url:        ZCS.constant.SERVICE_URL_BASE + 'NoOpRequest',
-				jsonData:   server.getWriter().getSoapEnvelope(null, null, 'NoOp'),
-				isPoll:     true
+				url: ZCS.constant.SERVICE_URL_BASE + 'NoOpRequest',
+				jsonData: server.getWriter().getSoapEnvelope(null, null, 'NoOp')
 			};
 
 		server.sendSoapRequest(options);
@@ -139,46 +147,20 @@ Ext.define('ZCS.controller.ZtMainController', {
 	 *
 	 * @param {Object}  fault       fault object from server
 	 */
-	handleError: function(data) {
+	handleError: function(fault) {
 
-		data = data || {};
-
-		var fault = data.Body && data.Body.Fault,
-			error = fault && fault.Detail && fault.Detail.Error,
+		var error = fault && fault.Detail && fault.Detail.Error,
 			code = error && error.Code,
 			info = error && error.a,
-			reason = fault && fault.Reason && fault.Reason.Text;
-
-		var	title = (code && ZtMsg[code + '_title']) || ZtMsg.error,
-			args, msg;
+			msg = ZtMsg[code] || ZtMsg.unknownError,
+			title = ZtMsg[code + '_title'] || ZtMsg.error,
+			args;
 
 		// Propagate any error-related info into args for the error msg. See soap.txt for details.
 		if (info && info.length) {
 			args = Ext.Array.map(info, function(node) {
 				return node._content;
 			});
-		}
-		else if (reason) {
-			args = [ reason ];
-		}
-
-		if (data.timedout) {
-			msg = ZtMsg.errorTimeout;
-		}
-		else if (code && ZtMsg[code]) {
-			msg = ZtMsg[code];
-		}
-		else if (args && args.length) {
-			msg = ZtMsg.unknownErrorWithMsg;
-		}
-		else if (data.status === 0 && !data.responseText) {
-			msg = ZtMsg.errorServerUnavailable;
-		}
-		else if (data.logoutNetworkError) {
-			msg = ZtMsg.errorServerUnavailableLogout;
-		}
-		else {
-			msg = ZtMsg.unknownError;
 		}
 
 		var text = args ? Ext.String.format(msg, args) : msg;
@@ -214,5 +196,57 @@ Ext.define('ZCS.controller.ZtMainController', {
 		if (isDirty) {
 			return ZtMsg.appExitWarning;
 		}
+	},
+
+	/**
+	 * Returns a list of known overviews.
+	 * @return {Array}  list of ZtOverview
+	 * @private
+	 */
+	getOverviewList: function() {
+		return Ext.ComponentQuery.query(ZCS.constant.ORG_LIST_OVERVIEW);
+	},
+
+	/**
+	 * An organizer has just been created. We need to add it to our session data,
+	 * and insert it into the organizer list component.
+	 *
+	 * @param {ZtOrganizer}     organizer       undefined (arg not passed)
+	 * @param {Object}          notification    JSON with organizer data
+	 */
+	handleOrganizerCreate: function(organizer, notification) {
+		ZCS.session.handleOrganizerCreate(organizer, notification);
+		this.addOrganizer(this.getOverviewList(), notification);
+	},
+
+	/**
+	 * An organizer has just changed. If it is a move, we need to relocate it within
+	 * the organizer nested list.
+	 *
+	 * @param {ZtOrganizer}     organizer       organizer that changed
+	 * @param {Object}          notification    JSON with new data
+	 */
+	handleOrganizerChange: function(organizer, notification) {
+		organizer.handleModifyNotification(notification);
+		ZCS.session.handleOrganizerChange(organizer, notification);
+		this.modifyOrganizer(this.getOverviewList(), organizer, notification);
+	},
+
+	/**
+	 * An organizer has been hard-deleted. Remove it from overview stores.
+	 *
+	 * @param {ZtOrganizer}     organizer          organizer that changed
+	 */
+	handleOrganizerDelete: function(organizer, notification) {
+		organizer.handleDeleteNotification();
+		ZCS.session.handleOrganizerDelete(organizer, notification);
+		this.removeOrganizer(this.getOverviewList(), organizer);
+	},
+
+	/**
+	 * We got a <refresh> block. Reload the overviews.
+	 */
+	handleRefresh: function() {
+		this.reloadOverviews(this.getOverviewList());
 	}
 });

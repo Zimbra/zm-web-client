@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -94,7 +94,8 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			count = store.getCount(),
 			msgIndex = store.indexOf(msg),
 			isAsc = (ZCS.session.getSetting(ZCS.constant.SETTING_CONVERSATION_ORDER) === ZCS.constant.DATE_ASC),
-			isOldest = isAsc ? msgIndex === 0 : msgIndex === count - 1;
+			isOldest = isAsc ? msgIndex === 0 : msgIndex === count - 1,
+			markedUpHtml;
 
 		var me = this,
 			isInvite = msg.get('isInvite'),
@@ -106,22 +107,27 @@ Ext.define('ZCS.view.mail.ZtMsgBody', {
 			iframeWidth = this.element.getWidth() || (this.parent.getChildWidth() - 22),
 			iframe = this.iframe;
 
-		if (ZCS.session.getDebugLevel() === 'orig') {
+		if (window.inlineData.debugLevel === 'orig') {
 			trimQuotedText = true;
 		}
-		var result = msg.getContentAsHtml(this.getId(), trimQuotedText),
-			hasQuotedContent = ZCS.model.mail.ZtMailMsg.hasQuotedContent[msgId],
-			html;
+		var html = msg.getContentAsHtml(this.getId(), trimQuotedText),
+			hasQuotedContent = ZCS.model.mail.ZtMailMsg.hasQuotedContent[msgId];
 
-		this.setMsg(msg);
+			this.setMsg(msg);
 
 		this.setUsingIframe(isHtml);
 
 		if (ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_FIND_OBJECTS]) {
-			html = ZCS.htmlutil.findObjects(result.content, isHtml);
-            if (isInvite && result.inviteDesc) {
-                html = result.inviteDesc + html;
+			markedUpHtml = ZCS.htmlutil.findObjects(html.content, isHtml);
+
+            if (isInvite && html.inviteDesc) {
+                markedUpHtml = html.inviteDesc + markedUpHtml;
             }
+			// If we added anchors for emails or links, make sure we're using an iframe
+			if (markedUpHtml.length !== html.length) {
+				this.setUsingIframe(true);
+				html = markedUpHtml;
+			}
 		}
 
 		this.resetExtraComponents();

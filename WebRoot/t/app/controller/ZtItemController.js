@@ -89,11 +89,10 @@ Ext.define('ZCS.controller.ZtItemController', {
 	doRemoveTag: function(tagParams) {
 
 		var item = tagParams.item || this.getItem(),
-			tagName = tagParams.tagName,
-			tag = ZCS.session.getOrganizerModel(tagParams.zcsId);
+			tagName = tagParams.tagName;
 
-		if (item && tag) {
-			this.tagItem(item, tag, true);
+		if (item && tagName) {
+			this.tagItem(item, tagName, true);
 		}
 	},
 
@@ -208,47 +207,17 @@ Ext.define('ZCS.controller.ZtItemController', {
 	 * Adds or removes a tag to/from the given item.
 	 *
 	 * @param {ZtMailItem}  item        item
-	 * @param {ZtOrganizer} tag         tag to add or remove
+	 * @param {String}      tagName     name of tag to add or remove
 	 * @param {Boolean}     remove      if true, remove the tag
 	 */
-	tagItem: function(item, tag, remove) {
+	tagItem: function(item, tagName, remove) {
 
 		this.performOp(item, {
 			op: remove ? '!tag' : 'tag',
-			tn: tag.get('name')
+			tn: tagName
 		}, function() {
 			var toastMsg = remove ? ZtMsg.tagRemoved : ZtMsg.tagAdded;
-			ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, tag.get('displayName')));
-		});
-	},
-
-    /**
-     * Disables "Tag" action if user doesn't have any tags.
-     */
-    enableTagItem: function(menu) {
-        if (menu && menu.getItem(ZCS.constant.OP_TAG)) {
- 	        var tags = ZCS.session.findOrganizersByAttribute('type', ZCS.constant.ORG_TAG, ZCS.constant.APP_MAIL);
-            menu.enableItem(ZCS.constant.OP_TAG, tags && tags.length > 0);
-        }
-    },
-
-	/**
-	 * Fetch the contact with the given email and use it to populate and edit form.
-	 *
-	 * @param {object}  actionParams    params with email address in some form
-	 */
-	doEditContact: function(actionParams) {
-
-		var email = actionParams.addrObj ? actionParams.addrObj.get('email') : actionParams.address;
-
-		ZCS.app.getContactListController().loadContactByEmail(email, function(contacts) {
-			var contactController = ZCS.app.getContactController(),
-				contact = contacts && contacts[0];
-
-			if (contact) {
-				contactController.setItem(contact);
-				contactController.showContactForm(ZCS.constant.OP_EDIT, contact);
-			}
+			ZCS.app.fireEvent('showToast', Ext.String.format(toastMsg, tagName));
 		});
 	}
 });

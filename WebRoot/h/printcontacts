@@ -67,7 +67,7 @@
         </c:forEach>
     </c:if>
 
-    <c:if test="${zm:boolean(hasGalContacts)}">
+    <c:if test="${hasGalContacts}">
         <zm:searchGal var="galResults" query="${empty param.sq ? '*' : param.sq}" type="account"/>
     </c:if>
     <c:set var="addRow" value="true"/>

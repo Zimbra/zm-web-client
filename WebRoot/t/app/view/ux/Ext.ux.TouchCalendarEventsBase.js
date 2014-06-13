@@ -58,8 +58,7 @@ Ext.define('Ext.ux.TouchCalendarEventsBase', {
 		dates.each(function(dateObj){
 			var currentDate = dateObj.get('date'),
 				currentDateTime = currentDate.getTime(),
-				takenDatePositions = [], // stores 'row positions' that are taken on current date
-				isAllDay = false;
+				takenDatePositions = []; // stores 'row positions' that are taken on current date
 
 			// sort the Events Store so we have a consistent ordering to ensure no overlaps
 			eventStore.sort(this.getPlugin().getStartEventField(), this.getEventSortDirection());
@@ -73,13 +72,7 @@ Ext.define('Ext.ux.TouchCalendarEventsBase', {
 					return;
 				}
 
-				if (event.data.isAllDay) {
-					isAllDay = true;
-				}
-				else {
-					isAllDay = false;
-					eventsPerTimeSlotCount = eventsPerTimeSlotCount + 1;
-				}
+				eventsPerTimeSlotCount = eventsPerTimeSlotCount + 1;
 
 				// Find any Event Bar record in the EventBarStore for the current Event's record (using internalID)
 				var eventBarIndex = this.eventBarStore.findBy(function(record, id){
@@ -117,23 +110,19 @@ Ext.define('Ext.ux.TouchCalendarEventsBase', {
 						eventBarRecord.linked().add(wrappedEventBarRecord);
 					}
 					else {
-						if (!isAllDay) {
-							// add the inherited BarPosition to the takenDatePositions array
-							takenDatePositions.push(eventBarRecord.get('BarPosition'));
+						// add the inherited BarPosition to the takenDatePositions array
+						takenDatePositions.push(eventBarRecord.get('BarPosition'));
 
-							// increment the BarLength value for this day
-							eventBarRecord.set('BarLength', eventBarRecord.get('BarLength') + 1);
-						}
+						// increment the BarLength value for this day
+						eventBarRecord.set('BarLength', eventBarRecord.get('BarLength') + 1);
 					}
 				}
 				else {
 					// get the next free bar position
-					var barPos = !isAllDay ? this.getNextFreePosition(takenDatePositions) : 0;
+					var barPos = this.getNextFreePosition(takenDatePositions);
 
-					if (!isAllDay) {
-						// push it onto array so it isn't reused
-						takenDatePositions.push(barPos);
-					}
+					// push it onto array so it isn't reused
+					takenDatePositions.push(barPos);
 
 					// create new EventBar record
 					eventBarRecord = Ext.create('Ext.ux.CalendarEventBarModel', {
@@ -212,13 +201,8 @@ Ext.define('Ext.ux.TouchCalendarEventsBase', {
 
 
 		// create the event bar
-		var bgColor = eventRecord.get('color'),
-			eventBar = Ext.DomHelper.append(this.getPlugin().getEventWrapperEl(), {
+		var eventBar = Ext.DomHelper.append(this.getPlugin().getEventWrapperEl(), {
 			tag: 'div',
-			style: {
-				'background-color': bgColor,
-				'color':            ZCS.util.getForegroundColor(bgColor)
-			},
 			html: this.getPlugin().getEventBarTpl().apply(eventRecord.data),
 			eventID: record.get('EventID'),
 			cls: cssClasses.join(' ')

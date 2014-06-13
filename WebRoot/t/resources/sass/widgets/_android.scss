@@ -7,32 +7,16 @@ $floating-list-text-color: #000;
 $floating-list-divider-color: #BBB;
 $floating-list-radius: 0em;
 
-$android-button-padding: 1em;
-
-.android-button {
-	background-color: $floating-list-background-color;
-	color: $floating-list-text-color;
-	text-align: left;
-}
-
-.android-button-label {
-	color: $floating-list-text-color;
-	font-weight: normal;
-	text-align: left;
-}
-
 .zcs-floating-list {
 	font-size: 1.1em;
 	@include border-radius($floating-list-radius);
 
 	.x-button {
-		@extend .android-button;
 		border-color: $floating-list-background-color;
-		padding-left: $android-button-padding;
 		@include border-radius($floating-list-radius);
 
 		.x-button-label {
-			@extend .android-button-label;
+			color: $floating-list-text-color;
 		}
 	}
 
@@ -40,14 +24,16 @@ $android-button-padding: 1em;
 	.x-scroll-container {
 		.x-inner {
 			.x-list-item {
-				@extend .android-button;
+				background-color: $floating-list-background-color;
+				color: $floating-list-text-color;
+				text-align: left;
 
 				&.x-item-disabled {
 					color: $medium-grey;
 				}
 
 				.x-list-item-body {
-					padding: $android-button-padding;
+					padding: 1em;
 				}
 			}
 

@@ -89,6 +89,7 @@ function() {
 	ZmItem.registerItem(ZmItem.TASK,
 						{app:			ZmApp.TASKS,
 						 nameKey:		"task",
+						 countKey:  	"typeTask",
 						 icon:			"TasksApp",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmTask",
@@ -108,14 +109,14 @@ ZmTasksApp.prototype._registerOrganizers =
 function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.TASKS,
 							{app:				ZmApp.TASKS,
-							 nameKey:			"tasksFolder",
+							 nameKey:			"taskFolder",
 							 defaultFolder:		ZmFolder.ID_TASKS,
 							 soapCmd:			"FolderAction",
 							 firstUserId:		256,
 							 orgClass:			"ZmTaskFolder",
 							 orgPackage:		"TasksCore",
 							 treeController:	"ZmTaskTreeController",
-							 labelKey:			"taskLists",
+							 labelKey:			"tasks",
 							 itemsKey:			"tasks",
                              folderKey:			"tasksFolder",   
                              hasColor:			true,
@@ -138,8 +139,7 @@ function() {
 								 icon:			"TasksApp",
 								 shareIcon:		"SharedTaskList",
 								 setting:		ZmSetting.TASKS_ENABLED,
-								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_TASK),
-								 disableOffline:true
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_TASK)
 								});
 };
 
@@ -180,12 +180,7 @@ function() {
 ZmTasksApp.prototype.postNotify =
 function(notify) {
 	if (this._checkReplenishListView) {
-		var tasks = notify.modified && notify.modified.task;
-		var item;
-		if (tasks) {
-			item = tasks[0].items[0];
-		}
-		this._checkReplenishListView._checkReplenish(item, true);
+		this._checkReplenishListView._checkReplenish();
 		this._checkReplenishListView = null;
 	}
 };

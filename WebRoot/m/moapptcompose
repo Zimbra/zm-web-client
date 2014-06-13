@@ -84,8 +84,8 @@
                                istask="${param.st eq 'newtask'}"
                                exceptionInviteId="${empty param.exInvId? null : param.exInvId}"
                                useInstance="${param.useInstance eq '1'}"
-                               instanceStartTime="${zm:nonNull(param.instStartTime)}"
-                               instanceDuration="${zm:nonNull(param.instDuration)}"/>
+                               instanceStartTime="${param.instStartTime}"
+                               instanceDuration="${param.instDuration}"/>
         </c:when>
         <c:when test="${uploader.isUpload and not empty message}">
             <zm:fixupMessageCompose message="${message}" compose="${compose}"
@@ -148,7 +148,7 @@
 </c:if>
 <fmt:message key="newTask" var="newTaskSub"/>
 <div class="sectionLbl"><b>${fn:escapeXml(zm:truncate(apptSubject, 24, true))}</b></div>
-<c:if test="${zm:boolean(isInstance)}"><div class="View"><div class="tbl"><div class="tr">
+<c:if test="${isInstance}"><div class="View"><div class="tbl"><div class="tr">
                 <span class="td ZhApptRecurrInfo"><app:img src="dwt/ImgInformation.png"/></span>
                 <span class="td">
                     <c:url value="${context_url}?st=newappt&bt=${bt}&useInstance=0&invId=${id}" var="apptUrl"/><fmt:message key="apptInstNote"/>
@@ -269,7 +269,7 @@
 </div>
 <c:if test="${param.st ne 'newtask'}">
 <div class="View"><div class="tbl"><div class="tr">
-    <span class="td left"><input id="allday" type=checkbox name="allDay" <c:if test="${zm:boolean(compose.allDay)}">checked="checked"</c:if> value="1"> <fmt:message key="allDayEvent"/></span>
+    <span class="td left"><input id="allday" type=checkbox name="allDay" <c:if test="${compose.allDay}">checked="checked"</c:if> value="1"> <fmt:message key="allDayEvent"/></span>
     <span class="td right"><span style="display:none;" id="showHide">
         <a id="showHideLink" href="?more=1&${zm:cook(pageContext.request.queryString)}" onclick="return toggleElem('apt_dtls_div',this,'<fmt:message key="hide"/>','<fmt:message key="more"/>')"><fmt:message key="more"/> </a>
     </span></span>

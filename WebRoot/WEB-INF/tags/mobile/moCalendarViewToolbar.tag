@@ -30,7 +30,7 @@
 <mo:calendarUrl var="listViewUrl" view="list" date="${dateDf}" _replaceDate="1"/>
 <mo:calendarUrl var="monthViewUrl" view="month" date="${dateDf}" _replaceDate="1"/>
 <c:choose>
-    <c:when test="${zm:boolean(openurl)}">
+    <c:when test="${openurl}">
         <c:set var="list">onclick='openURL("${fn:escapeXml(zm:jsEncode(listViewUrl))}")'</c:set>
         <c:set var="day">onclick='openURL("${fn:escapeXml(zm:jsEncode(dayViewUrl))}")'</c:set>
         <c:set var="month">onclick='openURL("${fn:escapeXml(zm:jsEncode(monthViewUrl))}")'</c:set>

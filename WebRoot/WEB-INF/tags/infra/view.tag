@@ -58,7 +58,7 @@
 <c:choose>
 
 <c:when test="${skin eq 'velodrome2'}">
-<c:if test="${zm:boolean(statusBlocking)}">
+<c:if test="${statusBlocking}">
 	<div id="app_st_block_div" class="VeilOverlay" style="z-index:99;"></div>
 </c:if>
 <div id="app_status_container" class='${requestScope.statusClass}' style="z-index:100;position:relative;"><app:appStatus/></div>
@@ -333,7 +333,7 @@ if (screen.width<=800) {
 
 
 <c:when test="${skin eq 'zmail'}">
-<c:if test="${zm:boolean(statusBlocking)}">
+<c:if test="${statusBlocking}">
 	<div id="app_st_block_div" class="VeilOverlay" style="z-index:99;"></div>
 </c:if>
 <table style="border-bottom:1px solid #C9D7F1;">
@@ -430,7 +430,7 @@ if (screen.width<=800) {
 
 
 <c:otherwise>
-<c:if test="${zm:boolean(statusBlocking)}">
+<c:if test="${statusBlocking}">
 	<div id="app_st_block_div" class="VeilOverlay" style="z-index:99;"></div>
 </c:if>
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>

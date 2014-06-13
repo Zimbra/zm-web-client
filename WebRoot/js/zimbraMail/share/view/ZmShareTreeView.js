@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -106,7 +106,7 @@ ZmShareTreeView.prototype.removeNode = function(oldNode) {
 
 ZmShareTreeView.prototype._createTreeItem = function(parent, organizer, index, tooltip) {
 	var treeItemId = "ZmShareTreeItem_" + ZmShareTreeView.TREE_INDEX++;
-    var treeItem = new DwtTreeItem({parent:parent, id: treeItemId, arrowDisabled: true, dynamicWidth: true});
+    var treeItem = new DwtTreeItem({parent:parent, id: treeItemId});
     treeItem.setText(organizer.name);
     treeItem.setImage(organizer.getIcon());
     treeItem.setToolTipContent(tooltip);

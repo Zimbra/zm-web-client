@@ -550,14 +550,12 @@ function(overviewId) {
 		for (var i = 0; i < len; i++) {
 			var treeId = treeIds[i];
 			var treeView = overview.getTreeView(treeId);
-			if (treeView) {
-				var items = treeView.getTreeItemList();
-				var len1 = items.length;
-				for (var j = 0; j < len1; j++) {
-					var treeItem = items[j];
-					if (treeItem._expanded) {
-						expIds.push(treeItem._htmlElId);
-					}
+			var items = treeView.getTreeItemList();
+			var len1 = items.length;
+			for (var j = 0; j < len1; j++) {
+				var treeItem = items[j];
+				if (treeItem._expanded) {
+					expIds.push(treeItem._htmlElId);
 				}
 			}
 		}
@@ -660,25 +658,6 @@ function(type) {
 };
 
 /**
- * Evaluates the controller class and returns the default view type from that controller.
- *
- * @param	{hash}							params						hash of params:
- * @param	{string}						controllerClass				string name of controller class
- * @param	{string}						sessionId					unique identifier for this controller
- * @param 	{ZmSearchResultsController}		searchResultsController		containing controller
- *
- * @returns	{string}													default view type
- */
-ZmApp.prototype.getTypeFromController =
-function(controllerClass) {
-	var controller = eval(controllerClass);
-	if (!controller.getDefaultViewType) {
-		throw new AjxException("Session controller " + controllerClass + " must implement getDefaultViewType()");
-	}
-	return controller.getDefaultViewType();
-};
-
-/**
  * Returns a controller of the given type and class. If no sessionId is provided, then
  * the controller's session ID will be an incremental number. If a sessionId is given,
  * then a check is made for an existing controller with that session ID. If none is
@@ -691,9 +670,15 @@ function(controllerClass) {
  */
 ZmApp.prototype.getSessionController =
 function(params) {
-
-	var type = this.getTypeFromController(params.controllerClass);
-
+	
+	var type;
+	try {
+		type = eval(params.controllerClass).getDefaultViewType(params);
+	}
+	catch (ex) {
+		throw new AjxException("Session controller " + params.controllerClass + " must implement getDefaultViewType()");
+	}
+	
 	// track controllers of this type
 	if (!this._sessionController[type]) {
 		this._sessionController[type] = {};
@@ -729,25 +714,6 @@ function(params) {
 	controller.inactive = false;
 
 	return controller;
-};
-
-/**
- * Deletes a controller of the given type, class, and sessionId.
- *
- * @param	{hash}							params						hash of params:
- * @param	{string}						controllerClass				string name of controller class
- * @param	{string}						sessionId					unique identifier for this controller
- * @param 	{ZmSearchResultsController}		searchResultsController		containing controller
- */
-ZmApp.prototype.deleteSessionController =
-function(params) {
-	var type		= this.getTypeFromController(params.controllerClass);
-	var sessionId	= params.sessionId;
-
-	if (!this._sessionController[type]) {
-		return;
-	}
-	delete this._sessionController[type][sessionId];
 };
 
 // returns the session ID of the most recently retrieved controller of the given type
@@ -1057,12 +1023,8 @@ function(mods) {
  */
 ZmApp.prototype._inNewWindow =
 function(ev) {
-	if (appCtxt.isWebClientOffline()) {
-		return false;
-	}  else {
-		var setting = appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
-		return !ev ? setting : ((!setting && ev && ev.shiftKey) || (setting && ev && !ev.shiftKey));
-	}
+	var setting = appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
+	return !ev ? setting : ((!setting && ev && ev.shiftKey) || (setting && ev && !ev.shiftKey));
 };
 
 /**
@@ -1119,40 +1081,6 @@ function(active, viewId) {
 		appCtxt.getAppController().setNewButtonProps(this.getNewButtonProps());
 		this.setOverviewPanelContent();
 		this.stopAlert();
-		if (appCtxt.isWebClientOfflineSupported) {
-			this.resetWebClientOfflineOperations();
-		}
-		this._setRefreshButtonTooltip();
-	}
-};
-
-/**
- * Handle the common aspects of a transition from online to offline and offline to online, and also do so
- * when an app is activated
- */
-ZmApp.prototype.resetWebClientOfflineOperations =
-function() {
-	var isWebClientOnline = !appCtxt.isWebClientOffline();
-	var overview = this.getOverview();
-	if (overview) {
-		var zimletTreeView = overview.getTreeView(ZmOrganizer.ZIMLET);
-		if (zimletTreeView) {
-			zimletTreeView.setVisible(isWebClientOnline);
-		}
-		// enable/disable right click
-		overview.actionSupported = isWebClientOnline;
-		// enable/disable drag and drop
-		overview.dndSupported = isWebClientOnline;
-	}
-	// new button enable/disable
-	var newButton = appCtxt.getAppController().getNewButton();
-	if (newButton) {
-		if (ZmController._defaultNewId === ZmOperation.NEW_MESSAGE) {
-			newButton._setDropDownCellMouseHandlers(isWebClientOnline);
-		}
-		else {
-			newButton.setEnabled(isWebClientOnline);
-		}
 	}
 };
 
@@ -1194,22 +1122,6 @@ function() {
 	if (this._alert) {
 		this._alert.stop();
 	}
-};
-
-ZmApp.prototype._setRefreshButtonTooltip =
-function() {
-	if (appCtxt.refreshButton) {
-		appCtxt.refreshButton.setToolTipContent(this._getRefreshButtonTooltip());
-	}
-};
-
-/**
- * this is the default refresh button tooltip. overridden in Calendar. (see bug 85965)
- * @private
- */
-ZmApp.prototype._getRefreshButtonTooltip =
-function() {
-	 return ZmMsg.checkMailPrefUpdate;
 };
 
 /**
@@ -1268,10 +1180,7 @@ function(appName, date) {
 		div.innerHTML = date.getTime();
 		div.style.display = "none";
 		document.body.appendChild(div);
-	}
-	if (window.appDevMode) {
-		console.profile(id);
-	}
+	}	
 };
 
 /**
@@ -1295,8 +1204,5 @@ function(appName, date) {
 		div.innerHTML = date.getTime();
 		div.style.display = "none";
 		document.body.appendChild(div);
-	}
-	if (window.appDevMode) {
-		console.profileEnd();
 	}
 };

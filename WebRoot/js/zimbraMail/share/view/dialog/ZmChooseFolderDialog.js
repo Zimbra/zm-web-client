@@ -42,6 +42,7 @@ ZmChooseFolderDialog = function(parent, className) {
 	this._treeViewListener = new AjxListener(this, this._treeViewSelectionListener);
 
 	this._multiAcctOverviews = {};
+    this._showRemainingFolders = AjxMessageFormat.format(ZmMsg.showRemainingFolders, "folders");
 };
 
 ZmChooseFolderDialog.prototype = new ZmDialog;
@@ -134,7 +135,7 @@ function(params) {
 	var searchOnly = (treeIds.length == 1 && treeIds[0] == ZmOrganizer.SEARCH);
 	var newButton = this._getNewButton();
 	if (newButton) {
-		newButton.setVisible(!searchOnly && !params.hideNewButton && !appCtxt.isExternalAccount() && !appCtxt.isWebClientOffline());
+		newButton.setVisible(!searchOnly && !params.hideNewButton && !appCtxt.isExternalAccount());
 	}
 
 	this._data = params.data;
@@ -173,7 +174,7 @@ function(params) {
 	// TODO: I opened bug 34447 for this performance enhancement.
 	var pkg = [];
 	if (treeIdMap[ZmOrganizer.BRIEFCASE]) pkg.push("BriefcaseCore","Briefcase");
-	if (treeIdMap[ZmOrganizer.CALENDAR]) pkg.push("MailCore","CalendarCore","Calendar");
+	if (treeIdMap[ZmOrganizer.CALENDAR]) pkg.push("CalendarCore","Calendar");
 	if (treeIdMap[ZmOrganizer.ADDRBOOK]) pkg.push("ContactsCore","Contacts");
 	if (treeIdMap[ZmOrganizer.FOLDER]) pkg.push("MailCore","Mail");
 	if (treeIdMap[ZmOrganizer.TASKS]) pkg.push("TasksCore","Tasks");
@@ -222,8 +223,8 @@ function(params) {
 
 
 ZmChooseFolderDialog.prototype.getOverviewId =
-function(part, appName) {
-	return appCtxt.getOverviewId([this.toString(), part, appName], null);
+function(part) {
+	return appCtxt.getOverviewId([this.toString(), part], null);
 };
 
 ZmChooseFolderDialog.prototype._resetTree =
@@ -341,9 +342,8 @@ function(ev) {
 
 ZmChooseFolderDialog.prototype._okButtonListener =
 function(ev) {
-    var tgtFolder = this._getOverview().getSelected(false);
-    var tgtType   = this._getOverview().getSelected(true);
-    var folderList = (tgtFolder && (!(tgtFolder instanceof Array)))
+    var tgtFolder = this._getOverview().getSelected();
+	var folderList = (tgtFolder && (!(tgtFolder instanceof Array)))
 		? [tgtFolder] : tgtFolder;
 
 	var msg = (!folderList || (folderList && folderList.length == 0))
@@ -353,13 +353,7 @@ function(ev) {
 	if (!msg && this._data) {
 		for (var i = 0; i < folderList.length; i++) {
 			var folder = folderList[i];
-			//Note - although this case is checked in mayContain, I do not change mayContain since mayContain is complicated and returns a boolean and used from DnD and is overridden a bunch of times.
-			//Only here we need the special message (see bug 82064) so I settle for that for now.
-			if (this._data.isZmFolder && !folder.isInTrash() && folder.hasChild(this._data.name) && !this._acceptFolderMatch) {
-				msg = ZmMsg.folderAlreadyExistsInDestination;
-				break;
-			}
-			else if (folder.mayContain && !folder.mayContain(this._data, tgtType, this._acceptFolderMatch)) {
+			if (folder.mayContain && !folder.mayContain(this._data, null, this._acceptFolderMatch)) {
 				if (this._data.isZmFolder) {
 					msg = ZmMsg.badTargetFolder; 
 				} else {
@@ -414,16 +408,14 @@ function() {
 			var items = treeView.getTreeItemList();
 			for (var i = 0, len = items.length; i < len; i++) {
 				var ti = items[i];
-				if (!ti.getData) {  //not sure if this could happen but it was here before my refactoring.
-					continue;
+				if (ti.getData) {
+					var folder = items[i].getData(Dwt.KEY_OBJECT);
+					if (folder && (folder.nId != ZmOrganizer.ID_ROOT)) {
+						var name = folder.getName(false, null, true, true).toLowerCase();
+						var path = "/" + folder.getPath(false, false, null, true).toLowerCase();
+						this._folders.push({id:folder.id, type:type, name:name, path:path, accountId:accountId});
+					}
 				}
-				var folder = items[i].getData(Dwt.KEY_OBJECT);
-				if (!folder || folder.nId == ZmOrganizer.ID_ROOT) {
-					continue;
-				}
-				var name = folder.getName(false, null, true, true).toLowerCase();
-				var path = "/" + folder.getPath(false, false, null, true).toLowerCase();
-				this._folders.push({id: folder.id, type: type, name: name, path: path, accountId: accountId});
 			}
 		}
 	}
@@ -552,10 +544,8 @@ function(ev) {
 	}
 
 	var organizer = ev.item && ev.item.getData(Dwt.KEY_OBJECT);
-	if (organizer.id == ZmFolder.ID_LOAD_FOLDERS) {
-		return;
-	}
 	var value = organizer ? organizer.getName(null, null, true) : ev.item.getText();
+    if (this._showRemainingFolders == organizer.getName(null, null, true) ) value = "";
 	this._inputField.setValue(value);
 	if (ev.detail == DwtTree.ITEM_DBL_CLICKED || ev.enter) {
 		this._okButtonListener();

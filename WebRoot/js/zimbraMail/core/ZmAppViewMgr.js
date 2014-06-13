@@ -187,7 +187,6 @@ ZmAppViewMgr.CB_POST_HIDE	= "POST_HIDE";
 ZmAppViewMgr.CB_PRE_SHOW	= "PRE_SHOW";
 ZmAppViewMgr.CB_POST_SHOW	= "POST_SHOW";
 ZmAppViewMgr.CB_PRE_UNLOAD	= "PRE_UNLOAD";
-ZmAppViewMgr.CB_POST_REMOVE	= "POST_REMOVE";
 
 // used to continue when returning from callbacks
 ZmAppViewMgr.PENDING_VIEW = "ZmAppViewMgr.PENDING_VIEW";
@@ -649,7 +648,7 @@ function(viewId, force) {
 			var button = ac.getButton(tp.id);
 			if (!button) {
 				button = ac.addButton(tp.id, tp);
-				button.setHoverImage("Close", "right");
+				button.setHoverImage("Close");
 			}
 		}
 	}
@@ -783,10 +782,6 @@ function(force, viewId, skipHistory) {
 
 	if (curView.isTabView) {
 		appCtxt.getAppChooser().removeButton(curView.tabParams.id);
-		var callback = view.callback[ZmAppViewMgr.CB_POST_REMOVE];
-		if (callback) {
-			callback.run();
-		}
 	}
 	
 	if (noShow) {
@@ -922,7 +917,6 @@ function(show) {
  */
 ZmAppViewMgr.prototype.fitAll =
 function() {
-	this._shell.relayout();
 	this._fitToContainer(ZmAppViewMgr.ALL_COMPONENTS);
 };
 
@@ -1220,7 +1214,7 @@ function(viewId, show) {
 		}
 		
 		if (view.app) {
-			this._controller.setActiveApp(view);
+			this._controller.setActiveApp(view.app, viewId, view.isTabView);
 		}
 	}
 	else {
@@ -1394,10 +1388,8 @@ function(delta) {
 
 	// MOW: get the min/max sizes from the skin.hints
 	if (!this.treeMinSize) {
-		this.treeMinSize =
-			DwtCssStyle.asPixelCount(window.skin.hints.tree.minWidth || 150);
-		this.treeMaxSize =
-			DwtCssStyle.asPixelCount(window.skin.hints.tree.maxWidth || 1000);
+		this.treeMinSize = window.skin.hints.tree.minWidth || 150;
+		this.treeMaxSize = window.skin.hints.tree.maxWidth || 300;
 	}
 
 	// pin the resize to the minimum and maximum allowable

@@ -40,8 +40,10 @@ Ext.define('ZCS.view.calendar.ZtCalendarView', {
             viewMode: 'month',
             itemId: 'calMonthView',
             value: new Date(),
-            enableSimpleEvents: true,
-            enableSwipeNavigate: true,
+            enableEventBars: {
+                eventHeight: 'auto',
+                eventBarTpl: '<div>{title}</div>'
+            },
             viewConfig: {
                 weekStart: 0,
                 eventStore: Ext.getStore('ZtCalendarStore')
@@ -74,7 +76,7 @@ Ext.define('ZCS.view.calendar.ZtCalendarView', {
             hidden: true,
             value: new Date(),
             enableEventBars: {
-                eventBarTpl: '<tpl if="isAllDay"><div>{title}</div><tpl else><div>{title}<span class="event-time">{event}</span></div></tpl>'
+                eventBarTpl: '<div>{title}&nbsp;&nbsp;&nbsp;<i>{event}</i></div>'
             },
             viewConfig: {
                 weekStart: 0, //TODO: This will be set as per User Preferences

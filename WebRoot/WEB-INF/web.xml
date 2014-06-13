@@ -48,7 +48,7 @@
 
   <context-param>
     <param-name>zimbraDefaultSkin</param-name>
-    <param-value>harmony</param-value>
+    <param-value>serenity</param-value>
   </context-param>
 
   <context-param>
@@ -69,7 +69,6 @@
   <filter>
     <filter-name>CharEncodingFilter</filter-name>
     <filter-class>com.zimbra.webClient.filters.CharEncodingFilter</filter-class>
-    <async-supported>true</async-supported>
   </filter>
   <filter-mapping>
     <filter-name>CharEncodingFilter</filter-name>
@@ -82,7 +81,6 @@
   <filter>
     <filter-name>DoSFilter</filter-name>
     <filter-class>com.zimbra.cs.servlet.DoSFilter</filter-class>
-    <async-supported>true</async-supported>
 
     <init-param>
      <param-name>maxRequestsPerSec</param-name>
@@ -109,7 +107,6 @@
   <filter>
     <filter-name>ZimbraQoSFilter</filter-name>
     <filter-class>com.zimbra.cs.servlet.ZimbraQoSFilter</filter-class>
-    <async-supported>true</async-supported>
   </filter>
 
   <filter-mapping>
@@ -117,48 +114,13 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-  <filter>
-    <filter-name>ContextPathBasedThreadPoolBalancerFilter</filter-name>
-    <filter-class>com.zimbra.cs.servlet.ContextPathBasedThreadPoolBalancerFilter</filter-class>
-    <async-supported>true</async-supported>
-    
-    <init-param>
-     <param-name>suspendMs</param-name>
-     <param-value>1000</param-value>
-    </init-param>
-    
-    <init-param>
-     <param-name>Rules</param-name>
-     <param-value>%%list VAR:zimbraHttpContextPathBasedThreadPoolBalancingFilterRules , %%</param-value>
-    </init-param>
-  </filter>
-
-  <filter-mapping>
-    <filter-name>ContextPathBasedThreadPoolBalancerFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-
   <!-- HTTPCOMPRESSIONBEGIN %%comment VAR:zimbraHttpCompressionEnabled,-->%%
   <filter>
     <filter-name>GzipFilter</filter-name>
     <filter-class>org.eclipse.jetty.servlets.IncludableGzipFilter</filter-class>
-    <async-supported>true</async-supported>
-    
     <init-param>
       <param-name>mimeTypes</param-name>
-      <param-value>application/soap+xml,
-      text/javascript,
-      application/x-javascript,
-      application/javascript,
-      text/html,
-      text/plain,
-      text/css,
-      text/xml,
-      image/png,
-      image/jpeg,
-      image/jpg,
-      image/gif
-      </param-value>
+      <param-value>text/html,text/plain,text/css,application/soap+xml</param-value>
     </init-param>
     <init-param>
       <param-name>userAgent</param-name>
@@ -167,10 +129,6 @@
     <init-param>
       <param-name>excludedAgents</param-name>
       <param-value>MSIE 6.0</param-value>
-    </init-param>
-    <init-param>
-      <param-name>methods</param-name>
-      <param-value>GET,POST</param-value>
     </init-param>
     <init-param>
       <param-name>minGzipSize</param-name>
@@ -189,7 +147,6 @@
   <filter>
     <filter-name>Set Header Filter</filter-name>
     <filter-class>com.zimbra.webClient.filters.SetHeaderFilter</filter-class>
-    <async-supported>true</async-supported>
     <init-param>
       <param-name>debug</param-name>
       <param-value>0</param-value>
@@ -212,7 +169,7 @@
     </init-param>
     <init-param>
       <param-name>Expires</param-name>
-      <param-value>2595600</param-value>
+      <param-value>604800</param-value>
       <!--
         Expires should be the number of seconds from now when a
         given static resource should expire
@@ -222,7 +179,7 @@
       <param-name>ProdMode</param-name>
       <param-value>@prodMode@</param-value>
       <!--
-        This parameter value is filled in by the build depending
+        This paramater value is filled in by the build depending
         on whether the build is a dev or prod build. This
         controls the way the query parameters are interpreted by
         the filter and the jsp pages.
@@ -246,7 +203,6 @@
   <filter>
     <filter-name>StandardRedirectHelp</filter-name>
     <filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
-    <async-supported>true</async-supported>
     <init-param>
       <param-name>input.dir</param-name>
       <param-value>/bhelp</param-value>
@@ -264,7 +220,6 @@
   <filter>
     <filter-name>AdvancedRedirectHelp</filter-name>
     <filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
-    <async-supported>true</async-supported>
     <init-param>
       <param-name>input.dir</param-name>
       <param-value>/help</param-value>
@@ -282,7 +237,6 @@
   <filter>
     <filter-name>AdminRedirectHelp</filter-name>
     <filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
-    <async-supported>true</async-supported>
     <init-param>
       <param-name>input.dir</param-name>
       <param-value>/adminhelp</param-value>
@@ -301,7 +255,6 @@
   <filter>
     <filter-name>InsertHelpBranding</filter-name>
     <filter-class>com.zimbra.webClient.filters.InsertHelpBranding</filter-class>
-    <async-supported>true</async-supported>
     <init-param>
       <param-name>exts</param-name>
       <param-value>.htm,.xml</param-value>
@@ -320,7 +273,6 @@
   <filter>
     <filter-name>TimezoneFilter</filter-name>
     <filter-class>com.zimbra.webClient.filters.TimezoneFilter</filter-class>
-    <async-supported>true</async-supported>
   </filter>
   <filter-mapping>
     <filter-name>TimezoneFilter</filter-name>
@@ -330,27 +282,15 @@
   <filter>
     <filter-name>ForwardFilter</filter-name>
     <filter-class>com.zimbra.webClient.filters.ForwardFilter</filter-class>
-    <async-supported>true</async-supported>
   </filter>
   <filter-mapping>
     <filter-name>ForwardFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-
- <filter>
-    <filter-name>RestFilter</filter-name>
-    <filter-class>com.zimbra.webClient.filters.RestFilter</filter-class>
-    <async-supported>true</async-supported>
-  </filter>
-  <filter-mapping>
-    <filter-name>RestFilter</filter-name>
-    <url-pattern>/h/*</url-pattern>
-  </filter-mapping>
-
+  
   <filter>
     <filter-name>RequestStringFilter</filter-name>
     <filter-class>com.zimbra.cs.servlet.RequestStringFilter</filter-class>
-    <async-supported>true</async-supported>
   </filter>
   <filter-mapping>
     <filter-name>RequestStringFilter</filter-name>
@@ -365,7 +305,6 @@
   <servlet>
     <servlet-name>Forwarder</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.Forward</servlet-class>
-    <async-supported>true</async-supported>
   </servlet>
 
   <servlet-mapping>
@@ -376,7 +315,6 @@
   <servlet>
     <servlet-name>SetCookieServlet</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.SetCookieServlet</servlet-class>
-    <async-supported>true</async-supported>
   </servlet>
 
   <servlet-mapping>
@@ -387,7 +325,6 @@
   <servlet>
     <servlet-name>jsp</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.JspServlet</servlet-class>
-    <async-supported>true</async-supported>
     <init-param>
       <param-name>logVerbosityLevel</param-name>
       <param-value>DEBUG</param-value>
@@ -432,7 +369,6 @@
   <servlet>
     <servlet-name>Properties2Javascript</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.Props2JsServlet</servlet-class>
-    <async-supported>true</async-supported>
     <init-param>
       <param-name>basename-patterns</param-name>
       <param-value>
@@ -449,7 +385,6 @@
   <servlet>
     <servlet-name>SkinResources</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.SkinResources</servlet-class>
-    <async-supported>true</async-supported>
     <!--
     <init-param>
       <description>Override the request server name.</description>
@@ -483,7 +418,6 @@
   <servlet-mapping>
     <servlet-name>SkinResources</servlet-name>
     <url-pattern>/css/*</url-pattern>
-    <url-pattern>/appcache/*</url-pattern>
     <url-pattern>/html/*</url-pattern>
     <url-pattern>/js/skin.js</url-pattern>
   </servlet-mapping>
@@ -498,7 +432,6 @@
   <servlet>
     <servlet-name>AdminResources</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.AdminServlet</servlet-class>
-    <async-supported>true</async-supported>
   </servlet>
 
   <servlet-mapping>
@@ -521,78 +454,6 @@
     <env-entry-name>protocolMode</env-entry-name>
     <env-entry-type>java.lang.String</env-entry-type>
     <env-entry-value>%%zimbraMailMode%%</env-entry-value><!-- PROTOCOL MODE -->
-  </env-entry>
-
-  <env-entry>
-    <description>
-	Memcached Servers in SERVER:PORT format seperated by space
-    </description>
-    <env-entry-name>memcachedServers</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getAllMemcachedServers%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>memcachedClientBinaryProtocolEnabled</env-entry-name>
-    <env-entry-type>java.lang.Boolean</env-entry-type>
-    <env-entry-value>%%zimbraMemcachedClientBinaryProtocolEnabled%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>memcachedClientHashAlgorithm</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%zimbraMemcachedClientHashAlgorithm%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>memcachedClientExpiry</env-entry-name>
-    <env-entry-type>java.lang.Integer</env-entry-type>
-    <env-entry-value>%%zimbraMemcachedClientExpirySeconds%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>memcachedClientTimeout</env-entry-name>
-    <env-entry-type>java.lang.Integer</env-entry-type>
-    <env-entry-value>%%zimbraMemcachedClientTimeoutMillis%%</env-entry-value>
-  </env-entry>
-
- <env-entry>
-    <description>
-        Nginx Lookup Extension Handlers in SERVER:PORT format seperated by space
-    </description>
-    <env-entry-name>nginxLookUpHandlers</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getAllReverseProxyURLs%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>reverseProxyRouteLookupTimeout</env-entry-name>
-    <env-entry-type>java.lang.Integer</env-entry-type>
-    <env-entry-value>%%zimbraReverseProxyRouteLookupTimeout%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>reverseProxyRouteLookupTimeoutCache</env-entry-name>
-    <env-entry-type>java.lang.Integer</env-entry-type>
-    <env-entry-value>%%zimbraReverseProxyRouteLookupTimeoutCache%%</env-entry-value>
-  </env-entry>
-
- <env-entry>
-    <description>
-        UpStream Mail Servers in SERVER:PORT format seperated by space
-    </description>
-    <env-entry-name>upstreamMailServers</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getAllReverseProxyBackends%%</env-entry-value>
-  </env-entry>
-
- <env-entry>
-    <description>
-        Zimbra Services Installed on the server.
-    </description>
-    <env-entry-name>zimbraServicesEnabled</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%list VAR:zimbraServiceEnabled ,%%</env-entry-value>
   </env-entry>
 
   <env-entry>
@@ -717,7 +578,7 @@
       <url-pattern>/h/autoSaveDraft</url-pattern>
     </jsp-property-group>
   </jsp-config>
- 
+
 <!-- REDIRECTBEGIN
     <security-constraint>
         <web-resource-collection>
@@ -729,20 +590,5 @@
         </user-data-constraint>
     </security-constraint>
 REDIRECTEND -->
-
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>Zimbra Downloads</web-resource-name>
-      <url-pattern>/downloads/*</url-pattern>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>user</role-name>
-    </auth-constraint>
-  </security-constraint>
- 
-  <login-config>
-    <auth-method>ZimbraAuth</auth-method>
-    <realm-name>Zimbra</realm-name>
-  </login-config>
 
 </web-app>

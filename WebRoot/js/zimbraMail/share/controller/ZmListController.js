@@ -191,7 +191,7 @@ function(hasMore) {
 	// offline issue. The problem is during initial sync when more
 	// messages come in: the forward navigation arrow doesn't get enabled.
 	
-	if (hasMore && this._list) {
+	if (hasMore) {
 		// bug: 30546
 		this._list.setHasMore(hasMore);
 		this._resetNavToolBarButtons();
@@ -257,14 +257,6 @@ function(actionCode, ev) {
 			if (button && button.getEnabled()) {
 				this._paginate(this._currentViewId, false);
 				result = true;
-			}
-			break;
-
-		// Esc pops search results tab
-		case ZmKeyMap.CANCEL:
-			var ctlr = this.isSearchResults && this.searchResultsController;
-			if (ctlr) {
-				ctlr._closeListener();
 			}
 			break;
 
@@ -350,17 +342,11 @@ function(menu) {
 
 ZmListController.prototype._menuPopdownActionListener =
 function(ev) {
-
-	var view = this.getListView();
 	if (!this._pendingActionData) {
+		var view = this.getListView();
 		if (view && view.handleActionPopdown) {
 			view.handleActionPopdown(ev);
 		}
-	}
-	// Reset back to item count unless there is multiple selection
-	var selCount = view ? view.getSelectionCount() : -1;
-	if (selCount <= 1) {
-		this._setItemCountText();
 	}
 };
 
@@ -384,18 +370,12 @@ function(ev) {
 	else {
 		var lv = this._listView[this._currentViewId];
 		if (lv) {
-			if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) && !ev.ctrlKey) {
-				if (lv.setSelectionHdrCbox) {
+			if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+				if (!ev.ctrlKey && lv.setSelectionHdrCbox) {
 					lv.setSelectionHdrCbox(false);
 				}
 			}
 			this._resetOperations(this.getCurrentToolbar(), lv.getSelectionCount());
-			if (ev.shiftKey) {
-				this._setItemSelectionCountText();
-			}
-			else {
-				this._setItemCountText();
-			}
 		}
 	}
 	return false;
@@ -422,7 +402,46 @@ function(ev) {
         this._setSearchMenu(actionMenu);
     }
 	this._resetOperations(actionMenu, this.getSelectionCount());
-	this._setItemSelectionCountText();
+};
+
+/**
+ * override to override the text from "received from sender"
+ */
+ZmBaseController.prototype.getSearchFromText =
+function() {
+	return null;
+};
+
+/**
+ * override to override the text from "sent to sender"
+ */
+ZmBaseController.prototype.getSearchToText =
+function() {
+	return null;
+};
+
+
+/**
+ * Add listener to search menu
+ *
+ * @param parent
+ */
+ZmListController.prototype._setSearchMenu =
+function(parent, isToolbar) {
+	if (!parent) return;
+	var searchMenu = parent.getSearchMenu();
+	if (!searchMenu) {
+		return;
+	}
+	searchMenu.addSelectionListener(ZmOperation.SEARCH, this._participantSearchListener.bind(this, isToolbar));
+	searchMenu.addSelectionListener(ZmOperation.SEARCH_TO, this._participantSearchToListener.bind(this, isToolbar));
+
+	if (this.getSearchFromText()) {
+		searchMenu.getMenuItem(ZmOperation.SEARCH).setText(this.getSearchFromText());
+	}
+	if (this.getSearchToText()) {
+		searchMenu.getMenuItem(ZmOperation.SEARCH_TO).setText(this.getSearchToText());
+	}
 };
 
 
@@ -444,6 +463,120 @@ function(ev) {
 	}
 };
 
+// Participant listeners
+
+/**
+ * From Search based on email address.
+ * 
+ * @private
+ */
+ZmListController.prototype._participantSearchListener =
+function(ev) {
+
+    var folder = this._getSearchFolder();
+    if (folder && (folder.nId == ZmFolder.ID_SENT || folder.nId == ZmFolder.ID_DRAFTS)) {
+        /* sent/drafts search from all recipients */
+        var ccAddrs = this._actionEv.item.getAddresses(AjxEmailAddress.CC).getArray();
+        var toAddrs = this._actionEv.item.getAddresses(AjxEmailAddress.TO).getArray();
+        var name = toAddrs.concat(ccAddrs);
+        appCtxt.getSearchController().fromSearch(name);
+    }
+    else{
+	    var name = this._actionEv.address.getAddress();
+        appCtxt.getSearchController().fromSearch(name);
+    }
+};
+
+// Participant listeners
+
+/**
+ * To Search based on email address.
+ *
+ * @private
+ */
+ZmListController.prototype._participantSearchToListener =
+function(ev) {
+
+	var folder = this._getSearchFolder();
+    if (folder && (folder.nId == ZmFolder.ID_SENT || folder.nId == ZmFolder.ID_DRAFTS)) {
+        /* sent/drafts search to all recipients */
+        var toAddrs = this._actionEv.item.getAddresses(AjxEmailAddress.TO).getArray();
+        var ccAddrs = this._actionEv.item.getAddresses(AjxEmailAddress.CC).getArray();
+        var name = toAddrs.concat(ccAddrs).concat(ccAddrs);
+        appCtxt.getSearchController().toSearch(name);
+    }
+    else{
+	    var name = this._actionEv.address.getAddress();
+        appCtxt.getSearchController().toSearch(name);
+    }
+};
+
+/**
+ * Compose message to participant.
+ * 
+ * @private
+ */
+ZmListController.prototype._participantComposeListener =
+function(ev) {
+	var name = this._actionEv.address.toString() + AjxEmailAddress.SEPARATOR;
+	AjxDispatcher.run("Compose", {action: ZmOperation.NEW_MESSAGE, inNewWindow: this._app._inNewWindow(ev),
+								  toOverride: name});
+};
+
+/**
+ * If there's a contact for the participant, edit it, otherwise add it.
+ * 
+ * @private
+ */
+ZmListController.prototype._participantContactListener =
+function(ev) {
+	var loadCallback = this._handleLoadParticipantContactListener.bind(this);
+	AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
+};
+
+/**
+ * @private
+ */
+ZmListController.prototype._handleLoadParticipantContactListener =
+function() {
+	var cc = AjxDispatcher.run("GetContactController");
+	var contact = this._actionEv.contact;
+	if (contact) {
+		if (contact.isDistributionList()) {
+			this._editListener(this._actionEv, false, contact);
+			return;
+		}
+		if (contact.isLoaded) {
+			var isDirty = contact.isGal;
+			cc.show(contact, isDirty);
+		} else {
+			var callback = this._loadContactCallback.bind(this);
+			contact.load(callback);
+		}
+	} else {
+		var contact = this._createNewContact(this._actionEv);
+		cc.show(contact, true);
+	}
+};
+
+/**
+ * @private
+ */
+ZmListController.prototype._createNewContact =
+function(ev) {
+	var contact = new ZmContact(null);
+	contact.initFromEmail(ev.address);
+	return contact;
+};
+
+/**
+ * @private
+ */
+ZmListController.prototype._loadContactCallback =
+function(resp, contact) {
+	AjxDispatcher.run("GetContactController").show(contact);
+};
+
 // Drag and drop listeners
 
 /**
@@ -451,15 +584,8 @@ function(ev) {
  */
 ZmListController.prototype._dragListener =
 function(ev) {
-
-	if (this.isSearchResults && ev.action == DwtDragEvent.DRAG_START) {
-		this.searchResultsController.showOverview(true);
-	}
-	else if (ev.action == DwtDragEvent.SET_DATA) {
+	if (ev.action == DwtDragEvent.SET_DATA) {
 		ev.srcData = {data: ev.srcControl.getDnDSelection(), controller: this};
-	}
-	else if (this.isSearchResults && (ev.action == DwtDragEvent.DRAG_END || ev.action == DwtDragEvent.DRAG_CANCEL)) {
-		this.searchResultsController.showOverview(false);
 	}
 };
 
@@ -515,8 +641,38 @@ function(ev) {
 };
 
 /**
+ * Sets text to "add" or "edit" based on whether a participant is a contact or not.
+ * 
  * @private
  */
+ZmListController.prototype._setContactText =
+function(isContact) {
+	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
+	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
+	ZmOperation.setOperation(this.getCurrentToolbar(), ZmOperation.CONTACT, newOp, ZmMsg.AB_ADD_CONTACT);
+	ZmOperation.setOperation(this.getActionMenu(), ZmOperation.CONTACT, newOp, newText);
+};
+
+/**
+ * This method gets overloaded if folder id is retrieved another way
+ * 
+ * @param {boolean}		allowComplex	if true, search can have other terms aside from the folder term
+ * @private
+ */
+ZmListController.prototype._getSearchFolderId =
+function(allowComplex) {
+	var s = this._activeSearch && this._activeSearch.search;
+	return s && (allowComplex || s.isSimple()) && s.folderId;
+};
+
+/**
+ * @private
+ */
+ZmListController.prototype._getSearchFolder =
+function() {
+	var id = this._getSearchFolderId();
+	return id && appCtxt.getById(id);
+};
 
 /**
  * returns true if the search folder is drafts
@@ -528,18 +684,6 @@ function() {
 		return false;
 	}
 	return folder.nId ==  ZmFolder.ID_DRAFTS;
-};
-
-/**
- * returns true if the search folder is drafts
- */
-ZmListController.prototype.isOutboxFolder =
-function() {
-    var folder = this._getSearchFolder();
-    if (!folder) {
-        return false;
-    }
-    return folder.nId == ZmFolder.ID_OUTBOX;
 };
 
 /**
@@ -961,13 +1105,7 @@ function(toolbar, view) {
 ZmListController.prototype._resetNavToolBarButtons =
 function(view) {
 
-	var lv;
-    if (view) {
-        lv = this._view[view];
-    } else {
-        lv = this.getListView();
-        view = this._currentViewId;
-    }
+	var lv = view ? this._view[view] : this.getListView();
 	if (!lv) { return; }
 
 	if (lv._isPageless) {
@@ -1016,28 +1154,9 @@ function(view) {
 	var se = this._getNavStartEnd(view);
 	if (!se) { return ""; }
 
-    var size  = se.size;
-    var msg   = "";
-    if (size === 0) {
-        msg = AjxMessageFormat.format(ZmMsg.navTextNoItems, ZmMsg[ZmApp.NAME[ZmApp.TASKS]]);
-    } else if (size === 1) {
-        msg = AjxMessageFormat.format(ZmMsg.navTextOneItem, ZmMsg[ZmItem.MSG_KEY[ZmItem.TASK]]);
-    } else {
-        // Multiple items
-        var lv    = this._view[view];
-        var limit = se.limit;
-        if (size < limit) {
-            // We have the exact size of the filtered items
-            msg = AjxMessageFormat.format(ZmMsg.navTextWithTotal, [se.start, se.end, size]);
-        } else {
-            // If it's more than the limit, we don't have an exact count
-            // available from the server
-            var sizeText = this._getUpperLimitSizeText(size);
-            var msgText = sizeText ? ZmMsg.navTextWithTotal : ZmMsg.navTextRange;
-            msg = AjxMessageFormat.format(msgText, [se.start, se.end, sizeText]);
-        }
-    }
-    return msg;
+	var total = this._getNumTotal();
+	var msgText = total ? ZmMsg.navText2 : ZmMsg.navText1;
+	return AjxMessageFormat.format(msgText, [se.start, se.end, total]);
 };
 
 /**
@@ -1056,7 +1175,7 @@ function(view) {
 		end = Math.min(lv.offset + limit, size);
 	}
 
-	return (start && end) ? {start:start, end:end, size:size, limit:limit} : null;
+	return (start && end) ? {start:start, end:end} : null;
 };
 
 /**
@@ -1107,45 +1226,31 @@ ZmListController.prototype._getItemCountText =
 function() {
 
 	var size = this._getItemCount();
-	if (size == 0) { return ""; }
-
-	var lv = this._view[this._currentViewId],
-		list = lv && lv._list,
-		type = lv._getItemCountType(),
-		total = this._getNumTotal(),
-		num = total || size,
-		countKey = 'type' + AjxStringUtil.capitalizeFirstLetter(ZmItem.MSG_KEY[type]),
-        typeText = type ? AjxMessageFormat.format(ZmMsg[countKey], num) : "";
-
+	if (size == null) { return ""; }
+	var lv = this._view[this._currentViewId];
+	var list = lv && lv._list;
+	var type = lv._getItemCountType();
+	var total = this._getNumTotal();
+	var num = total || size;
+    var typeText = type ? AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num) : "";
 	if (total && (size != total)) {
 		return AjxMessageFormat.format(ZmMsg.itemCount1, [size, total, typeText]);
 	} else {
-		var sizeText = this._getUpperLimitSizeText(size);
+		var sizeText = size;
+		if (this._list.hasMore()) {
+			//show 4+, 5+, 10+, 20+, 100+, 200+
+			var granularity = size < 10 ? 1	: size < 100 ? 10 : 100;
+			sizeText = (Math.floor(size / granularity)) * granularity + "+"; //round down to the chosen granularity
+		}
 		return AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, typeText]);
 	}
 };
-
-ZmListController.prototype._getUpperLimitSizeText =
-function(size) {
-    var sizeText = size;
-    if (this._list.hasMore()) {
-        //show 4+, 5+, 10+, 20+, 100+, 200+
-        var granularity = size < 10 ? 1	: size < 100 ? 10 : 100;
-        sizeText = (Math.floor(size / granularity)) * granularity + "+"; //round down to the chosen granularity
-    }
-    return sizeText;
-
-}
-
-
 
 ZmListController.prototype._getItemCount =
 function() {
 	var lv = this.getListView();
 	var list = lv && lv._list;
-	if (!list) {
-        return 0;
-    }
+	if (!list) { return null; }
 	return list.size();
 };
 
@@ -1162,23 +1267,6 @@ function(text) {
 	if (field) {
 		field.setText(text);
 	}
-};
-
-// Returns text that describes how many items are selected for action
-ZmListController.prototype._getItemSelectionCountText = function() {
-
-	var lv = this._view[this._currentViewId],
-		list = lv && lv._list,
-		type = lv._getItemCountType(),
-		num = lv.getSelectionCount(),
-		countKey = 'type' + AjxStringUtil.capitalizeFirstLetter(ZmItem.MSG_KEY[type]),
-		typeText = type ? AjxMessageFormat.format(ZmMsg[countKey], num) : "";
-
-	return num > 0 ? AjxMessageFormat.format(ZmMsg.itemSelectionCount, [num, typeText]) : '';
-};
-
-ZmListController.prototype._setItemSelectionCountText = function() {
-	this._setItemCountText(this._getItemSelectionCountText());
 };
 
 /**
@@ -1270,17 +1358,8 @@ function(params, actionParams) {
 		if (contResult) {
 			if (lv.allSelected) {
 				// items beyond page were acted on, give user a total count
-				if (actionParams.actionTextKey) {
-					var type = contResult.type;
-					if (type === ZmId.SEARCH_MAIL) {
-						type = this._list.type; //get the specific CONV/MSG type instead of the "searchFor" "MAIL".
-					}
-					actionParams.actionSummary = ZmList.getActionSummary({
-						actionTextKey:  actionParams.actionTextKey,
-						numItems:       this._continuation.totalItems,
-						type:           type,
-						actionArg:      actionParams.actionArg
-					});
+				if (actionParams.actionText) {
+					actionParams.actionSummary = ZmList.getActionSummary(actionParams.actionText, this._continuation.totalItems, contResult.type, actionParams.actionArg);
 				}
 				lv.deselectAll();
 			}

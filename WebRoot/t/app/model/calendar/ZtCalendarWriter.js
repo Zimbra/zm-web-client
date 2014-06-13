@@ -65,52 +65,11 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
             var m = methodJson.m = {};
 
             m = this.populateAttrs(methodJson, appt);
+            m.l = itemData.folderId || ZCS.constant.ID_CALENDAR;
 
             Ext.apply(methodJson, {
                 m: m
             });
-        } else if (action === 'update') {
-            var	invite = request.getRecords()[0];
-            if (itemData.op === 'modify') {
-	            var isCreateException = itemData.createException;
-
-                json = this.getSoapEnvelope(request, data, isCreateException ? 'CreateAppointmentException' : 'ModifyAppointment');
-                methodJson = isCreateException? json.Body.CreateAppointmentExceptionRequest : json.Body.ModifyAppointmentRequest;
-
-                var id = methodJson.id = itemData.id,
-                    attachments = itemData.attachments;
-
-                methodJson.ms = invite.get('ms');
-                methodJson.rev = invite.get('rev');
-                methodJson.comp = "0";
-
-                var m = methodJson.m = {};
-
-                m = this.populateAttrs(methodJson, invite, itemData.isInterMailboxMove, true, isCreateException);
-
-                this._addAttachmentsToRequest(m, invite, id, attachments);
-
-                if (isCreateException) {
-		            this._addExceptionRequestSubs(m, invite, new Date(itemData.instanceStartTime));
-		            methodJson.echo = "1";
-	            }
-
-                Ext.apply(methodJson, {
-                    m: m
-                });
-            } else if (itemData.op === 'move') {
-                request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'ItemAction');
-                json = this.getSoapEnvelope(request, data, 'ItemAction');
-                methodJson = json.Body.ItemActionRequest;
-
-                Ext.apply(methodJson, {
-                    action: {
-                        id: invite.get('id'),
-                        op: itemData.op,
-                         l: invite.get('apptFolderId')
-                    }
-                });
-            }
         }
 
         request.setJsonData(json);
@@ -118,112 +77,50 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         return request;
     },
 
-    populateAttrs: function(request, invite, isInterMailboxMove, isEdit, isCreateException) {
+    populateAttrs: function(request, appt) {
         var m = request.m = {},
             mailFromAddress,
             comps,
             comp,
             inv,
-            org,
-            notifyList = isEdit ? invite.get('attendees') : invite.get('attendee'),
-            isOrganizer = invite.get('isOrganizer');
+            org;
 
         inv = m.inv = {};
         m.e = [];
-
-        /**
-         * In case of mountpoints, the appt is modified in the local folder first and then moved
-         */
-        if (isInterMailboxMove) {
-            m.l = invite.get('oldCalFolderId');
-        } else {
-            m.l = invite.get('apptFolderId');
-        }
 
         comps = inv.comp = [];
         comp = comps[0] = {};
         comp.at = [];
         org = comp.or = {};
 
-        if (!isEdit || (isOrganizer && !isInterMailboxMove)) {
-            //FROM Address - in case of create appt and organizer edit
-            mailFromAddress =  ZCS.mailutil.getFromAddress();
-        } else {
-            mailFromAddress = invite.get('organizer');
-        }
+        //FROM Address
+        mailFromAddress =  ZCS.mailutil.getFromAddress();
         org.a = mailFromAddress.get('email');
         org.d = mailFromAddress.get('name');
 
         //start end time
-        this._addDateTimeToRequest(request, comp, invite);
+        this._addDateTimeToRequest(request, comp, appt);
 
         // subject/location
-        m.su = invite.get('subject');
+        m.su = appt.get('subject');
+        comp.name = appt.get('subject');
+        comp.loc = appt.get('location');
 
-        comp.name = invite.get('subject');
-        comp.loc = invite.get('location');
-        comp.fb = invite.get('fb');
-
-	    // Send recur object only in when series is edited
-	    if (invite.get('recur') && !isCreateException) {
-		    comp.recur = invite.get('recur');
-	    }
-
-        if (isEdit) {
-            inv.uid = invite.get('uid');
-        }
         //recurrence
-        this._setRecurrence(comp, invite);
+        this._setRecurrence(comp, appt);
 
         //alarm
-        var reminderMinutes = invite.get('reminderAlert');
+        var reminderMinutes = appt.get('reminder');
         this._setAlarmData(comp, reminderMinutes);
 
-        //attendees
-        this._addAttendeesToRequest(comp, m, notifyList, isOrganizer, isEdit);
-
         // notes
-        this._addNotesToRequest(m, invite);
+        this._addNotesToRequest(m, appt);
 
         return m;
     },
 
-    _addAttendeesToRequest : function(inv, m, notifyList, isOrganizer, isEdit) {
-        Ext.each(notifyList, function(attendee) {
-            var email = attendee.get('email'),
-                displayName = attendee.get('longName'),
-                e;
-
-            if (!isEdit || isOrganizer) {
-                e = {
-                    a : email,
-                    t : "t"
-                };
-                if (displayName) {
-                    e.p = displayName;
-                }
-                m.e.push(e);
-            }
-
-            if (inv) {
-                var at = {};
-
-                //TODO: add support for optional attendees
-                at.role = ZCS.constant.ROLE_REQUIRED;
-                at.ptst = ZCS.constant.PSTATUS_UNKNOWN;
-                at.rsvp = 1;
-                at.a = email;
-
-                if (displayName) {
-                    at.d = displayName;
-                }
-                inv.at.push(at);
-            }
-        }, this);
-    },
-
-    _addDateTimeToRequest : function(request, comp, invite) {
-        var allDay = invite.get('isAllDay') ? 1 : 0;
+    _addDateTimeToRequest : function(request, comp, appt) {
+        var allDay = appt.get('isAllDay') ? 1 : 0;
         comp.allDay = allDay + "";
 
         var tz,
@@ -231,8 +128,6 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
             sd,
             e,
             ed,
-            start = invite.get('start'),
-            end = invite.get('end'),
             timezone = ZCS.timezone.DEFAULT_TZ;
 
         if (timezone) {
@@ -240,13 +135,10 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
         }
 
         // start date
-        if (start) {
+        if (appt.get('start') || appt.get('startAllDay')) {
             s = comp.s = {};
             if (!allDay) {
-                var startTime = invite.get('startTime');
-                start.setHours(startTime.getHours());
-                start.setMinutes(startTime.getMinutes());
-                sd = Ext.Date.format(start, "Ymd\\THis");
+                sd = Ext.Date.format(appt.get('start'), "Ymd\\THis");
                 // set timezone if not utc date/time
                 if (tz && tz.length) {
                     s.tz = tz;
@@ -254,18 +146,15 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
                 s.d = sd;
             }
             else {
-                s.d = Ext.Date.format(start, "Ymd");
+                s.d = Ext.Date.format(appt.get('startAllDay'), "Ymd");
             }
         }
 
         // end date
-        if (end) {
+        if (appt.get('end') || appt.get('endAllDay')) {
             e = comp.e = {};
             if (!allDay) {
-                var endTime = invite.get('endTime');
-                end.setHours(endTime.getHours());
-                end.setMinutes(endTime.getMinutes());
-                ed = Ext.Date.format(end, "Ymd\\THis");
+                ed = Ext.Date.format(appt.get('end'), "Ymd\\THis");
 
                 // set timezone if not utc date/time
                 if (tz && tz.length) {
@@ -274,20 +163,20 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
                 e.d = ed;
 
             } else {
-                e.d = Ext.Date.format(end, "Ymd");
+                e.d = Ext.Date.format(appt.get('endAllDay'), "Ymd");
             }
         }
     },
 
-    _setRecurrence: function(comp, invite) {
-        if (invite.get('repeat') === ZCS.recur.self.NONE) {
+    _setRecurrence: function(comp, appt) {
+        if (appt.get('repeat') === ZCS.recur.self.NONE) {
             return;
         }
         var recur = comp.recur = {},
             add = recur.add = {},
             rule = add.rule = {},
             interval = rule.interval = {};
-        rule.freq = invite.get('repeat');
+        rule.freq = appt.get('repeat');
         interval.ival = 1;
     },
 
@@ -312,50 +201,15 @@ Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
 
     },
 
-    _addNotesToRequest : function(m, invite) {
+    _addNotesToRequest : function(m, appt) {
         var mp = m.mp = {"mp" : []},
-            content = invite.get('notes');
+            content = appt.get('notes');
 
         mp.ct = ZCS.mime.MULTI_ALT;
-
-	    mp.mp[0] = {
-		    ct: ZCS.mime.TEXT_PLAIN,
-		    content: ZCS.mailutil.htmlToText(content)
-	    };
-
-	    if (invite.get('isHtml')) {
-		    mp.mp[1] = {
-			    ct: ZCS.mime.TEXT_HTML,
-			    content: content
-		    };
-	    }
-    },
-
-	_addExceptionRequestSubs: function(m, invite, instanceStart) {
-		m.inv.comp[0]['class'] = invite.get('class'); // using ['class'] to avoid build error as class is reserved word
-		m.inv.comp[0].draft = 0;
-		m.inv.comp[0].exceptId = {};
-		m.inv.comp[0].exceptId.d = Ext.Date.format(instanceStart, 'Ymd\\THis');
-		m.inv.comp[0].exceptId.tz = ZCS.timezone.guessMachineTimezone().clientId;
-		m.inv.comp[0].status = invite.get('status');
-		m.inv.comp[0].transp = invite.get('transp');
-		m.inv.uid = invite.get('uid');
-	},
-
-    _addAttachmentsToRequest: function(m, invite, id, validAttachments) {
-        var attachNode = m.attach = {},
-            validAttLen;
-
-        if (validAttachments) {
-            validAttLen = validAttachments.length;
-            attachNode.mp = [];
-            for (i = 0; i < validAttLen; i++) {
-                attachNode.mp.push({
-                    mid : id,
-                    part : validAttachments[i].part
-                });
-            }
-        }
+        mp.mp.push({
+            ct : ZCS.mime.TEXT_PLAIN
+        });
+        mp.mp[0].content = content;
     }
 
 });

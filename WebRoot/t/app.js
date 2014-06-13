@@ -31,7 +31,6 @@ Ext.Loader.setPath({
 
 // Load utils and templates
 Ext.require([
-    'ZCS.common.ZtListScrollHack',
 	'ZCS.common.ZtUtil',
 	'ZCS.common.ZtTemplate',
 	'ZCS.common.ZtViewport',
@@ -64,12 +63,11 @@ Ext.application({
 		'ZCS.common.mail.ZtMailUtil',
 		'ZCS.common.ZtConstants',
 		'ZCS.common.ZtTemplate',
+		'ZCS.common.ZtItemCache',
 		'ZCS.common.ZtUserSession',
 		'ZCS.common.ZtTimezone',
-		'ZCS.common.calendar.ZtRecurrence',
-        'ZCS.common.Component'
+		'ZCS.common.calendar.ZtRecurrence'
 	],
-
 	//<feature logger>
 	logger: {
 		enabled: true,
@@ -101,16 +99,16 @@ Ext.application({
 		'ZCS.controller.contacts.ZtContactListController',
 		'ZCS.controller.contacts.ZtContactController',
 		'ZCS.controller.calendar.ZtCalendarController',
-		'ZCS.controller.calendar.ZtNewAppointmentController'
+		'ZCS.controller.calendar.ZtNewApptController'
 	],
 
 	views: ['ZtMain'],
 
 	icon: {
-		'57': '../img/logo/Icon.png',
-		'72': '../img/logo/Icon~ipad.png',
-		'114': '../img/logo/Icon@2x.png',
-		'144': '../img/logo/Icon~ipad@2x.png'
+		'57': 'resources/icons/Icon.png',
+		'72': 'resources/icons/Icon~ipad.png',
+		'114': 'resources/icons/Icon@2x.png',
+		'144': 'resources/icons/Icon~ipad@2x.png'
 	},
 
 	isIconPrecomposed: true,
@@ -157,6 +155,10 @@ Ext.application({
 		// Make sure message boxes (confirms, alerts, warnings) have translated button strings
 		ZCS.util.patchSenchaStrings();
 
+		//<debug>
+		Ext.Logger.info('STARTUP: app launch');
+
+		//</debug>
 		// Note: initial view created by ZtMainController
 	},
 
@@ -211,7 +213,7 @@ Ext.application({
 	},
 
 	getAppointmentController: function() {
-        return this.getController('ZCS.controller.calendar.ZtNewAppointmentController');
+        return this.getController('ZCS.controller.calendar.ZtNewApptController');
     },
 
     getAssignmentController: function() {

@@ -32,8 +32,6 @@ ZmApptAssistantView = function(parent, controller, apptView, closeCallback) {
 
 	DwtComposite.call(this, {parent: parent, posStyle: DwtControl.RELATIVE_STYLE, className: "ZmScheduleAssistantView"});
 
-	this.setScrollStyle(Dwt.SCROLL_Y);
-
 	this._controller    = controller;
 	this._apptView      = apptView;
     this._prefDialog    = appCtxt.getSuggestionPreferenceDialog();
@@ -73,8 +71,6 @@ ZmApptAssistantView.prototype.initialize =
 function() {
     this._createHTML();
     this._createWidgets();
-    this.addControlListener(this._resetSize.bind(this));
-    this._resetSize();
 };
 
 ZmApptAssistantView.prototype.isInitialized =
@@ -373,20 +369,4 @@ function(item) {
 		}
 	}
 	return null;
-};
-
-ZmApptAssistantView.prototype._resetSize = function() {
-    if (!this._suggestionsView) {
-        return;
-    }
-
-    var header = this._suggestionsContainer.firstChild;
-    var bounds = this.boundsForChild(this._suggestionsView);
-    var insets = Dwt.getInsets(this._suggestionsView);
-
-    var width = bounds.width - insets.left - insets.right;
-    var height = (bounds.height - Dwt.getOuterSize(this._suggestMinical).y -
-                  Dwt.getOuterSize(header).y);
-
-    Dwt.setSize(this._suggestionsView, width, height);
 };

@@ -177,15 +177,15 @@ Ext.define('ZCS.common.calendar.ZtRecurrence', {
                             dayType = 0;
                         }
 
-                        // Fix for bug: 86571. Passing isSpecificDay = true
-                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurMonthly, [bysetpos || ordinal, dayType, count], true));
+	                    // Fix for bug: 86571. Passing isSpecificDay = true
+                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurMonthlyEveryNumMonthsWeekDays, [bysetpos || ordinal, dayType, count], true));
                     }
                     else {
                         var day = new Date();
                         day.setDate(day.getDate() - day.getDay() + dayofweek);
 
-                        // Fix for bug: 86571. Passing isSpecificDay = false
-                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurMonthly, [bysetpos || ordinal, day, count], false));
+	                    // Fix for bug: 86571. Passing isSpecificDay = false
+                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurMonthlyEveryNumMonthsWeekDays, [bysetpos || ordinal, day, count], false));
                     }
                 }
                 break;
@@ -219,15 +219,15 @@ Ext.define('ZCS.common.calendar.ZtRecurrence', {
                             dayType = 0;
                         }
 
-                        // Fix for bug: 86571. Passing isSpecificDay = true
-                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurYearlyEveryMonth, [bysetpos || ordinal, dayType, month], true));
+	                    // Fix for bug: 86571. Passing isSpecificDay = true
+                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurYearlyEveryMonthWeekDays, [bysetpos || ordinal, dayType, month], true));
                     }
                     else {
                         var day = new Date();
                         day.setDate(day.getDate() - day.getDay() + dayofweek);
 
-                        // Fix for bug: 86571. Passing isSpecificDay = false
-                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurYearlyEveryMonth, [bysetpos || ordinal, day, month], false));
+	                    // Fix for bug: 86571. Passing isSpecificDay = false
+                        every.push(ZCS.util.formatRecurMsg(ZtMsg.recurYearlyEveryMonthWeekDays, [bysetpos || ordinal, day, month], false));
                     }
                 }
                 break;

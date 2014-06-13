@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -40,11 +40,7 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 		grouped: true,
 
 		listConfig: {
-			itemTpl: '<div class="zcs-menu-icon <tpl if="folderType">{folderType}\"<tpl else>{type}\"</tpl>></div>' +
-				'<div class="zcs-menu-label"><tpl if="folderType === ZCS.constant.ORG_CALENDAR">' +
-				'<tpl if="zcsId === ZCS.constant.ID_CALENDAR">' +
-				'<span class="zcs-menu-color-block zcs-tag-1"></span><tpl else>' +
-				'<span class="zcs-menu-color-block zcs-tag-{color}" style="background-color: {rgb};"></span></tpl></tpl>{title}</div>'
+			itemTpl: '<div class="zcs-menu-icon {type}"></div><div class="zcs-menu-label">{title}</div>'
 		},
 
 		listeners  : {
@@ -71,31 +67,10 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 
 			nestedList.goToNode(node);
 			if (node.parentNode) {
-
-				//Changing this property kicks off a sorting storm, so make sure
-				//that doesn't happen.
-				node.parentNode.disableStoreSorting();
 				node.parentNode.set('expanded', true);
-				node.parentNode.enableStoreSorting();
 			}
-
-			list.up('organizerlist').fireEvent('changeNode', node, false);
 		}
 	},
-
-	onBackTap: function() {
-        var list = this.getActiveItem(),
-            store = list.getStore(),
-            node = store.getNode();
-
-        this.callParent(arguments);
-
-        //Because we disabled sorting when we hit the disclosure, we have to manually
-        //sort once we go back.
-        this.getActiveItem().getStore().sort();
-        
-        list.up('organizerlist').fireEvent('changeNode', node, true);
-    },
 
 	/**
 	 * Runs a search that will show the folder's contents.
@@ -116,6 +91,7 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 		} else {
 			this.fireEvent('edititemtap', folder, list);
 		}
+
 	},
 
 	/**
@@ -137,9 +113,7 @@ Ext.define('ZCS.view.ZtOrganizerList', {
 		var list = this.callParent(arguments);
 
 		list.xtype = 'organizersublist';
-		list.infinite = this.getInfinite();
 		list.grouped = this.getGrouped();
-		list.store.setSorters(this.getStore().getSorters());
 		list.store.setGrouper(this.getStore().config.grouper);
 
 		return list;
@@ -168,7 +142,6 @@ Ext.define('ZCS.view.ZtOrganizerSubList', {
 	xtype: 'organizersublist',
 
 	config: {
-		infinite: true,
 		type: null      // ZCS.constant.ORG_LIST_*
 	},
 

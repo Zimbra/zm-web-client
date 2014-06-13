@@ -54,6 +54,7 @@ ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_CONVLIST]	= "byConversation";
 ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_CONVLIST]	= ZmKeyMap.VIEW_BY_CONV;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_CONVLIST);
 
+
 // Public methods
 
 ZmConvListController.getDefaultViewType =
@@ -112,7 +113,7 @@ function(view, force) {
 // Internally we manage two maps, one for CLV and one for CV2 (if applicable)
 ZmConvListController.prototype.getKeyMapName =
 function() {
-	if (this._convView && this._convView.isActiveQuickReply()) { //if user is quick replying, don't use the mapping of conv/mail list - so Ctrl+Z works
+	if (this._convView.isActiveQuickReply()) { //if user is quick replying, don't use the mapping of conv/mail list - so Ctrl+Z works
 		return ZmKeyMap.MAP_QUICK_REPLY;
 	}
 	return ZmKeyMap.MAP_CONVERSATION_LIST;
@@ -194,21 +195,20 @@ function(actionCode, ev) {
 			return DwtListView.prototype.handleKeyAction.apply(mlv, arguments);
 
 		// these are for quick reply
+		case ZmKeyMap.CANCEL:
+			var itemView = this.getItemView();
+			if (itemView && itemView._cancelListener) {
+				itemView._cancelListener();
+			}
+			break;
+		
 		case ZmKeyMap.SEND:
 			var itemView = this.getItemView();
 			if (itemView && itemView._sendListener) {
 				itemView._sendListener();
 			}
 			break;
-
-		// do this last since we want CANCEL to bubble up if not handled
-		case ZmKeyMap.CANCEL:
-			var itemView = this.getItemView();
-			if (itemView && itemView._cancelListener && itemView._replyView && itemView._replyView.getVisible()) {
-				itemView._cancelListener();
-				break;
-			}
-
+			
 		default:
 			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
 	}
@@ -364,6 +364,13 @@ function(view, menu) {
 // no support for showing total items, which are msgs
 ZmConvListController.prototype._getNumTotal = function() { return null; }
 
+ZmConvListController.prototype._getMoreSearchParams = 
+function(params) {
+	// OPTIMIZATION: find out if we need to pre-fetch the first hit message
+	params.fetch = this.isReadingPaneOn();
+	params.markRead = true;
+};
+
 ZmConvListController.prototype._preUnloadCallback =
 function(view) {
 	return !(this._convView && this._convView.isDirty());
@@ -372,64 +379,6 @@ function(view) {
 ZmConvListController.prototype._preHideCallback =
 function(viewId, force, newViewId) {
 	return force ? true : this.popShield(viewId, null, newViewId);
-};
-
-ZmConvListController.prototype._getActionMenuOps = function() {
-
-	var list = ZmDoublePaneController.prototype._getActionMenuOps.apply(this, arguments),
-		index = AjxUtil.indexOf(list, ZmOperation.FORWARD);
-
-	if (index !== -1) {
-		list.splice(index + 1, 0, ZmOperation.FORWARD_CONV);
-	}
-	return list;
-};
-
-ZmConvListController.prototype._getSecondaryToolBarOps = function() {
-
-	var list = ZmDoublePaneController.prototype._getSecondaryToolBarOps.apply(this, arguments),
-		index = AjxUtil.indexOf(list, ZmOperation.EDIT_AS_NEW);
-
-	if (index !== -1 && appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
-		list.splice(index + 1, 0, ZmOperation.FORWARD_CONV);
-	}
-	return list;
-};
-
-ZmConvListController.prototype._resetOperations = function(parent, num) {
-	ZmDoublePaneController.prototype._resetOperations.apply(this, arguments);
-	this._resetForwardConv(parent, num);
-};
-
-ZmConvListController.prototype._resetForwardConv = function(parent, num) {
-
-	var doShow = true,      // show if 'forward conv' applies at all
-		doEnable = false;   // enable if conv has multiple msgs
-
-	if (num == null || num === 1) {
-
-		var mlv = this._mailListView,
-			item = this._conv || mlv.getSelection()[0];
-
-		if (item && item.type === ZmItem.CONV) {
-			if (mlv && mlv._getDisplayedMsgCount(item) > 1) {
-				doEnable = true;
-			}
-		}
-		else {
-			doShow = false;
-		}
-	}
-	var op = parent.getOp(ZmOperation.FORWARD_CONV);
-	if (op) {
-		op.setVisible(doShow);
-		parent.enable(ZmOperation.FORWARD_CONV, doEnable);
-	}
-};
-
-ZmConvListController.prototype._forwardListener = function(ev) {
-	var action = ev.item.getData(ZmOperation.KEY_ID);
-	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit(ZmMailListController.REPLY_FOLDERS_TO_OMIT)});
 };
 
 /**
@@ -478,17 +427,10 @@ function(switchingView, callback) {
 	this._popShield.popdown();
 	if (switchingView) {
 		// attempt to switch to TV was canceled - need to undo changes
-		this._updateViewMenu(ZmId.VIEW_CONVLIST);
+		this._updateViewMenu(ZmId.VIEW_TRAD);
 		if (!appCtxt.isExternalAccount() && !this.isSearchResults && !this._currentSearch.isDefaultToMessageView) {
-			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_CONVLIST], true);
+			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_TRAD]);
 		}
-	}
-	//check if this is due to new selected item and it's different than current - if so we need to revert in the list.
-	var selection = this.getSelection();
-	var listSelectedItem = selection && selection.length && selection[0];
-	var conv = this._convView._item;
-	if (conv.id !== listSelectedItem.id) {
-		this.getListView().setSelection(conv, true); //skip notification so item is not re-set in the reading pane (or infinite pop shield loop :) )
 	}
 	appCtxt.getKeyboardMgr().grabFocus(this._convView._replyView._input);
 };
@@ -501,7 +443,7 @@ function(ev) {
 	
 	this._mailListView._selectedMsg = null;
 	if (ev.field == ZmItem.F_EXPAND && this._mailListView._isExpandable(item)) {
-		this._toggle(item);
+		this._toggle(item, false);
 		return true;
 	} else {
 		var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
@@ -561,11 +503,29 @@ function() {
 			var convParams = {};
 			convParams.markRead = this._handleMarkRead(item, true);
 			if (this.isSearchResults) {
-				convParams.fetch = ZmSetting.CONV_FETCH_MATCHES;
+				convParams.getMatches = true;
 			}
 			else {
-				convParams.fetch = ZmSetting.CONV_FETCH_UNREAD_OR_FIRST;
-				convParams.query = this._currentSearch.query;
+				convParams.getUnreadOrFirstMsg = true;
+				// generalize query so if conv is read we get latest msg and not just latest matching msg
+				var acctId = item.isShared() && ZmOrganizer.parseId(item.id).acctId;
+				var rootFolderId = acctId ? ['"', acctId, ':1"'].join("") : "1";
+				var terms = ["underid:" + rootFolderId];
+				var search = this._currentSearch;
+				if (search) {
+					var foldersToExclude = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
+					for (var i = 0; i < foldersToExclude.length; i++) {
+						var folderId = foldersToExclude[i];
+						if (acctId) {
+							folderId = ['"', acctId, ":", folderId, '"'].join("");
+						}
+						// note that Trash and Spam cannot be shared
+						if (acctId || !search.hasFolderTerm(ZmFolder.QUERY_NAME[folderId])) {
+							terms.push("underid:" + folderId);
+						}
+					}
+				}
+				convParams.query = terms.join(" AND NOT ");
 			}
 			// if the conv's unread state changed, load it again so we get the correct expanded msg bodies
 			convParams.forceLoad = item.unreadHasChanged;
@@ -678,9 +638,6 @@ function(callback) {
 ZmConvListController.prototype._displayItem =
 function(item) {
 
-	// cancel timed mark read action on previous conv
-	appCtxt.killMarkReadTimer();
-
 	var curItem = this._doublePaneView.getItem();
 	item.waitOnMarkRead = true;
 	this._doublePaneView.setItem(item);
@@ -691,7 +648,7 @@ function(item) {
 };
 
 ZmConvListController.prototype._toggle =
-function(item) {
+function(item, getFirstMsg) {
 	if (this._mailListView.isExpanded(item)) {
 		this._collapse(item);
 	} else {
@@ -701,11 +658,7 @@ function(item) {
 			msg = item;
 			offset = this._mailListView._msgOffset[item.id];
 		}
-		this._expand({
-			conv:   conv,
-			msg:    msg,
-			offset: offset
-		});
+		this._expand({conv:conv, msg:msg, offset:offset, getFirstMsg:getFirstMsg});
 	}
 };
 
@@ -716,6 +669,7 @@ function(item) {
  *        conv			[ZmConv]		conv to expand
  *        msg			[ZmMailMsg]		msg to expand (get next page of msgs for conv)
  *        offset		[int]			index of msg in conv
+ *        getFirstMsg	[boolean]		if true, fetch body of first msg
  *        callback		[AjxCallback]	callback to run when done
  */
 ZmConvListController.prototype._expand =
@@ -731,7 +685,9 @@ function(params) {
 			this._handleResponseLoadItem(params, new ZmCsfeResult(conv.msgs));
 		}
 	} else if (!conv._loaded) {
-		conv.load(null, respCallback);
+		// no msgs have been loaded yet
+		var getFirstMsg = (params.getFirstMsg === false) ? false : this.isReadingPaneOn();
+		conv.load({getFirstMsg:getFirstMsg}, respCallback);
 	} else {
 		// re-expanding first page of msgs
 		this._handleResponseLoadItem(params, new ZmCsfeResult(conv.msgs));
@@ -765,7 +721,8 @@ function(conv, offset, callback) {
 			offset = ((offset + limit) - max) + 1;
 		}
 		var respCallback = new AjxCallback(this, this._handleResponsePaginateConv, [conv, offset, callback]);
-		conv.load({offset:offset, limit:limit}, respCallback);
+		var getFirstMsg = this.isReadingPaneOn();
+		conv.load({offset:offset, limit:limit, getFirstMsg:getFirstMsg}, respCallback);
 		return false;
 	} else {
 		return true;
@@ -906,10 +863,8 @@ function(items, method, args) {
 };
 
 ZmConvListController.prototype._doFlag =
-function(items, on) {
-	if (on !== true && on !== false) {
-		on = !items[0].isFlagged;
-	}
+function(items) {
+	var on = !items[0].isFlagged;
 	this._applyAction(items, "_doFlag", [on]);
 };
 

@@ -80,10 +80,10 @@ function(tabView, dateInfo) {
     if (tabView._allDayCheckbox && tabView._allDayCheckbox.checked) {
 		dateInfo.showTime = false;
 
-        //used by DwtTimeInput - advanced time picker
+        //used by ZmTimeInput - advanced time picker
         dateInfo.startTimeStr = dateInfo.endTimeStr = null;
 
-        //used by DwtTimeSelect
+        //used by ZmTimeSelect
         dateInfo.startHourIdx = dateInfo.startMinuteIdx = dateInfo.startAmPmIdx =
 		dateInfo.endHourIdx = dateInfo.endMinuteIdx = dateInfo.endAmPmIdx = null;
 
@@ -91,7 +91,7 @@ function(tabView, dateInfo) {
     } else {
 		dateInfo.showTime = true;
 
-        if(tabView._startTimeSelect instanceof DwtTimeSelect) {
+        if(tabView._startTimeSelect instanceof ZmTimeSelect) {
             dateInfo.startHourIdx = tabView._startTimeSelect.getSelectedHourIdx();
             dateInfo.startMinuteIdx = tabView._startTimeSelect.getSelectedMinuteIdx();
             dateInfo.startAmPmIdx = tabView._startTimeSelect.getSelectedAmPmIdx();
@@ -103,7 +103,7 @@ function(tabView, dateInfo) {
             dateInfo.endHourIdx = dateInfo.endMinuteIdx = dateInfo.endAmPmIdx = null;            
         }
 
-        if(tabView._startTimeSelect instanceof DwtTimeInput) {
+        if(tabView._startTimeSelect instanceof ZmTimeInput) {
             dateInfo.startTimeStr = tabView._startTimeSelect.getTimeString();
             dateInfo.endTimeStr = tabView._endTimeSelect.getTimeString();
         }else {
@@ -217,7 +217,6 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
 	
 	var size = list ? list.size() : 0;
 
-	var useEmptyMsg = true;
 	var dateTime = date.getTime();
 	for (var i = 0; i < size; i++) {
 		var ao = list.get(i);
@@ -229,7 +228,6 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
             apptDate.setHours(0,0,0,0);
             if (apptDate.getTime() != dateTime) continue;
 
-			useEmptyMsg = false;
             if(!isMinical && ao.toString() == "ZmAppt") {
                 html.append("<tr><td><div class=appt>");
                 html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
@@ -244,7 +242,6 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
             }
 		}
 	    else {
-			useEmptyMsg = false;
 		    if(!isMinical && ao.toString() == "ZmAppt") {
                 html.append("<tr><td><div class=appt>");
                 html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
@@ -270,7 +267,7 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
             }
 		}
 	}
-	if (useEmptyMsg) {
+	if ( size == 0) {
 		html.append("<tr><td>"+emptyMsg+"</td></tr>");
 	}
 	html.append("</table>");
@@ -352,7 +349,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
     //todo: new ui hide folder select if there is only one folder
 };
 
-/**
+/*
  * Takes a string, AjxEmailAddress, or contact/resource and returns
  * a ZmContact or a ZmResource. If the attendee cannot be found in
  * contacts, locations, or equipment, a new contact or
@@ -397,27 +394,23 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 
 		// Bug 7837: preserve the email address as it was typed
 		//           instead of using the contact's primary email.
-		if (attendee && (type === ZmCalBaseItem.PERSON || type === ZmCalBaseItem.GROUP)) {
+		if (attendee && type == ZmCalBaseItem.PERSON) {
 			attendee = AjxUtil.createProxy(attendee);
 			attendee._inviteAddress = addr;
 			attendee.getEmail = function() {
 				return this._inviteAddress || this.constructor.prototype.getEmail.apply(this);
-			};
+			}
 		}
 
 		if (!checkForAvailability && !attendee && !strictEmail) {
 			// AjxEmailAddress has name and email, init a new contact/resource from those
-			if (type === ZmCalBaseItem.PERSON) {
-				attendee = new ZmContact(null, null, ZmItem.CONTACT);
-			}
-			else if (type === ZmCalBaseItem.GROUP) {
-				attendee = new ZmContact(null, null, ZmItem.GROUP);
-			}
-			else {
-				attendee = new ZmResource(type);
-			}
+			attendee = (type == ZmCalBaseItem.PERSON) ? new ZmContact(null) :
+													new ZmResource(type);
 			attendee.initFromEmail(item, true);
 		}
+		if(item.isGroup) {
+		    attendee.isGroup = item.isGroup;
+        }
 		attendee.canExpand = item.canExpand;
 		var ac = window.parentAppCtxt || window.appCtxt;
 		ac.setIsExpandableDL(addr, attendee.canExpand);
@@ -431,25 +424,20 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 	 		// is it a contact/resource we already know about?
 			attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
 			if (!checkForAvailability && !attendee && !strictEmail) {
-				if (type === ZmCalBaseItem.PERSON || type === ZmCalBaseItem.FORWARD) {
-					attendee = new ZmContact(null, null, ZmItem.CONTACT);
-				}
-				else if (type === ZmCalBaseItem.GROUP) {
-					attendee = new ZmContact(null, null, ZmItem.GROUP);
-				}
-				else if (type === ZmCalBaseItem.LOCATION) {
+				if (type == ZmCalBaseItem.PERSON || type == ZmCalBaseItem.FORWARD) {
+					attendee = new ZmContact(null);
+				} else if (type == ZmCalBaseItem.LOCATION) {
 					attendee = new ZmResource(null, ZmApptViewHelper._locations, ZmCalBaseItem.LOCATION);
-				}
-				else if (type === ZmCalBaseItem.EQUIPMENT) {
+				} else if (type == ZmCalBaseItem.EQUIPMENT) {
 					attendee = new ZmResource(null, ZmApptViewHelper._equipment, ZmCalBaseItem.EQUIPMENT);
 				}
 				attendee.initFromEmail(email, true);
-			} else if (attendee && (type === ZmCalBaseItem.PERSON || type === ZmCalBaseItem.GROUP)) {
+			} else if (attendee && type == ZmCalBaseItem.PERSON) {
 				// remember actual address (in case it's email2 or email3)
 				attendee._inviteAddress = addr;
                 attendee.getEmail = function() {
 				    return this._inviteAddress || this.constructor.prototype.getEmail.apply(this);
-			    };
+			    }
 			}
 		}
 	}
@@ -460,7 +448,7 @@ ZmApptViewHelper._getAttendeeFromAddr =
 function(addr, type) {
 
 	var attendee = null;
-	if (type === ZmCalBaseItem.PERSON || type === ZmCalBaseItem.GROUP || type === ZmCalBaseItem.FORWARD) {
+	if (type == ZmCalBaseItem.PERSON || type == ZmCalBaseItem.FORWARD) {
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		attendee = contactsApp && contactsApp.getContactByEmail(addr);
 	} else if (type == ZmCalBaseItem.LOCATION) {
@@ -539,9 +527,7 @@ function(attendee, type, shortForm) {
 
     //give preference to lookup email is the attendee object is located by looking up email address
     var lookupEmailObj = attendee.getLookupEmail(true);
-    if(lookupEmailObj) {
-		return lookupEmailObj.toString(shortForm || (type && type !== ZmCalBaseItem.PERSON && type !== ZmCalBaseItem.GROUP));
-	}
+    if(lookupEmailObj) return lookupEmailObj.toString(shortForm || (type && type != ZmCalBaseItem.PERSON))
 
     return attendee.getAttendeeText(type, shortForm);
 };
@@ -560,20 +546,22 @@ function(attendee, type, shortForm) {
 ZmApptViewHelper.getAttendeesByRoleCollapsed =
 function(list, type, role, objectManager, htmlElId) {
     if (!(list && list.length)) return "";
-	var attendees = ZmApptViewHelper.getAttendeesArrayByRole(list, role);
+	var attendees = ZmApptViewHelper.getAttendeesArrayByRole(list, type, role);
 
 	var emails = [];
 	for (var i = 0; i < attendees.length; i++) {
 		var att = attendees[i];
-		emails.push(new AjxEmailAddress(att.getEmail(), type, att.getFullName(), att.getFullName()));
+		emails.push(new AjxEmailAddress(att.getEmail(), type, att.getFullName(), att.getFullName())); 
 	}
 
 	var options = {};
+	options.addrBubbles = false; //todo - do we really want false here? why not use bubbles?
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 	var addressInfo = ZmMailMsgView.getAddressesFieldHtmlHelper(emails, options,
 		role, objectManager, htmlElId);
 	return addressInfo.html;
 };
+
 
 /**
 * Creates a string of attendees by role. this allows to show only count elements, with "..." appended.
@@ -589,9 +577,9 @@ function(list, type, role, count) {
 
 	var res = [];
 
-	var attendees = ZmApptViewHelper.getAttendeesArrayByRole(list, role);
-	for (var i = 0; i < attendees.length; i++) {
-		if (count && i > count) {
+	var attendees = ZmApptViewHelper.getAttendeesArrayByRole(list, type, role);
+	for (i = 0; i < attendees.length; i++) {
+		if (i > count) {
 			res.push(" ...");
 			break;
 		}
@@ -609,24 +597,23 @@ function(list, type, role, count) {
 * returns array of attendees by role.
 *
 * @param list					[array]			list of attendees (ZmContact or ZmResource)
+* @param type					[constant]		attendee type
 * @param role      		        [constant]      attendee role
 */
 ZmApptViewHelper.getAttendeesArrayByRole =
-function(list, role, count) {
-
-    if (!(list && list.length)) {
-	    return [];
-    }
+function(list, type, role, count) {
+    if (!(list && list.length)) return "";
 
     var a = [];
     for (var i = 0; i < list.length; i++) {
         var attendee = list[i];
-        var attendeeRole = attendee.getParticipantRole() || ZmCalItem.ROLE_REQUIRED;
-        if (attendeeRole === role){
+        var _attendeeRole = attendee.getParticipantRole() || ZmCalItem.ROLE_REQUIRED;
+        if (_attendeeRole == role){
             a.push(attendee);
         }
     }
 	return a;
+
 };
 
 ZmApptViewHelper._allDayItemHtml =
@@ -634,7 +621,7 @@ function(appt, id, controller, first, last) {
 	var isNew = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 	var isAccepted = appt.ptst == ZmCalBaseItem.PSTATUS_ACCEPT;
 	var calendar = appt.getFolder();
-    AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+    AjxDispatcher.require(["CalendarCore", "Calendar"]);
 
     var tagNames  = appt.getVisibleTags();
     var tagIcon = last ? appt.getTagImageFromNames(tagNames) : null;
@@ -773,7 +760,7 @@ function(last, colors, tagNames, templateData, colorParam, clearParam, peelTopOf
  * TODO: replace string onclick handlers with funcs
  */
 ZmApptViewHelper.getAttachListHtml =
-function(calItem, attach, hasCheckbox, getLinkIdCallback) {
+function(calItem, attach, hasCheckbox) {
 	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 
 	// gather meta data for this attachment
@@ -800,20 +787,13 @@ function(calItem, attach, hasCheckbox, getLinkIdCallback) {
 		html[i++] = "'></td>";
 	}
 
-	var hrefRoot = ["href='", msgFetchUrl, "&id=", calItem.invId, "&amp;part=", attach.part].join("");
+	var hrefRoot = ["href='", msgFetchUrl, "&id=", calItem.invId, "&amp;part="].join("");
 	html[i++] = "<td width=20><a target='_blank' class='AttLink' ";
-	if (getLinkIdCallback) {
-		var imageLinkId = getLinkIdCallback(attach.part, ZmCalItem.ATT_LINK_IMAGE);
-		html[i++] = "id='";
-		html[i++] = imageLinkId;
-		html[i++] = "' ";
-	}
 	html[i++] = hrefRoot;
+	html[i++] = attach.part;
 	html[i++] = "'>";
 	html[i++] = AjxImg.getImageHtml(icon);
-
 	html[i++] = "</a></td><td><a target='_blank' class='AttLink' ";
-
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED) && attach.ct == ZmMimeTable.MSG_RFC822) {
 		html[i++] = " href='javascript:;' onclick='ZmCalItemView.rfc822Callback(";
 		html[i++] = '"';
@@ -824,16 +804,11 @@ function(calItem, attach, hasCheckbox, getLinkIdCallback) {
 		html[i++] = "\"); return false;'";
 	} else {
 		html[i++] = hrefRoot;
-		html[i++] = "'";
-	}
-	if (getLinkIdCallback) {
-		var mainLinkId = getLinkIdCallback(attach.part, ZmCalItem.ATT_LINK_MAIN);
-		html[i++] = " id='";
-		html[i++] = mainLinkId;
+		html[i++] = attach.part;
 		html[i++] = "'";
 	}
 	html[i++] = ">";
-	html[i++] = AjxStringUtil.htmlEncode(attach.filename);
+	html[i++] = attach.filename;
 	html[i++] = "</a>";
 
 	var addHtmlLink = (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) &&
@@ -845,30 +820,18 @@ function(calItem, attach, hasCheckbox, getLinkIdCallback) {
 			html[i++] = sizeText;
 			html[i++] = ") ";
 		}
-		var downloadLinkId = "";
-		if (getLinkIdCallback) {
-			downloadLinkId = getLinkIdCallback(attach.part, ZmCalItem.ATT_LINK_DOWNLOAD);
-		}
 		if (addHtmlLink) {
 			html[i++] = "<a style='text-decoration:underline' target='_blank' class='AttLink' ";
-			if (getLinkIdCallback) {
-				html[i++] = "id='";
-				html[i++] = downloadLinkId;
-				html[i++] = "' ";
-			}
 			html[i++] = hrefRoot;
+			html[i++] = attach.part;
 			html[i++] = "&view=html'>";
 			html[i++] = ZmMsg.preview;
 			html[i++] = "</a>&nbsp;";
 		}
 		if (attach.ct != ZmMimeTable.MSG_RFC822) {
 			html[i++] = "<a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' ";
-			if (getLinkIdCallback) {
-				html[i++] = " id='";
-				html[i++] = downloadLinkId;
-				html[i++] = "' ";
-			}
 			html[i++] = hrefRoot;
+			html[i++] = attach.part;
 			html[i++] = "&disp=a'>";
 			html[i++] = ZmMsg.download;
 			html[i++] = "</a>";
@@ -876,12 +839,6 @@ function(calItem, attach, hasCheckbox, getLinkIdCallback) {
 	}
 
 	html[i++] = "</td></tr></table>";
-
-	// Provide lookup id and label for offline mode
-	if (!attach.mid) {
-		attach.mid = calItem.invId;
-		attach.label = attach.filename;
-	}
 
 	return html.join("");
 };

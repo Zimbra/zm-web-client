@@ -23,52 +23,70 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
         'Ext.Component',
         'Ext.field.DatePicker',
         'Ext.field.Select',
-        'Ext.ux.picker.Time',
-        'Ext.ux.field.TimePicker',
-        'ZCS.view.calendar.ZtTitleField',
-        'ZCS.view.contacts.ZtMultiField',
-        'ZCS.view.calendar.ZtAttendeeField',
-        'ZCS.view.calendar.ZtDateField',
-        'ZCS.view.calendar.ZtFolderField',
-        'ZCS.view.calendar.ZtStatusField',
-        'ZCS.view.calendar.ZtReminderField',
-        'ZCS.view.calendar.ZtDescriptionField'
+        'Ext.ux.field.DateTimePicker'
     ],
 
     xtype: 'newapptpanel',
 
     config: {
-        layout:     'fit',
-        width:      Ext.os.deviceType === "Phone" ? '100%' : '80%',
-        height:     '100%',
-        scrollable:  false,
-        hidden:      true,
-        modal:       true,
-        cls:        'zcs-contact-form'
+        layout: 'fit',
+        width: '80%',
+        height: '100%',
+        scrollable: false,
+        hidden: true,
+        modal: true,
+        cls: 'zcs-appt-form'
+    },
+
+    statics: {
+        reminderTimeDisplayMsgs : [
+            ZtMsg.apptRemindNever,
+            ZtMsg.apptRemindNMinutesBefore,
+            ZtMsg.apptRemindNMinutesBefore,
+            ZtMsg.apptRemindNMinutesBefore,
+            ZtMsg.apptRemindNMinutesBefore,
+            ZtMsg.apptRemindNMinutesBefore,
+            ZtMsg.apptRemindNMinutesBefore,
+            ZtMsg.apptRemindNMinutesBefore,
+            ZtMsg.apptRemindNHoursBefore,
+            ZtMsg.apptRemindNHoursBefore,
+            ZtMsg.apptRemindNHoursBefore,
+            ZtMsg.apptRemindNHoursBefore,
+            ZtMsg.apptRemindNHoursBefore,
+            ZtMsg.apptRemindNDaysBefore,
+            ZtMsg.apptRemindNDaysBefore,
+            ZtMsg.apptRemindNDaysBefore,
+            ZtMsg.apptRemindNDaysBefore,
+            ZtMsg.apptRemindNWeeksBefore,
+            ZtMsg.apptRemindNWeeksBefore
+        ],
+
+        reminderTimeValues :  [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080, 1440, 2880, 4320, 5760, 10080, 20160],
+        reminderTimeLabels : [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2]
+
     },
 
     initialize: function() {
 
         var newApptForm = this,
             toolbar = {
-                xtype:   'titlebar',
-                cls: 'zcs-item-titlebar contact-form-titlebar',
-                docked:  'top',
-                title:    ZtMsg.createAppointment,
+                xtype: 'titlebar',
+                docked: 'top',
+                title: ZtMsg.apptCreate,
                 items: [
                     {
-                        xtype:  'button',
-                        text:    ZtMsg.cancel,
-                        cls:    'contact-form-action-button',
+                        xtype: 'button',
+                        text: ZtMsg.cancel,
                         handler: function() {
                             this.up('newapptpanel').fireEvent('cancel');
                         }
                     },
                     {
-                        xtype:      'button',
-                        text:        ZtMsg.save,
-                        align:      'right',
-                        cls:    'contact-form-action-button',
+                        xtype: 'button',
+                        text: ZtMsg.create,
+                        align: 'right',
+                        ui:         'green',
+                        padding:    '0 2em',
                         handler: function() {
                             this.up('newapptpanel').fireEvent('create');
                         }
@@ -77,46 +95,292 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
             },
             spacer = {
                 xtype:  'spacer',
-                cls:    'zcs-form-spacer'
-            };
-
-	        var items = [
-		        spacer,
-		        { xtype: 'titlecontainer' },
-		        spacer,
-		        { xtype: 'datecontainer' },
-		        spacer,
-		        { xtype: 'foldercontainer' },
-		        { xtype: 'fbstatuscontainer' },
-		        spacer,
-		        { xtype: 'remindercontainer' }
-		    ];
-	        if (ZCS.session.getSetting(ZCS.constant.SETTING_GROUP_CALENDAR_ENABLED)) {
-		        items.push(spacer, { xtype: 'attendeecontainer' });
-	        }
-	        items.push(spacer,  { xtype: 'descriptioncontainer' });
-
-            var form = {
-                xtype:       'formpanel',
-                layout: 'vbox',
-                scrollable:   true,
+                cls:    'zcs-contact-spacer'
+            },
+            form = {
+                xtype: 'formpanel',
+                scrollable: false,
                 defaults: {
-                    labelWidth:  '5.5em',
-                    inputCls:    'zcs-form-input'
+                    labelWidth: '80px',
+                    inputCls: 'zcs-form-input'
                 },
-	            listeners: {
-		            initialize: function () {
-			            /**
-			             * Fixing dom bug caused by contenteditable where parent scroller
-			             * gets pushed outside its fit container. Manually making sure the
-			             * scroll container always fills its parent when scrolling starts.
-			             */
-			            this.getScrollable().getScroller().on('scrollstart', function () {
-				            this.container.dom.scrollIntoView(false);
-			            });
-		            }
-	            },
-                items: items
+                layout: {
+                    type: 'vbox'
+                },
+                items: [
+                    {
+                        layout: {
+                            type: 'hbox'
+                        },
+                        items: [
+                            {
+                                xtype: 'label',
+                                html:   ZtMsg.subjectLabel,
+                                cls:    'zcs-appt-label',
+                                width:  '20%'
+
+                            },
+                            {
+                                xtype: 'textfield',
+                                name: 'subject',
+                                placeHolder: ZtMsg.placeholderSubject,
+                                width:  '80%'
+
+                            }
+                        ]
+                    },
+                    {
+                        layout: {
+                            type: 'hbox'
+                        },
+                        items: [
+                            {
+                                xtype: 'label',
+                                html:   ZtMsg.locationLabel,
+                                cls:    'zcs-appt-label',
+                                width:  '20%'
+
+                            },
+                            {
+                                xtype: 'textfield',
+                                name: 'location',
+                                width: '80%',
+                                flex: 1,
+                                placeHolder: ZtMsg.placeholderLocation
+                            },
+                            {
+                                width: '5.5em',
+                                height: '2.5em',
+                                xtype: 'component',
+                                html: ZtMsg.equipmentLabel,
+                                itemId: 'equipmentFieldToggle',
+                                cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
+                                listeners: {
+                                    painted: function () {
+                                        this.element.on('tap', function() {
+                                            newApptForm.showEquipment();
+                                        });
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        xtype:  'container',
+                        layout: 'hbox',
+                        items:[
+                            {
+                                xtype:  'label',
+                                html:    ZtMsg.equipmentLabel,
+                                itemId: 'equipmentLabel',
+                                hidden:  true,
+                                width: '20%',
+                                cls:    'zcs-appt-label'
+
+                            },
+                            {
+                                xtype:          'textfield',
+                                width: '80%',
+                                hidden:         true,
+                                flex:           1,
+                                name:           'equipment',
+                                placeHolder: ZtMsg.placeholderEquipment
+                            }
+                        ]
+
+                    },
+                    spacer,
+                    {
+                        layout: {
+                            type: 'hbox'
+                        },
+                        items: [
+                            {
+                                xtype: 'label',
+                                html:   ZtMsg.startLabel,
+                                cls:    'zcs-appt-label',
+                                width:  '20%'
+                            },
+                            {
+                                xtype: 'datetimepickerfield',
+                                name: 'start',
+                                width: '80%',
+                                destroyPickerOnHide: true
+                            },
+                            {
+                                xtype: 'datepickerfield',
+                                name: 'startAllDay',
+                                itemId: 'startAllDay',
+                                width: '80%',
+                                hidden: true,
+                                dateFormat: ZtMsg.invDateFormat,
+                                listeners: {
+                                    focus: function() {
+                                        if (!this.getValue()) {
+                                            this.setValue(new Date());
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        layout: {
+                            type: 'hbox'
+                        },
+                        items: [
+                            {
+                                xtype: 'label',
+                                html:   ZtMsg.endLabel,
+                                cls:    'zcs-appt-label',
+                                width:  '20%'
+
+                            },
+                            {
+                                xtype: 'datetimepickerfield',
+                                name: 'end',
+                                flex: 1,
+                                width: '80%',
+                                destroyPickerOnHide: true
+                            },
+                            {
+                                xtype: 'datepickerfield',
+                                name: 'endAllDay',
+                                width: '80%',
+                                hidden: true,
+                                dateFormat: ZtMsg.invDateFormat,
+                                listeners: {
+                                    focus: function() {
+                                        var start = Ext.ComponentQuery.query('#startAllDay')[0].getValue();
+                                        if (start) {
+                                            this.setValue(start);
+                                        } else if (!this.getValue()) {
+                                            this.setValue(new Date());
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        layout: {
+                            type: 'hbox'
+                        },
+                        items: [
+                            {
+                                xtype: 'label',
+                                html:   ZtMsg.allDay,
+                                cls:    'zcs-appt-label',
+                                width:  '20%'
+
+                            },
+                            {
+                                xtype: 'togglefield',
+                                name: 'isAllDay',
+                                width:  '80%',
+                                flex: 1,
+                                listeners: {
+                                    change: function(field, newValue) {
+                                        if (field.getValue() == 1) {
+                                            Ext.ComponentQuery.query('datetimepickerfield')[0].hide();
+                                            Ext.ComponentQuery.query('datetimepickerfield')[1].hide();
+
+                                            Ext.ComponentQuery.query('datepickerfield')[0].show();
+                                            Ext.ComponentQuery.query('datepickerfield')[1].show();
+                                        } else {
+                                            Ext.ComponentQuery.query('datepickerfield')[0].hide();
+                                            Ext.ComponentQuery.query('datepickerfield')[1].hide();
+
+                                            Ext.ComponentQuery.query('datetimepickerfield')[0].show();
+                                            Ext.ComponentQuery.query('datetimepickerfield')[1].show();
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        layout: {
+                            type: 'hbox'
+                        },
+                        items: [
+                            {
+                                xtype: 'label',
+                                html:   ZtMsg.repeatLabel,
+                                cls:    'zcs-appt-label',
+                                width:  '20%'
+
+                            },
+                            {
+                                xtype: 'selectfield',
+                                name: 'repeat',
+                                flex: 1,
+                                width: '80%',
+                                options: [
+                                    { text: ZtMsg.none, 				value: "NON"},
+                                    { text: ZtMsg.everyDay, 			value: "DAI"},
+                                    { text: ZtMsg.everyWeek, 			value: "WEE"},
+                                    { text: ZtMsg.everyMonth, 			value: "MON"},
+                                    { text: ZtMsg.everyYear, 			value: "YEA"}
+                                ]
+                            }
+                        ]
+                    },
+                    spacer,
+                    {
+                        layout: {
+                            type: 'hbox'
+                        },
+                        items: [
+                            {
+                                xtype: 'label',
+                                html:   ZtMsg.reminderLabel,
+                                cls:    'zcs-appt-label',
+                                width:  '20%'
+
+                            },
+                            {
+                                xtype: 'selectfield',
+                                name: 'reminder',
+                                flex: 1,
+                                width: '80%',
+                                options: [ { text: ZtMsg.apptRemindNever, value: 0} ] ,
+                                listeners: {
+                                    painted: function() {
+                                        var arr = [];
+                                        for (var i = 0; i < ZCS.view.calendar.ZtNewAppointment.reminderTimeDisplayMsgs.length; i++) {
+                                            var optLabel = Ext.String.format(ZCS.view.calendar.ZtNewAppointment.reminderTimeDisplayMsgs[i], ZCS.view.calendar.ZtNewAppointment.reminderTimeLabels[i]),
+                                                data = {text: optLabel, value:ZCS.view.calendar.ZtNewAppointment.reminderTimeValues[i]};
+                                            arr.push(data);
+                                        }
+                                        this.setOptions(arr);
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    spacer,
+                    {
+                        layout: {
+                            type: 'hbox'
+                        },
+                        items: [
+                            {
+                                xtype: 'label',
+                                html:   ZtMsg.notes,
+                                cls:    'zcs-appt-label',
+                                width:  '20%'
+
+                            },
+                            {
+                                xtype: 'textareafield',
+                                name: 'notes',
+                                maxRows: 5,
+                                width: '80%'
+                            }
+                        ]
+                    }
+                ]
             };
 
         this.add([
@@ -125,24 +389,14 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
         ]);
     },
 
+    // Shows the optional equipment field
+    showEquipment: function() {
+        this.down('#equipmentFieldToggle').hide();
+        this.down('#equipmentLabel').show();
+        this.down('field[name=equipment]').show();
+    },
+
     resetForm: function() {
-        this.down('titlebar').setTitle(ZtMsg.createAppointment);
-
-	    var panel = this.down('.formpanel'),
-		    recurrenceField = panel.down('field[name=recurrence]'),
-		    repeatField = panel.down('field[name=repeat]');
-
-        panel.reset();
-
-	    var attendeesField = this.down('attendeecontainer');
-	    if (attendeesField) {
-		    attendeesField.reset();
-	    }
-
-	    recurrenceField.setValue('');
-	    recurrenceField.setHidden(true);
-	    repeatField.setHidden(false);
-
-        this.down('#body').element.down('.zcs-body-field').setHtml('');
+        this.down('.formpanel').reset();
     }
 });

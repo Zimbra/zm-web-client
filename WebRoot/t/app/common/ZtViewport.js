@@ -7,60 +7,12 @@ Ext.define('ZCS.common.ZtViewport', {
      */
     doBlurInput: function (e) {
         var target = e.target,
-            focusedElement = this.focusedElement,
-            targetIsEditable = Ext.fly(e.target).getAttribute('contenteditable');
+            focusedElement = this.focusedElement;
 
         //In IE9/10 browser window loses focus and becomes inactive if focused element is <body>. So we shouldn't call blur for <body>
-        if (focusedElement && focusedElement.nodeName.toUpperCase() != 'BODY' && !this.isInputRegex.test(target.tagName) && !targetIsEditable) {
+        if (focusedElement && focusedElement.nodeName.toUpperCase() != 'BODY' && !this.isInputRegex.test(target.tagName) && !target.attributes['contenteditable']) {
             delete this.focusedElement;
             focusedElement.blur();
-        }
-    },
-
-    doPreventZooming: function(e) {
-        // Don't prevent right mouse event
-        if ('button' in e && e.button !== 0) {
-            return;
-        }
-
-        var target = e.target,
-            targetIsEditable = Ext.fly(e.target).getAttribute('contenteditable');
-
-        if (target && target.nodeType === 1 && !this.isInputRegex.test(target.tagName) && !targetIsEditable) {
-            e.preventDefault();
-        }
-    },
-
-
-    onOrientationChange: function() {
-        var me = this;
-
-        setTimeout(function () {
-            var currentOrientation = me.getOrientation(),
-                newOrientation = me.determineOrientation();
-
-            if (newOrientation !== currentOrientation) {
-                me.fireOrientationChangeEvent(newOrientation, currentOrientation);
-            }
-        }, 250);
-        
-    },
-
-    getWindowHeight: function () {
-        //Android/chrome appear to like outerHeight, where ios wants inner height.
-        if (Ext.os.is.Android || Ext.browser.is.ChromeMobile) {
-            return window.outerHeight;
-        } else {
-            return window.innerHeight;
-        }
-    },
-
-    getWindowWidth: function () {
-        //Android/chrome appear to like outerHeight, where ios wants inner height.
-        if (Ext.os.is.Android || Ext.browser.is.ChromeMobile) {
-            return window.outerWidth;
-        } else {
-            return window.innerWidth;
         }
     }
 });

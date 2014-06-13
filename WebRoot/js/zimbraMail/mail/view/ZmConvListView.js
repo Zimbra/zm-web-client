@@ -115,15 +115,10 @@ function(item, force) {
 	if (changed && itemView && itemView._replyView) {
 		itemView._replyView.reset();
 	}
-	this._itemView.setVisible(true,null,item);
+	this._itemView.setVisible(true);
 	if (changed) {
 		this.setReadingPane(true);	// so that second view gets positioned
 	}
-    else if (item.isUnread && itemView._msgViews && itemView._msgViewList && itemView._msgViews[itemView._msgViewList[0]]._expanded === false){
-        //expand most recent msg
-        itemView._msgViews[itemView._msgViewList[0]]._toggleExpansion();
-        itemView._msgViews[itemView._msgViewList[0]]._item._markReadLocal(true);
-    }
 	return ZmDoublePaneView.prototype.setItem.apply(this, arguments);
 };
 
@@ -237,8 +232,7 @@ ZmConvListView.prototype.markUIAsRead =
 function(item) {
 	ZmMailListView.prototype.markUIAsRead.apply(this, arguments);
 	if (item.type == ZmItem.MSG) {
-		var classes = this._getClasses(ZmItem.F_STATUS, !this.isMultiColumn() ? ["ZmMsgListBottomRowIcon"]:null);
-		this._setImage(item, ZmItem.F_STATUS, item.getStatusIcon(), classes);
+		this._setImage(item, ZmItem.F_STATUS, item.getStatusIcon());
 	}
 };
 
@@ -292,10 +286,9 @@ ZmConvListView.prototype._initHeaders =
 function() {
 	if (!this._headerInit) {
 		ZmMailListView.prototype._initHeaders.call(this);
-		this._headerInit[ZmItem.F_EXPAND]	= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand, tooltip: ZmMsg.expandCollapse, cssClass:"ZmMsgListColExpand"};
+		this._headerInit[ZmItem.F_EXPAND]	= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand, tooltip: ZmMsg.expandCollapse};
         //bug:45171 removed sorted from converstaion for FROM field
-        this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true, cssClass:"ZmMsgListColFrom"};
-        this._headerInit[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true, cssClass:"ZmMsgListColFolder",visible:false};
+        this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true};
 	}
 };
 
@@ -331,6 +324,9 @@ function() {
 
 	return this._getHeaders(ZmId.VIEW_CONVLIST, headers);
 };
+
+// No-op so that conv list view retains From column (doesn't change it to To) for outbound folders
+ZmConvListView.prototype._resetFromColumnLabel = function() {};
 
 ZmConvListView.prototype._getDivClass =
 function(base, item, params) {
@@ -384,6 +380,16 @@ function(field, item) {
 	return "";
 };
 
+ZmConvListView.prototype._getCell =
+function(htmlArr, idx, item, field, colIdx, params) {
+	if (field == ZmItem.F_SORTED_BY && item.type == ZmItem.MSG) {
+		htmlArr[idx++] = "<td width=16>";
+		idx = this._getCellContents(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, params);
+		htmlArr[idx++] = "</td>";
+	}
+	return ZmMailListView.prototype._getCell.apply(this, arguments);
+};
+
 ZmConvListView.prototype._getCellId =
 function(item, field) {
 	return ((field == ZmItem.F_FROM || field == ZmItem.F_SUBJECT) && item.type == ZmItem.CONV)
@@ -394,96 +400,73 @@ function(item, field) {
 ZmConvListView.prototype._getCellClass =
 function(item, field, params) {
 	return (item.type == ZmItem.CONV && field == ZmItem.F_SIZE)
-		? "Count ZmMsgListColSize"
+		? "Count"
 		: (ZmMailListView.prototype._getCellClass.apply(this, arguments));
 };
 
-
-ZmConvListView.prototype._getCellCollapseExpandImage =
-function(item) {
-	if (!this._isExpandable(item)) {
-		return null;
-	}
-	return this._expanded[item.id] ? "NodeExpanded" : "NodeCollapsed";
-};
-
-
 ZmConvListView.prototype._getCellContents =
-function(htmlArr, idx, item, field, colIdx, params, classes) {
+function(htmlArr, idx, item, field, colIdx, params) {
 
-	var classes = classes || [];
-	if (field === ZmItem.F_SELECTION) {
-		if (this.isMultiColumn()) {
-			//add the checkbox only for multicolumn layout. The checkbox for single column layout is added in _getAbridgedContent
-			idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
-		}
+	if (field == ZmItem.F_SELECTION) {
+		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
 	}
-	else if (field === ZmItem.F_EXPAND) {
-		idx = this._getImageHtml(htmlArr, idx, this._getCellCollapseExpandImage(item), this._getFieldId(item, field), classes);
+	else if (field == ZmItem.F_EXPAND) {
+		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
 	}
-    else if (field === ZmItem.F_READ) {
-		idx = this._getImageHtml(htmlArr, idx, item.getReadIcon(), this._getFieldId(item, field), classes);
+    else if (field == ZmItem.F_READ) {
+		idx = this._getImageHtml(htmlArr, idx, item.getReadIcon(), this._getFieldId(item, field));
 	}
-	else if (item.type === ZmItem.MSG) {
+	else if (item.type == ZmItem.MSG) {
 		idx = ZmMailMsgListView.prototype._getCellContents.apply(this, arguments);
 	}
 	else {
-		var visibleMsgCount = this._getDisplayedMsgCount(item);
-		if (field === ZmItem.F_STATUS) {
+		if (field == ZmItem.F_STATUS) {
 			if (item.type == ZmItem.CONV && item.numMsgs == 1 && item.isScheduled) {
-				idx = this._getImageHtml(htmlArr, idx, "SendLater", this._getFieldId(item, field), classes);
+				idx = this._getImageHtml(htmlArr, idx, "SendLater", this._getFieldId(item, field));
 			} else {
-				htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + "></div>";
+				htmlArr[idx++] = "&nbsp;";
 			}
 		}
-		else if (field === ZmItem.F_FROM) {
-			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
+		else if (field == ZmItem.F_FROM) {
 			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
-			if (item.type === ZmItem.CONV && (visibleMsgCount > 1) && !this.isMultiColumn()) {
+			if (item.type == ZmItem.CONV && (item.numMsgs > 1) && !this.isMultiColumn()) {
 				htmlArr[idx++] = " - <span class='ZmConvListNumMsgs'>";
-				htmlArr[idx++] = visibleMsgCount;
+				htmlArr[idx++] = item.numMsgs;
 				htmlArr[idx++] = "</span>";
 			}
-			htmlArr[idx++] = "</div>";
 		}
-		else if (field === ZmItem.F_SUBJECT) {
-			var subj = item.subject || ZmMsg.noSubject;
-			if (item.numMsgs > 1) {
-				subj = ZmMailMsg.stripSubjectPrefixes(subj);
-			}
-			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
-			htmlArr[idx++] = "<span>";
+		else if (field == ZmItem.F_SUBJECT) {
+			var subj = ZmMailMsg.stripSubjectPrefixes(item.subject || ZmMsg.noSubject);
+			htmlArr[idx++] = "<span style='white-space: nowrap' >";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj, true) + "</span>";
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 			}
-			htmlArr[idx++] = "</div>";
 		}
-		else if (field === ZmItem.F_FOLDER) {
-				htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + " id='";
+		else if (field == ZmItem.F_FOLDER) {
+			if (item.folderId) {
+				htmlArr[idx++] = "<span style='white-space:nowrap' id='";
 				htmlArr[idx++] = this._getFieldId(item, field);
 				htmlArr[idx++] = "'>"; // required for IE bug
-				if (item.folderId) {
-					var folder = appCtxt.getById(item.folderId);
-					if (folder) {
-						htmlArr[idx++] = folder.getName();
-					}
+				var folder = appCtxt.getById(item.folderId);
+				if (folder) {
+					htmlArr[idx++] = folder.getName();
 				}
-				htmlArr[idx++] = "</div>";
-		}
-		else if (field === ZmItem.F_SIZE) {
-			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
-			if (item.size) {
-				htmlArr[idx++] = AjxUtil.formatSize(item.size);
+				htmlArr[idx++] = "</span>";
 			}
-			else {
+		}
+		else if (field == ZmItem.F_SIZE) {
+			if (item.type == ZmItem.CONV && item.numMsgs > 1) {
 				htmlArr[idx++] = "(";
-				htmlArr[idx++] = visibleMsgCount;
+				htmlArr[idx++] = item.numMsgs;
 				htmlArr[idx++] = ")";
+			} else if (item.size) {
+				htmlArr[idx++] = "<span style='white-space:nowrap'>";
+				htmlArr[idx++] = AjxUtil.formatSize(item.size);
+				htmlArr[idx++] = "</span>";
 			}
-			htmlArr[idx++] = "</div>";
 		}
-		else if (field === ZmItem.F_SORTED_BY) {
+		else if (field == ZmItem.F_SORTED_BY) {
 			htmlArr[idx++] = this._getAbridgedContent(item, colIdx);
 		}
 		else {
@@ -501,26 +484,16 @@ function(item, colIdx) {
 	var idx = 0;
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? 22 : 16;
 
-	var isMsg = (item.type === ZmItem.MSG);
-	var isConv = (item.type === ZmItem.CONV && this._getDisplayedMsgCount(item) > 1);
-
-	var selectionCssClass = '';
-	for (var i = 0; i < this._headerList.length; i++) {
-		if (this._headerList[i]._field == ZmItem.F_SELECTION) {
-			selectionCssClass = "ZmMsgListSelection";
-			break;
-		}
-	}
-	htmlArr[idx++] = "<div class='TopRow " + selectionCssClass + "' ";
+	var isMsg = (item.type == ZmItem.MSG);
+	var isConv = (item.type == ZmItem.CONV && item.numMsgs > 1);
+	
+	// first row
+	htmlArr[idx++] = "<table class='TopRow' style='width:100%;'>";
+	htmlArr[idx++] = (item.isUnread && !item.isMute) ? "<tr class='Unread' " : "<tr ";
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
-	if (selectionCssClass) {
-		idx = ZmMailListView.prototype._getCellContents.apply(this, [htmlArr, idx, item, ZmItem.F_SELECTION, colIdx]);
-	}
-	if (isMsg) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx);
-	}
+	
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_READ, colIdx, width);
 	if (isConv) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, "16", "style='padding:0'");
@@ -531,67 +504,52 @@ function(item, colIdx) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16", "align=right");
 	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right", ["ZmMsgListDate"]);
-	htmlArr[idx++] = "</div>";
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
+	htmlArr[idx++] = "</tr></table>";
 
 	// second row
-	htmlArr[idx++] = "<div class='BottomRow " + selectionCssClass + "'>";
-	var bottomRowMargin = ["ZmMsgListBottomRowIcon"];
+	htmlArr[idx++] = "<table class='BottomRow' style='width:100%;'><tr>";
+	htmlArr[idx++] = "<td width=";
+	htmlArr[idx++] = width;
+	htmlArr[idx++] = "></td>";
+	
 	if (isMsg) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width, null, bottomRowMargin);
-		bottomRowMargin = null;
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width);
 	}
 	if (item.isHighPriority || item.isLowPriority) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", null, bottomRowMargin);
-		bottomRowMargin = null;
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
 	}
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx, null, null, bottomRowMargin);
-
-	//add the attach, flag and tags in a wrapping div
-	idx = this._getListFlagsWrapper(htmlArr, idx, item);
-
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx);
 	if (item.hasAttach) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width, "valign=top");
 	}
 	var tags = item.getVisibleTags();
 	if (tags && tags.length) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width, null, ["ZmMsgListColTag"]);
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width);
 	}
 	if (appCtxt.get(ZmSetting.FLAGGING_ENABLED)) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, width);
 	}
-	htmlArr[idx++] = "</div></div>";
+	htmlArr[idx++] = "</tr></table>";
 	
 	return htmlArr.join("");
 };
 
 ZmConvListView.prototype._getParticipantHtml =
 function(conv, fieldId) {
-
 	var html = [];
 	var idx = 0;
 
-	var part = conv.participants ? conv.participants.getArray() : [],
-		isOutbound = this._isOutboundFolder(),
-		part1 = [];
-
-	for (var i = 0; i < part.length; i++) {
-		var p = part[i];
-		if ((isOutbound && p.type === AjxEmailAddress.TO) || (!isOutbound && p.type === AjxEmailAddress.FROM)) {
-			part1.push(p);
-		}
-	}
-	// Workaround for bug 87597: for "sent" folder, when no "to" fields were reported after notification,
-	// push all participants to part1 to trick origLen > 0
-	// then get recipients from msg.getAddresses below and overwrite part1
-	if (part1.length === 0 && isOutbound) {
-		part1 = part;
-	}
+	var part1 = conv.participants ? conv.participants.getArray() : null;
 	var origLen = part1 ? part1.length : 0;
 	if (origLen > 0) {
 
 		// bug 23832 - create notif for conv in sent gives us sender as participant, we want recip
-		if (origLen == 1 && (part1[0].type === AjxEmailAddress.FROM) && conv.isZmConv && isOutbound) {
+		var folder = appCtxt.getById(this._folderId);
+		if ((origLen == 1) && (part1[0].type == AjxEmailAddress.FROM) && folder && conv.isZmConv &&
+			(folder.isUnder(ZmFolder.ID_SENT) || folder.isUnder(ZmFolder.ID_DRAFTS) ||
+			folder.isUnder(ZmFolder.ID_OUTBOX))) {
+
 			var msg = conv.getFirstHotMsg();
 			if (msg) {
 				var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
@@ -607,47 +565,29 @@ function(conv, fieldId) {
 		var partColWidth = headerCol ? headerCol._width : ZmMsg.COLUMN_WIDTH_FROM_CLV;
 		var part2 = this._fitParticipants(part1, conv, partColWidth);
 		for (var j = 0; j < part2.length; j++) {
-			if (j === 0 && (conv.participantsElided || part2.length < origLen)) {
+			if (j == 0 && (conv.participantsElided || part2.length < origLen)) {
 				html[idx++] = AjxStringUtil.ELLIPSIS;
-			}
-			else if (part2.length > 1 && j > 0) {
+			} else if (part2.length > 1 && j > 0) {
 				html[idx++] = AjxStringUtil.LIST_SEP;
 			}
 			var p2 = (part2 && part2[j] && (part2[j].index != null)) ? part2[j].index : "";
 			var spanId = [fieldId, p2].join(DwtId.SEP);
-			html[idx++] = "<span id='";
+			html[idx++] = "<span style='white-space: nowrap' id='";
 			html[idx++] = spanId;
 			html[idx++] = "'>";
 			html[idx++] = (part2 && part2[j]) ? AjxStringUtil.htmlEncode(part2[j].name) : "";
 			html[idx++] = "</span>";
 		}
 	} else {
-		html[idx++] = isOutbound ? "&nbsp;" : ZmMsg.noRecipients;
+		html[idx++] = this._isOutboundFolder() ? "&nbsp;" : ZmMsg.noRecipients;
 	}
 
 	return html.join("");
 };
 
-// Returns the actual number of msgs that will be shown on expansion or in
-// the reading pane (msgs in Trash/Junk/Drafts are omitted)
-ZmConvListView.prototype._getDisplayedMsgCount =
-function(conv) {
-
-	var omit = this._controller.getFoldersToOmit(),
-		num = 0, id;
-
-	for (id in conv.msgFolder) {
-		if (!omit[conv.msgFolder[id]]) {
-			num++;
-		}
-	}
-
-	return num;
-};
-
 ZmConvListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
-
+	
 	if (field == ZmItem.F_EXPAND) {
 		return "";
 	}
@@ -714,7 +654,7 @@ function(conv, msg, force) {
 			index--;	// for ascending, we want to expand upward (add above expandable msg row)
 		}
 		var offset = this._msgOffset[item.id] || 0;
-		var a = conv.getMsgList(offset, ascending, this._controller.getFoldersToOmit());
+		var a = conv.getMsgList(offset, ascending);
 		for (var i = 0; i < a.length; i++) {
 			var msg = a[i];
 			var div = this._createItemHtml(msg);
@@ -729,7 +669,7 @@ function(conv, msg, force) {
 		}
 	}
 
-	this._setImage(item, ZmItem.F_EXPAND, "NodeExpanded", this._getClasses(ZmItem.F_EXPAND));
+	this._setImage(item, ZmItem.F_EXPAND, "NodeExpanded");
 	this._expanded[item.id] = true;
 	
 	var cid = isConv ? item.id : item.cid;
@@ -741,12 +681,10 @@ function(conv, msg, force) {
 	this._resetColWidth();
 	if (lastRow) {
 		this._scrollList(lastRow);
-		if (rowIds) {
-			var convHeight = rowIds.length * Dwt.getSize(lastRow).y;
-			if (convHeight > Dwt.getSize(lastRow.parentNode).y) {
-				this._scrollList(this._getElFromItem(item));
-			}
-		}
+	}
+	var convHeight = rowIds.length * Dwt.getSize(lastRow).y;
+	if (convHeight > Dwt.getSize(lastRow.parentNode).y) {
+		this._scrollList(this._getElFromItem(item));
 	}
 };
 
@@ -779,7 +717,7 @@ function(item) {
 	if (rowIds && rowIds.length) {
 		this._showMsgs(rowIds, false);
 	}
-	this._setImage(item, ZmItem.F_EXPAND, "NodeCollapsed", this._getClasses(ZmItem.F_EXPAND));
+	this._setImage(item, ZmItem.F_EXPAND, "NodeCollapsed");
 	this._expanded[item.id] = false;
 };
 
@@ -835,7 +773,7 @@ ZmConvListView.prototype._isExpandable =
 function(item) {
 	var expandable = false;
 	if (item.type == ZmItem.CONV) {
-		expandable = (this._getDisplayedMsgCount(item) > 1);
+		expandable = (item.numMsgs > 1);
 	} else {
 		var conv = appCtxt.getById(item.cid);
 		if (!conv) { return false; }
@@ -895,9 +833,6 @@ function(item) {
 
 ZmConvListView.prototype._expandAll =
 function(expand) {
-    if (!this._list)
-        return;
-
 	var a = this._list.getArray();
 	for (var i = 0, count = a.length; i < count; i++) {
 		var conv = a[i];
@@ -959,8 +894,6 @@ function(ev) {
     var isMute = item.isMute ? item.isMute : false;
 	var sortBy = this._sortByString || ZmSearch.DATE_DESC;
 	var handled = false;
-	var forceUpdateConvSize = false; //in case of soft delete we don't get notification of size change from server so take care of this case outselves.
-	var convToUpdate = null; //in case this is a msg but we want to update the size field for a conv - this is the conv to use.
 	
 	// msg moved or deleted
 	if (!isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
@@ -970,33 +903,20 @@ function(ev) {
 			var conv = appCtxt.getById(item.cid);
 			handled = true;
 			if (conv) {
-				if (item.folderId == ZmFolder.ID_SPAM || item.folderId == ZmFolder.ID_TRASH || ev.event == ZmEvent.E_DELETE) {
-					if (item.folderId == ZmFolder.ID_TRASH) {
-						//only in this case we don't get size notification from server.
-						forceUpdateConvSize = true;
-						convToUpdate = conv;
-					}
+				if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
 					// msg marked as Junk, or hard-deleted
+					// TODO: handle expandable msg removal
 					conv.removeMsg(item);
 					this.removeItem(item, true, ev.batchMode);	// remove msg row
+					var rowIds = this._msgRowIdList[conv.id];
+					if (this._expanded[conv.id] && rowIds && rowIds.length <= 1) {
+						this._setImage(conv, ZmItem.F_EXPAND, null);
+						this._collapse(conv);
+					}
 					this._controller._app._checkReplenishListView = this;
 					this._setNextSelection();
 				} else {
-					if (!conv.containsMsg(item)) {
-						//the message was moved to this conv, most likely by "undo". (not sure if any other ways, probably not).
-						sortIndex = conv.msgs && conv.msgs._getSortIndex(item, ZmSearch.DATE_DESC);
-						conv.addMsg(item, sortIndex);
-						forceUpdateConvSize = true;
-						convToUpdate = conv;
-						var expanded = this._expanded[conv.id];
-						//remove rows so will have to redraw them, reflecting the new item.
-						this._removeMsgRows(conv.id);
-						if (expanded) {
-							//expand if it was expanded before this undo.
-							this._expand(conv, null, true);
-						}
-					}
-					else if (!conv.hasMatchingMsg(this._controller._currentSearch, true)) {
+					if (!(conv.hasMatchingMsg(this._controller._currentSearch, true))) {
 						this._list.remove(conv);				// view has sublist of controller list
 						this._controller._list.remove(conv);	// complete list
 						ev.item = item = conv;
@@ -1005,6 +925,9 @@ function(ev) {
 					} else {
 						// normal case: just change folder name for msg
 						this._changeFolderName(item, ev.getDetail("oldFolderId"));
+						if (ev.event == ZmEvent.E_MOVE && (item.folderId == ZmFolder.ID_TRASH)) {
+							this._setNextSelection();
+						}
 					}
 				}
 			}
@@ -1054,8 +977,6 @@ function(ev) {
 			this._addRow(div, convIndex + msgIndex + 1);
 			rowIds.push(div.id);
 		}
-		forceUpdateConvSize = true;
-		convToUpdate = conv;
 		handled = ev.handled = true;
 	}
 
@@ -1121,20 +1042,14 @@ function(ev) {
 	}
 
 	// msg count in a conv changed - see if we need to add or remove an expand icon
-	if (forceUpdateConvSize || (isConv && (ev.event === ZmEvent.E_MODIFY && fields && fields[ZmItem.F_SIZE]))) {
-		conv = convToUpdate || item;
-		var numDispMsgs = this._getDisplayedMsgCount(conv);
+	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_SIZE])) {
 		//redraw the item when redraw is requested or when the new msg count is set to 1(msg deleted) or 2(msg added)
-		//redrawConvRow is from bug 75301 - not sure this case is still needed after my fix but keeping it to be safe for now.
-		if (conv.redrawConvRow || numDispMsgs === 1 || numDispMsgs === 2) {
-			if (numDispMsgs === 1) {
-				this._collapse(conv); //collapse since it's only one message.
-			}
-			//must redraw the line since the ZmItem.F_EXPAND field might not be there when switching from 1 message conv, so updateField does not work. And also we
-			//don't want it after deleting message(s) resulting in 1.
-			this.redrawItem(conv);
+		if (item.redrawConvRow || item.numMsgs == 1 || item.numMsgs == 2) {
+			this.redrawItem(item);
 		}
-		this._updateField(conv, this.isMultiColumn() ? ZmItem.F_SIZE : ZmItem.F_FROM); //in reading pane on the right, the count appears in the "from".
+		if (this.isMultiColumn()) {
+			this._updateField(item, ZmItem.F_SIZE);
+		}
 	}
 
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_DATE])) {
@@ -1298,9 +1213,9 @@ function(params) {
 };
 
 ZmConvListView.prototype._restoreState =
-function(state) {
+function() {
 
-	var s = state || this._state;
+	var s = this._state;
 	if (s.expanded) {
 		for (var id in s.expanded) {
 			if (s.expanded[id]) {

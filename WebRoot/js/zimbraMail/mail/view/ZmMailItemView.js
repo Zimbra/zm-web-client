@@ -13,17 +13,6 @@
  * ***** END LICENSE BLOCK *****
  */
 
-/**
- * @class
- * Base class for a view displaying a single mail item (msg or conv).
- *
- * @author Conrad Damon
- *
- * @param {string}					id				ID for HTML element
- * @param {ZmListController}		controller		containing controller
- *
- * @extends		DwtComposite
- */
 ZmMailItemView = function(params) {
 
 	if (arguments.length == 0) { return; }

@@ -60,9 +60,10 @@ Ext.define('ZCS.view.ZtToast', {
 		toast.setHtml(formattedTemplate);
 
 		toast.element.on('tap', me.handleTap);
+
 		me.doShow();
 
-        Ext.defer(me.hide, me.getMilliSecondsUntilHide(), me);
+		Ext.defer(me.hide, me.getMilliSecondsUntilHide(), me);
 	},
 
 	doShow: function () {
@@ -75,10 +76,6 @@ Ext.define('ZCS.view.ZtToast', {
 			"zIndex": 10000
 		});
 
-        //explicitly set left coordinate - otherwise, disabling animation in hide/show in app.js
-        //causes left coordinate of the Toast to be incorrect on Android devices
-        me.setLeft(left);
-
 		me.show({
 			from: {
 				opacity: 0,
@@ -90,7 +87,7 @@ Ext.define('ZCS.view.ZtToast', {
 			},
 			duration: 1000
 		});
-    },
+	},
 
 	reposition: function () {
 		var me = this,

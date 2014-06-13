@@ -43,13 +43,8 @@ AjxPackage.require("ajax.dwt.widgets.DwtRadioButton");
 AjxPackage.require("ajax.dwt.widgets.DwtRadioButtonGroup");
 AjxPackage.require("ajax.dwt.widgets.DwtForm");
 AjxPackage.require("ajax.dwt.widgets.DwtCalendar");
-AjxPackage.require("ajax.dwt.widgets.DwtMessageComposite");
 
 AjxPackage.require("ajax.util.AjxDateUtil");
-AjxPackage.require("ajax.util.AjxPluginDetector");
-AjxPackage.require("ajax.3rdparty.zeroclipboard.ZeroClipboard");
-AjxPackage.require("ajax.util.AjxClipboard");
-AjxPackage.require("ajax.util.AjxSHA1");
 
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
@@ -105,6 +100,7 @@ AjxPackage.require("zimbraMail.share.view.ZmOverviewContainer");
 AjxPackage.require("zimbraMail.share.view.ZmAccountOverviewContainer");
 AjxPackage.require("zimbraMail.share.view.ZmOverview");
 AjxPackage.require("zimbraMail.share.view.ZmTreeView");
+AjxPackage.require("zimbraMail.share.view.ZmTimeSelect");
 AjxPackage.require("zimbraMail.share.view.ZmColorMenu");
 AjxPackage.require("zimbraMail.share.view.ZmColorButton");
 
@@ -115,8 +111,8 @@ AjxPackage.require("zimbraMail.share.view.dialog.ZmAttachDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmQuickAddDialog");
 
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHtmlEditor");
+AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmAdvancedHtmlEditor");
 AjxPackage.require("zimbraMail.share.view.ZmDragAndDrop");
-AjxPackage.require("zimbraMail.share.view.ZmFolderChooser");
 
 AjxPackage.require("zimbraMail.share.controller.ZmController");
 AjxPackage.require("zimbraMail.share.controller.ZmBaseController");
@@ -138,14 +134,11 @@ AjxPackage.require("zimbraMail.calendar.ZmCalendarApp");
 AjxPackage.require("zimbraMail.tasks.ZmTasksApp");
 AjxPackage.require("zimbraMail.abook.ZmContactsApp");
 AjxPackage.require("zimbraMail.abook.model.ZmContact");
-AjxPackage.require("zimbraMail.abook.model.ZmContactList");
 AjxPackage.require("zimbraMail.briefcase.ZmBriefcaseApp");
 
 AjxPackage.require("zimbraMail.calendar.model.ZmCalBaseItem");
-AjxPackage.require("zimbraMail.calendar.model.ZmCalItem");
 AjxPackage.require("zimbraMail.calendar.model.ZmMiniCalCache");
 AjxPackage.require("zimbraMail.calendar.model.ZmCalMgr");
-AjxPackage.require("zimbraMail.calendar.model.ZmRecurrence");
 
 AjxPackage.require("zimbraMail.share.model.ZmZimbraAccount");
 AjxPackage.require("zimbraMail.mail.model.ZmDataSource");
@@ -171,12 +164,9 @@ AjxPackage.require("zimbraMail.mail.controller.ZmComposeController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMailListController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMsgController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMailConfirmController");
-AjxPackage.require("zimbraMail.mail.controller.ZmMailFolderTreeController");
 AjxPackage.require("zimbraMail.mail.view.ZmMailRedirectDialog");
 
 
 AjxPackage.require("zimbraMail.mail.view.object.ZmImageAttachmentObjectHandler");
-AjxPackage.require("zimbraMail.share.zimlet.handler.ZmEmailObjectHandler");
 
 AjxPackage.require("zimbra.common.ZmErrorDialog");
-AjxPackage.require("zimbraMail.offline.ZmOffline");

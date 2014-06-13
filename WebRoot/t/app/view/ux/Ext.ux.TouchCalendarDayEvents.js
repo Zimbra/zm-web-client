@@ -36,88 +36,43 @@ Ext.define('Ext.ux.TouchCalendarDayEvents', {
 	},
 
 	renderEventBars: function(store){
-		var me                  = this,
-			allDayApptRow       = this.getCalendar().element.select('tr.allDayApptRow', this.getCalendar().element.dom).first(),
-			allDayApptContainer = this.getCalendar().element.select('div.allDayApptDiv', this.getCalendar().element.dom).first(),
-			hasAllDay           = false,
-			allDayCount         = 0,
-			eventBarLeft        = 0,
-			pivotEventBars      = [];
+		var me = this,
+			l = store.getCount(),
+			i = 0,
+			rec;
 
-		store.each(function(record) {
-			if (record.get('Record').get('isAllDay')) {
+		for(; i < l; i++){
+			rec = store.getAt(i);
 
-				allDayCount++;
+			var eventRecord     = rec.data.Record,
+				eventBar        = this.createEventBar(rec, eventRecord),
 
-				var eventRecord = record.data.Record,
-					eventBar    = me.createEventBar(record, eventRecord),
-					verticalPos = me.getVerticalDayPosition(record),
-					eventWidth  = me.getEventBarWidth(record, 50 + 10), // 50 = left margin, 10 = right margin TODO: make configurable
-					eventBarTopPos,
-					eventBarTop;
+				eventWidth      = this.getEventBarWidth(rec, 50+10), // 50 = left margin, 10 = right margin TODO: make configurable
 
-				if (allDayCount === 1) {
-					eventBarLeft = me.getHorizontalDayPosition(record, eventWidth, true);
-				}
+				verticalPos     = this.getVerticalDayPosition(rec),
+				horizontalPos   = this.getHorizontalDayPosition(rec, eventWidth),
+				eventHeight     = this.getEventBarHeight(rec);
 
-				eventBarTopPos = verticalPos - me.getCalendar().element.getY() + 4;
-				// Keeping a distance of 3px between every event bar.
-				eventBarTop = allDayCount > 1 ? pivotEventBars[pivotEventBars.length - 1].getTop() + ((eventBar.getHeight()) + 3) : eventBarTopPos;
+			eventBar.setLeft(horizontalPos);
+			eventBar.setTop(verticalPos - this.getCalendar().element.getY());
 
-				pivotEventBars.push(eventBar);
-
-				hasAllDay = true;
-				allDayApptRow.show();
-				allDayApptContainer.setHeight((eventBar.getHeight() * allDayCount) + 8);
-
-				eventBar.setTop(eventBarTop);
-				eventBar.setLeft(eventBarLeft);
-				eventBar.setWidth(eventWidth);
-			}
-		});
-
-		store.each(function(record) {
-			if (!record.get('Record').get('isAllDay')) {
-				var eventRecord = record.data.Record,
-					eventBar    = me.createEventBar(record, eventRecord),
-					eventWidth,
-					verticalPos,
-					horizontalPos,
-					eventHeight;
-
-				eventWidth = me.getEventBarWidth(record, 50 + 10); // 50 = left margin, 10 = right margin TODO: make configurable
-				verticalPos = me.getVerticalDayPosition(record);
-
-				horizontalPos = me.getHorizontalDayPosition(record, eventWidth, false);
-				eventHeight = me.getEventBarHeight(record) + 1;
-
-				if (horizontalPos > 50) {
-					eventWidth = (eventWidth - horizontalPos) + 50;
-				}
-
-				eventBar.setLeft(horizontalPos);
-				eventBar.setTop(verticalPos - me.getCalendar().element.getY());
-
-				eventBar.setHeight(eventHeight);
-				eventBar.setWidth(eventWidth);
-			}
-		});
-
-		if (!hasAllDay) {
-			allDayApptRow.hide();
+			eventBar.setHeight(eventHeight);
+			eventBar.setWidth(eventWidth);
 		}
+
 	},
 
-	getEventBarWidth: function(event, offset) {
-		var eventsInTimeSlot    = 1,
+	getEventBarWidth: function(event, offset){
+		var eventsInTimeSlot    = this.getEventsPerTimeSlot()[event.get('Date').getTime()],
 			calendarWidth       = this.getCalendar().element.getWidth();
 
-		offset                  = offset || 0;
+		eventsInTimeSlot    = eventsInTimeSlot || 1;
+		offset              = offset || 0;
 
 		return Math.floor((calendarWidth - offset) / eventsInTimeSlot);
 	},
 
-	getEventBarHeight: function(event) {
+	getEventBarHeight: function(event){
 		var eventHeight = this.getPlugin().getEventHeight();
 
 		if(Ext.isNumeric(eventHeight)){
@@ -129,84 +84,35 @@ Ext.define('Ext.ux.TouchCalendarDayEvents', {
 		}
 	},
 
-	getEventBarHeightDuration: function(event) {
+	getEventBarHeightDuration: function(event){
 		var startDate           = event.data.Record.get(this.getPlugin().getStartEventField()),
 			endDate             = event.data.Record.get(this.getPlugin().getEndEventField()),
-			isMultiDay          = ZCS.util.isMultiDay(startDate, endDate),
-			isStartDay          = this.getCalendar().currentDate.getDate() === startDate.getDate(),
-			isEndDay            = this.getCalendar().currentDate.getDate() === endDate.getDate(),
-			fakeStartDate       = null,
-			fakeEndDate         = null;
-
-		// ZCS - Add fake days to adjust multiday appointments
-		/*
-		 * When appointment spans across 2, on the start day we need a fake end date, for second day we
-		 * need a fake start date. If appointment spans across 2+ days, we need fake start and end days
-		 * for day(s) between start and end day.
-		 */
-		if (isMultiDay && isStartDay) {
-			fakeEndDate = new Date(startDate.getTime());
-			fakeEndDate.setHours(23); // Day ends at 11:59:59 PM
-			fakeEndDate.setMinutes(59);
-			fakeEndDate.setSeconds(59);
-		}
-		else if (isMultiDay && !isStartDay && !isEndDay) {
-			fakeStartDate = new Date(this.getCalendar().currentDate);
-			fakeStartDate.setHours(00); // Day starts at 12:00:00 AM
-			fakeStartDate.setMinutes(00);
-			fakeStartDate.setSeconds(00);
-
-			fakeEndDate = new Date(this.getCalendar().currentDate);
-			fakeEndDate.setHours(23);
-			fakeEndDate.setMinutes(59);
-			fakeEndDate.setSeconds(59);
-		}
-		else if (isMultiDay && isEndDay) {
-			fakeStartDate = new Date(endDate.getTime());
-			fakeStartDate.setHours(00);
-			fakeStartDate.setMinutes(00);
-			fakeStartDate.setSeconds(00);
-		}
-
-		var roundedStartDate    = this.getRoundedTime(fakeStartDate !== null ? fakeStartDate : startDate),
-			minutesLength       = ((fakeEndDate !== null ? fakeEndDate.getTime() : endDate.getTime()) - (fakeStartDate !== null ? fakeStartDate.getTime() : startDate.getTime())) / 1000 / 60,
+			roundedStartDate    = this.getRoundedTime(startDate),
+			minutesLength       = (endDate.getTime() - startDate.getTime()) / 1000 / 60,
 			timeSlotEl          = this.getCalendar().getDateCell(roundedStartDate),
 			timeSlotRowEl       = timeSlotEl && timeSlotEl.parent('tr', false), // ZCS - Fix for JS error. Occurs in case of all day appointments.
 			heightPixels        = 0;
 
-		if(timeSlotRowEl) {
+		if(timeSlotRowEl){
 			var timeSlotHeight  = timeSlotEl.getHeight(),
 				minutesPerPixel = timeSlotHeight / 30;
 
             // ZCS - Minimum height of any appointment set to 15 minutes
-			heightPixels = minutesLength <= 15 ? 15 :(minutesLength * minutesPerPixel);
+			heightPixels    = minutesLength <= 15 ? 15 :(minutesLength * minutesPerPixel);
 		}
 
 		return heightPixels;
 	},
 
-	getVerticalDayPosition: function(event) {
+	getVerticalDayPosition: function(event){
 		var startDate           = event.data.Record.get(this.getPlugin().getStartEventField()),
-			endDate             = event.data.Record.get(this.getPlugin().getEndEventField()),
-			isMultiDay          = ZCS.util.isMultiDay(startDate, endDate),
-			isStartDay          = this.getCalendar().currentDate.getDate() === startDate.getDate(),
-			fakeStartDate       = null;
-
-		// ZCS - Add fake days to adjust multiday appointments
-		if (isMultiDay && !isStartDay) {
-			fakeStartDate = new Date(endDate.getTime());
-			fakeStartDate.setHours(00); // Day starts at 12:00:00 AM
-			fakeStartDate.setMinutes(00);
-			fakeStartDate.setSeconds(00);
-		}
-
-		var	roundedStartDate    = this.getRoundedTime(fakeStartDate !== null ? fakeStartDate : startDate),
+			roundedStartDate    = this.getRoundedTime(startDate),
 			timeSlotCount       = (roundedStartDate.getHours() * 2) + (roundedStartDate.getMinutes() === 30 ? 1 : 0),
-			minutesDiff         = ((fakeStartDate !== null ? fakeStartDate.getTime() : startDate.getTime()) - roundedStartDate.getTime()) / 1000 / 60,
+			minutesDiff         = (startDate.getTime() - roundedStartDate.getTime()) / 1000 / 60,
 			firstTimeSlotEl     = this.getCalendar().element.select('table.time-slot-table td', this.getCalendar().element.dom).first(),
 			verticalPosition    = 0;
 
-		if (firstTimeSlotEl) {
+		if(firstTimeSlotEl){
 			var firstTimeSlotHeight = firstTimeSlotEl.getHeight(),
 				firstTimeSlotY      = firstTimeSlotEl.getY(), // first time slot position - needed so we take the header row into account
 				minutesPerPixel     = firstTimeSlotHeight / 30,
@@ -218,21 +124,12 @@ Ext.define('Ext.ux.TouchCalendarDayEvents', {
 		return verticalPosition;
 	},
 
-	getHorizontalDayPosition: function(event, eventBarWidth, isAllDay){
-		var barPos           = event.get('BarPosition'),
-			leftMargin       = 50,
-			spacing          = this.getPlugin().getEventBarSpacing(),
-			eventsInTimeSlot = this.getEventsPerTimeSlot()[event.get('Date').getTime()];
+	getHorizontalDayPosition: function(event, eventBarWidth){
+		var barPos      = event.get('BarPosition'),
+			leftMargin  = 50,
+			spacing = this.getPlugin().getEventBarSpacing();
 
-		// If for current event there are other 0 or less than 2 other events in same timeslot
-		// or overlapping then, discard event's bar position which can be misleading.
-		if (isAllDay || eventsInTimeSlot <= 2) {
-			barPos = 0;
-			return leftMargin + (barPos * eventBarWidth) + (barPos * spacing);
-		}
-		else {
-			return leftMargin + (barPos * eventBarWidth / eventsInTimeSlot) + (barPos * spacing);
-		}
+		return leftMargin + (barPos * eventBarWidth) + (barPos * spacing);
 	},
 
 	/**
@@ -242,7 +139,7 @@ Ext.define('Ext.ux.TouchCalendarDayEvents', {
 	 * @param {Date} date
 	 * @return {Date}
 	 */
-	getRoundedTime: function(date) {
+	getRoundedTime: function(date){
 		date = Ext.Date.clone(date);
 
 		var minutes = date.getMinutes();

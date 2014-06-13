@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -187,13 +187,11 @@ function(isStart, ev) {
 	if (isStart) {
 		if (ed && (ed.valueOf() < ev.detail.valueOf())) {
 			this.setValue("endDateField", newDate);
-			this.getControl("endMiniCal").setDate(ev.detail);
 		}
 		this.setValue("startDateField", newDate);
 	} else {
 		if (sd && (sd.valueOf() > ev.detail.valueOf())) {
 			this.setValue("startDateField", newDate);
-			this.getControl("startMiniCal").setDate(ev.detail);
 		}
 		this.setValue("endDateField", newDate);
 	}

@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -175,37 +175,19 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 			itemTpl: cfg.listItemTpl
 		});
 
-		if(me.isPhone) {
-            cfg.list.store.getRootNode().insertChild(0, {
-                'title':'Cancel',
-                'name':'Cancel',
-                'displayName':'Cancel',
-                'type':'tag',
-                'zcsId' : 'cancel',
-                'itemCount' : 0,
-                'path' : '',
-                'disclosure' : false,
-                'leaf'  : true
-            });
-        }
- 
-
 		this.callParent(arguments);
 
 		var tapProducer = this.down('nestedlist') || this.down('list'),
 			item, eventName;
 
 		tapProducer.on('itemtap', function (list, index, target, organizer, e, eOpts) {
-  			item = me.getRecord();
-  			if (!target.getDisabled() && organizer.get('zcsId') !== 'cancel') {
-  				eventName = item.get('type') + 'Assignment';
-  				me.fireEvent(eventName, organizer, item);
-  				e.preventDefault();
-  				me.onClose();
-     		} else if(organizer.get('zcsId') === 'cancel') {
- 			    e.preventDefault();
-                me.onClose();
-  			}
+			if (!target.getDisabled()) {
+				item = me.getRecord();
+				eventName = item.get('type') + 'Assignment';
+				me.fireEvent(eventName, organizer, item);
+				e.preventDefault();
+				me.onClose();
+			}
 		});
 
 		ZCS.app.on('orientationChange', function (newDimensions) {
@@ -223,15 +205,15 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 		this.positionSheet();
 		this.show();
 
-		var appDimensions = newDimensions[ZCS.session.getActiveApp()];
-		
+		var fromBox = this.getAnimatedComponent().element.getPageBox(),
+			targetBox = this.down('#animationTarget').element.getPageBox(),
+			appDimensions = newDimensions[ZCS.session.getActiveApp()];
+
+		//TODO - determine how to make the dimensions to use generic.
+
+		this.originalDimensions = appDimensions.itemPanel;
+
 		if (!this.isPhone) {
-			var targetBox = this.down('#animationTarget').element.getPageBox();
-
-			//TODO - determine how to make the dimensions to use generic.
-
-			this.originalDimensions = appDimensions.itemPanel;
-
 			this.getAnimatedComponent().setWidth(targetBox.width);
 			this.getAnimatedComponent().setHeight(targetBox.height);
 			this.getAnimatedComponent().setLeft(targetBox.left);
@@ -336,7 +318,6 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 		this.updateComponentBox(component, targetBox);
 
 		component.floating = true;
-		component.isAssignment = true;
 
 		Ext.Viewport.add(component);
 
@@ -397,7 +378,6 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 	onClose: function () {
 		if (!this.isPhone) {
 			this.shiftedComponent.floating = false;
-			this.shiftedComponent.isAssignment = false;
 			this.updateComponentBox(this.shiftedComponent, this.originalDimensions);
 
 			this.shiftedComponent.element.applyStyles({

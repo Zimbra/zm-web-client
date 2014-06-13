@@ -87,21 +87,7 @@ function(msg, parentController, callback, markRead, hidePagination, forceLoad, n
 			msg.load({callback:respCallback, markRead:markRead, forceLoad:forceLoad, noTruncate:noTruncate});
 		}
 	} else {
-		// May have been explicitly marked as unread
-		var marked = false;
-		if (msg.isUnread && (appCtxt.get(ZmSetting.MARK_MSG_READ) != ZmSetting.MARK_READ_NONE)) {
-			if (msg.list) {
-				// Need to mark it on the server
-				marked = true;
-				var markCallback =  this._handleResponseShow.bind(this, callback, hidePagination);
-				msg.list.markRead({items: msg, value: true, callback: markCallback, noBusyOverlay: true});
-			}  else {
-				msg.markRead();
-			}
-		}
-		if (!marked) {
-			this._handleResponseShow(callback, hidePagination);
-		}
+		this._handleResponseShow(callback, hidePagination);
 	}
 };
 
@@ -185,9 +171,8 @@ function(actionCode) {
 			break;
 		
 		default:
-			if (ZmMsgController.ALLOWED_SHORTCUT[actionCode]) {
-				return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
-			}
+			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
+			break;
 	}
 	return true;
 };
@@ -375,10 +360,6 @@ function (msg) {
 	this._msg = msg;
 };
 
-ZmMsgController.prototype.getItemView = function() {
-	return this._view[this._currentViewId];
-};
-
 // No-op replenishment
 ZmMsgController.prototype._checkReplenish =
 function(params) {
@@ -388,9 +369,7 @@ function(params) {
 
 ZmMsgController.prototype._checkItemCount =
 function() {
-	if (!appCtxt.isChildWindow) {
-		this._backListener();
-	}
+	this._backListener();
 };
 
 ZmMsgController.prototype._getDefaultFocusItem = 
@@ -465,33 +444,9 @@ function(ev) {
     window.open(appContextPath+url, "_blank");
 };
 
-ZmMsgController.prototype._subscribeResponseHandler =
-function(statusMsg, ev) {
-    ZmMailListController.prototype._subscribeResponseHandler.call(this, statusMsg, ev);
-    //Close View
-    appCtxt.getAppViewMgr().popView();
-};
-
 ZmMsgController.prototype._acceptShareHandler =
 function(ev) {
     ZmMailListController.prototype._acceptShareHandler.call(this, ev);
     //Close View
     appCtxt.getAppViewMgr().popView();
-};
-
-ZmMsgController.prototype._setStatics = function() {
-
-	if (!ZmMsgController.ALLOWED_SHORTCUT) {
-		ZmMsgController.ALLOWED_SHORTCUT = AjxUtil.arrayAsHash([
-			ZmKeyMap.FORWARD,
-			ZmKeyMap.REPLY,
-			ZmKeyMap.REPLY_ALL,
-			ZmKeyMap.SPAM,
-			ZmKeyMap.MARK_READ,
-			ZmKeyMap.MARK_UNREAD,
-			ZmKeyMap.FLAG
-		]);
-	}
-
-	ZmMailListController.prototype._setStatics();
 };

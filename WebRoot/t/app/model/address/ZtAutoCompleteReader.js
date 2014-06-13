@@ -39,9 +39,6 @@ Ext.define('ZCS.model.address.ZtAutoCompleteReader', {
             data.name = emailAddressObj.get('name');
             data.displayName = node.display || emailAddressObj.get('displayName');
         }
-		if (node.display) {
-			data.name = node.display;
-		}
 		data.isGroup = node.isGroup;
 		data.ranking = node.ranking;
         data.matchType = node.type;
@@ -62,8 +59,8 @@ Ext.define('ZCS.model.address.ZtAutoCompleteReader', {
 		var records = [],
 			ids = {};
 
-		Ext.each(root, function(node, index) {
-			var nodeId = node.id ? [ node.type, node.id, index ].join(ZCS.constant.ID_JOIN) : null;
+		Ext.each(root, function(node) {
+			var nodeId = node.id ? [ node.type, node.id ].join(ZCS.constant.ID_JOIN) : null;
 			// For some reason, this API can return the same record multiple times. Filtering them out.
 			if (!ids[nodeId]) {
 

@@ -78,8 +78,7 @@ function(results, mailList, callback, markRead) {
 	// if search was run as a result of a <refresh> block rather than by the user, preserve
 	// what's in the reading pane as long as it's still in the list of results
 	var s = results && results.search;
-	var isRefresh = s && (s.isRefresh || s.isRedo);
-	var refreshSelItem = (isRefresh && mlv && mlv.hasItem(s.selectedItem) && s.selectedItem);
+	var refreshSelItem = (s && s.isRefresh && mlv && mlv.hasItem(s.selectedItem) && s.selectedItem);
 	if (this._doublePaneView) {
 		if (!refreshSelItem) {
 			this._doublePaneView._itemView.reset();
@@ -94,7 +93,6 @@ function(results, mailList, callback, markRead) {
 
 	if (refreshSelItem) {
 		mlv.setSelection(refreshSelItem, true);
-		this._resetOperations(this._toolbar[this._currentViewId], 1)
 	}
 	else {
 		var dpv = this._doublePaneView;
@@ -135,29 +133,12 @@ function() {
 
 ZmDoublePaneController.prototype.switchView =
 function(view, force) {
-	if (view === ZmSetting.RP_OFF || view === ZmSetting.RP_BOTTOM || view === ZmSetting.RP_RIGHT) {
+	if (view == ZmSetting.RP_OFF ||	view == ZmSetting.RP_BOTTOM || view == ZmSetting.RP_RIGHT) {
 		this._mailListView._colHeaderActionMenu = null;
 		var oldView = this._getReadingPanePref();
-		if (view !== oldView) {
-			var convView = this._convView;
-			if (convView) {
-				var replyView = convView._replyView;
-				if (replyView && view === ZmSetting.RP_OFF) {
-					// reset the replyView with the warning before turning off the pane
-					if (!force && !convView._controller.popShield(null, this.switchView.bind(this, view, true))) {
-						// redo setChecked on the oldView menu item if user cancels
-						this._viewMenu.getMenuItem(oldView)._setChecked(true);
-						return;
-					}
-					this._viewMenu.getMenuItem(view)._setChecked(true);
-					replyView.reset();
-				}
-			}
+		if (view != oldView) {
 			this._setReadingPanePref(view);
-			this._doublePaneView.setReadingPane(true);
-			if (replyView && view !== ZmSetting.RP_OFF) {
-				replyView._resized();
-			}
+			this._doublePaneView.setReadingPane();
 		}
 	} else {
 		ZmMailListController.prototype.switchView.apply(this, arguments);
@@ -257,23 +238,29 @@ function() {
 
 ZmDoublePaneController.prototype._getActionMenuOps =
 function() {
-	var list = [];
+	var list = this._flagOps();
+	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
     list.push(ZmOperation.REDIRECT);
     list.push(ZmOperation.EDIT_AS_NEW);		// bug #28717
 	list.push(ZmOperation.SEP);
-	list = list.concat(this._deleteOps());
-	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
-	list.push(ZmOperation.SEP);
-	list = list.concat(this._flagOps());
-	list.push(ZmOperation.SEP);
-	list = list.concat(this._createOps());
-	list.push(ZmOperation.SEP);
-	list = list.concat(this._otherOps());
+	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
+		list.push(ZmOperation.SEP, ZmOperation.DETACH);
+	}
+	list.push(ZmOperation.SHOW_ORIG);
 	if (this.getCurrentViewType() == ZmId.VIEW_TRAD) {
 		list.push(ZmOperation.SHOW_CONV);
 	}
+	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
+		list.push(ZmOperation.ADD_FILTER_RULE);
+	}
+    if(appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+        list.push(ZmOperation.CREATE_APPT);
+    }
+    if(appCtxt.get(ZmSetting.TASKS_ENABLED)) {
+        list.push(ZmOperation.CREATE_TASK);        
+    }
     //list.push(ZmOperation.QUICK_COMMANDS);
 	return list;
 };
@@ -340,7 +327,10 @@ function(item) {
 	if (!item._loaded) { return; }
 
 	// cancel timed mark read action on previous msg
-	appCtxt.killMarkReadTimer();
+	if (appCtxt.markReadActionId > 0) {
+		AjxTimedAction.cancelAction(appCtxt.markReadActionId);
+		appCtxt.markReadActionId = -1;
+	}
 
 	this._doublePaneView.setItem(item);
 	this._handleMarkRead(item);
@@ -357,13 +347,16 @@ function(msg) {
 ZmDoublePaneController.prototype._preHideCallback =
 function() {
 	// cancel timed mark read action on view change
-	appCtxt.killMarkReadTimer();
+	if (appCtxt.markReadActionId > 0) {
+		AjxTimedAction.cancelAction(appCtxt.markReadActionId);
+		appCtxt.markReadActionId = -1;
+	}
 	return ZmController.prototype._preHideCallback.call(this);
 };
 
 // Adds a "Reading Pane" checked menu item to a view menu
 ZmDoublePaneController.prototype._setupReadingPaneMenuItems =
-function(view, menu) {
+function(view, menu, checked) {
 
 	if (menu.getItemCount() > 0) {
 		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
@@ -483,30 +476,11 @@ function(parent, num) {
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && num == 1 && !isDraft));
 	parent.enable(ZmOperation.TEXT, true);
 	parent.enable(ZmOperation.KEEP_READING, this._keepReading(true));
-
-	if (appCtxt.isWebClientOffline()) {
-		parent.enable(
-			[
-				ZmOperation.ACTIONS_MENU,
-				ZmOperation.VIEW_MENU,
-				ZmOperation.DETACH,
-				ZmOperation.SHOW_ORIG,
-				ZmOperation.SHOW_CONV,
-				ZmOperation.PRINT,
-				ZmOperation.ADD_FILTER_RULE,
-				ZmOperation.CREATE_APPT,
-				ZmOperation.CREATE_TASK,
-				ZmOperation.CONTACT,
-				ZmOperation.REDIRECT
-			],
-			false
-		);
-	}
 };
 
 ZmDoublePaneController.prototype._resetOperation = 
 function(parent, op, num) {
-	if (parent && op == ZmOperation.KEEP_READING) {
+	if (op == ZmOperation.KEEP_READING) {
 		parent.enable(ZmOperation.KEEP_READING, this._keepReading(true));
 	}
 };
@@ -587,6 +561,7 @@ function(ev) {
 		}
 	}
 	return handled;
+	DBG.timePt("***** CONV: msg selection");
 };
 
 ZmDoublePaneController.prototype._handleResponseListSelectionListener =
@@ -721,16 +696,6 @@ ZmDoublePaneController.prototype._checkKeepReading =
 function() {
 	// done on timer so item view has had change to lay out and resize
 	setTimeout(this._resetOperation.bind(this, this._toolbar[this._currentViewId], ZmOperation.KEEP_READING), 250);
-};
-
-ZmDoublePaneController.handleScroll =
-function(ev) {
-	var target = DwtUiEvent.getTarget(ev);
-	var messagesView = DwtControl.findControl(target);
-	var controller = messagesView && messagesView._controller;
-	if (controller && controller._checkKeepReading) {
-		controller._checkKeepReading();
-	}
 };
 
 ZmDoublePaneController.prototype._dragListener =

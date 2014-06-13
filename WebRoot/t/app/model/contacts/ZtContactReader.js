@@ -130,16 +130,9 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 				if (m && m.length > 0) {
 					var type = m[1],
 						f = m[2],
-                        field = f,
+						field = f.charAt(0).toLowerCase() + f.slice(1),     // uncapitalize first letter
 						num = m[3];
-
-                    // uncapitalize first letter for all fields except URL
-                    if (f !== 'URL') {
-                        field = f.charAt(0).toLowerCase() + f.slice(1)
-                    }
-
 					type = ZCS.constant.ATTR_TYPE_SORT_VALUE[type] ? type : 'other';
-
 					if (field === 'fax') {
 						field = 'phone';
 						type = 'other';
@@ -217,12 +210,12 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			    data.longName = (attrs.firstName && attrs.lastName) ? [attrs.firstName, attrs.lastName].join(' ') : attrs.firstName || attrs.lastName || '';
 			    data.memberEmail = attrs.email || '';
 			    data.memberPhone = attrs.workPhone || attrs.homePhone || attrs.otherPhone || '';
+			    if (member.type === 'C' || member.type === 'G') {
+				    // TODO: what should we do here? will this happen?
+				    data.zcsId = member.value;
+			    }
                 data.memberImageUrl = ZCS.model.contacts.ZtContact.getImageUrl(attrs, member.value);
 			    group.push(data);
-		    }
-		    if (member.type === 'C' || member.type === 'G') {
-			    // TODO: what should we do here? will this happen?
-			    data.zcsId = member.value;
 		    }
 		    else if (member.type === 'I') {
 			    data.memberEmail = member.value;
@@ -275,7 +268,7 @@ Ext.define('ZCS.model.contacts.ZtContactReader', {
 			}, this);
 
 			// get the DL ZtContact from when the list view was loaded so we can use its fields
-			var dl = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_CONTACT, options.dlId),
+			var dl = ZCS.cache.get(options.dlId),
 				recordData = ZCS.util.getFields(dl, ['nickname','isMember','isOwner']);
 
 			Ext.apply(recordData, {

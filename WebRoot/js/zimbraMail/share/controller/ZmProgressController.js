@@ -104,7 +104,6 @@ function() {
 		var searchParams = {
 			query:		this._getFolderQuery(run._folderList),
 			types:		ZmItem.MSG,
-			forceTypes:	true,
 			limit:		ZmProgressController.CHUNK_SIZE,
 			idsOnly:	true,
 			noBusyOverlay: true

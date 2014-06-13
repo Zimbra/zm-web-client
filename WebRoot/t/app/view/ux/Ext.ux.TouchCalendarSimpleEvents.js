@@ -75,7 +75,7 @@ Ext.define('Ext.ux.TouchCalendarSimpleEvents', {
 	 * @cfg {Boolean} multiEventDots True to display a dot for each event on a day. False to only show one dot regardless
 	 * of how many events there are
 	 */
-	multiEventDots: false,
+	multiEventDots: true,
 	
 	/**
 	 * @cfg {String} wrapperCls CSS class that is added to the event dots' wrapper element
@@ -92,7 +92,7 @@ Ext.define('Ext.ux.TouchCalendarSimpleEvents', {
 	 * @cfg {Number} dotWidth Width in pixels of the dots as defined by CSS. This is used for calculating the positions and
 	 * number of dots able to be shown.
 	 */
-	dotWidth: 16,
+	dotWidth: 6,
 	
 	/**
 	 * @cfg {String} eventTpl Template used to create the Event markup. Template is merged with the records left

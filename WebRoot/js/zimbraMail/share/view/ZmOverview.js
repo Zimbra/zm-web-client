@@ -46,7 +46,6 @@
  * @param	{Boolean}	params.isCheckedByDefault	the default state for "checked" display style
  * @param	{Boolean}	params.noTooltips			if <code>true</code>, do not show toolt ips for tree items
  * @param	{Boolean}	params.skipImplicit			if <code>true</code>, do not save implicit prefs of expanded/collapsed node status for this overview (see ZmDialog.prototype._setOverview)
- * @param	{Boolean}	params.dynamicWidth			if <code>true</code>, the width is dynamic, i.e. the width is auto instead of fixed. Used for ZmDolderChooser so far.
  * @param {ZmOverviewController}	controller			the overview controller
  * 
  * @extends	DwtComposite
@@ -59,14 +58,13 @@ ZmOverview = function(params, controller) {
 
 	this._controller = controller;
 
-	this.setScrollStyle(params.scroll || Dwt.SCROLL_Y);
+	this.setScrollStyle(params.scroll || Dwt.SCROLL);
 
 	this.overviewId			= params.overviewId;
 	this.containerId		= params.containerId;
 	this.account			= params.account;
 	this.selectionSupported	= params.selectionSupported;
 	this.actionSupported	= params.actionSupported;
-	this.dynamicWidth		= params.dynamicWidth;
 	this.dndSupported		= params.dndSupported;
 	this.headerClass		= params.headerClass;
 	this.showUnread			= params.showUnread;
@@ -76,7 +74,6 @@ ZmOverview = function(params, controller) {
 	this.noTooltips			= params.noTooltips;
 	this.isAppOverview		= params.isAppOverview;
 	this.skipImplicit 		= params.skipImplicit;
-	this.appName            = params.appName;
 
 	this._treeIds			= [];
 	this._treeHash			= {};
@@ -311,13 +308,6 @@ function() {
 	}
 };
 
-ZmOverview.prototype.clearSelection =
-function() {
-	if (this._selectedTreeItem) {
-		this._selectedTreeItem._tree.deselectAll();
-	}
-};
-
 /**
  * @private
  */
@@ -340,10 +330,9 @@ function() {
 		}
 	}
 
-    if (item) {
-        item.focus();
-        item._tree.setSelection(item, false, true);
-    }
+	if (item) {
+		item.focus();
+	}
 };
 
 /**

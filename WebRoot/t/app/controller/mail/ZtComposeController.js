@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2012, 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -83,7 +83,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		action:     '',
 		origMsg:    null,   // reply/forward
 		draftId:    null,   // ID of existing draft to delete when edited version is sent
-		autoSaveActionId: null, // setInterval identifier used for the autosaving drafts
 		formHash:   ''      // used to perform dirty check
 	},
 
@@ -101,7 +100,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var addresses = {},
 			subject = null,
 			body = null,
-			signature = this.getSignature(false);
+			signature = ZCS.session.getSetting(ZCS.constant.SETTING_SIGNATURE);
 
 		if (msg) {
 			Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
@@ -178,15 +177,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 */
 	getReplyAddresses: function(msg, action) {
 
-		var addrs = {};
-		if (!msg) {
-			return addrs;
-		}
-
-		var	replyAddr = msg.getReplyAddress();
-		if (!replyAddr) {
-			return {};
-		}
+		var addrs = {},
+			replyAddr = msg.getReplyAddress();
 
 		replyAddr.set('type', ZCS.constant.TO);
 		addrs[ZCS.constant.TO] = [ replyAddr ];
@@ -218,12 +210,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		return addrs;
 	},
 
-	// return appropriate signature, as long as signatures are enabled
-	getSignature: function(isReplyOrForward) {
-		return ZCS.session.getSetting(ZCS.constant.SETTING_SIGNATURES_ENABLED) ?
-			ZCS.session.getSetting(isReplyOrForward ? ZCS.constant.SETTING_REPLY_SIGNATURE : ZCS.constant.SETTING_SIGNATURE) : '';
-	},
-
 	/**
 	 * Show the compose form, prepopulating any parameterized fields
 	 *
@@ -234,7 +220,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 */
 	showComposeForm: function(addresses, subject, body, msg) {
 
-		var panel = ZCS.util.getLazyReference('ZCS.view.mail.ZtComposeForm'),
+		var panel = this.getComposePanel(),
 			form = panel.down('formpanel'),
 			formField = {},
 			subjectFld = form.down('field[name=subject]'),
@@ -349,8 +335,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			me = this;
 
 		if (this.isDirty()) {
-			this.stopDraftTimer();
-
 			Ext.Msg.show({
 				title: ZtMsg.warning,
 				message: ZtMsg.saveDraftWarning,
@@ -366,20 +350,11 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 					else if (buttonId === 'no') {
 						me.endComposeSession();
 					}
-					else {
-						me.startDraftTimer();
-					}
 				}
 			});
 		}
 		else {
 			this.endComposeSession();
-		}
-	},
-
-	doAutoSave: function() {
-		if (this.isDirty()) {
-			this.doSaveDraft();
 		}
 	},
 
@@ -434,8 +409,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 					me.doShowAllAttachments(attachments);
 
-					me.getComposePanel().resetFileField();
 				}
+
+				//Adds an attachment
 			},
 			failure: function(response) {
 				// ? what to do on file upload failure...
@@ -473,39 +449,18 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * but can also take a message created via quick reply and send that.
 	 */
 	sendMessage: function(msg, callback, scope) {
-
 		var me = this,
-			panel = this.getComposePanel(),
-			toolbar = panel && panel.down('titlebar'),
-			buttons = toolbar && toolbar.query('button');
-
-		this.stopDraftTimer();
-
-		// disable buttons during request
-		Ext.each(buttons, function(button) {
-			button.disable();
-		}, this);
+			composePanel = this.getComposePanel();
 
 		msg.save({
 			success: function() {
-				Ext.each(buttons, function(button) {
-					button.enable();
-				}, this);
 				ZCS.app.fireEvent('showToast', ZtMsg.messageSent);
 				ZCS.app.fireEvent('messageSent', this.getDraftId() != null);
-				this.endComposeSession();
+				me.endComposeSession();
 				if (callback) {
 					callback.apply(scope);
 				}
 				this.setFormHash('');
-				this.startDraftTimer();
-
-			},
-			failure: function() {
-				Ext.each(buttons, function(button) {
-					button.enable();
-				}, this);
-				this.startDraftTimer();
 			}
 		}, this);
 	},
@@ -700,7 +655,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		var	quoted = usePrefix ? this.quoteHtml(content) : content;
 
-		var signature = this.getSignature(true),
+		var signature = ZCS.session.getSetting(ZCS.constant.SETTING_REPLY_SIGNATURE),
 			sigStyle = ZCS.session.getSetting(ZCS.constant.SETTING_SIGNATURE_STYLE),
 			body = '';
 
@@ -799,15 +754,11 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 * @return {Boolean}    true if the contents of the form have changed since it was shown
 	 */
 	isDirty: function() {
-		var composePanel = this.getComposePanel();
 
-        //always do hash comparison on Android,
-        //since isHidden() method seems to return incorrect value on Android
-		if (composePanel && composePanel.isHidden() && !Ext.os.is.Android) {
+		if (this.getComposePanel().isHidden()) {
 			return false;
-		} else if (!composePanel) {
-			return false;
-		} else {
+		}
+		else {
 		    return this.getFormHash() != this.calculateFormHash();
 		}
 	},
@@ -824,65 +775,18 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		var values = this.getComposeForm().getValues(),
 			editor = this.getEditor();
 
-		// TODO: import AjxMD5 (or similar) to convert this to a proper hash
-		var parts = [];
-
-		Ext.iterate(values, function(type, value) {
-			parts.push(type);
-
-			if (value instanceof Array) {
-				Array.prototype.push.apply(parts, value);
-			} else {
-				parts.push(value);
-			}
+		var parts = Ext.Array.map(ZCS.constant.RECIP_TYPES, function(type) {
+			return Ext.Array.map(values[type], function(addr) {
+				return addr.get('email');
+			}).join('\u001E');
 		});
 
-		parts.push(editor ? editor.innerHTML.length : 0);
+		parts.push(values.subject, editor ? editor.innerHTML.length : 0);  // MD5 of content would be better
 
-		var attBubbles = this.getAttachmentsField().element.query('.zcs-attachment-bubble');
-
-		Ext.Array.forEach(attBubbles, function(bubble) {
-			var idParams = ZCS.util.getIdParams(bubble.id);
-
-			if (idParams && idParams.objType === ZCS.constant.OBJ_ATTACHMENT) {
-				parts.push(bubble.getAttribute('aid') || idParams.url);
-			}
-		});
-
-		// individual chunks separated by a NUL
-		return parts.join('\u0000');
-	},
-
-	startDraftTimer: function() {
-		this.stopDraftTimer();
-
-		// We cannot use Ext.util.DelayedTask for the draft timer, as it
-		// cancels itself _after_ invoking its function, preventing the
-		// function from restarting it.
-		//
-		// Instead, we use an interval to ensures that we only ever have one
-		// single draft timer running.
-		var saveInterval =
-			ZCS.session.getSetting(ZCS.constant.SETTING_AUTO_SAVE_INTERVAL);
-
-		if (saveInterval) {
-			this.autoSaveActionId =
-				window.setInterval(Ext.Function.bind(this.doAutoSave, this),
-								   saveInterval * 1000);
-		}
-	},
-
-	stopDraftTimer: function() {
-		if (this.autoSaveActionId != null) {
-			window.clearInterval(this.autoSaveActionId);
-
-			this.autoSaveActionId = null;
-		}
+		return parts.join('\u001D');
 	},
 
 	unhideComposeForm: function () {
-
-
 		if (Ext.os.deviceType === "Phone") {
 			this.getComposePanel().element.dom.style.removeProperty('display');
 		} else {
@@ -891,14 +795,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				duration: 250
 			});
 		}
-
-		this.startDraftTimer();
 	},
 
 	hideComposeForm: function () {
-
-		this.stopDraftTimer();
-
 		if (Ext.os.deviceType === "Phone") {
 			this.getComposePanel().element.dom.style.setProperty('display', 'none');
 		} else {

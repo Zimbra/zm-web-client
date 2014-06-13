@@ -31,6 +31,10 @@
 	color: $base-color;
 }
 
+.zcs-form-input {
+	border-bottom: 1px solid #F7F7F7;
+}
+
 .zcs-offscreen {
 	position: absolute;
 	top: -10000px;
@@ -54,18 +58,11 @@
 	border-right: 1px solid $default-border-color;
 }
 
-.x-scroll-scroller {
-	max-width: 100%;
-}
-
-$zcs-titlebar-fontsize: 1.2rem;       // for titlebar icons & labels - base value in REM
-$zcs-titlebar-height: 2.8em;          // for titlebar height
-$zcs-title-fontsize: 1.2em;           // for titlebar text - slightly larger to stand out
-$zcs-textbutton-fontsize: 1em;            // for titlebar text button
+$zcs-titlebar-fontsize: 1.2rem;       // for titlebar height, icons & labels
+$zcs-title-fontsize: 1.4rem;          // for titlebar text - slightly larger to stand out
 $zcs-list-header-fontsize: 0.9rem;    // for org list category header text
 $zcs-list-fontsize: 0.9rem;           // for typical list item text
 $zcs-list-item-fontsize: 1.2rem;      // for app menu list items
-$zcs-titlebar-phnLndscp: 0.75;        // multiplier for phone landscape view
 
 @mixin zimbra-button() {
 	background-image: none;
@@ -99,14 +96,6 @@ $zcs-overview-base-color: $dark-grey;
 $zcs-overview-edit-color: lighten($zcs-overview-base-color, 10%);
 $zcs-overview-category-color: darken($dark-grey, 10%);
 $zcs-overview-text-color: $light-grey;
-
-.zcs-color-block{
-  display: inline-block;
-  height: 1.1em;
-  width: 1.1em;
-  vertical-align: -0.2em;
-  border: 1px solid #969696;
-}
 
 .zcs-overview-toolbar {
 	border: none;
@@ -159,12 +148,7 @@ $zcs-overview-text-color: $light-grey;
 			}
 		}
 		.x-button.x-button-back {
-			margin: 0 5px;
-			min-width: 1.5em;
-
-			&:before {
-				color:white;
-			}
+			color:white;
 		}
 	}
 
@@ -317,29 +301,12 @@ $zcs-overview-text-color: $light-grey;
 				border-bottom: none;
 			}
 
-			/**
-			 * Making sure the disclosure icon for browser to sub folders is big enough
-			 * so that it is easily tappable on smaller form factors.
-			 */
-			.x-list-disclosure {
-				height: 100%;
-				margin: 10px 0px 10px;
-				min-width: 69px;
-
-				&:before {
-					font-size: 1.2em;
-				}
-
-				&.x-item-hidden + .x-innerhtml .zcs-menu-label {
-					margin-right: 0;
-				}
+			.x-innerhtml {
+				@include ellipsis();
 			}
 
 			.zcs-menu-label {
-				margin-right: 1.2em;
-				overflow: hidden;
 				padding-left: 2.2em;
-				@include ellipsis();
 			}
 
 			.zcs-menu-icon:before {
@@ -374,19 +341,6 @@ $zcs-overview-text-color: $light-grey;
 			.zcs-menu-icon.tag:before {
 				content: "t";
 			}
-			.zcs-menu-icon.mailFolder:before {
-			  content: "M";
-			}
-			.zcs-menu-icon.addressBook:before {
-			  content: "N";
-			}
-			.zcs-menu-icon.calendarFolder:before {
-			  content: "L";
-			}
-			.zcs-menu-color-block {
-			  @extend .zcs-color-block;
-			  margin-right: 0.5em;
-			}
 		}
 	}
 }
@@ -398,7 +352,6 @@ $zcs-overview-text-color: $light-grey;
 		background-color: $zcs-overview-edit-color;
 	}
 }
-
 
 /* Floating List */
 
@@ -502,37 +455,60 @@ $contact-suggest-radius: $floating-list-radius;
 	}
 }
 
-/* List Panel - Search */
 
-.zcs-list-search {
-	background-color: $list-bg-color;
-	padding: 0.4rem;
+/* List Panel */
 
-	.x-form-fieldset-inner {
+.zcs-list-panel {
+	@extend .zcs-side-panel;
+
+	.zcs-list-titlebar {
+		font-size: $zcs-titlebar-fontsize;
 		border: none;
-		background: transparent;
+		@include border-radius(0);
 
-		.x-field-search {
-			min-height: 2rem;
+		.x-title {
+			font-size: $zcs-title-fontsize;
+			font-weight: normal;
+			color: $primary-text-color;
+		}
+	}
 
-			INPUT {
-				min-height: 2rem;
-				padding: 0 0.4rem;
+	.x-list {
+		font-size: $zcs-list-fontsize;
+
+		.x-list-item {
+			&.x-list-item-tpl::before {
+				left: 0;
+			}
+
+//			&:active,
+			&.x-item-pressed {
+				background-color: darken($zcs-button-active-bkgd-color,15) !important;
+				color: $zcs-button-active-color;
+			}
+
+			&.x-list-item-selected.x-list-item-tpl {
+				background-color: $zcs-button-active-bkgd-color !important;
+				color: $zcs-button-active-color;
 			}
 		}
 	}
 }
 
-// Base classes to be extended by apps
+/* List Panel - Search */
 
-.zcs-list-item-pressed {
-	background: lighten($list-active-color,10);
-	color: $primary-text-color;
-}
+.zcs-list-search {
+	background-color: $list-bg-color;
+	padding: 8px;
 
-.zcs-list-item-selected {
-	background: $list-active-color;
-	color: $white;
+	.x-form-fieldset-inner {
+		border: none;
+		background: transparent;
+
+		.x-field-search input {
+			padding: 0em .4em;
+		}
+	}
 }
 
 /* Not sure what this is supposed to do - commenting out for now */
@@ -557,11 +533,9 @@ $contact-suggest-radius: $floating-list-radius;
 .zcs-item-titlebar {
 
 	&.x-toolbar {
-		border-color: transparent;
-		font-size: $zcs-titlebar-fontsize;
-		height: $zcs-titlebar-height;
-		min-height: $zcs-titlebar-height;
-		@include border-radius(0);
+	font-size: $zcs-titlebar-fontsize;
+	border-color: transparent;
+	@include border-radius(0);
 
 		.x-title {
 			font-size: $zcs-title-fontsize;
@@ -575,7 +549,7 @@ $contact-suggest-radius: $floating-list-radius;
 		.x-button-icon,
 		.x-button-label {
 			color: $base-color;
-			font-size: $zcs-textbutton-fontsize;
+			font-size: $zcs-titlebar-fontsize;
 		}
 
 		&:active,
@@ -596,200 +570,7 @@ $contact-suggest-radius: $floating-list-radius;
 			}
 		}
 	}
-}
 
-.x-phone.x-landscape {
-	.zcs-item-titlebar.x-toolbar {
-		font-size: $zcs-titlebar-fontsize * $zcs-titlebar-phnLndscp;
-	}
-}
-
-/* Form Display Panel */
-
-$formDisplayBaseFontSize: 1rem;
-$formDisplayLabelWidth: 7rem;
-$formDisplayLabelWidthPhone: $formDisplayLabelWidth * 0.5;
-
-$formDisplayGutter: 1rem;
-$formDisplayFieldWidth: 21rem; //optimized intially for iPad in landscape
-
-/*.zcs-fieldSets {
-	font-size: $formDisplayBaseFontSize;
-
-	.zcs-fieldSet {
-		@extend .zcs-newLine;
-		margin-bottom: 1em;
-
-		.zcs-label {
-			@extend .zcs-floatLeft;
-			@include ellipsis();
-			@include opacity(.5);
-			margin-left: 0.75em;
-			text-align: right;
-			width: $formDisplayLabelWidth;
-
-			&:after {
-				//				content: ":";
-			}
-		}
-
-		.zcs-fields {
-			@extend .zcs-floatLeft;
-
-			.zcs-field {
-				@extend .zcs-newLine;
-				@include ellipsis();
-				margin: 0 1em 1.5em $formDisplayGutter;
-				max-width: $formDisplayFieldWidth * 2;
-				min-width: $formDisplayFieldWidth;
-			}
-		}
-
-		.zcs-subLabel {
-			@extend .zcs-floatLeft;
-			@include ellipsis();
-			@include opacity(.4);
-		}
-	}
-}
-
-.x-portrait .zcs-fieldSets {
-	// tablet portrait
-}
-
-.x-phone .zcs-fieldSets {
-	font-size: $formDisplayBaseFontSize * 0.9;
-
-	.zcs-label {
-		width: $formDisplayLabelWidthPhone;
-	}
-
-	.zcs-fields .zcs-field {
-		max-width: $formDisplayFieldWidth;
-		min-width: $formDisplayFieldWidth * 0.5;
-	}
-
-}
-
-.x-phone.x-portrait {
-	.zcs-fieldSets .zcs-fields .zcs-field {
-		max-width: $formDisplayFieldWidth * 0.57;
-		min-width: $formDisplayFieldWidth * 0.43;
-	}
-}
-*/
-
-/* Form Editor Panel */
-
-$zcs-form-font-size: 1.2rem;
-$zcs-form-bg-color: #DDD;
-$zcs-form-height: 1.8rem;
-$zcs-form-multifield-radius: 0.5em;
-
-.zcs-formline {
-	min-height: $zcs-form-height;  //overrides 100% from sencha
-}
-
-.zcs-form {
-	font-size: $zcs-form-font-size;
-	min-height: $zcs-form-height;
-
-	.x-scroll-container {
-		background-color: $zcs-form-bg-color;
-
-		.x-form-inner {
-			@extend .zcs-formline;
-
-			.multifield {
-				margin-left: 10px;
-				margin-right: 10px;
-				overflow: hidden;
-				@include border-radius($zcs-form-multifield-radius);
-
-				.zcs-form-multifield-field {
-					border-bottom: 1px solid $zcs-form-bg-color;
-
-					.x-button {  // See Form Field Buttons for more
-						background-color: transparent;
-						height: 3.5rem;
-						left: 10px;
-						position: absolute;
-					}
-
-					.x-field {
-						padding-left: 2.8rem;
-
-						.x-input-el {  // Data text
-							color: $primary-text-color;
-							font-size: $zcs-form-font-size;
-							font-weight: normal;
-							padding: 0.8rem 0;
-						}
-					}
-				}
-			}
-
-			// Clear icons should only be shown on focus
-			// but can't use this easily until clear icon is font-based
-			/*.x-field {
-				.x-field-input .x-clear-icon {
-				}
-				&.x-field-focused {
-					.x-field-input .x-clear-icon {
-					}
-				}
-			}*/
-		}
-	}
-}
-
-.zcs-form-spacer {
-	border-bottom: 1px solid $light-grey;
-	margin-bottom: 1rem;
-}
-
-//.zcs-form-input {
-//	border-bottom: 1px solid #F7F7F7;
-//}
-
-
-/* Form Field Buttons */
-
-$fieldButtonSize: 1.4rem;
-$fieldButtonLabelSize: 1.2rem;
-
-.form-field-button {
-	@include border-radius(initial);
-	border: none;
-}
-
-.form-remove-field-button {
-	@extend .form-field-button;
-	height: auto;
-	padding-left: 5px;
-
-	.x-button-icon:before{
-		color: red;
-		font-size: $fieldButtonSize;
-	}
-}
-
-.form-add-field-button {
-	@extend .form-field-button;
-
-	.x-button-label {
-		font-size: $fieldButtonLabelSize;
-		text-align: left;
-
-		.form-add-field-button-text:before {
-			color: green;
-			content: "+";
-			font-family: "pictos";
-			font-size: $fieldButtonSize;
-			margin-right: 10px;
-			text-align: center;
-		}
-	}
 }
 
 

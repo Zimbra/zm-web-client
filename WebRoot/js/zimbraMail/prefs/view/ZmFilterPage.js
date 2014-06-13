@@ -14,13 +14,13 @@
  */
 
 /**
- * Creates the filters page, with tabs for incoming and outgoing filters.
+ * Creates the import/export page.
  * @class
- * This class represents the filters page.
+ * This class represents the import/export page.
  * 
- * @param {DwtControl}	            parent			the containing widget
- * @param {Object}	                section			the page
- * @param {ZmFilterController}	    controller		the filter controller
+ * @param {DwtControl}	parent			the containing widget
+ * @param {Object}	section			the page
+ * @param {ZmPrefController}	controller		the prefs controller
  * 
  * @extends	ZmPreferencesPage
  * 
@@ -33,8 +33,10 @@ ZmFilterPage = function(parent, section, controller) {
 ZmFilterPage.prototype = new ZmPreferencesPage;
 ZmFilterPage.prototype.constructor = ZmFilterPage;
 
-ZmFilterPage.prototype.isZmFilterPage = true;
-ZmFilterPage.prototype.toString = function () { return "ZmFilterPage"; };
+ZmFilterPage.prototype.toString =
+function () {
+    return "ZmFilterPage";
+};
 
 ZmFilterPage.prototype._createControls =
 function() {
@@ -52,13 +54,7 @@ function() {
 	this.setVisible(true);
 	
 	this.hasRendered = true;
-};
-
-ZmFilterPage.prototype.reset =
-function() {
-	ZmPreferencesPage.prototype.reset.apply(this, arguments);
-	this._controller._stateChangeListener();
-};
+}
 
 ZmFilterPage.prototype.getTabView =
 function () {

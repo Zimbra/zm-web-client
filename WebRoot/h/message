@@ -31,7 +31,7 @@
     <table width=100% cellpadding="0" cellspacing="0">
         <tr>
             <td class='ZhAppContent'>
-                <c:if test="${zm:boolean(print)}">
+                <c:if test="${print}">
                 <table  border=0 width=100% cellpadding="7">
                     <tr>
                         <td style="font-size:20px;font-weight:bold;" ><fmt:message key="zimbraTitle"/></td>
@@ -52,7 +52,7 @@
                 <zm:currentResultUrl var="composeUrl" value="search" context="${null}"
                                      action="compose" paction="view" id="${msg.id}"/>
                 <c:choose>
-                    <c:when test="${zm:boolean(print)}">
+                    <c:when test="${print}">
                         <app:messagePrintView mailbox="${mailbox}" message="${msg}" />
                     </c:when>
                     <c:otherwise>
@@ -62,7 +62,7 @@
             </td>
         </tr>
     </table>
-<c:if test="${zm:boolean(print)}">
+<c:if test="${print}">
 <script type="text/javascript">
     <!--
     window.print();

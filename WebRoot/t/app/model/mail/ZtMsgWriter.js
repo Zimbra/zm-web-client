@@ -44,7 +44,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 
 			var curFolder = ZCS.session.getCurrentSearchOrganizer(),
 				curFolderId = curFolder && curFolder.get('zcsId'),
-				fetch = (curFolderId === ZCS.constant.ID_DRAFTS) ? 'all' : 'u!';
+				fetch = (curFolderId === ZCS.constant.ID_DRAFTS) ? 'all' : 'u1';
 
 			Ext.apply(methodJson, {
 				cid:    convId,
@@ -80,10 +80,7 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				mime = msg.getMime(),
 				origAtt = msg.get('origAttachments'),
 				attachments = msg.get('attachments'),
-				draftId = msg.get('draftId'),
-				isSeries = itemData.isSeries,
-				ridZ = itemData.ridZ,
-				exceptId = {};
+				draftId = msg.get('draftId');
 
 			// recipient addresses
 			for (i = 0; i < ln; i++) {
@@ -145,28 +142,13 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			}
 
 			if (itemData.isInviteReply) {
-
-				var invReply = {
+				Ext.apply(methodJson, {
 					compNum:            0,
 					id:                 origId,
 					idnt:               identityId,
 					updateOrganizer:    'TRUE',
 					verb:               msg.get('inviteAction')
-				};
-
-				/* In case of accepting invite from Mail app, isSeries & ridZ would be undefined.
-				   While accepting an invite from Mail app, action is always on series.
-				   When user accepts an invite from calendar invite view, action can be taken on individual
-				   instance/exception or series.
-				 */
-				if (itemData.isCalApp) {
-					if (!isSeries) {
-						exceptId.d = ridZ;
-						invReply.exceptId = exceptId;
-					}
-				}
-
-				Ext.apply(methodJson, invReply);
+				});
 			}
 
 			if (draftId) {
@@ -201,16 +183,6 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 						header:     ZCS.constant.ADDITIONAL_MAIL_HEADERS
 					}
 				});
-			}
-			else if (itemData.op === 'delete' && itemData.isApptRequest) {
-				var isHardDelete = itemData.hardDelete;
-
-				// TODO: Cancel appointment without notifying organizer
-				request.setUrl(ZCS.constant.SERVICE_URL_BASE + (isHardDelete ? 'ItemActionRequest' : 'CancelAppointmentRequest'));
-				json = this.getSoapEnvelope(request, data, isHardDelete ? 'ItemAction' : 'CancelAppointment');
-				methodJson = isHardDelete ? json.Body.ItemActionRequest : json.Body.CancelAppointmentRequest;
-
-				Ext.apply(methodJson, itemData.cancelReqObject);
 			}
 			else {
 				json = this.getActionRequest(request, itemData, 'MsgAction');

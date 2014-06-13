@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -22,7 +22,7 @@
 <app:handleError>
 <zm:composeUploader var="uploader"/>
 <c:set var="needComposeView" value="${param.action eq 'compose'}"/>
-<c:if test="${zm:boolean(param.cancelConfirmed)}">
+<c:if test="${param.cancelConfirmed }">
     <c:set var="needComposeView" value="${false}"/>
     <c:if test="${not empty sessionScope.temp_draftid}">
         <zm:deleteMessage var="result" id="${sessionScope.temp_draftid}"/>

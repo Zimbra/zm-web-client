@@ -76,10 +76,10 @@
             "path": "app/view/ux/Ext.ux.TouchCalendarWeekEvents.js"
         },
         {
-            "path": "app/view/ux/Time.js"
+            "path": "app/view/ux/DateTimePicker.js"
         },
         {
-            "path": "app/view/ux/TimePicker.js"
+            "path": "app/view/ux/DateTime.js"
         }
     ],
 
@@ -118,7 +118,7 @@
      */
     "resources": [
         "resources/images",
-        "../img/logo",
+        "resources/icons",
         "resources/startup"
     ],
 

@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -76,7 +76,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		activeList.setReadOnly(true);
 
-		ZCS.app.getAssignmentController().showAssignmentView(item, type, this.getApp(), this.afterAssignment.bind(this));
+		ZCS.app.getAssignmentController().showAssignmentView(item, type, this.getApp(), this, 'afterAssignment');
 
 		if (quickReply) {
 			quickReply.hide();
@@ -116,7 +116,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 	 * @param {ZtMailitem}      item    item to tag or untag
 	 */
 	saveItemTag: function (tag, item) {
-		this.tagItem(item, tag, false);
+		this.tagItem(item, tag.get('name'), false);
 	},
 
 	/**
@@ -190,7 +190,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		var isConv = (item.get('type') === ZCS.constant.ITEM_CONVERSATION),
 			toastMsg = isConv ? ZtMsg.moveConversation : ZtMsg.moveMessage,
-			folder = ZCS.session.getOrganizerModel(folderId),
+			folder = ZCS.cache.get(folderId),
 			folderName = folder && folder.get('displayName');
 
 		if (isConv) {

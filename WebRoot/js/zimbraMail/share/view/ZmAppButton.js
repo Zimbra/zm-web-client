@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -39,37 +39,14 @@
  */
 ZmAppButton = function(params) {
 
-	if (arguments.length == 0) {
-		return;
-	}
+	if (arguments.length == 0) { return; }
 
     params.style = params.style ? params.style : DwtLabel.IMAGE_LEFT;
 	params.posStyle = DwtControl.RELATIVE_STYLE;
     DwtButton.call(this, params);
 
-	if (params.image) {
-		this.setImage(params.image);
-	}
-	else {
-		if (params.leftImage) {
-			this.setImage(	params.leftImage, DwtLabel.LEFT);
-		}
-		if (params.rightImage) {
-			this.setImage(params.rightImage, DwtLabel.RIGHT);
-		}
-	}
-
-	if (params.hoverImage) {
-		this.setHoverImage(params.hoverImage);
-	}
-	else {
-		if (params.leftHoverImage) {
-			this.setHoverImage(params.leftHoverImage, DwtLabel.LEFT);
-		}
-		if (params.rightHoverImage) {
-			this.setHoverImage(params.rightHoverImage, DwtLabel.RIGHT);
-		}
-	}
+    this.setImage(params.image);
+    this.setHoverImage(params.hoverImage);
     this.setText(params.text);
 };
 

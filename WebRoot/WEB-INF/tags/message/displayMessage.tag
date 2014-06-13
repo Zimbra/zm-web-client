@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -209,7 +209,7 @@
                     <td nowrap align="left" style='padding-left: 5px'>
                         <table cellspacing="0" cellpadding="0" class='Tb'>
                             <tr>
-                                <c:if test="${zm:boolean(showInviteReply)}">
+                                <c:if test="${showInviteReply}">
                                     <td style='padding: 0 2px 0 2px'>
                                         <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=accept">
                                             <app:img src="common/ImgCheck.png" alt="check"/>
@@ -363,7 +363,7 @@
         </td>
         <c:if test="${needExtraCol}">
             <c:choose>
-                <c:when test="${zm:boolean(showInviteReply)}">
+                <c:when test="${showInviteReply}">
                     <td width="25%" valign="top"  class='ZhAppContent2'>
                         <c:catch>
                             <app:multiDay selectedId="${message.id}" date="${appt.start.calendar}" numdays="1" view="day" timezone="${mailbox.prefs.timeZone}"/>

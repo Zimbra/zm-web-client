@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -104,13 +104,8 @@ function() {
 
 	// create options
 	var options = [];
-	//In Web Client offline mode signature having vCard will be suppressed
-	var isWebClientOffline = appCtxt.isWebClientOffline();
 	for (var i = 0; i < signatures.length; i++) {
 		var signature = signatures[i];
-		if (isWebClientOffline && signature.contactId) {
-			continue;
-		}
 		options.push(new DwtSelectOptionData(signature.id, signature.name));
 	}
 	options.push(new DwtSelectOptionData("", ZmMsg.signatureDoNotAttach));

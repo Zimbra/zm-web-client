@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -42,12 +42,12 @@
         <span class='label' width="20%">${fn:escapeXml(label)}</span>
         <span class="value">
             <c:choose>
-                <c:when test="${zm:boolean(isurl)}">
+                <c:when test="${isurl}">
                     <c:set var="prefix" value="${fn:contains(value,'//') ? '' : 'http://'}"/>
                     <c:url var="url" value="${prefix}${value}"/>
                     <a target="_new" href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>
-                <c:when test="${zm:boolean(isaddress)}">
+                <c:when test="${isaddress}">
                     <c:url var="gmaps" value="http://maps.google.com/maps">
                         <c:param name="q" value="${street} ${city} ${state} ${postalcode} ${country}"/>
                     </c:url>
@@ -63,11 +63,11 @@
                         <c:if test="${not empty country}">,&nbsp;${fn:escapeXml(country)}</c:if>
                     </a>
                 </c:when>
-                <c:when test="${zm:boolean(isphone)}">
+                <c:when test="${isphone}">
                     <c:url var="url" value="tel:${value}"/>
                     <a target="_new" href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>
-                <c:when test="${zm:boolean(isemail)}">
+                <c:when test="${isemail}">
                     <c:url value="${context_url}" var="url">
                         <c:param name="st" value="newmail"/>
                         <c:param name="to" value="${value}"/>

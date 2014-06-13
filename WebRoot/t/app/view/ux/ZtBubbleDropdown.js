@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -78,9 +78,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 				}
 			},
 			destroy: function () {
-                if (this.menu) {
-                    this.menu.destroy();
-                }
+				this.menu.destroy();
 				this.showMenu = null;
 			},
 			/**
@@ -91,11 +89,6 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 				var me = this;
 
 				this.showMenu = Ext.Function.createBuffered(function (value) {
-
-					// no autocomplete if contacts app is disabled
-					if (!ZCS.util.isAppEnabled(ZCS.constant.APP_CONTACTS)) {
-						return;
-					}
 
 					if (!this.menu) {
 						this.menu = Ext.create('Ext.dataview.List', {
@@ -167,7 +160,7 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 					} else {
 						this.menu.hide();
 					}
-				}, 750, this);
+				}, 100, this);
 			}
 		}
 	},
@@ -197,7 +190,6 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	 * Retrieve menu items based on the current menu store.
 	 */
 	getMenuItems: function () {
-
 		var menuRecords = [],
 			me = this,
 			label,
@@ -208,15 +200,26 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 				var name = record.get('longName'),
 					email = record.get('email');
 				label = (name || email) ? tpl.apply({ name:name, email:email }) : null;
-			}
-			else {
+			} else {
 				label = record.get(me.getDropdownDisplayField());
 			}
 
+			var groupMembers, contactGroup,
+				isGroup = record.get('isGroup');
+			if (isGroup) {
+				contactGroup = ZCS.cache.get(record.get('contactId'));
+				if (contactGroup) {
+					groupMembers = Ext.Array.clean(Ext.Array.map(contactGroup.get('members'), function(member) {
+						return ZCS.model.mail.ZtEmailAddress.fromEmail(member.memberEmail);
+					}));
+				}
+			}
+
 			menuRecords.push({
-				label:              label,
-				isGroup:            record.get('isGroup'),
-				autocompleteRecord: record
+				label: label,
+				isGroup: isGroup,
+				groupMembers: groupMembers,
+				emailRecord: record
 			});
 		});
 
@@ -230,7 +233,6 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	 * Shows the menu ui element with the contents of the menu store.
 	 */
 	loadMenuFromStore: function () {
-
 		var menuItems,
 			menu = this.menu,
 			store = menu.getStore();
@@ -255,31 +257,21 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 	},
 
 	handleMenuItemTap: function (list, index, target, record, e, eOpts) {
+		var me = this,
+			isGroup = record.get('isGroup'),
+			groupMembers = record.get('groupMembers'),
+			gotGroupMembers = groupMembers && groupMembers.length > 0,
+			emailRecord = record.get('emailRecord');
 
-		var acRecord = record.get('autocompleteRecord'),
-			contactId = acRecord && acRecord.get('contactId'),
-			me = this;
+		me.clearInput();
+		 if (gotGroupMembers) {
+            me.addBubbles(groupMembers);
+        } else {
+            me.addBubble(emailRecord);
+        }
 
-		if (record.get('isGroup') && contactId) {
-			// expand contact group and add a bubble for each member
-			ZCS.app.getContactListController().loadGroupMembers(contactId, function(response) {
-				var contact = response[0],
-					members = contact && contact.get('members');
-
-				if (members) {
-					var groupMembers = Ext.Array.clean(Ext.Array.map(members, function(member) {
-						return ZCS.model.mail.ZtEmailAddress.fromEmail(member.memberEmail);
-					}));
-					me.addBubbles(groupMembers);
-				}
-			});
-		}
-		else {
-			this.addBubble(acRecord);
-		}
-
-		this.clearInput();
-		this.focusInput();
+		me.clearInput();
+		me.focusInput();
 		list.hide();
 
 		e.preventDefault();

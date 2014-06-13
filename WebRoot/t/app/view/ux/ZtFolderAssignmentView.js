@@ -26,28 +26,24 @@ Ext.define('ZCS.view.ux.ZtFolderAssignmentView', {
 
 	config: {
 		/**
-		 * @cfg {ZCS.model.ZtOrganizer} organizerRoot
+		 * @cfg {Object} Organizer tree with which to populate the store
 		 */
-		organizerRoot: null
+		organizerTree: null
 	},
 
 	constructor: function (config) {
 
-		var cfg = config || {};
+		var cfg = config || {},
+			organizerData = {
+			items: cfg.organizerTree
+		};
 
 		var listType = ZCS.constant.ORG_LIST_ASSIGNMENT,
 			organizerStore = Ext.create('ZCS.store.ZtOrganizerStore', {
-					storeId:    [ cfg.app, listType ].join('-'),
-					type:       listType,
-					root: cfg.organizerRoot
-			});
-
-		organizerStore.filter(function (item) {
-			return item.get('type') === ZCS.constant.ORG_FOLDER;
+				storeId:    [ cfg.app, listType ].join('-'),
+				type:       listType
 		});
-
-		organizerStore.doDefaultSorting();
-
+		organizerStore.setRoot(organizerData);
 
 		cfg.list = {
 			xtype:              'organizerlist',

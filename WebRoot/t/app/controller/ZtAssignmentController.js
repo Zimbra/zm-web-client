@@ -30,6 +30,10 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 		"ZCS.view.ux.ZtTagAssignmentView"
 	],
 
+	mixins: {
+		organizerNotificationHandler: 'ZCS.common.ZtOrganizerNotificationHandler'
+	},
+
 	config: {
 		/**
 		 * @cfg {Object}    hash keyed by app/type, eg 'folder-mail' or 'tag-contacts'
@@ -37,17 +41,24 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 		assignmentViews: {}
 	},
 
-	/**
-	 * Shows an animated assigment view. The item to assign is animated in the item panel (if there are two panels),
-	 * and the list of targets is shown in the list panel.
-	 *
-	 * @param {ZtItem}              item                item that is being moved or tagged
-	 * @param {string}              type                organizer type of target (folder or tag)
-	 * @param {string}              app                 app this is happening in
-	 * @param {function}            afterAssignmentFn   (optional) function to call after assignment is done
-	 * @returns {ZtAssignmentView}
-	 */
-	showAssignmentView: function(item, type, app, afterAssignmentFn) {
+	launch: function() {
+
+		ZCS.app.on('notifyFolderCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifySearchCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifyTagCreate', this.handleOrganizerCreate, this);
+
+		ZCS.app.on('notifyFolderDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifySearchDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifyTagDelete', this.handleOrganizerDelete, this);
+
+		ZCS.app.on('notifyFolderChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifySearchChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifyTagChange', this.handleOrganizerChange, this);
+
+		ZCS.app.on('notifyRefresh', this.handleRefresh, this);
+	},
+
+	showAssignmentView: function(item, type, app, controller, afterAssignment) {
 
 		var targetComp = Ext.Viewport,
 			itemPanel = Ext.ComponentQuery.query('appview #' + app + 'itempanel')[0],
@@ -68,8 +79,7 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 			itemPanel.hideListPanelToggle();
 		}
 
-		var list,
-			views = this.getAssignmentViews(),
+		var views = this.getAssignmentViews(),
 			assignmentView = views[cacheKey];
 
 		if (!assignmentView) {
@@ -79,36 +89,38 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 				targetElement:    targetComp.bodyElement,
 				record:           item,
 				listTitle:        isTags ? ZtMsg.tags : ZtMsg.folders,
-				organizerRoot:    ZCS.session.getOrganizerRoot(app),
+				organizerTree:    ZCS.session.getOrganizerData(app, type, ZCS.constant.ORG_LIST_ASSIGNMENT),
 				app:              app,
 
-				onAssignmentComplete:   function (success) {
+				onAssignmentComplete:   function () {
 					if (titlebar) {
 						titlebar.show();
 					}
 					if (!toggleHidden) {
 						itemPanel.showListPanelToggle();
 					}
-					if (afterAssignmentFn && Ext.isFunction(afterAssignmentFn)) {
-						afterAssignmentFn();
+					if (controller && afterAssignment) {
+						controller[afterAssignment]();
 					}
 				}
 			});
 			views[cacheKey] = assignmentView;
-			list = assignmentView.down('list');
-		} else {
-			list = assignmentView.down('list');
-			list.refresh();	
 		}
 
 		if (titlebar) {
 			titlebar.hide();
 		}
-		
-		var store = list.getStore();
 
-		store.filter(function(organizer, index) {
-			return organizer.isValidAssignmentTarget(item) && organizer.get('type') === type;
+		var list = assignmentView.down('list');
+
+		list.refresh();
+
+		var listItems = list.getViewItems(),
+			store = list.getStore();
+
+		store.each(function(organizer, index) {
+			organizer = organizer instanceof ZCS.model.ZtOrganizer ? organizer : ZCS.cache.get(organizer.getId());
+			listItems[index].setDisabled(!organizer.isValidAssignmentTarget(item));
 		}, this);
 
 		assignmentView.showWithComponent(itemPanel, item, contentHeight);
@@ -123,5 +135,24 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 	 */
 	getAssignmentViewList: function() {
 		return Ext.Object.getValues(this.getAssignmentViews());
+	},
+
+	handleOrganizerCreate: function(folder, notification) {
+		this.addOrganizer(this.getAssignmentViewList(), notification);
+	},
+
+	handleOrganizerDelete: function(folder, notification) {
+		this.removeOrganizer(this.getAssignmentViewList(), folder);
+	},
+
+	handleOrganizerChange: function(folder, notification) {
+		this.modifyOrganizer(this.getAssignmentViewList(), folder, notification);
+	},
+
+	/**
+	 * We got a <refresh> block. Reload the overviews.
+	 */
+	handleRefresh: function() {
+		this.reloadOverviews(this.getAssignmentViewList());
 	}
 });

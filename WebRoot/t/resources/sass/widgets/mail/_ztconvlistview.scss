@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -16,7 +16,7 @@ $zcs-mail-indent: 22px;
 $zcs-mail-topline1: .1em;
 $zcs-mail-topline2: 1.8em;
 $zcs-mail-topline3: 3.5em;
-$zcs-mail-dateWidth: 6.7em;
+$zcs-mail-dateWidth: 5.5em;
 
 
 .zcs-mail-list-slideable {
@@ -26,12 +26,11 @@ $zcs-mail-dateWidth: 6.7em;
 	width: 200%;
 
 	.zcs-mail-list-entry {
-		background-color: $white;
 		height: 90px;
+		width: 50%;
 		float: left;
 		overflow: hidden;
 		padding: 5px;
-		width: 50%;
 
 		.zcs-mail-list {
 			position: relative;
@@ -39,43 +38,59 @@ $zcs-mail-dateWidth: 6.7em;
 	}
 }
 
-.x-item-swiping .zcs-mail-list-slideable .zcs-mail-list-entry {
-	background-color: darken($white, 5%);
-}
-
-.zcs-conv-list {
-	/*
-	 * Hack to get ios5 to use hardware acceleration and not render improperly.
-	 *
-	 *
-	 *
-	 */
-	.x-list-item-tpl * {
-		-webkit-transform: translate3d(0,0,0);
-	}
-
-	.x-list-item-tpl {
-		-webkit-transform: translate3d(0,0,0);	
-	}
-}
-
 .zcs-conv-list .x-list-item {
+//	background-color: #DCDCDC !important;
 	border-top: none !important;
 
 	&.x-item-pressed .zcs-mail-list-entry {
-		@extend .zcs-list-item-pressed;
+		background: lighten($list-active-color,10);
+		color: $primary-text-color;
 	}
 
 	&.x-item-selected .zcs-mail-list-entry {
-		@extend .zcs-list-item-selected;
+		background: $list-active-color;
+		color: $white;
 	}
 
 	&.x-list-item-tpl:before {
 		border-bottom: none;
 	}
+
+	&.delete-active {
+		background-color: #CE2A26 !important; // red
+	}
+
+	.x-innerhtml {
+		padding: 0px !important;
+
+		&:before {
+			position: absolute;
+			right: 30px;
+			text-align: center;
+			font-family: "ZimbraTouch";
+			content: "T";
+			color: $white;
+			line-height: 90px;
+			font-size: 3em;
+		}
+	}
+
+	.zcs-mail-listitem-deleted {
+		height: 90px/2;
+		background: $light-grey;
+		line-height: 90px/2;
+		text-align: center;
+		font-size: 1.2em;
+	}
 }
 
+/*
+ * Hack to get ios5 to use hardware acceleration and not render improperly.
 
+.zcs-mail-list * {
+	-webkit-transform: translate3d(0,0,0);
+}
+ */
 
 .zcs-mail-list-item {
 	position: absolute;

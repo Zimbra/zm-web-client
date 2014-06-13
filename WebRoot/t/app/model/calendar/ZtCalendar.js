@@ -56,39 +56,14 @@ Ext.define('ZCS.model.calendar.ZtCalendar', {
             {
                 name: 'isAllDay',
                 type: 'boolean'
-            },
-			{
-				name: 'color',
-				type: 'string'
-			},
-	        {
-		        name: 'isRecur',
-		        type: 'boolean'
-	        },
-	        {
-		        name: 'ridZ',
-		        type: 'string'
-	        },
-	        {
-		        name: 'isException',
-		        type: 'boolean'
-	        },
-	        {
-		        name: 'ms',
-		        type: 'string'
-	        },
-	        {
-		        name: 'rev',
-		        type: 'string'
-	        }
+            }
         ],
 
         proxy: {
             type: 'soapproxy',
             api: {
                 read: urlBase + 'SearchRequest',
-                create: urlBase + 'CreateAppointmentRequest',
-                update  : urlBase + 'ModifyAppointmentRequest'
+                create: urlBase + 'CreateAppointmentRequest'
             },
 
             reader: 'calendarreader',

@@ -77,10 +77,6 @@ ZmCalBaseItem.PERSON				= "PERSON";
  */
 ZmCalBaseItem.OPTIONAL_PERSON		= "OPT_PERSON";
 /**
- * Defines the "group" resource type.
- */
-ZmCalBaseItem.GROUP					= "GROUP";
-/**
  * Defines the "location" resource type.
  */
 ZmCalBaseItem.LOCATION				= "LOCATION";
@@ -403,7 +399,7 @@ function(calItemNode, instNode) {
 	var sd = instNode.s !=null ? instNode.s : calItemNode.inst && calItemNode.inst.length > 0 &&  calItemNode.inst[0].s;
 	if (sd) {
         var tzo = this.tzo = instNode.tzo != null ? instNode.tzo : calItemNode.tzo;
-		var adjustMs = this.isAllDayEvent() ? (tzo + new Date(sd).getTimezoneOffset()*60*1000) : 0;
+		var adjustMs = this.isAllDayEvent() ? (tzo + new Date(instNode.s).getTimezoneOffset()*60*1000) : 0;
 		var startTime = parseInt(sd,10) + adjustMs;
 		this.startDate = new Date(startTime);
 		this.uniqStartTime = this.startDate.getTime();

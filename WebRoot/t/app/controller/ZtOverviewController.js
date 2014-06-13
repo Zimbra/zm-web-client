@@ -28,7 +28,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 
         refs: {
             // event handlers
-			folderList:             'overview nestedlist',
+            folderList:             'overview nestedlist',
             folderSelector:         'organizeredit nestedlist',
 	        newFolderBtn:           'overview button[action=newFolder]',
 	        newTagBtn:              'overview button[action=newTag]',
@@ -48,14 +48,11 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 
         control: {
             folderList: {
-				search: 'doSearch',
-                edititemtap:    'showEdit',
-                changeNode:     'subNodeChange'
+                edititemtap:    'showEdit'
             },
             folderSelector: {
                 edititemtap:        'assignParentFolder',
-                activeitemchange:   'filterFolderList',
-                changeNode:     'subNodeChange'
+                activeitemchange:   'filterFolderList'
             },
             editBtn: {
                 tap:            'toggleEditState'
@@ -92,7 +89,18 @@ Ext.define('ZCS.controller.ZtOverviewController', {
     },
 
 	launch: function() {
-		ZCS.app.on('notifyOrganizerNotificationBatch', this.handleOrganizerBatch, this);
+
+		ZCS.app.on('notifyFolderCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifySearchCreate', this.handleOrganizerCreate, this);
+		ZCS.app.on('notifyTagCreate', this.handleOrganizerCreate, this);
+
+		ZCS.app.on('notifyFolderDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifySearchDelete', this.handleOrganizerDelete, this);
+		ZCS.app.on('notifyTagDelete', this.handleOrganizerDelete, this);
+
+		ZCS.app.on('notifyFolderChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifySearchChange', this.handleOrganizerChange, this);
+		ZCS.app.on('notifyTagChange', this.handleOrganizerChange, this);
 
 		ZCS.app.on('notifyRefresh', this.handleRefresh, this);
 	},
@@ -110,21 +118,15 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	},
 
     doSave: function() {
-        var me = this,
-        	saveCallback = function () {
-        		if (errorMsg) {
-				    Ext.Msg.alert(ZtMsg.error, errorMsg);
-				    return;
-			    }
 
-		        me.hideEditPanel();
-		        me.toggleEditState();
-        	},
-        	errorMsg = (this.getEditType() === ZCS.constant.ORG_TAG) ? this.saveTag(saveCallback) : this.saveFolder(saveCallback);
+        var errorMsg = (this.getEditType() === ZCS.constant.ORG_TAG) ? this.saveTag() : this.saveFolder();
+	    if (errorMsg) {
+		    Ext.Msg.alert(ZtMsg.error, errorMsg);
+		    return;
+	    }
 
-        if (errorMsg) {
-        	saveCallback();
-        }
+        this.hideEditPanel();
+        this.toggleEditState();
     },
 
 	showNewFolder: function () {
@@ -138,7 +140,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	showNew: function(type) {
 
 		var	isTag = (type === ZCS.constant.ORG_TAG),
-			organizerEditPanel = ZCS.util.getLazyReference('ZCS.view.ZtOrganizerEdit'),
+			organizerEditPanel = this.getOrganizerEditPanel(),
 			deleteBtn = isTag ? this.getDeleteTagBtn() : this.getDeleteFolderBtn();
 
 		organizerEditPanel.down('titlebar').setTitle(isTag ? ZtMsg.newTag : ZtMsg.newFolder);
@@ -146,7 +148,8 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 
 		if (isTag) {
 			this.getColorPicker().setColor(0);
-		} else {
+		}
+		else {
 			// assign a default parent folder
 			var list = this.getCurrentFolderList();
 			this.assignParentFolder(list.getLastNode(), list.getActiveItem());
@@ -158,13 +161,13 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 
 	showEdit: function(organizer, list) {
 
-		if (organizer && ZCS.model.ZtOrganizer.isSystem(organizer.data)) {
+		if (organizer && organizer.isSystem()) {
 			return false;
 		}
 
 		var type = organizer.get('type'),
 			isTag = (type === ZCS.constant.ORG_TAG),
-			organizerEditPanel = ZCS.util.getLazyReference('ZCS.view.ZtOrganizerEdit'),
+			organizerEditPanel = this.getOrganizerEditPanel(),
 			deleteBtn = isTag ? this.getDeleteTagBtn() : this.getDeleteFolderBtn();
 
 		//TODO: allow this to succeed once there is a search edit state.
@@ -263,7 +266,8 @@ Ext.define('ZCS.controller.ZtOverviewController', {
         if (folderList._lastNode !== rootNode) {
             // reset folder selector to top level which triggers activeitemchange
             folderList.goToNode(rootNode);
-        } else {
+        }
+        else {
             // if already on first card just update filter manually
             this.filterFolderList(folderList);
         }
@@ -271,66 +275,33 @@ Ext.define('ZCS.controller.ZtOverviewController', {
     },
 
     toggleEditState: function() {
-
 	    var overview = this.getOverview(),
             organizerEditToolbar = overview.getDockedItems()[0],
             editBtn = overview.down('#zcs-overview-edit-btn'),
             appsBtn = overview.down('#zcs-overview-apps-btn'),
+            organizerEditPanel = this.getOrganizerEditPanel(),
             organizerListToolbar = overview.down('organizerlist').getToolbar(),
             folderList = this.getCurrentFolderList();
 
         if (folderList.editing) {
-	        // leaving edit mode
             folderList.editing = false;
             overview.removeCls('editing');
+            organizerListToolbar.setTitle(ZCS.constant.APP_NAME[overview.getApp()]);
             editBtn.setText(ZtMsg.edit);
+            appsBtn.show();
             organizerEditToolbar.hide();
         }
         else {
-	        // entering edit mode
             folderList.editing = true;
             overview.addCls('editing');
+            organizerListToolbar.setTitle([ZtMsg.edit,organizerListToolbar.getTitle()].join(" "));
             editBtn.setText(ZtMsg.done);
+            appsBtn.hide();
             organizerEditToolbar.show();
         }
     },
 
-    subNodeChange: function(node, isBack) {
-
-        var overview = this.getOverview(),
-            appsBtn = overview.down('#zcs-overview-apps-btn'),
-            organizerList = overview.down('organizerlist'),
-            isChildOfRoot = node.parentNode && node.parentNode.isRoot(),
-            isBackToSubFolder = !(isChildOfRoot && isBack),
-            store = organizerList.getStore();
-
-        if (isBackToSubFolder) {
-            appsBtn.hide();
-        } else {
-            appsBtn.show();
-        }
-
-	    var backButton = organizerList.getBackButton(),
-		    hideCancelButtons = isBackToSubFolder && organizerList.editing,
-		    showCancelButtons = !isBackToSubFolder && organizerList.editing;
-
-	    // We don't need the text cluttering up the toolbar; the < icon is enough
-	    if (backButton) {
-	        backButton.setText('');
-	    }
-
-	    // Don't show Cancel button if we're also showing a back button
-	    Ext.each([ this.getCancelBtn(), this.getLocationSelectionCardCancelBtn() ], function(button) {
-		    if (button && hideCancelButtons) {
-			    button.hide();
-		    }
-		    else if (button && showCancelButtons) {
-			    button.show();
-		    }
-	    }, this);
-    },
-
-    saveFolder: function(callback) {
+    saveFolder: function() {
 
         var organizerEditPanel = this.getOrganizerEditPanel(),
             folder = organizerEditPanel.getFolder(),
@@ -338,10 +309,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
             newParentFolder = organizerEditPanel.getParentFolder(),
 	        newParentId = (newParentFolder && newParentFolder.get('zcsId')) || ZCS.constant.ID_ROOT,
 	        app = ZCS.session.getActiveApp(),
-	        options = {
-	        	success: callback,
-	        	failure: callback
-	        };
+	        options = {};
 
 	    var errorMsg = this.checkName(newFolderName);
 	    if (errorMsg) {
@@ -354,9 +322,6 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 			    name:           newFolderName,
 			    parentZcsId:    newParentId
 		    });
-
-		    folder.phantom = true;
-		    
 		    options.view = ZCS.constant.FOLDER_VIEW[app];
 	    }
 	    else {
@@ -366,24 +331,19 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 		    if (newParentId !== folder.get('parentZcsId')) {
 			    options.parentId = newParentId;
 		    }
-		    if (!options.name && !options.parentId) {
-			    return ZtMsg.noChangesMade;
-		    }
 	    }
 	    folder.save(options);
 
+        this.hideEditPanel();
     },
 
-    saveTag: function(callback) {
+    saveTag: function() {
 
         var organizerEditPanel = this.getOrganizerEditPanel(),
             tag = organizerEditPanel.getTag(),
 	        newTagName = organizerEditPanel.down('#tagName').getValue(),
 	        newTagColor = this.getColorPicker().getColor(),
-	        options = {
-	        	success: callback,
-	        	failure: callback
-	        };
+	        options = {};
 
 	    var errorMsg = this.checkName(newTagName);
 	    if (errorMsg) {
@@ -404,44 +364,33 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 		    if (newTagColor !== tag.get('color')) {
 			    options.color = newTagColor;
 		    }
-		    if (!options.name && !options.color) {
-			    return ZtMsg.noChangesMade;
-		    }
 	    }
 	    tag.save(options);
     },
 
 	deleteFolder: function() {
 
-		var me = this,
-			organizerEditPanel = this.getOrganizerEditPanel(),
+		var organizerEditPanel = this.getOrganizerEditPanel(),
 			folder = organizerEditPanel.getFolder(),
-			onSaveFunction = function () {
-                me.hideEditPanel();
-                me.toggleEditState();
-                folder.enableDefaultStoreEvents();
-                folder.updateDependentLists();
-			},
-			options = {
-				success: onSaveFunction,
-				failure: onSaveFunction
-			};
+			options = {};
 
 		if (folder) {
 			if (folder.deleteIsHard()) {
-				var deleteMsg = Ext.String.format(ZtMsg.hardDeleteFolderText, Ext.String.htmlEncode(folder.get('name')));
+				var deleteMsg = Ext.String.format(ZtMsg.hardDeleteFolderText, folder.get('name'));
 				Ext.Msg.confirm(ZtMsg.hardDeleteFolderTitle, deleteMsg, function(buttonId) {
 					if (buttonId === 'yes') {
 						options.del = true;
-						folder.disableDefaultStoreEvents();
 						folder.save(options);
+                        this.hideEditPanel();
+                        this.toggleEditState();
 					}
 				}, this);
 			}
 			else {
 				options.trash = true;
-				folder.disableDefaultStoreEvents();
 				folder.save(options);
+                this.hideEditPanel();
+                this.toggleEditState();
 			}
 		}
 	},
@@ -449,32 +398,50 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	deleteTag: function() {
 		var organizerEditPanel = this.getOrganizerEditPanel(),
 			tag = organizerEditPanel.getTag(),
-			me = this,
-			onSaveFunction = function () {
-                me.hideEditPanel();
-                me.toggleEditState();
-			},
-			options = {
-				success: onSaveFunction,
-				failure: onSaveFunction
-			};
+			options = {};
 
 		if (tag) {
-			var deleteMsg = Ext.String.format(ZtMsg.hardDeleteTagText, Ext.String.htmlEncode(tag.get('name')));
+			var deleteMsg = Ext.String.format(ZtMsg.hardDeleteTagText, tag.get('name'));
 			Ext.Msg.confirm(ZtMsg.hardDeleteTagTitle, deleteMsg, function(buttonId) {
 				if (buttonId === 'yes') {
 					options.del = true;
 					tag.save(options);
+                    this.hideEditPanel();
+                    this.toggleEditState();
 				}
 			}, this);
 		}
+	},
+
+	handleOrganizerCreate: function(folder, notification) {
+		this.addOrganizer(this.getOrganizerEditPanel(), notification);
+	},
+
+	/**
+	 * An organizer has just changed. If it is a move, we need to relocate it within
+	 * the overview used for parent folder selection.
+	 *
+	 * @param {ZtOrganizer}     folder          organizer that changed
+	 * @param {Object}          notification    JSON with new data
+	 */
+	handleOrganizerChange: function(folder, notification) {
+		this.modifyOrganizer(this.getOrganizerEditPanel(), folder, notification);
+	},
+
+	/**
+	 * An organizer has been hard-deleted. Remove it from overview stores.
+	 *
+	 * @param {ZtOrganizer}     folder          organizer that changed
+	 */
+	handleOrganizerDelete: function(folder) {
+		this.removeOrganizer(this.getOrganizerEditPanel(), folder);
 	},
 
 	/**
 	 * We got a <refresh> block. Reload the overviews.
 	 */
 	handleRefresh: function() {
-		this.reloadOverviews();
+		this.reloadOverviews(this.getOrganizerEditPanel());
 	},
 
     onLocationSelectionCardShow: function(){
@@ -511,19 +478,5 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 		}
 
 		return null;
-	},
-
-	doSearch: function(query, folder) {
-		/**
-		 * Search for other apps is handled generically in the list controller. Since list controller is
-		 * not registered in case of calendar, override it specifically in calendar controller.
-		 */
-        /**
-         * bug:88804 - Disable search on individual calendar folders till bug 88908 is fixed.
-         */
-//		if (ZCS.session.getActiveApp() === ZCS.constant.APP_CALENDAR) {
-//			ZCS.app.getCalendarController().doSearch(query, folder);
-//		}
 	}
 });
-

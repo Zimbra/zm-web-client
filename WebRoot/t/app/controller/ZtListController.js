@@ -70,7 +70,22 @@ Ext.define('ZCS.controller.ZtListController', {
 	 */
 	launch: function () {
 
+		var defaultQuery = this.getDefaultQuery();
+        //<debug>
+		Ext.Logger.verbose('STARTUP: list ctlr launch - ' + ZCS.util.getClassName(this));
+        //</debug>
 		this.callParent();
+
+		//Set the proxies params so this parameter persists between paging requests.
+		this.getStore().getProxy().setExtraParams({
+			query: defaultQuery
+		});
+
+		this.getStore().load({
+			query:      defaultQuery,
+			callback:   this.storeLoaded,
+			scope:      this
+		});
 
 		ZCS.app.on('applicationSwitch', function (newApp) {
 			if (this.getApp() === newApp) {
@@ -108,7 +123,8 @@ Ext.define('ZCS.controller.ZtListController', {
 		if (!curFolder && lastFolder) {
 			// user is looking at search results, tapped the Back button - show last organizer visited
 			this.doSearch(lastFolder.getQuery(), lastFolder);
-		} else {
+		}
+		else {
 			// user is looking at organizer contents, show the overview
 			ZCS.app.fireEvent('showOverviewPanel');
 		}
@@ -161,14 +177,10 @@ Ext.define('ZCS.controller.ZtListController', {
 			query:      query,
 			folder:     folder,
 			callback:   this.storeLoaded,
-			failure: function() {
-				this.getListView().setMasked(false);
-			},
 			scope:      this
 		});
 
 		ZCS.app.fireEvent('hideOverviewPanel');
-        ZCS.app.fireEvent('showListPanel');
 	},
 
 	/**
@@ -180,6 +192,7 @@ Ext.define('ZCS.controller.ZtListController', {
 	 * @param {boolean}     success
 	 */
 	storeLoaded: function(records, operation, success) {
+
 		var app = this.getApp(),
 			folder = operation.config.folder;
 
@@ -192,7 +205,8 @@ Ext.define('ZCS.controller.ZtListController', {
 				// If we got here via tap on a saved search in the overview, remember it so we can show its name
 				var searchId = (folder.get('type') === ZCS.constant.ORG_SEARCH) ? folder.get('zcsId') : null;
 				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH_ID, searchId, app);
-			} else if (this.getFolderList()) {
+			}
+			else {
 				// If the user ran a search, deselect the selected folder since it no longer matches results
 				this.getFolderList().getActiveItem().deselectAll();
 			}
@@ -204,7 +218,6 @@ Ext.define('ZCS.controller.ZtListController', {
 				//make sure this element doesn't get focus due to an errant touch
 				this.getSearchBox().blur();
 			}
-
 		} else {
 			//<debug>
 			Ext.Logger.info('Parameters not present in storeLoaded');
@@ -221,9 +234,7 @@ Ext.define('ZCS.controller.ZtListController', {
 
 		var titlebar = this.getTitlebar();  // might not be available during startup
 		if (!titlebar) {
-			//<debug>
 			Ext.Logger.info('Titlebar not found');
-			//</debug>
 			return;
 		}
 

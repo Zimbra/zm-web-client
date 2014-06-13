@@ -50,21 +50,21 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
 		control: {
 			listPanel: {
 				newItem: 'doNewContact'
-		    }
+		    },
+            listView: {
+                itemswipe: 'handleSwipe'
+            }
     	},
 
 		app: ZCS.constant.APP_CONTACTS
 	},
 
-	launch: function() {
-
+    launch: function() {
         if (!ZCS.util.isAppEnabled(this.getApp())) {
             return;
         }
 
-	    this.callParent();
-
-	    ZCS.app.on('notifyContactCreate', this.handleCreateNotification, this);
+        ZCS.app.on('notifyContactCreate', this.handleCreateNotification, this);
         ZCS.app.on('notifyContactChange', this.handleModifyNotification, this);
 
         if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_DL_FOLDER)) {
@@ -80,6 +80,8 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
             };
             ZCS.app.fireEvent('notify', dlFolder);
         }
+
+	    this.loadAllContacts();
     },
 
     /**
@@ -100,123 +102,57 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
         });
     },
 
-	loadContactByEmail: function(email, callback) {
-		this.getStore().load({
-			field:      'email',
-			query:      email,
-			callback:   callback
-		});
-	},
-
     /**
      * Load local contacts via REST call so we can cache them.
      */
-    loadAllContacts: function(callback) {
+    loadAllContacts: function() {
 
         var store = this.getStore();
 
-	    var restUri = ZCS.htmlutil.buildUrl({
-                path:   '/home/' + ZCS.session.getAccountName() + '/Contacts',
-                qsArgs: {
-                    fmt:    'cf',
-                    t:      2,
-                    all:    'all'
-                }
-            });
+        var restUri = ZCS.htmlutil.buildUrl({
+            path: '/home/' + ZCS.session.getAccountName() + '/Contacts',
+            qsArgs: {
+                fmt:    'cf',
+                t:      2,
+                all:    'all'
+            }
+        });
+
 
         Ext.Ajax.request({
             url: restUri,
             success: function(response, options) {
-
-	            this.contactData = {};
-
                 var text = response.responseText,
                     contacts = text.split('\u001E'),
                     reader = ZCS.model.contacts.ZtContact.getProxy().getReader(),
-                    ln = contacts.length, i, fields, data, attrs, j, field, value, emails, field,
-                    contactGroupIds = [],
-	                dataFields = ZCS.constant.CONTACT_DATA_FIELDS,
-	                dataFieldsLn = dataFields.length;
+                    ln = contacts.length, i, fields, data, attrs, j, field, value,
+                    contactGroupIds = [];
 
                 for (i = 0; i < ln; i++) {
                     fields = contacts[i].split('\u001D');
                     attrs = {};
-	                emails = [];
-
-	                // first, find all the emails while remembering the other attr/value pairs
                     for (j = 0; j < fields.length; j += 2) {
-	                    field = fields[j];
-	                    value = fields[j + 1];
-                        attrs[field] = value;
-	                    if (field.indexOf('email') === 0) {
-		                    emails.push(value);
-	                    }
+                        attrs[fields[j]] = fields[j + 1];
                     }
-
-	                // add an object with the attrs we need for each email we found
-	                if (emails.length > 0) {
-		                data = {};
-		                for (j = 0; j < dataFieldsLn; j++) {
-			                field = dataFields[j];
-			                if (attrs[field]) {
-			                    data[field] = attrs[field];
-			                }
-		                }
-		                for (j = 0; j < emails.length; j++) {
-		                    this.contactData[emails[j]] = data;
-		                }
-	                }
+                    if (!ZCS.cache.get(attrs.id)) {
+                        data = reader.getDataFromNode({ _attrs: attrs });
+                        new ZCS.model.contacts.ZtContact(data, attrs.id);
+                    }
+                    if (attrs.type === ZCS.constant.CONTACT_GROUP) {
+                        contactGroupIds.push(attrs.id);
+                    }
                 }
-
-	            if (callback) {
-		            callback();
-	            }
-            },
-	        scope: this
+                // if we got any contact groups, expand them now so that they're available for autocomplete
+                if (contactGroupIds.length > 0) {
+                    store.load({
+                        contactId:      contactGroupIds,
+                        contactType:    ZCS.constant.CONTACT_GROUP,
+                        scope:          this
+                    });
+                }
+            }
         });
     },
-
-	// Go find the group members for the contact group with the given ID.
-	loadGroupMembers: function(contactId, callback) {
-		this.getStore().load({
-			contactId:      contactId,
-			contactType:    ZCS.constant.CONTACT_GROUP,
-			callback:       callback
-		});
-	},
-
-	/**
-	 * Returns the value of the given field for the contact data object with the given email.
-	 *
-	 * @param {string}  email       email address
-	 * @param {string}  field       name of field
-	 * @param {int}     maxWidth    width of image (optional)
-	 *
-	 * @returns {string}    value of field
-	 */
-	getDataFieldByEmail: function(email, field, maxWidth) {
-
-		var data = this.contactData && this.contactData[email];
-		if (!data) {
-			return '';
-		}
-
-		var result = data[field];
-		if (field === 'shortName') {
-			result = data.nickname || data.firstName || email;
-		}
-		else if (field === 'longName') {
-			result = data.firstName && data.lastName ? [ data.firstName, data.lastName ].join(' ') : data.firstName || data.lastName || email;
-		}
-		else if (field === 'image' && data.imagepart) {
-			result = ZCS.model.contacts.ZtContact.getImageUrl({ imagepart: data.imagepart }, data.id, maxWidth);
-		}
-		else if (field === 'exists') {
-			result = 'true';    // return string that is truthy
-		}
-
-		return result || '';
-	},
 
     /**
      * Handle a newly created contact. Add it to view if is is in the currently viewed folder.
@@ -303,18 +239,61 @@ Ext.define('ZCS.controller.contacts.ZtContactListController', {
         }
     },
 
-     updateTitlebar: function(app) {
-         this.callParent(arguments);
+    handleSwipe: function(list, index, contactItem, record, e, eOpts) {
+        var contactEl = contactItem.element,
+            contactElBox = contactEl.getBox(),
+            buttonHeight = contactElBox.height,
+            buttonWidth = 120,
+            swipeElm = Ext.dom.Element.create({
+                html: ZCS.controller.contacts.ZtContactListController.swipeToDeleteTpl.apply({
+                    width: buttonWidth,
+                    height: buttonHeight
+                }),
+                "class": 'zcs-outer-swipe-elm'
+            }),
+            sameItemSwipeButton = contactEl.down('.zcs-outer-swipe-elm'),
+            anySwipeButton = list.element.down('.zcs-outer-swipe-elm');
 
-        //disable Add button for Contacts -> Distribution Lists
-         var titlebar = this.getTitlebar(),
-             addButton = titlebar && titlebar.down([ '#', ZCS.constant.APP_CONTACTS, '-newButton'].join('')),
-             curFolder = ZCS.session.getCurrentSearchOrganizer();
+        e.preventDefault();
 
-         if (addButton) {
-             addButton.setVisibility(!ZCS.util.folderIs(curFolder, ZCS.constant.ID_DLS));
-         }
-     }
+        if (sameItemSwipeButton) {
+            sameItemSwipeButton.fadeAway();
+        } else {
+
+            if (anySwipeButton && !anySwipeButton.fading) {
+                anySwipeButton.fadeAway();
+            }
+
+            swipeElm.fadeAway = function () {
+                var fadingButton = swipeElm;
+                fadingButton.fading = true;
+                Ext.Anim.run(fadingButton, 'fade', {
+                    after: function() {
+                        fadingButton.destroy();
+                    },
+                    out: true
+                })
+            }
+
+            swipeElm.on('tap', function (event, node, options, eOpts) {
+                var el = Ext.fly(event.target);
+                if (el.hasCls('zcs-swipe-delete')) {
+                    ZCS.app.fireEvent('deleteContactItem', record);
+                    swipeElm.fadeAway();
+                }
+            });
+
+            swipeElm.on('swipe', function () {
+                swipeElm.fadeAway();
+            });
+
+            //Delay this so any scroll that occurs before a swiper has a chance to complete
+            Ext.defer(function () {
+                swipeElm.insertAfter(Ext.fly(contactEl.dom.children[0]));
+            }, 100);
+
+        }
+    }
 },
     function (thisClass) {
         thisClass.swipeToDeleteTpl = Ext.create('Ext.XTemplate', ZCS.template.ConvListSwipeToDelete);

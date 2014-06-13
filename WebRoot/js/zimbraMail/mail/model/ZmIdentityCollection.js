@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -191,11 +191,7 @@ function(identity) {
 		var addresses = identity.whenSentToAddresses;
 		for (var i = 0, count = addresses.length; i < count; i++) {
 			var address = addresses[i].toLowerCase();
-			// External emails are added after other identities, potentially overwriting a persona which should have
-			// precedence.  Use the external identity only if the email address has not been assigned an identity.
-			if (!this._addressToIdentity[address] || !identity.isFromDataSource) {
-				this._addressToIdentity[address] = identity;
-			}
+			this._addressToIdentity[address] = identity;
 		}
 	}
 

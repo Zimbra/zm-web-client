@@ -53,19 +53,15 @@ Ext.define('ZCS.view.ZtOverview', {
 		var me = this,
 			app = this.getApp(),
 			listType = ZCS.constant.ORG_LIST_OVERVIEW,
-			organizerRoot = ZCS.session.getOrganizerRoot(app);
+			organizerData = {
+				items: ZCS.session.getOrganizerData(app, null, listType)
+			};
 
 		// create a store for the organizers
 		var organizerStore = Ext.create('ZCS.store.ZtOrganizerStore', {
 			storeId:    [ app, listType ].join('-'),
-			root:       organizerRoot
+			data:       organizerData
 		});
-
-		organizerStore.doDefaultSorting();
-
-		//Because we instantiated the root with a model that already has model children,
-		//we have to force those children to get added to the store's collection.
-		// organizerStore.add(organizerStore.retrieveChildNodes(organizerRoot));
 
 		// show the account name at the top of the overview
 		var accountName = ZCS.session.getAccountName();
@@ -101,36 +97,28 @@ Ext.define('ZCS.view.ZtOverview', {
 			}
 		});
 
-		organizerList.getBackButton().setText('');
 		this.add(organizerList);
 
 		if (this.config.showEdit) {
-
-			var items = [{
-				xtype: 'spacer'
-			}, {
-				text:   ZtMsg.newFolder,
-				action: 'newFolder',
-				cls:    'zcs-text-btn'
-			}];
-			if (ZCS.session.getSetting(ZCS.constant.SETTING_TAGGING_ENABLED)) {
-				items.push({
+			var organizerEditToolbar = Ext.create('Ext.Toolbar', {
+				//height: 50,
+				docked: 'bottom',
+				hidden: true,
+				items: [{
+					xtype: 'spacer'
+				}, {
+					text:   ZtMsg.newFolder,
+					action: 'newFolder',
+					cls:    'zcs-text-btn'
+				}, {
 					xtype: 'spacer'
 				}, {
 					text:   ZtMsg.newTag,
 					action: 'newTag',
 					cls:    'zcs-text-btn'
-				});
-			}
-			items.push({
-				xtype: 'spacer'
-			});
-
-			var organizerEditToolbar = Ext.create('Ext.Toolbar', {
-				//height: 50,
-				docked: 'bottom',
-				hidden: true,
-				items:  items
+				}, {
+					xtype: 'spacer'
+				}]
 			});
 			this.add(organizerEditToolbar);
 		}

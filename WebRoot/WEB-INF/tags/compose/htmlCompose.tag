@@ -22,14 +22,13 @@
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
 <app:spellcheck/>
-<app:loadTinyMCE />
-
+<script type="text/javascript" src="../js/ajax/3rdparty/tinymce/tiny_mce.js"></script>
 <script type="text/javascript">
 <!--             
 var myEditor;
 
     var saveContentToTextarea = function(){
-        myEditor.save({format:"raw"});
+        myEditor.saveHTML();
         var _htmlval = document.getElementById("body").value;
         var stripHTML = /<\S[^><]*>/g;
         var stripNBSP  = /&nbsp;/g
@@ -38,7 +37,7 @@ var myEditor;
     };
 
     var saveToTextareaToSend = function(){
-        myEditor.save({format:"raw"});
+        myEditor.saveHTML();
         var _htmlval = document.getElementById("body").value;
         var stripHTML = /<\S[^><]*>/g;
         var stripNBSP  = /&nbsp;/g
@@ -68,9 +67,7 @@ var myEditor;
             </c:forEach>
         </c:forEach>
 
-        var onTinyMCEEditorInit = function(ev){
-            var ed = ev.target;
-
+        var onTinyMCEEditorInit = function(ed){
             ed.dom.setStyles( ed.getBody(), {
                 "font-family" : "${mailbox.prefs.htmlEditorDefaultFontFamily}",
                 "font-size"   : "${mailbox.prefs.htmlEditorDefaultFontSize}",
@@ -80,9 +77,7 @@ var myEditor;
             enableSpellCheck(ed);
         };
 
-        var handleContentLoad = function(ev){
-            var ed = ev.target;
-
+        var handleContentLoad = function(ed){
             var imageArray = ed.dom.select("img[dfsrc^='doc:']"),
                 path = ["/home/", "${mailbox.accountInfo.name}", "/"].join(""),
                 image;
@@ -92,51 +87,38 @@ var myEditor;
             }
         };
 
-        if (window.tinymce) {
-            tinymce.PluginManager.add('zspellchecker', function(ed) {
-                tinyMCE.DOM.loadCSS("../css/spellcheck.css");
-
-                /* Spellcheck button action*/
-                function onSpellCheck(event) {
-                    var spellChecker = event.target; //Spellchecker button id
-
-                    if (!spellChecker)
-                        return;
-
-                    if (ed.dom.hasClass(spellChecker, "mce-active") ){
-                        ed.dom.removeClass(spellChecker, "mce-active");
-                        ed.endSpellCheck();
-                    } else {
-                        ed.dom.addClass(spellChecker, "mce-active");
-                        ed.startSpellCheck();
+        /* Spellcheck button action*/
+        var onSpellCheck = function(event){
+            this.dom.loadCSS("../css/spellcheck.css");
+            var onSpellCheck = function(event){
+                var spellCheckerId = this.controlManager.get("spellchecker").id, //Spellchecker button id
+                    dom;
+                if(spellCheckerId){
+                    dom = tinyMCE.DOM;
+                    if( dom.hasClass(spellCheckerId, "mceButtonActive") ){
+                        dom.removeClass(spellCheckerId, "mceButtonActive");
+                        this.endSpellCheck();
                     }
-                };
+                    else{
+                        dom.addClass(spellCheckerId, "mceButtonActive");
+                        this.startSpellCheck();
+                    }
+                }
+            };
+            return onSpellCheck.call(this, event);
+        };
 
-                ed.addButton('zspellchecker', {
-                    onclick: onSpellCheck,
-                    icon: "spellchecker",
-                    title: "Check spelling"
-                });
-            });
+        //Refer http://www.tinymce.com/i18n/index.php?ctrl=lang&act=download&pr_id=1
+        var tinyMCELocaleArray = ['sq', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'nb', 'bs', 'br', 'bg', 'my', 'ca', 'km', 'ch', 'zh', 'hr', 'cs', 'da', 'dv', 'nl', 'en', 'eo', 'et', 'fi', 'fr', 'gl', 'ka', 'de', 'el', 'gu', 'he', 'hi', 'hu', 'is', 'id', 'ia', 'it', 'ja', 'kl', 'ko', 'lv', 'lt', 'lb', 'mk', 'ms', 'ml', 'mn', 'se', 'no', 'nn', 'fa', 'pl', 'pt', 'ps', 'ro', 'ru', 'sc', 'sr', 'si', 'sk', 'sl', 'es', 'sv', 'ta', 'tt', 'te', 'th', 'tn', 'tr', 'tw', 'uk', 'ur', 'vi', 'cy', 'zu', 'zh-tw', 'cn', 'zh-cn'],
+            locale = "${mailbox.prefs.locale}" || "en";
+
+        locale = locale.toLowerCase().replace("_", "-");
+        if (tinymce.inArray(tinyMCELocaleArray, locale) === -1) {
+            locale = locale.substr(0, 2);
+            if (tinymce.inArray(tinyMCELocaleArray, locale) === -1) {
+                locale = "en";
+            }
         }
-
-        var toolbarbuttons = [
-            'fontselect fontsizeselect formatselect |',
-            'bold italic underline strikethrough |',
-            'forecolor backcolor |',
-            'removeformat |',
-            'outdent indent bullist numlist blockquote |',
-            'alignleft aligncenter alignright alignjustify |',
-            'image link zemoticons charmap hr table |',
-            'undo redo |',
-            'pastetext code'
-        ];
-
-    	var plugins = [
-    		"zemoticons",
-    		"table", "paste", "directionality", "textcolor", "lists", "advlist",
-    		"link", "hr", "charmap", "code"
-    	];
 
         var tinyMCEInitObj = {
             mode : "exact",
@@ -146,39 +128,49 @@ var myEditor;
             <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
                 auto_focus : "body",
             </c:if>
-            plugins : plugins.join(' '),
-            theme : "modern",
-            toolbar_items_size: 'small',
-            toolbar : toolbarbuttons.join(' '),
-            font_formats : fonts.join(";"),
-            statusbar : false,
-            menubar : false,
+            plugins : "advlist,inlinepopups,table,paste,directionality,emotions" + (tinymce.isIE ? "" : ",autolink"),
+            theme : "advanced",
+            theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,image,link,unlink,emotions,|,spellchecker",
+            theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,|,tablecontrols,|,blockquote,hr,charmap",
+            theme_advanced_buttons3 : "",
+            theme_advanced_buttons4 : "",
+            theme_advanced_toolbar_location : "top",
+            theme_advanced_toolbar_align : "left",
+            theme_advanced_resizing : true,
+            theme_advanced_fonts : fonts.join(";"),
+            theme_advanced_statusbar_location : "none",
             convert_urls : false,
             verify_html : false,
-            browser_spellcheck : true,
+            gecko_spellcheck : true,
             dialog_type : "modal",
             forced_root_block : "div",
-            table_default_attributes: { cellpadding: '3px', border: '1px' },
-            table_default_styles: { width: '90%', tableLayout: 'fixed' },
+            table_default_cellpadding : 3,
+            table_default_border: 1,
             content_css : false,
-            language : tinyMCE.getlanguage("${mailbox.prefs.locale}"),
+            language : locale,
+            theme_advanced_show_current_color : true,
             paste_retain_style_properties : "all",
             paste_remove_styles_if_webkit : false,
             submit_patch : false,
             add_form_submit_trigger: false,
             setup : function(ed) {
-                ed.on('init', onTinyMCEEditorInit);
-                ed.on('LoadContent', handleContentLoad);
-                ed.on('SaveContent', function(ev) {
-                    var ed = ev.target;
-
+                ed.onInit.add(onTinyMCEEditorInit);
+                ed.onLoadContent.add(handleContentLoad);
+                ed.onBeforeRenderUI.add(function() {
+                    tinymce.ScriptLoader.loadScripts(['../js/ajax/3rdparty/tinymce/themes/advanced/Zmeditor_template.js']);
+                });
+                ed.onSaveContent.add(function(ed, o) {
                     if (!ed.isDirty() && ed.getContent() == "<div></div>") {
-                        ev.content = "";
+                        o.content = "";
                     }
                 });
-                ed.on('BeforeSetContent', function(ed) {
+                ed.onBeforeSetContent.add(function(ed, o) {
                     // Replaces all double br elements for avoiding enter issue
-                    ed.content = ed.content.replace(/<br><br>/ig, '<br><div><br></div>');
+                    o.content = o.content.replace(/<br><br>/ig, '<br><div><br></div>');
+                });
+                ed.addButton('spellchecker', {
+                    onclick : onSpellCheck,
+                    title: "Check spelling"
                 });
             }
         };

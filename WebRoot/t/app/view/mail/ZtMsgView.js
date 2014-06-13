@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -137,12 +137,12 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 	doMsgViewUpdate: function (msgView, msgId, renderBody) {
 
 		var controller = ZCS.app.getConvController(),
-			msg = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_MESSAGE, msgId),
+			msg = ZCS.cache.get(msgId),
 			oldMsgView = controller.getMsgViewById(msgId),
 			shouldBeExpanded, modelState;
 
 		//<debug>
-		if (msg && oldMsgView && msgView) {
+		if (oldMsgView) {
 			Ext.Logger.info('updatedata for msg ' + msgId + ' ("' + msg.get('fragment') + '") from msg view ' + oldMsgView.getId() + ' into msg view ' + msgView.getId());
 		}
 		//</debug>
@@ -264,40 +264,7 @@ Ext.define('ZCS.view.mail.ZtMsgView', {
 				listRef.refreshScroller(listRef.getScrollable().getScroller());
 			}
 		}
-	},
 
-	/**
-	 *  Override of default sencha touch list functionality that we don't use.
-	 *
-	 */
-	updateRecord: function(record) {
-        var me = this,
-            dataview = me.dataview || this.getDataview(),
-            data = record && dataview.prepareData(record.getData(true), dataview.getStore().indexOf(record), record),
-            dataMap = me.getDataMap(),
-            body = this.getBody(),
-            disclosure = this.getDisclosure();
-
-        me._record = record;
-
-        if (dataMap) {
-            me.doMapData(dataMap, data, body);
-        } else if (body) {
-        	// Prevent the default template update which eats processing time on render, we dont' use this anyway.
-            // body.updateData(data || null);
-        }
-
-        // if (disclosure && record && dataview.getOnItemDisclosure()) {
-        //     var disclosureProperty = dataview.getDisclosureProperty();
-        //     disclosure[(data.hasOwnProperty(disclosureProperty) && data[disclosureProperty] === false) ? 'hide' : 'show']();
-        // }
-
-        /**
-         * @event updatedata
-         * Fires whenever the data of the DataItem is updated.
-         * @param {Ext.dataview.component.DataItem} this The DataItem instance.
-         * @param {Object} newData The new data.
-         */
-        me.fireEvent('updatedata', me, data);
-    }
+		this.up('list').resetScrollHack();
+	}
 });

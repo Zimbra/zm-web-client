@@ -71,31 +71,18 @@ function() {
  * @private
  */
 ZmReminderController.prototype.refresh =
-function(retryCount) {
+function() {
 	this._searchTimeRange = this.getSearchTimeRange();
-    DBG.println(AjxDebug.DBG1, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
+    AjxDebug.println(AjxDebug.REMINDER, "reminder search time range: " + this._searchTimeRange.start + " to " + this._searchTimeRange.end);
 
-	try {
-		var params = this.getRefreshParams();
-	} catch(e) {
-		if (retryCount == null && retryCount != 0) {
-			retryCount = 3; //retry 3 times before giving up.
-		}
-		//bug 76771 if there is a exception retry after 1 sec
-		if (retryCount) {
-			setTimeout(this.refresh.bind(this, --retryCount), 1000);
-			return;
-		}
-		DBG.println(AjxDebug.DBG1, "Too many failures to get refresh params. Giving up.");
-		return;
-	}
+	var params = this.getRefreshParams();
 	this._calController.getApptSummaries(params);
-
+	
 	// cancel outstanding refresh, since we are doing one now, and re-schedule a new one
 	if (this._refreshActionId) {
 		AjxTimedAction.cancelAction(this._refreshActionId);
 	}
-	DBG.println(AjxDebug.DBG1, "reminder refresh");
+    AjxDebug.println(AjxDebug.REMINDER, "reminder refresh");
 	this._refreshActionId = AjxTimedAction.scheduleAction(this._refreshTimedAction, (AjxDateUtil.MSEC_PER_HOUR * ZmReminderController._CACHE_REFRESH));
 };
 
@@ -149,12 +136,6 @@ function() {
 		AjxTimedAction.cancelAction(this._housekeepingActionId);
 		delete this._houseKeepingActionId;
 	}
-};
-
-ZmReminderController.prototype._scheduleHouseKeepingAction =
-function() {
-	this._cancelHousekeepingAction(); //cancel to be on safe side against race condition when 2 will be runing instead of one.
-	this._housekeepingActionId = AjxTimedAction.scheduleAction(this._housekeepingTimedAction, 60 * 1000);
 };
 
 /**
@@ -270,7 +251,7 @@ function() {
 	var activeSize = this._activeAppts.size();
 	if (cachedSize == 0 && activeSize == 0) {
         AjxDebug.println(AjxDebug.REMINDER, "no appts - empty cached and active list");
-		this._scheduleHouseKeepingAction();
+		this._housekeepingActionId = AjxTimedAction.scheduleAction(this._housekeepingTimedAction, 60*1000);
 		return;
 	}
 
@@ -335,7 +316,7 @@ function() {
 
 	// need to schedule housekeeping callback, ideally right before next _cachedAppt start time - lead,
 	// for now just check once a minute...
-	this._scheduleHouseKeepingAction();
+	this._housekeepingActionId = AjxTimedAction.scheduleAction(this._housekeepingTimedAction, 60*1000);
 };
 
 ZmReminderController.prototype._silentDismissCallback =
@@ -365,6 +346,7 @@ function(list) {
  */
 ZmReminderController.prototype.dismissAppt =
 function(list, callback) {
+	var appt;
 	if (!(list instanceof AjxVector)) {
 		list = AjxVector.fromArray((list instanceof Array)? list: [list]);
 	}
@@ -381,18 +363,16 @@ function(list, callback) {
 /**
  * Snoozes the appointments.
  * 
- * @param	{AjxVector}	appts	a list of {@link ZmAppt} objects
+ * @param	{AjxVector}	list	a list of {@link ZmAppt} objects
  * @return	{Array}	an array of snoozed apt ids
  */
 ZmReminderController.prototype.snoozeAppt =
-function(appts) {
-	appts = AjxUtil.toArray(appts);
-
+function(list) {
 	var snoozedIds = [];
 	var appt;
 	var uid;
-	for (var i = 0; i < appts.length; i++) {
-		appt = appts[i];
+	for (var i = 0; i < list.size(); i++) {
+		appt = list.get(i);
 		uid = appt.getUniqueId(true);
 		this._apptState[uid] = ZmReminderController._STATE_SNOOZED;
 		snoozedIds.push(uid);
@@ -404,35 +384,26 @@ function(appts) {
 
 ZmReminderController.prototype.dismissApptRequest = 
 function(list, callback) {
+	var soapDoc = AjxSoapDoc.create("DismissCalendarItemAlarmRequest", "urn:zimbraMail");
 
+	var dismissedAt = (new Date()).getTime();
+	for (var i = 0; i < list.size(); i++) {
+		var appt = list.get(i);
+		var apptNode = soapDoc.set("appt");
+		apptNode.setAttribute("id", appt.id);
+		apptNode.setAttribute("dismissedAt", dismissedAt);
+	}
 
-    //<DismissCalendarItemAlarmRequest>
-    //    <appt|task id="cal item id" dismissedAt="time alarm was dismissed, in millis"/>+
-    //</DismissCalendarItemAlarmRequest>
-    var jsonObj = {DismissCalendarItemAlarmRequest:{_jsns:"urn:zimbraMail"}};
-    var request = jsonObj.DismissCalendarItemAlarmRequest;
-
-    var appts = [];
-    var dismissedAt = (new Date()).getTime();
-    for (var i = 0; i < list.size(); i++) {
-        var appt = list.get(i);
-        var apptInfo = { id: appt.id, dismissedAt: dismissedAt};
-        appts.push(apptInfo)
-    }
-    request[this._apptType] = appts;
-
-    var respCallback    = this._handleDismissAppt.bind(this, list, callback);
-    var offlineCallback = this._handleOfflineReminderAction.bind(this,  jsonObj, list, true);
-    var errorCallback   = this._handleErrorDismissAppt.bind(this, list, callback);
-    var params =
-        {jsonObj:         jsonObj,
-         asyncMode:       true,
-         callback:        respCallback,
-         offlineCallback: offlineCallback,
-         errorCallback:   errorCallback
-        };
-    appCtxt.getAppController().sendRequest(params);
-
+	// for multi-account, always set account name to be the local account
+	var acct = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: true,
+		accountName: (acct ? acct.name : null),
+		callback: (new AjxCallback(this, this._handleDismissAppt, [list, callback])),
+		errorCallback: (new AjxCallback(this, this._handleErrorDismissAppt, [list, callback]))
+	};
+	appCtxt.getAppController().sendRequest(params);
 	return true;
 };
 
@@ -482,7 +453,7 @@ function(apptList, responseAppts) {
             }
         }
     }
-};
+}
 
 /**
  * Gets the reminder dialog.
@@ -499,51 +470,42 @@ function() {
 
 
 ZmReminderController.prototype._snoozeApptAction =
-function(apptArray, snoozeMinutes, beforeAppt) {
-
-	var apptList = AjxVector.fromArray(apptArray);
-
-    var chosenSnoozeMilliseconds = snoozeMinutes * 60 * 1000;
+function(apptList, snoozeMinutes, beforeAppt) {
+    var chosenSnoozeMilliseconds = snoozeMinutes*60*1000;
     var added = false;
 
-    //     <SnoozeCalendarItemAlarmRequest xmlns="urn:zimbraMail">
-    //        <appt id="573" until="1387833974851"/>
-    //        <appt id="601" until="1387833974851"/>
-    //    </SnoozeCalendarItemAlarmRequest>
-
-    var jsonObj = {SnoozeCalendarItemAlarmRequest:{_jsns:"urn:zimbraMail"}};
-    var request = jsonObj.SnoozeCalendarItemAlarmRequest;
-
-    var appts = [];
+    var soapDoc = AjxSoapDoc.create("SnoozeCalendarItemAlarmRequest", "urn:zimbraMail");
     if (beforeAppt) {
         // Using a before time, relative to the start of each appointment
         if (!this._beforeProcessor) {
             this._beforeProcessor = new ZmSnoozeBeforeProcessor(this._apptType);
         }
-        added = this._beforeProcessor.execute(apptList, chosenSnoozeMilliseconds, appts);
+        added = this._beforeProcessor.execute(apptList, chosenSnoozeMilliseconds, soapDoc);
     } else {
         // using a fixed untilTime for all appts
         added = apptList.size() > 0;
         var untilTime = (new Date()).getTime() + chosenSnoozeMilliseconds;
         for (var i = 0; i < apptList.size(); i++) {
             var appt = apptList.get(i);
-            var apptInfo = { id: appt.id, until: untilTime};
-            appts.push(apptInfo)
+            var actionNode = soapDoc.set(this._apptType);
+            actionNode.setAttribute("id", appt.id);
+            actionNode.setAttribute("until", untilTime);
         }
     }
-    request[this._apptType] = appts;
 
-    var respCallback    = this._handleResponseSnoozeAction.bind(this, apptList, snoozeMinutes);
-    var offlineCallback = this._handleOfflineReminderAction.bind(this,  jsonObj, apptList, false);
-    var errorCallback   = this._handleErrorResponseSnoozeAction.bind(this);
-    var ac = window.parentAppCtxt || window.appCtxt;
-    ac.getRequestMgr().sendRequest(
-        {jsonObj:         jsonObj,
-         asyncMode:       true,
-         callback:        respCallback,
-         offlineCallback: offlineCallback,
-         errorCallback:   errorCallback});
 
+    if (added) {
+        var respCallback = this._handleResponseSnoozeAction.bind(this, apptList, snoozeMinutes);
+        var errorCallback = this._handleErrorResponseSnoozeAction.bind(this);
+        var acct = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
+        appCtxt.getAppController().sendRequest({
+            soapDoc:       soapDoc,
+            asyncMode:     true,
+            accountName:   acct,
+            callback:      respCallback,
+            errorCallback: errorCallback
+        });
+    }
 };
 
 
@@ -560,85 +522,11 @@ function(apptList, snoozeMinutes, result) {
 
     if (snoozeMinutes == 1) {
 	    // cancel outstanding timed action and update now...
-		// I'm not sure why this is here but I suspect to prevent some race condition.
-		this._cancelHousekeepingAction();
-		//however calling _housekeepingAction immediately caused some other race condition issues. so I just schedule it again.
-		this._scheduleHouseKeepingAction();
+	    this._cancelHousekeepingAction();
+	    this._housekeepingAction();
     }
 };
 ZmReminderController.prototype._handleErrorResponseSnoozeAction =
 function(result) {
     //appCtxt.getAppController().popupErrorDialog(ZmMsg.reminderSnoozeError, result.msg, null, true);
 };
-
-ZmReminderController.prototype._handleOfflineReminderAction =
-function(jsonObj, apptList, dismiss) {
-    var jsonObjCopy = $.extend(true, {}, jsonObj);  //Always clone the object.  ?? Needed here ??
-    var methodName = dismiss ? "DismissCalendarItemAlarmRequest" : "SnoozeCalendarItemAlarmRequest";
-    jsonObjCopy.methodName = methodName;
-    // Modify the id to thwart ZmOffline._handleResponseSendOfflineRequest, which sends a DELETE
-    // notification for the id (which impacts here if there is a single id).
-    jsonObjCopy.id = "C" + this._createSendRequestKey(apptList);
-
-    var value = {
-        update:          true,
-        methodName:      methodName,
-        id:              jsonObjCopy.id,
-        value:           jsonObjCopy
-    };
-
-    var callback = this._handleOfflineReminderDBCallback.bind(this, jsonObjCopy, apptList, dismiss);
-    ZmOfflineDB.setItemInRequestQueue(value, callback);
-};
-
-ZmReminderController.prototype._createSendRequestKey =
-function(apptList) {
-    var keyPart = [];
-    var appt;
-    for (var i = 0; i < apptList.size(); i++) {
-        appt = apptList.get(i);
-        if (appt) {
-            keyPart.push(apptList.get(i).invId);
-        }
-    }
-    return keyPart.join(":");
-}
-
-ZmReminderController.prototype._handleOfflineReminderDBCallback =
-function(jsonObj, apptList, dismiss) {
-    // Successfully stored the snooze request in the SendRequest queue, update the db items and flush the apptCache
-
-    var request = jsonObj[jsonObj.methodName];
-    var appts   = request[this._apptType];
-
-    var callback;
-    var appt;
-    var apptCache = this._calController.getApptCache();
-    for (var i = 0; i < apptList.size(); i++) {
-        appt = apptList.get(i);
-        if (appt) {
-            // AWKWARD, but with indexedDB there's no way to specify a set of ids to read. So for the moment
-            // (hopefully not too many appts triggered at once) - read one, modify, write it to the Calendar Obj store.
-            // When done with each one, invoke a callback to update the reminder appt in memory.
-            var apptInfo = appts[i];
-            callback = this._updateOfflineAlarmCallback.bind(this, appt, dismiss, apptInfo.until);
-            // Set up null data and replacement data for snooze.  apptInfo.until will be undefined for dismiss,
-            // but we remove the alarm data for dismiss anyway
-            var nullData = [];
-            nullData.push({ nextAlarm: apptInfo.until});
-            apptCache.updateOfflineAppt(appt.invId, "alarmData.0.nextAlarm", apptInfo.until, nullData, callback);
-        }
-    }
-}
-
-// Final step in the Reminder Snooze: update in memory.  I believe alarmData[0].nextAlarm is all that needs to
-// be modified, try for now.   The online _updateApptAlarmData replaces the entire alarmData with the Snooze response,
-// but all we have is the nextAlarm value.
-ZmReminderController.prototype._updateOfflineAlarmCallback =
-function(appt, dismiss, origValue, field, value) {
-    if (dismiss) {
-        appt.alarmData = null;
-    } else {
-        appt.alarmData[0].nextAlarm = origValue;
-    }
-}

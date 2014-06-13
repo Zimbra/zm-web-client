@@ -55,7 +55,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 			{ name: 'email',        type: 'auto' },
 			{ name: 'phone',        type: 'auto' },
 			{ name: 'address',      type: 'auto' },
-			{ name: 'URL',          type: 'auto' },
+			{ name: 'url',          type: 'auto' },
 
 			// Below are fields created out of the simple fields above
 
@@ -139,7 +139,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 	            name: 'imageUrl',
 	            type: 'auto',
                 convert: function(value, record) {
-                    return ZCS.model.contacts.ZtContact.getImageUrl(record, record.getId(), 56);
+                    return ZCS.model.contacts.ZtContact.getImageUrl(record, record.getId());
                 }
             },
 
@@ -194,7 +194,18 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 
     constructor: function(data, id) {
 
-        var contact = this.callParent(arguments) || this;
+        var contact = this.callParent(arguments) || this,
+            emails = data && data.email,
+            altKey;
+
+        if (emails) {
+            for (var i = 0, len = emails.length; i < len; i++) {
+                altKey = emails[i].email;
+                if (altKey) {
+                    ZCS.cache.set(altKey, this, 'email');
+                }
+            }
+        }
 
 	    // Compile a static list of fields that are converted (so they can be updated when
 	    // the contact model changes)
@@ -369,7 +380,7 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 				return attrs.zimletImage || null;  // return zimlet populated image only if user-uploaded image is not there
 			}
 
-			maxWidth = (maxWidth || 48) * (window.devicePixelRatio || 1);
+			maxWidth = maxWidth || 48;
 
 			return ZCS.htmlutil.buildUrl({
 				path: ZCS.constant.PATH_MSG_FETCH,
@@ -378,7 +389,6 @@ Ext.define('ZCS.model.contacts.ZtContact', {
 					id:         contactId,
 					part:       imagePart,
 					max_width:  maxWidth,
-					max_height: maxWidth,
 					t:          (new Date()).getTime()
 				}
 			});

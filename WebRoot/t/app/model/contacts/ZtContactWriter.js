@@ -81,7 +81,7 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 
 			}
 			else {
-//				var query = request.getParams().query || 'in:contacts';
+				var query = request.getParams().query || 'in:contacts';
 				request.setUrl(ZCS.constant.SERVICE_URL_BASE + 'SearchRequest');    // replace configured 'read' URL
 				json = this.getSoapEnvelope(request, data, 'Search');
 				methodJson = json.Body.SearchRequest;
@@ -91,7 +91,6 @@ Ext.define('ZCS.model.contacts.ZtContactWriter', {
 					offset: operation.getStart(),
 					limit:  ZCS.constant.DEFAULT_PAGE_SIZE,
 					query:  query,
-					field:  itemData.field,
 					types:  'contact'
 				});
 			}

@@ -71,19 +71,7 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 			data.attachments = ctxt.attachments;
 			data.bodyParts = ctxt.bodyParts;
 			data.contentTypes = ctxt.contentTypes;
-
 			data.isLoaded = !!(data.bodyParts.length > 0 || data.attachments.length > 0);
-
-			//Don't allow multiple messages to be expanded in a single conversation.
-			//Having many expanded messages leads to performance issues.
-			if (this.oneMessageAlreadyExpanded) {
-				data.isLoaded = false;
-			}
-
-			if (data.isLoaded) {
-				this.oneMessageAlreadyExpanded = true;
-			}
-
 		}
 		else {
 			data.isLoaded = false;
@@ -97,12 +85,6 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 			if (node.cif) {
 				data.invite.set('calendarIntendedFor', node.cif);
 			}
-            if (node.ms) {
-                data.invite.set('ms', node.ms);
-            }
-            if (node.rev) {
-                data.invite.set('rev', node.rev);
-            }
 		}
 
 		return data;
@@ -119,8 +101,6 @@ Ext.define('ZCS.model.mail.ZtMsgReader', {
 		}
 
 		var records = [], ln = root.length, i;
-
-		this.oneMessageAlreadyExpanded = false;
 
 		// Process each msg from JSON to data
 		for (i = 0; i < ln; i++) {

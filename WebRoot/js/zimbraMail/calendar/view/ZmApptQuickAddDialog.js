@@ -40,7 +40,7 @@ ZmApptQuickAddDialog = function(parent) {
 	DBG.timePt("ZmQuickAddDialog constructor", true);
 
 	AjxDispatcher.run("GetResources");
-    AjxDispatcher.require(["MailCore", "CalendarCore"]);
+    AjxDispatcher.require("CalendarCore");
 
     var app = appCtxt.getApp(ZmApp.CALENDAR);
     this._fbCache = new ZmFreeBusyCache(app);
@@ -174,7 +174,7 @@ function() {
 	var errorMsg = null;
 
 	if (subj && subj.length) {
-		if (!DwtTimeInput.validStartEnd( this._startDateField, this._endDateField, this._startTimeSelect, this._endTimeSelect)) {
+		if (!ZmTimeInput.validStartEnd( this._startDateField, this._endDateField, this._startTimeSelect, this._endTimeSelect)) {
 			errorMsg = ZmMsg.errorInvalidDates;
 		}
 	} else {
@@ -210,7 +210,7 @@ function(loc) {
 		if (this._folderSelect.size() > 1) {
 			members.push(this._folderSelect);
 		}
-		// XXX: DwtTimeInput doesn't handle focus yet
+		// XXX: ZmTimeInput doesn't handle focus yet
 		members = members.concat([this._startDateField, this._startDateButton, this._startTimeSelect.getInputField(),
 								  this._endDateField, this._endDateButton,  this._endTimeSelect.getInputField(),
 								  this._repeatSelect]);
@@ -257,7 +257,7 @@ function() {
 											validationStyle:DwtInputField.CONTINUAL_VALIDATION,
 											parentElement:(this._htmlElId + "_subject")});
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
+	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
 
 
     this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
@@ -265,13 +265,13 @@ function() {
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION,
 											parentElement:(this._htmlElId + "_location")});
-	Dwt.setSize(this._locationField.getInputElement(), "100%", "2rem");
+	Dwt.setSize(this._locationField.getInputElement(), "100%", "22px");
 
     // create DwtSelects
 	this._showAsSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_showAs")});
 	for (var i = 0; i < ZmApptViewHelper.SHOWAS_OPTIONS.length; i++) {
 		var option = ZmApptViewHelper.SHOWAS_OPTIONS[i];
-		this._showAsSelect.addOption(option.label, option.selected, option.value, "ShowAs" + option.value);
+		this._showAsSelect.addOption(option.label, option.selected, option.value, "showAs" + option.value);
 	}
 
 	this._privacySelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_privacy")});
@@ -295,11 +295,11 @@ function() {
 	// create selects for Time section
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 	
-	this._startTimeSelect = new DwtTimeInput(this, DwtTimeInput.START);
+	this._startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START);
 	this._startTimeSelect.addChangeListener(timeSelectListener);
 	this._startTimeSelect.reparentHtmlElement(this._htmlElId + "_startTime");
 
-	this._endTimeSelect = new DwtTimeInput(this, DwtTimeInput.END);
+	this._endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END);
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 	this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_endTime");
 
@@ -626,7 +626,7 @@ function(ev) {
 
 ZmApptQuickAddDialog.prototype._timeChangeListener =
 function(ev, id) {
-	DwtTimeInput.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField, this._dateInfo, id);
+	ZmTimeInput.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField, this._dateInfo, id);
     if (!this._appt.isAllDayEvent()) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
     }

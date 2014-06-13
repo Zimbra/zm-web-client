@@ -89,6 +89,7 @@ function(actionCode, ev) {
 		default:
 			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
 	}
+	return true;
 };
 
 // Private methods
@@ -102,7 +103,7 @@ function() {
 ZmTradController.prototype._resetOperations = 
 function(parent, num) {
 	ZmDoublePaneController.prototype._resetOperations.apply(this, arguments);
-	parent.enable(ZmOperation.SHOW_CONV, (num == 1) && !appCtxt.isWebClientOffline());
+	parent.enable(ZmOperation.SHOW_CONV, (num == 1));
 };
 
 ZmTradController.prototype._paginate = 
@@ -120,6 +121,13 @@ function(view) {
 
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousPage);
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);
+};
+
+ZmTradController.prototype._getMoreSearchParams = 
+function(params) {
+	// OPTIMIZATION: find out if we need to pre-fetch the first hit message
+	params.fetch = this.isReadingPaneOn();
+	params.markRead = true;
 };
 
 ZmTradController.prototype._listSelectionListener =

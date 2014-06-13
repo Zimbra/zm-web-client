@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2012, 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -64,39 +64,12 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 		this.callParent();
 
-		var callback = this.showInitialResults.bind(this);
-		if (ZCS.util.isAppEnabled(ZCS.constant.APP_CONTACTS)) {
-			ZCS.app.getContactListController().loadAllContacts(callback);
-		}
-		else {
-			callback();
-		}
-
 		ZCS.app.on('notifyConversationDelete', this.handleDeleteNotification, this);
 		ZCS.app.on('notifyConversationCreate', this.handleConvCreateNotification, this);
 		ZCS.app.on('notifyMessageCreate', this.handleMsgCreateNotification, this);
 		ZCS.app.on('notifyConversationChange', this.handleModifyNotification, this);
 
 		ZCS.app.on('notifyRefresh', this.handleRefresh, this);
-	},
-
-	// Display the initial (inlined) search results.
-	showInitialResults: function() {
-
-		var defaultQuery = this.getDefaultQuery();
-
-		// Set the proxy's params so this parameter persists between paging requests.
-		this.getStore().getProxy().setExtraParams({
-			query: defaultQuery
-		});
-
-		this.getStore().load({
-			query:          defaultQuery,
-			initialSearch:  true,
-			callback:       this.storeLoaded,
-			scope:          this
-		});
-
 	},
 
 	doDelete: function (list, item, target, record) {
@@ -136,8 +109,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 			this.currentSlidingEl = convItem.element.down('.zcs-mail-list-slideable');
 			this.currentSlidingItem = convItem;
 
-			convItem.addCls('x-item-swiping');
-			convItem.removeCls('x-item-pressed');
+			convItem.addCls('x-item-pressed');
 
 			list.setScrollable(false);
 			list.container.innerElement.on({
@@ -154,27 +126,15 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 		// Apply delete style at halfway
 		if (newX <= this.deleteThreshold) {
-			this.currentSlidingEl.translate(newX);
-            this.currentSlidingEl.slideOffset = newX;
-            
-            if (!this.currentSlidingItem.deleteActive) {
-				this.currentSlidingItem.addCls('delete-active');
-				//Save state so we don't keep re-applying this class and hitting the dom
-				this.currentSlidingItem.deleteActive = true;
-			}
+			this.currentSlidingEl.setX(newX);
+			this.currentSlidingItem.addCls('delete-active');
 		// Don't let item move right past start
 		} else if (newX > 0) {
-			this.currentSlidingEl.translate(0);
-            this.currentSlidingEl.slideOffset = 0;
+			this.currentSlidingEl.setX(0);
 		// Only take action if X movement is not 0
 		} else if (moveDistance != 0) {
-			this.currentSlidingEl.translate(newX);
-            this.currentSlidingEl.slideOffset = newX;
-
-            if (this.currentSlidingItem.deleteActive) {
-				this.currentSlidingItem.removeCls('delete-active');
-				this.currentSlidingItem.deleteActive = false;
-			}
+			this.currentSlidingEl.setX(newX);
+			this.currentSlidingItem.removeCls('delete-active');
 		}
 		this.listItemLastMouseX = e.pageX;
 		this.listItemLastX = newX;
@@ -188,17 +148,11 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 			scope: this
 		});
 		list.setScrollable(true);
-		if (slidingEl.slideOffset <= this.deleteThreshold) {
+		if (slidingEl.getX() <= this.deleteThreshold) {
 			ZCS.app.fireEvent('swipeDeleteMailItem', record, list, convItem);
-		} else {
-			convItem.removeCls('delete-active');
-	        convItem.removeCls('x-item-pressed');
-	        convItem.removeCls('x-item-swiping');
 		}
-		if (this.lastItemLastX !== 0) {
-			slidingEl.translate(0);
-		}
-		convItem.deleteActive = false;
+		slidingEl.setX(0);
+		convItem.removeCls('x-item-pressed');
 	},
 
 	/**
@@ -218,7 +172,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 
 		var curSearch = ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, this.getApp()),
 			curFolder = this.getFolder() || ZCS.session.getCurrentSearchOrganizer(),
-			isOutbound = curFolder && ZCS.util.isOutboundFolderId(curFolder.get('zcsId'));
+			isOutbound = ZCS.util.isOutboundFolderId(curFolder.get('zcsId'));
 
 		// gather up the conv's msgs from their create nodes (typically just one msg)
 		for (i = 0; i < ln; i++) {
@@ -276,7 +230,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		// conv is already in the store, doesn't need to be added; just bump conv to top if msg matches
 		if (store.getById(msgCreate.cid)) {
 			if (msgMatches) {
-				var conv = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_CONVERSATION, msgCreate.cid);
+				var conv = ZCS.cache.get(msgCreate.cid);
 				if (conv && store.indexOf(conv) > 0) {
 					store.insert(0, [conv]);
 				}
@@ -324,7 +278,7 @@ Ext.define('ZCS.controller.mail.ZtConvListController', {
 		// virtual conv changes ID when it gets a second message; we can't just change the ID
 		// field since that breaks the connection to the list item in the UI
 		if (modify.newId) {
-			var oldConv = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_CONVERSATION, modify.id),
+			var oldConv = ZCS.cache.get(modify.id),
 				index = oldConv ? store.indexOf(oldConv) : -1,
 				newConv;
 

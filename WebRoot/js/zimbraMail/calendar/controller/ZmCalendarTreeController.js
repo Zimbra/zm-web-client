@@ -152,7 +152,7 @@ function(overviewId, listener) {
 
 ZmCalendarTreeController.prototype.resetOperations = 
 function(actionMenu, type, id) {
-	if (actionMenu && !appCtxt.isWebClientOffline()) {
+	if (actionMenu) {
 		var calendar = appCtxt.getById(id);
 		var nId;
 		if (calendar) {
@@ -203,9 +203,8 @@ function(actionMenu, type, id) {
             fbLinkMenuItem.setMenu(this._fbLinkSubMenu);
         }
 
-        actionMenu.enable(ZmOperation.NEW_CALENDAR, !isTrash && !appCtxt.isExternalAccount() && !appCtxt.isWebClientOffline());
 
-    }
+	}
 };
 
 ZmCalendarTreeController.prototype._getFreeBusySubMenu =
@@ -285,8 +284,6 @@ function() {
                 ZmOperation.CLEAR_ALL);
     }
 
-	ops.push(ZmOperation.FIND_SHARES);
-
 	return ops;
 };
 
@@ -295,7 +292,6 @@ ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
     if(appCtxt.getCurrentApp().containsWritableFolder()) {
         return [
-            ZmOperation.NEW_CALENDAR,
             ZmOperation.SHARE_CALENDAR,
             ZmOperation.DELETE_WITHOUT_SHORTCUT,
             ZmOperation.MOVE,
@@ -322,19 +318,15 @@ function(ev) {
         return null;
     }
 	var menu = ZmTreeController.prototype._getActionMenu.apply(this, arguments);
-    if (appCtxt.isWebClientOffline())  {
-        menu.enableAll(false);
-    } else {
-        var isTrash = organizer.nId == ZmOrganizer.ID_TRASH;
-        //bug 67531: "Move" Option should be disabled for the default calendar
-        var isCalendar = organizer.nId == ZmOrganizer.ID_CALENDAR;
-        menu.enableAll(!isTrash);
-        menu.enable(ZmOperation.MOVE, !isCalendar && !isTrash);
-        menu.enable(ZmOperation.EMPTY_FOLDER, isTrash);
-        var menuItem = menu.getMenuItem(ZmOperation.EMPTY_FOLDER);
-        if (menuItem) {
-            menuItem.setText(isTrash ? ZmMsg.emptyTrash : ZmMsg.emptyFolder);
-        }
+    var isTrash = organizer.nId == ZmOrganizer.ID_TRASH;
+    //bug 67531: "Move" Option should be disabled for the default calendar
+    var isCalendar = organizer.nId == ZmOrganizer.ID_CALENDAR;
+    menu.enableAll(!isTrash);
+    menu.enable(ZmOperation.MOVE, !isCalendar && !isTrash);
+    menu.enable(ZmOperation.EMPTY_FOLDER, isTrash);
+    var menuItem = menu.getMenuItem(ZmOperation.EMPTY_FOLDER);
+    if (menuItem) {
+        menuItem.setText(isTrash ? ZmMsg.emptyTrash : ZmMsg.emptyFolder);
     }
     return menu;
 };
@@ -348,9 +340,7 @@ function(organizer) {
             return;
         }
 
-        if (organizer.nId == ZmOrganizer.ID_TRASH) {
-			return;
-		}
+        if (organizer.id == ZmOrganizer.ID_TRASH) return;
 
 		var appId = ZmOrganizer.APP[organizer.type];
 		var app = appId && appCtxt.getApp(appId);
@@ -426,9 +416,12 @@ function(ev) {
             dlg.setMessage(ZmMsg.orgChange, DwtMessageDialog.WARNING_STYLE);
             dlg.popup();
 		} else {
-            if (data instanceof ZmCalendar) {
-                this._doMove(data, dropFolder);
-            } else {
+            if(data instanceof ZmCalendar){
+                // Root node's type is folder, but it's labelled 'Calendars'.  Pass the proper
+                // name down to the status message.
+                var folderName = (dropFolder.nId == ZmFolder.ID_ROOT) ? ZmMsg.calendars : null;
+                this._doMove(data, dropFolder, folderName);
+            } else{
                 ctlr._doMove(appts, dropFolder, null, isShiftKey);
             }
 		}
@@ -462,26 +455,13 @@ function() {
     return appCtxt.getNewCalendarDialog();
 };
 
-ZmCalendarTreeController.prototype._newCallback =
-function(params) {
-    // For a calendar, set the parent folder (params.l) if specified
-    var folder = this._pendingActionData instanceof ZmOrganizer ? this._pendingActionData :
-        (this._pendingActionData && this._pendingActionData.organizer);
-    if (folder) {
-        params.l = folder.id;
-    }
-    ZmTreeController.prototype._newCallback.call(this, params);
-};
-
-
-
 /*
 * Returns an "External Calendar" dialog.
 */
 ZmCalendarTreeController.prototype.getExternalCalendarDialog =
 function() {
     if(!this._externalCalendarDialog) {
-        AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+        AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 	    this._externalCalendarDialog = new ZmExternalCalendarDialog({parent: this._shell, controller: this});
     }
     return this._externalCalendarDialog;
@@ -527,7 +507,7 @@ function(ev, treeView, overviewId) {
 ZmCalendarTreeController.prototype._treeViewListener =
 function(ev) {
 	// handle item(s) clicked
-	if (ev.detail == DwtTree.ITEM_CHECKED) {
+	if (ev.detail == DwtTree.ITEM_CHECKED) { 
 		var overviewId = ev.item.getData(ZmTreeView.KEY_ID);
 		var calendar = ev.item.getData(Dwt.KEY_OBJECT);
 

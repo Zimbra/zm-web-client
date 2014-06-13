@@ -104,6 +104,25 @@ function(type, inclDispName) {
 };
 
 /**
+ * Gets the attendee as text by role.
+ *
+ * @param	{constant}		type		the type
+ * @param	{constant}		role		defines the role of the attendee (required/optional)
+ * @param	{Boolean} collapseLongList - if true, long lists have a "show more" link that expands.
+ * @param	{String}  htmlElId - required if collapseLongList is true - identifier for this view
+ *
+ * @return	{String}	the attendee string by role
+ */
+ZmAppt.prototype.getAttendeesTextByRole =
+function(type, role, collapseLongList, objectManager, htmlElId) {
+	if (collapseLongList) {
+		return ZmApptViewHelper.getAttendeesByRoleCollapsed(this.getAttendees(type), type, role, objectManager, htmlElId);
+	}
+	return ZmApptViewHelper.getAttendeesByRole(this.getAttendees(type), type, role);
+};
+
+
+/**
  * Checks if the appointment has attendees of the specified type.
  * 
  * @param	{constant}		type		the type
@@ -137,30 +156,6 @@ function() {
 };
 
 // Public methods
-
-ZmAppt.loadOfflineData =
-function(apptInfo, list) {
-    var appt = new ZmAppt(list);
-    var recurrence;
-    var alarmActions;
-    var subObjects = {_recurrence:ZmRecurrence, alarmActions:AjxVector};
-    for (var prop in apptInfo) {
-        // PROBLEM: The indexeddb serialization/deserialization does not recreate the actual objects - for example,
-        // a AjxVector is recreated as an object containing an array.  We really want a more generalized means, but
-        // for the moment do custom deseralization here.   Also, assuming only one sublevel of custom objects
-        if (subObjects[prop]) {
-            var obj = new subObjects[prop]();
-            for (var rprop in apptInfo[prop]) {
-                obj[rprop] = apptInfo[prop][rprop];
-            }
-            appt[prop] = obj;
-        } else {
-            appt[prop] = apptInfo[prop];
-        }
-    }
-
-    return appt;
-}
 
 /**
  * Used to make our own copy because the form will modify the date object by 
@@ -268,28 +263,16 @@ function(controller, callback) {
 		sentBy: sentBy,
 		when: this.getDurationText(false, false),
 		location: this.getLocation(),
-		width: "250",
-		hideAttendees: true
+		width: "250"
 	};
 
 	this.updateParticipantStatus();
 	if (this.ptstHashMap != null) {
 		var ptstStatus = {};
-		var statusAttendees;
-		var hideAttendees = true;
-
-		statusAttendees = ptstStatus[ZmMsg.ptstAccept] = this._getPtstStatus(ZmCalBaseItem.PSTATUS_ACCEPT);
-		hideAttendees = hideAttendees && !statusAttendees.count;
-
-		statusAttendees = ptstStatus[ZmMsg.ptstDeclined] = this._getPtstStatus(ZmCalBaseItem.PSTATUS_DECLINED);
-		hideAttendees = hideAttendees && !statusAttendees.count;
-
-		statusAttendees = ptstStatus[ZmMsg.ptstTentative] = this._getPtstStatus(ZmCalBaseItem.PSTATUS_TENTATIVE);
-		hideAttendees = hideAttendees && !statusAttendees.count;
-
-		statusAttendees = ptstStatus[ZmMsg.ptstNeedsAction] = this._getPtstStatus(ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
-		hideAttendees = hideAttendees && !statusAttendees.count;
-		params.hideAttendees = hideAttendees;
+		ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_ACCEPT]);
+		ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_DECLINED]);
+		ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
+		ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this.ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
 		params.ptstStatus = ptstStatus;
 
 		var attendees = [];
@@ -309,16 +292,6 @@ function(controller, callback) {
 	} else {
 		return toolTip;
 	}
-};
-
-ZmAppt.prototype._getPtstStatus =
-function(ptstHashKey) {
-	var ptstString = this.ptstHashMap[ptstHashKey];
-
-	return {
-		count: ptstString ? ptstString.length : 0,
-		attendees: this.getAttendeeToolTipString(ptstString)
-	};
 };
 
 ZmAppt.prototype.getAttendeeToolTipString =
@@ -749,13 +722,14 @@ function(message) {
 			var att = attendees[i];
 			var addr = att.a;
 			var name = att.d;
-			var email = new AjxEmailAddress(addr, null, name, null, att.isGroup, att.isGroup && att.exp);
+			var email = new AjxEmailAddress(addr, null, name);
+			email.isGroup = att.isGroup;
+			email.canExpand = att.isGroup && att.exp;
 			ac.setIsExpandableDL(att.a, email.canExpand);
             if (att.rsvp) {
 				rsvp = true;
 			}
-			var type = att.isGroup ? ZmCalBaseItem.GROUP : ZmCalBaseItem.PERSON;
-			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, type);
+			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, ZmCalBaseItem.PERSON);
 			if (attendee) {
 				attendee.setParticipantStatus(ptstReplies[addr] || att.ptst);
 				attendee.setParticipantRole(att.role || ZmCalItem.ROLE_REQUIRED);
@@ -1120,10 +1094,7 @@ function(inv, m, notifyList, attendee, type, request) {
 			role = attendee.getParticipantRole() ? attendee.getParticipantRole() : ZmCalItem.ROLE_REQUIRED;
 		}
 		at.role = role;
-		var ptst = attendee.getParticipantStatus();
-		if (!ptst || type === ZmCalBaseItem.PERSON && this.dndUpdate) {  //Bug 56639 - special case for drag-n-drop since the ptst was not updated correctly as we didn't have the informations about attendees and changes.
-			ptst = ZmCalBaseItem.PSTATUS_NEEDS_ACTION
-		}
+		var ptst = attendee.getParticipantStatus() || ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 		if (notifyList) {
 			var attendeeFound = false;
 			for (var i = 0; i < notifyList.length; i++) {
@@ -1609,4 +1580,4 @@ ZmAppt.prototype.checkDSTChangeOnEndDate = function(){
     var prevDayOffset = prevDay.getTimezoneOffset();
     var diffOffset = prevDayOffset - eOffset;
     return diffOffset;
-};
+}

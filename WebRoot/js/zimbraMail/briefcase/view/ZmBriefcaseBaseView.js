@@ -54,7 +54,7 @@ function() {
 ZmBriefcaseBaseView.prototype._sortIndex =
 function(list, item){
     if(!list){
-        return null;
+        return 0;
     }
     var a = list.getArray(), index = a.length;
 	for(var i = 0; i < a.length; i++) {
@@ -65,7 +65,7 @@ function(list, item){
 		}
 
 	}
-	return { listIndex: index, displayIndex: index};
+	return index;
 };
 
 ZmBriefcaseBaseView.prototype._changeListener =
@@ -76,42 +76,31 @@ function(ev) {
 	var items = ev.getDetail("items");
 
 	if (ev.event == ZmEvent.E_CREATE) {
-		var indices;
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
-			if (this._list) {
-				indices = this._sortIndex(this._list, item);
-				if (indices) {
-					this.addItem(item, indices.displayIndex, false, indices.listIndex);
-					this.scrollToItem(item);
-					if(this.getSelection().length == 0) {
-						// Only select if nothing else is selected
-						this.setSelection(item);
-					}
-				}
-			} else {
-				// Create the list and add the item
-				this.addItem(item, 0, false, 0);
-				this.setSelection(item);
-			}
+			this.addItem(item, this._sortIndex(this._list, item));
+            this.scrollToItem(item);
+            if(this.getSelection().length > 0){
+                this.selectItem(item, true);
+            }else{
+                this.setSelection(item);
+            }
 		}
 	}
 
-    if (ev.event == ZmEvent.E_MODIFY) {
-		var updateList = false;
-		var item;
-		var nameUpdated;
-		for (var i = 0; i < items.length; i++) {
-			item = items[i];
+    if(ev.event == ZmEvent.E_MODIFY){
+        for (var i = 0; i < items.length; i++) {
+			var item = items[i];
 			if (this._list && this._list.contains(item)) {
-				nameUpdated = ev.getDetail(ZmBriefcaseBaseItem.NAME_UPDATED);
-				if (nameUpdated) {
-					this._handleRename(item);
-				} else {
-					this._handleModified(item);
-				}
-			}
+                this._redrawItem(item);
+                if (this._expanded && this._expanded[item.id]){
+                    //if already expanded, update revisions row
+                    this.parent._expand(item);
+
+                }
+
+            }
 		}
     }
 
@@ -126,18 +115,6 @@ function(ev) {
         }
     }
 
-};
-
-ZmBriefcaseBaseView.prototype._handleRename = function(item) {
-	this._handleModified(item);
-};
-
-ZmBriefcaseBaseView.prototype._handleModified = function(item) {
-	this._redrawItem(item);
-	if (this._expanded && this._expanded[item.id]) {
-		//if already expanded, update revisions row
-		this.parent._expand(item);
-	}
 };
 
 
@@ -178,7 +155,7 @@ ZmBriefcaseBaseView.prototype.uploadFiles =
 function() {
     var attachDialog = appCtxt.getUploadDialog();
     var files = this.processUploadFiles();
-    attachDialog.uploadFiles(null, files, document.getElementById("zdnd_form"), {id:this._controller._folderId});
+    attachDialog.uploadFiles(files, document.getElementById("zdnd_form"), {id:this._controller._folderId});
 };
 
 /**
@@ -302,18 +279,10 @@ function(){
         this._renameField.setDisplay(Dwt.DISPLAY_NONE);
         this._renameField.setLocation("-10000px", "-10000px");
         this._renameField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
+        this.addSelectionListener(new AjxListener(this, this.cleanup));
     }
     return this._renameField;
 };
-
-ZmBriefcaseBaseView.prototype._mouseDownAction = function(mouseEv, div) {
-	if (this._renameField && this._renameField.getVisibility() && this._fileItem) {
-		this._doRename(this._fileItem);
-		this.resetRenameFile();
-	}
-	ZmListView.prototype._mouseDownAction(mouseEv, div);
-};
-
 
 ZmBriefcaseBaseView.prototype._handleKeyUp =
 function(ev) {
@@ -321,7 +290,19 @@ function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
     var item = this._fileItem;
     if(key == DwtKeyEvent.KEY_ENTER){
-        this._doRename(item);
+        var fileName = this._renameField.getValue();
+        if(fileName != '' && fileName != item.name){
+            if(this._checkDuplicate(fileName)){
+                this._redrawItem(item);
+                var warning = appCtxt.getMsgDialog();
+                warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, fileName), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
+                warning.popup();
+            }else{
+                item.rename(fileName, new AjxCallback(this, this.resetRenameFile));
+            }
+        }else{
+            this.redrawItem(item);
+        }
         allowDefault = false;
     }else if( key == DwtKeyEvent.KEY_ESCAPE){
         this._redrawItem(item);
@@ -329,27 +310,6 @@ function(ev) {
     }
 	DwtUiEvent.setBehaviour(ev, true, allowDefault);
 };
-
-ZmBriefcaseBaseView.prototype._doRename = function(item) {
-	var fileName = this._renameField.getValue();
-	if (fileName != '' && (fileName != item.name)) {
-		var warning = appCtxt.getMsgDialog();
-		if (this._checkDuplicate(fileName)) {
-			this._redrawItem(item);
-			warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, fileName), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
-			warning.popup();
-		} else if(ZmAppCtxt.INVALID_NAME_CHARS_RE.test(fileName)) {
-			//Bug fix # 79986 show warning popup in case of invalid filename
-			warning.setMessage(AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName)), DwtMessageDialog.WARNING_STYLE, ZmMsg.briefcase);
-			warning.popup();
-		} else {
-			item.rename(fileName, new AjxCallback(this, this.resetRenameFile));
-		}
-	} else {
-		this.redrawItem(item);
-	}
-}
-
 
 ZmBriefcaseBaseView.prototype.resetRenameFile =
 function(){
@@ -379,9 +339,9 @@ function(name){
     return false;   
 };
 
-ZmBriefcaseBaseView.prototype.cleanup = function() {
-    if (this._renameField) {
+ZmBriefcaseBaseView.prototype.cleanup =
+function(){
+    if(this._renameField)
         this.resetRenameFile();
-	}
 };
 

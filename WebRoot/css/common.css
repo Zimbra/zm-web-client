@@ -39,19 +39,6 @@
 	@FontFamily-system@
 }
 
-.user_font_size_small {
-	font-size:@UserFontSize-small@
-}
-.user_font_size_normal {
-	font-size:@UserFontSize-normal@
-}
-.user_font_size_large {
-	font-size:@UserFontSize-large@
-}
-.user_font_size_larger {
-	font-size:@UserFontSize-larger@
-}
-
 /*
 * HTML elements - use for global declarations
 */
@@ -75,8 +62,8 @@ BODY {
 }
 
 FORM {
-	margin:0px;
-	padding:0px;
+	margin:0;
+	padding:0;
 }
 
 TABLE {
@@ -105,37 +92,40 @@ INPUT[readonly] {
 	@InputField-disabled@
 }
 TEXTAREA {
-	@TextArea@
-	@TextArea-normal@
-#IFDEF SAFARI
-	resize:none;
-#ENDIF
+	@TextArea@ @TextArea-normal@
+	#IFDEF SAFARI
+		resize:none;
+	#ENDIF
 }
 TEXTAREA[readonly] {
 	@TextArea-disabled@
 }
 
 INPUT[type="checkbox"] {
-	@ActiveCursor@
+		@ActiveCursor@
 }
 
 #IFDEF MSIE
 	INPUT {cursor: expression(this.type=="checkbox"?'pointer':''); }
 #ENDIF
 
-/* set for 'text' and 'password' fields explicitly so checkboxes and radio buttons don't get borders */
-INPUT[type="text"],
-INPUT[type="password"] {
-	@InputField@
-	@InputField-normal@
-}
-INPUT[disabled] {
-	@InputField-disabled@
-}
-textarea {
-	@TextArea@
-	@TextArea-normal@
-}
+/* TODO: figure out what we need to do for IE/etc to set the same INPUT styles */
+#IFDEF GECKO
+	/* set for 'text' and 'password' fields explicitly so checkboxes and radio buttons don't get borders */
+	INPUT[type="text"],
+	INPUT[type="password"] {
+		@InputField@
+		@InputField-normal@
+	}
+	INPUT[disabled] {
+		@InputField-disabled@
+	}
+	textarea {
+		@TextArea@
+		@TextArea-normal@
+	}
+#ENDIF
+
 
 
 /*** Syntactic sugar ***/
@@ -463,7 +453,7 @@ TD.vSpace {
 	table-layout:fixed;
 }
 
-.Row TD, .RowDouble TD, .Row DIV, .RowDouble DIV {
+.Row TD, .RowDouble TD {
 	@ListItemText@
 }
 
@@ -472,119 +462,61 @@ TD.vSpace {
 }
 
 .RowDouble TD.SubjectDoubleRow {
-	vertical-align:text-bottom;
-}
-
-.ZmMsgListBottomRowIcon {
-#IFNDEF MSIE_LOWER_THAN_9
-	margin-left: 28px;
-#ENDIF
-#IFDEF MSIE_LOWER_THAN_9
-	margin-left: 18px;
-#ENDIF
-}
-
-.ZmConvExpanded .ZmMsgListBottomRowIcon {
-#IFNDEF MSIE_LOWER_THAN_9
-	margin-left: 50px;
-#ENDIF
-#IFDEF MSIE_LOWER_THAN_9
-	margin-left: 36px;
-#ENDIF
-}
-
-.ZmMsgListSelection .ZmMsgListBottomRowIcon {
-	margin-left: 46px;
-}
-
-.ZmConvExpanded .ZmMsgListSelection .ZmMsgListBottomRowIcon {
-	margin-left: 68px;
+    vertical-align:text-bottom;
 }
 
 #IFDEF MACINTOSH
 #IFDEF WEBKIT
-	.RowDouble TD.SubjectDoubleRow, .RowDouble DIV.SubjectDoubleRow  			{	padding-top:1px; 		}
-	.RowDouble .Unread TD.SubjectDoubleRow, .RowDouble .Unread DIV.SubjectDoubleRow  	{	padding-top:0px; 		}
+	.RowDouble TD.SubjectDoubleRow 			{	padding-top:1px; 		} 
+	.RowDouble .Unread TD.SubjectDoubleRow 	{	padding-top:0px; 		}
 #ENDIF
 #ENDIF
 
-#IFDEF MSIE
-.SubjectDoubleRow {
-	width:100%;
-}
-#ENDIF
 /* list row styles (bgs & border) */
 
-.Row							{	@ListItemContainer-normal@			}
+.Row						{	@ListItemContainer-normal@			}
 
-.RowOdd							{	@ListItemContainer-alt@			}
+.RowOdd						{	@ListItemContainer-alt@			}
 
-/* selected row styles */
-.selected,
+.selected, 	/* TODO: used? */
 .Row-selected,
 .Row-selected-dragProxy,
-.Row-selected-disabled			{	@ListItemContainer-selected@		}
-
-.Row-selected .ZmListFlagsWrapper,
-.Row-selected-disabled .ZmListFlagsWrapper,
-.Row-selected .ZmMsgListDate,
-.Row-selected-disabled .ZmMsgListDate 	{	background:@ListItemBgColor-selected@;	}
-/* must define on 'background', so it overrides both 'background-color' AND 'background-image' */
-
-.Row-selected-actioned .ZmListFlagsWrapper,
-.Row-selected-actioned .ZmMsgListDate 	{	background:@ListItemBgColor-actioned@;	}
-/* must define on 'background', so it overrides both 'background-color' AND 'background-image' */
-
-/* row selected only for reading pane, not actions */
-.Row-altSelected				{	@ListItemContainer-sel-alt@		}
-
-.Row-altSelected .ZmListFlagsWrapper,
-.Row-altSelected .ZmMsgListDate 	{	background:@ListItemBgColor-sel-alt@;	}
-/* must define on 'background', so it overrides both 'background-color' AND 'background-image' */
+.Row-selected-disabled 		{	@ListItemContainer-selected@		}
 
 /* .Row-matched, */
-.Row-matched-dragProxy 			{ 	@ListItemContainer-matched@		}
+.Row-matched-dragProxy 		{ 	@ListItemContainer-matched@		}
 
 .Row-matched TABLE, 
 .Row-matched-drag TABLE 		{	table-layout:fixed;					}
 
-.Row-focused 					{	@ListItemContainer-focused@		}
+.Row-focused 				{	@ListItemContainer-focused@		}
 
-.Row-selected-actioned 			{	@ListItemContainer-actioned@		}
+.Row-selected-actioned 		{	@ListItemContainer-actioned@		}
 
 .Row-dragProxy,
-.Row-matched-dragProxy 			{	@ListItemContainer-dragProxy@		}
+.Row-matched-dragProxy 		{	@ListItemContainer-dragProxy@		}
 
-.RowDouble-dragProxy .ZmListFlagsWrapper,
-.RowDouble-dragProxy .ZmMsgListDate,
-.Row-dragProxy .ZmListFlagsWrapper,
-.Row-dragProxy .ZmMsgListDate	{	@ListItemContainer-dragProxy@	}
 
 /* list row TD's (eg: text) */
 
-.Row TD, .RowDouble TD,
-.Row DIV, .RowDouble DIV		{	@ListItemText-normal@				}
+.Row TD, .RowDouble TD		{	@ListItemText-normal@				}
 
-.RowOdd TD, .RowOdd DIV			{	@ListItemText-alt@	}
-.RowOdd .ZmMsgListDate,
-.RowOdd .ZmListFlagsWrapper		{	background-color:@ListItemBgColor-alt@;	}
-
-LI.RowDouble, LI.Row {list-style: none;}
+.RowOdd TD					{	@ListItemText-alt@					}
 
 .selected TD,	/* TODO: used? */
 
 .Row-selected TD,
 .Row-selected-dragProxy TD,
-.Row-selected-disabled TD 		{	@ListItemText-selected@	}
+.Row-selected-disabled TD 	{	@ListItemText-selected@				}
 
 /* .Row-matched TD			 	{ 	@ListItemText-matched@				} */
 
 .Row-focused TD 				{	@ListItemText-focused@			}
 
-.Row-selected-right TD			{	@ListItemText-actioned@			}
+.Row-selected-right TD	 		{	@ListItemText-actioned@			}
 
 .Row-dragProxy TD,
-.Row-matched-dragProxy TD		{	@ListItemText-dragProxy@			}
+.Row-matched-dragProxy TD	{	@ListItemText-dragProxy@			}
 
 
 /*** TODO:  clean this the hell up ***/
@@ -607,7 +539,7 @@ LI.RowDouble, LI.Row {list-style: none;}
  * Flags
  */
 .Unread 					{	@Text-unread@ 		}
-.Trash 						{	@Text-deleted@ 		}
+.Trash 					{	@Text-deleted@ 		}
 .Unread .SubjectDoubleRow	{	@Text-unread@ 		} /* overrides quirksmode, since quirks sets table font-weight to normal and takes precedence, so this is more specific, and since SubjectDoubleRow is on a TD it works */
 
 
@@ -627,18 +559,18 @@ LI.RowDouble, LI.Row {list-style: none;}
 .OverviewTree 				{	@FullWidth@ 		}
 
 
-.dialogOverview {
+.dialogOverview				{
 	@TreeContainer@
 	@NormalInsetBorder@
 	@BoxPadding@
 	height:200px;		/* ??? SIZE */
 }
 
-.dialogOverviewContainer 	{	@PanelBg@ 			}
+.dialogOverviewContainer 		{	@PanelBg@ 			}
 
 .dialogOverview TD 			{	@Text@ 				}
 
-.pickerOverview 			{	@TreeContainer@ @FullHeight@ 	}
+.pickerOverview 				{	@TreeContainer@ @FullHeight@ 	}
 
 /* ??? MARGINS */
 .overviewHeader,.overviewHeader-actioned {
@@ -652,7 +584,7 @@ LI.RowDouble, LI.Row {list-style: none;}
 
 .overviewHeader-Text,
 .overviewHeader-dragOver {
-	@TreeHeaderText@
+	@TreeHeaderText@	
 }
 
 .overviewHeader-selected {
@@ -677,8 +609,8 @@ LI.RowDouble, LI.Row {list-style: none;}
 	font-size:13px;
 }
 .inlineContactTagIcon {
-	font-size:11px;
-	vertical-align:middle;
+    font-size:11px;
+    vertical-align:middle;
 }
 
 .TooltipHint {
@@ -699,33 +631,14 @@ LI.RowDouble, LI.Row {list-style: none;}
 
 /* Anchor and Link styles */
 
-.FakeAnchor, A:link, A:visited {
+.FakeAnchor, a:link, a:visited {
 	@Anchor@
 }
 
-.FakeAnchor:hover, A:hover {
+.FakeAnchor:hover, a:hover {
 	@Anchor-hover@
 }
 
-.FakeAnchor:active, A:active {
+.FakeAnchor:active, a:active {
 	@Anchor-active@
-}
-
-.FakeAnchor.ZDisabled,
-.FakeAnchor.ZDisabled:hover,
-.FakeAnchor.ZDisabled:active {
-	@Text-disabled@
-	text-decoration: none;
-}
-
-.AutoAnchor,
-.AutoAnchor:link,
-.AutoAnchor:visited {
-	@AutoAnchor@
-}
-.AutoAnchor:hover {
-	@AutoAnchor-hover@
-}
-.AutoAnchor:active {
-	@AutoAnchor-active@
 }

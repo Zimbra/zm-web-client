@@ -144,20 +144,20 @@
 <c:set var="calcss" value=",${sessionScope.zms}-cal"/>
 <link href="<c:url value='/css/${sessionScope.zms}${calcss},images.css${not empty param.dev ? "?debug=1" : ""}'/>" type="text/css" rel="stylesheet"/>
 </head>
-<body onorientationchange="updateOrientation()"><c:if test="${zm:boolean(dbg)}"><!--${ua.userAgent}--></c:if>
+<body onorientationchange="updateOrientation()"><c:if test="${dbg}"><!--${ua.userAgent}--></c:if>    
 <div class="container tbl" id="appbar" align="center"><c:set var="appcount" value="1"/>
-    <c:if test="${zm:boolean(mailbox.features.mail)}"><c:set var="appcount" value="${appcount+1}"/></c:if>
-    <c:if test="${zm:boolean(mailbox.features.contacts)}"><c:set var="appcount" value="${appcount+1}"/></c:if>
-    <c:if test="${zm:boolean(mailbox.features.calendar)}"><c:set var="appcount" value="${appcount+1}"/></c:if>
+    <c:if test="${mailbox.features.mail}"><c:set var="appcount" value="${appcount+1}"/></c:if>
+    <c:if test="${mailbox.features.contacts}"><c:set var="appcount" value="${appcount+1}"/></c:if>
+    <c:if test="${mailbox.features.calendar}"><c:set var="appcount" value="${appcount+1}"/></c:if>
     <c:if test="${mailbox.features.briefcases || mailbox.features.notebook || mailbox.features.tasks}"><c:set var="appcount" value="${appcount+1}"/></c:if>
     <c:set var="active" value="${empty param.st || param.st eq 'message' || param.st eq 'conversation' || param.st eq 'folders' ? '-active' : ''}"
-    /><div class="tr"><c:if test="${zm:boolean(mailbox.features.mail)}"><a style='width: ${95/appcount}%;'  accesskey="${requestScope.mailapp_accesskey}" id="mail" class="mail${active} appTab${active} td" href="${aurl}?st=${mailbox.prefs.groupMailBy}">
+    /><div class="tr"><c:if test="${mailbox.features.mail}"><a style='width: ${95/appcount}%;'  accesskey="${requestScope.mailapp_accesskey}" id="mail" class="mail${active} appTab${active} td" href="${aurl}?st=${mailbox.prefs.groupMailBy}">
             <span onclick="return zClickLink('mail')" class="nstd"><fmt:message key="mail"/></span>
             <span onclick="return zClickLink('mail')" style="display:none;" class="apunread nstd" id="inboxUnread">${mailbox.inbox.unreadCount > 0 ? mailbox.inbox.unreadCount : ''}</span>
-        </a></c:if><c:if test="${zm:boolean(mailbox.features.contacts)}"><c:set var="active" value="${param.st eq 'contact' || param.st eq 'ab' ? '-active' : ''}"/>
+        </a></c:if><c:if test="${mailbox.features.contacts}"><c:set var="active" value="${param.st eq 'contact' || param.st eq 'ab' ? '-active' : ''}"/>
         <a style='width: ${95/appcount}%;'  accesskey="${requestScope.contactapp_accesskey}" id="contact" class="contact${active} appTab${active} td" href="${aurl}?st=contact">
             <span onclick="return zClickLink('contact')" class="nstd"><fmt:message key="contacts"/></span>
-        </a></c:if><c:if test="${zm:boolean(mailbox.features.calendar)}"><c:set var="active" value="${param.st eq 'cal' || param.st eq 'cals' ? '-active' : ''}"/>
+        </a></c:if><c:if test="${mailbox.features.calendar}"><c:set var="active" value="${param.st eq 'cal' || param.st eq 'cals' ? '-active' : ''}"/>
         <a style='width: ${95/appcount}%;'  accesskey="${requestScope.calapp_accesskey}" id="cal" class="cal${active} appTab${active} td" href="${aurl}?st=cal">
             <span class="nstd" onclick="return zClickLink('cal')"><fmt:message key="calendar"/></span><fmt:formatDate value="${zm:getToday(mailbox.prefs.timeZone).time}" timeZone="${mailbox.prefs.timeZone}" pattern="EEE|d|MMM" var="today"/><c:set var="darr" value="${fn:split(today,'|')}"/>
             <span onclick="return zClickLink('cal')" style="display:none;" class="aptoday nstd">
@@ -217,13 +217,13 @@
                 <div class="tbl avs"><div class="tr">
                     <span class="td aleft">
                         <select name="st" style="border:1px solid gray;">
-                                <c:if test="${zm:boolean(mailbox.features.mail)}"><option value="${mailbox.prefs.groupMailBy}" ${empty st or st eq  mailbox.prefs.groupMailBy ? 'selected="selected"' : ''}><fmt:message key="mail"/></option></c:if>
-                                <c:if test="${zm:boolean(mailbox.features.contacts)}"><option value="contact" ${st eq 'contact' ? 'selected=selected' : ''}><fmt:message key="contacts"/></option></c:if>
-                                <c:if test="${zm:boolean(mailbox.features.gal)}"><option value="gal" ${st eq 'gal' ? 'selected=selected' : ''}><fmt:message key="GAL"/></option></c:if>
-                                <c:if test="${zm:boolean(mailbox.features.calendar)}"><option value="cal" ${st eq 'cal' ? 'selected=selected' : ''}><fmt:message key="appointments"/></option></c:if>
-                                <c:if test="${zm:boolean(mailbox.features.tasks)}"><option value="task" ${st eq 'task' ? 'selected=selected' : ''}><fmt:message key="tasks"/></option></c:if>
-                                <c:if test="${zm:boolean(mailbox.features.notebook)}"><option value="wiki" ${st eq 'wiki' ? 'selected=selected' : ''}><fmt:message key="pages"/></option></c:if>
-                                <c:if test="${zm:boolean(mailbox.features.briefcases)}"><option value="briefcase" ${st eq 'briefcase' ? 'selected=selected' : ''}><fmt:message key="files"/></option></c:if>
+                                <c:if test="${mailbox.features.mail}"><option value="${mailbox.prefs.groupMailBy}" ${empty st or st eq  mailbox.prefs.groupMailBy ? 'selected="selected"' : ''}><fmt:message key="mail"/></option></c:if>
+                                <c:if test="${mailbox.features.contacts}"><option value="contact" ${st eq 'contact' ? 'selected=selected' : ''}><fmt:message key="contacts"/></option></c:if>
+                                <c:if test="${mailbox.features.gal}"><option value="gal" ${st eq 'gal' ? 'selected=selected' : ''}><fmt:message key="GAL"/></option></c:if>
+                                <c:if test="${mailbox.features.calendar}"><option value="cal" ${st eq 'cal' ? 'selected=selected' : ''}><fmt:message key="appointments"/></option></c:if>
+                                <c:if test="${mailbox.features.tasks}"><option value="task" ${st eq 'task' ? 'selected=selected' : ''}><fmt:message key="tasks"/></option></c:if>
+                                <c:if test="${mailbox.features.notebook}"><option value="wiki" ${st eq 'wiki' ? 'selected=selected' : ''}><fmt:message key="pages"/></option></c:if>
+                                <c:if test="${mailbox.features.briefcases}"><option value="briefcase" ${st eq 'briefcase' ? 'selected=selected' : ''}><fmt:message key="files"/></option></c:if>    
                             </select>
                      </span>
                      <span class="td aright"><a href="<c:url value="${context_url}?st=query"><c:param name="s" value="${st}"/></c:url>"><fmt:message key="advancedSearch"/></a></span>
@@ -274,9 +274,7 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
             <span class="quota-span"><fmt:message key="MO_quotaLabel"/>&nbsp;<c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/><fmt:message var="unlimited" key="unlimited"/><fmt:message key="MO_quotaUsage"><fmt:param value="${zm:displaySizeFractions(pageContext, mailbox.size,2)}"/><fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,2)}"/></fmt:message></span>
         </div>
     </div></div>
-    <c:if test="${zm:boolean(mailbox.features.options)}">
-        <div class="tbl container" style="height:32px;"><div class="tr"><div class="td fw list-row"><a href="?st=prefs"><fmt:message key="options"/></a></div></div></div>
-    </c:if>
+    <div class="tbl container" style="height:32px;"><div class="tr"><div class="td fw list-row"><a href="?st=prefs"><fmt:message key="options"/></a></div></div></div>
     <div class="tbl container" style="height:30px;"><div class="tr">
             <div class="td fw list-row"><c:set var="v" value="${ua.isiPhone || ua.isiPod || ua.isOsAndroid? 'iphone' : ( ua.isIE ? 'wm6' : 'xlite')}"/>
                 <fmt:message key="lowBandwidth" var="lbw"/>

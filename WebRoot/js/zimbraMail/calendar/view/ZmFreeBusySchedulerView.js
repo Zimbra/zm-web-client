@@ -466,7 +466,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 			var dwtInputField = new DwtInputField({parent: this, type: DwtInputField.STRING, maxLen: 256});
 			dwtInputField.setDisplay(Dwt.DISPLAY_INLINE);
 			var inputEl = dwtInputField.getInputElement();
-            Dwt.setSize(inputEl, Dwt.DEFAULT, "2rem")
+            Dwt.setSize(inputEl, Dwt.DEFAULT, "22px")
 			inputEl.className = "ZmSchedulerInput";
 			inputEl.id = sched.dwtInputId;
             inputEl.style.border = "0px";
@@ -671,9 +671,7 @@ function(inputEl, attendee, useException) {
             if (!curAttendee) {
 				// user added attendee in empty slot
 				var value = this._emptyRowIndex = this._addAttendeeRow(false, null, true, null, true, true); // add new empty slot
-                if (this.isComposeMode) {
-                    this._editView.resize();
-                }
+                if(this.isComposeMode) this._editView.autoSize();
                 return value;
 			}
 		} else {
@@ -851,9 +849,7 @@ function(list, updateCycle) {
         this.addAttendee(att, type, isOrganizer, emails);
     }
     
-    if (this.isComposeMode) {
-        this._editView.resize();
-    }
+    if(this.isComposeMode) this._editView.autoSize();
     this.batchUpdateSequence(list, updateCycle+1);
 };
 
@@ -1554,8 +1550,8 @@ function(dateInfo) {
         endDate.setHours(23,59,59,999);
         this._endDate   = endDate;
     } else {
-        this._startDate = DwtTimeInput.getDateFromFields(dateInfo.startTimeStr,startDate);
-        this._endDate   = DwtTimeInput.getDateFromFields(dateInfo.endTimeStr,  endDate);
+        this._startDate = ZmTimeInput.getDateFromFields(dateInfo.startTimeStr,startDate);
+        this._endDate   = ZmTimeInput.getDateFromFields(dateInfo.endTimeStr,  endDate);
     }
 }
 

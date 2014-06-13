@@ -23,7 +23,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:if test="${zm:boolean(attendeeMode)}">
+<c:if test="${attendeeMode}">
 <c:set var="tz" value="${zm:getTimeZone(uploader.compose.timeZone)}"/>
 <c:set var="today" value="${zm:getCalendarMidnight(uploader.compose.apptStartCalendar.timeInMillis,tz)}"/>
 <c:set var="endDay" value="${zm:getCalendarMidnight(uploader.compose.apptEndCalendar.timeInMillis,tz)}"/>
@@ -47,7 +47,7 @@
     <tr valign='top'>
         <th width=1%>&nbsp;
             <c:choose>
-                <c:when test="${zm:boolean(attendeeMode)}">
+                <c:when test="${attendeeMode}">
                     <c:if test="${uploader.contactLocation eq 'resources'}">
                     <th width=2%><fmt:message key="resource"/>:
                     </c:if>
@@ -55,7 +55,7 @@
                     <th width=2%><fmt:message key="attendee"/>:
                     </c:if>
                 </c:when>
-                <c:when test="${zm:boolean(groupMode)}">
+                <c:when test="${groupMode}">
                     <th width=2%><fmt:message key="contact"/>:
                 </c:when>
                 <c:otherwise>
@@ -82,7 +82,7 @@
                 <th ><fmt:message key="email"/>
            </c:otherwise>
         </c:choose>
-        <c:if test="${zm:boolean(attendeeMode)}">
+        <c:if test="${attendeeMode}">
         <th width="10%">
             <fmt:message key="freeBusy"/>
         </th>
@@ -90,32 +90,27 @@
     </tr>
     <c:forEach items="${searchResult.hits}" var="hit" varStatus="status">
     <c:if test="${
-                groupMode or hit.contactHit.isGroup or (!fn:contains(uploader.pendingAttendees,hit.contactHit.displayEmail)
+                groupMode or !fn:contains(uploader.pendingAttendees,hit.contactHit.displayEmail)
                 and !fn:contains(uploader.compose.attendees,hit.contactHit.displayEmail)
                 and !fn:contains(uploader.pendingResources,hit.contactHit.displayEmail)
-                and !fn:contains(uploader.compose.resources,hit.contactHit.displayEmail))
+                and !fn:contains(uploader.compose.resources,hit.contactHit.displayEmail)
     }">   <%-- This condition is for not to list the contact/resource which has been already added --%>
     
-    <c:if test="${not empty hit.contactHit.displayEmail or hit.contactHit.isGroup}">
+    <c:if test="${not empty hit.contactHit.displayEmail}">
         <tr>
             <td width=1%>&nbsp;</td>
             <c:choose>
-                <c:when test="${zm:boolean(attendeeMode)}">
+                <c:when test="${attendeeMode}">
                     <td width=2% nowrap><input type=checkbox  name="addAttendees" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
                 </c:when>
-                <c:when test="${zm:boolean(groupMode)}">
+                <c:when test="${groupMode}">
                     <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(hit.contactHit.fullAddress)};${fn:escapeXml(hit.contactHit.id)};C">
                     </td>
                 </c:when>
                 <c:otherwise>
-                    <c:set var="addresses" value="${fn:escapeXml(hit.contactHit.fullAddress)}"/>
-                    <c:if test="${hit.contactHit.isGroup}">
-                        <zm:getContact var="contactGroup" id="${hit.contactHit.id}"/>
-                        <c:set var="addresses" value="${fn:escapeXml(contactGroup.memberAddresses)}"/>
-                    </c:if>
-                    <td width=2% nowrap><input type=checkbox  name="addTo" value="${addresses}"></td>
-                    <td width=2% nowrap><input type=checkbox name="addCc" value="${addresses}"></td>
-                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="${addresses}"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addTo" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
+                    <td width=2% nowrap><input type=checkbox name="addCc" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
                 </c:otherwise>
             </c:choose>
             <td width=1%><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
@@ -125,7 +120,7 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.displayEmail)}</td>
-            <c:if test="${zm:boolean(attendeeMode)}">
+            <c:if test="${attendeeMode}">
             <td>
                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.email}"/>
                <c:if test="${empty exp or exp eq null}">
@@ -165,10 +160,10 @@
         <tr>
             <td width=1%>&nbsp;</td>
             <c:choose>
-                <c:when test="${zm:boolean(attendeeMode)}">
+                <c:when test="${attendeeMode}">
                     <td width=2% nowrap><input type=checkbox  name="addAttendees" value="&#034;${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.email2)}&gt;"></td>
                 </c:when>
-                <c:when test="${zm:boolean(groupMode)}">
+                <c:when test="${groupMode}">
                     <td width=2% nowrap><input type=checkbox  name="addToGroup" value="&#034;${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.email2)}&gt;"></td>
                 </c:when>
                 <c:otherwise>
@@ -184,7 +179,7 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.email2)}</td>
-            <c:if test="${zm:boolean(attendeeMode)}">
+            <c:if test="${attendeeMode}">
             <td>
                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.email2}"/>
                <c:if test="${empty exp or exp eq null}">
@@ -224,10 +219,10 @@
         <tr>
             <td width=1%>&nbsp;</td>
             <c:choose>
-                <c:when test="${zm:boolean(attendeeMode)}">
+                <c:when test="${attendeeMode}">
                     <td width=2% nowrap><input type=checkbox  name="addAttendees" value="&#034;${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.email3)}&gt;"></td>
                 </c:when>
-                <c:when test="${zm:boolean(groupMode)}">
+                <c:when test="${groupMode}">
                     <td width=2% nowrap><input type=checkbox  name="addToGroup" value="&#034;${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.email3)}&gt;"></td>
                 </c:when>
                 <c:otherwise>
@@ -243,7 +238,7 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.email3)}</td>
-            <c:if test="${zm:boolean(attendeeMode)}">
+            <c:if test="${attendeeMode}">
             <td>
                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.email3}"/>
                <c:if test="${empty exp or exp eq null}">
@@ -283,10 +278,10 @@
         <tr>
             <td width=1%>&nbsp;</td>
             <c:choose>
-                <c:when test="${zm:boolean(attendeeMode)}">
+                <c:when test="${attendeeMode}">
                     <td width=2% nowrap><input type=checkbox  name="addAttendees" value="&#034;${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail1)}&gt;"></td>
                 </c:when>
-                <c:when test="${zm:boolean(groupMode)}">
+                <c:when test="${groupMode}">
                     <td width=2% nowrap><input type=checkbox  name="addToGroup" value="&#034;${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail1)}&gt;"></td>
                 </c:when>
                 <c:otherwise>
@@ -302,7 +297,7 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail1)}</td>
-            <c:if test="${zm:boolean(attendeeMode)}">
+            <c:if test="${attendeeMode}">
             <td>
                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.workEmail1}"/>
                <c:if test="${empty exp or exp eq null}">
@@ -342,10 +337,10 @@
         <tr>
             <td width=1%>&nbsp;</td>
             <c:choose>
-                <c:when test="${zm:boolean(attendeeMode)}">
+                <c:when test="${attendeeMode}">
                     <td width=2% nowrap><input type=checkbox  name="addAttendees" value="&#034;${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail2)}&gt;"></td>
                 </c:when>
-                <c:when test="${zm:boolean(groupMode)}">
+                <c:when test="${groupMode}">
                     <td width=2% nowrap><input type=checkbox  name="addToGroup" value="&#034;${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail2)}&gt;"></td>
                 </c:when>
                 <c:otherwise>
@@ -361,7 +356,7 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail2)}</td>
-            <c:if test="${zm:boolean(attendeeMode)}">
+            <c:if test="${attendeeMode}">
             <td>
                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.workEmail2}"/>
                <c:if test="${empty exp or exp eq null}">
@@ -401,10 +396,10 @@
         <tr>
             <td width=1%>&nbsp;</td>
             <c:choose>
-                <c:when test="${zm:boolean(attendeeMode)}">
+                <c:when test="${attendeeMode}">
                     <td width=2% nowrap><input type=checkbox  name="addAttendees" value="&#034;${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail3)}&gt;"></td>
                 </c:when>
-                <c:when test="${zm:boolean(groupMode)}">
+                <c:when test="${groupMode}">
                     <td width=2% nowrap><input type=checkbox  name="addToGroup" value="&#034;${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail3)}&gt;"></td>
                 </c:when>
                 <c:otherwise>
@@ -420,7 +415,7 @@
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail3)}</td>
-            <c:if test="${zm:boolean(attendeeMode)}">
+            <c:if test="${attendeeMode}">
             <td>
                <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${hit.contactHit.workEmail3}"/>
                <c:if test="${empty exp or exp eq null}">
@@ -460,7 +455,7 @@
         <tr>
             <td width=1%>&nbsp;</td>
             <c:choose>
-                <c:when test="${zm:boolean(attendeeMode)}">
+                <c:when test="${attendeeMode}">
                     <c:choose>
                         <c:when test="${uploader.contactLocation eq 'resources'}">
                             <td width=2% nowrap><input type=checkbox  name="addResources" value="${fn:escapeXml(contact.galFullAddress)}"></td>
@@ -471,7 +466,7 @@
                     </c:choose>
 
                 </c:when>
-                <c:when test="${zm:boolean(groupMode)}">
+                <c:when test="${groupMode}">
                     <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(contact.galFullAddress)};${fn:escapeXml(contact.id)};G">
                     </td>
                 </c:when>
@@ -498,7 +493,7 @@
                     ${fn:escapeXml(contact.attrs.zimbraCalResType)}
             </td>
             </c:if>
-            <c:if test="${zm:boolean(attendeeMode)}">
+            <c:if test="${attendeeMode}">
             <td>
                 <zm:getFreeBusyAppointments varexception="exp" var="freeBusyAppts" start="${apptStartLong}" end="${apptEndLong}" email="${contact.email}"/>
                <c:if test="${empty exp or exp eq null}">

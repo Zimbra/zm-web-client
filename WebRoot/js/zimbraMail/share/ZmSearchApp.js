@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -46,12 +46,10 @@ ZmApp.SEARCH					= ZmId.APP_SEARCH;
 ZmApp.CLASS[ZmApp.SEARCH]		= "ZmSearchApp";
 ZmApp.SETTING[ZmApp.SEARCH]		= ZmSetting.SEARCH_ENABLED;
 
-ZmSearchApp.CONTROLLER_CLASS = "ZmSearchResultsController";
-
 ZmSearchApp.prototype.getSearchResultsController =
 function(sessionId, appName) {
 	return this.getSessionController({
-				controllerClass:	ZmSearchApp.CONTROLLER_CLASS,
+				controllerClass:	"ZmSearchResultsController",
 				sessionId:			sessionId,
 				appName:			appName
 			});
@@ -61,21 +59,4 @@ function(sessionId, appName) {
 ZmSearchApp.prototype.activate =
 function(active) {
 	this._active = active;
-};
-
-// Not hooked up for activate, but it will be called after displaying the search results
-ZmSearchApp.prototype.resetWebClientOfflineOperations =
-function(searchResultsController) {
-	ZmApp.prototype.resetWebClientOfflineOperations.apply(this);
-	if (!searchResultsController) {
-		var controllerType = this.getTypeFromController(ZmSearchApp.CONTROLLER_CLASS);
-		var sessionId = this.getCurrentSessionId(controllerType);
-		searchResultsController = this.getSearchResultsController(sessionId);
-	}
-	// Only Save affected currently
-	var searchResultsToolBar = searchResultsController && searchResultsController._toolbar;
-	var saveButton = searchResultsToolBar && searchResultsToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON);
-	if (saveButton) {
-		saveButton.setEnabled(!appCtxt.isWebClientOffline());
-	}
 };

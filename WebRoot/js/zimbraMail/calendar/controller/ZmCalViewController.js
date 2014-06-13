@@ -136,7 +136,6 @@ ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_MONTH_VIEW]		= ZmId.VIEW_CA
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_LIST_VIEW]			= ZmId.VIEW_CAL_LIST;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_FB_VIEW]		    = ZmId.VIEW_CAL_FB;
 
-ZmCalViewController.CHECKED_STATE_KEY = "CalendarsChecked";
 
 // Zimlet hack
 ZmCalViewController.prototype.postInitListeners =
@@ -185,8 +184,7 @@ function(viewId) {
 
 ZmCalViewController.prototype.show =
 function(viewId, startDate, skipMaintenance) {
-	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
-	DBG.println(AjxDebug.DBG1, "ZmCalViewController.show, viewId = " + viewId);
+	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	if (!viewId || viewId == ZmId.VIEW_CAL) {
 		viewId = this.getCurrentViewType() || this.getDefaultViewType();
 	}
@@ -254,7 +252,6 @@ function(viewId, startDate, skipMaintenance) {
 			? cv.getShortCalTitle()
 			: cv.getCalTitle();
 		this._navToolBar[ZmId.VIEW_CAL].setText(navText);
-		DBG.println(AjxDebug.DBG1, "ZmCalViewController.show, skipMaintenance = " + skipMaintenance);
 		if (!skipMaintenance) {
 			var work = ZmCalViewController.MAINT_VIEW;
 			if (window.inlineCalSearchResponse) {
@@ -340,54 +337,6 @@ function(includeTrash) {
 	}
     return includeTrash ? this._checkedCalendarsAll : this._checkedCalendars;
 };
-
-ZmCalViewController.prototype.getMainAccountCheckedCalendarIds =
-function() {
-    if (!this._checkedAccountCalendarIds) {
-        // Generate the checked calendar data
-        this._updateCheckedCalendars();
-    }
-    // If there are any account calendar ids, the 0th should be the main account - copy its checked calendars
-    return (this._checkedAccountCalendarIds.length == 0) ? [] : this._checkedAccountCalendarIds[0].slice(0);
-}
-
-// Called whether starting on or offline
-ZmCalViewController.prototype.getOfflineSearchCalendarIds =
-function() {
-    if (!this._offlineSearchCalendarIds) {
-
-        var checkedCalendarHash = null;
-        if (appCtxt.isWebClientOffline()) {
-            checkedCalendarHash = this._retrieveCalendarCheckedState();
-        }
-
-        // Generate the checked calendar data - this will also store the calendar entries, if we are starting up online
-        this._updateCheckedCalendars(checkedCalendarHash);
-    }
-    return (this._offlineSearchCalendarIds);
-}
-
-ZmCalViewController.prototype._storeCalendarCheckedState =
-function() {
-    // if !offline, store which calendars are currently checked, in localStorage.  This will be updated
-    // while running, and reloaded if the app starts in offline mode.
-    var calendarCheckedState = this._checkedCalendarIds.join(":");
-    localStorage.setItem(ZmCalendarApp.CHECKED_STATE_KEY, calendarCheckedState);
-}
-
-
-ZmCalViewController.prototype._retrieveCalendarCheckedState =
-function() {
-    // Starting up offline, retrieve the stored calendar checked state
-    var checkedStateText = localStorage.getItem(ZmCalendarApp.CHECKED_STATE_KEY);
-    var checkedCalendarFolderIds = checkedStateText.split(":");
-    var checkedCalendarHash = {};
-    for (var i = 0; i < checkedCalendarFolderIds.length; i++) {
-        checkedCalendarHash[checkedCalendarFolderIds[i]] = true;
-    }
-    return checkedCalendarHash;
-}
-
 
 /**
  * Gets the unchecked calendar folder ids for a owner email
@@ -514,7 +463,7 @@ ZmCalViewController.__map_id = function(item) {
 };
 
 ZmCalViewController.prototype._updateCheckedCalendars =
-function(checkedCalendarHash) {
+function() {
     var allCalendars = [];
 	if (this._calTreeController) {
 		if (appCtxt.multiAccounts) {
@@ -555,26 +504,16 @@ function(checkedCalendarHash) {
     this._checkedCalendarIds = [];
     this._checkedLocalCalendarIds = [];
     this._checkedAccountCalendarIds = [];
-    this._offlineSearchCalendarIds = [];
     this._reminderCalendarIds = [];
     var checkedAccountCalendarIds = {};
     var trashFolder = null;
     for (var i = 0; i < allCalendars.length; i++) {
         var cal = allCalendars[i];
-        if (!cal.noSuchFolder) {
-            this._offlineSearchCalendarIds.push(cal.id);
-        }
         if (!cal.noSuchFolder && (cal.id != ZmOrganizer.ID_TRASH) &&
             (cal.isRemote && !cal.isRemote())) {
             this._reminderCalendarIds.push(cal.id);
         }
-        var checked = cal.isChecked;
-        if (checkedCalendarHash) {
-            // LocalStorage values passed in upon offline startup, use those
-            checked = checkedCalendarHash[cal.id] ? true : false;
-            cal.isChecked = checked;
-        }
-        if (checked) {
+        if (cal.isChecked) {
             if (cal.id == ZmOrganizer.ID_TRASH) {
                 trashFolder = cal;
             } else {
@@ -599,13 +538,6 @@ function(checkedCalendarHash) {
     // convert hash to local array
     for (var i in checkedAccountCalendarIds) {
         this._checkedAccountCalendarIds.push(checkedAccountCalendarIds[i]);
-    }
-
-    if (!checkedCalendarHash) {
-        // Not the initial call, update the stored calendar info.  Note this will be called when calendars are
-        // checked/unchecked by the user (online or offline), and when notifications modifying the calendars
-        // are received.
-        this._storeCalendarCheckedState();
     }
 
     // return list of checked calendars
@@ -679,83 +611,33 @@ function() {
 	var accountName = appCtxt.isOffline && appCtxt.accountList.mainAccount.name;
 	var batchCmd = new ZmBatchCommand(null, accountName, true);
 	var itemCount = 0;
-    for (var i in this._calItemStatus) {
-        var info = this._calItemStatus[i];
-        if (info.item) {
-            var calendar = info.item;
-            //If, Remote Calendars & not mount-points, dont send check/uncheck requests
-            if ((calendar.isRemote() && (!calendar.isMountpoint || !calendar.zid))) {
-                calendar.isChecked = info.checked;
-                calendar.checkedCallback(info.checked);
-                this._handleCheckedCalendarRefresh(calendar);
-            } else {
-                batchCmd.add(new AjxCallback(calendar, calendar.checkAction, [info.checked]));
-                itemCount++;
-            }
-        }
-    }
+	for (var i in this._calItemStatus) {
+		var info = this._calItemStatus[i];
+		if (info.item) {
+			var calendar = info.item;
+			//If, Remote Calendars & not mount-points, dont send check/uncheck requests
+			if (calendar.isRemote() && (!calendar.isMountpoint || !calendar.zid)) {
+				calendar.isChecked = info.checked;
+				calendar.checkedCallback(info.checked);
+				this._handleCheckedCalendarRefresh(calendar);
+			} else {
+				batchCmd.add(new AjxCallback(calendar, calendar.checkAction, [info.checked]));
+				itemCount++;
+			}
+		}
+	}
 
-    if (appCtxt.multiAccounts) {
-        this.apptCache.clearCache();
-    }
+	if (appCtxt.multiAccounts) {
+		this.apptCache.clearCache();
+	}
 
-    if (itemCount > 0) {
-        if (appCtxt.isWebClientOffline()) {
-            // The offlineCallback gets bound inside batchCmd.run to this
-            var offlineCallback = this._handleOfflineCalendarCheck.bind(this, batchCmd);
-            batchCmd.run(null, null, offlineCallback);
-        } else {
-            this._calItemStatus = {};
-            batchCmd.run();
-        }
-    }
+	this._calItemStatus = {};
+	if (itemCount > 0) {
+		batchCmd.run();
+	}
 
 	this._updateCalItemStateActionId = null;
 };
-
-// Update the check change locally (a folder and its subfolders) and store the batch command into the request queue
-ZmCalViewController.prototype._handleOfflineCalendarCheck =
-function(batchCmd) {
-
-    // Json batchCommand created in _updaetCalItemState above.  Must be Json to be stored in offline request queue
-    var jsonObj = batchCmd.getRequestBody();
-
-    this.apptCache.clearCache();
-    // Apply the changes locally
-    var calendarIds = [];
-    for (var i in this._calItemStatus) {
-        var info = this._calItemStatus[i];
-        if (info.item) {
-            var calendar = info.item;
-            calendarIds.push(calendar.id);
-            // Remote non-mountpoint has aleady been processed for local display - ignore it
-            if (!(calendar.isRemote() && (!calendar.isMountpoint || !calendar.zid))) {
-                calendar.isChecked = info.checked;
-                calendar.checkedCallback(info.checked);
-                this._handleCheckedCalendarRefresh(calendar);
-            }
-        }
-    }
-     this._calItemStatus = {};
-
-    // Store the request for playback
-    var jsonObjCopy = $.extend(true, {}, jsonObj);  //Always clone the object.  ?? Needed here ??
-    // This should be the only BatchCommand queued for calendars for replay (for the FolderAction, checked).
-    jsonObjCopy.methodName = "BatchRequest";
-    // Modify the id to thwart ZmOffline._handleResponseSendOfflineRequest, which sends a DELETE
-    // notification for the id - so a single calendar would get deleted in the UI
-    jsonObjCopy.id = "C" + calendarIds.join(":");
-    var value = {
-        update:          true,
-        methodName:      jsonObjCopy.methodName,
-        id:              jsonObjCopy.id,
-        value:           jsonObjCopy
-    };
-
-    // No callback - we apply the check changes, whether or not the request goes into the queue successfully
-    ZmOfflineDB.setItemInRequestQueue(value);
-};
-
 
 ZmCalViewController.prototype._handleCheckedCalendarRefresh =
 function(calendar){
@@ -778,11 +660,6 @@ function(ev) {
 	}
 };
 
-ZmCalViewController.prototype.getApptCache =
-function(){
-    return this.apptCache;
-};
-    
 /**
  * Gets the calendar by folder id.
  * 
@@ -858,10 +735,6 @@ function(folderId) {
 
 ZmCalViewController.prototype._refreshButtonListener =
 function(ev) {
-	//Return if a search is already in progress
-	if (this.searchInProgress) {
-		return;
-	}
     this.setCurrentListView(null);
     
 	// bug fix #33830 - force sync for calendar refresh
@@ -877,12 +750,6 @@ function(ev) {
 	this._refreshMaintenance = true;
     this.searchInProgress = false;
 	this._refreshAction(false);
-
-	var overview = appCtxt.getOverviewController().getOverview(appCtxt.getApp(ZmApp.CALENDAR).getOverviewId());
-	if (overview) {
-		overview.clearSelection();
-	}
-
 };
 
 // Move button has been pressed, show the dialog.
@@ -914,7 +781,7 @@ function(ev) {
 
 ZmCalViewController.prototype._isItemMovable =
 function(item, isShiftKey, folder) {
-	return (!isShiftKey && !folder.isReadOnly() && !appCtxt.isWebClientOffline());
+	return (!isShiftKey && !folder.isReadOnly());
 };
 
 ZmCalViewController.prototype._moveCallback =
@@ -1199,8 +1066,8 @@ function(ev) {
 			}
 
 			// If dealing with a contact, make sure it has a valid email address
-			if (!shiftKey && data.isZmContact) {
-				if (data.isGroup() && !data.isDistributionList()) {
+			if (!shiftKey && (data instanceof ZmContact)) {
+				if (data.isGroup()) {
 					ev.doIt = (data.getGroupMembers().good.size() > 0);
 				} else {
 					var email = data.getEmail();
@@ -1251,7 +1118,7 @@ function(mailItem, date) {
 	if (mailItem instanceof ZmConv) {
 		mailItem = mailItem.getFirstHotMsg();
 	}
-	mailItem.load({getHtml:false, markRead: true, forceLoad: true, noTruncate: true,
+	mailItem.load({getHtml:false, markRead: true, forceLoad: true,
 	               callback:new AjxCallback(this, this._msgLoadedCallback, [mailItem, date, subject])});
 };
 
@@ -1296,24 +1163,20 @@ function(newAppt) {
 ZmCalViewController.prototype.newApptFromContact =
 function(contact, date) {
 	var emails = [];
-	var list = AjxUtil.toArray(contact);
+	var list = (contact instanceof ZmContact) ? [contact] : contact;
 	for (var i = 0; i < list.length; i++) {
-		var item = list[i];
-		if (item.isGroup() && !item.isDistributionList()) {
-			var members = item.getGroupMembers().good.getArray();
+		if (list[i].isGroup()) {
+			var members = list[i].getGroupMembers().good.getArray();
 			for (var j = 0; j < members.length; j++) {
 				var e = members[j].address;
-				if (e && e !== "") {
+				if (e && e != "")
 					emails.push(e);
-				}
 			}
-		}
-		else {
+		} else {
 			// grab the first valid email address for this contact
-			var e = item.getEmail();
-			if (e && e !== "") {
+			var e = list[i].getEmail();
+			if (e && e != "")
 				emails.push(e);
-			}
 		}
 	}
 
@@ -1381,7 +1244,7 @@ function(ev) {
 	}
 
 	var loadCallback = new AjxCallback(this, this._handleLoadNewApptAction, [d, calendarId]);
-	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
+	AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
 };
 
 ZmCalViewController.prototype._handleLoadNewApptAction =
@@ -1414,7 +1277,7 @@ function(ev) {
 	}
 
 	var loadCallback = new AjxCallback(this, this._handleLoadNewAllDayApptAction, [d, calendarId]);
-	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
+	AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
 };
 
 ZmCalViewController.prototype._handleLoadNewAllDayApptAction =
@@ -1475,7 +1338,7 @@ function(viewId, forward) {
  */
 ZmCalViewController.prototype.setDate =
 function(date, duration, roll) {
-	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	// set mini-cal first so it will cache appts we might need
 	if (this._miniCalendar.getDate() == null ||
 		this._miniCalendar.getDate().getTime() != date.getTime())
@@ -1514,7 +1377,7 @@ ZmCalViewController.prototype._miniCalSelectionListener =
 function(ev) {
 	if (ev.item instanceof DwtCalendar) {
 		var loadCallback = new AjxCallback(this, this._handleLoadMiniCalSelection, [ev]);
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
+		AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
 	}
 };
 
@@ -1934,12 +1797,16 @@ function(items, hardDelete, attrs, op) {
 	if ((this._viewMgr.getCurrentViewName() == ZmId.VIEW_CAL_LIST || isTrash) && items.length > 1) {
 		var divvied = this._divvyItems(items);
 
+		// data structure to keep track of which appts to delete and how
+		this._deleteList = {};
+		this._deleteList[ZmCalItem.MODE_DELETE] = divvied.normal;
+
 		// first attempt to deal with read-only appointments
 		if (divvied.readonly.length > 0) {
 			var dlg = appCtxt.getMsgDialog();
 			var callback = (divvied.recurring.length > 0)
-				? this._showTypeDialog.bind(this, [divvied.recurring, ZmCalItem.MODE_DELETE])
-				: null;
+				? new AjxCallback(this, this._showTypeDialog, [divvied.recurring, ZmCalItem.MODE_DELETE])
+				: new AjxCallback(this, this._promptDeleteApptList);
 			var listener = new AjxListener(this, this._handleReadonlyOk, [callback, dlg]);
 			dlg.setButtonListener(DwtDialog.OK_BUTTON, listener);
 			dlg.setMessage(ZmMsg.deleteReadonly);
@@ -1949,7 +1816,7 @@ function(items, hardDelete, attrs, op) {
 			this._showTypeDialog(divvied.recurring, ZmCalItem.MODE_DELETE);
 		}
 		else {
-			this._promptDeleteApptList(divvied.normal);
+			this._promptDeleteApptList();
 		}
 	}
 	else {
@@ -1975,34 +1842,36 @@ function(callback, dlg) {
 };
 
 ZmCalViewController.prototype._handleMultiDelete =
-function(deleteList, mode) {
+function() {
 	var batchCmd = new ZmBatchCommand(true, null, true);
 
 	// first, get details for each appointment
-	for (var i = 0; i < deleteList.length; i++) {
-		var appt = deleteList[i];
-		var args = [mode, null, null, null, null];
-		batchCmd.add(new AjxCallback(appt, appt.getDetails, args));
+	for (var j in this._deleteList) {
+		var list = this._deleteList[j];
+		for (var i = 0; i < list.length; i++) {
+			var appt = list[i];
+			var args = [j, null, null, null, null];
+			batchCmd.add(new AjxCallback(appt, appt.getDetails, args));
+		}
 	}
-	batchCmd.run(this._handleGetDetails.bind(this, deleteList, mode));
+	batchCmd.run(new AjxCallback(this, this._handleGetDetails));
 };
 
 ZmCalViewController.prototype._handleGetDetails =
-function(deleteList, mode) {
+function() {
 	var batchCmd = new ZmBatchCommand(true, null, true);
-	for (var i = 0; i < deleteList.length; i++) {
-		var appt = deleteList[i];
-		var args = [mode, null, null, null];
-		batchCmd.add(new AjxCallback(appt, appt.cancel, args));
+	for (var j in this._deleteList) {
+		var list = this._deleteList[j];
+		for (var i = 0; i < list.length; i++) {
+			var appt = list[i];
+			var args = [j, null, null, null];
+			batchCmd.add(new AjxCallback(appt, appt.cancel, args));
+		}
 	}
 	batchCmd.run();
-	var summary = ZmList.getActionSummary({
-		actionTextKey:  'actionDelete',
-		numItems:       batchCmd.size(),
-		type:           ZmItem.APPT
-	});
+	var summary = ZmList.getActionSummary(ZmMsg.actionDelete, batchCmd.size(), ZmItem.APPT);
 	appCtxt.setStatusMsg(summary);
-	appCtxt.notifyZimlets("onAppointmentDelete", deleteList);//notify Zimlets on delete
+	appCtxt.notifyZimlets("onAppointmentDelete", [this._deleteList]);//notify Zimlets on delete 
 };
 
 ZmCalViewController.prototype.getSelection =
@@ -2026,13 +1895,11 @@ function(items) {
 		var appt = items[i];
 		if (appt.type != ZmItem.APPT) { continue; }
 
-		if (appt.isFolderReadOnly()) {
+		if (appt.isReadOnly()) {
 			readonly.push(appt);
-		}
-		else if (appt.isRecurring() && !appt.isException) {
+		} else if (appt.isRecurring() && !appt.isException) { 
 			recurring.push(appt);
-		}
-		else {
+		} else {
 			normal.push(appt);
 		}
 
@@ -2048,22 +1915,20 @@ function(items) {
 };
 
 ZmCalViewController.prototype._promptDeleteApptList =
-function(deleteList) {
-	if (deleteList.length === 0) {
-		return;
+function() {
+	if (this._deleteList[ZmCalItem.MODE_DELETE] &&
+		this._deleteList[ZmCalItem.MODE_DELETE].length > 0)
+	{
+        var calendar = this._deleteList[ZmCalItem.MODE_DELETE][0].getFolder();
+        var isTrash = calendar && calendar.nId==ZmOrganizer.ID_TRASH;
+        var msg = (isTrash) ? ZmMsg.confirmCancelApptListPermanently : ZmMsg.confirmCancelApptList;
+		var callback = new AjxCallback(this, this._handleMultiDelete);
+		appCtxt.getConfirmationDialog().popup(msg, callback);
 	}
-	var calendar = deleteList[0].getFolder();
-	var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
-	var msg = (isTrash) ? ZmMsg.confirmCancelApptListPermanently : ZmMsg.confirmCancelApptList;
-	var callback = this._handleMultiDelete.bind(this, deleteList, ZmCalItem.MODE_DELETE);
-	appCtxt.getConfirmationDialog().popup(msg, callback);
 };
 
 ZmCalViewController.prototype._promptDeleteAppt =
 function(appt, mode) {
-    if(!appt){
-        return;
-    }
 	if (appt instanceof Array) {
 		this._continueDelete(appt, mode);
 	} else {
@@ -2184,7 +2049,7 @@ function(appt, mode) {
         var msg = ZmMsg.confirmCancelAppt;
         if(appt.isRecurring()){
             msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE)
-    			? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, AjxStringUtil.htmlEncode(appt.name))
+    			? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name)
     			: ZmMsg.confirmCancelApptSeries;
         }
         var msgDiv = document.getElementById(this._deleteNotifyDialog._confirmMessageDivId);
@@ -2259,8 +2124,12 @@ ZmCalViewController.prototype._continueDelete =
 function(appt, mode) {
 	if (appt instanceof Array) {
 		// if list of appointments, de-dupe the same series appointments
-		var deleteList = (mode === ZmCalItem.MODE_DELETE_SERIES) ? this._dedupeSeries(appt) : appt;
-		this._handleMultiDelete(deleteList, mode);
+		if (mode == ZmCalItem.MODE_DELETE_SERIES) {
+			this._deleteList[ZmCalItem.MODE_DELETE_SERIES] = this._dedupeSeries(appt);
+		} else {
+			this._deleteList[ZmCalItem.MODE_DELETE_INSTANCE] = appt;
+		}
+		this._handleMultiDelete();
 	}
 	else {
 		var respCallback = new AjxCallback(this, this._handleResponseContinueDelete, appt);
@@ -2276,11 +2145,7 @@ function(appt) {
         currentView.close();
     }
 
-	var summary = ZmList.getActionSummary({
-		actionTextKey:  'actionDelete',
-		numItems:       1,
-		type:           ZmItem.APPT
-	});
+	var summary = ZmList.getActionSummary(ZmMsg.actionDelete, 1, ZmItem.APPT);
 	appCtxt.setStatusMsg(summary);
 	appCtxt.notifyZimlets("onAppointmentDelete", [appt]);//notify Zimlets on delete 
 };
@@ -2344,7 +2209,7 @@ function(num) {
 ZmCalViewController.prototype._showTypeDialog =
 function(appt, mode) {
 	if (this._typeDialog == null) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);		
 		this._typeDialog = new ZmCalItemTypeDialog(this._shell);
 		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener));
 		this._typeDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._typeCancelListener));
@@ -2368,7 +2233,7 @@ function(appt, mode) {
 
 ZmCalViewController.prototype._showQuickAddDialog =
 function(appt, shiftKey) {
-    if(appCtxt.isExternalAccount() || appCtxt.isWebClientOffline()) { return; }
+    if(appCtxt.isExternalAccount()) { return; }
 	// find out if we really should display the quick add dialog
 	var useQuickAdd = appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD);
 	if ((useQuickAdd && !shiftKey) || (!useQuickAdd && shiftKey)) {
@@ -2388,7 +2253,7 @@ function(appt, shiftKey) {
 ZmCalViewController.prototype._showQuickAddDialogContinue =
 function(appt, shiftKey) {
 	if (this._quickAddDialog == null) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 		this._quickAddDialog = new ZmApptQuickAddDialog(this._shell);
 		this._quickAddDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
 		this._quickAddDialog.addSelectionListener(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, new AjxListener(this, this._quickAddMoreListener));
@@ -2416,7 +2281,7 @@ function(startDate, endDate, folderId, shiftKey) {
 
 ZmCalViewController.prototype.newAppointment =
 function(newAppt, mode, isDirty, startDate) {
-	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
 	var appt = newAppt || this._newApptObject(sd, (appCtxt.get(ZmSetting.CAL_DEFAULT_APPT_DURATION) * 1000));  //bug:50121 added appt duration as configurable from preference
 
@@ -2492,7 +2357,7 @@ function() {
 ZmCalViewController.prototype.editAppointment =
 function(appt, mode) {
 	Dwt.setLoadingTime("ZmCalendarApp-editAppt");
-	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	if (mode != ZmCalItem.MODE_NEW) {
 		var clone = ZmAppt.quickClone(appt);
 		clone.getDetails(mode, new AjxCallback(this, this._showApptComposeView, [clone, mode]));
@@ -2535,7 +2400,6 @@ function(appt, all, result) {
 
 		msg.invite = orig.invite;
 		msg.id = orig.id;
-        msg.date = orig.date;
 	}
 	msg.setSubject(appt.name);
 
@@ -2553,36 +2417,37 @@ function(appt, all, result) {
 	}
 
 	if (all) {
-		var omit = AjxUtil.arrayAsHash([ self, organizerAddress.getAddress() ]),
-			attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
-
-		this._addAttendeesToReply(attendees, msg, ZmCalItem.ROLE_REQUIRED, AjxEmailAddress.FROM, omit);
-		this._addAttendeesToReply(attendees, msg, ZmCalItem.ROLE_OPTIONAL, AjxEmailAddress.CC, omit);
+		var reqAddressArray = appt.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED).split(/;\s*/);
+		var optAddressArray = appt.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL).split(/;\s*/);
+		
+		for (var i=0; i<reqAddressArray.length; i++) {
+			if (reqAddressArray[i]) {
+				var address = AjxEmailAddress.parse(reqAddressArray[i]);
+				if (address.getAddress() != self && address.getAddress() != organizerAddress.getAddress()) {
+					address.setType(AjxEmailAddress.FROM);
+					msg.addAddress(address);
+				}
+			}
+		}
+		for (var i=0; i<optAddressArray.length; i++) {
+			if (optAddressArray[i]) {
+				var address = AjxEmailAddress.parse(optAddressArray[i]);
+				if (address.getAddress() != self && address.getAddress() != organizerAddress.getAddress()) {
+					address.setType(AjxEmailAddress.CC);
+					msg.addAddress(address);
+				}
+			}
+		}
 	}
 	
 	var data = {action: all ? ZmOperation.CAL_REPLY_ALL : ZmOperation.CAL_REPLY, msg: msg};
 	AjxDispatcher.run("GetComposeController").doAction(data);
 };
 
-ZmCalViewController.prototype._addAttendeesToReply = function(attendees, msg, role, addrType, omit) {
-
-	var attendeesByRole = ZmApptViewHelper.getAttendeesArrayByRole(attendees, role),
-		ln = attendeesByRole.length, i, addr;
-
-	for (i = 0; i < ln; i++) {
-		addr = attendeesByRole[i].getAttendeeText(ZmCalBaseItem.PERSON);
-		if (addr && !omit[addr]) {
-			var addrObj = new AjxEmailAddress(addr);
-			addrObj.setType(addrType);
-			msg.addAddress(addrObj);
-		}
-	}
-};
-
 ZmCalViewController.prototype._forwardAppointment =
 function(appt, mode) {
 	Dwt.setLoadingTime("ZmCalendarApp-fwdAppt");
-	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	if (mode != ZmCalItem.MODE_NEW) {
 		var clone = ZmAppt.quickClone(appt);
 		clone.getDetails(mode, new AjxCallback(this, this._showApptForwardComposeView, [clone, mode]));
@@ -2602,7 +2467,7 @@ function(appt) {
 			// prompt user to edit instance vs. series if recurring but not for exception and from edit mode
 			if (appt.isException || appt.editViewMode) {
 				var mode = appt.editViewMode || ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
-				if (appt.isReadOnly() || calendar.isReadOnly() || isSynced || appCtxt.isWebClientOffline()) {
+				if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
 					this.showApptReadOnlyView(appt, mode);
 				} else {
 					this.editAppointment(appt, mode);
@@ -2613,7 +2478,7 @@ function(appt) {
 		} else {
 			// if simple appointment, no prompting necessary
             var isTrash = calendar.nId == ZmOrganizer.ID_TRASH;
-			if (appt.isReadOnly() || calendar.isReadOnly() || isSynced || isTrash || appCtxt.isWebClientOffline()) {
+			if (appt.isReadOnly() || calendar.isReadOnly() || isSynced || isTrash) {
                 var mode = appt.isRecurring() ? (appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES) : ZmCalItem.MODE_EDIT;
 				this.showApptReadOnlyView(appt, mode);
 			} else {
@@ -2660,7 +2525,7 @@ function(appt, mode, isInstance) {
 		var calendar = appt.getFolder();
 		var isSynced = Boolean(calendar.url);
 
-		if (appt.isReadOnly() || calendar.isReadOnly() || isSynced || appCtxt.isWebClientOffline()) {
+		if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
 			this.showApptReadOnlyView(appt, editMode);
 		} else {
 			this.editAppointment(appt, editMode);
@@ -2854,22 +2719,7 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		}
 		if (endDateOffset) {
 			var ed = (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) ? appt.getUniqueEndDate() : new Date(appt.getEndTime());
-            if(appt.allDayEvent){
-                //BUG: 87613
-                // For a given all day event, the appointment starts at 00:00 hrs of current day and ends at 00:00  of next day.
-                // e.g. start: 06 May 2014 00:00 end: 07 May 2014 00:00
-                // In DND the start and end dates are offsetted by the dragged amount.
-                // If date is dragged by 1 day in future the updated appt becomes -> start: 07 May 2014 00:00 end: 08 May 2014 00:00
-                // The dates sent to server become {s: 20140507, e: 20140508}. Thus tricking the server into making it a 2 day event.
-
-                // If this is modified using compose view the dates are picked from the calendar thus setting start and end as same date and yielding correct result.
-
-                // For all day event set the end date same as start date.
-                appt.setEndDate(appt.startDate);
-            }
-            else{
-                appt.setEndDate(new Date(ed.getTime() + endDateOffset));
-            }
+			appt.setEndDate(new Date(ed.getTime() + endDateOffset));
 		}
 		if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
 			//bug: 32231 - use proper timezone while creating exceptions
@@ -3071,11 +2921,9 @@ function(navToolbar, currentViewName) {
 
 ZmCalViewController.prototype._resetOperations =
 function(parent, num) {
-    if (!parent) return;
-
 	parent.enableAll(true);
 	var currViewName = this._viewMgr.getCurrentViewName();
-    parent.enable(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED) && !appCtxt.isWebClientOffline());
+    parent.enable(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED));
 
 	if (currViewName == ZmId.VIEW_CAL_LIST && num > 1) { return; }
 
@@ -3088,32 +2936,30 @@ function(parent, num) {
     var isReadOnly = calendar ? calendar.isReadOnly() : false;
     var isSynced = Boolean(calendar && calendar.url);
     var isShared = calendar ? calendar.isRemote() : false;
-    var disabled = isSynced || isReadOnly || (num == 0) || appCtxt.isWebClientOffline();
+    var disabled = isSynced || isReadOnly || (num == 0);
     var isPrivate = appt && appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
-    var isForwardable = !isTrash && calendar && !calendar.isReadOnly() && appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && !appCtxt.isWebClientOffline();
-    var isReplyable = !isTrash && appt && (num == 1) && !appCtxt.isWebClientOffline();
+    var isForwardable = !isTrash && calendar && !calendar.isReadOnly() && appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
+    var isReplyable = !isTrash && appt && (num == 1);
     var isTrashMultiple = isTrash && (num && num>1);
 
     parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (isReplyable && !isTrashMultiple));
-    parent.enable(ZmOperation.TAG_MENU, ((!isReadOnly && !isSynced && num > 0) || isTrashMultiple) && !appCtxt.isWebClientOffline());
+    parent.enable(ZmOperation.TAG_MENU, (!isReadOnly && !isSynced && num > 0) || isTrashMultiple);
     parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate && !isTrashMultiple);
-    parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable
-                  && !isTrashMultiple  && !appCtxt.isWebClientOffline());
-    parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple && !appCtxt.isWebClientOffline());
-    parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null && !isTrashMultiple  && !appCtxt.isWebClientOffline());
+    parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable && !isTrashMultiple);
+    parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple);
+    parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null && !isTrashMultiple);
 
     parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU], !disabled || isTrashMultiple);
 
     parent.enable(ZmOperation.VIEW_APPT_INSTANCE,!isTrash);
 
     var apptAccess = ((appt && appt.isPrivate() && calendar.isRemote()) ? calendar.hasPrivateAccess() : true );
-    parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess && !isTrashMultiple && this._app.containsWritableFolder() && !appCtxt.isWebClientOffline());
-    parent.enable(ZmOperation.SHOW_ORIG,apptAccess && !isTrashMultiple  && !appCtxt.isWebClientOffline());
+    parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess && !isTrashMultiple && this._app.containsWritableFolder());
+    parent.enable(ZmOperation.SHOW_ORIG,apptAccess && !isTrashMultiple);
 
 	/*if (currViewName == ZmId.VIEW_CAL_LIST) {
 		parent.enable(ZmOperation.PRINT_CALENDAR, num > 0);
 	} */
-	parent.enable(ZmOperation.PRINT_CALENDAR, !appCtxt.isWebClientOffline());
 
 	// disable button for current view
 	var op = ZmCalViewController.VIEW_TO_OP[currViewName];
@@ -3121,12 +2967,6 @@ function(parent, num) {
 	if (op && parent.setSelected) {
 		parent.setSelected(op);
 	}
-
-    if (appCtxt.isWebClientOffline()) {
-        // Disable the list view when offline
-        //parent.enable(ZmCalViewController.VIEW_TO_OP[ZmOperation.CAL_LIST_VIEW], false);
-        parent.enable(ZmOperation.CAL_LIST_VIEW, false);
-    }
 
     //this._resetQuickCommandOperations(parent);
 };
@@ -3178,7 +3018,7 @@ function(ev) {
 		case ZmOperation.VIEW_APPT_SERIES:		mode = ZmCalItem.MODE_EDIT_SERIES; break;
 	}
 	
-	if (appt.isReadOnly() || isSynced || isTrash || appCtxt.isWebClientOffline()) {
+	if (appt.isReadOnly() || isSynced || isTrash) {
 		var clone = ZmAppt.quickClone(appt);
 		var callback = new AjxCallback(this, this._showApptReadOnlyView, [clone, mode]);
 		clone.getDetails(mode, callback, this._errorCallback);
@@ -3293,7 +3133,6 @@ function(menu) {
 	for (var i = 0; i < ZmCalViewController.OPS.length; i++) {
 		var op = ZmCalViewController.OPS[i];
 		menu.addSelectionListener(op, this._listeners[op]);
-        menu.enable(op, ((op != ZmOperation.CAL_LIST_VIEW) || !appCtxt.isWebClientOffline()));
 	}
 };
 
@@ -3401,7 +3240,7 @@ function(recurrenceMode) {
 	var deleteOp = ZmOperation.DELETE;
 	var viewOp = ZmOperation.VIEW_APPOINTMENT;
 	var forwardOp = ZmOperation.FORWARD_APPT;
-
+	
 	if (recurrenceMode == ZmOperation.VIEW_APPT_INSTANCE) {
 		deleteOp = ZmOperation.DELETE_INSTANCE;
 		viewOp = ZmOperation.OPEN_APPT_INSTANCE;
@@ -3448,13 +3287,10 @@ function(appt, actionMenu) {
     if (!(appt && actionMenu)) {
         return;
     }
+	var isOrganizer = appt.isOrganizer();
     var isExternalAccount = appCtxt.isExternalAccount();
     var isFolderReadOnly = appt.isFolderReadOnly();
-	var isShared = appt.isShared();
-
-	//Note - isOrganizer means the Calendar is the organizer of the appt. i.e. the appointment was created on this calendar.
-	//This could be "true" even if the current user is just a sharee of the calendar.
-	var isTheCalendarOrganizer = appt.isOrganizer();
+    var isSharedViewOnly = isFolderReadOnly && appt.isShared();
 
 	// find the checked calendar for this appt
 	var calendar;
@@ -3467,106 +3303,86 @@ function(appt, actionMenu) {
 		}
 	}
     //bug:68452 if its a trash folder then its not present in the calendars array
-    if (!calendar){
+    if(!calendar){
         calendar = appt.getFolder();
     }
 	var share = calendar && calendar.link ? calendar.getMainShare() : null;
 	var workflow = share ? share.isWorkflow() : true;
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
 	var isPrivate = appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
+	var enabled = !isOrganizer && workflow && !isPrivate && !isExternalAccount && !isSharedViewOnly;
     var isReplyable = !isTrash && appt.otherAttendees;
 	var isForwardable = !isTrash && calendar && !calendar.isReadOnly() && appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
 
-	//don't show for organizer calendar, or readOnly attendee calendar.
-	var showAcceptDecline = !isTheCalendarOrganizer && !isFolderReadOnly;
-	actionMenu.setItemVisible(ZmOperation.REPLY_ACCEPT, showAcceptDecline);
-	actionMenu.setItemVisible(ZmOperation.REPLY_DECLINE, showAcceptDecline);
-	actionMenu.setItemVisible(ZmOperation.REPLY_TENTATIVE, showAcceptDecline);
-	actionMenu.setItemVisible(ZmOperation.INVITE_REPLY_MENU, showAcceptDecline);
-	actionMenu.setItemVisible(ZmOperation.PROPOSE_NEW_TIME, showAcceptDecline);
-    actionMenu.setItemVisible(ZmOperation.REINVITE_ATTENDEES, !isTrash && isTheCalendarOrganizer && !isFolderReadOnly && !appt.inviteNeverSent && appt.otherAttendees);
+    actionMenu.setItemVisible(ZmOperation.REPLY_ACCEPT,      !isOrganizer);
+    actionMenu.setItemVisible(ZmOperation.REPLY_DECLINE,     !isOrganizer);
+    actionMenu.setItemVisible(ZmOperation.REPLY_TENTATIVE,   !isOrganizer);
+    actionMenu.setItemVisible(ZmOperation.INVITE_REPLY_MENU, !isOrganizer);
+    actionMenu.setItemVisible(ZmOperation.PROPOSE_NEW_TIME,  !isOrganizer);
+    actionMenu.setItemVisible(ZmOperation.REINVITE_ATTENDEES, isOrganizer && !appt.inviteNeverSent && appt.otherAttendees);
     actionMenu.setItemVisible(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED));
 
     // Initially enabling all the options in the action menu. And then selectively disabling unsupported options for special users.
     actionMenu.enableAll(true);
 
-	//enable/disable specific actions, only if we actually show them. (we don't show for organizer or shared calendar)
-	if (showAcceptDecline) {
-		var enabled = isReplyable && workflow && !isPrivate && !isExternalAccount;
-        actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
-        actionMenu.enable(ZmOperation.REPLY_DECLINE, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
-        actionMenu.enable(ZmOperation.REPLY_TENTATIVE, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
-        actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled);
-		// edit reply menu
-		var mi = enabled && actionMenu.getMenuItem(ZmOperation.INVITE_REPLY_MENU);
-		var replyMenu = mi && mi.getMenu();
-		if (replyMenu) {
-			replyMenu.enable(ZmOperation.EDIT_REPLY_ACCEPT,	appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
-			replyMenu.enable(ZmOperation.EDIT_REPLY_DECLINE, appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
-			replyMenu.enable(ZmOperation.EDIT_REPLY_TENTATIVE, appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
-		}
-	}
+// reply action menu
+    if (!isOrganizer) {
+        actionMenu.enable(ZmOperation.REPLY_ACCEPT,      enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
+        actionMenu.enable(ZmOperation.REPLY_DECLINE,     enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
+        actionMenu.enable(ZmOperation.REPLY_TENTATIVE,   enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
+        actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled && isReplyable);
+    }
 
     actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
-	var myEmail = appt.getFolder().getAccount().getEmail();
-	//the last condition in the following is for the somewhat corner case user1 invites user2, and user1 is looking at user2's calendar as a share.
-	actionMenu.enable(ZmOperation.REPLY, isReplyable && !isTheCalendarOrganizer && myEmail !== appt.organizer); //the organizer can't reply just to himself
+	actionMenu.enable(ZmOperation.REPLY, (isOrganizer ? false : isReplyable));
 	actionMenu.enable(ZmOperation.REPLY_ALL, isReplyable);
 
     var disabledOps;
-    if(appCtxt.isWebClientOffline()) {
-         disabledOps = [ZmOperation.REINVITE_ATTENDEES,
-            ZmOperation.PROPOSE_NEW_TIME,
-            ZmOperation.REPLY,
-            ZmOperation.REPLY_ALL,
-            ZmOperation.DUPLICATE_APPT,
-            ZmOperation.DELETE,
-            ZmOperation.DELETE_INSTANCE,
-            ZmOperation.DELETE_SERIES,
-            ZmOperation.FORWARD_APPT,
-            ZmOperation.FORWARD_APPT_INSTANCE,
-            ZmOperation.FORWARD_APPT_SERIES,
-            ZmOperation.SHOW_ORIG,
-            ZmOperation.DUPLICATE_APPT,
-			ZmOperation.MOVE,
-			ZmOperation.PRINT,
-			ZmOperation.TAG_MENU,
-            ZmOperation.MOVE_MENU];
+    if(isExternalAccount) {
+        disabledOps = [ZmOperation.REINVITE_ATTENDEES,
+                       ZmOperation.PROPOSE_NEW_TIME,
+                       ZmOperation.REPLY,
+                       ZmOperation.REPLY_ALL,
+                       ZmOperation.DUPLICATE_APPT,
+                       ZmOperation.DELETE,
+                       ZmOperation.DELETE_INSTANCE,
+                       ZmOperation.DELETE_SERIES];
+
         actionMenu.enable(disabledOps, false);
-    } else {
-        if(isExternalAccount) {
-            disabledOps = [ZmOperation.REINVITE_ATTENDEES,
-                ZmOperation.PROPOSE_NEW_TIME,
-                ZmOperation.REPLY,
-                ZmOperation.REPLY_ALL,
-                ZmOperation.DUPLICATE_APPT,
-                ZmOperation.DELETE,
-                ZmOperation.DELETE_INSTANCE,
-                ZmOperation.DELETE_SERIES];
-
-            actionMenu.enable(disabledOps, false);
-        }
-
-        // bug:71007 Disabling unsupported options for shared calendar with view only rights
-        if (isFolderReadOnly) {
-            disabledOps = [ZmOperation.REINVITE_ATTENDEES,
-                           ZmOperation.PROPOSE_NEW_TIME,
-                           ZmOperation.DELETE,
-                           ZmOperation.DELETE_INSTANCE,
-                           ZmOperation.DELETE_SERIES,
-                           ZmOperation.MOVE,
-                           ZmOperation.TAG_MENU,
-                           ZmOperation.MOVE_MENU];
-
-            actionMenu.enable(disabledOps, false);
-        }
     }
+
+    // bug:71007 Disabling unsupported options for shared calendar with view only rights
+    if(isSharedViewOnly) {
+        disabledOps = [ZmOperation.REINVITE_ATTENDEES,
+                       ZmOperation.PROPOSE_NEW_TIME,
+                       ZmOperation.DELETE,
+                       ZmOperation.DELETE_INSTANCE,
+                       ZmOperation.DELETE_SERIES,
+                       ZmOperation.MOVE,
+                       ZmOperation.TAG_MENU,
+                       ZmOperation.MOVE_MENU];
+
+	    actionMenu.enable(disabledOps, false);
+	}
+
+	// edit reply menu
+	if (enabled) {
+		var mi = actionMenu.getMenuItem(ZmOperation.INVITE_REPLY_MENU);
+		if (mi) {
+			var editReply = mi.getMenu();
+			if (editReply) {
+				editReply.enable(ZmOperation.EDIT_REPLY_ACCEPT, appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
+				editReply.enable(ZmOperation.EDIT_REPLY_DECLINE, appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
+				editReply.enable(ZmOperation.EDIT_REPLY_TENTATIVE, appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
+			}
+		}
+	}
 
 	var del = actionMenu.getMenuItem(ZmOperation.DELETE);
 	if (del && !isTrash) {
-		del.setText((isTheCalendarOrganizer && appt.otherAttendees) ? ZmMsg.cancel : ZmMsg.del);
+		del.setText((isOrganizer && appt.otherAttendees) ? ZmMsg.cancel : ZmMsg.del);
 		var isSynced = Boolean(calendar.url);
-		del.setEnabled(!calendar.isReadOnly() && !isSynced && !isPrivate && !appCtxt.isWebClientOffline());
+		del.setEnabled(!calendar.isReadOnly() && !isSynced && !isPrivate);
 	}
 
 	// recurring action menu options
@@ -3578,18 +3394,8 @@ function(appt, actionMenu) {
 ZmCalViewController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
-	var count = this.getSelectionCount();
 	var appt = ev.item;
 	var actionMenu = this.getActionMenu();
-	actionMenu.enableAll(count === 1);
-	if (count > 1) {
-		var isExternalAccount = appCtxt.isExternalAccount();
-  		var isFolderReadOnly = appt.isFolderReadOnly();
-		var enabled = !isExternalAccount && !isFolderReadOnly;
-		actionMenu.enable([ZmOperation.TAG_MENU, ZmOperation.MOVE_MENU, ZmOperation.MOVE, ZmOperation.DELETE], enabled);
-		actionMenu.popup(0, ev.docX, ev.docY);
-		return;
-	}
     var calendar = appt && appt.getFolder();
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
 	var menu = (appt.isRecurring() && !appt.isException && !isTrash) ? this._recurringActionMenu : actionMenu;
@@ -3609,12 +3415,6 @@ function(ev) {
 	menu.popup(0, ev.docX, ev.docY);
 };
 
-ZmCalViewController.prototype._clearViewActionMenu =
-function() {
-    // This will cause it to regenerate next time its accessed
-    this._viewActionMenu = null;
-}
-
 ZmCalViewController.prototype._viewActionListener =
 function(ev) {
 	if (!this._viewActionMenu) {
@@ -3632,9 +3432,6 @@ function(ev) {
 				this._initCalViewMenu(menu);
 			} else if (this._listeners[menuItem]) {
 				this._viewActionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
-                if ((menuItem == ZmOperation.NEW_APPT) || (menuItem == ZmOperation.NEW_ALLDAY_APPT)) {
-                    this._viewActionMenu.enable(menuItem, !appCtxt.isWebClientOffline());
-                }
 			}
 		}
         this._viewActionMenu.addPopdownListener(this._menuPopdownListener);
@@ -3669,7 +3466,7 @@ function(ev) {
 			var calendar = item.getFolder();
 			var isReadOnly = calendar ? calendar.isReadOnly() : false;
 			var isSynced = Boolean(calendar && calendar.url);
-			if (isSynced || isReadOnly  || appCtxt.isWebClientOffline()) {
+			if (isSynced || isReadOnly) {
 				ev.doIt = false; // can't tag a GAL or shared contact
 				view.dragSelect(div);
 				return;
@@ -3716,14 +3513,8 @@ function(params) {
 
 ZmCalViewController.prototype.handleUserSearch =
 function(params, callback) {
-	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
-	//Calendar search is defaulted to list view when searched from the calendar app.
-	if (params.origin === ZmId.SEARCH) {
-		this.show(ZmId.VIEW_CAL_LIST, null, true);
-	}
-	else {
-		this.show(null, null, true);
-	}
+	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	this.show(null, null, true);
 
 	this.apptCache.clearCache();
 	this._viewMgr.setNeedsRefresh();
@@ -3940,7 +3731,7 @@ function(appts, newFolderId) {
 	var isMovingBetw = false;
 	for (var i = 0; i < appts.length; i++) {
 		var appt = appts[i];
-		if (!appt.isReadOnly() && appt._orig && appt.otherAttendees && !appCtxt.isWebClientOffline()) {
+		if (!appt.isReadOnly() && appt._orig && appt.otherAttendees) {
 			var origFolder = appt._orig.getFolder();
 			var newFolder = appCtxt.getById(newFolderId);
 			if (origFolder && newFolder) {
@@ -4071,8 +3862,6 @@ ZmCalViewController.prototype.refreshCurrentView =
 ZmCalViewController.prototype._scheduleMaintenance =
 function(work, forceMaintenance) {
 
-	DBG.println(AjxDebug.DBG1, "ZmCalViewController._scheduleMaintenance, work = " + work + ", forceMaintenance = " + forceMaintenance);
-	DBG.println(AjxDebug.DBG1, "ZmCalViewController._scheduleMaintenance, searchInProgress = " + this.searchInProgress + ", pendingWork = " + this._pendingWork);
 	this.onErrorRecovery = new AjxCallback(this, this._errorRecovery, [work, forceMaintenance]);
 
 	// schedule timed action
@@ -4107,8 +3896,7 @@ function(work, forceMaintenance) {
 
 ZmCalViewController.prototype._maintenanceAction =
 function() {
-	DBG.println(AjxDebug.DBG1, "ZmCalViewController._maintenanceAction, work = " + this._pendingWork);
- 	var work = this._pendingWork;
+	var work = this._pendingWork;
 	this.searchInProgress = true;
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
 
@@ -4123,27 +3911,30 @@ function() {
 	else if (maintainMiniCal || maintainView || maintainRemainder) {
         // NOTE: It's important that we go straight to the view!
 		var view = this._viewMgr ? this._viewMgr.getView(this._currentViewId) : null;
-		var needsRefresh =  view && view.needsRefresh();
-		DBG.println(AjxDebug.DBG1, "ZmCalViewController._maintenanceAction, view = " + this._currentViewId + ", needsRefresh = " + needsRefresh);
-		if (needsRefresh) {
+		if (view && view.needsRefresh()) {
             var rt = view.getTimeRange();
-			var params = {
-				start: rt.start,
-				end: rt.end,
-				fanoutAllDay: view._fanoutAllDay(),
-				callback: (new AjxCallback(this, this._maintGetApptCallback, [work, view])),
-				accountFolderIds: ([].concat(this._checkedAccountCalendarIds)), // pass in a copy, not a reference
-				query: this._userQuery
-			};
+            if (this._currentViewType == ZmId.VIEW_CAL_LIST) {
+                view.searchRefresh(rt);
+                this.searchInProgress = false;
+            }
+            else {
+                var params = {
+                    start: rt.start,
+                    end: rt.end,
+                    fanoutAllDay: view._fanoutAllDay(),
+                    callback: (new AjxCallback(this, this._maintGetApptCallback, [work, view])),
+                    accountFolderIds: ([].concat(this._checkedAccountCalendarIds)), // pass in a copy, not a reference
+                    query: this._userQuery
+                };
 
-			var reminderParams;
-			if (maintainRemainder) {
-				reminderParams = this._app.getReminderController().getRefreshParams();
-				reminderParams.callback = null;
-			}
+                var reminderParams;
+                if (maintainRemainder) {
+                    reminderParams = this._app.getReminderController().getRefreshParams();
+                    reminderParams.callback = null;
+                }
 
-			DBG.println(AjxDebug.DBG1, "ZmCalViewController._maintenanceAction, do apptCache.batchRequest");
-			this.apptCache.batchRequest(params, this.getMiniCalendarParams(), reminderParams);
+                this.apptCache.batchRequest(params, this.getMiniCalendarParams(), reminderParams);
+            }
 			view.setNeedsRefresh(false);
 		} else {
 			this.searchInProgress = false;
@@ -4159,7 +3950,6 @@ function() {
 ZmCalViewController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmCalViewController.handleKeyAction");
-	var isWebClientOffline = appCtxt.isWebClientOffline();
 
 	switch (actionCode) {
 
@@ -4167,17 +3957,12 @@ function(actionCode) {
 		case ZmKeyMap.CAL_WEEK_VIEW:
 		case ZmKeyMap.CAL_WORK_WEEK_VIEW:
 		case ZmKeyMap.CAL_MONTH_VIEW:
+		case ZmKeyMap.CAL_LIST_VIEW:
 			this.show(ZmCalViewController.ACTION_CODE_TO_VIEW[actionCode]);
 			break;
 
-		case ZmKeyMap.CAL_LIST_VIEW:
-			if (!isWebClientOffline) {
-				this.show(ZmCalViewController.ACTION_CODE_TO_VIEW[actionCode]);
-			}
-			break;
-
         case ZmKeyMap.CAL_FB_VIEW:
-            if(appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED) && !isWebClientOffline) {
+            if(appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
                 this.show(ZmCalViewController.ACTION_CODE_TO_VIEW[actionCode]);
             }
 			break;
@@ -4191,21 +3976,19 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.QUICK_ADD:
-			if (appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD) && !isWebClientOffline) {
+			if (appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD)) {
 				var date = this._viewMgr ? this._viewMgr.getDate() : new Date();
 				this.newAppointmentHelper(date, ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
 			}
 			break;
 
 		case ZmKeyMap.EDIT:
-			if (!isWebClientOffline) {
-				var appt = this.getSelection()[0];
-				if (appt) {
-					var ev = new DwtSelectionEvent();
-					ev.detail = DwtListView.ITEM_DBL_CLICKED;
-					ev.item = appt;
-					this._listSelectionListener(ev);
-				}
+			var appt = this.getSelection()[0];
+			if (appt) {
+				var ev = new DwtSelectionEvent();
+				ev.detail = DwtListView.ITEM_DBL_CLICKED;
+				ev.item = appt;
+				this._listSelectionListener(ev);
 			}
 			break;
 
@@ -4225,10 +4008,50 @@ function(actionCode) {
             }
 			break;
 
+		case ZmKeyMap.COPY:
+			this.clipboardCopy();
+			break;
+
+		case ZmKeyMap.PASTE:
+			this.clipboardPaste();
+			break;
+
 		default:
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 	}
 	return true;
+};
+
+ZmCalViewController.prototype.clipboardCopy =
+function() {
+	var items = this.getSelection();
+
+	if(items && items.length) {
+		this._clipBoardAppts = items;
+		appCtxt.setStatusMsg(ZmMsg.apptCopied);
+	}
+};
+
+ZmCalViewController.prototype.clipboardPaste =
+function() {
+	if(!this._clipBoardAppts) return;
+
+	var appt = this._clipBoardAppts[0];
+	var params = {};
+
+	if(appt && this._viewMgr && this._viewMgr.getDate()) {
+		var sd = this._viewMgr.getDate();
+		var dur = appt.getDuration();
+		params.startDate = sd;
+		params.endDate = new Date(sd.getTime() + dur);
+	}
+
+	if(appt) {
+		appCtxt.setStatusMsg({msg: ZmMsg.apptCreatingFromCopy, force: true});
+		this.duplicateAppt(appt, params);
+	}   
+
+	delete this._clipBoardAppts;
 };
 
 ZmCalViewController.prototype._getDefaultFocusItem =
@@ -4307,7 +4130,7 @@ ZmCalViewController.prototype._showApptSource =
 function(appt) {
     var apptFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI)
                     + "&id=" + AjxStringUtil.urlComponentEncode(appt.id || appt.invId)
-                    +"&mime=text/plain&noAttach=1&icalAttach=none";
+                    +"&mime=text/plain&noAttach=1";
     // create a new window w/ generated msg based on msg id
     window.open(apptFetchUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 };
@@ -4512,4 +4335,4 @@ function(startDate, endDate, allDay, respCallback){
        newAppt.message = appCtxt.get(ZmSetting.VACATION_MSG);
        newAppt.convertToLocalTimezone();
        newAppt.save(null, respCallback);
-};
+}

@@ -86,12 +86,14 @@ Ext.define('ZCS.model.ZtItem', {
 
 			return !tagIds ? [] : Ext.Array.map(tagIds.split(','), function(tagId) {
 
-				var tag = ZCS.session.getOrganizerModel(tagId);
+				var tags = ZCS.cache.get(tagId),
+					tag = Array.isArray(tags) ? tags[0] : tags;
+
 				if (tag) {
 					return tag.getData();
 				} else {
 					//<debug>
-                    Ext.Logger.warn('Could not find tag with ID ' + tagId);
+                    Ext.Logger.warn('Could not find tag with ID ' + id + ' in the item cache');
                     //</debug>
 				}
 			});
@@ -115,6 +117,20 @@ Ext.define('ZCS.model.ZtItem', {
 			}
 			return tagDataList;
 		}
+	},
+
+	constructor: function(data, id) {
+
+		// The Model constructor can return a cached object rather than 'this',
+		// so we need to check for that and return it if we get one.
+		var item = this.callParent(arguments) || this,
+			key = (data && data.id) || id;
+
+		if (key) {
+			ZCS.cache.set(key, item);
+		}
+
+		return item;
 	},
 
 	/**

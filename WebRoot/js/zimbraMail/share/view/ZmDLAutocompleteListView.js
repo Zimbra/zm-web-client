@@ -63,7 +63,7 @@ function(list, contact) {
 		row.className = this._origClass;
 		row.id = this._selectAllRowId = this._getId("Row", "selectAll");
 		var cell = row.insertCell(-1);
-		cell.className = "AutocompleteMatchIcon";
+		cell.className = "Icon";
 		cell.innerHTML = AjxImg.getImageHtml("Blank16");
 		cell = row.insertCell(-1);
 		var text = numMembers ? ZmMsg.selectAllMembers : ZmMsg.noMembers;
@@ -99,7 +99,7 @@ function(table, match, rowId) {
 		row.className = this._origClass;
 		row.id = rowId;
 		var cell = row.insertCell(-1);
-		cell.className = "AutocompleteMatchIcon";
+		cell.className = "Icon";
 		if (match.icon) {
 			cell.innerHTML = (match.icon.indexOf('Dwt') != -1) ? ["<div class='", match.icon, "'></div>"].join("") :
 																  AjxImg.getImageHtml(match.icon);

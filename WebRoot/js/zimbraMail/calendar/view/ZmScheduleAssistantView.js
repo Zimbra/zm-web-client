@@ -101,8 +101,6 @@ function() {
 
     this._locationSuggestions = new ZmLocationSuggestionView(this, this._controller, this._apptView);
     this._locationSuggestions.reparentHtmlElement(this._suggestionsView);
-
-    this._resetSize();
 }
 
 ZmScheduleAssistantView.prototype.show =
@@ -124,8 +122,6 @@ function(suggestTime) {
         this._locationSuggestions.setVisible(true);
         this._currentSuggestions = this._locationSuggestions;
     }
-
-    this._resetSize();
 };
 
 ZmScheduleAssistantView.prototype.suggestAction =
@@ -141,9 +137,7 @@ function(focusOnSuggestion, showAllSuggestions) {
     };
 
     this._currentSuggestions.setLoadingHtml();
-	// Location information is required even for a time search, since the time display indicates locations available
-	// at that time.  Use isSuggestRooms to only do so when GAL_ENABLED is true.
-    if ((this._resources.length == 0) && this.isSuggestRooms()) {
+    if(this._resources.length == 0 && !this._suggestTime) {
         this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo, [params]));
     } else {
         this._findFreeBusyInfo(params);
@@ -282,7 +276,6 @@ function(date, attendees, forceRefresh) {
         if(!this.isSuggestionsEnabled()) {
            if(isGalEnabled) this._timeSuggestions.setShowSuggestionsHTML(this._date);
         }
-        this._resetSize();
         return;
     }
 
@@ -295,8 +288,6 @@ function(date, attendees, forceRefresh) {
         }
         if(forceRefresh) this.suggestAction(false, false);
     }
-
-    this._resetSize();
 };
 
 ZmScheduleAssistantView.prototype._miniCalDateRangeListener =
@@ -571,8 +562,8 @@ function(enable) {
 
 ZmScheduleAssistantView.prototype.isSuggestRooms =
 function() {
-    // Assume desire room checking if it is possible
-    return appCtxt.get(ZmSetting.GAL_ENABLED);
+    // Keep for the moment - no preference now, but may need some sort of function
+    return true;
 };
 
 ZmScheduleAssistantView.prototype.getAttendees =
@@ -657,7 +648,7 @@ function(startTime, endTime, params) {
     }
 
     //mini calendar suggestions should avoid collecting all computed information in array for optimiziation
-    if (!params.miniCalSuggestions) {
+    if(!params.miniCalSuggestions && fbInfo.availableUsers > 0) {
         var showOnlyGreenSuggestions = params.showOnlyGreenSuggestions;
         if(!showOnlyGreenSuggestions || (fbInfo.availableUsers == this._totalUsers)) {
             this._fbStat.add(fbInfo);
@@ -754,7 +745,6 @@ function(params) {
 
     this._currentSuggestions.set(params);
     if(params.focus) this._currentSuggestions.focus();
-    this._resetSize();
 };
 
 //modules for handling mini calendar suggestions
@@ -956,7 +946,9 @@ function(params) {
             fbStat = this.computeAvailability(dayStartTime, dayStartTime + duration, params);
             dayStartTime += AjxDateUtil.MSEC_PER_HALF_HOUR;
 
-            if(fbStat && fbStat.availableUsers == this._totalUsers) {
+            var roomsAvailable = (fbStat.availableLocations > 0);
+            var includeRooms   = this.isSuggestRooms();
+            if(fbStat && fbStat.availableUsers == this._totalUsers && (!includeRooms || roomsAvailable)) {
                 this._addColorCode(params, startTime, ZmMiniCalendar.COLOR_GREEN);
                 freeSlotFound = true;
                 //found atleast one free slot that can accomodate all attendees and atleast one recources
@@ -980,22 +972,4 @@ function(params, startTime, code) {
     var str = AjxDateFormat.format("yyyyMMdd", sd);
     params.dates[str] = sd;
     params.colors[str] = code;
-};
-
-ZmScheduleAssistantView.prototype._resetSize = function() {
-	ZmApptAssistantView.prototype._resetSize.call(this);
-
-    if (!this._currentSuggestions) {
-        return;
-    }
-
-    var width = this.boundsForChild(this._currentSuggestions).width;
-    width -= Dwt.getScrollbarSizes(this._suggestionsView).x;
-
-    if (AjxEnv.isIE || AjxEnv.isModernIE) {
-        var insets = this._currentSuggestions.getInsets();
-        width -= insets.left + insets.right;
-    }
-
-    this._currentSuggestions.setSize(width);
 };

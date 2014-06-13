@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2009, 2010, 2012, 2013 Zimbra Software, LLC.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
@@ -104,7 +104,6 @@ function(results) {
 	}
 
 	this._listView.set(this._devices);
-	this._resetOperations(this._toolbar);
 };
 
 /**
@@ -216,10 +215,6 @@ function(parent, numSel) {
 					button.setImage("MobileWipe");
 				}
 			}
-			if (status === ZmMobileDevice.STATUS_REMOTE_WIPE_COMPLETE) {
-				parent.enable(ZmOperation.MOBILE_WIPE, false);
-			}
-
 		}
 
 		if (!item.provisionable) {

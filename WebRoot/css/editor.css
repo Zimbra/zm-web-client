@@ -12,6 +12,6 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-table.ZmHtmlEditor-Table td { border: 1px solid #000; } /* visible borders for newly inserted cells */
+table.DwtHtmlEditor-Table td { border: 1px solid #000; } /* visible borders for newly inserted cells */
 div.ZmMovie { border: 1px dashed #000; padding: 1px; }
 blockquote { border-left: 2px solid rgb(16, 16, 255); margin-left: 5px; padding-left: 5px; }

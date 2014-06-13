@@ -29,31 +29,6 @@ Ext.define('ZCS.common.ZtUtil', {
 
 	idParams: {},
 
-	/**
-	 * Gets a reference to the single instance of the parameterized Ext.Component.
-	 * If an instance of the component does not exist, one is added to the viewport.
-	 * This method is not suited to adding classes which have multiple instances
-	 * or should be added to some level of the component hierarchy that is not
-	 * the viewport.
-	 *
-	 * @param {String}    className The name of a class extending from Ext.Component
-	 * @param {Object}    config    Config for the instance.
-	 *
-	 */
-	getLazyReference: function (className, config) {
-		var aliases = Ext.ClassManager.getAliasesByName(className), //get registered aliases for use in component query
-			alias = aliases[0],  //widget.component
-			queriableAliasName = alias.substring(alias.indexOf(".")), //.component
-			existingInstances = Ext.ComponentQuery.query(queriableAliasName),
-			existingInstance = existingInstances.length > 0 && existingInstances[0];
-
-		if (!existingInstance) {
-			return Ext.Viewport.add(Ext.create(className));
-		} else {
-			return existingInstance;
-		}
-	},
-
 
 	/**
 	 * Returns a display string in either KB, MB or GB, depending on file size.
@@ -213,7 +188,8 @@ Ext.define('ZCS.common.ZtUtil', {
 
 		var result = {
 			accountId:  '',
-			localId:    ''
+			localId:    '',
+			isRemote:   false
 		};
 		if (!id) {
 			return result;
@@ -230,6 +206,7 @@ Ext.define('ZCS.common.ZtUtil', {
 			parts = id.split(':');
 			result.accountId = parts[0];
 			result.localId = parts[1];
+			result.isRemote = true;
 		}
 		else {
 			result.accountId = ZCS.session.getAccountId();
@@ -261,7 +238,7 @@ Ext.define('ZCS.common.ZtUtil', {
 	folderIs: function(folder, folderId) {
 
 		if (Ext.isString(folder)) {
-			folder = ZCS.session.getOrganizerModel(folder);
+			folder = ZCS.cache.get(folder);
 		}
 		return folder ? this.localId(folder.get('zcsId')) === folderId : false;
 	},
@@ -284,17 +261,6 @@ Ext.define('ZCS.common.ZtUtil', {
 	 */
 	curFolderIs: function(folderId) {
 		return this.curFolderLocalId() === folderId;
-	},
-
-	/**
-	 * Returns true if the current folder is the folder with the given ID, or is a descendant of it.
-	 *
-	 * @param {String}      folderId        folder ID to match against
-	 * @return {Boolean}        true if the current folder is under the one with the given ID
-	 */
-	curFolderIsUnder: function(folderId) {
-		var curFolder = ZCS.session.getCurrentSearchOrganizer();
-		return curFolder && curFolder.isUnder(folderId);
 	},
 
 	/**
@@ -538,7 +504,6 @@ Ext.define('ZCS.common.ZtUtil', {
 	 *
 	 * @param {String} pattern
 	 * @param {Object} value - This could be a Number/String/Array object
-     * @param {Boolean} isSpecificDay - This is optional
 	 * @return {String}
 	 */
 	formatRecurMsg: function(pattern, value, isSpecificDay) {
@@ -559,17 +524,19 @@ Ext.define('ZCS.common.ZtUtil', {
 				if (value[1].length === 0) {
 					return Ext.String.format(pattern, value[0], '');
 				}
-				else if (value[1].length >= 1) {
-					var daysLen = value[1].length,
-						i,
-						recurStr = "";
-
-					for (i = 0; i < daysLen; i++) {
-						recurStr += Ext.Date.format(value[1][i], 'l')  + (i !== daysLen - 1 ? ', ' : '');
-					}
-
-					return Ext.String.format(pattern, value[0], recurStr);
+				else if (value[1].length === 1) {
+					return Ext.String.format(pattern, value[0], Ext.Date.format(value[0][0], 'l'));
 				}
+
+				var weekDaysLen = value[1].length,
+					i,
+					msgStr = '';
+
+				for (i = 0; i < weekDaysLen; i++) {
+					msgStr += Ext.Date.format(value[1][i], 'l') + (i !== weekDaysLen - 1 ? ', ' : '');
+				}
+
+				return Ext.String.format(pattern, value[0], msgStr);
 			}
 
 			case ZtMsg.recurWeeklyEveryWeekday:
@@ -578,21 +545,21 @@ Ext.define('ZCS.common.ZtUtil', {
 			case ZtMsg.recurYearlyEveryDate:
 				return Ext.String.format(pattern, Ext.Date.format(value[0], 'F'), value[1]);
 
-			case ZtMsg.recurYearlyEveryMonth:
-                if (isSpecificDay) {
-                    return Ext.String.format(pattern, this.getOrdinal(value[0]), this.getDayType(value[1]), Ext.Date.format(value[2], 'F'));
-                }
-                else {
-                    return Ext.String.format(pattern, this.getOrdinal(value[0]), Ext.Date.format(value[1], 'l'), Ext.Date.format(value[2], 'F'));
-                }
+			case ZtMsg.recurYearlyEveryMonthWeekDays:
+				if (isSpecificDay) {
+					return Ext.String.format(pattern, this.getOrdinal(value[0]), this.getDayType(value[1]), Ext.Date.format(value[2], 'F'));
+				}
+				else {
+					return Ext.String.format(pattern, this.getOrdinal(value[0]), Ext.Date.format(value[1], 'l'), Ext.Date.format(value[2], 'F'));
+				}
 
-			case ZtMsg.recurMonthly:
-                if (isSpecificDay) {
-                    return Ext.String.format(pattern, this.getOrdinal(value[0]), this.getDayType(value[1]), value[2]);
-                }
-                else {
-                    return Ext.String.format(pattern, this.getOrdinal(value[0]), Ext.Date.format(value[1], 'l'), value[2]);
-                }
+			case ZtMsg.recurMonthlyEveryNumMonthsWeekDays:
+				if (isSpecificDay) {
+					return Ext.String.format(pattern, this.getOrdinal(value[0]), this.getDayType(value[1]), value[2]);
+				}
+				else {
+					return Ext.String.format(pattern, this.getOrdinal(value[0]), Ext.Date.format(value[1], 'l'), value[2]);
+				}
 
 			case ZtMsg.recurMonthlyEveryNumMonthsDate:
 				return Ext.String.format(pattern, value[0], value[1]);
@@ -660,143 +627,5 @@ Ext.define('ZCS.common.ZtUtil', {
 				});
 			}
 		});
-	},
-
-	/**
-	 * Tells whether appointment is multi-day or not
-	 *
-	 * @param {Date} startDate
-	 * @param {Date} endDate
-
-	 * @return {Boolean}
-	 * @adapts ZmCalBaseItem.prototype.isMultiDay
-	 */
-	isMultiDay: function(startDate, endDate) {
-
-		if (!startDate || !endDate) { return false; }
-
-		if (endDate.getHours() === 0 && endDate.getMinutes() === 0 && endDate.getSeconds() === 0) {
-			/* If appt ends at beginning of next day, though it crossed a day boundary
-			we do not consider it while painting the appt. We just consider it for labeling appt as multi-day.
-			Consider an edge case, appt ends at 12 AM next day, we just paint appt till 11:59:59 but technically
-			it crossed a day so the appt is multiday.
-			*/
-			endDate = new Date(endDate.getTime() - 2 * 3600000);
-		}
-
-		return (startDate.getDate() !== endDate.getDate()) ||
-			(startDate.getMonth() !== endDate.getMonth()) ||
-			(startDate.getFullYear() !== endDate.getFullYear());
-	},
-
-    /**
-     * Converts the given time to the next 15-minute slot
-     */
-    convertTime: function(currdate, isEndTime) {
-        var hours = currdate.getHours(),
-            minutes = currdate.getMinutes();
-
-        if (isEndTime) {
-            hours += 1;
-            if (hours === 24) {
-                hours = 0;
-            }
-        }
-        minutes = (Math.ceil(minutes / 15) * 15);
-        if (minutes < 10) {
-            minutes = "0" + minutes;
-        }
-        currdate.setHours(hours);
-        currdate.setMinutes(minutes);
-        return currdate;
-    },
-
-	/**
-	 * Returns a value for the brightness of the given color.
-	 *
-	 * @param   {string}    rgb     RGB value as #RRGGBB
-	 * @returns {number}    number between 0 and 255 (higher is brighter)
-	 */
-	getBrightness: function(rgb) {
-
-		var r, g, b;
-
-		if (rgb && rgb.length === 7 && rgb.indexOf('#') === 0) {
-			rgb = rgb.substr(1);
-		}
-		else {
-			return null;
-		}
-
-		r = parseInt(rgb.substr(0, 2), 16);
-		g = parseInt(rgb.substr(2, 2), 16);
-		b = parseInt(rgb.substr(4, 2), 16);
-
-		// http://alienryderflex.com/hsp.html
-		return Math.sqrt(
-			r * r * .299 +
-			g * g * .587 +
-			b * b * .114
-		);
-	},
-
-	/**
-	 * Returns the better foreground color based on contrast with the given background color.
-	 *
-	 * @param   {string}    bgColor     RGB value as #RRGGBB
-	 * @returns {string}    'black' or 'white'
-	 */
-	getForegroundColor: function(bgColor) {
-		var brightness = ZCS.util.getBrightness(bgColor);
-		return (brightness != null && brightness < 130) ? 'white' : 'black';
-	},
-
-	unquote: function(str) {
-
-		if (!str) {
-			return '';
-		}
-
-		var first = str.charAt(0);
-		if (first === '"') {
-			return str.replace(/^"/, '').replace(/"$/, '');
-		}
-		else if (first === "'") {
-			return str.replace(/^'/, '').replace(/'$/, '');
-		}
-		else {
-			return str;
-		}
-	},
-
-	// Looks for the item with the given ID in the store that matches its type.
-	findItemInActiveStore: function(itemType, zcsId) {
-
-		var store = Ext.StoreMgr.get(ZCS.constant.ITEM_STORE[itemType]);
-		return store ? this.findInStoreById(store, zcsId) : null;
-	},
-
-	// Finds an item in a store based on its zcsId.
-	findInStoreById: function(store, zcsId) {
-
-		var index = store.findBy(function(record) {
-			return record.get('zcsId') === zcsId;
-		});
-		return index !== -1 ? store.getAt(index) : null;
-	},
-
-	/**
-	 * Clears content inside div[contenteditable] if there is a <br> tag at the start or blank spaces
-	 * added by iphone/ipad device browser.
-	 *
-	 * @param   {object}    elem     HTMLElement
-	 *
-	 */
-	showHidePlaceholder: function(elem) {
-		var text = elem.innerHTML.replace(/^\&nbsp\;|<br?\>*/gi, "").replace(/\&nbsp\;|<br?\>$/gi, "").trim();
-
-		if (text.length === 0) {
-			elem.innerHTML = "";
-		}
 	}
 });

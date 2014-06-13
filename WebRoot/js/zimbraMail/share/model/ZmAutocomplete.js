@@ -94,7 +94,7 @@ ZmAutocomplete.prototype.toString =
  * @param {Boolean}					supportForget	allow user to reset ranking for a contact (defaults to true)
  */
 ZmAutocomplete.prototype.autocompleteMatch =
-		function(str, callback, aclv, options, account, autocompleteType) {
+		function(str, callback, aclv, options, account) {
 
 			str = str.toLowerCase().replace(/"/g, '');
 			this._curAcStr = str;
@@ -108,20 +108,19 @@ ZmAutocomplete.prototype.autocompleteMatch =
 			}
 			else {
 				aclv.setWaiting(true, str);
-				return this._doSearch(str, aclv, options, acType, callback, account, autocompleteType);
+				return this._doSearch(str, aclv, options, acType, callback, account);
 			}
 		};
 
 ZmAutocomplete.prototype._doSearch =
-		function(str, aclv, options, acType, callback, account, autocompleteType) {
+		function(str, aclv, options, acType, callback, account) {
 
 			var params = {query:str, isAutocompleteSearch:true};
 			if (acType != ZmAutocomplete.AC_TYPE_CONTACT) {
 				params.isGalAutocompleteSearch = true;
 				params.isAutocompleteSearch = false;
 				params.limit = params.limit * 2;
-				var searchType = ((acType === ZmAutocomplete.AC_TYPE_LOCATION) || (acType === ZmAutocomplete.AC_TYPE_EQUIPMENT)) ?  ZmItem.RESOURCE : ZmItem.CONTACT;
-				params.types = AjxVector.fromArray([searchType]);
+				params.types = AjxVector.fromArray([ZmItem.CONTACT]);
 				params.galType = params.galType || ZmSearch.GAL_RESOURCE;
 				DBG.println("ac", "AutoCompleteGalRequest: " + str);
 			} else {
@@ -136,10 +135,6 @@ ZmAutocomplete.prototype._doSearch =
 				timeout:		ZmAutocomplete.AC_TIMEOUT,
 				noBusyOverlay:	true
 			};
-			if (autocompleteType) {
-				searchParams.autocompleteType = autocompleteType;
-			}
-            searchParams.offlineCallback = this._handleOfflineDoAutocomplete.bind(this, str, search, searchParams.callback);
 			return search.execute(searchParams);
 		};
 
@@ -155,7 +150,7 @@ ZmAutocomplete.prototype._handleResponseDoAutocomplete =
 			var resultList, gotContacts = false, hasGal = false;
 			var resp = result.getResponse();
 			if (resp && resp.search && resp.search.isGalAutocompleteSearch) {
-				var cl = resp.getResults(resp.type);
+				var cl = resp.getResults(ZmItem.CONTACT);
 				resultList = (cl && cl.getArray()) || [];
 				gotContacts = hasGal = true;
 			} else {
@@ -195,66 +190,6 @@ ZmAutocomplete.prototype._handleErrorDoAutocomplete =
 
 			return true;
 		};
-
-/**
- * @private
- */
-ZmAutocomplete.prototype._handleOfflineDoAutocomplete =
-function(str, search, callback) {
-    if (str) {
-        var autoCompleteCallback = this._handleOfflineResponseDoAutocomplete.bind(this, search, callback);
-        ZmOfflineDB.searchContactsForAutoComplete(str, autoCompleteCallback);
-    }
-};
-
-ZmAutocomplete.prototype._handleOfflineResponseDoAutocomplete =
-function(search, callback, result) {
-    var match = [];
-    result.forEach(function(contact) {
-        var attrs = contact._attrs;
-		if (attrs) {
-			var obj = {
-				id : contact.id,
-				l : contact.l
-			};
-			if (attrs.fullName) {
-				var fullName = attrs.fullName;
-			}
-			else {
-				var fullName = [];
-				if (attrs.firstName) {
-					fullName.push(attrs.firstName);
-				}
-				if (attrs.middleName) {
-					fullName.push(attrs.middleName);
-				}
-				if (attrs.lastName) {
-					fullName.push(attrs.lastName);
-				}
-				fullName = fullName.join(" ");
-			}
-			if (attrs.email) {
-				obj.email = '"' + fullName + '" <' + attrs.email + '>';
-			}
-			else if (attrs.type === "group") {
-				obj.display = fullName;
-				obj.type = ZmAutocomplete.AC_TYPE_CONTACT;
-				obj.exp = true;
-				obj.isGroup = true;
-			}
-			match.push(obj);
-		}
-    });
-    if (callback) {
-        var zmSearchResult = new ZmSearchResult(search);
-        var response = {
-            match : match
-        };
-        zmSearchResult.set(response);
-        var zmCsfeResult = new ZmCsfeResult(zmSearchResult);
-        callback(zmCsfeResult);
-    }
-};
 
 /**
  * Sort auto-complete list by ranking scores.
@@ -496,7 +431,7 @@ ZmAutocomplete.prototype._settingChangeListener =
  */
 ZmAutocompleteMatch = function(match, options, isContact, str) {
 	// TODO: figure out how to minimize loading of calendar code
-	AjxDispatcher.require(["MailCore", "CalendarCore"]);
+	AjxDispatcher.require("CalendarCore");
 	if (!match) {
 		return;
 	}
@@ -886,7 +821,7 @@ ZmSearchAutocomplete.prototype._loadFolders =
 			var folders = folderTree ? folderTree.asList({includeRemote:true}) : [];
 			for (var i = 0, len = folders.length; i < len; i++) {
 				var folder = folders[i];
-				if (folder.id !== ZmOrganizer.ID_ROOT && !ZmFolder.HIDE_ID[folder.id] && folder.id !== ZmFolder.ID_DLS) {
+				if (folder.id != ZmOrganizer.ID_ROOT && !ZmFolder.HIDE_ID[folder.id]) {
 					list.push(folder);
 				}
 			}

@@ -47,10 +47,6 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 
 	initialize: function() {
 
-		// Hack to set label width based on length of "To" when it is translated
-		var toLabelWidth = 1 + (0.3 * ZtMsg.toHdr.length),
-			ccBccLabelWidth = toLabelWidth + 2.5;
-
 		var composeForm = this,
 			isPhone = Ext.os.deviceType === "Phone",
 			toolbar = {
@@ -116,7 +112,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						addressType: ZCS.constant.TO,
 						flex: 1,
 						label: ZtMsg.toHdr,
-						labelWidth: toLabelWidth + 'em'
+						labelWidth: '4em'
 					}]
 				}, {
 					xtype: 'contactfield',
@@ -125,7 +121,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					addressType: ZCS.constant.CC,
 					hidden: true,
 					label: ZtMsg.ccHdr,
-					labelWidth: ccBccLabelWidth + 'em'
+					labelWidth: '6.5em'
 				}, {
 					xtype: 'contactfield',
 					name: ZCS.constant.BCC,
@@ -133,7 +129,7 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 					addressType: ZCS.constant.BCC,
 					hidden: true,
 					label: ZtMsg.bccHdr,
-					labelWidth: ccBccLabelWidth + 'em'
+					labelWidth: '6.5em'
 				}, {
 					cls: 'zcs-subjectline',
 					layout: {
@@ -144,8 +140,8 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 						cls: 'zcs-subject',
 						name: 'subject',
 						flex: 1,
-						label: '',
-						placeHolder: ZtMsg.subjectHdr,
+						label: ZtMsg.subjectHdr,
+						labelWidth: '6.5em',
 						listeners: {
 							blur: function () {
 								//Because this panel is floating, and a keystroke may have forced the whole window to scroll,
@@ -178,6 +174,17 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 								});
 							}
 						}
+					}, {
+						xtype: 'filefield',
+						hidden: true,
+						listeners: {
+							change: function (field, newValue, oldValue) {
+								//When the value of this field is reset, newValue is null.
+								if (newValue) {
+									composeForm.fireEvent('attachmentAdded', field, newValue, oldValue);
+								}
+							}
+						}
 					}]
 				}, {
 					xtype: 'component',
@@ -189,35 +196,26 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 								bodyField = this.element.down('.zcs-body-field');
 
 							bodyField.setMinHeight(heightToSet);
-							bodyField.on('blur', function () {
-								ZCS.htmlutil.resetWindowScroll();
-							});
 						}
 					}
 				}]
 			};
 
 		if (ZCS.constant.IS_ENABLED[ZCS.constant.FEATURE_ADD_ATTACHMENT] && Ext.feature.has.XHR2) {
-			/**
-			 *
-			 * We overlay a transparent file input element over the label.  This is because you can't 
-			 * style the file input element directly.  Additionally, if you try and programmatically trigger
-			 * a click on the file input element, there are positioning bugs in iOS.  This is a hack,
-			 * but works.
-			 *
-			 */
 			form.items[3].items.push({
-				xtype: 'container',
-				width: 36,
-				cls: 'zcs-attach-hack-container',
-				layout: 'auto',
-				items: [this.getFileFieldConfig(), {
-					xtype: 'component',
-					cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field attach-label',
-					itemId: 'attach',
-//					html: ZtMsg.attach,
-					width: 36
-				}]
+				xtype: 'component',
+				cls: 'x-form-label x-form-label-nowrap x-field zcs-toggle-field',
+				itemId: 'attach',
+				html: ZtMsg.attach,
+				width: 80,
+				listeners: {
+					initialize: function () {
+						var comp = this;
+						this.element.on('tap', function () {
+							composeForm.doAttach();
+						});
+					}
+				}
 			});
 		}
 
@@ -225,43 +223,6 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 			toolbar,
 			form
 		]);
-	},
-
-	resetFileField: function () {
-		var existingFileField = this.down('filefield'),
-			parent = existingFileField.parent;
-
-		existingFileField.suspendEvents();
-		parent.remove(existingFileField, true);
-		parent.add(this.getFileFieldConfig());
-
-	},
-
-	getFileFieldConfig: function () {
-		var composeForm = this;
-
-		return {
-			xtype: 'filefield',
-			width: 36,
-			opacity: 0.01,
-			cls: 'file-input-div',
-			// style:  "visibility:hidden;",
-			listeners: {
-				change: function (field, newValue, oldValue) {
-					//When the value of this field is reset, newValue is null.
-					if (newValue) {
-					 	composeForm.fireEvent('attachmentAdded', field, newValue, oldValue);
-					} else {
-						ZCS.htmlutil.resetWindowScroll();
-					}
-				},
-				initialize: function (fileField) {
-					Ext.fly(fileField.element.down('input')).on('blur', function () {
-						ZCS.htmlutil.resetWindowScroll();
-					});
-				}
-			}
-		};
 	},
 
 	// TODO: Separate toggles for CC and BCC
@@ -278,6 +239,10 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		}
 	},
 
+	doAttach: function () {
+		this.down('filefield').element.down('input').dom.click();
+	},
+
 	resetForm: function () {
 		this.down('.formpanel').reset();
 		this.down('#cc').hide();
@@ -287,7 +252,5 @@ Ext.define('ZCS.view.mail.ZtComposeForm', {
 		this.down('.formpanel').element.dom.reset();
 		//Reset this so we don't parse out old attachment info next time we come to the form.
 		this.down('#attachments').setHtml('');
-
-		ZCS.htmlutil.resetWindowScroll();
 	}
 });

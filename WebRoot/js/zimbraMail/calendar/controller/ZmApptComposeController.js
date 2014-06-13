@@ -36,6 +36,8 @@ ZmApptComposeController = function(container, app, type, sessionId) {
 	this._addedAttendees = [];
 	this._removedAttendees = [];
 	this._kbMgr = appCtxt.getKeyboardMgr();
+
+	appCtxt.getSettings().getSetting(ZmSetting.USE_ADDR_BUBBLES).addChangeListener(new AjxListener(this, this._handleSettingChange));
 };
 
 ZmApptComposeController.prototype = new ZmCalItemComposeController;
@@ -183,18 +185,13 @@ function(attId) {
         this._composeView.getNumLocationConflictRecurrence() :
         ZmTimeSuggestionPrefDialog.DEFAULT_NUM_RECURRENCE;
 
-	if (appt) {
+    if (appt && !appt.isValidDuration()) {
+        this._composeView.showInvalidDurationMsg();
+        this.enableToolbar(true);
+        return false;
+    }
 
-		if (!appt.isValidDuration()) {
-			this._composeView.showInvalidDurationMsg();
-			this.enableToolbar(true);
-			return false;
-		}
-		if (!appt.isValidDurationRecurrence()) {
-			this._composeView.showInvalidDurationRecurrenceMsg();
-			this.enableToolbar(true);
-			return false;
-		}
+	if (appt) {
 
         if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
             if (this._requestResponses)
@@ -1267,7 +1264,7 @@ function(newAppt) {
 ZmApptComposeController.prototype.initComposeView =
 function(initHide) {
     
-	if (!this._composeView) {
+	if (!this._composeView || this._needComposeViewRefresh) {
 		this._composeView = this._createComposeView();
         var appEditView = this._composeView.getApptEditView();
         this._savedFocusMember = appEditView._getDefaultFocusItem();
@@ -1293,6 +1290,7 @@ function(initHide) {
 		if (initHide) {
 			this._composeView.preload();
 		}
+		this._needComposeViewRefresh = false;
 		return true;
 	}
     else{
@@ -1353,6 +1351,18 @@ ZmApptComposeController.prototype._resetToolbarOperations =
 function() {
     //do nothing - this  gets called when this controller handles a list view
 };
+
+ZmApptComposeController.prototype._handleSettingChange =
+function(ev) {
+
+	if (ev.type != ZmEvent.S_SETTING) { return; }
+
+	var id = ev.source.id;
+	if (id == ZmSetting.USE_ADDR_BUBBLES) {
+		this._needComposeViewRefresh = true;
+	}
+};
+
 
 // --- Subclass the ApptComposeController for saving Quick Add dialog appointments, and doing a
 //     save when the CalColView drag and drop is used

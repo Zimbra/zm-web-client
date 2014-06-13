@@ -151,9 +151,6 @@ function(mode) {
         this._disableEditForTrashedItems();
     }
 
-    if (appCtxt.isWebClientOffline()) {
-        this._disableEditForOffline();
-    }
     if (isReadOnly) {
         this._disableActionsForReadOnlyAppt();
     }
@@ -161,33 +158,6 @@ function(mode) {
         this._disableActionsForExternalAccount();
     }
 };
-
-ZmApptController.prototype._disableEditForOffline =
-function() {
-    var actionMenu = this._toolbar.getActionsMenu();
-    if(actionMenu){
-        actionMenu.enable([
-            ZmOperation.EDIT,
-            ZmOperation.TAG,
-            ZmOperation.TAG_MENU,
-            ZmOperation.REPLY,
-            ZmOperation.REPLY_ALL,
-            ZmOperation.PROPOSE_NEW_TIME,
-            ZmOperation.DUPLICATE_APPT,
-            ZmOperation.FORWARD_APPT,
-            ZmOperation.DELETE,
-            ZmOperation.SHOW_ORIG
-        ], false);
-    }
-    var tagButton = this._toolbar.getButton(ZmOperation.TAG_MENU);
-    if (tagButton) {
-        tagButton.setEnabled(false);
-    }
-    var printButton = this._toolbar.getButton(ZmOperation.PRINT);
-    if (printButton) {
-        printButton.setEnabled(false);
-    }
-}
 
 ZmApptController.prototype._disableEditForTrashedItems =
 function() {
@@ -316,8 +286,6 @@ function(ev) {
 
     var saveCallback = new AjxCallback(this, this._handleSaveResponse);
     var calViewCtrl = this._app.getCalController();
-	// This will trigger a call to  ZmMailMsg.sendInviteReply, which updates the offline appointment ptst field
-	// and the invite mail msg.
     var respCallback = new AjxCallback(calViewCtrl, calViewCtrl._handleResponseHandleApptRespondAction, [calItem, this.getOpValue(), op, saveCallback]);
 	calItem.getDetails(null, respCallback, this._errorCallback);
 
@@ -343,15 +311,6 @@ function(ev) {
 
 ZmApptController.prototype._handleSaveResponse =
 function(result, value) {
-    if (appCtxt.isWebClientOffline()) {
-        // Set the value of the appt stored in-memory in the list.  Normally, this would be updated
-        // by a notification, but not offline.
-        //var appt = this.getCalItem();
-        //appt.ptst = value;
-
-        // Update the version currently in use.  It may get updated again below, but it doesn't matter
-        this.getCurrentView().setOrigPtst(value);
-    }
     if (this.isCloseAction()) {
         this._closeView();
     } else {

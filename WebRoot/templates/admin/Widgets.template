@@ -1,5 +1,5 @@
 <template id='admin.Widgets#ZaAppTab' class='ZAppTab'>
-  <table role="presentation" class='ZWidgetTable ZAppTabTable ZAppTabBorder' style='table-layout:auto;'>
+  <table class='ZWidgetTable ZAppTabTable ZAppTabBorder' style='table-layout:auto;'>
   <tr id='${id}_row'>
 		<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
 		<td id='${id}_title'		class='ZWidgetTitle'></td>
@@ -7,7 +7,7 @@
 	</tr></table>
 </template>
 <template id='admin.Widgets#ZaToolBarLabel' class='ZaToolBarLabel ZWidget'>
-  <table role="presentation" id='${id}_label'		class='ZWidgetTable ZLabelBorder'><tr>
+  <table id='${id}_label'		class='ZWidgetTable ZLabelBorder'><tr>
     <td id='${id}_left_icon'	class='ZLeftIcon ZWidgetIcon'></td>
     <td id='${id}_title'		class='ZWidgetTitle ZaNowrapTitle'></td>
     <td id='${id}_right_icon'	class='ZRightIcon ZWidgetIcon'></td>
@@ -22,12 +22,12 @@
 	</div>
 </template>
 <template id='admin.Widgets#ZaCurrentAppBar' class='ZaCurrentAppBar'>
-	<table role="presentation" style='table-layout:fixed;width:100%; height:100%'>
+	<table style='table-layout:fixed;width:100%; height:100%'>
 		<tr>
 			<td id='${id}_title'	class='ZWidgetTitle'	style='width:100%'></td>
 			<td id='${id}_action'							style='width:0px'>
 			    <div>
-                    <table role="presentation" class='ZToolbarTable'>
+                    <table class='ZToolbarTable'>
                         <tr id='${id}_actionitems'>
                         </tr>
                     </table>
@@ -39,7 +39,7 @@
 	</table>
 </template>
 <template id='admin.Widgets#ZaTreeHeaderButton' class='ZWidget'>
-	<table role="presentation" id='${id}_table' class='DwtLinkButtonTable ${bgImg}' style='table-layout:fixed;width:100%'>
+	<table id='${id}_table' class='DwtLinkButtonTable ${bgImg}' style='table-layout:fixed;width:100%'>
 		<tr>
 			<td id='${id}_doubleArrow' style='width:20px'>
 				<div>
@@ -56,7 +56,7 @@
 </template>
 <template id='admin.Widgets#ZaTreeItem'>
 	<div class='${divClassName}' id='${id}_div'>
-		<table role="presentation" id='${id}_table'>
+		<table id='${id}_table'>
 			<tr>
 				<$ if (data.isCheckedStyle) { $>
 					<td nowrap id='${id}_checkboxCell' class="ZTreeItemCheckboxCell">
@@ -68,11 +68,9 @@
 					</td>
 				<$ } $>
 				<td width=16 nowrap class='imageCell' id='${id}_imageCell'></td>
-				<td nowrap class='${textClassName}' id='${id}_textTDCell'>
-				    <div class='ZTreeItemTextCell' id='${id}_textCell'></div>
-				</td>
+				<td width=100% nowrap class='${textClassName}' id='${id}_textCell'></td>
                 <td width=16 class='imageCell' id='${id}_extraCell'></td>
-				<td width=1% align=center nowrap id='${id}_countCell'></td>
+				<td align=center nowrap id='${id}_countCell'></td>
 				<td align=center nowrap id='${id}_nodeCell'></td>
 			</tr>
 		</table>
@@ -81,7 +79,7 @@
 
 <template id='admin.Widgets#ZaBaseDialog' width='20' height='32'>
 	<div class='DwtDialog WindowOuterContainer'>
-		<table role="presentation">
+		<table>
 			<tr class='DwtDialogHeader' id='${dragId}'>
 				<td class='minWidth'>${icon}</td>
 				<td id='${id}_title' class='DwtDialogTitle'>${title}</td>
@@ -96,7 +94,7 @@
             </tr>
 			<tr>
 				<td class='WindowInnerContainer' colspan='5'>
-				    <table role="presentation">
+				    <table>
 				        <tr>
 				            <td>
                                 <div id='${id}_content' class='DwtDialogBody'></div>
@@ -118,10 +116,10 @@
 
 <template id='admin.Widgets#ZaSeachOptionDialog' width='20' height='32'>
 	<div class='DwtDialog'>
-		<table role="presentation">
+		<table>
 			<tr>
 				<td class='WindowInnerContainer' colspan='4'>
-				    <table role="presentation">
+				    <table>
 				        <tr>
 				            <td>
                                 <div id='${id}_content' class='DwtDialogBody'></div>
@@ -142,7 +140,7 @@
 
 <template id='admin.Widgets#ZaAboutDialog' width='20' height='32'>
 	<div class='ZaAboutDialog'>
-		<table role="presentation" style='table-layout:fixed;width:100%'>
+		<table style='table-layout:fixed;width:100%'>
 			<tr class='ZaAboutDialogHeader' id='${dragId}'>
 				<td id='${id}_full' class='ZaAboutDialogTitle' style='width:100%;'>&nbsp</td>
 				<td width=24 id='${id}_close' >
@@ -151,7 +149,7 @@
 			</tr>
 			<tr>
 				<td class='WindowInnerContainer' colspan='2'>
-				    <table role="presentation">
+				    <table>
 				        <tr>
 				            <td>
                                 <div id='${id}_content' class='DwtDialogBody'>

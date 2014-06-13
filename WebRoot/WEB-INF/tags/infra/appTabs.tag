@@ -27,7 +27,7 @@
 <table>
     <tr class='AppTabs'>
         <td class='TabSpacer'/>
-        <c:if test="${zm:boolean(mailbox.features.portalEnabled)}">
+        <c:if test="${mailbox.features.portalEnabled}">
             <td></td>
             <td class='Tab ${selected=='home' ? 'AppTabSelected' :'AppTabNormal'}'>
                 <a id='TAB_HOME' href="<c:url value="/h/home"/>" <c:if test="${keys}">accesskey="v"</c:if>>
@@ -47,7 +47,7 @@
         </td>
         </c:if>
         <td class='TabSpacerR'/>
-        <c:if test="${zm:boolean(mailbox.licenses.voice)}">
+        <c:if test="${mailbox.licenses.voice}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='voice' ? 'AppTabSelected' :'AppTabNormal'}'>
                 <a id='TAB_VOICE' href="<c:url value="/h/search?st=voicemail"/>" <c:if test="${keys}">accesskey="v"</c:if>><span id='tab_ikon_voice'><app:img src="voicemail/ImgVoicemailApp.png" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
@@ -55,7 +55,7 @@
             </td>
             <td class='TabSpacerR'/>
         </c:if>
-        <c:if test="${zm:boolean(mailbox.features.contacts)}">
+        <c:if test="${mailbox.features.contacts}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='contacts' ? 'AppTabSelected' :'AppTabNormal'}'>
                 <a id='TAB_ADDRESSBOOK' href="<c:url value="/h/search?st=contact"/>">
@@ -82,7 +82,7 @@
             </td>
             <td class='TabSpacerR'/>
         </c:if>
-        <c:if test="${zm:boolean(mailbox.features.notebook)}">
+        <c:if test="${mailbox.features.notebook}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='wiki' ? 'AppTabSelected' :'AppTabNormal'}'>
                 <a id='TAB_NOTEBOOK' href="<c:url value="/h/search?st=wiki"/>">
@@ -91,7 +91,7 @@
             </td>
             <td class='TabSpacerR'/>
         </c:if>
-        <c:if test="${zm:boolean(mailbox.features.briefcases)}">
+        <c:if test="${mailbox.features.briefcases}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='briefcase' ? 'AppTabSelected' :'AppTabNormal'}'>
                 <a id='TAB_BRIEFCASES' href="<c:url value="/h/search?st=briefcase"/>">
@@ -100,7 +100,7 @@
             </td>
             <td class='TabSpacerR'/>
         </c:if>
-        <c:if test="${zm:boolean(mailbox.features.options)}">
+        <c:if test="${mailbox.features.options}">
 	        <td class='TabSpacer'/>
 	        <td class='Tab ${selected=='options' ? 'AppTabSelected' :'AppTabNormal'}'>
                 <a id='TAB_OPTIONS' href="<c:url value="/h/options?prev=${zm:cook(selected)}"/>">

@@ -49,6 +49,8 @@ ZmMimeTable.APP_OPENXML_EXCEL		= "application/vnd.openxmlformats-officedocument.
 ZmMimeTable.APP_OPENXML_PPT			= "application/vnd.openxmlformats-officedocument.presentationml.presentation";
 ZmMimeTable.APP_XML     			= "application/xml";
 ZmMimeTable.APP_ZIMBRA_DOC			= "application/x-zimbra-doc";
+ZmMimeTable.APP_ZIMBRA_SLIDES		= "application/x-zimbra-slides";
+ZmMimeTable.APP_ZIMBRA_SPREADSHEET	= "application/x-zimbra-xls";
 ZmMimeTable.APP_ZIP					= "application/zip";
 ZmMimeTable.APP_ZIP2				= "application/x-zip-compressed";
 ZmMimeTable.AUDIO					= "audio";
@@ -81,10 +83,7 @@ ZmMimeTable.VIDEO					= "video";
 ZmMimeTable.VIDEO_WMV				= "video/x-ms-wmv";
 ZmMimeTable.XML_ZIMBRA_SHARE		= "xml/x-zimbra-share";
 
-// Formats for text/plain
-ZmMimeTable.FORMAT_FLOWED			= "flowed";
-
-ZmMimeTable._table = {};
+ZmMimeTable._table = new Object();
 
 // only add types which are NOT ignored by the client	
 ZmMimeTable._table[ZmMimeTable.APP]					= {desc: ZmMsg.application, image: "ExeDoc", imageLarge: "ExeDoc_48", query: "application/*"};
@@ -93,7 +92,7 @@ ZmMimeTable._table[ZmMimeTable.APP_ADOBE_PS]		= {desc: ZmMsg.adobePsDocument, im
 ZmMimeTable._table[ZmMimeTable.APP_EXE]				= {desc: ZmMsg.application, image: "ExeDoc", imageLarge: "ExeDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_MS_DOWNLOAD]		= {desc: ZmMsg.msDownload, image: "ExeDoc", imageLarge: "ExeDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_MS_EXCEL]		= {desc: ZmMsg.msExcelDocument, image: "MSExcelDoc", imageLarge: "MSExcelDoc_48", query: "excel"};
-ZmMimeTable._table[ZmMimeTable.APP_MS_PPT]			= {desc: ZmMsg.msPPTDocument, image: "MSPowerpointDoc", imageLarge: "MSPowerpointDoc_48", query: "powerpoint"};
+ZmMimeTable._table[ZmMimeTable.APP_MS_PPT]			= {desc: ZmMsg.msPPTDocument, image: "MSPowerpointDoc", imageLarge: "MSPowerpointDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_MS_PROJECT]		= {desc: ZmMsg.msProjectDocument, image: "MSProjectDoc", imageLarge: "MSProjectDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_MS_VISIO]		= {desc: ZmMsg.msVisioDocument, image: "MSVisioDoc", imageLarge: "MSVisioDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_MS_WORD]			= {desc: ZmMsg.msWordDocument, image: "MSWordDoc", imageLarge: "MSWordDoc_48", query: "word"};
@@ -103,6 +102,8 @@ ZmMimeTable._table[ZmMimeTable.APP_OPENXML_EXCEL]	= {desc: ZmMsg.msExcelDocument
 ZmMimeTable._table[ZmMimeTable.APP_OPENXML_PPT]		= {desc: ZmMsg.msPPTDocument, image: "MSPowerpointDoc", imageLarge: "MSPowerpointDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_XML]			    = {desc: ZmMsg.xmlDocument, image: "GenericDoc", imageLarge: "GenericDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_ZIMBRA_DOC]  	= {desc: ZmMsg.zimbraDocument, image: "Doc", imageLarge: "Doc_48"};
+ZmMimeTable._table[ZmMimeTable.APP_ZIMBRA_SLIDES]	= {desc: ZmMsg.zimbraPresentation, image: "Presentation", imageLarge: "Presentation_48"};
+ZmMimeTable._table[ZmMimeTable.APP_ZIMBRA_SPREADSHEET] = {desc: ZmMsg.zimbraSpreadsheet, image: "ZSpreadSheet", imageLarge: "ZSpreadSheet_48" };
 ZmMimeTable._table[ZmMimeTable.APP_ZIP]				= {desc: ZmMsg.zipFile, image: "ZipDoc", imageLarge: "ZipDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_ZIP2]			= {desc: ZmMsg.zipFile, image: "ZipDoc", imageLarge: "ZipDoc_48"};
 ZmMimeTable._table[ZmMimeTable.AUDIO]				= {desc: ZmMsg.audio, image: "AudioDoc", imageLarge: "Doc_48"};
@@ -218,5 +219,7 @@ function(type){
 
 ZmMimeTable.isWebDoc =
 function(type) {
-    return (type == ZmMimeTable.APP_ZIMBRA_DOC);
+    return (type == ZmMimeTable.APP_ZIMBRA_SLIDES ||
+            type == ZmMimeTable.APP_ZIMBRA_SPREADSHEET ||
+            type == ZmMimeTable.APP_ZIMBRA_DOC);
 };

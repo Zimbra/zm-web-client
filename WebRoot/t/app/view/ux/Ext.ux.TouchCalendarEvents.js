@@ -269,11 +269,7 @@ Ext.define('Ext.ux.TouchCalendarEvents', {
 		    this.calendar.getScrollable().getScroller().scrollTo(0,0);
 	    }
 
-        var store = this.calendar.eventStore;
-        //clear any previous filters applied on the store
-        store.clearFilter();
-
-        this.removeEvents();
+	    this.removeEvents();
         
         this.getViewModeProcessor().generateEventBars(); // in turn calls this.renderEventBars(this.eventBarStore);
         
@@ -563,12 +559,9 @@ Ext.define('Ext.ux.TouchCalendarEvents', {
             this.eventBarStore = null;
         }
     
-	    if(this.droppable){
-	      this.droppable = null;
-	    }
-	    // Clear all day appointment area
-	    var allDayApptRow = this.calendar.element.select('tr.allDayApptRow', this.calendar.element.dom).first();
-	    allDayApptRow && allDayApptRow.hide();
+    if(this.droppable){
+      this.droppable = null;
+    }
     },
 
 	applyEventBarTpl: function(tpl){

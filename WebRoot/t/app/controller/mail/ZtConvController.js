@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2012, 2013 Zimbra Software, LLC.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.4 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -74,8 +74,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	activeDeleteAnimCount: 0,
 
-	quickReplyEnabled: true,
-
 	launch: function () {
 
 		ZCS.app.on('swipeDeleteMailItem', this.swipeDelete, this);
@@ -102,7 +100,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 				quickReplyTextarea.setHeight(ZCS.constant.QUICK_REPLY_LARGE);
 				quickReplyTitleBar.show();
 				quickReply.addCls('expanded');
-				if (!quickReplyTextarea.getValue() && this.quickReplyEnabled) {
+				if (!quickReplyTextarea.getValue()) {
 					this.setQuickReplyPlaceholderText('');
 				}
 			}, this);
@@ -110,7 +108,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 				quickReplyTextarea.setHeight(ZCS.constant.QUICK_REPLY_SMALL);
 				quickReplyTitleBar.hide();
 				quickReply.removeCls('expanded');
-				if (!quickReplyTextarea.getValue() && this.quickReplyEnabled) {
+				if (!quickReplyTextarea.getValue()) {
 					this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
 				}
 			}, this);
@@ -180,42 +178,59 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		this.currentConversation = conv;
 
-		ZCS.app.getMsgController().hideActionMenu();
-
         //<debug>
 		Ext.Logger.info("conv controller: show conv " + conv.getId());
         //</debug>
 
-        //Set item ourselves instead of using the parent function
-        //if we use the parent showItem, then it clears the toolbar
-        //Since we are going to update the toolbar anyway, don't clear it.
-		this.setItem(conv);
+		this.callParent(arguments);
 
-		var me = this,
-			curFolder = ZCS.session.getCurrentSearchOrganizer(),
+		var curFolder = ZCS.session.getCurrentSearchOrganizer(),
 			curFolderId = curFolder && curFolder.get('zcsId'),
 			store = this.getStore(),
 			isDraft = (curFolderId === ZCS.constant.ID_DRAFTS),
 			remoteAccountId = conv.get('isShared') && conv.get('accountId'),
+			convQueryTerms = [],
 			title = Ext.String.htmlEncode(conv.get('subject') || ZtMsg.noSubject),
-			msgListView = this.getMsgListView(),
-			quickReply = this.getQuickReply();
+			msgListView = this.getMsgListView();
 
-		this.quickReplyEnabled = !conv.get('isDraft');
-		if (quickReply) {
-			if (this.quickReplyEnabled) {
-				quickReply.show();
-			}
-			else {
-				quickReply.hide();
-			}
+		function makeFolderTerm(id) {
+			return 'underid:' + (remoteAccountId ? '"' + [ remoteAccountId, id ].join(':') + '"' : id);
 		}
 
-		this.setHandleUpdateDataEvent(false);
+		convQueryTerms.push(makeFolderTerm(ZCS.constant.ID_ROOT));
+
+		Ext.each(Object.keys(ZCS.constant.CONV_HIDE), function(id) {
+			if (id !== curFolderId) {
+				convQueryTerms.push('NOT ' + makeFolderTerm(id));
+			}
+		}, this);
+
+		// Make sure the organizer button stays.
+		ZCS.app.fireEvent('updatelistpanelToggle', this.getOrganizerTitle(), ZCS.session.getActiveApp());
+
+		var quickReply = this.getQuickReply();
+		if (quickReply) {
+			quickReply.show();
+		}
+
+		// Reset the translation on this list -- in the touch world, scrolling is done
+		// by using translate3d.  In Sencha's implementation, there is a scroller object (Ext.scroll.Scroller)
+		// and an underlying translation provider.  There appears to be a bug with the list
+		// in that if you fire a refresh event on the list, and you have its scrollToTopOnRefresh
+		// property set to true, it will tell the Scroller object to scroll, but if the translation
+		// object has an old y value, that never gets reset by the scroller.
+		// So manually reset it here.
+		msgListView.topItemIndex = 0;
+		msgListView.getScrollable().getScroller().getTranslatable().y = 0;
+
+		//Additionally, reset our own hacks which prevent bugs with iframes that have parents with
+		//translate3d.  Removing this will cause the msg list view to retain its old scroll position
+		//when it should not.
+     	msgListView.resetScrollHack();
 
 		store.load({
-			convId:     conv.getId(),
-			convQuery:  ZCS.session.getSetting(ZCS.constant.SETTING_CUR_SEARCH, this.getApp()).getQuery(),
+			convId: conv.getId(),
+			convQuery: convQueryTerms.join(' AND '),
 			callback: function(records, operation, success) {
 				if (success) {
 					this.updateToolbar({
@@ -223,24 +238,19 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 						isDraft:    isDraft
 					});
 
-					if (quickReply && this.quickReplyEnabled) {
+					if (quickReply) {
 						this.setQuickReplyPlaceholderText(this.getQuickReplyPlaceholderText());
 						quickReply.down('titlebar').setTitle(this.getQuickReplyTitleText());
-						quickReply.show();
 					}
+
+					this.setHandleUpdateDataEvent(false);
 
 					// Hate to use a timer here, but couldn't find an event that fires after the msgListView has
 					// rendered. The Sencha List component doesn't fire 'show' or 'painted'.
 					Ext.defer(msgListView.scrollToFirstExpandedMsg, 100, msgListView);
-
-					// Make sure the organizer button stays.
-					ZCS.app.fireEvent('updatelistpanelToggle', me.getOrganizerTitle(), ZCS.session.getActiveApp());
 				}
 			},
-			failure: function() {
-				this.getMsgListView().setMasked(false);
-			},
-			scope:  this
+			scope: this
 		});
 	},
 
@@ -315,7 +325,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	/**
 	 * Returns the message that a conversation-level reply should use.
-	 * It will be the latest msg not in Sent, Drafts, Trash, or Junk (unless the user
+	 * It will be the first msg not in Sent, Drafts, Trash, or Junk (unless the user
 	 * is viewing one of those folders, in which case that one is okay).
 	 *
 	 * @param {Function}    callback    callback to run with result if msg needs to be loaded
@@ -323,34 +333,38 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 */
 	getActiveMsg: function(callback) {
 
-		var	curFolder = ZCS.session.getCurrentSearchOrganizer(),
+		var conv = this.getItem(),
+			msgs = conv && conv.getMessages(),
+			ln = msgs ? msgs.length : 0, i, msg, folderId,
+			curFolder = ZCS.session.getCurrentSearchOrganizer(),
 			curFolderId = curFolder && curFolder.get('zcsId'),
 			ignoreFolder = ZCS.constant.CONV_REPLY_OMIT,
-			store = this.getStore(),
-			activeMsg = null,
-			folderId,
-			maxDate = 0;
+			lastMessage = null,
+			activeMsg = null;
 
-		store.each(function(msg) {
-			var folderId = msg.get('folderId'),
-				msgDate = msg.get('date');
-			if ((!ignoreFolder[folderId] || (curFolderId === folderId)) && msgDate > maxDate) {
-				activeMsg = msg;
-				maxDate = msgDate;
+		for (i = 0; i < ln; i++) {
+			msg = msgs[i];
+			folderId = msg.get('folderId');
+			if (!ignoreFolder[folderId] || (curFolderId === folderId)) {
+				if (!activeMsg) {
+					activeMsg = msg;
+				}
+				lastMessage = msg;
+
 			}
-		}, this);
-		activeMsg = activeMsg || store.getAt(0);
+		}
+		activeMsg = activeMsg || (ln > 0 ? msgs[0] : null);
 
 		if (callback && activeMsg) {
 			if (activeMsg.get('isLoaded')) {
-				callback(activeMsg);
+				callback(activeMsg, lastMessage);
 			}
 			else {
 				activeMsg.save({
 					op: 'load',
 					id: activeMsg.getId(),
 					success: function() {
-						callback(activeMsg);
+						callback(activeMsg, lastMessage);
 					}
 				});
 			}
@@ -370,7 +384,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		var item = this.getItem(),
 			curId = item && item.getId(),
 			convId = create.cid,
-			conv = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_CONVERSATION, convId),
+			conv = ZCS.cache.get(convId),
 			convListCtlr = ZCS.app.getConvListController(),
 			convStore = convListCtlr.getStore(),
 			curFolder = ZCS.session.getCurrentSearchOrganizer(),
@@ -409,7 +423,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			else {
 				store.insert(0, [msg]);
 			}
-			item.set('numMsgsShown', item.get('numMsgsShown'));
 		}
 	},
 
@@ -456,7 +469,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		if (modify.l) {
 
 			item.set('folderId', modify.l);
-			var conv = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_CONVERSATION, item.get('convId'));
+			var conv = ZCS.cache.get(item.get('convId'));
 			if (conv) {
 				conv.set('numMsgsShown', conv.get('numMsgsShown'));
 			}
@@ -498,10 +511,14 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 */
 	handleConvChange: function(item, modify) {
 
-		var newId = modify.newId;
-		if (newId && this.getItem() === item) {
-			item.setId(newId);
-			item.set('zcsId', newId);
+		if (modify.newId) {
+			var newConv = ZCS.cache.get(modify.newId),
+				curId = item.getId();
+
+			if (newConv && curId === modify.id) {
+				this.setItem(newConv);
+				ZCS.cache.remove(curId);
+			}
 		}
 	},
 
@@ -517,8 +534,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 	/**
 	 * Handle message move/delete by checking to see if the conv still has at least one message in the folder
-	 * currently being viewed. If it doesn't, remove it from the list view and clear it from the item panel,
-	 * then select the next conv and display it.
+	 * currently being viewed. If it doesn't, remove it from the list view.
 	 *
 	 * @param {ZtMailMsg}   item        message
 	 * @param {Boolean}     isDelete    if true, this is a (hard) delete; otherwise it's a move
@@ -527,28 +543,27 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	checkConv: function(item, isDelete) {
 
 		var convId = item.get('convId'),
-			conv = this.getItem(),
-			curId = item && item.getId(),
 			convListCtlr = ZCS.app.getConvListController(),
 			convStore = convListCtlr.getStore();
 
-		if (convId === curId && convStore.getById(convId)) {
-			var	curFolder = ZCS.session.getCurrentSearchOrganizer(),
+		if (convStore.getById(convId)) {
+			var	conv = ZCS.cache.get(convId),
+				messages = conv && conv.getMessages(),
+				ln = messages ? messages.length : 0, i,
+				curFolder = ZCS.session.getCurrentSearchOrganizer(),
 				curFolderId = curFolder && curFolder.get('zcsId'),
-				store = this.getStore(),
 				removeConv = true,
 				folderId, isGone, index, convListView, wasSelected;
 
-
 			if (curFolderId) {
-				store.each(function(msg) {
-					folderId = msg.get('folderId');
+				for (i = 0; i < ln; i++) {
+					folderId = messages[i].get('folderId');
 					isGone = (isDelete && folderId === ZCS.constant.ID_TRASH);
 					if (folderId === curFolderId && !isGone) {
 						removeConv = false;
-						return false;
+						break;
 					}
-				}, this);
+				}
 			}
 			else {
 				removeConv = false;
@@ -576,8 +591,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			return;
 		}
 
-		this.getActiveMsg(function(originalMessage) {
-			ZCS.app.getComposeController().reply(originalMessage);
+		this.getActiveMsg(function(originalMessage, lastMessage) {
+			ZCS.app.getComposeController().reply(originalMessage, lastMessage);
 		});
 	},
 
@@ -587,8 +602,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			return;
 		}
 
-		this.getActiveMsg(function(originalMessage) {
-			ZCS.app.getComposeController().replyAll(originalMessage);
+		this.getActiveMsg(function(originalMessage, lastMessage) {
+			ZCS.app.getComposeController().replyAll(originalMessage, lastMessage);
 		});
 	},
 
@@ -598,14 +613,14 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			return;
 		}
 
-		this.getActiveMsg(function(originalMessage) {
-			ZCS.app.getComposeController().forward(originalMessage);
+		this.getActiveMsg(function(originalMessage, lastMessage) {
+			ZCS.app.getComposeController().forward(originalMessage, lastMessage);
 		});
 	},
 
 	doEdit: function() {
-		this.getActiveMsg(function(originalMessage) {
-			ZCS.app.getComposeController().compose(originalMessage);
+		this.getActiveMsg(function(originalMessage, lastMessage) {
+			ZCS.app.getComposeController().compose(originalMessage, lastMessage);
 		});
 	},
 
@@ -630,11 +645,11 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	doDelete: function(item, isSwipeDelete) {
 
 		var conv = item || this.getItem(),
-			inTrash = ZCS.util.curFolderIsUnder(ZCS.constant.ID_TRASH),
+			inTrash = ZCS.util.curFolderIs(ZCS.constant.ID_TRASH),
 			inJunk = ZCS.util.curFolderIs(ZCS.constant.ID_JUNK);
 
 		if (inTrash || inJunk) {
-			var folderName = Ext.String.htmlEncode(ZCS.session.getCurrentSearchOrganizer().get('name')),
+			var folderName = ZCS.session.getCurrentSearchOrganizer().get('name'),
 				deleteMsg = Ext.String.format(ZtMsg.hardDeleteConvText, folderName);
 
 			Ext.Msg.confirm(ZtMsg.hardDeleteConvTitle, deleteMsg, function(buttonId) {
@@ -669,7 +684,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		// Handle visual experience of delete
 		Ext.defer(function () {
-
+			
 			storeStillHasItem = deletedId === listStore.getAt(itemIndex).get('zcsId');
 			if (storeStillHasItem) {
 				// Suspend events so list doesn't re-order during animation
@@ -681,9 +696,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 						duration: 2000,
 						scope: this,
 						after: function () {
-							convItem.removeCls('delete-active');
-					        convItem.removeCls('x-item-pressed');
-					        convItem.removeCls('x-item-swiping');
 							this.activeDeleteAnimCount--;
 							listStore.remove(placeholder);
 
@@ -696,15 +708,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 							}
 						}
 					});
-				} else if (convItem.element) {
-					convItem.removeCls('delete-active');
-			        convItem.removeCls('x-item-pressed');
-			        convItem.removeCls('x-item-swiping');
 				}
-			} else {
-				convItem.removeCls('delete-active');
-		        convItem.removeCls('x-item-pressed');
-		        convItem.removeCls('x-item-swiping');
 			}
 		}, 2000, this);
 
@@ -759,12 +763,9 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 * separated, with TO addresss first: "User1, CCUser1, and CCUser2"
 	 */
 	getAllNames: function(nameField) {
-		var activeMsg = this.getActiveMsg();
-		if (!activeMsg) {
-			return '';
-		}
 
-		var	action = ZCS.constant.OP_REPLY_ALL,
+		var activeMsg = this.getActiveMsg(),
+			action = ZCS.constant.OP_REPLY_ALL,
 			addrs = ZCS.app.getComposeController().getReplyAddresses(activeMsg, action),
 			recips = Ext.Array.clean(addrs[ZCS.constant.TO].concat(addrs[ZCS.constant.CC])),
 			names = [], nameString, nameField = nameField || 'shortName';
@@ -775,14 +776,14 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		if (names.length < 3) {
 			nameString = names.join(' ' + ZtMsg.and + ' ');
-		} else {
+		}
+		else {
 			nameString = names.join(', ');
 			nameString = nameString.replace(/,\s([^,]+)$/, ', ' + ZtMsg.and + ' $1');
 		}
 
 		return nameString;
 	},
-
 
 	/**
 	 * Sets the placeholder text in the quick reply textarea.
@@ -819,32 +820,24 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		params = params || {};
 		var app = ZCS.util.getAppFromObject(this),
-			hideAll = !this.getItem() || params.hideAll,
-			hideThisButton = true;
+			hideAll = !this.getItem() || params.hideAll;
 
 		Ext.each(ZCS.constant.ITEM_BUTTONS[app], function(button) {
-			showThisButton = !hideAll;
-
-			//If we have not been told to hide all buttons,
-			//then consider special cases for buttons
-			if (!hideAll) {
-				if (params.isDraft &&
-						(button.op === ZCS.constant.OP_REPLY || button.op === ZCS.constant.OP_REPLY_ALL)) {
-					showThisButton = false;
-				} else if (!params.isDraft && 
-						button.op === ZCS.constant.OP_EDIT) {
-					showThisButton = false;
-				}
-			}
-
-			this.showButton(button.op, showThisButton);
+			this.showButton(button.op, !hideAll);
 		}, this);
 
 		if (hideAll) {
 			return;
 		}
 
+		if (params.isDraft) {
+			this.showButton(ZCS.constant.OP_REPLY, false);
+			this.showButton(ZCS.constant.OP_REPLY_ALL, false);
+		}
+		else {
+			this.showButton(ZCS.constant.OP_EDIT, false);
 
+		}
 	},
 
 	updateTitle: function (params) {
@@ -862,15 +855,6 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		}
 
 		// Add padding inside scroll inner so items start below transparent titlebar
-		var titleHeight = convTitleBar.element.getHeight();
-		listScrollInner.setStyle({ paddingTop: titleHeight + 'px' });
-	},
-
-    /**
-    * Disable "Tag" action if user doesn't have any tags.
-    */
-    enableMenuItems: function(menu) {
-        this.enableTagItem(menu);
-    }
-
+		listScrollInner.addCls('top-padding-'+convTitleBar.element.getHeight());
+	}
 });

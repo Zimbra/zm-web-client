@@ -33,7 +33,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 		var me = this,
 			inlineResults = ZCS.session.getInitialSearchResults();
 
-		if (inlineResults && operation.config.initialSearch) {
+		if (inlineResults) {
 
 			// cobble together the appropriate request so that we can pretend it was used to get
 			// these results
@@ -78,10 +78,6 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 
 			// Erase the canned results since we only do this once.
 			ZCS.session.setInitialSearchResults(null);
-			// Also, we don't need inlineData any longer, so free the memory.
-			window.inlineData = null;
-			delete window.inlineData;
-
 		}
 		else {
 			return me.callParent(arguments);
@@ -93,33 +89,28 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 */
 	processResponse: function(success, operation, request, response, callback, scope) {
 
-		if (success) {
-			var query = operation.config.query;
-			if (query) {
-				var search = operation.config.search = Ext.create('ZCS.common.ZtSearch', {
-						query: query
-					}),
-					orgId = search.getOrganizerId(),
-					org = orgId && ZCS.session.getOrganizerModel(orgId),
-					// get app from organizer except for Trash (cache lookup above will always return Mail's Trash)
-					app = (!ZCS.util.folderIs(org, ZCS.constant.ID_TRASH) && (org && org.get('app'))) || ZCS.session.getActiveApp(),
-					searchField = ZCS.session.getCurrentSearchField();
+		var query = operation.config.query;
 
-				// show current search string if user wants to see it
-				ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search, app);
-				if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH) && app === ZCS.session.getActiveApp() && searchField) {
-					searchField.setValue(search.getQuery());
-				}
+		if (query) {
+			var search = operation.config.search = Ext.create('ZCS.common.ZtSearch', {
+					query: query
+				}),
+				orgId = search.getOrganizerId(),
+				org = orgId && ZCS.cache.get(orgId),
+				app = (org && ZCS.constant.FOLDER_APP[org.get('type')]) || ZCS.session.getActiveApp();
+
+			ZCS.session.setSetting(ZCS.constant.SETTING_CUR_SEARCH, search, app);
+			if (ZCS.session.getSetting(ZCS.constant.SETTING_SHOW_SEARCH)) {
+				ZCS.session.getCurrentSearchField().setValue(query);
 			}
+		}
+		if (success) {
 			this.callParent(arguments);
 		}
-
-		this.processResponse1(success, response, operation);
+		this.processResponse1(success, response);
 	},
 
-	processResponse1: function(success, response, operation, options) {
-
-		options = options || (operation && operation.config) || {};
+	processResponse1: function(success, response) {
 
 		var data = this.getReader().getResponseData(response);
 
@@ -127,11 +118,8 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			this.processHeader(data.Header);
 			ZCS.app.getMainController().schedulePoll();
 		}
-		else if (!options.isPoll) {
-			if (options.failure) {
-				Ext.callback(options.failure, operation.config.scope, data);
-			}
-			ZCS.app.fireEvent('serverError', data);
+		else {
+			ZCS.app.fireEvent('serverError', (data.Body && data.Body.Fault) || data.statusText || "Unknown error");
 		}
 	},
 
@@ -167,27 +155,22 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	},
 
 	handleNotifications: function(notifications) {
-		var organizerNotifications = [];
 
 		Ext.each(notifications, function(notify) {
 			if (notify.seq > ZCS.session.getNotifySeq()) {
 				ZCS.session.setNotifySeq(notify.seq);
 				this.normalizeNotifications(notify);
 				if (notify.deleted) {
-					organizerNotifications.push.apply(organizerNotifications, this.handleDeletes(notify.deleted));
+					this.handleDeletes(notify.deleted);
 				}
 				if (notify.created) {
-					organizerNotifications.push.apply(organizerNotifications, this.handleCreates(notify.created));
+					this.handleCreates(notify.created);
 				}
 				if (notify.modified) {
-					organizerNotifications.push.apply(organizerNotifications, this.handleModifies(notify.modified));
+					this.handleModifies(notify.modified);
 				}
 			}
 		}, this);
-
-		ZCS.app.fireEvent('notifyOrganizerNotifications', organizerNotifications);
-
-		//do something special with organizer notifications.
 	},
 
 	/**
@@ -200,28 +183,15 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	handleDeletes: function(deleted) {
 
 		var ids = deleted.id && deleted.id.split(','),
-			notification,
-			type,
-			organizerNotifications = [],
-			object;
+			notification;
 
 		Ext.each(ids, function(id) {
-			
-			object = ZCS.session.getOrganizerModel(id);
-
 			notification = {
 				id:     id,
 				type:   ZCS.constant.NOTIFY_DELETE
 			};
-
-			if (organizerNotifications) {
-				organizerNotifications.push(notification);
-			} else {
-				ZCS.app.fireEvent('notify', notification);
-			}
+			ZCS.app.fireEvent('notify', notification);
 		}, this);
-
-		return organizerNotifications;
 	},
 
 	/**
@@ -230,26 +200,15 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 * @param {Array}   creates     list of created item nodes
 	 */
 	handleCreates: function(creates) {
-		var organizerNotifications = [];
 
 		Ext.each(ZCS.constant.NODES, function(nodeType) {
 			Ext.each(creates[nodeType], function(notification) {
-
 				notification.type = ZCS.constant.NOTIFY_CREATE;
 				notification.nodeType = (nodeType === ZCS.constant.ORG_MOUNTPOINT) ? ZCS.constant.ORG_FOLDER : nodeType;
 				notification.creates = creates; // conv needs to know about msg creates
-				
-				if (nodeType === ZCS.constant.ORG_FOLDER ||
-						nodeType === ZCS.constant.ORG_SEARCH ||
-							nodeType === ZCS.constant.ORG_TAG) {
-					organizerNotifications.push(notification);
-				} else {
-					ZCS.app.fireEvent('notify', notification);
-				}
+				ZCS.app.fireEvent('notify', notification);
 			}, this);
 		}, this);
-
-		return organizerNotifications;
 	},
 
 	/**
@@ -259,24 +218,14 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	 * @param {Array}   modifies        list of modified item nodes
 	 */
 	handleModifies: function(modifies) {
-		var organizerNotifications = [];
 
 		Ext.each(ZCS.constant.NODES, function(nodeType) {
 			Ext.each(modifies[nodeType], function(notification) {
 				notification.type = ZCS.constant.NOTIFY_CHANGE;
 				notification.nodeType = (nodeType === ZCS.constant.ORG_MOUNTPOINT) ? ZCS.constant.ORG_FOLDER : nodeType;
-					
-				if (nodeType === ZCS.constant.ORG_FOLDER ||
-						nodeType === ZCS.constant.ORG_SEARCH ||
-							nodeType === ZCS.constant.ORG_TAG) {
-					organizerNotifications.push(notification);
-				} else {
-					ZCS.app.fireEvent('notify', notification);
-				}
+				ZCS.app.fireEvent('notify', notification);
 			}, this);
 		}, this);
-
-		return organizerNotifications;
 	},
 
 	/**
@@ -372,10 +321,6 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 				newToOldCid[mod.cid] = virtCid;
 				createdConv._wasVirtConv = true;
 				createdConv.fr = fragments[mod.cid];
-				msg = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_MESSAGE, mod.id);
-				if (msg) {
-					msg.set('convId', mod.cid);
-				}
 			}
 		}, this);
 
@@ -434,11 +379,7 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 			notification.newId = cid;
 			notification.type = ZCS.constant.NOTIFY_CHANGE;
 			notification.nodeType = ZCS.constant.NODE_CONVERSATION;
-			// call this directly since we want it to happen immediately, and fireEvent() doesn't guarantee that
-			conv = ZCS.util.findItemInActiveStore(ZCS.constant.ITEM_CONVERSATION, newToOldCid[cid]);
-			if (conv) {
-				ZCS.app.getConvController().handleConvChange(conv, notification);
-			}
+			ZCS.app.fireEvent('notify', notification);
 		}
 	},
 
@@ -463,6 +404,6 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 	},
 
 	processSoapResponse: function(options, success, response) {
-		this.processResponse1(success, response, null, options);
+		this.processResponse1(success, response);
 	}
 });

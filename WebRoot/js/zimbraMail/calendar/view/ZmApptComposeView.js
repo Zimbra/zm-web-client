@@ -164,11 +164,11 @@ function() {
 	return this._apptEditView.getComposeMode();
 };
 
-// Sets the mode the editor should be in.
+// Sets the mode ZmHtmlEditor should be in.
 ZmApptComposeView.prototype.setComposeMode = 
 function(composeMode) {
-	if (composeMode == Dwt.TEXT ||
-		(composeMode == Dwt.HTML && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)))
+	if (composeMode == DwtHtmlEditor.TEXT || 
+		(composeMode == DwtHtmlEditor.HTML && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)))
 	{
 		this._apptEditView.setComposeMode(composeMode);
 	}
@@ -411,13 +411,6 @@ function(msg, style, cb, cbObj, cbArgs) {
         msgDlg.setTitle(ZmMsg.timezoneConflictTitle);
         msgDlg.popup();
 }
-ZmApptComposeView.prototype.showInvalidDurationRecurrenceMsg =
-	function() {
-		var msgDlg = appCtxt.getMsgDialog(true);
-		msgDlg.setMessage(ZmMsg.durationRecurrenceError, DwtMessageDialog.WARNING_STYLE);
-		msgDlg.setTitle(ZmMsg.durationRecurrenceErrorTitle);
-		msgDlg.popup();
-	}
 
 // Private / Protected methods
 
@@ -426,10 +419,6 @@ function() {
     this._apptEditView = new ZmApptEditView(this, this._attendees, this._controller, this._dateInfo);
 	this._apptEditView.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 	this.addControlListener(new AjxListener(this, this._controlListener));
-
-	// make the appointment edit view take up the full size of this view
-	var bounds = this.getInsetBounds();
-	this._apptEditView.setSize(bounds.width, bounds.height);
 };
 
 ZmApptComposeView.prototype.getApptEditView =
@@ -458,11 +447,12 @@ function() {
 
 ZmApptComposeView.prototype._controlListener =
 function(ev) {
-	if (ev && ev.type === DwtControlEvent.RESIZE) {
-	    // make the appointment edit view take up the full size of this view
-	    var bounds = this.getInsetBounds();
-	    this._apptEditView.setSize(bounds.width, bounds.height);
-	}
+	var newWidth = (ev.oldWidth == ev.newWidth) ? null : ev.newWidth;
+	var newHeight = (ev.oldHeight == ev.newHeight) ? null : ev.newHeight;
+
+	if (!(newWidth || newHeight)) return;
+
+	this._apptEditView.resize(newWidth, newHeight);
 };
 
 ZmApptComposeView.prototype.deactivate =

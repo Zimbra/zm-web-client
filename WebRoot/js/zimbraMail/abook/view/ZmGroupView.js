@@ -25,8 +25,6 @@
  * 
  * @param	{DwtComposite}	parent		the parent
  * @param	{ZmContactController}		controller		the controller
- *
- * @constructor
  * 
  * @extends		DwtComposite
  */
@@ -37,6 +35,7 @@ ZmGroupView = function(parent, controller) {
 
 	this._controller = controller;
 
+	this._defaultQuery = ".";
 	this._view = ZmId.VIEW_GROUP;
 
 	this._tagList = appCtxt.getTagTree();
@@ -57,8 +56,6 @@ ZmGroupView = function(parent, controller) {
 
 ZmGroupView.prototype = new DwtComposite;
 ZmGroupView.prototype.constructor = ZmGroupView;
-ZmGroupView.prototype.isZmGroupView = true;
-
 
 /**
  * Returns a string representation of the object.
@@ -141,7 +138,7 @@ function(contact, isDirty) {
 		this._contact.removeChangeListener(this._changeListener);
 	}
 	contact.addChangeListener(this._changeListener);
-	this._contact = this._item = contact;
+	this._contact = contact;
 
 	if (!this._htmlInitialized) {
 		this._createHtml();
@@ -289,15 +286,12 @@ function() {
 ZmGroupView.prototype._getGroupName =
 function() {
 	if (this.isDistributionList()) {
-		var username = this._getDlAddressLocalPart();
+		var username = this._usernameEditable 
+				? AjxStringUtil.trim(this._groupNameInput.getValue())
+				: this._emailUsername;
 		return username + "@" + this._getGroupDomainName();
 	}
 	return AjxStringUtil.trim(this._groupNameInput.getValue());
-};
-
-ZmGroupView.prototype._getDlAddressLocalPart =
-function() {
-	return this._usernameEditable ? AjxStringUtil.trim(this._groupNameInput.getValue()) : this._emailUsername;
 };
 
 ZmGroupView.prototype._getDlDisplayName =
@@ -389,8 +383,8 @@ function() {
 	if (!this._usernameEditable) {
 		return true; //to be on the safe and clear side. no need to check.
 	}
-	var account = this._getDlAddressLocalPart();
-	return AjxEmailAddress.accountPat.test(account);
+	var groupName = this._getGroupName();
+	return AjxEmailAddress.isValid(groupName);
 };
 
 ZmGroupView.prototype.isValidDlDomainName =
@@ -711,9 +705,9 @@ function() {
 
 ZmGroupView.prototype._addWidgets =
 function() {
-	if (!this.isDistributionList() || this._usernameEditable) {
-		this._groupNameInput = new DwtInputField({parent:this, size: this.isDistributionList() ? 20: 40, inputId: this._htmlElId + "_groupName"});
-		this._groupNameInput.setHint(this.isDistributionList() ? ZmMsg.distributionList : ZmMsg.groupNameLabel);
+	this._groupNameInput = new DwtInputField({parent:this, size: this.isDistributionList() ? 20: 40, inputId: this._htmlElId + "_groupName"});
+	this._groupNameInput.setHint(this.isDistributionList() ? ZmMsg.distributionList : ZmMsg.groupNameLabel);
+	if (document.getElementById(this._htmlElId + "_groupNameParent")) {
 		this._groupNameInput.reparentHtmlElement(this._htmlElId + "_groupNameParent");
 	}
 	
@@ -1119,7 +1113,23 @@ function() {
 	var tagCell = this._getTagCell();
 	if (!tagCell) { return; }
 
-	tagCell.innerHTML = ZmTagsHelper.getTagsHtml(this._contact, this);
+	// get sorted list of tags for this msg
+	var ta = [];
+	for (var i = 0; i < this._contact.tags.length; i++)
+		ta.push(this._tagList.root.getByNameOrRemote(this._contact.tags[i]));
+	ta.sort(ZmTag.sortCompare);
+
+	var html = [];
+	var i = 0;
+	for (var j = 0; j < ta.length; j++) {
+		var tag = ta[j];
+		if (!tag) continue;
+		var icon = tag.getIconWithColor();
+		html[i++] = AjxImg.getImageSpanHtml(icon, null, null, AjxStringUtil.htmlEncode(tag.name));
+		html[i++] = "&nbsp;";
+	}
+
+	tagCell.innerHTML = html.join("");
 };
 
 // Consistent spot to locate various dialogs
@@ -1143,8 +1153,8 @@ function(ev){
 	}
 	else if (ev && ev.target && this._groupMembersListView.quickAddButtons[ev.target.id]) {
 		if (AjxUtil.isArray(selection)) {
-			var address = selection[0].address || selection[0];
-			this.quickAddContact(address);
+			var value = selection[0].value || selection[0];
+			this.quickAddContact(value);
 		}
 	}
 		
@@ -1536,7 +1546,6 @@ ZmGroupListView = function(parent) {
 	if (arguments.length == 0) { return; }
 	DwtListView.call(this, {parent:parent, className:"DwtChooserListView ZmEditGroupContact",
 							headerList:this._getHeaderList(parent), view:this._view, posStyle: Dwt.RELATIVE_STYLE});
-	Dwt.setScrollStyle(this._elRef, Dwt.CLIP);
 };
 
 ZmGroupListView.prototype = new DwtListView;

@@ -33,7 +33,6 @@ ZmConv = function(id, list) {
 	this._sortBy = ZmSearch.DATE_DESC;
 	this._listChangeListener = new AjxListener(this, this._msgListChangeListener);
 	this.folders = {};
-	this.msgFolder = {};
 };
 
 ZmConv.prototype = new ZmMailItem;
@@ -85,7 +84,11 @@ function(msg, args) {
  * @param {int}			params.offset				the position of first msg to return
  * @param {int}			params.limit				the number of msgs to return
  * @param {Boolean}		params.getHtml				if <code>true</code>, return HTML part for inlined msg
- * @param {String}		params.fetch				which msg bodies to fetch (see soap.txt under SearchConvRequest)
+ * @param {Boolean}		params.getFirstMsg			if <code>true</code>, fetch the first matching msg in the conv
+ * @param {Boolean}		params.getMatches			if <code>true</code>, fetch all matching msgs in the conv 
+ * @param {Boolean}		params.getAllMsgs			if <code>true</code>, fetch all msgs in the conv 
+ * @param {Boolean}		params.getUnreadMsgs		if <code>true</code>, fetch all unread msgs in the conv
+ * @param {Boolean}		params.getUnreadOrFirstMsg	if <code>true</code>, fetch unread, or first if none are unread
  * @param {Boolean}		params.markRead				if <code>true</code>, mark that msg read
  * @param {boolean}		params.needExp				if not <code>false</code>, have server check if addresses are DLs
  * @param {AjxCallback}	callback					the callback to run with results
@@ -139,17 +142,17 @@ function(params, callback) {
 			getHtml: (params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML)),
 			accountName: (appCtxt.multiAccounts && this.getAccount().name)
 		};
+		var search = this.search = new ZmSearch(searchParams);
 
-		var search = this.search = new ZmSearch(searchParams),
-			fetch = (params.fetch === true) ? ZmSetting.CONV_FETCH_UNREAD_OR_FIRST : params.fetch || ZmSetting.CONV_FETCH_NONE;
-
-		var	convParams = {
+		var fetchId = (params.getFirstMsg && "1") || (params.getMatches && "hits") || (params.getAllMsgs && "all") ||
+					  (params.getUnreadMsgs && "u") || (params.getUnreadOrFirstMsg && "u1") || "0";
+		var convParams = {
 			cid:		this.id,
 			callback:	(new AjxCallback(this, this._handleResponseLoad, [params, callback])),
-			fetch:      fetch,
+			fetchId:	fetchId,
 			markRead:	params.markRead,
 			noTruncate:	params.noTruncate,
-			needExp:	fetch !== ZmSetting.CONV_FETCH_NONE
+			needExp:	Boolean(fetchId)
 		};
 		search.getConv(convParams);
 	}
@@ -171,7 +174,7 @@ function(params, callback, result) {
 };
 
 /**
- * This method supports ZmZimletBase::getMsgsForConv. It loads *all* of this conv's
+ * This method supports ZmZimletBase::getMsgsForConv. It loads all of this conv's
  * messages, including their content. Note that it is not search-based, and uses
  * GetConvRequest rather than SearchConvRequest.
  * 
@@ -188,9 +191,8 @@ function(params, callback, batchCmd) {
 	var request = jsonObj.GetConvRequest;
 	var c = request.c = {
 		id:		this.id,
-		needExp:	true,
 		html:	(params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML))
-	};
+	}
 	if (params.fetchAll) {
 		c.fetch = "all";
 	}
@@ -207,7 +209,6 @@ function(params, callback, batchCmd) {
 
 ZmConv.prototype._handleResponseLoadMsgs =
 function(callback, result) {
-
 	var resp = result.getResponse().GetConvResponse.c[0];
 	this.msgIds = [];
 
@@ -221,9 +222,6 @@ function(callback, result) {
 		//don't recreate if it already exists, so we don't lose listeners.. (see ZmConvView2.prototype.set)
 		this.msgs.removeAllItems();
 	}
-	if (this.search && !this.msgs.search) {
-		this.msgs.search = this.search;
-	}
 	this.msgs.setHasMore(false);
 	this._loaded = true;
 
@@ -232,7 +230,6 @@ function(callback, result) {
 	for (var i = len - 1; i >= 0; i--) {
 		var msgNode = resp.m[i];
 		this.msgIds.push(msgNode.id);
-		this.msgFolder[msgNode.id] = msgNode.l;
 		msgNode.su = resp.su;
 		// construct ZmMailMsg's so they get cached
 		var msg = ZmMailMsg.createFromDom(msgNode, {list: this.msgs});
@@ -257,16 +254,12 @@ function(msg, index) {
 		this.msgs.addChangeListener(this._listChangeListener);
 		this.msgs.setHasMore(false);
 	}
-	if (this.search && !this.msgs.search) {
-		this.msgs.search = this.search;
-	}
 	this.msgs.add(msg, index);
 	this.msgIds = [];
 	var a = this.msgs.getArray();
 	for (var i = 0, len = a.length; i < len; i++) {
 		this.msgIds.push(a[i].id);
 	}
-	this.msgFolder[msg.id] = msg.folderId;
 };
 
 /**
@@ -282,22 +275,6 @@ function(msg) {
 	if (this.msgIds && this.msgIds.length) {
 		AjxUtil.arrayRemove(this.msgIds, msg.id);
 	}
-	delete this.msgFolder[msg.id];
-};
-
-ZmConv.prototype.canAddTag =
-function(tagName) {
-	if (!this.msgs) {
-		return ZmItem.prototype.canAddTag.call(this, tagName);
-	}
-	var msgs = this.msgs.getArray();
-	for (var i = 0; i < msgs.length; i++) {
-		var msg = msgs[i];
-		if (msg.canAddTag(tagName)) {
-			return true;
-		}
-	}
-	return false;
 };
 
 ZmConv.prototype.mute =
@@ -343,8 +320,6 @@ function() {
 		this.msgs = null;
 	}
 	this.msgIds = [];
-	this.folders = {};
-	this.msgFolder = {};
 	
 	ZmMailItem.prototype.clear.call(this);
 };
@@ -377,38 +352,27 @@ function() {
 
 /**
  * Checks if this conversation has a message that matches the given search.
- * If we're not able to tell whether a msg matches, we return the given default value.
+ * If the search is not present or not matchable, the provided default value is
+ * returned.
  *
  * @param {ZmSearch}	search			the search to match against
- * @param {Object}	    defaultValue	the value to return if search is not matchable or conv not loaded
- * @return	{Boolean}	<code>true</code> if this conversation has a matching message
+ * @param {Object}	defaultValue		the value to return if search is not matchable
+ * @return	{Boolean|Object}	<code>true</code> if this conversation has the message
  */
 ZmConv.prototype.hasMatchingMsg =
 function(search, defaultValue) {
-
-	var msgs = this.msgs && this.msgs.getArray(),
-		hasUnknown = false;
-
-	if (msgs && msgs.length > 0) {
+	if (search && search.isMatchable() && this.msgs) {
+		var msgs = this.msgs.getArray();
 		for (var i = 0; i < msgs.length; i++) {
-			var msg = msgs[i],
-				msgMatches = search.matches(msg);
-
-			if (msgMatches && !msg.ignoreJunkTrash() && this.folders[msg.folderId]) {
+			var msg = msgs[i];
+			if (search.matches(msg) && !msg.ignoreJunkTrash() && this.folders[msg.folderId]) {
 				return true;
 			}
-			else if (msgMatches === null) {
-				hasUnknown = true;
-			}
 		}
+	} else {
+		return defaultValue;
 	}
-
-	return hasUnknown ? !!defaultValue : false;
-};
-
-ZmConv.prototype.containsMsg =
-function(msg) {
-	return this.msgIds && AjxUtil.arrayContains(this.msgIds, msg.id);
+	return false;
 };
 
 ZmConv.prototype.ignoreJunkTrash =
@@ -591,20 +555,10 @@ function(folderId) {
 };
 
 ZmConv.prototype.getMsgList =
-function(offset, ascending, omit) {
+function(offset, ascending) {
 	// this.msgs will not be set if the conv has not yet been loaded
 	var list = this.msgs && this.msgs.getArray();
 	var a = list ? (list.slice(offset || 0)) : [];
-	if (omit) {
-		var a1 = [];
-		for (var i = 0; i < a.length; i++) {
-			var msg = a[i];
-			if (!(msg && msg.folderId && omit[msg.folderId])) {
-				a1.push(msg);
-			}
-		}
-		a = a1;
-	}
 	if (ascending) {
 		a.reverse();
 	}
@@ -617,9 +571,9 @@ function() {
 };
 
 /**
- * Gets the first relevant msg of this conv, loading the conv msg list if necessary. If the
+ * Gets the first matching msg of this conv, loading the conv msg list if necessary. If the
  * msg itself hasn't been loaded we also load the conv. The conv load is a SearchConvRequest
- * which fetches the content of the first msg and returns it via a callback. If no
+ * which fetches the content of the first matching msg and returns it via a callback. If no
  * callback is provided, the conv will not be loaded - if it already has a msg list, the msg
  * will come from there; otherwise, a skeletal msg with an ID is returned. Note that a conv
  * always has at least one msg.
@@ -640,52 +594,41 @@ function(params, callback) {
 	params = params || {};
 
 	if (this.msgs && this.msgs.size()) {
-		msg = this.msgs.getFirstHit(params.offset, params.limit, params.foldersToOmit);
+		msg = this.msgs.getFirstHit(params.offset, params.limit);
 	}
 
 	if (callback) {
 		if (msg && msg._loaded && !params.forceLoad) {
 			callback.run(msg);
-		}
-		else {
-			var respCallback = this._handleResponseGetFirstHotMsg.bind(this, params, callback);
-			params.fetch = ZmSetting.CONV_FETCH_FIRST;
+		} else {
+			var respCallback = new AjxCallback(this, this._handleResponseGetFirstHotMsg, [params, callback]);
+			params.getFirstMsg = true;
 			this.load(params, respCallback);
 		}
-	}
-	else {
+	} else {
 		// do our best to return a "realized" message by checking cache
 		if (!msg && this.msgIds && this.msgIds.length) {
 			var id = this.msgIds[0];
-			msg = appCtxt.getById(id);
-			if (!msg) {
-				if (!this.msgs) {
-					this.msgs = new ZmMailList(ZmItem.MSG);
-					this.msgs.convId = this.id;
-					this.msgs.addChangeListener(this._listChangeListener);
-				}
-				msg = new ZmMailMsg(id, this.msgs);
-			}
+			msg = appCtxt.getById(id) || new ZmMailMsg(id);
 		}
 		return msg;
 	}
 };
 
-ZmConv.prototype._handleResponseGetFirstHotMsg = function(params, callback) {
-
+ZmConv.prototype._handleResponseGetFirstHotMsg =
+function(params, callback) {
 	var msg = this.msgs.getFirstHit(params.offset, params.limit);
 	// should have a loaded msg
 	if (msg && msg._loaded) {
 		if (callback) {
 			callback.run(msg);
 		}
-	}
-	else {
+	} else {
 		// desperate measures - get msg content from server
 		if (!msg && this.msgIds && this.msgIds.length) {
 			msg = new ZmMailMsg(this.msgIds[0]);
 		}
-		var respCallback = this._handleResponseLoadMsg.bind(this, msg, callback);
+		var respCallback = new AjxCallback(this, this._handleResponseLoadMsg, [msg, callback]);
 		msg.load({getHtml:params.getHtml, callback:respCallback});
 	}
 };
@@ -699,7 +642,6 @@ function(msg, callback) {
 
 ZmConv.prototype._loadFromDom =
 function(convNode) {
-
 	this.numMsgs = convNode.n;
 	this.date = convNode.d;
 	this._parseFlags(convNode.f);
@@ -717,11 +659,9 @@ function(convNode) {
 	// note that the list of msg IDs in a search result is partial - only msgs that matched are included
 	if (convNode.m) {
 		this.msgIds = [];
-		this.msgFolder = {};
 		for (var i = 0, count = convNode.m.length; i < count; i++) {
 			var msgNode = convNode.m[i];
 			this.msgIds.push(msgNode.id);
-			this.msgFolder[msgNode.id] = msgNode.l;
 			this.folders[msgNode.l] = true;
 		}
 		if (count == 1) {
@@ -730,7 +670,6 @@ function(convNode) {
 			// bug 49067 - SearchConvResponse does not return the folder ID w/in
 			// the msgNode as fully qualified so reset if this 1-msg conv was
 			// returned by a simple folder search
-			// TODO: if 85358 is fixed, we can remove this section
 			var searchFolderId = this.list && this.list.search && this.list.search.folderId;
 			if (searchFolderId) {
 				this.folderId = searchFolderId;
@@ -792,7 +731,6 @@ function(msg) {
 	this.fragment = msg.fragment;
 	this.sf = msg.sf;
 	this.msgIds = [msg.id];
-	this.msgFolder[msg.id] = msg.folderId;
 	//add a flag to redraw this conversation when additional information is available
 	this.redrawConvRow = true;
 };

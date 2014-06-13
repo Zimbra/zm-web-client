@@ -47,9 +47,6 @@ ZmAddrBook = function(params) {
 ZmAddrBook.prototype = new ZmFolder;
 ZmAddrBook.prototype.constructor = ZmAddrBook;
 
-ZmAddrBook.prototype.isZmAddrBook = true;
-ZmAddrBook.prototype.toString = function() { return "ZmAddrBook"; };
-
 
 // Consts
 
@@ -88,7 +85,17 @@ function(addrBookA, addrBookB) {
 
 // Public methods
 
-ZmAddrBook.prototype.getIcon =
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmAddrBook.prototype.toString = 
+function() {
+	return "ZmAddrBook";
+};
+
+ZmAddrBook.prototype.getIcon = 
 function() {
 	if (this.nId == ZmFolder.ID_ROOT)			{ return null; }
 	if (this.nId == ZmFolder.ID_TRASH)			{ return "Trash"; }
@@ -111,30 +118,58 @@ function() {
 /**
  * @private
  */
-ZmAddrBook.prototype.mayContain = function(what) {
+ZmAddrBook.prototype.mayContain =
+function(what) {
+	if (!what) return true;
 
-	if (!what) {
-		return true;
-	}
-
-	// Distribution Lists is a system-generated folder
 	if (this.id == ZmOrganizer.ID_DLS) {
 		return false;
 	}
 
-	if (what.isZmAddrBook) {
-		return ZmFolder.prototype.mayContain.apply(this, arguments);
+	if (what instanceof ZmAddrBook) {
+		if (this.link) {
+			return false; //can't move a folder to a shared folder, regardless of read-only status 
+		}
+		if (!appCtxt.multiAccounts) {
+			return true;
+		}
+		return this.mayContainFolderFromAccount(what.getAccount()); // cannot move folders across accounts, unless the target is local
 	}
 
-	// An item or an array of items is being moved
-	var items = AjxUtil.toArray(what);
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		if (item.type !== ZmItem.CONTACT && item.type !== ZmItem.GROUP) {
-			// only contacts are valid for addr books.
+	if (this.nId == ZmOrganizer.ID_ROOT) {
+		// cannot drag anything onto root folder
+		return false;
+	}
+	if (this.link) {
+		// cannot drop anything onto a read-only addrbook
+		if (this.isReadOnly()) {
 			return false;
 		}
 	}
 
-	return ZmFolder.prototype.mayContain.apply(this, arguments);
+	// An item or an array of items is being moved
+	var items = (what instanceof Array) ? what : [what];
+	var item = items[0];
+
+	if (item.type != ZmItem.CONTACT && item.type != ZmItem.GROUP) {
+		// only contacts are valid for addr books.
+		return false;
+	}
+
+	// can't move items to folder they're already in; we're okay if
+	// we have one item from another folder
+	if (item.folderId) {
+		var invalid = true;
+		for (var i = 0; i < items.length; i++) {
+			var tree = appCtxt.getById(items[i].folderId);
+			if (tree != this) {
+				invalid = false;
+				break;
+			}
+		}
+
+		return !invalid;
+	}
+
+	return true;
 };

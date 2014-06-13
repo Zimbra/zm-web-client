@@ -74,7 +74,7 @@
 </c:catch>
 
 <c:if test="${not empty authResult}">
-    <c:redirect url="/">
+    <c:redirect url="${param.dev eq '1' ? '/tdebug' : '/t'}">
         <c:forEach var="p" items="${paramValues}">
             <c:forEach var='value' items='${p.value}'>
                 <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
@@ -145,10 +145,10 @@
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <link rel="apple-touch-icon" sizes="57x57" href="/img/logo/Icon.png" />
-    <link rel="apple-touch-icon" sizes="72x72" href="/img/logo/Icon~ipad.png" />
-    <link rel="apple-touch-icon" sizes="114x114" href="/img/logo/Icon@2x.png" />
-    <link rel="apple-touch-icon" sizes="144x144" href="/img/logo/Icon~ipad@2x.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/t/resources/icons/Icon.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/t/resources/icons/Icon~ipad.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/t/resources/icons/Icon@2x.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/t/resources/icons/Icon~ipad@2x.png" />
 
     <title><fmt:message key="zimbraLoginTitle"/></title>
     <link rel="stylesheet" type="text/css" href="<c:url value='/css/ztouch.css'>
@@ -222,14 +222,13 @@
             </c:if>
             <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
                 <input type="hidden" name="loginOp" value="login"/>
-                <input type="hidden" name="zrememberme" value="1"/>
                 <div style='text-align: center;'>
                     <div class='zLoginFieldDiv'><input id="username" class="zLoginField" name="username"
                         onkeyup="enableSignIn();" type="text" value="${fn:escapeXml(param.username)}" size="25"
                         placeholder="<fmt:message key="username"/>" autocapitalize="off" autocorrect="off"/></div>
                     <div class='zLoginFieldDiv'><input id="password" class="zLoginField" name="password"
                         onkeyup="enableSignIn();" type="password" value="" size="25"
-                        placeholder="<fmt:message key="password"/>" /></div>
+                        placeholder="<fmt:message key="password"/>" autocomplete="off"/></div>
                     <div class='LoginButtonDiv'><input type="submit" id="loginBtn" class="LoginButton"
                         value="<fmt:message key="login"/>" /></div>
                 </div>

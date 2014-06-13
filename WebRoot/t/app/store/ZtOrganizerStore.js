@@ -29,15 +29,20 @@ Ext.define('ZCS.store.ZtOrganizerStore', {
 	config: {
 
 		model:                  'ZCS.model.ZtOrganizer',
+		defaultRootProperty:    'items',
 		storeId:                'organizerStore',
 
 		grouper: function(record) {
-		    if (record.parentNode && record.parentNode.parentNode && !record.parentNode.parentNode.isRoot()) {
-		        return record.parentNode.parentNode.getTitle();
-		    } else {
-                return record.getGroupName();
-		    }
-		}
+			return record.getGroupName();
+		},
+
+		sorters: [
+			{
+				sorterFn: function(organizer1, organizer2) {
+					return ZCS.model.ZtOrganizer.compare(organizer1, organizer2);
+				}
+			}
+		]
 	},
 
 	/**
@@ -49,52 +54,5 @@ Ext.define('ZCS.store.ZtOrganizerStore', {
 		return function(item) {
 			return true;
 		};
-	},
-
-	/**
-	 * Overriding default functionality so this store does not clone the root.
-	 */
-	applyRoot: function(root) {
-        var me = this;
-        root = root || {};
-
-        // Allow the root to remain the passed in model instead of creating a new instance.
-        // root = Ext.apply({}, root);
-
-        if (!root.isModel) {
-            Ext.applyIf(root, {
-                id: me.getStoreId() + '-' + me.getDefaultRootId(),
-                text: 'Root',
-                allowDrag: false
-            });
-
-            root = Ext.data.ModelManager.create(root, me.getModel());
-        }
-
-        Ext.data.NodeInterface.decorate(root);
-        root.set(root.raw);
-
-        return root;
-    },
-
-    doDefaultSorting: function () {
-		this.data._autoSort = false;
-		this.suspendEvents();
-
-    	this.setSorters({
-			sorterFn: function(organizer1, organizer2) {
-				return ZCS.model.ZtOrganizer.compare(organizer1, organizer2);
-			}
-		});
-
-    	//Make sure shared roots don't trigger sort storms.
-    	this.getRoot().disableStoreSorting();
-    	//Make sure sorting the root doesn't trigger a sort storm.
-		this.getRoot().sortWithoutEvents(this.data.getSortFn(), true, true);
-		//Sort ourselves without trigger a storm.
-		this.getRoot().enableStoreSorting();
-
-		this.data._autoSort = true;
-		this.resumeEvents(true);
-    }
+	}
 });
