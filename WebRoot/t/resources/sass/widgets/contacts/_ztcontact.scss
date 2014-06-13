@@ -454,6 +454,11 @@ $contactGroupMemberImageRadius: $contactGroupMemberImageSize / 2;
 	}
 }
 
+// Hack for android not showing the bottom borders on groups
+.x-android .zcs-contactgroupview-members .zcs-contactgroupview-member {
+	border-bottom-width: 2px;
+}
+
 .contact-form-remove-field-button,
 .contact-form-add-field-button {
 	min-height: $contactFormButtonMinHeight;
