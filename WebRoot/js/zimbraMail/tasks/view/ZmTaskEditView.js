@@ -368,6 +368,7 @@ function(flag) {
 ZmTaskEditView.prototype.getpCompleteInputValue = function() {
     var pValue  = this._pCompleteSelectInput.getValue();
     pValue      = pValue.replace(/[%]/g,"");
+	pValue      = pValue.trim();
     var valid = /^\d*$/.test(pValue);
     var percent = 0;
     if (valid) {
