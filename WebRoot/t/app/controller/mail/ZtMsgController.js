@@ -32,6 +32,7 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 			msgHeader: 'msgheader',
 			msgBody: 'msgbody',
 			msgView: 'msgview',
+			// see ZtConstants.MENU_CONFIGS for source of these menu names
 			msgActionsMenu: 'list[itemId=msgActionsMenu]',
 			msgReplyActionsMenu: 'list[itemId=msgReplyActionsMenu]',
 			addressActionsMenu: 'list[itemId=addressActionsMenu]',
@@ -53,10 +54,10 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 				addressTouch:       'doComposeToAddress'
 			},
 			msgActionsMenu: {
-				itemtap:            'onMenuItemSelect'
+				itemtap:            'onActionMenuTap'
 			},
 			msgReplyActionsMenu: {
-				itemtap:            'onMenuItemSelect'
+				itemtap:            'onActionMenuTap'
 			},
 			addressActionsMenu: {
 				itemtap:            'onMenuItemSelect'
@@ -94,7 +95,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	},
 
 	onMsgActionsTap: function (button, e) {
-		var msgView = button.up('msgview'),
+
+		var msgView = this.actionMsgView = button.up('msgview'),
 			actionMenu = msgView.down('toolbar[cls=zcs-msg-actions-toolbar]'),
 			actionMenuContainer = msgView.down('#toolbarContainer');
 
@@ -104,20 +106,29 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	},
 
 	onMsgActionsCancelTap: function (button, e) {
-		var msgView = button.up('msgview'),
-			actionMenu = msgView.down('toolbar[cls=zcs-msg-actions-toolbar]'),
-			actionMenuButton = msgView.down('button[cls=zcs-btn-msg-details]');
-
-		actionMenuButton.show();
-		actionMenu.hide();
+		this.hideActionMenu(button);
 		// container hide is done in actionMenu hide listener
 	},
 
+	hideActionMenu: function(button) {
+
+		var msgView = this.actionMsgView,
+			actionMenu = msgView && msgView.down('toolbar[cls=zcs-msg-actions-toolbar]'),
+			actionMenuButton = msgView && msgView.down('button[cls=zcs-btn-msg-details]');
+
+		if (actionMenu && actionMenuButton) {
+			actionMenuButton.show();
+			actionMenu.hide();
+		}
+	},
+
 	onMsgActionsButtonTap: function (button, e) {
-		var msgView = button.up('msgview'),
+
+		var msgView = this.actionMsgView = button.up('msgview'),
 			msg = msgView.getMsg();
 
 		if (button.get('iconCls') == 'trash') {
+			this.hideActionMenu();
 			this.doDelete({msg: msg});
 		} else {
 			this.showMenu(button, {
@@ -438,5 +449,11 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 
 	        this.enableTagItem(menu);
 		}
+	},
+
+	// hide menu and perform the selected action
+	onActionMenuTap: function(list, index, target, record, e) {
+		this.hideActionMenu();
+		this.onMenuItemSelect(list, index, target, record, e);
 	}
 });
