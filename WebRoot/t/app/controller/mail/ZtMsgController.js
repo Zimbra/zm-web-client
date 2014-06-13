@@ -114,6 +114,8 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 		actionMenuContainer.show();
 		actionMenu.show();
 		button.hide();
+		
+		actionMenu.up('list').getScrollable().getScroller().scrollBy(0, actionMenu.getHeight() * 1.5);
 	},
 
 	onMsgActionsCancelTap: function (button, e) {
