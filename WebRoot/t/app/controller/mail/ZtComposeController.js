@@ -882,9 +882,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 	unhideComposeForm: function () {
 
-		this.getComposePanel().element.dom.style.removeProperty('display');
 
-/*
 		if (Ext.os.deviceType === "Phone") {
 			this.getComposePanel().element.dom.style.removeProperty('display');
 		} else {
@@ -893,17 +891,14 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				duration: 250
 			});
 		}
-*/
+
 		this.startDraftTimer();
 	},
 
 	hideComposeForm: function () {
 
 		this.stopDraftTimer();
-		this.getComposePanel().element.dom.style.setProperty('display', 'none');
 
-		// comment out the animation to hide the form, which does not work on iPads (bug 91905); safer to use display for now
-/*
 		if (Ext.os.deviceType === "Phone") {
 			this.getComposePanel().element.dom.style.setProperty('display', 'none');
 		} else {
@@ -912,7 +907,6 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				duration: 250
 			});
 		}
-*/
 	},
 
 	checkRecipientStatus: function (bubbleModel) {
