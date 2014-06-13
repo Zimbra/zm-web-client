@@ -180,6 +180,8 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 
 		this.currentConversation = conv;
 
+		ZCS.app.getMsgController().hideActionMenu();
+
         //<debug>
 		Ext.Logger.info("conv controller: show conv " + conv.getId());
         //</debug>
