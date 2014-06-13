@@ -76,7 +76,7 @@ Ext.define('ZCS.controller.mail.ZtMailItemController', {
 
 		activeList.setReadOnly(true);
 
-		ZCS.app.getAssignmentController().showAssignmentView(item, type, this.getApp(), this, 'afterAssignment');
+		ZCS.app.getAssignmentController().showAssignmentView(item, type, this.getApp(), this.afterAssignment.bind(this));
 
 		if (quickReply) {
 			quickReply.hide();

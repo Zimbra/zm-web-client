@@ -37,7 +37,17 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 		assignmentViews: {}
 	},
 
-	showAssignmentView: function(item, type, app, controller, afterAssignment) {
+	/**
+	 * Shows an animated assigment view. The item to assign is animated in the item panel (if there are two panels),
+	 * and the list of targets is shown in the list panel.
+	 *
+	 * @param {ZtItem}              item                item that is being moved or tagged
+	 * @param {string}              type                organizer type of target (folder or tag)
+	 * @param {string}              app                 app this is happening in
+	 * @param {function}            afterAssignmentFn   (optional) function to call after assignment is done
+	 * @returns {ZtAssignmentView}
+	 */
+	showAssignmentView: function(item, type, app, afterAssignmentFn) {
 
 		var targetComp = Ext.Viewport,
 			itemPanel = Ext.ComponentQuery.query('appview #' + app + 'itempanel')[0],
@@ -79,8 +89,8 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 					if (!toggleHidden) {
 						itemPanel.showListPanelToggle();
 					}
-					if (controller && afterAssignment) {
-						controller[afterAssignment]();
+					if (afterAssignmentFn && Ext.isFunction(afterAssignmentFn)) {
+						afterAssignmentFn();
 					}
 				}
 			});
@@ -101,7 +111,6 @@ Ext.define('ZCS.controller.ZtAssignmentController', {
 			return organizer.isValidAssignmentTarget(item) && organizer.get('type') === type;
 		}, this);
 
-		
 		assignmentView.showWithComponent(itemPanel, item, contentHeight);
 
 		return assignmentView;

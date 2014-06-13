@@ -283,7 +283,7 @@ Ext.define('ZCS.controller.contacts.ZtContactController', {
 	 * @param {String}      type        ZCS.constant.ORG_*
 	 */
 	doAssignmentView: function(item, type) {
-		ZCS.app.getAssignmentController().showAssignmentView(item || this.getItem(), type, this.getApp(), this);
+		ZCS.app.getAssignmentController().showAssignmentView(item || this.getItem(), type, this.getApp());
 	},
 
 	/**
