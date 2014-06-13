@@ -120,6 +120,18 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 		// then add it
 		var item = this.insert(insertionIndex,Ext.factory(config, 'Ext.Container'));
 
+		//set focus on the first input field.
+		var field = item.down('.textfield');
+		if (field) {
+			field.focus();
+		} else {
+			//find the first dom input element and focus it
+			field = item.element.dom.getElementsByTagName('input')[0];
+			if (field) {
+				field.focus();
+			}
+		}
+
 		//Manually set this property because in production build it won't get copied over.
 		item.opts = opts;
 
@@ -140,48 +152,73 @@ Ext.define('ZCS.view.contacts.ZtMultiField', {
 	},
 
 	removeField: function(fieldId) {
+		var needConfirm = true;
+		var field;
+		if (this.getType() === "name" || this.getType() === "company" ) {
+			field = this.down('.textfield[name="' + this.down('#' + fieldId).opts.name + '"]');
+		} else {
+			field = this.down('.textfield');
+		}
+
+		if (field) {
+			needConfirm = field.getValue() !== '';
+		} else {
+			field = this.element.dom.getElementsByTagName('input')[0];
+			if (field) {
+				needConfirm = field.value !== '';
+			}
+		}
+
+		if (needConfirm) {
+			var me = this;
+			Ext.Msg.confirm(
+				ZtMsg.contactFormRemoveFieldConfirmationMessageHeader,
+				ZtMsg.contactFormRemoveFieldConfirmationMessageBody,
+				function(buttonid){
+					if (buttonid == 'yes') {
+						me.removeFieldNow(fieldId);
+					}
+				}
+			);
+		} else {
+			this.removeFieldNow(fieldId);
+		}
+	},
+
+	removeFieldNow: function(fieldId) {
 		var me = this;
-		Ext.Msg.confirm(
-			ZtMsg.contactFormRemoveFieldConfirmationMessageHeader,
-			ZtMsg.contactFormRemoveFieldConfirmationMessageBody,
-			function(buttonid){
-				if (buttonid == 'yes'){
-					me.getAt(0).removeCls('first');
-					var field = me.down('#' + fieldId);
-					if (field) {
-						Ext.Anim.run(field, 'slide', {
-							out: true,
-							direction: 'left',
-							duration: 300,
-							after: function(){
-								// re-populate options list
-								if (me.getType() === "name" || me.getType() === "company" ){
-									var visibleFields = Ext.Array.clone(me.getVisibleFields());
-									Ext.Array.remove(visibleFields,field.opts.order);
-									me.setVisibleFields(visibleFields);
+		me.getAt(0).removeCls('first');
+		var field = me.down('#' + fieldId);
+		if (field) {
+			Ext.Anim.run(field, 'slide', {
+				out: true,
+				direction: 'left',
+				duration: 300,
+				after: function(){
+					// re-populate options list
+					if (me.getType() === "name" || me.getType() === "company" ){
+						var visibleFields = Ext.Array.clone(me.getVisibleFields());
+						Ext.Array.remove(visibleFields,field.opts.order);
+						me.setVisibleFields(visibleFields);
 
-									// show ADD FIELD button again for Name and Company information fieldset
-						            var addFieldButton = field.up(me.getType()+ 'container').down('addtionalFieldsAddButton');
-						            if (addFieldButton && addFieldButton.isHidden()){
-						                addFieldButton.show();
-									}
-					            }
-
-								field.destroy();
-
-								me.getAt(0).addCls('first');
-								if (!me.getAt(me.getItems().length-1).getHidden()){
-									if (me.getAt(me.getItems().length-2)){
-										me.getAt(me.getItems().length-2).removeCls('last');	
-									}
-								}
-							}
-						})
+						// show ADD FIELD button again for Name and Company information fieldset
+						var addFieldButton = field.up(me.getType()+ 'container').down('addtionalFieldsAddButton');
+						if (addFieldButton && addFieldButton.isHidden()){
+							addFieldButton.show();
+						}
 					}
 
+					field.destroy();
+
+					me.getAt(0).addCls('first');
+					if (!me.getAt(me.getItems().length-1).getHidden()){
+						if (me.getAt(me.getItems().length-2)){
+							me.getAt(me.getItems().length-2).removeCls('last');
+						}
+					}
 				}
-			}
-		);
+			})
+		}
 	},
 
 	reset: function() {
