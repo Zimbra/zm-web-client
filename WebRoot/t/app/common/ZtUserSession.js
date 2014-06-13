@@ -170,9 +170,18 @@ Ext.define('ZCS.common.ZtUserSession', {
 			}
 		});
 
-		this.roots = {};
+		if (!this.roots) {
+			this.roots = {};
+		}
+
+		if (!this.oldRoots) {
+			this.oldRoots = {};
+		}
 
 		Ext.each(apps, function (app) {
+			if (this.roots[app]) {
+				this.oldRoots[app] = this.roots[app];
+			}
 			this.roots[app] =  ZCS.model.ZtOrganizer.singleInstanceProxy.getReader().getDataFromNode({id: fakeIndex + "", leaf: false}, ZCS.constant.ORG_FOLDER);
 			this.roots[app] =  Ext.create('ZCS.model.ZtOrganizer', this.roots[app]);
 			Ext.data.NodeInterface.decorate(this.roots[app]);
@@ -314,6 +323,29 @@ Ext.define('ZCS.common.ZtUserSession', {
 		app = app || ZCS.session.getActiveApp();
 
 		return this.roots[app];
+	},
+
+	/**
+	 * Returns the old tree for the given app which was made old by a refresh block.  Will return null
+	 * if the old organizer had been cleared for garbage collection.
+	 *
+	 * @param {string}  app     app name
+	 *
+	 * @return {ZCS.model.ZtOrganizer}     Root node of ZtOrganizer
+	 */
+	getOldOrganizerRoot: function (app) {
+		app = app || ZCS.session.getActiveApp();
+
+		return this.oldRoots[app];
+	},
+
+	/**
+	 * Clear the old tree reference for garbage collection.
+	 *
+	 *
+	 */
+	clearOldOrganizerRoot: function (app) {
+		delete this.oldRoots[app];
 	},
 
 	/**

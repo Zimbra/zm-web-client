@@ -62,8 +62,6 @@ Ext.define('ZCS.controller.ZtMainController', {
 		Ext.Viewport.add(Ext.create('ZCS.view.ZtMain'));
 		ZCS.app.on('serverError', this.handleError, this);
 		window.onbeforeunload = this.unloadHandler;
-
-		ZCS.app.on('notifyRefresh', this.handleRefresh, this);
 	},
 
 	/**

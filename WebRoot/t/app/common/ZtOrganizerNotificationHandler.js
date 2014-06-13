@@ -44,32 +44,34 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 					if (notification.nodeType === ZCS.constant.ORG_TAG) {
 						parentOrganizer = ZCS.session.getOrganizerModel(ZCS.constant.ID_ROOT, app);
 					} else {
-						if (notification.type === ZCS.constant.NOTIFY_CREATE) {
+						if (notification.type === ZCS.constant.NOTIFY_CREATE || notification.type === ZCS.constant.NOTIFY_CHANGE) {
 							parentOrganizer = ZCS.session.getOrganizerModel(notification.l, app);
-						} else if (notification.type === ZCS.constant.NOTIFY_CHANGE) {
-							parentOrganizer = ZCS.session.getOrganizerModel(notification.parentZcsId, app);
 						}
 					}
 
-					if (organizer || parentOrganizer) {
-						if (notification.type === ZCS.constant.NOTIFY_CREATE) {
-							updates.push(this.addOrganizer(
-								notification,
-								parentOrganizer,
-								app
-							));
-						} else if (notification.type === ZCS.constant.NOTIFY_CHANGE) {
-							updates.push(this.modifyOrganizer(
-								organizer,
-								notification,
-								app
-							));
-						} else if (notification.type === ZCS.constant.NOTIFY_DELETE) {
-							updates.push(this.removeOrganizer(
-								organizer,
-								notification
-							));
-						}
+					if (notification.type === ZCS.constant.NOTIFY_CREATE && parentOrganizer) {
+						updates.push(this.addOrganizer(
+							notification,
+							parentOrganizer,
+							app
+						));
+					//Make sure the organizer exists, because we could have received a move notification
+					//which will not specify the view of the organizer, so we have to check each app
+					//to find the organizer that is being modified.
+					} else if (notification.type === ZCS.constant.NOTIFY_CHANGE && organizer) {
+						updates.push(this.modifyOrganizer(
+							organizer,
+							notification,
+							app
+						));
+					//Make sure the organizer exists, because we could have received a delete notification
+					//which will not specify the view of the organizer, so we have to check each app
+					//to find the organizer that is being modified.
+					} else if (notification.type === ZCS.constant.NOTIFY_DELETE && organizer) {
+						updates.push(this.removeOrganizer(
+							organizer,
+							notification
+						));
 					}
 				}
 			}, this);
@@ -103,13 +105,16 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	 * @param {ZtOrganizer} organizer       organizer being deleted
 	 */
 	removeOrganizer: function(organizer, notification) {
-		var me = this;
-
+		var me = this,
+			dependentLists;
 
 		parentNode = organizer.parentNode;
 			
-		//Don't touch any stores here, just update the nodes.
+		//Don't touch anything here, we need to leave the relationships as is so we
+		//can back track to the dependent stores and lists in batch updating.
 		if (parentNode) {
+			dependentLists = organizer.getDependentLists();
+
 			parentNode.disableDefaultStoreEvents();
 
 			parentNode.removeChild(organizer, true);
@@ -121,16 +126,17 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 
 			parentNode.enableDefaultStoreEvents();
 
-			organizer.destroy();
+			// organizer.destroy();
 
 			return {
 				oldParent: parentNode,
+				dependentLists: dependentLists,
 				newChild: null,
 				deletedChild: organizer
 			};
 		}
 
-		organizer.destroy();
+		// organizer.destroy();
 
 		return null;
 	},
@@ -225,37 +231,50 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 	/**
 	 * Handles the arrival of a <refresh> block by regenerating overviews.
 	 *
-	 * @param {Array}       parentViews     views that may need to be updated
 	 */
-	reloadOverviews: function(parentViews) {
+	reloadOverviews: function() {
 
-		var ln = parentViews.length, i, app,
-			updates = []; 
+		var updates = [];
 
-		for (i = 0; i < ln; i++) {
-			var parentView = parentViews[i],
-				app = (parentView.getApp && parentView.getApp()) || ZCS.session.getActiveApp(),
-				list = this.getListFromView(parentView),
-				store = list && list.getStore();
+		Ext.each(ZCS.constant.APPS, function(app) {
+			if (ZCS.util.isAppEnabled(app)) {
+				var oldRoot = ZCS.session.getOldOrganizerRoot(app),
+					storeRefs = Ext.Array.clone(oldRoot.stores),
+					root = ZCS.session.getOrganizerRoot(app),
+					newRoot;
 
-			store.data._autoSort = false;
-			store.suspendEvents();
+				oldRoot.disableDefaultStoreEvents();
 
-			store.setClearOnLoad(false);
-			store.getRoot().removeAll(true, true);
+				Ext.each(storeRefs, function (store) {
 
-			store.setRoot(ZCS.session.getOrganizerRoot(app));
+					//Treestores need to have this disabled,
+					//but nodestores do not.
+					if (store.setClearOnLoad) {
+						store.setClearOnLoad(false);
+					}
 
-			store.doDefaultSorting();
+					if (store.getRoot) {
+						store.getRoot().removeAllSilently();
+						store.setRoot(root);
+						newRoot = store.getRoot();
+					} else if (store.getNode) {
+						store.getNode().removeAllSilently();
+						root.suspendEvents();
+						store.setNode(root);
+						root.resumeEvents(true);
+						newRoot = store.getNode();
+					}
 
-			updates.push({
-				type: 'refresh',
-				root: store.getRoot()
-			});
+					updates.push({
+						type: 'refresh',
+						root: newRoot
+					});
 
-			store.data._autoSort = true;
-			store.resumeEvents(true);
-		}
+				}, this);
+
+				ZCS.session.clearOldOrganizerRoot(app);
+			}
+		}, this);
 
 		this.doEfficientHandlingOfUpdates(updates);
 	},
@@ -315,7 +334,8 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 
 					modelHash[updateInformation.oldParent.getId()].updates[updateInformation.deletedChild.getId()] = {
 						type: 'delete',
-						oldNode: updateInformation.deletedChild
+						oldNode: updateInformation.deletedChild,
+						dependentLists: updateInformation.dependentLists
 					};
 				}
 
@@ -385,10 +405,11 @@ Ext.define('ZCS.common.ZtOrganizerNotificationHandler', {
 					storeToUpdate.add(value.node);
 					dependentListsForThisNode = value.node.getDependentLists();
 				} else if (value.type === 'delete') {
-					dependentListsForThisNode = value.oldNode.getDependentLists();
+					dependentListsForThisNode = value.dependentLists;
 					storeToUpdate.remove(value.oldNode);
-				} else if (value.type === 'refresh') {
-
+					value.oldNode.destroy();
+				} else {
+					dependentLists = value.root.getDependentLists();
 				}
 
 				if (storeToUpdate.doDefaultSorting) {

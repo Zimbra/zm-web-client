@@ -474,9 +474,7 @@ Ext.define('ZCS.controller.ZtOverviewController', {
 	 * We got a <refresh> block. Reload the overviews.
 	 */
 	handleRefresh: function() {
-		if (this.getOrganizerEditPanel()) {
-			this.reloadOverviews(this.getOrganizerEditPanel());
-		}
+		this.reloadOverviews();
 	},
 
     onLocationSelectionCardShow: function(){

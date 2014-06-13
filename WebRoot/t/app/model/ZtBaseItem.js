@@ -180,6 +180,27 @@ Ext.define('ZCS.model.ZtBaseItem', {
 		});
 
 		return components;
+	},
+
+    /**
+     * 
+     * Copied from Nodeinterface, also makes the node updates silent which the base
+     * implementation does not offer that option.
+     *
+	 * Removes all child nodes from this node.
+	 * @param {Boolean} [destroy=false] `true` to destroy the node upon removal.
+	 * @return {Ext.data.NodeInterface} this
+	 */
+	removeAllSilently: function () {
+
+
+        var cn = this.childNodes,
+            n;
+
+        while ((n = cn[0])) {
+            this.removeChild(n, true, true, true);
+        }
+        return this;
 	}
 
 });
