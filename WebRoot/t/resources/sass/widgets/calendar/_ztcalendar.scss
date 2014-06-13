@@ -392,7 +392,7 @@ $responseIconPos: 0 center no-repeat;
   min-height: 1.2rem;
 }
 
-.zcs-desc-field[data-placeholder]:not(:focus):not([data-div-placeholder-content]):before {
+.zcs-desc-field[data-placeholder]:not(:focus):empty:before {
   content: attr(data-placeholder);
   color: #808080;
   font-weight: 300;

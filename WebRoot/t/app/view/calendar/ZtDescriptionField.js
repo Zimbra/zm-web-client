@@ -34,7 +34,7 @@ Ext.define('ZCS.view.calendar.ZtDescriptionField', {
                 itemId: 'body',
                 name: 'notes',
                 width: '100%',
-                html: '<div contenteditable="true" class="zcs-compose-form zcs-editable zcs-body-field zcs-desc-field" data-placeholder="' + ZtMsg.notes + '"></div>'
+                html: '<div contenteditable="true" class="zcs-compose-form zcs-editable zcs-body-field zcs-desc-field" onblur="ZCS.util.showHidePlaceholder(this);" data-placeholder="' + ZtMsg.notes + '"></div>'
             }
         ]
     }

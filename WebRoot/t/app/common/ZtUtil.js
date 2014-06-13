@@ -783,5 +783,20 @@ Ext.define('ZCS.common.ZtUtil', {
 			return record.get('zcsId') === zcsId;
 		});
 		return index !== -1 ? store.getAt(index) : null;
+	},
+
+	/**
+	 * Clears content inside div[contenteditable] if there is a <br> tag at the start or blank spaces
+	 * added by iphone/ipad device browser.
+	 *
+	 * @param   {object}    elem     HTMLElement
+	 *
+	 */
+	showHidePlaceholder: function(elem) {
+		var text = elem.innerHTML.replace(/^\&nbsp\;|<br?\>*/gi, "").replace(/\&nbsp\;|<br?\>$/gi, "").trim();
+
+		if (text.length === 0) {
+			elem.innerHTML = "";
+		}
 	}
 });
