@@ -678,8 +678,14 @@ function(callback, syncToken, result) {
 };
 
 ZmOffline.prototype._handleDeltaSyncError =
-function() {
+function(ex) {
 	ZmOffline.refreshStatusIcon();
+	if (ex && ex.code === ZmCsfeException.MAIL_MUST_RESYNC) {
+		//if the response is a mail.MUST_RESYNC fault, client has fallen too far out of date and must re-initial sync
+		localStorage.removeItem("SyncToken");
+		this.sendSyncRequest();
+		return true;
+	}
 };
 
 ZmOffline.prototype._handleSyncDeletes =
