@@ -492,6 +492,8 @@ function(optionsSaved, callback, noPop, list, result) {
 			postSaveCallbacks[i].run(changed);
 		}
 	}
+	//Once preference is saved, reload the application cache to get the latest changes
+	appCtxt.reloadAppCache();
 };
 
 ZmPrefController.prototype._backListener = 

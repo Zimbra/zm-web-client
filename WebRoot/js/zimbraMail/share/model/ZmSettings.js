@@ -1081,7 +1081,6 @@ function(ev) {
 	}
 	else if (id === ZmSetting.SKIN_NAME) {
 		this._showConfirmDialog(ZmMsg.skinChangeRestart, this._refreshBrowserCallback.bind(this, { skin: value }));
-        appCtxt.reloadAppCache();
 	}
 	else if (id === ZmSetting.SHOW_SELECTION_CHECKBOX) {
 		this._showConfirmDialog(value ? ZmMsg.checkboxChangeRestartShow : ZmMsg.checkboxChangeRestartHide, this._refreshBrowserCallback.bind(this));
@@ -1105,7 +1104,6 @@ function(ev) {
 			}
 		}
 		this._showConfirmDialog(ZmMsg.localeChangeRestart, this._refreshBrowserCallback.bind(this));
-        appCtxt.reloadAppCache();
 	}
 	else if (id === ZmSetting.CHILD_ACCTS_VISIBLE) {
 		this._showConfirmDialog(ZmMsg.accountChangeRestart, this._refreshBrowserCallback.bind(this));

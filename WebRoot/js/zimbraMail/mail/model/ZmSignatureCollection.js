@@ -104,8 +104,13 @@ function() {
 
 	// create options
 	var options = [];
+	//In Web Client offline mode signature having vCard will be suppressed
+	var isWebClientOffline = appCtxt.isWebClientOffline();
 	for (var i = 0; i < signatures.length; i++) {
 		var signature = signatures[i];
+		if (isWebClientOffline && signature.contactId) {
+			continue;
+		}
 		options.push(new DwtSelectOptionData(signature.id, signature.name));
 	}
 	options.push(new DwtSelectOptionData("", ZmMsg.signatureDoNotAttach));
