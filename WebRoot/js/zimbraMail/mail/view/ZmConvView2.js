@@ -1811,12 +1811,14 @@ function(expanded) {
 		// hide or show everything below the header
         var children = this.getHtmlElement().childNodes;
         for (var i = 0; i < children.length; i++) {
-                if (children[i].className !== 'Conv2MsgHeader'){
-                var child = children[i];
-                var show = (child && (child.id == this._displayImagesId)) ? this._expanded && this._needToShowInfoBar : this._expanded;
-                Dwt.setVisible(child, show);
-      	    }
-        }
+			var child = children[i];
+			if (child === this._header.getHtmlElement()) {
+				//do not collapse the header! (p.s. it might not be the first child - see bug 82989
+				continue;
+			}
+			var show = (child && child.id === this._displayImagesId) ? this._expanded && this._needToShowInfoBar : this._expanded;
+			Dwt.setVisible(child, show);
+		}
 		this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
 		if (this._expanded) {
 			this._setTags(this._msg);
