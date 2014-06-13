@@ -603,8 +603,13 @@ function(params) {
 
 	params.items = AjxUtil.toArray(params.items);
 	params.attrs = params.attrs || {};
-	params.attrs.l = params.folder.id;
-	params.action = "copy";
+    if (!appCtxt.isExternalAccount()) {
+        params.attrs.l = params.folder.id;
+        params.action = "copy";
+    }
+    else {
+        params.action = 'trash';
+    }
 	params.actionTextKey = 'itemCopied';
 	params.actionArg = params.folder.getName(false, false, true);
 	params.callback = new AjxCallback(this, this._handleResponseCopyItems, params);
