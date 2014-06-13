@@ -336,6 +336,7 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 		this.updateComponentBox(component, targetBox);
 
 		component.floating = true;
+		component.isAssignment = true;
 
 		Ext.Viewport.add(component);
 
@@ -396,6 +397,7 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 	onClose: function () {
 		if (!this.isPhone) {
 			this.shiftedComponent.floating = false;
+			this.shiftedComponent.isAssignment = false;
 			this.updateComponentBox(this.shiftedComponent, this.originalDimensions);
 
 			this.shiftedComponent.element.applyStyles({

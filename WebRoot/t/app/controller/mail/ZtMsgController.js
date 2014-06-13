@@ -97,7 +97,13 @@ Ext.define('ZCS.controller.mail.ZtMsgController', {
 	onMsgActionsTap: function (button, e) {
 
 		var msgView = this.actionMsgView = button.up('msgview'),
-			actionMenu = msgView.down('toolbar[cls=zcs-msg-actions-toolbar]'),
+			itemPanel = msgView && msgView.up('itempanel');
+
+		if (itemPanel && itemPanel.isAssignment) {
+			return;
+		}
+
+		var	actionMenu = msgView.down('toolbar[cls=zcs-msg-actions-toolbar]'),
 			actionMenuContainer = msgView.down('#toolbarContainer');
 
 		actionMenuContainer.show();
