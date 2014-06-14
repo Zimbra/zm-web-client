@@ -41,11 +41,9 @@
 	border-bottom: 1px solid $light-grey;
 
 	.x-innerhtml {
+		color: $link-text-color;
 		font-size: 1rem;
 		line-height: 1.2rem;
-
-		//TODO: the following should come from a link style
-		color: $base-color;
 		//text-decoration: underline;
 	}
 }
@@ -745,6 +743,7 @@ $zcs-form-multifield-radius: 0.5em;
 
 .zcs-form-spacer {
 	border-bottom: 1px solid $light-grey;
+	max-resolution:16px;
 	margin-bottom: 1rem;
 }
 
@@ -778,6 +777,7 @@ $fieldButtonLabelSize: 1.2rem;
 	@extend .form-field-button;
 
 	.x-button-label {
+		color: $link-text-color;
 		font-size: $fieldButtonLabelSize;
 		text-align: left;
 
@@ -786,7 +786,7 @@ $fieldButtonLabelSize: 1.2rem;
 			content: "+";
 			font-family: "pictos";
 			font-size: $fieldButtonSize;
-			margin-right: 10px;
+			margin-right: 1rem;
 			text-align: center;
 		}
 	}

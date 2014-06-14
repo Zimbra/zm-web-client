@@ -25,16 +25,16 @@ Ext.define('ZCS.view.calendar.ZtDescriptionField', {
     xtype: 'descriptioncontainer',
 
     config: {
-        cls: 'create-appt-margin first last',
-	    style: 'margin-bottom: 1rem;',
+        cls:    'zcs-description-field',
+        style:  'margin-bottom: 1rem;',
         layout: 'fit',
         items: [
             {
-                xtype: 'component',
+                xtype:  'component',
                 itemId: 'body',
-                name: 'notes',
-                width: '100%',
-                html: '<div contenteditable="true" class="zcs-compose-form zcs-editable zcs-body-field zcs-desc-field" onblur="ZCS.util.showHidePlaceholder(this);" data-placeholder="' + ZtMsg.notes + '"></div>'
+                name:   'notes',
+                width:  '100%',
+                html:   '<div contenteditable="true" class="zcs-body-field zcs-editable" onblur="ZCS.util.showHidePlaceholder(this);" data-placeholder="' + ZtMsg.notes + '"></div>'
             }
         ]
     }

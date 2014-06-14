@@ -25,7 +25,7 @@ Ext.define('ZCS.view.calendar.ZtStatusField', {
     xtype: 'fbstatuscontainer',
 
     config: {
-        cls: 'create-appt-margin last',
+        cls:   'zcs-status-field',
         layout: {
               type: 'hbox'
         }
@@ -39,14 +39,15 @@ Ext.define('ZCS.view.calendar.ZtStatusField', {
             xtype:  'label',
             html:    ZtMsg.display,
             cls:    'zcs-appt-label',
-            flex:   1
+            flex:    1
         });
 
         this.add({
-            xtype: 'selectfield',
+            xtype:  'selectfield',
+            cls:    'zcs-appt-value-withlabel',
             name:   'fb',
-            flex:   1,
-            value: 'B',
+            flex:    1,
+            value:  'B',
             options: me.setStatusOptions()
         });
     },

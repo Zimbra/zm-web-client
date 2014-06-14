@@ -25,8 +25,8 @@ Ext.define('ZCS.view.calendar.ZtFolderField', {
     xtype: 'foldercontainer',
 
     config: {
-        xtype: 'container',
-        cls: 'create-appt-margin first',
+        xtype:  'container',
+        cls:    'zcs-folder-field',
         layout: {
             type: 'hbox'
         }
@@ -40,14 +40,15 @@ Ext.define('ZCS.view.calendar.ZtFolderField', {
             xtype:  'label',
             html:    ZtMsg.folderCalendar,
             cls:    'zcs-appt-label',
-            flex:   1
+            flex:    1
         });
 
         this.add({
-            xtype: 'selectfield',
+            xtype:  'selectfield',
             name:   'apptFolderId',
-            flex:   1,
-            value: 10,
+            cls:    'zcs-appt-value-withlabel',
+            flex:    1,
+            value:   10,
             options: me.setCalendarFolders()
         });
     },

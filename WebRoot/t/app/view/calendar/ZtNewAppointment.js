@@ -18,33 +18,33 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
     extend: 'Ext.Sheet',
 
     requires: [
-        'Ext.form.Panel',
-        'Ext.field.Text',
         'Ext.Component',
         'Ext.field.DatePicker',
         'Ext.field.Select',
-        'Ext.ux.picker.Time',
+        'Ext.field.Text',
+        'Ext.form.Panel',
         'Ext.ux.field.TimePicker',
+        'Ext.ux.picker.Time',
         'ZCS.view.calendar.ZtTitleField',
-        'ZCS.view.contacts.ZtMultiField',
         'ZCS.view.calendar.ZtAttendeeField',
         'ZCS.view.calendar.ZtDateField',
         'ZCS.view.calendar.ZtFolderField',
         'ZCS.view.calendar.ZtStatusField',
         'ZCS.view.calendar.ZtReminderField',
-        'ZCS.view.calendar.ZtDescriptionField'
+        'ZCS.view.calendar.ZtDescriptionField',
+        'ZCS.view.contacts.ZtMultiField'
     ],
 
     xtype: 'newapptpanel',
 
     config: {
         layout:     'fit',
-        width:      Ext.os.deviceType === "Phone" ? '100%' : '80%',
+        width:       Ext.os.deviceType === "Phone" ? '100%' : '80%',
         height:     '100%',
         scrollable:  false,
         hidden:      true,
         modal:       true,
-        cls:        'zcs-contact-form'
+        cls:        'zcs-appt-form'
     },
 
     initialize: function() {
@@ -52,23 +52,23 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
         var newApptForm = this,
             toolbar = {
                 xtype:   'titlebar',
-                cls: 'zcs-item-titlebar contact-form-titlebar',
+                cls:     'zcs-item-titlebar appt-form-titlebar',
                 docked:  'top',
                 title:    ZtMsg.createAppointment,
                 items: [
                     {
                         xtype:  'button',
                         text:    ZtMsg.cancel,
-                        cls:    'contact-form-action-button',
+                        cls:    'appt-form-action-button',
                         handler: function() {
                             this.up('newapptpanel').fireEvent('cancel');
                         }
                     },
                     {
-                        xtype:      'button',
-                        text:        ZtMsg.save,
-                        align:      'right',
-                        cls:    'contact-form-action-button',
+                        xtype:  'button',
+                        text:    ZtMsg.save,
+                        align:  'right',
+                        cls:    'appt-form-action-button',
                         handler: function() {
                             this.up('newapptpanel').fireEvent('create');
                         }
@@ -80,42 +80,42 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
                 cls:    'zcs-form-spacer'
             };
 
-	        var items = [
-		        spacer,
-		        { xtype: 'titlecontainer' },
-		        spacer,
-		        { xtype: 'datecontainer' },
-		        spacer,
-		        { xtype: 'foldercontainer' },
-		        { xtype: 'fbstatuscontainer' },
-		        spacer,
-		        { xtype: 'remindercontainer' }
-		    ];
-	        if (ZCS.session.getSetting(ZCS.constant.SETTING_GROUP_CALENDAR_ENABLED)) {
-		        items.push(spacer, { xtype: 'attendeecontainer' });
-	        }
-	        items.push(spacer,  { xtype: 'descriptioncontainer' });
+            var items = [
+                spacer,
+                { xtype: 'titlecontainer' },
+                spacer,
+                { xtype: 'datecontainer' },
+                spacer,
+                { xtype: 'foldercontainer' },
+                { xtype: 'fbstatuscontainer' },
+                spacer,
+                { xtype: 'remindercontainer' }
+            ];
+            if (ZCS.session.getSetting(ZCS.constant.SETTING_GROUP_CALENDAR_ENABLED)) {
+                items.push(spacer, { xtype: 'attendeecontainer' });
+            }
+            items.push(spacer,  { xtype: 'descriptioncontainer' });
 
             var form = {
                 xtype:       'formpanel',
-                layout: 'vbox',
+                layout:      'vbox',
                 scrollable:   true,
                 defaults: {
                     labelWidth:  '5.5em',
                     inputCls:    'zcs-form-input'
                 },
-	            listeners: {
-		            initialize: function () {
-			            /**
-			             * Fixing dom bug caused by contenteditable where parent scroller
-			             * gets pushed outside its fit container. Manually making sure the
-			             * scroll container always fills its parent when scrolling starts.
-			             */
-			            this.getScrollable().getScroller().on('scrollstart', function () {
-				            this.container.dom.scrollIntoView(false);
-			            });
-		            }
-	            },
+                listeners: {
+                    initialize: function () {
+                        /**
+                         * Fixing dom bug caused by contenteditable where parent scroller
+                         * gets pushed outside its fit container. Manually making sure the
+                         * scroll container always fills its parent when scrolling starts.
+                         */
+                        this.getScrollable().getScroller().on('scrollstart', function () {
+                            this.container.dom.scrollIntoView(false);
+                        });
+                    }
+                },
                 items: items
             };
 
@@ -128,20 +128,20 @@ Ext.define('ZCS.view.calendar.ZtNewAppointment', {
     resetForm: function() {
         this.down('titlebar').setTitle(ZtMsg.createAppointment);
 
-	    var panel = this.down('.formpanel'),
-		    recurrenceField = panel.down('field[name=recurrence]'),
-		    repeatField = panel.down('field[name=repeat]');
+        var panel = this.down('.formpanel'),
+            recurrenceField = panel.down('field[name=recurrence]'),
+            repeatField = panel.down('field[name=repeat]');
 
         panel.reset();
 
-	    var attendeesField = this.down('attendeecontainer');
-	    if (attendeesField) {
-		    attendeesField.reset();
-	    }
+        var attendeesField = this.down('attendeecontainer');
+        if (attendeesField) {
+            attendeesField.reset();
+        }
 
-	    recurrenceField.setValue('');
-	    recurrenceField.setHidden(true);
-	    repeatField.setHidden(false);
+        recurrenceField.setValue('');
+        recurrenceField.setHidden(true);
+        repeatField.setHidden(false);
 
         this.down('#body').element.down('.zcs-body-field').setHtml('');
     }

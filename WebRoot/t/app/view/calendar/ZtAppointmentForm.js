@@ -5,17 +5,17 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 	xtype: 'appointmentpanel',
 
 	config: {
-		itemId: 'appointmentPanel',
-		layout: 'vbox',
+		itemId:  'appointmentPanel',
+		layout:  'vbox',
 		centered: true,
-		width: '100%',
-		height: '100%',
-		hidden: true,
-		modal: true,
-		style: 'background-color: white;',   // TODO: move styles to a class
-		title: null,
-		app: null,
-		msg: null
+		width:   '100%',
+		height:  '100%',
+		hidden:   true,
+		modal:    true,
+		style:   'background-color: white;',   // TODO: move styles to a class
+		title:    null,
+		app:      null,
+		msg:      null
 	},
 
 	initialize: function() {
@@ -52,14 +52,14 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 		});
 
 		var toolbar = {
-			xtype: 'toolbar',
-			cls: 'zcs-item-titlebar',
+			xtype:  'toolbar',
+			cls:    'zcs-item-titlebar',
 			docked: 'top',
 			itemId: 'apptToolbar',
 			items: [
 				{
-					xtype: 'button',
-					align: 'left',
+					xtype:   'button',
+					align:   'left',
 					iconCls: 'back',
 					handler: function() {
 						this.up('appointmentpanel').fireEvent('cancel');
@@ -69,38 +69,38 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 					xtype: 'spacer'
 				},
 				{
-					xtype: 'button',
+					xtype:   'button',
 					iconCls: 'edit',
-					id: 'editAppt',
-                    handler: function() {
-                        this.up('appointmentpanel').fireEvent('onButtonTap');
-                    }
+					id:      'editAppt',
+					handler:  function() {
+						this.up('appointmentpanel').fireEvent('onButtonTap');
+					}
 				},
 				{
-					xtype: 'button',
+					xtype:   'button',
 					iconCls: 'trash',
-					id: 'deleteAppt',
-					handler: function() {
+					id:      'deleteAppt',
+					handler:  function() {
 						this.up('appointmentpanel').fireEvent('onButtonTap');
 					}
 				},
 				{
-					xtype: 'button',
+					xtype:   'button',
 					iconCls: 'arrow_down',
-					id: 'inviteActionsAppt',
+					id:      'inviteActionsAppt',
 					menuName: ZCS.constant.MENU_INVITE_ACTIONS,
-					handler: function() {
+					handler:  function() {
 						this.up('appointmentpanel').fireEvent('onButtonTap');
 					}
 				},
 				{
-					xtype: 'button',
+					xtype:   'button',
 					iconCls: 'arrow_down',
-					id: 'apptActions',
+					id:      'apptActions',
 					disabled: true,
-					hidden: true,
+					hidden:   true,
 					menuName: ZCS.constant.MENU_APPT_ACTIONS,
-					handler: function() {
+					handler:  function() {
 						this.up('appointmentpanel').fireEvent('onButtonTap');
 					}
 				}
@@ -108,14 +108,14 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 		};
 
 		var titleBar = {
-			xtype: 'component',
+			xtype:  'component',
 			itemId: 'apptTitleOnlyBar',
-			cls: 'zcs-conv-title-bar'
+			cls:    'zcs-conv-title-bar'
 		};
 
 		var itemView = {
-			xtype: 'container',
-			flex: 1,
+			xtype:  'container',
+			flex:    1,
 			itemId: 'apptDetails',
 			scrollable: { direction: 'vertical'}
 		};
@@ -164,40 +164,40 @@ Ext.define('ZCS.view.calendar.ZtAppointmentForm', {
 		}
 
 		var idParams = {
-				objType:	ZCS.constant.OBJ_INVITE,
-				msgId:	  msg.get('id')
+				objType:    ZCS.constant.OBJ_INVITE,
+				msgId:      msg.get('id')
 			},
 			data = {
-				title:  invite.get('subject'),
-				start:  apptTitleString,
-				location: invite.get('location'),
-				isOrganizer: invite.get('isOrganizer'),
-				organizer: ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('organizer')),
-                attendees: ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('attendees')),
-				optAttendees: ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('optAttendees')),
-				myResponse: myResponse ? ZCS.constant.PSTATUS_TEXT[myResponse] : '',
-				calendar: calFolderName,
-				color: apptColor ? apptColor : (apptRgbColor ? '' : '1'),
-				rgb: apptRgbColor,
-				reminder: invite.get('reminderAlert'), /* TODO: Get strings similar to Ajax Client */
-				recurrence: invite.get('recurrence'),
+				title:         invite.get('subject'),
+				start:         invite.get('isAllDay') ? eventDate : (startTime + " - " + endTime + ", " + eventDate),
+				location:      invite.get('location'),
+				isOrganizer:   invite.get('isOrganizer'),
+				organizer:     ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('organizer')),
+                attendees:     ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('attendees')),
+				optAttendees:  ZCS.model.mail.ZtMailItem.convertAddressModelToObject(invite.get('optAttendees')),
+				myResponse:    myResponse ? ZCS.constant.PSTATUS_TEXT[myResponse] : '',
+				calendar:      calFolderName,
+				color:         apptColor ? apptColor : (apptRgbColor ? '' : '1'),
+				rgb:           apptRgbColor,
+				reminder:      invite.get('reminderAlert'), /* TODO: Get strings similar to Ajax Client */
+				recurrence:    invite.get('recurrence'),
 				displayStatus: displayStatus,
-				notes: invite.get('notes'),
-				invAcceptButtonId:	 ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_ACCEPT }, idParams)),
+				notes:         invite.get('notes'),
+				invAcceptButtonId:     ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_ACCEPT }, idParams)),
 				invTentativeButtonId:  ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_TENTATIVE }, idParams)),
-				invDeclineButtonId:	ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_DECLINE }, idParams)),
-                isException: invite.get('isException'),
-                attachments: me.fetchAttachments(msg)
-            },
+				invDeclineButtonId:    ZCS.util.getUniqueId(Ext.apply({}, { action: ZCS.constant.OP_DECLINE }, idParams)),
+				isException:   invite.get('isException'),
+				attachments:   me.fetchAttachments(msg)
+			},
 			tpl,html,me;
 
 		tpl = Ext.create('Ext.XTemplate', ZCS.template.ApptViewDesc);
 		html = tpl.apply(data);
 
-        var apptView = this.getInnerAt(1);
-        apptView.setHtml(html);
-        this.setMsg(msg);
-    },
+		var apptView = this.getInnerAt(1);
+		apptView.setHtml(html);
+		this.setMsg(msg);
+	},
 
 	getShowAsOptionLabel : function(value) {
 		for (var i = 0; i < ZCS.constant.SHOWAS_OPTIONS.length; i++) {

@@ -332,9 +332,9 @@ $responseIconPos: 0 center no-repeat;
 /*
 * helper class to make tables align the labels with the top margin
 */
-.zcs-table-vtop TD {
-	vertical-align: top;
-}
+//.zcs-table-vtop TD {
+//	vertical-align: top;
+//}
 
 .create-appt-margin {
 	margin-left: 10px;
@@ -353,15 +353,166 @@ $responseIconPos: 0 center no-repeat;
 	overflow: hidden;
 }
 
+/*
+* Appointment Editor Panel
+*/
+
+.zcs-appt-form {
+	.x-form .x-field .x-field-input,
+	.x-form .x-field .x-input-el {
+		font-weight: normal;
+		min-height: 0;
+		padding: 0;
+	}
+}
+
+.zcs-appt-item {
+	font-size: 1.2rem;
+	min-height: 1.8rem;
+	padding: 0.85rem;
+}
+
 .zcs-appt-label {
+	@extend .zcs-appt-item;
 	background-color: white;
 	background-image: none;
 	color: lighten($primary-text-color, 25%);
-	font-size: 1.2rem;
-	min-height: 1.8em;
-	padding: .85em;
-//	text-align: right;
+	width: 40%;
+	
+	.x-innerhtml {
+		@include ellipsis();
+		overflow: hidden;
+	}
 }
+
+.zcs-appt-value {
+	@extend .zcs-appt-item;
+}
+
+.zcs-appt-value-nolabel {
+	@extend .zcs-appt-value;
+	background-color: $white;
+}
+
+.zcs-appt-value-withlabel {
+	@extend .zcs-appt-value;
+	width: 60%;
+}
+
+.zcs-appt-value-date {
+	@extend .zcs-appt-value;
+	width: 60%;
+}
+
+.zcs-appt-value-time {
+	@extend .zcs-appt-value;
+	width: 40%;
+}
+
+.zcs-title-field {
+	@extend .create-appt-margin;
+	@extend .first;
+	@extend .zcs-appt-value-nolabel;
+}
+
+.zcs-location-field {
+	@extend .create-appt-margin;
+	@extend .last;
+	@extend .zcs-appt-value-nolabel;
+}
+
+.zcs-allday-field {
+	@extend .create-appt-margin;
+	@extend .first;
+}
+
+.zcs-startdate-field {
+	@extend .create-appt-margin;
+}
+
+.zcs-enddate-field {
+	@extend .create-appt-margin;
+}
+
+.zcs-repeat-field {
+	@extend .create-appt-margin;
+	@extend .last;
+}
+
+.zcs-folder-field {
+	@extend .create-appt-margin;
+	@extend .first;
+}
+
+.zcs-status-field {
+	@extend .create-appt-margin;
+	@extend .last;
+}
+
+.zcs-reminder-field {
+	@extend .create-appt-margin;
+	@extend .first;
+	@extend .last;
+}
+
+.zcs-attendee-field {
+	@extend .create-appt-margin;
+	@extend .first;
+	@extend .last;
+
+	.x-button {
+		min-height: 3.8rem;
+		padding: 0.85rem;
+	}
+
+	.zcs-bubblearea {
+
+		.x-form-label {
+			padding: 0;
+		}
+
+		.bubble-main-contents {
+			font-size: 1.2rem;
+
+			.bubble-comp {
+				line-height: 3.6rem;
+			}
+
+			.bubble-comp + .input-comp {
+				display: none;
+				margin: 0;
+			}
+
+			.input-comp {
+				margin: 1rem 0;
+			}
+		}
+	}
+}
+
+.zcs-description-field {
+	@extend .create-appt-margin;
+	@extend .first;
+	@extend .last;
+	@extend .zcs-appt-value-nolabel;
+
+	.zcs-body-field {
+		@extend .zcs-compose-form;
+		min-height: 1.2rem;
+
+		&[data-placeholder]:not(:focus):empty:before {
+			content:attr(data-placeholder);
+			color:#808080;
+			font-weight:300;
+		}
+	}
+}
+
+// TODO: ".x-tablet" should switch to ".x-tablet.x-portrait" when Bug 91709 is fixed
+.x-tablet .zcs-description-field .zcs-body-field {
+	min-height: 14rem;
+}
+
 
 .zcs-appt-dialog {
 	background-color: #808080;
@@ -385,15 +536,4 @@ $responseIconPos: 0 center no-repeat;
 			margin-bottom: 10px;
 		}
 	}
-}
-
-.zcs-desc-field {
-  padding: 1.2rem;
-  min-height: 1.2rem;
-}
-
-.zcs-desc-field[data-placeholder]:not(:focus):empty:before {
-  content: attr(data-placeholder);
-  color: #808080;
-  font-weight: 300;
 }

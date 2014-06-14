@@ -29,13 +29,13 @@ Ext.define('ZCS.view.calendar.ZtTitleField', {
                 xtype:       'textfield',
                 name:        'subject',
                 placeHolder:  ZtMsg.titleLabel,
-                cls: 'create-appt-margin first'
+                cls:         'zcs-title-field'
             },
             {
                 xtype:       'textfield',
                 name:        'location',
                 placeHolder:  ZtMsg.locationLabel,
-                cls: 'create-appt-margin last'
+                cls:         'zcs-location-field'
             }
         ]
     }

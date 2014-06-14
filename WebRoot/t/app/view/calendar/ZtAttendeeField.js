@@ -25,23 +25,23 @@ Ext.define('ZCS.view.calendar.ZtAttendeeField', {
     xtype: 'attendeecontainer',
 
     config: {
-        type: 'attendee',
+        type:          'attendee',
         addButtonLabel: ZtMsg.addAttendeeLabel,
-        panel: 'newapptpanel',
-        cls: 'create-appt-margin first last'
+        panel:         'newapptpanel',
+        cls:           'zcs-attendee-field'
     },
 
     getFieldConfig: function(fieldId) {
         return {
             layout: 'hbox',
-            width: '100%',
+            width:  '100%',
             items: [
                 {
                     xtype:      'contactfield',
                     name:       'attendee',
-                    label: '',
+                    label:      '',
                     labelWidth: '0em',
-                    flex:       1
+                    flex:        1
                 }
             ].reverse().concat(this.getRemoveConfig(fieldId, this.getPanel())).reverse()
         };

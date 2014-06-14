@@ -26,52 +26,52 @@ Ext.define('ZCS.view.calendar.ZtAppointmentDialog', {
 	xtype: 'appointmentdialog',
 
 	config: {
-		itemId: 'appointmentDialog',
-		bottom: 0,
-		height: '30%',
-		width: '100%',
-		cls: 'zcs-appt-dialog',
-		hidden: true,
-		modal: true,
+		itemId:       'appointmentDialog',
+		bottom:        0,
+		height:       '30%',
+		width:        '100%',
+		cls:          'zcs-appt-dialog',
+		hidden:        true,
+		modal:         true,
 		showAnimation: {
-			type: 'slide',
-			easing: 'ease-out',
-			direction: 'up',
-			duration: 400
+			type:       'slide',
+			easing:     'ease-out',
+			direction:  'up',
+			duration:    400
 		},
 		hideAnimation: {
-			type: 'slideOut',
-			easing: 'ease-out',
-			direction: 'down',
-			duration: 400
+			type:       'slideOut',
+			easing:     'ease-out',
+			direction:  'down',
+			duration:    400
 		},
-		layout: 'vbox',
+		layout:  'vbox',
 		defaults: {
 			flex: 1
 		},
 		items: [
 			{
-				xtype: 'button',
-				text: ZtMsg.apptOpenInstance,
-				cls: 'zcs-appt-dialogbtn first',
+				xtype:  'button',
+				text:    ZtMsg.apptOpenInstance,
+				cls:    'zcs-appt-dialogbtn first',
 				handler: function() {
 					ZCS.app.getCalendarController().appointmentDialogAction(true);
 					Ext.ComponentQuery.query('#appointmentDialog')[0].hide();
 				}
 			},
 			{
-				xtype: 'button',
-				text: ZtMsg.apptOpenSeries,
-				cls: 'zcs-appt-dialogbtn last',
+				xtype:  'button',
+				text:    ZtMsg.apptOpenSeries,
+				cls:    'zcs-appt-dialogbtn last',
 				handler: function() {
 					ZCS.app.getCalendarController().appointmentDialogAction(false);
 					Ext.ComponentQuery.query('#appointmentDialog')[0].hide();
 				}
 			},
 			{
-				xtype: 'button',
-				text: ZtMsg.cancel,
-				cls: 'zcs-appt-dialogbtn zcs-appt-cancelbtn',
+				xtype:  'button',
+				text:    ZtMsg.cancel,
+				cls:    'zcs-appt-dialogbtn zcs-appt-cancelbtn',
 				handler: function() {
 					Ext.ComponentQuery.query('#appointmentDialog')[0].hide();
 				}

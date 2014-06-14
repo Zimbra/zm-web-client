@@ -30,8 +30,8 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
         },
         items: [
         {
-            xtype: 'container',
-            cls: 'create-appt-margin first',
+            xtype:  'container',
+            cls:    'zcs-allday-field',
             layout: {
                 type: 'hbox'
             },
@@ -40,7 +40,7 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
                     xtype:  'label',
                     html:    ZtMsg.allDay,
                     cls:    'zcs-appt-label',
-                    flex:   1
+                    flex:    1
 
                 },
                 {
@@ -63,15 +63,16 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
         },
         {
             xtype: 'container',
-            cls: 'create-appt-margin',
+            cls: 'zcs-startdate-field',
             layout: {
                 type: 'hbox'
             },
             items: [
                 {
                     xtype:  'datepickerfield',
+                    cls:    'zcs-appt-value-date',
                     name:   'start',
-                    flex:   2,
+                    flex:    2,
                     destroyPickerOnHide: true,
                     dateFormat:  ZtMsg.invShortDateFormat,
                     value: new Date(),
@@ -86,63 +87,66 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
                     }
                 },
                 {
-                    xtype:  'timepickerfield',
-                    name:   'startTime',
-                    flex:   1,
+                    xtype:   'timepickerfield',
+                    cls:     'zcs-appt-value-time',
+                    name:    'startTime',
+                    flex:     1,
                     destroyPickerOnHide: false,
                     dateFormat:  ZtMsg.invTimeFormat,
                     value: ZCS.util.convertTime(new Date()),
                     listeners: {
                         change: function(field) {
-	                        var msg = ZCS.app.getAppointmentController().getMsg(),
-	                            endTime = Ext.ComponentQuery.query('#endTime')[0];
+                            var msg = ZCS.app.getAppointmentController().getMsg(),
+                                endTime = Ext.ComponentQuery.query('#endTime')[0];
 
-	                        if (msg) {
-								var invite = msg.get('invite'),
-									invStart = invite.get('start'),
-									invEnd = invite.get('end'),
-									isStartEndSame = invEnd && invStart.getTime() === invEnd.getTime(),
-									elapsedTime = isStartEndSame ? 0 : field.getValue().getTime() - invStart.getTime();
+                            if (msg) {
+                                var invite = msg.get('invite'),
+                                    invStart = invite.get('start'),
+                                    invEnd = invite.get('end'),
+                                    isStartEndSame = invEnd && invStart.getTime() === invEnd.getTime(),
+                                    elapsedTime = isStartEndSame ? 0 : field.getValue().getTime() - invStart.getTime();
 
-		                        if (endTime && invEnd) {
-			                        endTime.setValue(new Date(invEnd.getTime() + elapsedTime));
-		                        }
-	                        }
-	                        else {
-		                        if (field.getValue()) {
-			                        if (endTime)
-				                        endTime.setValue(ZCS.util.convertTime(field.getValue(), true));
-		                        }
-	                        }
+                                if (endTime && invEnd) {
+                                    endTime.setValue(new Date(invEnd.getTime() + elapsedTime));
+                                }
+                            }
+                            else {
+                                if (field.getValue()) {
+                                    if (endTime)
+                                        endTime.setValue(ZCS.util.convertTime(field.getValue(), true));
+                                }
+                            }
                         }
                     }
                 }
             ]
         },
         {
-            xtype: 'container',
-            cls: 'create-appt-margin',
+            xtype:  'container',
+            cls:    'zcs-enddate-field',
             layout: {
                 type: 'hbox'
             },
             items: [
                 {
                     xtype:               'datepickerfield',
+                    cls:                 'zcs-appt-value-date',
                     name:                'end',
                     itemId:              'end',
                     flex:                 2,
                     destroyPickerOnHide:  true,
-                    dateFormat:  ZtMsg.invShortDateFormat,
-                    value: new Date()
+                    dateFormat:           ZtMsg.invShortDateFormat,
+                    value:                new Date()
                 },
                 {
-                    xtype:  'timepickerfield',
-                    name:   'endTime',
-                    itemId:   'endTime',
-                    flex:   1,
-                    destroyPickerOnHide: false,
-                    dateFormat:  ZtMsg.invTimeFormat,
-                    value: ZCS.util.convertTime(new Date(), true),
+                    xtype:               'timepickerfield',
+                    cls:                 'zcs-appt-value-time',
+                    name:                'endTime',
+                    itemId:              'endTime',
+                    flex:                 1,
+                    destroyPickerOnHide:  false,
+                    dateFormat:           ZtMsg.invTimeFormat,
+                    value:                ZCS.util.convertTime(new Date(), true),
                     listeners: {
                         change: function(field) {
                             var val = field.getValue();
@@ -160,8 +164,8 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
             ]
         },
         {
-            xtype: 'container',
-            cls: 'create-appt-margin last',
+            xtype:  'container',
+            cls:    'zcs-repeat-field',
             layout: {
                 type: 'hbox'
             },
@@ -170,11 +174,12 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
                     xtype:   'label',
                     html:     ZtMsg.repeatLabel,
                     cls:     'zcs-appt-label',
-                    flex:   1
+                    flex:     1
 
                 },
                 {
                     xtype:   'selectfield',
+                    cls:     'zcs-appt-value-withlabel',
                     name:    'repeat',
                     flex:     1,
                     options: [
@@ -188,8 +193,8 @@ Ext.define('ZCS.view.calendar.ZtDateField', {
                 {
                     xtype:   'textfield',
                     name:    'recurrence',
-                    flex:     2,
-                    hidden: true,
+                    flex:     1,
+                    hidden:   true,
                     disabled: true
                 }
             ]

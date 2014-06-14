@@ -25,8 +25,8 @@ Ext.define('ZCS.view.calendar.ZtReminderField', {
     xtype: 'remindercontainer',
 
     config: {
-        xtype: 'container',
-        cls: 'create-appt-margin first last',
+        xtype:  'container',
+        cls:    'zcs-reminder-field',
         layout: {
             type: 'hbox'
         }
@@ -40,12 +40,13 @@ Ext.define('ZCS.view.calendar.ZtReminderField', {
             xtype:  'label',
             html:    ZtMsg.reminderLabel,
             cls:    'zcs-appt-label',
-            flex:   1
+            flex:    1
         });
 
         this.add({
             xtype:   'selectfield',
             name:    'reminderAlert',
+            cls:     'zcs-appt-value-withlabel',
             flex:     1,
             value:    ZCS.session.getSetting(ZCS.constant.SETTING_REMINDER_TIME),
             options:  me.setReminderOptions()

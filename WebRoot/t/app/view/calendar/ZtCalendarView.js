@@ -34,13 +34,13 @@ Ext.define('ZCS.view.calendar.ZtCalendarView', {
         this.callParent(arguments);
 
         var monthView = {
-            xtype: 'calendar',
-            width: '100%',
-            height: '100%',
+            xtype:    'calendar',
+            width:    '100%',
+            height:   '100%',
             viewMode: 'month',
-            itemId: 'calMonthView',
-            value: new Date(),
-            enableSimpleEvents: true,
+            itemId:   'calMonthView',
+            value:     new Date(),
+            enableSimpleEvents:  true,
             enableSwipeNavigate: true,
             viewConfig: {
                 weekStart: 0,
@@ -49,35 +49,35 @@ Ext.define('ZCS.view.calendar.ZtCalendarView', {
         };
 
         var weekView = {
-            xtype: 'calendar',
-            width: '100%',
-            height: '100%',
+            xtype:    'calendar',
+            width:    '100%',
+            height:   '100%',
             viewMode: 'week',
-            itemId: 'calWeekView',
-            hidden: true,
-            value: new Date(),
+            itemId:   'calWeekView',
+            hidden:    true,
+            value:     new Date(),
             enableEventBars: {
                 eventBarTpl: '<div>{title}</div>'
             },
             viewConfig: {
-                weekStart: 0,
+                weekStart:  0,
                 eventStore: Ext.getStore('ZtCalendarStore')
             }
         };
 
         var dayView = {
-            xtype: 'calendar',
-            width: '100%',
-            height: '100%',
+            xtype:    'calendar',
+            width:    '100%',
+            height:   '100%',
             viewMode: 'day',
-            itemId: 'calDayView',
-            hidden: true,
-            value: new Date(),
+            itemId:   'calDayView',
+            hidden:    true,
+            value:     new Date(),
             enableEventBars: {
                 eventBarTpl: '<tpl if="isAllDay"><div>{title}</div><tpl else><div>{title}<span class="event-time">{event}</span></div></tpl>'
             },
             viewConfig: {
-                weekStart: 0, //TODO: This will be set as per User Preferences
+                weekStart:  0, //TODO: This will be set as per User Preferences
                 eventStore: Ext.getStore('ZtCalendarStore')
             }
         };
