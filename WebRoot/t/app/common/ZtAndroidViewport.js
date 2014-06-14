@@ -16,6 +16,7 @@ Ext.define('ZCS.common.ZtAndroidViewport', {
         if (focusedElement && !this.isInputRegex.test(target.tagName) && !targetIsEditable) {
             dummy = this.getDummyInput();
             delete this.focusedElement;
+            delete this.lastFocusedElement;
             dummy.focus();
 
             setTimeout(function() {

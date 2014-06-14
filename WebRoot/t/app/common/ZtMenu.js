@@ -140,12 +140,28 @@ Ext.define('ZCS.common.ZtMenu', {
 	            Ext.Viewport.add(this);
 	        }
 
+	        var focusedElement = Ext.Viewport.focusedElement || Ext.Viewport.lastFocusedElement,
+	            direction = 'up';
+
+
+	        //If the focused element is an input or content editable, it means the keyboard
+	        //is showing, and we need to display the menu at the top of the screen.
+	        if (focusedElement && Ext.Viewport.isInputRegex.test(focusedElement.tagName)) {
+	        	direction = 'down';
+	        	this.setTop(0);
+	        	this.setBottom(null);
+	        } else {
+	        	this.setTop(null);
+	        	this.setBottom(0);
+	        }
+
 			// this.showBy(this.getReferenceComponent(), positioning || 'tr-br?');
 			this.show({
 				type: 'slide',
-				direction: 'up',
+				direction: direction,
 				duration: 250
 			});
+
 		} else {
 			this.showBy(this.getReferenceComponent(), positioning || 'tr-br?');
 		}

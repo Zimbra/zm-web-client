@@ -13,6 +13,7 @@ Ext.define('ZCS.common.ZtViewport', {
         //In IE9/10 browser window loses focus and becomes inactive if focused element is <body>. So we shouldn't call blur for <body>
         if (focusedElement && focusedElement.nodeName.toUpperCase() != 'BODY' && !this.isInputRegex.test(target.tagName) && !targetIsEditable) {
             delete this.focusedElement;
+            delete this.lastFocusedElement;
             focusedElement.blur();
         }
     },
