@@ -700,7 +700,7 @@ ZmFilterRule.ACTIONS_OUTGOING_LIST = [
 
 ZmFilterRule._setPreconditions =
 function() {
-	ZmFilterRule.CONDITIONS[ZmFilterRule.C_COMMUNITY].precondition = ZmSetting.SOCIAL_EXTERNAL_ENABLED;
+	ZmFilterRule.CONDITIONS[ZmFilterRule.C_COMMUNITY].precondition = ZmSetting.SOCIAL_EXTERNAL_URL;
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG].pOptions[1].precondition = ZmSetting.FLAGGING_ENABLED;
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG].precondition = ZmSetting.TAGGING_ENABLED;
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD].precondition = ZmSetting.FILTERS_MAIL_FORWARDING_ENABLED;

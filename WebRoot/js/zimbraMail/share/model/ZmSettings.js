@@ -260,6 +260,7 @@ function(callback, accountName, result) {
  * @param {boolean} [params.preInit]        Only init base settings for startup
  */
 ZmSettings.prototype.setUserSettings = function(params) {
+
     params = Dwt.getParams(arguments, ["info", "accountName", "setDefault", "skipNotify", "skipImplicit", "preInit"]);
 
     var info = this.getInfoResponse = params.info;
@@ -313,6 +314,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
             this._settings[settings[i]].setValue(value, null, setDefault, skipNotify, skipImplicit);
         }
     }
+
     // features and other settings
     if (info.attrs && info.attrs._attrs) {
         this.createFromJs(info.attrs._attrs, setDefault, skipNotify, skipImplicit);
@@ -325,7 +327,14 @@ ZmSettings.prototype.setUserSettings = function(params) {
 	    mailApp.enableMailPrefs();
     }
 
-    if (params.preInit) { return; }
+	// Server may provide us with SSO-enabled URL for Community integration (integration URL with OAuth signature)
+	if (info.communityURL) {
+		this.getSetting(ZmSetting.SOCIAL_EXTERNAL_URL).setValue(info.communityURL, null, setDefault, skipNotify);
+	}
+
+	if (params.preInit) {
+	    return;
+    }
 
     // preferences
     if (info.prefs && info.prefs._attrs) {
@@ -333,6 +342,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
     }
 
     // accounts
+	var setting;
 	if (!accountName) {
 		// NOTE: only the main account can have children
 		appCtxt.accountList.createAccounts(this, info);
@@ -340,7 +350,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		// for offline, find out whether this client supports prism-specific features
 		if (appCtxt.isOffline) {
 			if (AjxEnv.isPrism && window.platform) {
-				var setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
+				setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
 				if (setting) {
 					setting.setValue(true, null, setDefault, skipNotify, skipImplicit);
 				}
@@ -356,7 +366,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 	}
 
 	// handle settings whose values may depend on other settings
-	var setting = this._settings[ZmSetting.REPLY_TO_ADDRESS];
+	setting = this._settings[ZmSetting.REPLY_TO_ADDRESS];
 	if (setting) {
 		setting.defaultValue = this.get(ZmSetting.USERNAME);
 	}
@@ -852,7 +862,7 @@ function() {
 	this.registerSetting("OPTIONS_ENABLED",					{name:"zimbraFeatureOptionsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("PORTAL_ENABLED",					{name:"zimbraFeaturePortalEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("SOCIAL_ENABLED",					{name:"zimbraFeatureSocialEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("SOCIAL_EXTERNAL_ENABLED",			{name:"zimbraFeatureSocialExternalEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+//	this.registerSetting("SOCIAL_EXTERNAL_ENABLED",			{name:"zimbraFeatureSocialExternalEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("SOCIAL_EXTERNAL_URL",				{name:"zimbraFeatureSocialExternalURL", type:ZmSetting.T_COS});
 	this.registerSetting("SOCIAL_NAME",				        {name:"zimbraFeatureSocialName", type:ZmSetting.T_COS, defaultValue:ZmMsg.communityName});
 	this.registerSetting("TASKS_ENABLED",					{name:"zimbraFeatureTasksEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
