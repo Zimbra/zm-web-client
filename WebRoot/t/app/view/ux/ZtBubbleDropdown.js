@@ -245,7 +245,17 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			menu.setHeight(Math.min(menu.get('maxHeight'), menu.get('itemHeight') * menuItems.length));
 			menu.setData(menuItems);
 			menu.on('itemtap', this.handleMenuItemTap, this);
-			menu.showBy(this.getInput(), 'tc-bc?');
+
+			if (Ext.os.deviceType === "Phone") {
+				menu.setTop(0);
+				//Dock to the right
+				menu.setRight(0);
+				menu.show();
+			} else {
+				menu.showBy(this.getInput(), 'tc-bc?');
+			}
+
+			Ext.Viewport.lastFocusedElement = Ext.Viewport.focusedElement;
 
 			// Don't let the viewport blur input field when scrolling menu
 			delete Ext.Viewport.focusedElement;
