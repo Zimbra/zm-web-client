@@ -1112,3 +1112,11 @@ ZCS.constant.reminderTimeLabels =
     [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
 
 ZCS.constant.MAX_URL_LENGTH = 30;
+
+ZCS.constant.LAYER_Z_INDEX_MAP = {
+	BASE_LAYER: 0,
+	OVERLAY_LAYER: 8,
+	MODAL_LAYER: 16,
+	MENU_LAYER: 32,
+	NOTIFICATION_LAYER: 64
+};

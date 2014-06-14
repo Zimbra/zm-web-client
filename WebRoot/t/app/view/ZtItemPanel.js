@@ -93,7 +93,8 @@ Ext.define('ZCS.view.ZtItemPanel', {
 		var titleBar = {
 			xtype: 'component',
 			itemId: 'itemTitleOnlyBar',
-			cls: 'zcs-conv-title-bar'
+			cls: 'zcs-conv-title-bar',
+			zIndex: ZCS.constant.LAYER_Z_INDEX_MAP.BASE_LAYER + 1
 		};
 
         if (app !== ZCS.constant.APP_CALENDAR) {

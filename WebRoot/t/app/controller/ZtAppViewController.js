@@ -188,6 +188,8 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 		sheetConfig.modal = true;
 		sheetConfig.hideOnMaskTap = true;
 
+		sheetConfig.zIndex = ZCS.constant.LAYER_Z_INDEX_MAP.OVERLAY_LAYER;
+
 		sheetConfig.width = width;
 		sheetConfig.height = this.getOverviewPanelHeight();
 
@@ -220,6 +222,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 
 		sheetConfig.width = width;
 		sheetConfig.height = '100%';
+		sheetConfig.zIndex = ZCS.constant.LAYER_Z_INDEX_MAP.OVERLAY_LAYER;
 
 		if (this.showListPanelAtStart && appview.getApp() === ZCS.session.getActiveApp()) {
 			sheetConfig.left = 0;
@@ -259,6 +262,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
         }
 
 		config.width = width;
+        config.zIndex = ZCS.constant.LAYER_Z_INDEX_MAP.BASE_LAYER;
 
 		var itemPanel = appview.add(config);
 
@@ -274,11 +278,9 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 		var activeApp = ZCS.session.getActiveApp(),
 			appViewConfig = this.appViews[activeApp],
 			itemPanel = appViewConfig.itemPanel,
-			listPanel = appViewConfig.listPanel,
-			itemPanelZIndex = itemPanel.getZIndex();
+			listPanel = appViewConfig.listPanel;
 
 		if (itemPanel && listPanel) {
-			listPanel.setZIndex(itemPanelZIndex + 2);
 			listPanel.show();
 		}
 	},
@@ -293,12 +295,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 		if (!appViewConfig.overviewPanel) {
 			this.createOverviewPanel(activeApp, appViewConfig);
 		}
-
-		if (activeApp !== ZCS.constant.APP_CALENDAR) {
-			var listPanelZIndex = appViewConfig.listPanel.getZIndex();
-			appViewConfig.overviewPanel.setZIndex(listPanelZIndex + 2);
-		}
-
+		
 		appViewConfig.overviewPanel.show();
 	},
 

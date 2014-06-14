@@ -98,6 +98,7 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 
 		cfg.cls = 'zcs-sheet';
 		cfg.style = "visibility:hidden; position:absolute; padding:0;";
+		cfg.zIndex = ZCS.constant.LAYER_Z_INDEX_MAP.MODAL_LAYER;
 
 		me.isPhone = Ext.os.deviceType === "Phone";
 
@@ -174,20 +175,6 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 			}),
 			itemTpl: cfg.listItemTpl
 		});
-
-		if(me.isPhone) {
-            cfg.list.store.getRootNode().insertChild(0, {
-                'title':'Cancel',
-                'name':'Cancel',
-                'displayName':'Cancel',
-                'type':'tag',
-                'zcsId' : 'cancel',
-                'itemCount' : 0,
-                'path' : '',
-                'disclosure' : false,
-                'leaf'  : true
-            });
-        }
  
 
 		this.callParent(arguments);

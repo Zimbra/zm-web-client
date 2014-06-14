@@ -72,7 +72,7 @@ Ext.define('ZCS.view.ZtToast', {
 
 		me.element.applyStyles({
 			position: 'absolute',
-			"zIndex": 10000
+			"zIndex": ZCS.constant.LAYER_Z_INDEX_MAP.NOTIFICATION_LAYER
 		});
 
         //explicitly set left coordinate - otherwise, disabling animation in hide/show in app.js

@@ -61,6 +61,9 @@ Ext.define('ZCS.common.ZtMenu', {
 	},
 
 	constructor: function (config) {
+
+		config.zIndex = ZCS.constant.LAYER_Z_INDEX_MAP.MENU_LAYER;
+
         if (this.config.showCancelButton) {
             config.data.push({
                 label: ZtMsg.cancel,

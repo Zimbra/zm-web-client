@@ -43,9 +43,22 @@ Ext.define('ZCS.common.ZtUtil', {
 	getLazyReference: function (className, config) {
 		var aliases = Ext.ClassManager.getAliasesByName(className), //get registered aliases for use in component query
 			alias = aliases[0],  //widget.component
+			layerIndex,
 			queriableAliasName = alias.substring(alias.indexOf(".")), //.component
 			existingInstances = Ext.ComponentQuery.query(queriableAliasName),
 			existingInstance = existingInstances.length > 0 && existingInstances[0];
+
+		config = config || {};
+
+		if (!config.zIndex) {
+			if (!config.layerSpec) {
+				layerIndex = 'MODAL_LAYER';
+			} else {
+				layerIndex = config.layerSpec;
+			}
+
+			config.zIndex = ZCS.constant.LAYER_Z_INDEX_MAP[layerIndex];
+		}
 
 		if (!existingInstance) {
 			return Ext.Viewport.add(Ext.create(className));
