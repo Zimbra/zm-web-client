@@ -82,11 +82,13 @@ Ext.define('ZCS.view.ZtToast', {
 		me.show({
 			from: {
 				opacity: 0,
-				left: left
+				left: left,
+				top: 50
 			},
 			to: {
 				opacity: 1,
-				left: left
+				left: left,
+				top: 50
 			},
 			duration: 1000
 		});
@@ -98,6 +100,7 @@ Ext.define('ZCS.view.ZtToast', {
 			left = (viewportBox.width / 2) - (me.getWidth() / 2);
 
 		me.setLeft(left);
+		me.setTop(50);
 	}
 }, function (thisClass) {
 		thisClass.toastTpl = Ext.create('Ext.XTemplate', ZCS.template.Toast);
