@@ -114,13 +114,16 @@ Ext.define('ZCS.common.calendar.ZtRecurrence', {
                 break;
             }
             case this.self.WEEKLY: {
-                if (this.repeatCustomCount === 1 && this.repeatWeeklyDays.length === 1) {
+                if (this.repeatCustomCount === 1 && (this.repeatWeeklyDays.length === 1 || this.repeatWeeklyDays.length === 0)) {
                     var dayofweek = ZCS.util.indexOf(this.self.SERVER_WEEK_DAYS, this.repeatWeeklyDays[0]),
                         date = new Date(),
                         formatter;
 
-                    date.setDate(date.getDate() - date.getDay() + dayofweek);
+	                if (dayofweek === -1) {
+		                dayofweek = this.self.SERVER_WEEK_DAYS.indexOf(this.self.SERVER_WEEK_DAYS[this.startDate.getDay()]);
+	                }
 
+		            date.setDate(date.getDate() - date.getDay() + dayofweek);
                     every.push(ZCS.util.formatRecurMsg(ZtMsg.recurWeeklyEveryWeekday, date));
                 }
                 else {
