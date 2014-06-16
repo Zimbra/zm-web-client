@@ -299,7 +299,10 @@
 
 #widgets/_assignmentview.scss
 <template id="TagAssignmentListItem">
-	<div class='zcs-tag zcs-tag-{color} zcs-tag-large' <tpl if="rgb">style='background-color:{rgb};'</tpl>></div>{displayName}
+	<tpl if="color || rgb">
+		<div class='zcs-tag zcs-tag-{color} zcs-tag-large' <tpl if="rgb">style='background-color:{rgb};'</tpl> ></div>
+	</tpl>
+	{displayName}
 </template>
 
 <template id="InviteDesc">
@@ -711,3 +714,19 @@
 	</div>
 </template>
 
+<template id="OrganizerItem">
+	<div class='zcs-menu-icon <tpl if="folderType">{folderType}'<tpl else>{type}'</tpl> ></div>
+	<div class='zcs-menu-label'>
+		<tpl if="type === ZCS.constant.ORG_TAG && (color || rgb)">
+			<div class='zcs-tag zcs-tag-{color} zcs-tag-large' <tpl if="rgb">style='background-color:{rgb};'</tpl> ></div>
+		</tpl>
+		<tpl if="folderType === ZCS.constant.ORG_CALENDAR">
+			<tpl if="zcsId === ZCS.constant.ID_CALENDAR">
+				<span class='zcs-menu-color-block zcs-tag-1'></span>
+			<tpl else>
+				<span class='zcs-menu-color-block zcs-tag-{color}' style='background-color: {rgb};'></span>
+			</tpl>
+		</tpl>
+		{title}
+	</div>
+</template>

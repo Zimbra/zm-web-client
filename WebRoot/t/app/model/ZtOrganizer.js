@@ -139,15 +139,6 @@ Ext.define('ZCS.model.ZtOrganizer', {
 				return !organizer1 && !organizer2 ? 0 : organizer1 ? 1 : -1;
 			}
 
-
-			if(organizer1 && organizer1.get && organizer1.get('zcsId') === 'cancel') {
-                return 1;
-            }
-
-            if(organizer1 && organizer2 && organizer2.get && organizer2.get('zcsId') === 'cancel') {
-                return -1;
-            }
-
 			// organizers may come to us as data or as instantiated ZtOrganizer objects
 			var get1 = !!organizer1.get,
 				get2 = !!organizer2.get,
@@ -160,6 +151,14 @@ Ext.define('ZCS.model.ZtOrganizer', {
 				isSystem1 = (orgType1 === ZCS.constant.ORG_FOLDER && id1 <= ZCS.constant.MAX_SYSTEM_ID),
 				isSystem2 = (orgType2 === ZCS.constant.ORG_FOLDER && id2 <= ZCS.constant.MAX_SYSTEM_ID),
 				sortField1, sortField2;
+
+			// Our special Cancel item always sorts to the top
+			if (id1 === ZCS.constant.ID_CANCEL) {
+				return -1;
+			}
+			if (id2 === ZCS.constant.ID_CANCEL) {
+				return 1;
+			}
 
 			if (orgType1 !== orgType2) {
 				sortField1 = ZCS.constant.ORG_SORT_VALUE[orgType1] || 0;
@@ -458,8 +457,12 @@ Ext.define('ZCS.model.ZtOrganizer', {
 	 */
 	isValidAssignmentTarget: function(item) {
 
-		var	type = this.get('type');
+		// always let us add the special "Cancel" item if present
+		if (this.get('zcsId') === ZCS.constant.ID_CANCEL) {
+			return true;
+		}
 
+		var	type = this.get('type');
 		if (type === ZCS.constant.ORG_TAG) {
 			return !item.hasTag(this);
 		}

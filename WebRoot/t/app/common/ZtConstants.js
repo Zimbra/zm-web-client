@@ -366,6 +366,7 @@ ZCS.constant.ID_CHATS       = '14';
 
 // Use negative ID for internal system folder
 ZCS.constant.ID_DLS         = '-18';    // distribution lists
+ZCS.constant.ID_CANCEL      = '-19';    // special Cancel item for assignment view on phone
 
 // An ID less than this indicates a system folder
 ZCS.constant.MAX_SYSTEM_ID = 255;

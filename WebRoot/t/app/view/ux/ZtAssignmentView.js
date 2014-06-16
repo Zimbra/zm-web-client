@@ -94,6 +94,7 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 	},
 
 	constructor: function (cfg) {
+
 		var me = this;
 
 		cfg.cls = 'zcs-sheet';
@@ -175,6 +176,21 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 			}),
 			itemTpl: cfg.listItemTpl
 		});
+
+		var store = cfg.list.store;
+		if (me.isPhone) {
+            store.getRoot().insertChild(0, {
+                title:          ZtMsg.cancel,
+                name:           ZtMsg.cancel,
+                displayName:    ZtMsg.cancel,
+                type:           store.getAt(0).get('type'),
+                zcsId:          ZCS.constant.ID_CANCEL,
+                itemCount:      0,
+                path:           '',
+                disclosure:     false,
+                leaf:           true
+            });
+        }
  
 
 		this.callParent(arguments);
@@ -184,15 +200,12 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 
 		tapProducer.on('itemtap', function (list, index, target, organizer, e, eOpts) {
   			item = me.getRecord();
-  			if (!target.getDisabled() && organizer.get('zcsId') !== 'cancel') {
+  			if (!target.getDisabled() && organizer.get('zcsId') !== ZCS.constant.ID_CANCEL) {
   				eventName = item.get('type') + 'Assignment';
   				me.fireEvent(eventName, organizer, item);
-  				e.preventDefault();
-  				me.onClose();
-     		} else if(organizer.get('zcsId') === 'cancel') {
- 			    e.preventDefault();
-                me.onClose();
-  			}
+		    }
+            e.preventDefault();
+            me.onClose();
 		});
 
 		ZCS.app.on('orientationChange', function (newDimensions) {
