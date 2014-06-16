@@ -1,4 +1,3 @@
-
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
@@ -808,7 +807,7 @@ function(leaveMarkers) {
 	if (this._htmlEditor) {
 		content = this._htmlEditor.getContent(true);
 		if (!leaveMarkers && (this._composeMode === Dwt.TEXT)) {
-			content = content.replace(/\u0001|\u0002|\u0003|\u0004|\u0005|\u0006/g, "");	// remove markers
+			content = this._removeMarkers(content);
 		}
 	}
 	return content;
@@ -2021,12 +2020,12 @@ ZmComposeView.BC_ALL_COMPONENTS = [
 
 // nonprinting markers that help us identify components within editor content
 ZmComposeView.BC_TEXT_MARKER = {};
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_TEXT_PRE]		= '\u0001';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_SIG_PRE]		= '\u0002';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_DIVIDER]		= '\u0003';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_HEADERS]		= '\u0004';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_QUOTED_TEXT]	= '\u0005';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_SIG_POST]		= '\u0006';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_TEXT_PRE]		= '\u200B\u200B';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_SIG_PRE]		= '\u200C\u200C';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_DIVIDER]		= '\u200D\u200D';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_HEADERS]		= '\uFEFF\uFEFF';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_QUOTED_TEXT]	= '\u200B\u200C';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_SIG_POST]		= '\u200B\u200D';
 
 // HTML marker is an expando attr whose value is the name of the component
 ZmComposeView.BC_HTML_MARKER_ATTR = "data-marker";
@@ -2408,6 +2407,11 @@ function(mode, params) {
 	return value;
 };
 
+ZmComposeView.prototype._removeMarkers =
+function(text) {
+	return text.replace(/\u200B|\u200C|\u200D|\uFEFF/g, "");
+};
+
 ZmComposeView.prototype._normalizeText =
 function(text, isHtml) {
 		
@@ -2416,8 +2420,8 @@ function(text, isHtml) {
         text = AjxStringUtil.trimHtml(text);
 	}
 	else {
-		text = text.replace(/\u0001|\u0002|\u0003|\u0004|\u0005|\u0006/g, "");	// remove markers
-		text = text.replace(/\n+$/g, "\n");										// compress trailing line returns
+		text = this._removeMarkers(text);
+		text = text.replace(/\n+$/g, "\n");	// compress trailing line returns
 	}
 
 	return AjxStringUtil._NON_WHITESPACE.test(text) ? text + this._crlf : "";
