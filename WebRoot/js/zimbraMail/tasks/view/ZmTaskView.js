@@ -154,3 +154,6 @@ function(ev){
     }
 };
 
+ZmTaskView.prototype._getItemCountType = function() {
+	return ZmId.ITEM_TASK;
+};
