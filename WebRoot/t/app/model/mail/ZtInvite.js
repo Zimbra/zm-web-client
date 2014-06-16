@@ -172,6 +172,12 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 						attList = (att.role === ZCS.constant.ROLE_OPTIONAL) ? optAttendees : attendees;
 						email = ZCS.model.mail.ZtEmailAddress.fromInviteNode(att);
                         email.ptst = att.ptst;
+                        if (!email.ptst) {
+                            email.ptst = ZCS.model.mail.ZtInvite.getPtstFromReplies(node.replies, att.a);
+                            if (!email.ptst) {
+                                email.ptst = ZCS.constant.PSTATUS_UNKNOWN; //We don't know the status
+                            }
+                        }
                         attList.push(email);
                     }
 				}
@@ -228,6 +234,22 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 
 			return invite;
 		},
+
+        getPtstFromReplies: function(node, email) {
+            if (!node || node.length !== 1) {
+                return null;
+            }
+            var reply = node[0].reply;
+            if (!reply) {
+                return null;
+            }
+            for (var i = 0; i < reply.length; i++) {
+                if (reply[i].at === email) {
+                    return reply[i].ptst;
+                }
+            }
+            return null;
+        },
 
 		/**
 		 * Converts a Zimbra date object to Date based on its contents. Dates come in at least two
