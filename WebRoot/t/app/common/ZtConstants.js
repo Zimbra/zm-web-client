@@ -1115,9 +1115,22 @@ ZCS.constant.reminderTimeLabels =
 ZCS.constant.MAX_URL_LENGTH = 30;
 
 ZCS.constant.LAYER_Z_INDEX_MAP = {
-	BASE_LAYER: 0,
-	OVERLAY_LAYER: 8,
-	MODAL_LAYER: 16,
-	MENU_LAYER: 32,
+	BASE_LAYER:         0,
+	OVERLAY_LAYER:      8,
+	MODAL_LAYER:        16,
+	MENU_LAYER:         32,
 	NOTIFICATION_LAYER: 64
+};
+
+ZCS.constant.COLOR_TO_RGB = {
+	0:  '#000000',
+	1:  '#5b9bf2',
+	2:  '#43eded',
+	3:  '#6acb9e',
+	4:  '#ba86e5',
+	5:  '#f66666',
+	6:  '#f8fa33',
+	7:  '#fe98d3',
+	8:  '#bebebe',
+	9:  '#fdbc55'
 };

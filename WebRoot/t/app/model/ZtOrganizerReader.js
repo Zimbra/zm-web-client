@@ -67,7 +67,7 @@ Ext.define('ZCS.model.ZtOrganizerReader', {
 			displayName:        Ext.String.htmlEncode(orgName),
 			path:               isFolder ? node.absFolderPath || node.name : '',
 			color:              node.color,
-			rgb:                node.rgb,
+			rgb:                node.rgb ? node.rgb : node.color ? ZCS.constant.COLOR_TO_RGB[node.color] : null,
 			itemCount:          node.n,
 			disclosure:         false,
 			leaf:               true,

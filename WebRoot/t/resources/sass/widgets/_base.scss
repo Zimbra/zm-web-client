@@ -113,7 +113,7 @@ $zcs-overview-text-color: $light-grey;
 	@include border-radius(0);
 }
 
-.zcs-overview {
+.zcs-overview, .zcs-assignment-panel {
 
 	background: $zcs-overview-base-color;
 
@@ -369,9 +369,9 @@ $zcs-overview-text-color: $light-grey;
 			.zcs-menu-icon.search:before {
 				content: "s";
 			}
-//			.zcs-menu-icon.tag:before {
-//				content: "t";
-//			}
+			.zcs-menu-icon.tag:before {
+				content: "t";
+			}
 			.zcs-menu-icon.mailFolder:before {
 			  content: "M";
 			}
