@@ -27,8 +27,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
 	extend: 'Ext.data.Model',
 
 	requires: [
-		'ZCS.model.calendar.ZtCalendarReader',
-		'ZCS.model.calendar.ZtCalendarWriter'
+		'ZCS.model.calendar.ZtAppointmentReader',
+		'ZCS.model.calendar.ZtAppointmentWriter'
 	],
 
 	config: {
@@ -81,8 +81,8 @@ Ext.define('ZCS.model.mail.ZtInvite', {
                 update  : urlBase + 'ModifyAppointmentRequest'
             },
 
-            reader: 'calendarreader',
-            writer: 'calendarwriter'
+            reader: 'appointmentreader',
+            writer: 'appointmentwriter'
         },
 
 		msgId: ''

@@ -29,7 +29,7 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
 
         models: ['ZCS.model.mail.ZtInvite'],
 
-        stores: ['ZCS.store.calendar.ZtCalendarStore'],
+        stores: ['ZCS.store.calendar.ZtAppointmentStore'],
 
         composeMode:    null,
 

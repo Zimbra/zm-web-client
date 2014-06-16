@@ -249,7 +249,7 @@ ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONVERSATION] = 'ZCS.model.mail.Zt
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MESSAGE]      = 'ZCS.model.mail.ZtMailMsg';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_CONTACT]      = 'ZCS.model.contacts.ZtContact';
 ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_MATCH]        = 'ZCS.model.address.ZtAutoComplete';
-ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_APPOINTMENT]     = 'ZCS.model.calendar.ZtCalendar';
+ZCS.constant.CLASS_FOR_TYPE[ZCS.constant.ITEM_APPOINTMENT]     = 'ZCS.model.calendar.ZtAppointment';
 
 ZCS.constant.ORG_NODE_FIELD_HASH = ZCS.util.arrayAsLookupHash([
 //	'name', 'absFolderPath', 'color', 'rgb', 'l', 'n', 'u', 'url', 'query', 'types'
@@ -297,14 +297,14 @@ ZCS.constant.NODE_ITEM = ZCS.util.getBackMap(ZCS.constant.ITEM_NODE);
 ZCS.constant.STORE = {};
 ZCS.constant.STORE[ZCS.constant.APP_MAIL]       = 'ZtConvStore';
 ZCS.constant.STORE[ZCS.constant.APP_CONTACTS]   = 'ZtContactStore';
-ZCS.constant.STORE[ZCS.constant.APP_CALENDAR]   = 'ZtCalendarStore';
+ZCS.constant.STORE[ZCS.constant.APP_CALENDAR]   = 'ZtAppointmentStore';
 
 // Store that holds each type of item
 ZCS.constant.ITEM_STORE = {};
 ZCS.constant.ITEM_STORE[ZCS.constant.ITEM_CONVERSATION] = 'ZtConvStore';
 ZCS.constant.ITEM_STORE[ZCS.constant.ITEM_MESSAGE]      = 'ZtMsgStore';
 ZCS.constant.ITEM_STORE[ZCS.constant.ITEM_CONTACT]      = 'ZtContactStore';
-ZCS.constant.ITEM_STORE[ZCS.constant.ITEM_APPOINTMENT]  = 'ZtCalendarStore';
+ZCS.constant.ITEM_STORE[ZCS.constant.ITEM_APPOINTMENT]  = 'ZtAppointmentStore';
 
 // App based on folder type
 ZCS.constant.FOLDER_APP = {};

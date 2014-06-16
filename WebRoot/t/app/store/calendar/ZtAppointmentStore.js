@@ -14,16 +14,16 @@
  */
 
 /**
- * This class represents a store of calendars used to display the calendars in the list panel.
+ * This class represents a store of calendar appointments.
  *
  * @author Ajinkya Chhatre <achhatre@zimbra.com>
  */
-Ext.define('ZCS.store.calendar.ZtCalendarStore', {
+Ext.define('ZCS.store.calendar.ZtAppointmentStore', {
 
     extend: 'ZCS.store.ZtItemStore',
 
     config: {
-        model: 'ZCS.model.calendar.ZtCalendar',
+        model: 'ZCS.model.calendar.ZtAppointment',
         remoteSort: true
     }
 });

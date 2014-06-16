@@ -19,11 +19,11 @@
  * @author Ajinkya Chhatre <achhatre@zimbra.com>
  */
 
-Ext.define('ZCS.model.calendar.ZtCalendarWriter', {
+Ext.define('ZCS.model.calendar.ZtAppointmentWriter', {
 
     extend: 'ZCS.model.ZtWriter',
 
-    alias: 'writer.calendarwriter',
+    alias: 'writer.appointmentwriter',
 
     writeRecords: function(request, data) {
 

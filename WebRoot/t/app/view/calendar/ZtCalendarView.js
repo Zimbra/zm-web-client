@@ -44,7 +44,7 @@ Ext.define('ZCS.view.calendar.ZtCalendarView', {
             enableSwipeNavigate: true,
             viewConfig: {
                 weekStart: 0,
-                eventStore: Ext.getStore('ZtCalendarStore')
+                eventStore: Ext.getStore('ZtAppointmentStore')
             }
         };
 
@@ -61,7 +61,7 @@ Ext.define('ZCS.view.calendar.ZtCalendarView', {
             },
             viewConfig: {
                 weekStart:  0,
-                eventStore: Ext.getStore('ZtCalendarStore')
+                eventStore: Ext.getStore('ZtAppointmentStore')
             }
         };
 
@@ -78,7 +78,7 @@ Ext.define('ZCS.view.calendar.ZtCalendarView', {
             },
             viewConfig: {
                 weekStart:  0, //TODO: This will be set as per User Preferences
-                eventStore: Ext.getStore('ZtCalendarStore')
+                eventStore: Ext.getStore('ZtAppointmentStore')
             }
         };
 

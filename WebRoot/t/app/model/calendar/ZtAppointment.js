@@ -20,13 +20,13 @@
  */
 
 var urlBase = ZCS.constant.SERVICE_URL_BASE;
-Ext.define('ZCS.model.calendar.ZtCalendar', {
+Ext.define('ZCS.model.calendar.ZtAppointment', {
 
     extend: 'ZCS.model.ZtItem',
 
     requires: [
-        'ZCS.model.calendar.ZtCalendarReader',
-        'ZCS.model.calendar.ZtCalendarWriter'
+        'ZCS.model.calendar.ZtAppointmentReader',
+        'ZCS.model.calendar.ZtAppointmentWriter'
     ],
 
     config: {
@@ -91,8 +91,8 @@ Ext.define('ZCS.model.calendar.ZtCalendar', {
                 update  : urlBase + 'ModifyAppointmentRequest'
             },
 
-            reader: 'calendarreader',
-            writer: 'calendarwriter'
+            reader: 'appointmentreader',
+            writer: 'appointmentwriter'
         }
     }
 });

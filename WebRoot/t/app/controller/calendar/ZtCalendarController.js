@@ -39,9 +39,9 @@ Ext.define('ZCS.controller.calendar.ZtCalendarController', {
 
     config: {
 
-        models: ['ZCS.model.calendar.ZtCalendar'],
+        models: ['ZCS.model.calendar.ZtAppointment'],
 
-        stores: ['ZCS.store.calendar.ZtCalendarStore'],
+        stores: ['ZCS.store.calendar.ZtAppointmentStore'],
 
         views: [
             'ZCS.view.calendar.ZtCalendarView'

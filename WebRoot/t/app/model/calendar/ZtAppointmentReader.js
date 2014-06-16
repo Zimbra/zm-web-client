@@ -14,16 +14,16 @@
  */
 
 /**
- * This class parses JSON calendar data into ZtCalendar objects.
+ * This class parses JSON calendar data into ZtAppointment objects.
  *
  * @author Ajinkya Chhatre <achhatre@zimbra.com>
  */
 
-Ext.define('ZCS.model.calendar.ZtCalendarReader', {
+Ext.define('ZCS.model.calendar.ZtAppointmentReader', {
 
     extend: 'ZCS.model.ZtReader',
 
-    alias: 'reader.calendarreader',
+    alias: 'reader.appointmentreader',
 
     /**
      * Converts a list of JSON nodes into a list of records.
