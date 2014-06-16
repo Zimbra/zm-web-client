@@ -387,7 +387,7 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 		// notification. We only do this for a real conv (more than two messages). If a conv has
 		// just been promoted from virtual to real, then ZtConvListController::handleModifyNotification
 		// handles moving it to the top.
-		if (convStore.getById(convId) && conv.get('numMsgs') > 2) {
+		if (convStore.getById(convId) && conv && conv.get('numMsgs') > 2) {
 			conv.handleModifyNotification({
 				d: create.d,
 				fr: create.fr
@@ -408,6 +408,9 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 			}
 			else {
 				store.insert(0, [msg]);
+			}
+			if (conv) {
+				conv.handleMsgChange(msg);
 			}
 			item.set('numMsgsShown', item.get('numMsgsShown'));
 		}
@@ -527,12 +530,12 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	checkConv: function(item, isDelete) {
 
 		var convId = item.get('convId'),
-			conv = this.getItem(),
 			curId = item && item.getId(),
 			convListCtlr = ZCS.app.getConvListController(),
-			convStore = convListCtlr.getStore();
+			convStore = convListCtlr.getStore(),
+			conv = convStore.getById(convId);
 
-		if (convId === curId && convStore.getById(convId)) {
+		if (convId === curId && conv) {
 			var	curFolder = ZCS.session.getCurrentSearchOrganizer(),
 				curFolderId = curFolder && curFolder.get('zcsId'),
 				store = this.getStore(),
@@ -567,6 +570,10 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 					convListView.select(Math.min(index, convStore.getCount() - 1));
 				}
 			}
+		}
+
+		if (conv) {
+			conv.handleMsgChange(item, isDelete);
 		}
 	},
 

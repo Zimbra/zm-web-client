@@ -105,7 +105,9 @@ Ext.define('ZCS.model.mail.ZtConv', {
 		return this.callParent(arguments) || this;
 	},
 
-	updateMessages: function(messages) {
+	// If the hash that tells us which folder each of the conv's messages are in changes, update
+	// the folder hash that tells us which folders this conv spans.
+	updateMessageInfo: function(messages) {
 
 		var folderHash = {},
 			folderId;
@@ -118,6 +120,26 @@ Ext.define('ZCS.model.mail.ZtConv', {
 		}, this);
 
 		this.setFolderHash(folderHash);
+	},
+
+	// Update our message info if a msg is added, changed, or deleted.
+	handleMsgChange: function(msg, isDelete) {
+
+		var msgInfo = this.getMessageInfo(),
+			msgId = msg.get('zcsId');
+
+		if (isDelete) {
+			msgInfo[msgId] = null;
+			msgInfo.delete(msgId);
+		}
+		else {
+			msgInfo[msgId] = {
+				id: msgId,
+				l:  msg.get('folderId')
+			};
+		}
+
+		this.setMessageInfo(msgInfo);
 	},
 
 	/**
