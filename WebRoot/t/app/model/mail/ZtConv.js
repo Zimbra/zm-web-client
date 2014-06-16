@@ -126,17 +126,26 @@ Ext.define('ZCS.model.mail.ZtConv', {
 	handleMsgChange: function(msg, isDelete) {
 
 		var msgInfo = this.getMessageInfo(),
-			msgId = msg.get('zcsId');
+			ln = msgInfo.length, i, m, id,
+			msgId = msg.get('zcsId'),
+			indexToDelete = null;
 
-		if (isDelete) {
-			msgInfo[msgId] = null;
-			msgInfo.delete(msgId);
+		for (i = 0; i < ln; i++) {
+			m = msgInfo[i];
+			id = m.id;
+			if (id === msgId) {
+				if (isDelete) {
+					indexToDelete = i;
+				}
+				else {
+					m.l = msg.get('folderId');
+				}
+				break;
+			}
 		}
-		else {
-			msgInfo[msgId] = {
-				id: msgId,
-				l:  msg.get('folderId')
-			};
+
+		if (indexToDelete !== null) {
+			msgInfo.splice(indexToDelete, 1);
 		}
 
 		this.setMessageInfo(msgInfo);

@@ -529,13 +529,11 @@ Ext.define('ZCS.controller.mail.ZtConvController', {
 	 */
 	checkConv: function(item, isDelete) {
 
-		var convId = item.get('convId'),
-			curId = item && item.getId(),
-			convListCtlr = ZCS.app.getConvListController(),
+		var	convListCtlr = ZCS.app.getConvListController(),
 			convStore = convListCtlr.getStore(),
-			conv = convStore.getById(convId);
+			conv = convStore.getById(item.get('convId'));
 
-		if (convId === curId && conv) {
+		if (conv) {
 			var	curFolder = ZCS.session.getCurrentSearchOrganizer(),
 				curFolderId = curFolder && curFolder.get('zcsId'),
 				store = this.getStore(),

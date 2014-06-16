@@ -201,20 +201,19 @@ Ext.define('ZCS.model.ZtSoapProxy', {
 
 		var ids = deleted.id && deleted.id.split(','),
 			notification,
-			type,
 			organizerNotifications = [],
-			object;
+			organizer;
 
 		Ext.each(ids, function(id) {
-			
-			object = ZCS.session.getOrganizerModel(id);
+
+			organizer = ZCS.session.getOrganizerModel(id);
 
 			notification = {
 				id:     id,
 				type:   ZCS.constant.NOTIFY_DELETE
 			};
 
-			if (organizerNotifications) {
+			if (organizer) {
 				organizerNotifications.push(notification);
 			} else {
 				ZCS.app.fireEvent('notify', notification);
