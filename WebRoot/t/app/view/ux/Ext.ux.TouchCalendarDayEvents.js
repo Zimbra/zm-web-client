@@ -76,45 +76,107 @@ Ext.define('Ext.ux.TouchCalendarDayEvents', {
 			}
 		});
 
-		store.each(function(record) {
+		var timeSlots = [];
+
+		for (var i = 0, storeLen = store.getCount(); i < storeLen; i++) {
+			var record = store.getAt(i);
+
 			if (!record.get('Record').get('isAllDay')) {
-				var eventRecord = record.data.Record,
-					eventBar    = me.createEventBar(record, eventRecord),
-					eventWidth,
-					verticalPos,
-					horizontalPos,
-					eventHeight;
+				var start,
+					end,
+					starthour,
+					endHour;
 
-				eventWidth = me.getEventBarWidth(record, 50 + 10); // 50 = left margin, 10 = right margin TODO: make configurable
-				verticalPos = me.getVerticalDayPosition(record);
+				start = record.get('Record').get('start');
+				end = record.get('Record').get('end');
 
-				horizontalPos = me.getHorizontalDayPosition(record, eventWidth, false);
-				eventHeight = me.getEventBarHeight(record) + 1;
+				starthour = start.getHours();
+				endHour = end.getHours();
 
-				if (horizontalPos > 50) {
-					eventWidth = (eventWidth - horizontalPos) + 50;
-				}
-
-				eventBar.setLeft(horizontalPos);
-				eventBar.setTop(verticalPos - me.getCalendar().element.getY());
-
-				eventBar.setHeight(eventHeight);
-				eventBar.setWidth(eventWidth);
+				addAppointmentToSlots(record, starthour, endHour);
 			}
-		});
+		}
+
+		function addAppointmentToSlots(record, startHour, endHour) {
+			for (var i = startHour; i <= endHour; i++) {
+				if(timeSlots[i]) {
+					timeSlots[i].push(record);
+				}
+				else{
+					timeSlots[i] = [record];
+				}
+			}
+		}
+
+		timeSlots = this.reindexTimeSlotArray(timeSlots);
+
+		for (var i = 0, timeSlotLen = timeSlots.length; i < timeSlotLen; i++) {
+			var slot = timeSlots[i];
+
+			if (slot) {
+				for (var j = 0; j < slot.length; j++) {
+					if (slot[j]) {
+						if (slot[j].data.Record.get('start').getHours() === i) {
+							var eventRecord = slot[j].data.Record,
+								eventBar = this.createEventBar(slot[j], eventRecord),
+								eventWidth,
+								verticalPos,
+								horizontalPos,
+								eventHeight;
+
+							eventWidth = this.getEventBarWidth(slot[j], 60, slot.length);
+							verticalPos = this.getVerticalDayPosition(slot[j]);
+							horizontalPos = this.getHorizontalDayPosition(slot[j], eventWidth);
+							eventHeight = this.getEventBarHeight(slot[j]) + 1;
+
+							eventBar.setLeft(horizontalPos);
+							eventBar.setTop(verticalPos - this.getCalendar().element.getY());
+
+							eventBar.setHeight(eventHeight);
+							eventBar.setWidth(eventWidth);
+						}
+					}
+				}
+			}
+		}
 
 		if (!hasAllDay) {
 			allDayApptRow.hide();
 		}
 	},
 
-	getEventBarWidth: function(event, offset) {
-		var eventsInTimeSlot    = 1,
+	getEventBarWidth: function(event, offset, slotCount) {
+		var eventsInTimeSlot    = slotCount ? slotCount : 1,
 			calendarWidth       = this.getCalendar().element.getWidth();
 
 		offset                  = offset || 0;
 
 		return Math.floor((calendarWidth - offset) / eventsInTimeSlot);
+	},
+
+	reindexTimeSlotArray: function(timeSlots) {
+		var i       = 0,
+			slotLen = timeSlots.length;
+
+		for (; i < slotLen; i++) {
+			var slot = timeSlots[i];
+
+			if (slot) {
+				var counter = 0;
+
+				while (counter < slot.length) {
+
+					if (slot[counter] && slot[counter].data.Record.get('start').getHours() !== i) {
+						slot.splice(counter, 1);
+					}
+					else {
+						counter++;
+					}
+				}
+			}
+		}
+
+		return timeSlots;
 	},
 
 	getEventBarHeight: function(event) {
@@ -218,21 +280,12 @@ Ext.define('Ext.ux.TouchCalendarDayEvents', {
 		return verticalPosition;
 	},
 
-	getHorizontalDayPosition: function(event, eventBarWidth, isAllDay){
-		var barPos           = event.get('BarPosition'),
-			leftMargin       = 50,
-			spacing          = this.getPlugin().getEventBarSpacing(),
-			eventsInTimeSlot = this.getEventsPerTimeSlot()[event.get('Date').getTime()];
+	getHorizontalDayPosition: function(event, eventBarWidth) {
+		var barPos      = event.get('BarPosition'),
+			leftMargin  = 50,
+			spacing     = this.getPlugin().getEventBarSpacing();
 
-		// If for current event there are other 0 or less than 2 other events in same timeslot
-		// or overlapping then, discard event's bar position which can be misleading.
-		if (isAllDay || eventsInTimeSlot <= 2) {
-			barPos = 0;
-			return leftMargin + (barPos * eventBarWidth) + (barPos * spacing);
-		}
-		else {
-			return leftMargin + (barPos * eventBarWidth / eventsInTimeSlot) + (barPos * spacing);
-		}
+		return leftMargin + (barPos * eventBarWidth) + (barPos * spacing);
 	},
 
 	/**
