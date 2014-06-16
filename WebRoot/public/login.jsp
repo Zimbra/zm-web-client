@@ -56,10 +56,18 @@
 			<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 			<c:set var="logoutRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLogoutURL}" />
 			<c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLogoutURLAllowedUA)}"/>
-			<zm:logout/>
-			<c:if test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain)}" >
-				<c:redirect url="${logoutRedirectUrl}"/>
-			</c:if>
+            <c:choose>
+                <c:when test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
+                    <zm:logout/>
+                    <c:redirect url="${logoutRedirectUrl}"/>
+                </c:when>
+                <c:when test="${useTablet or useMobile}">
+                    <jsp:forward page="/public/loginTouch.jsp"/>
+                </c:when>
+                <c:otherwise>
+                    <zm:logout/>
+                </c:otherwise>
+            </c:choose>
 		</c:when>
 		<c:when test="${(param.loginOp eq 'login') && !(empty trimmedUserName) && !(empty param.password) && (pageContext.request.method eq 'POST')}">
 			<c:choose>
