@@ -606,11 +606,11 @@ function(params) {
     if (!appCtxt.isExternalAccount()) {
         params.attrs.l = params.folder.id;
         params.action = "copy";
+        params.actionTextKey = 'itemCopied';
     }
     else {
         params.action = 'trash';
     }
-	params.actionTextKey = 'itemCopied';
 	params.actionArg = params.folder.getName(false, false, true);
 	params.callback = new AjxCallback(this, this._handleResponseCopyItems, params);
 
