@@ -88,7 +88,8 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 			 * the user inputs some search text.
 			 */
 			initialize: function () {
-				var me = this;
+				var me = this,
+					itemHeight = 68;
 
 				this.showMenu = Ext.Function.createBuffered(function (value) {
 
@@ -98,15 +99,17 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 					}
 
 					if (!this.menu) {
-						this.menu = Ext.create('Ext.dataview.List', {
+						this.menu = Ext.Viewport.add({
+							xtype: 'list',
 							cls: 'zcs-contact-suggest',
 							itemTpl: '{label}',
 							scrollable: 'vertical',
 							defaultType: 'listitem',
 							disableSelection: true,
 							maxHeight: 400,
-							itemHeight: 68,
-							width: this.getMenuWidth()
+							itemHeight: itemHeight,
+							width: this.getMenuWidth(),
+							zIndex: ZCS.constant.LAYER_Z_INDEX_MAP.MENU_LAYER
 						});
 					}
 
@@ -136,7 +139,8 @@ Ext.define('ZCS.view.ux.ZtBubbleDropdown', {
 
 					//Let the menu know that it only has the space between the bottom of the input
 					//and the top of the keyboard  to show itself, this will allow it to scroll.
-					this.menu.setMaxHeight(availableHeight);
+					//Make sure the height is at least enough to display one item.
+					this.menu.setMaxHeight(Math.max(availableHeight, itemHeight));
 
 					//If the value length is greater than 0 and defined.
 					if (value.length) {

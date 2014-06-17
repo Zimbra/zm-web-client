@@ -222,7 +222,7 @@ Ext.define('ZCS.controller.ZtAppViewController', {
 
 		sheetConfig.width = width;
 		sheetConfig.height = '100%';
-		sheetConfig.zIndex = ZCS.constant.LAYER_Z_INDEX_MAP.OVERLAY_LAYER;
+		sheetConfig.zIndex = ZCS.constant.LAYER_Z_INDEX_MAP.OVERLAY_LAYER + 1;
 
 		if (this.showListPanelAtStart && appview.getApp() === ZCS.session.getActiveApp()) {
 			sheetConfig.left = 0;

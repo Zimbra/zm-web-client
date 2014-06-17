@@ -49,7 +49,9 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
      */
     showNewApptForm: function(mode, msg, event, warningDone) {
 
-        var panel = ZCS.util.getLazyReference('ZCS.view.calendar.ZtNewAppointment'),
+        var panel = ZCS.util.getLazyReference('ZCS.view.calendar.ZtNewAppointment', {
+                zIndex: ZCS.constant.LAYER_Z_INDEX_MAP.MODAL_LAYER + 1
+            }),
             isEdit = (mode === ZCS.constant.OP_EDIT);
 
 	    if (isEdit && !warningDone) {
@@ -160,7 +162,7 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
 
     unhideAppointmentForm: function () {
         if (Ext.os.deviceType === "Phone") {
-            this.getNewApptPanel().element.dom.style.removeProperty('display');
+            this.getNewApptPanel().show(false);
         } else {
             this.getNewApptPanel().show({
                 type: 'fadeIn',
@@ -176,7 +178,7 @@ Ext.define('ZCS.controller.calendar.ZtNewAppointmentController', {
         var panel = this.getNewApptPanel();
 
         if (Ext.os.deviceType === "Phone") {
-            panel.element.dom.style.setProperty('display', 'none');
+            panel.hide(false);
         } else {
             panel.hide({
                 type: 'fadeOut',

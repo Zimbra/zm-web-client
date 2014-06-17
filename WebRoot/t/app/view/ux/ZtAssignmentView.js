@@ -278,6 +278,7 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 
 			component.on('show', function() {
 				sheet.setVisibility(true);
+				component.originalZIndex = component.getZIndex(); 
 				component.setZIndex(sheet.getZIndex() + 1);
 				if (sheet.getOnTransitionComplete()) {
 					sheet.getOnTransitionComplete()();
@@ -305,6 +306,8 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 			this.setAnimatedComponent(component);
 		} else {
 			sheet.setVisibility(true);
+			component.originalZIndex = component.getZIndex();
+			this.shiftedComponent = component;
 			component.setZIndex(sheet.getZIndex() + 1);
 			if (sheet.getOnTransitionComplete()) {
 				sheet.getOnTransitionComplete()();
@@ -411,6 +414,9 @@ Ext.define('ZCS.view.ux.ZtAssignmentView', {
 
 			this.originalParent.add(this.shiftedComponent);
 		}
+		
+		this.shiftedComponent.setZIndex(this.shiftedComponent.originalZIndex);
+
 
 		this.setVisibility(false);
 

@@ -234,7 +234,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 	 */
 	showComposeForm: function(addresses, subject, body, msg) {
 
-		var panel = ZCS.util.getLazyReference('ZCS.view.mail.ZtComposeForm'),
+		var me = this,
+			panel = ZCS.util.getLazyReference('ZCS.view.mail.ZtComposeForm'),
 			form = panel.down('formpanel'),
 			formField = {},
 			subjectFld = form.down('field[name=subject]'),
@@ -285,39 +286,40 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			}
 		}
 
-		this.unhideComposeForm();
+		this.unhideComposeForm(function () {
+			Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
+				formField[type].addBubbles(addresses[type]);
+			}, me);
+			me.checkRecipientStatus();
 
-		Ext.each(ZCS.constant.RECIP_TYPES, function(type) {
-			formField[type].addBubbles(addresses[type]);
-		}, this);
-		this.checkRecipientStatus();
+			if (subject) {
+				subjectFld.setValue(subject);
+			}
 
-		if (subject) {
-			subjectFld.setValue(subject);
-		}
+			editor.innerHTML = body || '';
 
-		editor.innerHTML = body || '';
+			ZCS.htmlutil.fixImages(msg, editor, false);
 
-		ZCS.htmlutil.fixImages(msg, editor, false);
+			me.setFormHash(me.calculateFormHash());
 
-		this.setFormHash(this.calculateFormHash());
+			if (!(addresses[ZCS.constant.TO] && addresses[ZCS.constant.TO].length)) {
+				formField[ZCS.constant.TO].focusInput();
+			} else if (!subject) {
+				subjectFld.focus();
+			} else {
+				editor.focus();
 
-		if (!(addresses[ZCS.constant.TO] && addresses[ZCS.constant.TO].length)) {
-			formField[ZCS.constant.TO].focusInput();
-		} else if (!subject) {
-			subjectFld.focus();
-		} else {
-			editor.focus();
+				var range = document.createRange();
+				range.selectNodeContents(editor);
+				range.collapse(true);
+				var sel = window.getSelection();
+				sel.removeAllRanges();
+				sel.addRange(range);
+			}
 
-			var range = document.createRange();
-			range.selectNodeContents(editor);
-			range.collapse(true);
-			var sel = window.getSelection();
-			sel.removeAllRanges();
-			sel.addRange(range);
-		}
+			Ext.fly(editor).addCls('zcs-fully-editable');
+		});
 
-		Ext.fly(editor).addCls('zcs-fully-editable');
 
 	},
 
@@ -392,8 +394,9 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 		// Remove this style so it doesn't interfere with the next layout
 		Ext.fly(editor).removeCls('zcs-fully-editable');
-		this.hideComposeForm();
-		composePanel.resetForm();
+		this.hideComposeForm(function () {
+			composePanel.resetForm();		
+		});
 	},
 
 	uploadTemporaryAttachment: function (field, newValue, oldValue) {
@@ -942,31 +945,39 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 		}
 	},
 
-	unhideComposeForm: function () {
+	unhideComposeForm: function (callback) {
 
 
 		if (Ext.os.deviceType === "Phone") {
-			this.getComposePanel().element.dom.style.removeProperty('display');
+			this.getComposePanel().show(false);
+			callback();
 		} else {
 			this.getComposePanel().show({
 				type: 'fadeIn',
-				duration: 250
+				duration: 250,
+				listeners: {
+					animationend: callback
+				}
 			});
 		}
 
 		this.startDraftTimer();
 	},
 
-	hideComposeForm: function () {
+	hideComposeForm: function (callback) {
 
 		this.stopDraftTimer();
 
 		if (Ext.os.deviceType === "Phone") {
-			this.getComposePanel().element.dom.style.setProperty('display', 'none');
+			this.getComposePanel().hide(false);
+			callback();
 		} else {
 			this.getComposePanel().hide({
 				type: 'fadeOut',
-				duration: 250
+				duration: 250,
+				listeners: {
+					animationend: callback
+				}
 			});
 		}
 	},
