@@ -821,6 +821,10 @@ function(ev) {
 	var sigId = ev.item.getData(ZmComposeController.SIGNATURE_KEY);
 	var okCallback = this._switchSignatureOkCallback.bind(this, sigId);
 	var cancelCallback = this._switchSignatureCancelCallback.bind(this);
+	//TODO: There shouldn't be a need to warn the user now that we're preserving quoted text and headers.
+	//(see bugs 91743 and 92086
+	//However since it's the release time, it's safer to keep warning the user.
+	//Revisit this after the release.
 	if (!this._warnUserAboutChanges(ZmId.OP_ADD_SIGNATURE, okCallback, cancelCallback)) {
 		this._switchSignature(sigId);
 	}
@@ -1516,6 +1520,10 @@ function(mode) {
 	var op = (mode === Dwt.HTML) ? ZmOperation.FORMAT_HTML : ZmOperation.FORMAT_TEXT;
 	var okCallback = this._formatOkCallback.bind(this, mode);
 	var cancelCallback = this._formatCancelCallback.bind(this, curMode);
+	//TODO: There shouldn't be a need to warn the user now that we're preserving quoted text and headers.
+	//(see bugs 91743 and 92086
+	//However since it's the release time, it's safer to keep warning the user.
+	//Revisit this after the release.
 	if (!this._warnUserAboutChanges(op, okCallback, cancelCallback)) {
 		this._composeView.setComposeMode(mode);
 		return true;

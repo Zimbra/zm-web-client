@@ -2336,30 +2336,38 @@ function(mode, params) {
 			}
 		}
 	}
-		
+
 	if (headers.length) {
+		//TODO: this could be simplified and maybe refactored with the similar code in _getBodyComponent()
+		//(see bug 91743)
+		//Revisit this after the release.
 		var text = headers.join(this._crlf) + this._crlf;
+		var wrapParams = {
+			text:				text,
+			preserveReturns:	true,
+			htmlMode:			htmlMode,
+			isHeaders:			true
+		}
+		var marker = this._getMarker(Dwt.HTML, ZmComposeView.BC_HEADERS);
 		if (incOptions.prefix) {
 			incOptions.pre = !htmlMode && appCtxt.get(ZmSetting.REPLY_PREFIX);
-			var wrapParams = {
-				text:				text,
-				preserveReturns:	true,
-				htmlMode:			htmlMode,
-				isHeaders:			true,
-				prefix:				incOptions.pre
-			}
+			wrapParams.prefix = incOptions.pre;
 			if (htmlMode) {
-				var marker = this._getMarker(Dwt.HTML, ZmComposeView.BC_HEADERS);
 				wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
 				wrapParams.after = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
 			}
+			value = AjxStringUtil.wordWrap(wrapParams);
+		}
+		else if (htmlMode) {
+			wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">';
+			wrapParams.after = '</div>';
 			value = AjxStringUtil.wordWrap(wrapParams);
 		}
 		else {
 			value = text;
 		}
 	}
-		
+
 	return value;
 };
 
@@ -2369,14 +2377,14 @@ function(mode, params) {
 	mode = mode || this._composeMode;
 	params = params || {};
 	var action = (params && params.action) || this._action;
+	var htmlMode = (mode === Dwt.HTML);
 	var msg = (params && params.msg) || this._msg;
 	var incOptions = (params && params.incOptions) || this._controller._curIncOptions;
+	var what = incOptions.what;
 	var bodyInfo = params.bodyInfo || this._getBodyContent(msg, htmlMode, what);
 
 	var value = "";
 	var body = "";
-	var htmlMode = (mode === Dwt.HTML);
-	var what = incOptions.what;
 	if (msg && (what === ZmSetting.INC_BODY || what === ZmSetting.INC_SMART)) {
 		body = bodyInfo.body;
 		// Bug 7160: Strip off the ~*~*~*~ from invite replies.
@@ -2390,20 +2398,38 @@ function(mode, params) {
 
 	body = AjxStringUtil.trim(body);
 	if (body) {
+		//TODO: this could be simplified and maybe refactored with the similar code in _getHeaders()
+		//(see bug 91743)
+		//Revisit this after the release.
 		var wrapParams = {
 			text:				body,
 			preserveReturns:	true,
-			htmlMode:			htmlMode,
-			prefix:				appCtxt.get(ZmSetting.REPLY_PREFIX)
+			htmlMode:			htmlMode
 		}
-		if (htmlMode && incOptions.prefix) {
+		if (htmlMode) {
 			var marker = this._getMarker(Dwt.HTML, ZmComposeView.BC_QUOTED_TEXT);
-			wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
-			wrapParams.after = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
+			if (incOptions.prefix) {
+				wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
+				wrapParams.after = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
+				wrapParams.prefix = appCtxt.get(ZmSetting.REPLY_PREFIX);
+			}
+			else {
+				wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">';
+				wrapParams.after = '</div>';
+			}
+			value = AjxStringUtil.wordWrap(wrapParams);
 		}
-		value = incOptions.prefix ? AjxStringUtil.wordWrap(wrapParams) : body;
+		else {
+			if (incOptions.prefix) {
+				wrapParams.prefix = appCtxt.get(ZmSetting.REPLY_PREFIX);
+				value = AjxStringUtil.wordWrap(wrapParams);
+			}
+			else {
+				value = body;
+			}
+		}
 	}
-				
+
 	return value;
 };
 
@@ -2565,7 +2591,7 @@ ZmComposeView.prototype._preserveQuotedText =
 function(op, quotedText, check) {
 
 	var savedQuotedText = this._compContent && this._compContent[ZmComposeView.BC_QUOTED_TEXT];
-	if (!savedQuotedText) {
+	if (check && !savedQuotedText) {
 		return true;
 	}
 	quotedText = quotedText || this._getQuotedText();
