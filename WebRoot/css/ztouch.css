@@ -66,10 +66,16 @@ BODY.x-android {
 }
 
 .ImgLoginBanner {
-	background:url(@LogoImgDir@/TouchLoginBanner.png) no-repeat bottom;
+	background:url(@LogoImgDir@/TouchLoginBanner.png) no-repeat bottom / 100%;
 	cursor:pointer;
 	height:85px;
 	width:300px;
+}
+
+@media (min-resolution: 100dpi), (-webkit-min-device-pixel-ratio: 2) {
+	.ImgLoginBanner {
+		background-image: url(@LogoImgDir@/TouchLoginBanner@2x.png);
+	}
 }
 
 .x-phone .ImgLoginBanner {
@@ -202,6 +208,7 @@ BODY.x-android {
 /* must keep these separate as an override will load both and the wrong one may show momentarily */
 .x-ios .SplashScreenProgressBar {
 	background-image:url('/t/resources/images/progress_ios.gif');
+	background-size: 100%;
 	height:64px;
 	margin-left:118px;
 	width:64px;
@@ -209,7 +216,18 @@ BODY.x-android {
 
 .x-android .SplashScreenProgressBar {
 	background-image:url('/t/resources/images/progress_android.gif');
+	background-size: 100%;
 	height:4px;
 	margin-left:22px;
 	width:256px;
+}
+
+@media (min-resolution: 100dpi), (-webkit-min-device-pixel-ratio: 2) {
+	.x-ios .SplashScreenProgressBar {
+		background-image:url('/t/resources/images/progress_ios@2x.gif');
+	}
+
+	.x-android .SplashScreenProgressBar {
+		background-image:url('/t/resources/images/progress_android@2x.gif');
+	}
 }
