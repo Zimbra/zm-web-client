@@ -284,12 +284,11 @@
     <target name="war"
             depends="templates,timezones,images,styles,settings,jam-files,compress,help"
             description="Builds all dependencies and assembles the war file.">
-        <!--<if><isset property='build.network' />-->
-            <!--<then>-->
-                <!--<ant dir="${network.dir}/ZimbraTouch" target="touch"/>-->
-            <!--</then>-->
-        <!--</if>-->
-        <antcall target="touch"/>
+        <if><isset property='build.network' />
+            <then>
+                <ant dir="${network.dir}/ZimbraTouch" target="touch"/>
+            </then>
+        </if>
         <antcall target="assemble-war"/>
     </target>
 
