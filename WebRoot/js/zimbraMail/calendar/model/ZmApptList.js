@@ -32,7 +32,7 @@ ZmApptList.prototype.isZmApptList = true;
 ZmApptList.prototype.toString = function() { return "ZmApptList"; };
 
 ZmApptList.prototype.loadFromSummaryJs =
-function(appts) {
+function(appts, noCache) {
 	if (!appts) { return; }
 
 	for (var i = 0; i < appts.length; i++) {
@@ -41,7 +41,7 @@ function(appts) {
 		if (instances) {
 			var args = {list:this};
 			for (var j = 0; j < instances.length; j++) {
-				var appt = ZmAppt.createFromDom(apptNode, args, instances[j]);
+				var appt = ZmAppt.createFromDom(apptNode, args, instances[j], noCache);
 				if (appt) this.add(appt);
 			}
 		}

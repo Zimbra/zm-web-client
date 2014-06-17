@@ -198,10 +198,10 @@ function(appt) {
 };
 
 ZmAppt.createFromDom =
-function(apptNode, args, instNode) {
+function(apptNode, args, instNode, noCache) {
 	var appt = new ZmAppt(args.list);
 	appt._loadFromDom(apptNode, (instNode || {}));
-    if (appt.id) {
+    if (appt.id && !noCache) {
         appCtxt.cacheSet(appt.id, appt);
     }
 	return appt;

@@ -359,7 +359,7 @@ function(startTime, endTime, callback, getMessages, previousMessageIds, apptIds,
         // Convert the raw appts into ZmAppt objects.  Each rawAppt may represent several actual appointments (if the
         // appt is a recurring one), with differing start and end dates.  So break a raw appt into its component appts
         // and store them individually, with start and end time index info.
-        apptList.loadFromSummaryJs(searchResp.appt);
+        apptList.loadFromSummaryJs(searchResp.appt, true);
         var numAppt = apptList.size();
         var apptContainers = [];
         var apptContainer;
@@ -369,7 +369,6 @@ function(startTime, endTime, callback, getMessages, previousMessageIds, apptIds,
         var uniqueMsgIds = {};
         for (var i = 0; i < numAppt; i++) {
             appt       = apptList.get(i);
-            this._cleanApptForStorage(appt);
             apptStartTime  = appt.startDate.getTime();
             apptEndTime    = appt.endDate.getTime();
             // If this was called via _downloadByApptId (Sync items), prune if a synced item is outside
@@ -379,6 +378,8 @@ function(startTime, endTime, callback, getMessages, previousMessageIds, apptIds,
                 ((apptEndTime   >= startTime) && (apptEndTime   <= endTime)) ) {
                 // The appts do not contain a unique id for each instance.  Generate one (used as the primary key),
                 // for each appt/instance and store the appt with a container that has the index fields
+
+                this._cleanApptForStorage(appt);
                 apptContainer = {appt: appt,
                                  instanceId: this._createApptPrimaryKey(appt),
                                  id:         appt.id,
