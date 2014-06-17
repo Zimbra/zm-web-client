@@ -435,6 +435,10 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 					me.doShowAllAttachments(attachments);
 
 					me.getComposePanel().resetFileField();
+
+                    //save draft after attachment is uploaded
+                    //to convert from "aid" to "part"
+                    me.doSaveDraft();
 				}
 			},
 			failure: function(response) {
@@ -498,8 +502,8 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 					callback.apply(scope);
 				}
 				this.setFormHash('');
-				this.startDraftTimer();
-
+                //no need to start draft timer is message sent succeeded
+                //this.startDraftTimer();
 			},
 			failure: function() {
 				Ext.each(buttons, function(button) {
@@ -522,7 +526,47 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 				var reader = ZCS.model.mail.ZtMailMsg.getProxy().getReader(),
 					response = reader.getResponseData(operation.getResponse());
 				this.setDraftId(response.Body.SaveDraftResponse.m[0].id);
-			}
+
+                //for newly uploaded attachment need to replace "aid" with part for
+                //for all attachments - update part/mid parameters
+                var attBubbles = this.getAttachmentsField().element.query('.zcs-attachment-bubble');
+
+                if (attBubbles && attBubbles.length) {
+                    var ln = attBubbles ? attBubbles.length : 0, i,
+                        bubbleEl,
+                        aid,
+                        idParams;
+
+                    var attachmentsArr = reader.getDataFromNode(response.Body.SaveDraftResponse.m[0]).attachments;
+
+                    if (attachmentsArr && attachmentsArr.length) {
+                        for (i = 0; i < ln; i++) {
+                            bubbleEl = Ext.fly(attBubbles[i]);
+                            aid = bubbleEl.getAttribute('aid');
+
+                            // iterate through attachments and find the one that was just uploaded
+                            // by matching the filename and clear "aid"
+                            // Also update  part and mid for attachments
+                            for (j = 0; j < attachmentsArr.length; j++) {
+                                if (attachmentsArr[j].data.fileName === attBubbles[i].getAttribute("label")) {
+                                    var part = attachmentsArr[j].data.part;
+
+                                    idParams = ZCS.util.getIdParams(attBubbles[i].id);
+                                    idParams.part = part;
+
+                                    //update message id
+                                    bubbleEl.set({"mid": this.getDraftId()});
+
+                                    //clear "aid" parameter for attachment that was just uploaded
+                                    if (aid) {
+                                        bubbleEl.set({"aid": ""});
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 		}, this);
 	},
 
@@ -571,7 +615,7 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			var ln = attBubbles ? attBubbles.length : 0, i,
 				origAtt = [],
 				newAtt = [],
-				msgId = origMsg ? origMsg.getId() : null,
+				msgId = origMsg ? origMsg.getId() : this.getDraftId(),
 				bubbleEl,
 				aid,
 				idParams;
@@ -582,19 +626,34 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 
 				//Only attachments added by the user during compose get the aid attribute
 				aid = bubbleEl.getAttribute('aid');
+                var mid = bubbleEl.getAttribute('mid');
 
-				if (idParams && origMsg && !aid) {
-					origAtt.push({
-						mid:    msgId,
-						part:   idParams.part
-					});
-				} else {
-					newAtt.push({
-						aid:    aid,
-						label: bubbleEl.getAttribute('label'),
-						size: bubbleEl.getAttribute('size')
-					});
-				}
+                if (idParams && !aid) {
+                    if (origMsg) {
+                        //origAtt stores attachments from original message that is being forwarded
+                        origAtt.push({
+                            mid:    mid || msgId,
+                            part:   idParams.part
+                        });
+                    } else {
+                        //attachments that were added by the user during compose session and
+                        //have been uploaded and got "part" number from the server
+                        newAtt.push({
+                            mid:    mid || msgId,
+                            part:   idParams.part,
+                            label: bubbleEl.getAttribute('label'),
+                            size: bubbleEl.getAttribute('size')
+                        });
+                    }
+                } else {
+                    //attachments that were added by the user during compose session and
+                    //have "aid" but not "part" number yet
+                    newAtt.push({
+                        aid:    aid,
+                        label: bubbleEl.getAttribute('label'),
+                        size: bubbleEl.getAttribute('size')
+                    });
+                }
 			}
 		}
 
@@ -632,9 +691,12 @@ Ext.define('ZCS.controller.mail.ZtComposeController', {
 			if (irtMessageId) {
 				msg.set('irtMessageId', irtMessageId);
 			}
-			msg.set('origAttachments', origAtt);
 			originalInlineImages = origMsg.getInlineImageParts();
 		}
+
+        if (origAtt) {
+            msg.set('origAttachments', origAtt);
+        }
 
 		if (newAtt && newAtt.length > 0) {
 			msg.set('attachments', newAtt);

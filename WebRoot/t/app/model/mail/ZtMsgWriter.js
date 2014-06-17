@@ -120,6 +120,18 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 			// identity
 			m.idnt = identityId;
 
+            //"new" attachments added during compose session that
+            // don't have "aid" anymore are encoded together with origAtt (using "mid" and "part" params)
+            if (attachments) {
+                var len = attachments.length;
+                while (len--) {
+                    if (!attachments[len].aid) {
+                        origAtt.push(attachments[len]);
+                        attachments.splice(len, 1);
+                    }
+                }
+            }
+
 			// attachments to forward from original message
 			if (origAtt && origAtt.length > 0) {
 				m.attach = {
@@ -137,7 +149,9 @@ Ext.define('ZCS.model.mail.ZtMsgWriter', {
 				}
 
 				Ext.each(attachments, function (attachment) {
-					m.attach.aid += attachment.aid + ",";
+					if (attachment.aid) {
+                        m.attach.aid += attachment.aid + ",";
+                    }
 				});
 
 				m.attach.aid = m.attach.aid.slice(0, -1);
