@@ -78,16 +78,7 @@ ZmSearchFolder.create = function(params) {
 		searchNode.sortBy = params.sortBy;
 	}
 
-	if (search && search.types) {
-		var a = search.types.getArray();
-		if (a.length) {
-			var typeStr = [];
-			for (var i = 0; i < a.length; i++) {
-				typeStr.push(ZmSearch.TYPE[a[i]]);
-			}
-			searchNode.types = typeStr.join(",");
-		}
-	}
+	searchNode.types = ZmSearchFolder._getSearchTypes(search);
 
 	if (params.rgb) {
 		searchNode.rgb = params.rgb;
@@ -112,6 +103,23 @@ ZmSearchFolder.create = function(params) {
 		callback:       ZmSearchFolder._handleCreate,
 		errorCallback:  params.errorCallback || ZmOrganizer._handleErrorCreate.bind(null)
 	});
+};
+
+// converts a vector of types to a string the server can understand
+ZmSearchFolder._getSearchTypes = function(search) {
+
+	var typeStr = "";
+	if (search && search.types) {
+		var a = search.types.getArray();
+		if (a.length) {
+			var typeStr = [];
+			for (var i = 0; i < a.length; i++) {
+				typeStr.push(ZmSearch.TYPE[a[i]]);
+			}
+			typeStr = typeStr.join(",");
+		}
+	}
+	return typeStr;
 };
 
 ZmSearchFolder._handleCreate =
@@ -144,7 +152,8 @@ ZmSearchFolder.prototype.setQuery = function(query, callback, errorCallback, bat
 		_jsns: "urn:zimbraMail",
 		search: {
 			query:  query,
-			id:     params.id || this.id
+			id:     params.id || this.id,
+			types:  ZmSearchFolder._getSearchTypes(this.search)
 		}
 	};
 	var jsonObj = {};
