@@ -2615,6 +2615,7 @@ function(op, quotedText, check) {
 		if (incOptions.prefix) {
 			var wrapParams = {
 				text:				quotedText,
+				htmlMode:			htmlMode,
 				preserveReturns:	true,
 				prefix:				appCtxt.get(ZmSetting.REPLY_PREFIX)
 			}
