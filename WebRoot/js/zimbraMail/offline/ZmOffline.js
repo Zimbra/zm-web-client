@@ -561,7 +561,7 @@ function(downloadCalendar, callback, result) {
 				if (msgIds) {
 					msgIds.split(",").forEach(function(id) {
 						var params = {
-							m : {id:id, html:1, needExp:1, max:25000},
+							m : {id:id, html:1, needExp:1},
 							_jsns : "urn:zimbraMail"
 						};
 						msgParamsArray.push(params);
@@ -723,7 +723,7 @@ function(syncResponse) {
 	var contactIdsArray = [];
 	if (msgs) {
 		msgs.forEach(function(msg) {
-			var params = {m:{id:msg.id, html:1, needExp:1, max:25000}, _jsns:"urn:zimbraMail"};
+			var params = {m:{id:msg.id, html:1, needExp:1}, _jsns:"urn:zimbraMail"};
 			msgParamsArray.push(params);
 		});
 	}
@@ -908,7 +908,6 @@ function(msgIds, callback){
         msg.setAttribute("read", 0);
         msg.setAttribute("html", 1);
         msg.setAttribute("needExp", 1);
-        msg.setAttribute("max", 250000);
      }
     var respCallback = this._handleGetResponse.bind(this, callback);
     appCtxt.getRequestMgr().sendRequest({
