@@ -1292,7 +1292,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr></table></td>
 		<td width='1%'><table role="presentation" class='ZCheckboxTable' style='margin-left:1em;'><tr>
 			<td> <input id='${id}_active' type='checkbox' name='cbActive' checked tabindex='20'> </td>
-			<td><label for='${id}_active'> <$=ZmMsg.active$> </label></td>
+			<td style='white-space:nowrap;'><label for='${id}_active'> <$=ZmMsg.active$> </label></td>
 		</tr></table></td>
 	</tr></table>
 

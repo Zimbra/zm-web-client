@@ -45,11 +45,11 @@
 		<td class='contactHeaderCell' width='1%'>
 			<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 			<tr>
-				<td style='text-align:right;'><$=ZmMsg.fileAsLabel$></td>
+				<td style='text-align:right;white-space:nowrap;'><$=ZmMsg.fileAsLabel$></td>
 				<td><div id='${id}_FILE_AS' tabindex='400'></div></td>
 			</tr>
 			<tr>
-				<td style='text-align:right;'><$=ZmMsg.locationLabel$></td>
+				<td style='text-align:right;white-space:nowrap;'><$=ZmMsg.locationLabel$></td>
 				<td><div id='${id}_FOLDER' tabindex='401'></div></td>
 			</tr>
 			<$ if (appCtxt.multiAccounts) { $>
