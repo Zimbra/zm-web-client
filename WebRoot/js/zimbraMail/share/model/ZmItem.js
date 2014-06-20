@@ -832,10 +832,18 @@ function() {
 
 ZmItem.prototype._doNotify =
 function(event, details) {
-    this._evt.item = this;
-    if (event != null) {
-        ZmModel.prototype._notify.call(this, event, details);
-    }
+	if (this._evt) {
+		this._evt.item = this;
+		if (event != null) {
+			ZmModel.prototype._notify.call(this, event, details);
+		}
+	} else {
+		var idText = "";
+		if (this.type && this.id) {
+			idText = ": item = " + this.type + "(" + this.id + ")";
+		}
+		DBG.println(AjxDebug.DBG1, "ZmItem._doNotify, missing _evt" + idText);
+	}
     if (this.list) {
         this.list._evt.item = this;
         this.list._evt.items = [this];
