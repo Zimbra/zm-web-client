@@ -347,7 +347,7 @@
 		var imgClassName = contact.isDistributionList() ? 'Group_48' : contact.isGroup() ? 'GroupPerson_48' : 'Person_48';
 		var isEdit = data.isEdit;
 	$>
-	<table role="presentation" width=100% class='contactHeaderTable <$= data.contactHdrClass $> ZPropertySheet' cellspacing='6'>
+	<table role="presentation" width=100% id='${id}_headerTable' class='contactHeaderTable <$= data.contactHdrClass $> ZPropertySheet' cellspacing='6'>
 		<tr>
 			<$ if (imageUrl) { $>
 				<td width='48' rowspan='2' class='contactHeaderTableImage'><img src='<$= imageUrl $>'
@@ -701,7 +701,7 @@
 			<!-- content: right pane -->
 			<td width='50%' valign='top'>
 				<table role="presentation" width='100%'>
-				<tr>
+				<tr id='${id}_searchFieldsRow'>
 					<td width='50'>&nbsp;</td>
 					<td>
 						<table role="presentation" class='ZPropertySheet' cellspacing='6'>
@@ -752,15 +752,15 @@
 					<td>
 					<div id='${id}_listView'></div>
 					<table role="presentation" width='100%' class='ZPropertySheet' cellspacing='6'>
-						<tr>
+						<tr id='${id}_navButtonsRow'>
 							<td width='100%'></td>
 							<td id='${id}_prevButton'></td>
 							<td id='${id}_nextButton'></td>
 						</tr>
 					</table>
 					</td>
-					</tr>
-					<tr>
+				</tr>
+				<tr id='${id}_manualAddRow'>
 					<td width='50'>
 					<table role="presentation" width='100%' class='ZPropertySheet' cellspacing='6'>
 						<tr><td id='${id}_addNewButton'></td></tr>

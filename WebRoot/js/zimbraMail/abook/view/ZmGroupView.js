@@ -547,9 +547,14 @@ function(x, y, width, height) {
 		Dwt.setSize(this._addNewField, Dwt.DEFAULT, 50);
 	}
 	this._groupMembersListView.setSize(Dwt.DEFAULT, height-150);
-	var fudge = (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED))
-		? 185 : 160;
-	this._listview.setSize(Dwt.DEFAULT, height-fudge-(this._addNewField? 100 : 0));
+
+	var headerTableHeight = Dwt.getSize(this._headerTable).y;
+	var tabBarHeight = this._tabBar ? Dwt.getSize(this._tabBar).y : 0; //only DL
+	var searchFieldsRowHeight = Dwt.getSize(this._searchFieldsRow).y;
+	var manualAddRowHeight = Dwt.getSize(this._manualAddRow).y;
+	var navButtonsRowHeight = Dwt.getSize(this._navButtonsRow).y;
+	var listHeight = height - headerTableHeight - tabBarHeight - searchFieldsRowHeight - manualAddRowHeight - navButtonsRowHeight - 40;
+	this._listview.setSize(Dwt.DEFAULT, listHeight);
 };
 
 ZmGroupView.prototype.cleanup  =
@@ -695,7 +700,7 @@ function() {
 		this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#DlView", params);
 		this._tabViewContainerId = this._htmlElId + "_tabViewContainer";
 		var tabViewContainer = document.getElementById(this._tabViewContainerId);
-		this._tabView = new DwtTabView({parent: this, posStyle: Dwt.STATIC_STYLE});
+		this._tabView = new DwtTabView({parent: this, posStyle: Dwt.STATIC_STYLE, id: this._htmlElId + "_tabView"});
 		this._tabView.reparentHtmlElement(tabViewContainer);
 		this._dlMembersTabView = new ZmDlMembersTabView(this);
 		this._tabView.addTab(ZmMsg.dlMembers, this._dlMembersTabView);
@@ -705,6 +710,12 @@ function() {
 	else {
 		this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupView", params);
 	}
+
+	this._headerTable = document.getElementById(this._htmlElId + "_headerTable");
+	this._tabBar = document.getElementById(this._htmlElId + "_tabView_tabbar"); //only for DLs
+	this._searchFieldsRow = document.getElementById(this._htmlElId + "_searchFieldsRow");
+	this._manualAddRow = document.getElementById(this._htmlElId + "_manualAddRow");
+	this._navButtonsRow = document.getElementById(this._htmlElId + "_navButtonsRow");
 
 	this._htmlInitialized = true;
 };
