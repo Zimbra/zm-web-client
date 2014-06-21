@@ -1,3 +1,25 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2014 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the “License”);
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
+ * 
+ * Software distributed under the License is distributed on an “AS IS” basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2014 Zimbra, Inc. All Rights Reserved. 
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
 tinymce.addI18n('ar',{
 "Cut": "\u0642\u0635",
 "Your browser doesn't support direct access to the clipboard. Please use the Ctrl+X\/C\/V keyboard shortcuts instead.": "\u0645\u062a\u0635\u0641\u062d\u0643 \u0644\u0627 \u064a\u062f\u0639\u0645 \u0627\u0644\u0648\u0635\u0648\u0644 \u0627\u0644\u0645\u0628\u0627\u0634\u0631 \u0625\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629. \u0627\u0644\u0631\u062c\u0627\u0621 \u0627\u0633\u062a\u062e\u062f\u0627\u0645 \u0627\u062e\u062a\u0635\u0627\u0631\u0627\u062a \u0644\u0648\u062d\u0629 \u0627\u0644\u0645\u0641\u0627\u062a\u064a\u062d Ctrl+X\/C\/V \u0628\u062f\u0644\u0627 \u0645\u0646 \u0630\u0644\u0643.",

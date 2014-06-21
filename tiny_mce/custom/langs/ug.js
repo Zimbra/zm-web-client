@@ -1,3 +1,25 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2014 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the “License”);
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
+ * 
+ * Software distributed under the License is distributed on an “AS IS” basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2014 Zimbra, Inc. All Rights Reserved. 
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
 tinymce.addI18n('ug',{
 "Cut": "\u0643\u06d0\u0633\u0649\u0634",
 "Your browser doesn't support direct access to the clipboard. Please use the Ctrl+X\/C\/V keyboard shortcuts instead.": "\u0633\u0649\u0632\u0646\u0649\u06ad \u062a\u0648\u0631 \u0643\u06c6\u0631\u06af\u06c8\u0686\u0649\u06ad\u0649\u0632 \u0642\u0649\u064a\u0649\u067e \u0686\u0627\u067e\u0644\u0627\u0634 \u062a\u0627\u062e\u062a\u0649\u0633\u0649 \u0632\u0649\u064a\u0627\u0631\u06d5\u062a \u0642\u0649\u0644\u0649\u0634\u0646\u0649 \u0642\u0648\u0644\u0644\u0649\u0645\u0627\u064a\u062f\u06c7.  Ctrl+X\/C\/V \u062a\u06d0\u0632\u0644\u06d5\u062a\u0645\u06d5 \u0643\u0648\u0646\u06c7\u067e\u0643\u0649\u0633\u0649 \u0626\u0627\u0631\u0642\u0649\u0644\u0649\u0642 \u0643\u06d0\u0633\u0649\u067e \u0686\u0627\u067e\u0644\u0627\u0634 \u0645\u06d5\u0634\u063a\u06c7\u0644\u0627\u062a\u0649 \u0642\u0649\u0644\u0649\u06ad.",
