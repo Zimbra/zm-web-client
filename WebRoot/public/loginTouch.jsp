@@ -51,7 +51,7 @@
             <c:choose>
                 <c:when test="${!empty cookie.ZM_TEST}">
                     <zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
-                              varAuthResult="authResult" rememberme="true" importData="true"/>
+                              varAuthResult="authResult" rememberme="true" importData="true" csrfTokenSecured="true"/>
                     <%-- continue on at not empty authResult test --%>
                 </c:when>
                 <c:otherwise>
@@ -65,8 +65,8 @@
             <c:set var="authtoken" value="${not empty param.zauthtoken ? param.zauthtoken : cookie.ZM_AUTH_TOKEN.value}"/>
             <c:if test="${not empty authtoken}">
                 <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
-                          varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-                          rememberme="true" adminPreAuth="${param.adminPreAuth == '1'}" importData="true"/>
+                          varRedirectUrl="postLoginUrl" varAuthResult="authResult" rememberme="true"
+                          adminPreAuth="${param.adminPreAuth == '1'}" importData="true" csrfTokenSecured="true"/>
                 <%-- continue on at not empty authResult test --%>
             </c:if>
         </c:otherwise>
