@@ -47,6 +47,7 @@ ZmOffline.CONTACTS_PROGRESS = "Contacts";
 ZmOffline.CALENDAR_PROGRESS = "Calendar Appointments";
 
 ZmOffline.MAX_REQUEST_IN_BATCH_REQUEST = 50;
+ZmOffline.SYNC_REQUEST_DELAY = 10000;
 
 ZmOffline._checkCacheDone =
 function (){
@@ -502,7 +503,7 @@ function(notify, methodName) {
 	if (this._syncRequestActionId) {
 		AjxTimedAction.cancelAction(this._syncRequestActionId);
 	}
-	this._syncRequestActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.sendSyncRequest), 30000);
+	this._syncRequestActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.sendSyncRequest), ZmOffline.SYNC_REQUEST_DELAY);
 };
 
 ZmOffline.prototype.sendSyncRequest =
@@ -755,7 +756,9 @@ function(folders) {
 				ZmOfflineDB.doIndexSearch([folderId.toString()], ZmApp.MAIL, null, callback, null, "folder", true);
 				delete ZmOffline.folders[folderId];
 			}
-			else if (!isExistingOfflineFolder || folder.webOfflineSyncDays != ZmOffline.folders[folderId].webOfflineSyncDays) {
+			else if ( (isExistingOfflineFolder && folder.webOfflineSyncDays != ZmOffline.folders[folderId].webOfflineSyncDays)
+					  || (!isExistingOfflineFolder && folder.webOfflineSyncDays != 0) ) {
+				//If existing offline folder’s webOfflineSyncDays property is modified or new folder’s webOfflineSyncDays property is set
 				//specify the start date for the mail to be synched
 				var startDate = AjxDateUtil.roll(new Date(), AjxDateUtil.DAY, -parseInt(folder.webOfflineSyncDays));
 				params.msgCutoff = Math.round(startDate.getTime() / 1000);
