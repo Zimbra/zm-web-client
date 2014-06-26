@@ -420,11 +420,13 @@ delete text;
         <c:set var="types" value="${requestScope.authResult.attrs.zimbraFeatureConversationsEnabled[0] eq 'FALSE' ? 'message' : requestScope.authResult.prefs.zimbraPrefGroupMailBy[0]}"/>
 		<c:set var="numItems" value="${requestScope.authResult.prefs.zimbraPrefItemsPerVirtualPage[0]}"/>
 
-        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${not empty app and app ne 'mail' or isOfflineMode ? false : true}" itemsperpage="${numItems * 2}" types="${types}" folderpath="${path}" sortby="${sortOrder}" fullconversation="true"/>
+        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" csrftoken="${requestScope.authResult.csrfToken}"
+                        dosearch="${not empty app and app ne 'mail' or isOfflineMode ? false : true}" itemsperpage="${numItems * 2}" types="${types}" folderpath="${path}" sortby="${sortOrder}" fullconversation="true"/>
         var batchInfoResponse = ${getInfoJSON};
 
         <c:if test="${not empty app and app eq 'calendar'}">
-        <zm:calSearchJSON var="calSearchJSON" authtoken="${requestScope.authResult.authToken}" timezone="${requestScope.tz}" itemsperpage="500" types="appointment"/>
+        <zm:calSearchJSON var="calSearchJSON" authtoken="${requestScope.authResult.authToken}" csrftoken="${requestScope.authResult.csrfToken}"
+                          timezone="${requestScope.tz}" itemsperpage="500" types="appointment"/>
         window.inlineCalSearchResponse = ${calSearchJSON};
         </c:if>
 		<c:if test="${isLeakDetectorOn}">
