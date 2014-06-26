@@ -78,7 +78,7 @@ BODY.x-android {
 	width:300px;
 }
 
-@media (min-resolution: 100dpi), (-webkit-min-device-pixel-ratio: 2) {
+@media (min-resolution: 1.1dppx), (min-resolution: 100dpi), (-webkit-min-device-pixel-ratio: 2) {
 	.ImgLoginBanner {
 		background-image: url(@LogoImgDir@/TouchLoginBanner@2x.png);
 	}
@@ -228,7 +228,7 @@ BODY.x-android {
 	width:256px;
 }
 
-@media (min-resolution: 100dpi), (-webkit-min-device-pixel-ratio: 2) {
+@media (min-resolution: 1.1dppx), (min-resolution: 100dpi), (-webkit-min-device-pixel-ratio: 2) {
 	.x-ios .SplashScreenProgressBar {
 		background-image:url('/t/resources/images/progress_ios@2x.gif');
 	}
