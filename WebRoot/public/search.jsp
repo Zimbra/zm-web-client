@@ -9,7 +9,7 @@
  search.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2013 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013, 2014 Zimbra, Inc.
  * 
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software Foundation,
