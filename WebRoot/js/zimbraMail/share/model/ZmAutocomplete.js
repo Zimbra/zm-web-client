@@ -521,7 +521,7 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 		if (this.isGroup && !this.isDL) {
 			// Local contact group; emails need to be looked up by group member ids. 
 			var contactGroup = ac.cacheGet(match.id);
-			if (contactGroup) {
+			if (contactGroup && contactGroup.isLoaded) {
 				this.setContactGroupMembers(match.id);
 			}
 			else {
