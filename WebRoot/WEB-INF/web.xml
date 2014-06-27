@@ -480,6 +480,18 @@
     </init-param>
   </servlet>
 
+  <servlet>
+    <servlet-name>AdminResources</servlet-name>
+    <servlet-class>com.zimbra.webClient.servlet.AdminServlet</servlet-class>
+    <async-supported>true</async-supported>
+  </servlet>
+
+  <servlet>
+    <servlet-name>ServiceServlet</servlet-name>
+    <servlet-class>com.zimbra.webClient.servlet.ServiceServlet</servlet-class>
+    <async-supported>true</async-supported>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>SkinResources</servlet-name>
     <url-pattern>/css/*</url-pattern>
@@ -495,15 +507,14 @@
     <url-pattern>/keys/*</url-pattern>
   </servlet-mapping>
 
-  <servlet>
-    <servlet-name>AdminResources</servlet-name>
-    <servlet-class>com.zimbra.webClient.servlet.AdminServlet</servlet-class>
-    <async-supported>true</async-supported>
-  </servlet>
-
   <servlet-mapping>
     <servlet-name>AdminResources</servlet-name>
     <url-pattern>/adminres</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>ServiceServlet</servlet-name>
+    <url-pattern>/fromservice/*</url-pattern>
   </servlet-mapping>
 
   <welcome-file-list>
