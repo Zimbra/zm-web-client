@@ -1097,7 +1097,7 @@ function(params, isOutboxFolder, requestParams) {
     if (isOutboxFolder && action.op === "trash") {
         var key = {
             methodName : "SendMsgRequest", //Outbox folder only contains offline sent emails
-            id : action.id
+			id : action.id.split(",")
         };
         ZmOfflineDB.deleteItemInRequestQueue(key, callback);
     }

@@ -1876,6 +1876,7 @@ function(params) {
         currentTime = new Date().getTime(),
         callback,
         aid = [];
+	var folderId = this.getFolderId();
 
     jsonObj.methodName = methodName;
     msgNode.d = currentTime; //for displaying date and time in the outbox/Drafts folder
@@ -1919,6 +1920,10 @@ function(params) {
 
     callback = this._handleOfflineResponseSendMessageCallback.bind(this, params, jsonObj);
 
+	//For outbox item, message id will be always undefined.
+	if (folderId == ZmFolder.ID_OUTBOX) {
+		msgNode.id = origMsg && origMsg.id;
+	}
     if (msgNode.id) { //Existing drafts created online or offline
         jsonObj.id = msgNode.id;
         var value = {
