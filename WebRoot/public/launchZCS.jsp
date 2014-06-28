@@ -146,6 +146,7 @@
     pageContext.setAttribute("isCoverage", isCoverage);
     pageContext.setAttribute("isPerfMetric", isPerfMetric);
     pageContext.setAttribute("isLocaleId", localeId != null);
+	pageContext.setAttribute("csrfToken", authResult.getCsrfToken());
 %>
 <html class="user_font_size_normal">
 <head>
@@ -172,7 +173,7 @@
 <meta http-equiv="Pragma" content="no-cache"/>
 <fmt:setLocale value='${locale}' scope='request' />
 <c:if test="${not isLocaleId}">
-<zm:getValidLocale locale='${locale}' var='validLocale'/>
+<zm:getValidLocale locale='${locale}' var='validLocale' csrftoken="${csrfToken}"/>
   <c:if test="${not validLocale}">
     <% pageContext.setAttribute("locale", Locale.US); //unsupported locale being set default to US%>
    </c:if>
@@ -225,6 +226,7 @@
     window.isScriptErrorOn		= ${isScriptErrorOn};
     window.isPerfMetric			= ${isPerfMetric};
 	window.authTokenExpires = <%= authResult.getExpires()%>;
+	window.csrfToken = "${csrfToken}";
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
@@ -420,13 +422,24 @@ delete text;
         <c:set var="types" value="${requestScope.authResult.attrs.zimbraFeatureConversationsEnabled[0] eq 'FALSE' ? 'message' : requestScope.authResult.prefs.zimbraPrefGroupMailBy[0]}"/>
 		<c:set var="numItems" value="${requestScope.authResult.prefs.zimbraPrefItemsPerVirtualPage[0]}"/>
 
-        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" csrftoken="${requestScope.authResult.csrfToken}"
-                        dosearch="${not empty app and app ne 'mail' or isOfflineMode ? false : true}" itemsperpage="${numItems * 2}" types="${types}" folderpath="${path}" sortby="${sortOrder}" fullconversation="true"/>
+        <zm:getInfoJSON var="getInfoJSON"
+        	authtoken="${requestScope.authResult.authToken}"
+        	csrftoken="${csrfToken}"
+			dosearch="${not empty app and app ne 'mail' or isOfflineMode ? false : true}"
+			itemsperpage="${numItems * 2}"
+			types="${types}"
+			folderpath="${path}"
+			sortby="${sortOrder}"
+			fullconversation="true"/>
         var batchInfoResponse = ${getInfoJSON};
 
         <c:if test="${not empty app and app eq 'calendar'}">
-        <zm:calSearchJSON var="calSearchJSON" authtoken="${requestScope.authResult.authToken}" csrftoken="${requestScope.authResult.csrfToken}"
-                          timezone="${requestScope.tz}" itemsperpage="500" types="appointment"/>
+        <zm:calSearchJSON var="calSearchJSON"
+        	authtoken="${requestScope.authResult.authToken}"
+        	csrftoken="${csrfToken}"
+            timezone="${requestScope.tz}"
+            itemsperpage="500"
+            types="appointment"/>
         window.inlineCalSearchResponse = ${calSearchJSON};
         </c:if>
 		<c:if test="${isLeakDetectorOn}">
