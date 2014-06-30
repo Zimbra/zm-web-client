@@ -157,8 +157,8 @@
 	window.appExtension			= "${zm:jsEncode(ext)}";
 	window.appDevMode			= ${isDevMode};
     window.appCoverageMode		= ${isCoverage};
-    window.authTokenExpires     = ${authTokenExpires};
-    window.childId              = ${childId};
+    window.authTokenExpires     = AjxStringUtil.htmlEncode(${authTokenExpires});
+    window.childId              = AjxStringUtil.htmlEncode(${childId});
 </script>
 
 <%@ include file="loadImgData.jsp" %>
