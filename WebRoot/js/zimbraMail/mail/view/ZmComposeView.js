@@ -3546,7 +3546,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 				this._replyAttachInfo = this._replyAttachments = [];
 				Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_REPLY_ATT_ROW), false);
 		} else if (action === ZmOperation.REPLY || action === ZmOperation.REPLY_ALL) {
-			if (attInfo && attInfo.length) {
+			if (attInfo && attInfo.length && !appCtxt.isWebClientOffline()) {
 				this._replyAttachInfo = attInfo;
 				this._replyAttachments = this._msg.attachments;
 				this._attachCount = 0;

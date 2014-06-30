@@ -1909,9 +1909,15 @@ function(params) {
         }
     }
 
-    if (msgNodeAttach) {
-        msgNodeAttach.aid = aid.join();
-    }
+	if (msgNodeAttach) {
+		if (aid.length > 0) {
+			msgNodeAttach.aid = aid.join();
+		}
+		//If msgNodeAttach is an empty object then delete it
+		if (Object.keys(msgNodeAttach).length === 0) {
+			delete msgNode.attach;
+		}
+	}
 
     // Checking for inline Attachment
     if (this.getInlineAttachments().length > 0 || (origMsg && origMsg.getInlineAttachments().length > 0)) {
