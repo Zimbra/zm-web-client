@@ -1160,6 +1160,10 @@ function(ev) {
         if (id === ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY) {
             var callback = this._offlineSettingsSaveCallback.bind(this, setting);
         }
+		else {
+			//Once implicit preference is saved, reload the application cache to get the latest changes
+			var callback = appCtxt.reloadAppCache.bind(appCtxt);
+		}
 		this.save([setting], callback, null, appCtxt.getActiveAccount(), true);
 	}
 };
