@@ -177,7 +177,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     window.appDevMode     = ${isDevMode};
     window.appCoverageMode = ${isCoverage};
     window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
-    window.authTokenExpires     = ${authTokenExpires};
+    window.authTokenExpires     = AjxStringUtil.htmlEncode(${authTokenExpires});
 
     if(!ZmCsfeCommand.noAuth){
         ZmDocsEditApp.setFile('${fileId}', '${fileName}', '${folderId}');
