@@ -141,7 +141,7 @@ If not, see <http://www.gnu.org/licenses/>.
         window.appRequestLocaleId	= "${locale}";
         window.appDevMode			= ${isDevMode};
         window.appCoverageMode		= ${isCoverage};
-        window.authTokenExpires		= ${authTokenExpires};
+        window.authTokenExpires		= AjxStringUtil.htmlEncode(${authTokenExpires});
 
         window.cacheKillerVersion = "${vers}";
         AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(locale)}";
