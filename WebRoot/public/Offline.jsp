@@ -14,7 +14,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 -->
-<html manifest="<%=request.getParameter("url")%>">
+<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
+<html manifest="<%=StringEscapeUtils.escapeHtml(request.getParameter("url"))%>">
 <head>
 	<script>
 			var appCache = window.applicationCache;
