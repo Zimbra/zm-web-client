@@ -2,9 +2,7 @@ ABOUT
 
 Throughout this document, the source repository directory path is
 written as /depot/{branch}/. The primary (or "head" or "trunk") branch
-is "main" and the 5.0.x branch is "FRANKLIN". This document is written
-according to the main branch but the same information applies to the
-FRANKLIN branch.
+is "main".  This document is written according to the main branch.
 
 
 SOURCE TREE STRUCTURE
