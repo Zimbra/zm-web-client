@@ -14,8 +14,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 -->
-<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
-<html manifest="<%=StringEscapeUtils.escapeHtml(request.getParameter("url"))%>">
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<html manifest="${fn:escapeXml(param.url)}">
 <head>
 	<script>
 			var appCache = window.applicationCache;
