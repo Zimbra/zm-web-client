@@ -3556,7 +3556,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 			return;
 		}
 
-		if (attInfo.length > 0) {
+		if (attInfo.length > 0 && !appCtxt.isWebClientOffline()) {
 			for (var i = 0; i < attInfo.length; i++) {
 				var att = attInfo[i];
 				var params = {

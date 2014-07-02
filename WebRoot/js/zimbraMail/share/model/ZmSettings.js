@@ -1162,7 +1162,7 @@ function(ev) {
         }
 		else {
 			//Once implicit preference is saved, reload the application cache to get the latest changes
-			var callback = appCtxt.reloadAppCache.bind(appCtxt);
+			var callback = appCtxt.reloadAppCache.bind(appCtxt, false);
 		}
 		this.save([setting], callback, null, appCtxt.getActiveAccount(), true);
 	}
