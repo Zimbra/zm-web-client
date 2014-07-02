@@ -10,17 +10,7 @@ are 15 icons with 59 possible color variations.  To generate these icons, we hav
 canvas methods in the non-IE browsers to generate the icons.  The data-uri that is generated is then POSTed to a PHP page
 and saved to a file.
 
-Once you have these 886 files, you can place them ZimbraWebClient/WebRoot/img/ie-custom-icons.
-
-Next, run ant clean deploy.
-
-This will generate a ie-custom-icons.png sprite image and also add the required CSS classes to images.css.
-
-Copy the ie-custom-icons.png into the /img/ie-custom-icons directory and remove the previously generated icons.
-Copy the CSS classes from images.css that reference ie-custom-icons.png into a CSS file ie-custom-icons.css.
-
-We conditionally load the ie-custom-icons.css stylesheet for IE9 user agents (in Zimbra 8 we force IE10 into IE9 browser
-mode so detection is done as IE9).
+1. Install the php processing script
 
 ####PHP Script#####
 Mac OS ships with an Apache webserver and PHP installed.  You just need to enable it.
@@ -42,13 +32,51 @@ file_put_contents("/tmp/custom/".$imageName.".png", $decodedData);
 chown _www /tmp/custom
 chmod 755 /tmp/custom
 
+Once you access that ImageGenerator.html the /tmp/custom directory populate with the images.
+
+--------------------------------------
+
+2. Setup ImageGenerator.html
 #####JavaScript######
 * Copy ImageGenerator.html to the public directory of Zimbra so it can be accessed via
 http://localhost:7070/public/ImageGenerator.html
 
+--------------------------------------
+
+3. Run ImageGenerator.html
+http://localhost/public/ImageGenerator.html
+
+Once in the page, wait: it should display the generated images in the page once done.
+Then look in /tmp/custom for the created images
+
+
+If you get a 403 'Permission Denied' error (you can run the ImageGenerator.html with a
+debugger to see the console output), set:
+  zmprov mc default +zimbraProxyAllowedDomains localhost
+to allow the zimbra jetty server to access you local Mac host.
+
+If the images are not generated, click on one of the calls to processing.php and click
+on the reply - it may have an error/warning that is informitive.
+
+--------------------------------------
+
+4. Once you have these 886 files, you can place them ZimbraWebClient/WebRoot/img/ie-custom-icons.
+
+5. Next, run ant clean deploy from ZimbraWebClient
+This will generate a ie-custom-icons.png sprite image and also add the required CSS classes to images.css.
+
+6. Copy the ie-custom-icons.png into the /img/ie-custom-icons directory and remove the previously generated icons.
+7.Copy the CSS classes from images.css that reference ie-custom-icons.png into a CSS file ie-custom-icons.css.
+
+
+
+
+We conditionally load the ie-custom-icons.css stylesheet for IE9 user agents (in Zimbra 8 we force IE10 into IE9 browser
+mode so detection is done as IE9).
+
+
 This script has only been tested with Chrome on Mac.  
 
-Once you access that URL the /tmp/custom directory populate with the images.
 
 
 
