@@ -41,6 +41,21 @@
 	</c:if>
 </c:if>
 
+<!-- Touch client exists only in network edition -->
+<%
+    Boolean touchLoginPageExists = (Boolean) application.getAttribute("touchLoginPageExists");
+    if(touchLoginPageExists == null) {
+        try {
+            touchLoginPageExists = new java.io.File(application.getRealPath("/public/loginTouch.jsp")).exists();
+        } catch (Exception ignored) {
+            // Just in case there's anException
+            touchLoginPageExists = true;
+        }
+        application.setAttribute("touchLoginPageExists", touchLoginPageExists);
+    }
+%>
+<c:set var="touchLoginPageExists" value="<%=touchLoginPageExists%>"/>
+
 <c:catch var="loginException">
 	<c:choose>
 		<c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
@@ -61,7 +76,7 @@
                     <zm:logout/>
                     <c:redirect url="${logoutRedirectUrl}"/>
                 </c:when>
-                <c:when test="${useTablet or useMobile}">
+                <c:when test="${(useTablet or useMobile) and touchLoginPageExists}">
                     <jsp:forward page="/public/loginTouch.jsp"/>
                 </c:when>
                 <c:otherwise>
@@ -142,7 +157,9 @@
             </c:when>
             <c:otherwise>
                 <c:set var="client" value="${param.client}"/>
-                <c:if test="${empty client and (useTablet or useMobile)}"><c:set var="client" value="touch"/></c:if>
+                <c:if test="${empty client and (useTablet or useMobile)}">
+                    <c:set var="client" value="${touchLoginPageExists ? 'touch' : 'mobile'}"/>
+                </c:if>
                 <c:if test="${empty client or client eq 'preferred'}">
                     <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
                 </c:if>
@@ -226,11 +243,11 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:otherwise>
+    <c:when test="${touchLoginPageExists}">
         <c:if test="${useTablet or useMobile}">
             <jsp:forward page="/public/loginTouch.jsp"/>
         </c:if>
-    </c:otherwise>
+    </c:when>
 </c:choose>
 
 
@@ -336,7 +353,17 @@ if (application.getInitParameter("offlineMode") != null) {
 	<c:set var="useStandard" value="${not (ua.isFirefox3up or ua.isGecko1_9up or ua.isIE8up or ua.isSafari4Up or ua.isChrome or ua.isModernIE)}"/>
 	<c:if test="${empty client}">
 		<%-- set client select default based on user agent. --%>
-		<c:set var="client" value="${useTablet ? 'touch' : useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
+        <c:choose>
+            <c:when test="${useTablet or useMobile}">
+                <c:set var="client" value="${touchLoginPageExists ? 'touch' : 'mobile'}"/>
+            </c:when>
+            <c:when test="${useStandard}">
+                <c:set var="client" value="standard"/>
+            </c:when>
+            <c:otherwise>
+                <c:set var="client" value="preferred"/>
+            </c:otherwise>
+        </c:choose>
 	</c:if>
 	<c:set var="smallScreen" value="${client eq 'mobile' or client eq 'socialfox'}"/>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
@@ -463,7 +490,9 @@ if (application.getInitParameter("offlineMode") != null) {
 											<option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
 											<option value="standard" <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
 											<option value="mobile" <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
-											<option value="touch" <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
+                                            <c:if test="${touchLoginPageExists}">
+    											<option value="touch" <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
+                                            </c:if>
 										</select>
 									</c:otherwise>
 								</c:choose>
