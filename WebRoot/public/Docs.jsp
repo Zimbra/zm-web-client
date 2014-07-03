@@ -63,7 +63,6 @@ If not, see <http://www.gnu.org/licenses/>.
 		request.setAttribute("packages", "dev");
     }
 
-    String authTokenExpires = request.getParameter("authTokenExpires");
 
     final String SKIN_COOKIE_NAME = "ZM_SKIN";
     String skin = application.getInitParameter("zimbraDefaultSkin");
@@ -118,7 +117,6 @@ If not, see <http://www.gnu.org/licenses/>.
     pageContext.setAttribute("isProdMode", !prodMode.equals(""));
     pageContext.setAttribute("isDebug", isDevMode);
     pageContext.setAttribute("isCoverage", isCoverage);
-    pageContext.setAttribute("authTokenExpires", authTokenExpires);
 %>
 <html>
 <head>
@@ -141,7 +139,7 @@ If not, see <http://www.gnu.org/licenses/>.
         window.appRequestLocaleId	= "${locale}";
         window.appDevMode			= ${isDevMode};
         window.appCoverageMode		= ${isCoverage};
-        window.authTokenExpires		= AjxStringUtil.htmlEncode(${authTokenExpires});
+        window.authTokenExpires		= window.opener.authTokenExpires;
 
         window.cacheKillerVersion = "${vers}";
         AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(locale)}";

@@ -1554,12 +1554,6 @@ function(fullVersion, width, height, name) {
 	url[i++] = appCurrentSkin;
 	url[i++] = "&localeId=";
 	url[i++] = AjxEnv.DEFAULT_LOCALE || "";
-	url[i++] = "&authTokenExpires=";
-	url[i++] = window.authTokenExpires;
-	if (window.csrfToken) {
-		url[i++] = "&cst=";
-		url[i++] = window.csrfToken;
-	}
 	if (fullVersion) {
 		url[i++] = "&full=1";
 	}
