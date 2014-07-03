@@ -105,7 +105,7 @@ ZmDocsEditView.prototype.save = function(force){
     // Ignore save if document is not dirty
     var _docModified = this.isDirty();
     var _docNameModified = fileName && (fileName != ZmDocsEditApp.fileInfo.name);
-    if(!_docModified && !_docNameModified) {
+    if (!_docModified && !_docNameModified && !message) {
         if(this._saveClose){
             window.close();
         } else {
