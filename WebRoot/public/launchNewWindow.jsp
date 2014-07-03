@@ -64,6 +64,7 @@
 	if(contextPath.equals("/")) contextPath = "";
 
     String authTokenExpires = request.getParameter("authTokenExpires");
+	String csrfToken = request.getParameter("cst");
 
 	boolean isDev = getParameter(request, "dev", "0").equals("1");
 	if (isDev) {
@@ -119,6 +120,7 @@
 	pageContext.setAttribute("contextPath", contextPath);
 	pageContext.setAttribute("skin", skin);
     pageContext.setAttribute("authTokenExpires", authTokenExpires);
+	pageContext.setAttribute("csrfToken", csrfToken);
 	pageContext.setAttribute("ext", ext);
 	pageContext.setAttribute("vers", vers);
 	pageContext.setAttribute("locale", locale);
@@ -157,8 +159,9 @@
 	window.appExtension			= "${zm:jsEncode(ext)}";
 	window.appDevMode			= ${isDevMode};
     window.appCoverageMode		= ${isCoverage};
-    window.authTokenExpires     = AjxStringUtil.htmlEncode(${authTokenExpires});
-    window.childId              = AjxStringUtil.htmlEncode(${childId});
+    window.authTokenExpires     = ${authTokenExpires};
+    window.childId              = ${childId};
+	window.csrfToken 			= "${csrfToken}";
 </script>
 
 <%@ include file="loadImgData.jsp" %>
