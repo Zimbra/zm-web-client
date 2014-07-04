@@ -3556,7 +3556,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 			return;
 		}
 
-		if (attInfo.length > 0 && !appCtxt.isWebClientOffline()) {
+		if (attInfo.length > 0 && !(action === ZmOperation.FORWARD_INLINE && appCtxt.isWebClientOffline())) {
 			for (var i = 0; i < attInfo.length; i++) {
 				var att = attInfo[i];
 				var params = {
