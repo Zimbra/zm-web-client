@@ -309,6 +309,7 @@
             table_default_styles: { width: '90%', tableLayout: 'fixed' },
             content_css : false,
             language : tinyMCE.getlanguage("${mailbox.prefs.locale}"),
+            paste_data_images: true,
             paste_retain_style_properties : "all",
             paste_remove_styles_if_webkit : false,
             submit_patch : false,
