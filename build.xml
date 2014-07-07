@@ -1655,14 +1655,14 @@ if (ext == null) ext = "";
 
                         map[name] =
                             String(java.lang.String.format("data:%s;base64,%s",
-                                                           type, data));
+                                                           [type, data]));
                     }
 
                     // write it to disk as a loadable JavaScript source file
-                    writer = Files.newBufferedWriter(Paths.get(dstfile),
+                    writer = Files.newBufferedWriter(Paths.get(dstfile, []),
                                                      StandardCharsets.UTF_8,
-                                                     StandardOpenOption.TRUNCATE_EXISTING,
-                                                     StandardOpenOption.CREATE);
+                                                     [StandardOpenOption.TRUNCATE_EXISTING,
+                                                      StandardOpenOption.CREATE]);
 
                     writer.write("tinyMCE.emoticon_map = ");
                     writer.write(JSON.stringify(map, null, 4));
