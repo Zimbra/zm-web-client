@@ -1113,7 +1113,8 @@ ZmListController.prototype._getItemCountText =
 function() {
 
 	var size = this._getItemCount();
-	if (size == 0) { return ""; }
+	// Size can be null or a number
+	if (!size) { return ""; }
 
 	var lv = this._view[this._currentViewId],
 		list = lv && lv._list,
