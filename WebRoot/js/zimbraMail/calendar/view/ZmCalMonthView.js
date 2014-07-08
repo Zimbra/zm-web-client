@@ -739,7 +739,7 @@ function() {
 
                 var day = this._getDayForAppt(appt);
                 if (day) {
-                    var dow = (apptSet.dow + iAppt) % (this._showWeekNumber ? 8 : 7); // 8 columns, 7 days of week & 1 week number.
+					var dow = (apptSet.dow + iAppt) % 7;
                     var apptX = this._calculateAllDayX(dow, ae.head) + (this._showWeekNumber ? 15 : 0); // Add week number width
                     var apptY = dayY[day.week] + (21*apptSet.rows[day.week]) + 18 + 3; //first 17, each appt + 1, second 17, day heading
                     Dwt.setLocation(ae, apptX, apptY);
