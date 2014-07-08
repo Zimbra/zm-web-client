@@ -595,22 +595,23 @@ SELECT						{	@FieldBorder@	}
 .RowDouble .ZmRowDoubleHeader		{ border:1px solid white; 			}
 .RowDouble .TopRow,
 .RowDouble .ImgCheckboxChecked,
-.RowDouble .ImgCheckboxUnchecked 	{ margin:6px 0px 0px; 	}
+.RowDouble .ImgCheckboxUnchecked 	{ margin:6px 0px 0px; }
+.RowDouble .ZmMsgListExpand			{ margin-left:-2px; margin-right:2px; }
 .RowDouble .BottomRow				{ margin:4px 0px 6px; 	}
 .Row-matched, .RowDouble-matched,
 .RowDouble-matched .ZmListFlagsWrapper,
-.RowDouble-matched .ZmMsgListDate	{ background-color:@SearchResultColor@;		}.ZmListFlagsWrapper
+.RowDouble-matched .ZmMsgListDate	{ background-color:@SearchResultColor@;		}
 .TopRow, .BottomRow					{ height:16px; height:1.6rem; position:relative;	}
 #IFDEF MSIE_LESS_THAN_9
 .TopRow, .BottomRow					{ width:99%;	}
 #ENDIF
-.ZmListFlagsWrapper					{ position:absolute; right:-3px; @ListItemContainer-normal@ }
-.SimpleContact .ZmListFlagsWrapper	{ padding:.08rem 0px; right:0px;}
+.ZmListFlagsWrapper					{ position:absolute; right:0px; @ListItemContainer-normal@ }
+.SimpleContact .ZmListFlagsWrapper	{ padding:.08rem 0px; right:0px; }
 .SimpleContact .ImgCheckboxUnchecked,
 .SimpleContact .ImgCheckboxChecked,
-.ZmContactIcon						{ margin:0px 5px 0px 2px;}
+.ZmContactIcon						{ margin:0px 5px 0px 2px; }
 #IFNDEF MSIE
-.ZmListFlagsWrapper DIV				{ margin:0px 2px 0px 3px;}
+.ZmListFlagsWrapper DIV				{ margin:0px 2px 0px 3px; }
 #ENDIF
 .TopRow .ImgMsgRead,
 .TopRow .ImgMsgUnread				{ margin:0px 3px 0px 3px; }

@@ -482,21 +482,12 @@ TD.vSpace {
 }
 
 .ZmMsgListBottomRowIcon {
-#IFNDEF MSIE_LOWER_THAN_9
-	margin-left: 28px;
-#ENDIF
-#IFDEF MSIE_LOWER_THAN_9
-	margin-left: 18px;
-#ENDIF
+	margin-left: 23px;
+	margin-right: 5px;
 }
 
 .ZmConvExpanded .ZmMsgListBottomRowIcon {
-#IFNDEF MSIE_LOWER_THAN_9
-	margin-left: 50px;
-#ENDIF
-#IFDEF MSIE_LOWER_THAN_9
-	margin-left: 36px;
-#ENDIF
+	margin-left: 39px;
 }
 
 .ZmMsgListSelection .ZmMsgListBottomRowIcon {
@@ -507,18 +498,10 @@ TD.vSpace {
 	margin-left: 68px;
 }
 
-#IFDEF MACINTOSH
-#IFDEF WEBKIT
-	.RowDouble TD.SubjectDoubleRow, .RowDouble DIV.SubjectDoubleRow  			{	padding-top:1px; 		}
-	.RowDouble .Unread TD.SubjectDoubleRow, .RowDouble .Unread DIV.SubjectDoubleRow  	{	padding-top:0px; 		}
-#ENDIF
+#IFDEF MSIE
+.SubjectDoubleRow { width:100%; }
 #ENDIF
 
-#IFDEF MSIE
-.SubjectDoubleRow {
-	width:100%;
-}
-#ENDIF
 /* list row styles (bgs & border) */
 
 .Row							{	@ListItemContainer-normal@			}

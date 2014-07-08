@@ -529,15 +529,15 @@ function(item, colIdx) {
 	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_READ, colIdx, width);
 	if (isConv) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, "16", "style='padding:0'");
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, "16", null, ["ZmMsgListExpand"]);
 	}
 	
 	// for multi-account, show the account icon for cross mbox search results
 	if (appCtxt.multiAccounts && !isMsg && appCtxt.getSearchController().searchAllAccounts) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16", "align=right");
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16");
 	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right", ["ZmMsgListDate"]);
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, null, ["ZmMsgListDate"]);
 	htmlArr[idx++] = "</div>";
 
 	// second row
@@ -557,7 +557,7 @@ function(item, colIdx) {
 	idx = this._getListFlagsWrapper(htmlArr, idx, item);
 
 	if (item.hasAttach) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width, "valign=top");
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width);
 	}
 	var tags = item.getVisibleTags();
 	if (tags && tags.length) {
