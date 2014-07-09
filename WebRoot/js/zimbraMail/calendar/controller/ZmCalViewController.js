@@ -875,16 +875,21 @@ function(ev) {
 		appCtxt.accountList.syncAll();
 	}
 
+	var app = appCtxt.getApp(ZmApp.CALENDAR);
 	// reset possibly set user query
 	this._userQuery = null;
-	var sc = appCtxt.getSearchController();
-	sc.setSearchField("");
-	sc.getSearchToolbar().blur();
+	if (app === appCtxt.getCurrentApp()) {
+		var sc = appCtxt.getSearchController();
+		sc.setSearchField("");
+		sc.getSearchToolbar().blur();
+	}
+	app.currentSearch = null;
+	app.currentQuery = null;
 	this._refreshMaintenance = true;
     this.searchInProgress = false;
 	this._refreshAction(false);
 
-	var overview = appCtxt.getOverviewController().getOverview(appCtxt.getApp(ZmApp.CALENDAR).getOverviewId());
+	var overview = appCtxt.getOverviewController().getOverview(app.getOverviewId());
 	if (overview) {
 		overview.clearSelection();
 	}
