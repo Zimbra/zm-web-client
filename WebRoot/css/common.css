@@ -491,11 +491,11 @@ TD.vSpace {
 }
 
 .ZmMsgListSelection .ZmMsgListBottomRowIcon {
-	margin-left: 46px;
+	margin-left: 37px;
 }
 
 .ZmConvExpanded .ZmMsgListSelection .ZmMsgListBottomRowIcon {
-	margin-left: 68px;
+	margin-left: 54px;
 }
 
 #IFDEF MSIE
