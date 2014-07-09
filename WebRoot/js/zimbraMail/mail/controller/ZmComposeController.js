@@ -1417,6 +1417,13 @@ function(composeMode, incOptions) {
 
 	this._setDependentOptions(incOptions);
 
+	var showBcc = appCtxt.get(ZmSetting.SHOW_BCC);
+	var mi = menu.getOp(ZmOperation.SHOW_BCC);
+	if (mi) {
+		mi.setChecked(showBcc);
+		this._composeView._recipients._toggleBccField(showBcc);
+	}
+
 	button.setMenu(menu);
 	this._setOptionsVisibility();
 };
@@ -1748,6 +1755,7 @@ function(ev) {
 	}
 	else if (op === ZmOperation.SHOW_BCC) {
 		this._composeView._recipients._toggleBccField();
+		appCtxt.set(ZmSetting.SHOW_BCC, !appCtxt.get(ZmSetting.SHOW_BCC));
 	}
 	else if (op !== ZmOperation.ADD_SIGNATURE) {
 		// at this point we assume the op is related to include options

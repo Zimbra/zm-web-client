@@ -601,6 +601,7 @@ function() {
 };
 
 ZmRecipients.prototype._toggleBccField =
-function() {
-	this._showAddressField(AjxEmailAddress.BCC, !Dwt.getVisible(this._divEl[AjxEmailAddress.BCC]));
+function(show) {
+	var visible = AjxUtil.isBoolean(show) ? show : !Dwt.getVisible(this._divEl[AjxEmailAddress.BCC]);
+	this._showAddressField(AjxEmailAddress.BCC, visible);
 };
