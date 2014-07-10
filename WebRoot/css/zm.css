@@ -245,9 +245,9 @@
 	background-color:@AppC@;
 }
 
-#IFNDEF MSIE_LOWER_THAN_9
+#IFNDEF GECKO
 .itemToolbar {
-	padding-left:6px;
+	padding-left:1px;
 }
 #ENDIF
 
@@ -1215,6 +1215,12 @@ INPUT[type="text"].search_input-expanded {
 	@PageBg@
 	@FullWidth@
 }
+
+#IFDEF MSIE
+.ZmComposeView .ZPropertySheet {
+	margin-left:5px;
+}
+#ENDIF
 
 /* ??? SHOTGUN */
 .ZmComposeView TD {
