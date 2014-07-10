@@ -1,0 +1,210 @@
+# HG changeset patch
+# User Spocke <spocke@moxiecode.com>
+# Date 1399551744 -7200
+#      Thu May 08 14:22:24 2014 +0200
+# Node ID dad5bb6d55a087f356c920cd21e51d50a534b6bc
+# Parent  9f4de5a573b1ddf5cee4b0f5fe0789bbc14ff2d2
+Fixed various paste related issues.
+
+diff --git a/js/tinymce/plugins/paste/classes/Clipboard.js b/js/tinymce/plugins/paste/classes/Clipboard.js
+--- a/js/tinymce/plugins/paste/classes/Clipboard.js
++++ b/js/tinymce/plugins/paste/classes/Clipboard.js
+@@ -197,7 +197,6 @@ define("tinymce/pasteplugin/Clipboard", 
+ 				}
+ 			}
+ 
+-			keyboardPastePlainTextState = false;
+ 			pasteBinElm = lastRng = null;
+ 		}
+ 
+@@ -359,6 +358,8 @@ define("tinymce/pasteplugin/Clipboard", 
+ 				var isKeyBoardPaste = new Date().getTime() - keyboardPasteTimeStamp < 1000;
+ 				var plainTextMode = self.pasteFormat == "text" || keyboardPastePlainTextState;
+ 
++				keyboardPastePlainTextState = false;
++
+ 				if (e.isDefaultPrevented()) {
+ 					removePasteBin();
+ 					return;
+@@ -387,41 +388,54 @@ define("tinymce/pasteplugin/Clipboard", 
+ 				}
+ 
+ 				setTimeout(function() {
+-					var html = getPasteBinHtml();
++					var content;
++
++					// Grab HTML from Clipboard API or paste bin as a fallback
++					if (hasContentType(clipboardContent, 'text/html')) {
++						content = Utils.trimHtml(clipboardContent['text/html']);
++					} else {
++						content = getPasteBinHtml();
++
++						// If paste bin is empty try using plain text mode
++						// since that is better than nothing right
++						if (content == pasteBinDefaultContent) {
++							plainTextMode = true;
++						}
++					}
+ 
+ 					// WebKit has a nice bug where it clones the paste bin if you paste from for example notepad
++					// so we need to force plain text mode in this case
+ 					if (pasteBinElm && pasteBinElm.firstChild && pasteBinElm.firstChild.id === 'mcepastebin') {
+ 						plainTextMode = true;
+ 					}
+ 
+ 					removePasteBin();
+ 
+-					// Always use pastebin HTML if it's available since it contains Word contents
+-					if (!plainTextMode && isKeyBoardPaste && html && html != pasteBinDefaultContent) {
+-						clipboardContent['text/html'] = html;
+-					}
+-
+-					if (html == pasteBinDefaultContent || !isKeyBoardPaste) {
+-						html = clipboardContent['text/html'] || clipboardContent['text/plain'] || pasteBinDefaultContent;
+-
+-						if (html == pasteBinDefaultContent) {
+-							if (!isKeyBoardPaste) {
+-								editor.windowManager.alert('Please use Ctrl+V/Cmd+V keyboard shortcuts to paste contents.');
+-							}
+-
+-							return;
++					// Grab plain text from Clipboard API or convert existing HTML to plain text
++					if (plainTextMode) {
++						// Use plain text contents from Clipboard API unless the HTML contains paragraphs then
++						// we should convert the HTML to plain text since works better when pasting HTML/Word contents as plain text
++						if (hasContentType(clipboardContent, 'text/plain') && content.indexOf('</p>') == -1) {
++							content = clipboardContent['text/plain'];
++						} else {
++							content = Utils.innerText(content);
+ 						}
+ 					}
+ 
+-					// Force plain text mode if we only got a text/plain content type
+-					if (!hasContentType(clipboardContent, 'text/html') && hasContentType(clipboardContent, 'text/plain')) {
+-						plainTextMode = true;
++					// If the content is the paste bin default HTML then it was
++					// impossible to get the cliboard data out.
++					if (content == pasteBinDefaultContent) {
++						if (!isKeyBoardPaste) {
++							editor.windowManager.alert('Please use Ctrl+V/Cmd+V keyboard shortcuts to paste contents.');
++						}
++
++						return;
+ 					}
+ 
+ 					if (plainTextMode) {
+-						pasteText(clipboardContent['text/plain'] || Utils.innerText(html));
++						pasteText(content);
+ 					} else {
+-						pasteHtml(html);
++						pasteHtml(content);
+ 					}
+ 				}, 0);
+ 			});
+diff --git a/js/tinymce/plugins/paste/classes/Quirks.js b/js/tinymce/plugins/paste/classes/Quirks.js
+--- a/js/tinymce/plugins/paste/classes/Quirks.js
++++ b/js/tinymce/plugins/paste/classes/Quirks.js
+@@ -32,26 +32,6 @@ define("tinymce/pasteplugin/Quirks", [
+ 		}
+ 
+ 		/**
+-		 * Removes WebKit fragment comments and converted-space spans.
+-		 *
+-		 * This:
+-		 *   <!--StartFragment-->a<span class="Apple-converted-space">&nbsp;</span>b<!--EndFragment-->
+-		 *
+-		 * Becomes:
+-		 *   a&nbsp;b
+-		 */
+-		function removeWebKitFragments(html) {
+-			html = Utils.filter(html, [
+-				/^[\s\S]*<body[^>]*>\s*<!--StartFragment-->|<!--EndFragment-->\s*<\/body[^>]*>[\s\S]*$/g, // WebKit fragment body
+-				/<!--StartFragment-->|<!--EndFragment-->/g, // Inner fragments (tables from excel on mac)
+-				[/<span class="Apple-converted-space">\u00a0<\/span>/g, '\u00a0'], // WebKit &nbsp;
+-				/<br>$/i // Traling BR elements
+-			]);
+-
+-			return html;
+-		}
+-
+-		/**
+ 		 * Removes BR elements after block elements. IE9 has a nasty bug where it puts a BR element after each
+ 		 * block element when pasting from word. This removes those elements.
+ 		 *
+@@ -170,7 +150,6 @@ define("tinymce/pasteplugin/Quirks", [
+ 		// Sniff browsers and apply fixes since we can't feature detect
+ 		if (Env.webkit) {
+ 			addPreProcessFilter(removeWebKitStyles);
+-			addPreProcessFilter(removeWebKitFragments);
+ 		}
+ 
+ 		if (Env.ie) {
+diff --git a/js/tinymce/plugins/paste/classes/Utils.js b/js/tinymce/plugins/paste/classes/Utils.js
+--- a/js/tinymce/plugins/paste/classes/Utils.js
++++ b/js/tinymce/plugins/paste/classes/Utils.js
+@@ -91,8 +91,27 @@ define("tinymce/pasteplugin/Utils", [
+ 		return text;
+ 	}
+ 
++	/**
++	 * Trims the specified HTML by removing all WebKit fragments, all elements wrapping the body trailing BR elements etc.
++	 *
++	 * @param {String} html Html string to trim contents on.
++	 * @return {String} Html contents that got trimmed.
++	 */
++	function trimHtml(html) {
++		html = filter(html, [
++			/^[\s\S]*<body[^>]*>\s*<!--StartFragment-->|<!--EndFragment-->\s*<\/body[^>]*>[\s\S]*$/g, // WebKit fragment body
++			/<!--StartFragment-->|<!--EndFragment-->/g, // Inner fragments (tables from excel on mac)
++			[/<span class="Apple-converted-space">\u00a0<\/span>/g, '\u00a0'], // WebKit &nbsp;
++			[/(.*)<body[^>]*>(.*?)<\/body>(.*)/gi, '$2'], // Remove anything but the contents within the BODY element
++			/<br>$/i // Trailing BR elements
++		]);
++
++		return html;
++	}
++
+ 	return {
+ 		filter: filter,
+-		innerText: innerText
++		innerText: innerText,
++		trimHtml: trimHtml
+ 	};
+ });
+\ No newline at end of file
+diff --git a/tests/plugins/paste.js b/tests/plugins/paste.js
+--- a/tests/plugins/paste.js
++++ b/tests/plugins/paste.js
+@@ -486,25 +486,14 @@ test('paste innerText of textnode with w
+ 	equal(tinymce.pasteplugin.Utils.innerText(editor.getBody().firstChild.innerHTML), ' a ');
+ });
+ 
++test('trim html from clipboard fragments', function() {
++	equal(tinymce.pasteplugin.Utils.trimHtml('<!--StartFragment-->a<!--EndFragment-->'), 'a');
++	equal(tinymce.pasteplugin.Utils.trimHtml('a\n<body>\n<!--StartFragment-->\nb\n<!--EndFragment-->\n</body>\nc'), '\nb\n');
++	equal(tinymce.pasteplugin.Utils.trimHtml('a<!--StartFragment-->b<!--EndFragment-->c'), 'abc');
++	equal(tinymce.pasteplugin.Utils.trimHtml('a<body>b</body>c'), 'b');
++});
++
+ if (tinymce.Env.webkit) {
+-	test('paste webkit body fragment', function() {
+-		editor.setContent('');
+-		editor.execCommand('mceInsertClipboardContent', false, {content: 'a\n<body>\n<!--StartFragment-->\nb\n<!--EndFragment-->\n</body>\nc'});
+-		equal(editor.getContent(), '<p>b</p>');
+-	});
+-
+-	test('paste webkit body fragment no line feeds', function() {
+-		editor.setContent('');
+-		editor.execCommand('mceInsertClipboardContent', false, {content: 'a<body><!--StartFragment-->b<!--EndFragment--></body>c'});
+-		equal(editor.getContent(), '<p>b</p>');
+-	});
+-
+-	test('paste webkit inner fragment', function() {
+-		editor.setContent('');
+-		editor.execCommand('mceInsertClipboardContent', false, {content: 'a<!--StartFragment-->b<!--EndFragment-->c'});
+-		equal(editor.getContent(), '<p>abc</p>');
+-	});
+-
+ 	test('paste webkit retains text styles runtime styles internal', function() {
+ 		editor.settings.paste_webkit_styles = 'color';
+ 		editor.setContent('');
