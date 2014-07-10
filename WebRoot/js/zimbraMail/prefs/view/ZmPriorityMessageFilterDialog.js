@@ -324,7 +324,7 @@ function(msg) {
 ZmPriorityMessageFilterDialog.prototype._createActivityStreamsFolder =
 function() {
 	var jsonObj = {CreateFolderRequest:{_jsns:"urn:zimbraMail"}};
-	var folder = jsonObj.CreateFolderRequest.folder = {l: ZmOrganizer.ID_ROOT, name: ZmMsg.activityStreamFolder, fie: 1};
+	var folder = jsonObj.CreateFolderRequest.folder = {l: ZmOrganizer.ID_ROOT, name: ZmMsg.activityStreamFolder, fie: 1, view: "message"};
 	return appCtxt.getAppController().sendRequest({
 		jsonObj: jsonObj,
 		asyncMode: true,
