@@ -370,8 +370,11 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
+	AjxDispatcher.require("Alert");
+	var notifyText = ZmDesktopAlert.getInstance().getDisplayText();
 	ZmPref.registerPref("CAL_REMINDER_NOTIFY_TOASTER", {
-		displayFunc:		function() { AjxDispatcher.require("Alert"); return ZmDesktopAlert.getInstance().getDisplayText(); },
+		displayFunc:		function() { return notifyText; },
+		precondition:		function() { return !!notifyText; },
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
