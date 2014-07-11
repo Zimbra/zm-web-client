@@ -727,9 +727,13 @@ function(syncResponse) {
 	var msgParamsArray = [];
 	var contactIdsArray = [];
 	if (msgs) {
+		var offlineFolderIds = Object.keys(ZmOffline.folders);
 		msgs.forEach(function(msg) {
-			var params = {m:{id:msg.id, html:1, needExp:1}, _jsns:"urn:zimbraMail"};
-			msgParamsArray.push(params);
+			//Get messages only if it belongs to offline folder
+			if (msg.l && offlineFolderIds.indexOf(msg.l) !== -1) {
+				var params = {m:{id:msg.id, html:1, needExp:1}, _jsns:"urn:zimbraMail"};
+				msgParamsArray.push(params);
+			}
 		});
 	}
 	if (contacts) {
