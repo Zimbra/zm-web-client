@@ -17,7 +17,7 @@
 <c:set var="itemColor" value="${not empty param.color ? param.color : requestScope.zimbra_target_item_color}" scope="request"/>
 
 
-<zm:getMailbox var="mailbox" restauthtoken="${requestScope.zimbra_authToken}" resttargetaccountid="${requestScope.zimbra_target_account_id}"/>
+<zm:getMailbox var="mailbox" restauthtoken="${requestScope.zimbra_authToken}" csrfenabled="${requestScope.zimbra_csrfEnabled}" resttargetaccountid="${requestScope.zimbra_target_account_id}"/>
 
 <c:choose>
     <c:when test="${(type eq 'folder' or type eq 'remote folder') and (view eq 'appointment')}">
