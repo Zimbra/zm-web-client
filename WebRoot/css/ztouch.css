@@ -72,7 +72,10 @@ BODY.x-android {
 }
 
 .ImgLoginBanner {
-	background:url(@LogoImgDir@/TouchLoginBanner.png) no-repeat bottom / 100%;
+	background-image: url(@LogoImgDir@/TouchLoginBanner.png);
+	background-repeat: no-repeat;
+	background-position: bottom;
+	background-size: 100%;
 	cursor:pointer;
 	height:85px;
 	width:300px;
