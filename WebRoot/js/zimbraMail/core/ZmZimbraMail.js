@@ -2703,8 +2703,8 @@ function(ev, relogin) {
 		window.close();
 		return;
 	}
-	if (ev && appCtxt.isWebClientOfflineSupported) {
-		return ZmOfflineSettingsDialog.showConfirmSignOutDialog();
+	if (appCtxt.isWebClientOfflineSupported && (ev || relogin)) {
+		return ZmOffline.handleLogOff(ev, relogin);
     }
 
 	ZmZimbraMail._isLogOff = true;

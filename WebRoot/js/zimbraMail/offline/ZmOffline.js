@@ -1659,3 +1659,14 @@ function(isSyncing) {
 		}
 	}
 };
+
+ZmOffline.handleLogOff =
+function(ev, relogin) {
+	if (ev) {
+		ZmOfflineSettingsDialog.showConfirmSignOutDialog();
+	}
+	else if (relogin) {
+		appCtxt.reloadAppCache();
+		setTimeout(ZmZimbraMail.logOff, 1000);
+	}
+};
