@@ -251,6 +251,9 @@ function(msg, params) {
 	params.sessionId = this._controller.getSessionId();
 	params.isDraft = msg.isDraft;
 	var msgView = this._msgViews[msg.id] = new ZmMailMsgCapsuleView(params);
+	if (params.index !== undefined) {
+		this._msgViewList.splice(params.index, 0, msg.id);
+	}
 	this._msgViewList.push(msg.id);
 	msgView.set(msg);
 };
