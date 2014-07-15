@@ -146,7 +146,7 @@ ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.PREV_UNREAD]	= DwtKeyMap.SELECT_
 
 ZmMailListController.viewToTab = {};
 
-ZmMailListController.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_DRAFTS];
+ZmMailListController.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
 
 // Public methods
 
@@ -443,11 +443,13 @@ function(folders) {
 
 	var a = folders || ZmMailListController.FOLDERS_TO_OMIT,
 		omit = [],
-		curSearch = appCtxt.getCurrentSearch(),
+		curSearch = this._currentSearch,
 		curFolderId = curSearch && curSearch.folderId;
 
+	var isUserInitiatedSearch = curSearch && curSearch.userInitiated;
+
 	for (var i = 0; i < a.length; i++) {
-		if (a[i] != curFolderId) {
+		if (!isUserInitiatedSearch && a[i] != curFolderId) {
 			omit.push(a[i]);
 		}
 	}
