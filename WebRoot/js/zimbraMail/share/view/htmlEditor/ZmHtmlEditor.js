@@ -731,6 +731,7 @@ function(id, content) {
         forced_root_block : "div",
         width: "100%",
         height: "auto",
+        visual: false,
         language: tinyMCE.getlanguage(appCtxt.get(ZmSetting.LOCALE_NAME)),
         directionality : appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION),
         paste_retain_style_properties : "all",
