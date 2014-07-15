@@ -83,7 +83,7 @@
 	<script type="text/javascript">
 
 		var batchInfoResponse = ${getInfoJSON};
-		var debugLevel = "<%= (debug != null) ? debug : "" %>";
+		var debugLevel = "<%= (debug != null) ? BeanUtils.cook(debug) : "" %>";
 		window.inlineData = {
 			header:batchInfoResponse.Header,
 			response:batchInfoResponse.Body.BatchResponse,
