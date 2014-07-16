@@ -1073,6 +1073,7 @@ function(list, defaultColumnSort, folderId, isSearchResults) {
 	}
 
 	this.parent.showAlphabetBar(!isSearchResults);
+	this.parent.enableAlphabetBar(fid != ZmOrganizer.ID_DLS);
 };
 
 /**
