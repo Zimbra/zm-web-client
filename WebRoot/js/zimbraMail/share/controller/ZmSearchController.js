@@ -957,7 +957,16 @@ ZmSearchController.prototype._handleOfflineResponseDoSearch =
 function(search, callback, result) {
 
     if (search.sortBy === ZmSearch.DATE_DESC) {
-        result.reverse();
+		//Sort by received date descending
+		result.sort(function(a, b) {
+			return b.d - a.d;
+	    });
+    }
+	else if (search.sortBy === ZmSearch.DATE_ASC) {
+	    //Sort by received date ascending
+	    result.sort(function(a, b) {
+		    return a.d - b.d;
+	    });
     }
 
     var searchResult = new ZmSearchResult(search);

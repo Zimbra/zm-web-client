@@ -485,7 +485,8 @@ function(search, callback, errorCallback) {
 		return;
 	}
 	search = ZmOfflineDB._parseSearchObj(search);
-	if (search.searchFor === ZmId.SEARCH_MAIL || search.parsedSearchFor === ZmId.SEARCH_MAIL) {
+	if (search.searchFor === ZmId.SEARCH_MAIL || search.parsedSearchFor === ZmId.SEARCH_MAIL || (search.types && search.types.contains(ZmItem.MSG))) {
+		search.searchFor = ZmId.SEARCH_MAIL;
 		ZmOfflineDB.searchMail(search, callback, errorCallback);
 	}
 	else if (search.searchFor === ZmItem.CONTACT || search.contactSource === ZmItem.CONTACT) {
