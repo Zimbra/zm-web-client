@@ -76,8 +76,10 @@
                     <zm:logout/>
                     <c:redirect url="${logoutRedirectUrl}"/>
                 </c:when>
-                <c:when test="${(useTablet or useMobile) and touchLoginPageExists}">
-                    <jsp:forward page="/public/loginTouch.jsp"/>
+                <c:when test="${empty param.client or param.client eq 'touch'}">
+                    <c:if test="${(useTablet or useMobile) and touchLoginPageExists}">
+                        <jsp:forward page="/public/loginTouch.jsp"/>
+                    </c:if>
                 </c:when>
                 <c:otherwise>
                     <zm:logout/>
@@ -243,8 +245,8 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${touchLoginPageExists}">
-        <c:if test="${useTablet or useMobile}">
+    <c:when test="${empty param.client or param.client eq 'touch'}">
+        <c:if test="${(useTablet or useMobile) and touchLoginPageExists}">
             <jsp:forward page="/public/loginTouch.jsp"/>
         </c:if>
     </c:when>
