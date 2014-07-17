@@ -490,6 +490,9 @@ ZmMsgController.prototype._setStatics = function() {
 	if (!ZmMsgController.ALLOWED_SHORTCUT) {
 		ZmMsgController.ALLOWED_SHORTCUT = AjxUtil.arrayAsHash([
 			ZmKeyMap.FORWARD,
+			ZmKeyMap.MOVE,
+			ZmKeyMap.PRINT,
+			ZmKeyMap.TAG,
 			ZmKeyMap.REPLY,
 			ZmKeyMap.REPLY_ALL,
 			ZmKeyMap.SPAM,

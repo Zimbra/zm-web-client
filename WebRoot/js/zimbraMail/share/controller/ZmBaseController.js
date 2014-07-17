@@ -182,9 +182,7 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.MOVE:
             if (isExternalAccount) { break; }
-			if (!appCtxt.isChildWindow) {
-				this._moveListener();
-			}
+			this._moveListener();
 			break;
 
 		case ZmKeyMap.PRINT:
