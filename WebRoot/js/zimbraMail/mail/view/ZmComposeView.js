@@ -1008,7 +1008,7 @@ function(composeMode, initOnly) {
 		this._moveCaretOnTimer();
 	}
 
-	if (this._msg && this._isInline() && composeMode === Dwt.TEXT) {
+	if (this._msg && this._isInline(this._msg) && composeMode === Dwt.TEXT) {
 		this._showForwardField(this._msg, this._action, null, true);
 	}
 	this.modeSwitch = false; //reset the mode switch option
