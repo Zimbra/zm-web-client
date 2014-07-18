@@ -69,6 +69,10 @@ function() {
 ZmPickTagDialog.prototype.popup = 
 function(params) {
 
+	if (appCtxt.isChildWindow) {
+		return; //disable for now.
+	}
+
 	params = params || {};
 	this._account = params.account;
 
