@@ -1669,6 +1669,9 @@ INPUT[type="text"].search_input-expanded {
 .AlphabetBarDisabled {
 	/* TODO:this was hard-coded to 50% opaque -- why not same as icon? */
 	@HalfOpacity@
+}
+
+.AlphabetBarDisabled .AlphabetBarCell {
 	@InactiveCursor@
 }
 
