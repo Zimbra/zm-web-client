@@ -19,8 +19,9 @@
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
-<c:set var="useMobile" value="${ua.isiPhone or ua.isiPod or (ua.isMobile and not ua.isTouchiPad)}"/>
-<c:set var="useTablet" value="${ua.isTouchiPad or (ua.isOsAndroid and not ua.isMobile)}"/>
+<c:set var="touchSupported" value="${ua.isIos6_0up or ua.isAndroid4_0up}"/>
+<c:set var="mobileSupported" value="${ua.isMobile && (ua.isOsWindows || ua.isOsBlackBerry
+                                        || not ua.isAndroid4_0up || not ua.isIos6_0up)}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
@@ -76,10 +77,10 @@
                     <zm:logout/>
                     <c:redirect url="${logoutRedirectUrl}"/>
                 </c:when>
-                <c:when test="${empty param.client or param.client eq 'touch'}">
-                    <c:if test="${(useTablet or useMobile) and touchLoginPageExists}">
-                        <jsp:forward page="/public/loginTouch.jsp"/>
-                    </c:if>
+                <c:when test="${touchSupported and touchLoginPageExists and (empty param.client or param.client eq 'touch')}">
+                    <%--Redirect to loginTouch only if the device supports touch client, the touch login page exists
+                    and the user has not specified the client param as "mobile" or anything else.--%>
+                    <jsp:forward page="/public/loginTouch.jsp"/>
                 </c:when>
                 <c:otherwise>
                     <zm:logout/>
@@ -159,8 +160,11 @@
             </c:when>
             <c:otherwise>
                 <c:set var="client" value="${param.client}"/>
-                <c:if test="${empty client and (useTablet or useMobile)}">
+                <c:if test="${empty client and touchSupported}">
                     <c:set var="client" value="${touchLoginPageExists ? 'touch' : 'mobile'}"/>
+                </c:if>
+                <c:if test="${empty client and mobileSupported}">
+                    <c:set var="client" value="mobile"/>
                 </c:if>
                 <c:if test="${empty client or client eq 'preferred'}">
                     <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
@@ -246,7 +250,7 @@
         </c:choose>
     </c:when>
     <c:when test="${empty param.client or param.client eq 'touch'}">
-        <c:if test="${(useTablet or useMobile) and touchLoginPageExists}">
+        <c:if test="${touchSupported and touchLoginPageExists}">
             <jsp:forward page="/public/loginTouch.jsp"/>
         </c:if>
     </c:when>
@@ -356,8 +360,11 @@ if (application.getInitParameter("offlineMode") != null) {
 	<c:if test="${empty client}">
 		<%-- set client select default based on user agent. --%>
         <c:choose>
-            <c:when test="${useTablet or useMobile}">
+            <c:when test="${touchSupported}">
                 <c:set var="client" value="${touchLoginPageExists ? 'touch' : 'mobile'}"/>
+            </c:when>
+            <c:when test="${mobileSupported}">
+                <c:set var="client" value="mobile"/>
             </c:when>
             <c:when test="${useStandard}">
                 <c:set var="client" value="standard"/>
@@ -517,7 +524,7 @@ if (application.getInitParameter("offlineMode") != null) {
 			<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="clientLoginNotice"/></div>
 			<div class="copyright">
 			<c:choose>
-				<c:when test="${useMobile}">
+				<c:when test="${mobileSupported}">
 							<fmt:message bundle="${zhmsg}" key="splashScreenCopyright"/>
 				</c:when>
 				<c:otherwise>
