@@ -1757,7 +1757,7 @@ function(ev) {
 		this._composeView._recipients._toggleBccField();
 		appCtxt.set(ZmSetting.SHOW_BCC, !appCtxt.get(ZmSetting.SHOW_BCC));
 	}
-	else if (ZmComposeController.INC_MAP[op]) {
+	else if (ZmComposeController.INC_MAP[op] || op === ZmOperation.USE_PREFIX) {
 		// user is changing include options
 		if (this._setInclude(op)) {
 			this._switchInclude(op);
