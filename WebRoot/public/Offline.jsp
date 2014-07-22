@@ -15,6 +15,10 @@
  * ***** END LICENSE BLOCK *****
 -->
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:if test="${not empty param.isFirefox && param.isFirefox eq 'true'}">
+	<c:set var="overrideCacheControl" value="true" scope="session" />
+</c:if>
 <html manifest="${fn:escapeXml(param.url)}">
 <head>
 	<script>

@@ -1394,7 +1394,7 @@ function(force) {
             document.body.appendChild(offlineIframe);
         }
         if (offlineIframe) {
-            offlineIframe.src = "public/Offline.jsp?url=" + manifestURL;
+			offlineIframe.src = "public/Offline.jsp?url=" + manifestURL + "&isFirefox=" + AjxEnv.isFirefox;
         }
     }
 };
