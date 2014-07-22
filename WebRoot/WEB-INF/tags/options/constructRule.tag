@@ -23,7 +23,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<zm:filterRule var="ruleVar" name="${param.rulename}" active="${param.ruleactive}" allconditions="${param.allof eq 'all'}">
+<zm:filterRule var="ruleVar" name="${param.rulename}" active="${zm:boolean(param.ruleactive)}" allconditions="${param.allof eq 'all'}">
     <c:set var="badDate" value=""/>
     <c:forEach var="i" begin="0" end="${empty param.cond_count ? 0 : param.cond_count - 1}">
         <c:set var="key_condi" value="cond${i}"/>
