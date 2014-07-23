@@ -188,23 +188,31 @@ ZmOffline.prototype._initStaticResources =
 function() {
 	ZmOffline.refreshStatusIcon(true);
 	var staticURLs = [];
-	staticURLs.push("/css/msgview.css");
-	staticURLs.push("/img/large.png");
-	staticURLs.push("/img/large/ImgPerson_48.png");
-	staticURLs.push("/img/arrows/ImgSashArrowsUp.png");
-	staticURLs.push("/img/arrows.png");
-	staticURLs.push("/img/calendar/ImgCalendarDayGrid.repeat.gif");
+	staticURLs.push({url : "/css/msgview.css", storeInLocalStorage : true});
+	staticURLs.push({url : "/img/large.png"});
+	staticURLs.push({url : "/img/large/ImgPerson_48.png"});
+	staticURLs.push({url : "/img/arrows/ImgSashArrowsUp.png"});
+	staticURLs.push({url : "/img/arrows.png"});
+	staticURLs.push({url : "/img/calendar/ImgCalendarDayGrid.repeat.gif"});
+	staticURLs.push({url : "/css/tinymce-content.css"});
+	staticURLs.push({url : "/js/ajax/3rdparty/tinymce/skins/lightgray/fonts/tinymce-small.woff", appendCacheKillerVersion : false});
+	staticURLs.push({url : "/js/ajax/3rdparty/tinymce/skins/lightgray/content.min.css", appendCacheKillerVersion : false});
+	staticURLs.push({url : "/js/ajax/3rdparty/tinymce/skins/lightgray/skin.min.css", appendCacheKillerVersion : false});
 	this._cacheStaticResources(staticURLs);
 };
 
 ZmOffline.prototype._cacheStaticResources =
 function(staticURLs, cachedURL, response) {
-	if (response && response.success && cachedURL && cachedURL.indexOf("css") !== -1) {
-		localStorage.setItem(cachedURL, response.text);
+	if (response && response.success && cachedURL && cachedURL.storeInLocalStorage) {
+		localStorage.setItem(cachedURL.url, response.text);
 	}
 	if (staticURLs && staticURLs.length > 0) {
-		var url = appContextPath + staticURLs.shift() + "?v=" + cacheKillerVersion;
-		var callback = this._cacheStaticResources.bind(this, staticURLs, url);
+		var staticURL = staticURLs.shift();
+		var url = appContextPath + staticURL.url;
+		if (staticURL.appendCacheKillerVersion !== false) {
+			staticURL.url = url = url + "?v=" + cacheKillerVersion;
+		}
+		var callback = this._cacheStaticResources.bind(this, staticURLs, staticURL);
 		AjxRpc.invoke(null, url, null, callback, true);
 	}
 	else {
