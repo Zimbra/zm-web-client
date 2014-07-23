@@ -6,7 +6,6 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
@@ -157,7 +156,7 @@
 	window.appDevMode			= ${isDevMode};
     window.appCoverageMode		= ${isCoverage};
     window.authTokenExpires     = window.opener.authTokenExpires;
-    window.childId              = ${fn:escapeXml(childId)};
+    window.childId              = parseInt("${zm:jsEncode(childId)}"); //convert the string back to integer
 	window.csrfToken 			= window.opener.csrfToken;
 </script>
 
