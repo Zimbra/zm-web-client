@@ -789,7 +789,7 @@ function(force, viewId, skipHistory) {
 
 	if (curView.isTabView) {
 		appCtxt.getAppChooser().removeButton(curView.tabParams.id);
-		var callback = view.callback[ZmAppViewMgr.CB_POST_REMOVE];
+		var callback = curView.callback[ZmAppViewMgr.CB_POST_REMOVE];
 		if (callback) {
 			callback.run();
 		}

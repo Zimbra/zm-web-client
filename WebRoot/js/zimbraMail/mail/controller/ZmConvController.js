@@ -67,6 +67,7 @@ ZmConvController.prototype.show =
 function(conv, parentController, callback, markRead, msg) {
 
 	this._conv = conv;
+	conv.isInUse = true;
 
 	this._relatedMsg = msg;
 	this._parentController = parentController;
@@ -214,6 +215,11 @@ function(ev) {
 ZmConvController.prototype._close =
 function(ev) {
 	this._app.popView();
+};
+
+ZmConvController.prototype._postRemoveCallback =
+function() {
+	this._conv.isInUse = false;
 };
 
 ZmConvController.prototype._navBarListener =

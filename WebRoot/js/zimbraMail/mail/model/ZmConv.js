@@ -343,6 +343,9 @@ function() {
 
 ZmConv.prototype.clear =
 function() {
+	if (this.isInUse) {
+		return;
+	}
 	if (this.msgs) {
 		this.msgs.clear();
 		this.msgs.removeChangeListener(this._listChangeListener);

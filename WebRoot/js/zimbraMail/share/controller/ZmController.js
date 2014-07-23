@@ -592,6 +592,7 @@ function() {
 // Callbacks to run on changes in view state
 ZmController.prototype._preUnloadCallback	= function() { return true; };
 ZmController.prototype._postHideCallback	= function() { return true; };
+ZmController.prototype._postRemoveCallback	= function() { return true; };
 ZmController.prototype._preShowCallback		= function() { return true; };
 
 // preserve focus state
