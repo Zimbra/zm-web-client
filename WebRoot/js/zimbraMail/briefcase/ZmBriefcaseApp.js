@@ -695,6 +695,7 @@ ZmBriefcaseApp.prototype._uploadSaveDocsResponse = function(params, response) {
 
 	// check for conflicts
 	var mailboxQuotaExceeded = false;
+	var uploadRejected = false;
 	var isItemLocked = false;
 	var code = 0;
 	var conflicts = [];
@@ -724,7 +725,10 @@ ZmBriefcaseApp.prototype._uploadSaveDocsResponse = function(params, response) {
 				DBG.println("Unknown error occurred: " + code);
 				if (code == ZmCsfeException.MAIL_QUOTA_EXCEEDED) {
 					mailboxQuotaExceeded = true;
+				}  else if (code === ZmCsfeException.UPLOAD_REJECTED) {
+					uploadRejected = true;
 				}
+
 				errors[fault.requestId] = fault;
 			}
 		}
@@ -736,12 +740,19 @@ ZmBriefcaseApp.prototype._uploadSaveDocsResponse = function(params, response) {
 	}
 
 	// TODO: What to do about other errors?
+	// TODO: This should handle reporting several errors at once
 	if (mailboxQuotaExceeded) {
 		this._popupErrorDialog(ZmMsg.errorQuotaExceeded);
 		return;
 	}
 	else if (isItemLocked) {
 		this._popupErrorDialog(ZmMsg.errorItemLocked);
+		return;
+	} else if (uploadRejected) {
+		// Yes, its bogus, but strings are locked.  This allows us to get somewhat close to indicating what happened.
+		// TODO: Add an appropriate error string
+		var rejectedMsg = AjxMessageFormat.format(ZmMsg.uploadError, [ ZmMsg.dlReject ] );
+		this._popupErrorDialog(rejectedMsg);
 		return;
 	}
 	else if (code == ZmCsfeException.SVC_PERM_DENIED) {
