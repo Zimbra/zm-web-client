@@ -20,6 +20,7 @@
  */
 
 /* Login page styling */
+
 .form .ZLoginButton {
 	background-color:@AltC@;
 	border-color:white;
@@ -36,6 +37,7 @@
 }
 
 /* App tab styling */
+
 #skin_spacing_app_row {
 	height:2.4rem;
 }
@@ -83,6 +85,7 @@
 }
 
 /* Left nav tree styling */
+
 .overviewHeader,
 .overviewHeader-actioned,
 .overviewHeader-selected {
@@ -104,6 +107,7 @@
 }
 
 /* New button styling */
+
 .ZNewButton {
 	border-radius:3px;
 	margin-right:0px;
@@ -112,22 +116,19 @@
 }
 
 .ZNewButton .ZToolbarButtonBorder {
-#IFDEF MSIE_LOWER_THAN_9
-	background-color:rgb(243,138,108);
-	border-color:rgb(238,94,52);
-#ELSE
-	background-color:rgba(241,89,34,.7);
-	border-color:rgba(241,89,34,.9);
-#ENDIF
+	background-color:rgb(0,135,195);
+	border-color:rgb(0,135,195);
 }
 
 .ZNewButton.ZHover .ZToolbarButtonBorder,
 .ZNewButton.ZActive .ZToolbarButtonBorder {
-	border-color:@AltC@;
+	background-color:#00AAF6;
+	border-color:#00AAF6;
 }
 
 .ZNewButton.ZActive .ZToolbarButtonBorder {
-	background-color:@AltC@;
+	background-color:@_PrimaryBrandingColor_@;
+	border-color:@_PrimaryBrandingColor_@;
 	background-image:none;
 }
 
@@ -135,20 +136,20 @@
 	display:none;
 }
 
-.ZNewButton .ZToolbarButtonTable .ZWidgetTitle {
+.ZNewButton .ZToolbarButtonTable .ZWidgetTitle,
+.ZNewButton.ZHover .ZToolbarButtonTable .ZWidgetTitle {
 	color:white;
 }
 
-.ZNewButton.ZHover .ZToolbarButtonTable .ZWidgetTitle {
-	color:@TxtC@;
-}
-
-.ZNewButton .ImgSelectPullDownArrow {
+.ZNewButton .ImgSelectPullDownArrow,
+.ZNewButton.ZHover .ImgSelectPullDownArrowHover,
+.ZNewButton.ZActive .ImgSelectPullDownArrow {
 	background-image:url(@AppContextPath@/skins/@SkinName@/img/harmony/ImgNewSelectPullDownArrow.png?v=@jsVersion@);
 	background-position:0px 0px;
 }
 
 /* Msg view styling */
+
 .ZmMailMsgCapsuleView {
 	border-width:0px 0px 1px;
 	@roundCorners(0)@
@@ -159,6 +160,7 @@
 }
 
 /* Conv view styling */
+
 .Conv2Messages {
 	padding:0.25em 0.5em;
 }
@@ -192,6 +194,7 @@
 }
 
 /* Table header styling */
+
 .DwtListView-Sash:first-child DIV {
 	background-color:@darken(AppC,10)@ !important;
 }
@@ -215,90 +218,17 @@ TD.DwtListView-ColumnActive  {
 	margin-left:0;
 }
 
-
 /* Row styling */
-/* Moves major styling from outside container (Row) to inside container (Row>DIV) */
-/* Outside container styling */
+
 .Row,
 .RowDouble {
-	background-color:transparent;
-	border-color:transparent;
 	border-bottom-color:@darken(AppC,25)@ !important;
-	border-style:solid;
-	border-width:0px 0px 1px;
 }
 
 .Row {
-	height:22px;
-	height:2.2rem;
-	padding:.25em 0px;
-}
-
-.Row-selected,
-.Row-focused,
-.Row-selected-actioned,
-.Row-altSelected {
-	background-color:transparent !important;
-	border-color:inherit;
-}
-
-/* Inside container styling */
-.Row>DIV,
-.Row>TABLE,
-.RowDouble>TABLE,
-.RowDouble>.ZmRowDoubleHeader {
-	background-color:transparent;
-	border-color:transparent;
-	@roundCorners(3px)@
-}
-
-.Row>DIV,
-.Row>DIV>DIV {
-	@ListItemHeight@
-	line-height:16px;
-	line-height:1.6rem;
-}
-
-.Row-selected>DIV,
-.Row-selected-actioned>DIV,
-.Row-selected.ZmConvExpanded>DIV,
-.Row-selected-actioned.ZmConvExpanded>DIV,
-.Row-selected>TABLE,
-.Row-selected-actioned>TABLE,
-.Row-selected.RowDouble>TABLE,
-.Row-selected-actioned.RowDouble>TABLE,
-.Row-selected.RowDouble>.ZmRowDoubleHeader,
-.Row-selected-actioned.RowDouble>.ZmRowDoubleHeader,
-.Row-selected.SimpleContact>DIV,
-.Row-selected-actioned.SimpleContact>DIV,
-.ZmSuggestResults .Row-selected TD,
-.ZmSuggestResults .Row-selected-actioned TD {
-	background-color:@SelC@;
-	border:1px solid @SelC@;
-}
-
-.Row-altSelected>DIV,
-.Row-altSelected.ZmConvExpanded>DIV,
-.Row-altSelected>TABLE,
-.Row-altSelected.RowDouble>TABLE,
-.Row-altSelected.RowDouble>.ZmRowDoubleHeader,
-.Row-altSelected.SimpleContact>DIV,
-.ZmSuggestResults .Row-altSelected TD {
-	background-color:@SelAltColor@;
-	border:1px solid @SelAltColor@;
-}
-
-.Row-focused>DIV,
-.Row-focused>TABLE,
-.ZmSuggestResults .Row-focused {
-	border:1px dotted @darken(AppC,30)@ !important;
-}
-
-.Row-selected>TABLE,
-.Row-selected.RowDouble>TABLE,
-.Row-focused>TABLE,
-.Row-selected-actioned>TABLE {
-	border-collapse:separate;
+	height:20px;
+	height:2rem;
+	padding-top:4px;
 }
 
 .ZmContactSplitView,
@@ -317,6 +247,7 @@ TD.DwtListView-ColumnActive  {
 }
 
 /* Double-row styling*/
+
 .RowDouble {
 	border-top-color:transparent !important;
 	border-right-color:transparent !important;
@@ -324,78 +255,15 @@ TD.DwtListView-ColumnActive  {
 	padding:.25em .5em;
 }
 
-.RowDouble .ZmMsgListDate,
-.RowDouble .ZmListFlagsWrapper {
-	background-color:@AppC@; /* Solid to cover overlapping text */
+.RowDouble>TABLE,
+.RowDouble .ZmRowDoubleHeader {
+	border-color:transparent;
 }
 
 .RowDouble .TopRow {
 	position:relative; /* global? */
 }
 
-.SimpleContact {
-	background-color:transparent;
-	background-image:none;
-/*	height:22px;
-	height:2.2rem;*/
-	margin-bottom:.5em;
-	margin-right:3px;
-	padding:0px;
-}
-.SimpleContact>DIV {
-	background-color:transparent;
-	border-color:transparent;
-/*	height:18px;
-	height:1.8rem;*/
-}
-
-.SimpleContact .ZmListFlagsWrapper {
-	height:16px;
-	margin-top:2px;
-	right:3px; /* accounts for rounding */
-}
-
-/* Expanded conversation styling */
-.ZmConvExpanded,
-.ZmConvExpanded.Row>DIV,
-.ZmConvExpanded.RowDouble>TABLE,
-.ZmConvExpanded.RowDouble .ZmRowDoubleHeader,
-.ZmConvExpanded.RowDouble .ZmMsgListDate,
-.ZmConvExpanded.RowDouble .ZmListFlagsWrapper,
-.ZmConvExpanded.Row-selected,
-.ZmConvExpanded.Row-focused,
-.ZmConvExpanded.Row-selected-actioned {
-	background-color:@darken(AppC,8)@ !important;
-}
-
-
-.ZmConvExpanded.Row-selected>DIV,
-.ZmConvExpanded.Row-selected-actioned>DIV,
-.ZmConvExpanded.RowDouble.Row-selected .ZmRowDoubleHeader,
-.ZmConvExpanded.RowDouble.Row-selected-actioned .ZmRowDoubleHeader,
-.ZmConvExpanded.RowDouble.Row-selected .ZmMsgListDate,
-.ZmConvExpanded.RowDouble.Row-selected-actioned .ZmMsgListDate,
-.ZmConvExpanded.RowDouble.Row-selected .ZmListFlagsWrapper,
-.ZmConvExpanded.RowDouble.Row-selected-actioned .ZmListFlagsWrapper,
-.ZmConvExpanded.Row-selected>TABLE,
-.ZmConvExpanded.Row-selected-actioned>TABLE {
-	background-color:@SelC@ !important;
-}
-
-/* Removes the color for rows that are colored by their tags */
-.Row[style*="background"]>DIV,
-.RowDouble[style*="background"]>TABLE,
-.RowDouble[style*="background"]>.ZmRowDoubleHeader,
-.RowDouble[style*="background"] DIV.ZmListFlagsWrapper.
-.RowDouble[style*="background"] DIV.ZmMsgListDate {
-	background-color:transparent;
-}
-
-.ZmRowDoubleHeader DIV.TopRow DIV.ZmMsgListDate,
-.ZmRowDoubleHeader DIV.BottomRow DIV.ZmListFlagsWrapper {
-	margin-right:2px; /* accounts for 1px border on 2 parent containers */
-	padding-right:2px;
-}
 
 .ZmComposeView INPUT,
 .ZmComposeView TEXTAREA {
@@ -438,12 +306,27 @@ TD.DwtListView-ColumnActive  {
 	border:1px solid @darken(AppC,25)@;
 }
 
-.groupMembers .ZmEditGroupContact {
+.SimpleContact {
+	background-color:transparent;
+	background-image:none;
+	height:22px;
+	height:2.2rem;
+}
+.SimpleContact>DIV {
+	background-color:transparent;
+	border-color:transparent;
+}
+
+.SimpleContact .ZmListFlagsWrapper {
+	height:16px;
+	margin-top:2px;
+	right:3px; /* accounts for rounding */
 }
 
 .ZmEditGroupContact .Row {
 	margin-bottom:.5em;
 }
+
 .groupMembers .ZmEditGroupContact .Row {
 	background-color:white;
 	border-color:@AppC@;
@@ -457,6 +340,7 @@ TD.DwtListView-ColumnActive  {
 }
 
 /* Calendar appt styling */
+
 .ZmCalViewMgr,
 .calendar_view {
 	background-color:transparent;
@@ -496,6 +380,7 @@ TD.DwtListView-ColumnActive  {
 }
 
 /* Task styling */
+
 .ZmTaskMultiView .DwtListView-Column {
 	background-color:transparent;
 	border-color:transparent;
@@ -523,6 +408,7 @@ TD.DwtListView-ColumnActive  {
 }
 
 /* Briefcase styling */
+
 .ZmBriefcaseDetailListView {
 	background-color:transparent;
 }
@@ -541,6 +427,7 @@ TD.DwtListView-ColumnActive  {
 }
 
 /* Doc editor styling */
+
 .ZmDocsEditView {
 	background-color:@AppC@;
 }
@@ -550,6 +437,7 @@ TD.DwtListView-ColumnActive  {
 }
 
 /* Preferences styling */
+
 .ZmPrefView {
 	background-color:@AppC@;
 }
@@ -584,6 +472,7 @@ TD.DwtListView-ColumnActive  {
 }
 
 /* Dialog styling */
+
 .WindowOuterContainer {
 	background-color:@AppC@;
 }
@@ -604,7 +493,8 @@ TD.DwtListView-ColumnActive  {
 	padding:0.25em;
 }
 
-/* mini-cal */
+/* Mini-cal */
+
 .DwtCalendar {
 	border-top:1px solid @darken(AppC,25)@;
 }
@@ -614,6 +504,7 @@ TD.DwtListView-ColumnActive  {
 }
 
 /* Chooser styling */
+
 .ZmContactPicker .DwtChooserListView {
 	background-color:white;
 	border-color:@darken(AppC,25)@;
@@ -623,7 +514,8 @@ TD.DwtListView-ColumnActive  {
 	border-color:@darken(AppC,25)@;
 }
 
-/* labels */
+/* Labels */
+
 .ZmContactSplitView .rowLabel,
 .ZmMailMsgView .LabelColName,
 .ZmMailMsgCapsuleView .LabelColName {
