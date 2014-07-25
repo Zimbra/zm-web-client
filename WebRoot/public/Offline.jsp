@@ -22,6 +22,7 @@
 <html manifest="${fn:escapeXml(param.url)}">
 <head>
 	<script>
+			var retryOnError = <%=request.getParameter("retryOnError")%>;
 			var appCache = window.applicationCache;
 			// Checking for an update. Always the first event fired in the sequence.
 			appCache.addEventListener('checking', function() {
@@ -53,6 +54,11 @@
                 var AjxDebug = parent.AjxDebug;
 				AjxDebug.println(AjxDebug.OFFLINE, "Application Cache :: error :: " + JSON.stringify(ev) + " :: " + AjxDebug._getTimeStamp());
                 parent.ZmOffline.refreshStatusIcon(false);
+				// If error event is fired reload the application cache after 2 seconds.
+				if (retryOnError) {
+					AjxDebug.println(AjxDebug.OFFLINE, "Reloading Application Cache due to error :: " + AjxDebug._getTimeStamp());
+					setTimeout(parent.appCtxt.reloadAppCache.bind(parent.appCtxt, false, false), 2000);
+				}
 			}, false);
 			// Fired if the manifest file returns a 404 or 410.
 			// This results in the application cache being deleted.

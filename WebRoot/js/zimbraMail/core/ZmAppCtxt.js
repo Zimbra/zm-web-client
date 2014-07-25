@@ -1371,7 +1371,7 @@ function() {
 };
 
 ZmAppCtxt.prototype.reloadAppCache =
-function(force) {
+function(force, retryOnError) {
 	AjxDebug.println(AjxDebug.OFFLINE, "reloadAppCache :: " + AjxDebug._getTimeStamp());
     if (this.isWebClientOfflineSupported || force) {
 		var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
@@ -1394,7 +1394,8 @@ function(force) {
             document.body.appendChild(offlineIframe);
         }
         if (offlineIframe) {
-			offlineIframe.src = "public/Offline.jsp?url=" + manifestURL + "&isFirefox=" + AjxEnv.isFirefox;
+			retryOnError = AjxUtil.isBoolean(retryOnError) ? retryOnError : true;
+			offlineIframe.src = "public/Offline.jsp?url=" + manifestURL + "&isFirefox=" + AjxEnv.isFirefox + "&retryOnError=" + retryOnError;
         }
     }
 };
