@@ -2442,7 +2442,7 @@ function(ev) {
 	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
     if(this._schedulerOpened) {
         //this._controller.getApp().getFreeBusyCache().clearCache();
-        this._scheduleView._timeChangeListener(ev, id);
+        this._scheduleView._timeChangeListener(ev);
     }
 
     if (oldTZ != this._dateInfo.timezone) {
