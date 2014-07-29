@@ -1375,7 +1375,8 @@ function(force, retryOnError) {
 	AjxDebug.println(AjxDebug.OFFLINE, "reloadAppCache :: " + AjxDebug._getTimeStamp());
     if (this.isWebClientOfflineSupported || force) {
 		var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
-		if (localOfflineBrowserKey) {
+		//If application cache status is downloading browser is already downloading the resources mentioned in the manifest file. Resetting the cookie value will result in application cache error event "Manifest changed during update".
+		if (localOfflineBrowserKey && AjxEnv.supported.applicationcache && applicationCache.status !== applicationCache.DOWNLOADING) {
 			var cookieValue = localOfflineBrowserKey + "_" + new Date().getTime();
 			AjxCookie.setCookie(document, "ZM_OFFLINE_KEY", cookieValue, false, "/");
 		}
