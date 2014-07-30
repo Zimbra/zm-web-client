@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -151,6 +157,9 @@ function(mode) {
         this._disableEditForTrashedItems();
     }
 
+    if (appCtxt.isWebClientOffline()) {
+        this._disableEditForOffline();
+    }
     if (isReadOnly) {
         this._disableActionsForReadOnlyAppt();
     }
@@ -158,6 +167,33 @@ function(mode) {
         this._disableActionsForExternalAccount();
     }
 };
+
+ZmApptController.prototype._disableEditForOffline =
+function() {
+    var actionMenu = this._toolbar.getActionsMenu();
+    if(actionMenu){
+        actionMenu.enable([
+            ZmOperation.EDIT,
+            ZmOperation.TAG,
+            ZmOperation.TAG_MENU,
+            ZmOperation.REPLY,
+            ZmOperation.REPLY_ALL,
+            ZmOperation.PROPOSE_NEW_TIME,
+            ZmOperation.DUPLICATE_APPT,
+            ZmOperation.FORWARD_APPT,
+            ZmOperation.DELETE,
+            ZmOperation.SHOW_ORIG
+        ], false);
+    }
+    var tagButton = this._toolbar.getButton(ZmOperation.TAG_MENU);
+    if (tagButton) {
+        tagButton.setEnabled(false);
+    }
+    var printButton = this._toolbar.getButton(ZmOperation.PRINT);
+    if (printButton) {
+        printButton.setEnabled(false);
+    }
+}
 
 ZmApptController.prototype._disableEditForTrashedItems =
 function() {
@@ -286,6 +322,8 @@ function(ev) {
 
     var saveCallback = new AjxCallback(this, this._handleSaveResponse);
     var calViewCtrl = this._app.getCalController();
+	// This will trigger a call to  ZmMailMsg.sendInviteReply, which updates the offline appointment ptst field
+	// and the invite mail msg.
     var respCallback = new AjxCallback(calViewCtrl, calViewCtrl._handleResponseHandleApptRespondAction, [calItem, this.getOpValue(), op, saveCallback]);
 	calItem.getDetails(null, respCallback, this._errorCallback);
 
@@ -311,6 +349,15 @@ function(ev) {
 
 ZmApptController.prototype._handleSaveResponse =
 function(result, value) {
+    if (appCtxt.isWebClientOffline()) {
+        // Set the value of the appt stored in-memory in the list.  Normally, this would be updated
+        // by a notification, but not offline.
+        //var appt = this.getCalItem();
+        //appt.ptst = value;
+
+        // Update the version currently in use.  It may get updated again below, but it doesn't matter
+        this.getCurrentView().setOrigPtst(value);
+    }
     if (this.isCloseAction()) {
         this._closeView();
     } else {

@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -55,6 +61,8 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 		this._dropTgt.addDropListener(this._dropListener.bind(this));
 		this.setDropTarget(this._dropTgt);
 	}
+    // Finder to DetailView drag and drop
+    this._initDragAndDrop();
 };
 
 ZmDetailListView.prototype = new ZmBriefcaseBaseView;
@@ -133,7 +141,7 @@ function(parent) {
                 name:ZmMsg.tag}));
         }
         headers.push(
-                new DwtListHeaderItem({field:ZmItem.F_LOCK, icon: "PadLock", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.lock}),
+                new DwtListHeaderItem({field:ZmItem.F_LOCK, icon: "Padlock", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.lock}),
                 new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"GenericDoc", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.icon}),
                 new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, sortable:ZmItem.F_NAME}),
                 new DwtListHeaderItem({field:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmMsg.COLUMN_WIDTH_TYPE_DLV}),
@@ -144,7 +152,7 @@ function(parent) {
                 new DwtListHeaderItem({field:ZmItem.F_VERSION, text:ZmMsg.version, width:ZmMsg.COLUMN_WIDTH_VERSION_DLV})
                 );
     }else{
-        headers.push(new DwtListHeaderItem({field:ZmItem.F_SORTED_BY, text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.name), sortable:ZmItem.F_SORTED_BY, resizeable:false}));
+        headers.push(new DwtListHeaderItem({field:ZmItem.F_SORTED_BY, text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.name), sortable:ZmItem.F_NAME, resizeable:false}));
     }
 	return headers;
 };
@@ -216,7 +224,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_TYPE) {
 		htmlArr[idx++] = AjxImg.getImageHtml(item.getIcon());
 	} else if (field == ZmItem.F_LOCK) {
-		idx = this._getImageHtml(htmlArr, idx, (item.locked ? "PadLock" : "Blank_16") , this._getFieldId(item, field)); //AjxImg.getImageHtml(item.locked ? "PadLock" : "Blank_16");
+		idx = this._getImageHtml(htmlArr, idx, (item.locked ? "Padlock" : "Blank_16") , this._getFieldId(item, field)); //AjxImg.getImageHtml(item.locked ? "Padlock" : "Blank_16");
 	} else if (field == ZmItem.F_VERSION) {
 		htmlArr[idx++] = item.version;
 	} else if (field == ZmItem.F_NAME || field == ZmItem.F_SUBJECT) {
@@ -311,7 +319,7 @@ function(item, colIdx) {
     idx = this._getCellContents(html, idx, item, ZmItem.F_DATE, colIdx);
     html[idx++] = "</td>";
     html[idx++] = "<td style='text-align:center;' width=" + width + " id='" + this._getFieldId(item, ZmItem.F_LOCK)+"'> ";
-    idx =   this._getImageHtml(html, idx, (item.locked ? "PadLock" : "Blank_16") , this._getFieldId(item, ZmItem.F_LOCK));
+    idx =   this._getImageHtml(html, idx, (item.locked ? "Padlock" : "Blank_16") , this._getFieldId(item, ZmItem.F_LOCK));
 	html[idx++] = "</td>";
     html[idx++] = "</tr></table>";
 
@@ -370,13 +378,22 @@ function(item, revisions){
 
 ZmDetailListView.prototype.collapse =
 function(item, clear){
-     var rowIds = this._itemRowIdList[item.id];
-     this._showRows(rowIds, false);
-     this._setImage(item, ZmItem.F_EXPAND, "NodeCollapsed");
-	 this._expanded[item.id] = false;
-     if(clear){
-         this._itemRowIdList[item.id] = null;
-     }
+	var rowIds = this._itemRowIdList[item.id];
+	this._showRows(rowIds, false);
+	this._setImage(item, ZmItem.F_EXPAND, "NodeCollapsed");
+	this._expanded[item.id] = false;
+	if(clear && rowIds){
+		var divId;
+		var el;
+		for (var i = 0; i < rowIds.length; i++) {
+			divId = rowIds[i];
+			el = document.getElementById(divId);
+			if (el && el.parentNode) {
+				el.parentNode.removeChild(el);
+			}
+		}
+		this._itemRowIdList[item.id] = null;
+	}
 };
 
 ZmDetailListView.prototype.collapseAll =
@@ -634,4 +651,71 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 	} else {
 		return DwtListView.prototype._createHeader.apply(this, arguments);
 	}
+};
+
+ZmDetailListView.prototype._initDragAndDrop =
+function() {
+    this._dnd = new ZmDragAndDrop(this);
+};
+
+ZmDetailListView.prototype._submitMyComputerAttachments =
+function(files, node, isInline) {
+	var selectionCallback = this._controller._uploadFileListener.bind(this._controller);
+	var briefcaseApp = appCtxt.getApp(ZmApp.BRIEFCASE);
+	briefcaseApp.initExternalDndUpload(files, node, isInline, selectionCallback);
+};
+
+
+ZmDetailListView.prototype._handleRename = function(item) {
+	// Always collapse - should be harmless if already collapsed or has no versions.  We need
+	// to insure any divs created for revisions are removed before moving the item - otherwise
+	// they will be reused in their old location.
+	this.collapse(item, true);
+
+	this.removeItem(item);
+	var indices = this._sortIndex(this._list, item);
+	if (indices) {
+		this.addItem(item, indices.displayIndex, false, indices.listIndex);
+	}
+	item._nameUpdated = false;
+};
+
+
+/**
+ * Override the sorted Index calculation.  The DetailListView has a mismatch between its list
+ * and the actual displayed rows, which can contain versions of a file.
+ *
+ * @param	{AjxVector}			list		  vector containing the file entries
+ * @param	{ZmBriefcaseItem}	item		  file entry - find the position to insert it
+ *
+ * @return	Object                            See DwtListView.addItem
+ *			{number}			displayIndex  the index at which to add item to list view
+ *			{number}			listIndex	  index at which to add item to list
+ */
+ZmDetailListView.prototype._sortIndex = function(list, item){
+	if (!list) {
+		return null;
+	}
+
+	var lItem;
+	var rowIds;
+	var a = list.getArray();
+	var displayIndex = 0;
+	var itemName = item.name.toLowerCase();
+	var i;
+	for (i = 0; i < a.length; i++) {
+		lItem = a[i];
+		if (!lItem.isFolder && (itemName < lItem.name.toLowerCase())) {
+			break;
+		}
+		rowIds = this._itemRowIdList[lItem.id];
+		if (rowIds && rowIds.length) {
+			displayIndex += rowIds.length + 1;
+		} else {
+			displayIndex++;
+		}
+	}
+	// listIndex = insertion into the underlying list vector.
+	// displayIndex:
+	return { listIndex: i, displayIndex: displayIndex};
 };

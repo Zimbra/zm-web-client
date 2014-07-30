@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -53,7 +59,7 @@ ZmObjectManager = function(view, selectCallback, skipHandlers) {
     this.sortHandlers();
 	this.reset();
 	this.setView(view);
-}
+};
 
 ZmObjectManager._TOOLTIP_DELAY = 275;
 
@@ -188,13 +194,13 @@ ZmObjectManager.prototype.sortHandlers =
 function() {
 	this._allObjectHandlers = [];
     var objectHandlers = this.getHandlers();
-    for (i in objectHandlers) {
+    for (var type in objectHandlers) {
 		// Object handlers grouped by Type
-		objectHandlers[i].sort(ZmObjectManager.__byPriority);
+		objectHandlers[type].sort(ZmObjectManager.__byPriority);
 
 		// Copy each array to a single array of all Object Handlers
-		for (var k = 0; k < objectHandlers[i].length; k++) {
-			this._allObjectHandlers.push(objectHandlers[i][k]);
+		for (var k = 0; k < objectHandlers[type].length; k++) {
+			this._allObjectHandlers.push(objectHandlers[type][k]);
 		}
 	}
 	this._allObjectHandlers.sort(ZmObjectManager.__byPriority);
@@ -208,11 +214,12 @@ function() {
 	var c = ZmObjectManager._autohandlers, i, obj, prio;
 	for (i = 0; i < c.length; ++i) {
 		obj = c[i];
-		var	zim = obj;
+		var	handler = obj;
 		var type = obj.TYPE;
+		// TODO: adding internal handler should not rely on having zimlets (here and elsewhere)
 		if (appCtxt.zimletsPresent()) {
-			if (!(obj instanceof ZmZimletBase)) {
-				zim = new obj();
+			if (!(obj.isZmObjectHandler)) {
+				handler = new obj();
 			}
 		}
 		if (obj.useType) {
@@ -221,7 +228,7 @@ function() {
 		if (obj.usePrio) {
 			prio = obj.usePrio;
 		}
-		this.addHandler(zim, type, prio);
+		this.addHandler(handler, type, prio);
 	}
 };
 
@@ -252,6 +259,10 @@ function(view) {
 	    this._hoverOutListener = new AjxListener(this, this._handleHoverOut);
 	}
 	this._view = view;
+};
+
+ZmObjectManager.prototype.getView = function() {
+	return this._view;
 };
 
 /**
@@ -328,7 +339,7 @@ function(content, htmlEncode, type, isTextMsg, options) {
 			if (handlers) {
 				for (i = 0; i < handlers.length; i++) {
 					//DBG.println(AjxDebug.DBG3, "findObjects by TYPE (" + handlers[i] + ")");
-					result = handlers[i].findObject(content, lastIndex);
+					result = handlers[i].findObject(content, lastIndex, this);
 					// No match keep trying.
 					if(!result) {continue;}
 					// Got a match let's handle it.
@@ -342,7 +353,7 @@ function(content, htmlEncode, type, isTextMsg, options) {
 			if (type == "email" || content instanceof AjxEmailAddress) {
 				if (lowestHandler) {
                     content = this._getAjxEmailAddress(content);
-					this.generateSpan(lowestHandler, html, idx, content, null, options);
+					this.generateSpan(lowestHandler, html, idx, content, lowestResult, options);
 				} else {
 					html[idx++] = AjxStringUtil.htmlEncode(content.toString());
 				}
@@ -352,7 +363,7 @@ function(content, htmlEncode, type, isTextMsg, options) {
 			for (var j = 0; j < this._allObjectHandlers.length; j++) {
 				var handler = this._allObjectHandlers[j];
 				//DBG.println(AjxDebug.DBG3, "findObjects trying (" + handler + ")");
-				result = handler.findObject(content, lastIndex);
+				result = handler.findObject(content, lastIndex, this);
 				if (result && result.index < lowestIndex) {
 					lowestResult = result;
 					lowestIndex = result.index;
@@ -420,12 +431,22 @@ ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 
 			if (next == null) {
 				if (/^(img|a)$/.test(tmp)) {
-                    var isMailTo = (tmp == 'a' && ZmMailMsgView._MAILTO_RE.test(node.href));
-					if (tmp == "a" && node.target
-					    && (isMailTo || ZmMailMsgView._URL_RE.test(node.href)))
-					{
+                    var href;
+                    try {
+                        // IE can throw an "Invalid Argument" error depending on value of href
+                        // e.g: http://0:0:0:0:0:0:0:1%0:7070/service/soap/ContactActionRequest:1331608015326:9c4f5868c5b0b4f2
+                        href = node.href;
+                    }
+                    catch(e) {
+                        //do nothing
+                    }
+
+                    var isMailToLink = tmp === "a" && ZmMailMsgView._MAILTO_RE.test(href),
+                        isUrlLink = tmp === "a" && ZmMailMsgView._URL_RE.test(href);
+
+                    if ((isMailToLink || isUrlLink) && node.target){
 						// tricky.
-						var txt = isMailTo ? node.href :RegExp.$1 ;
+						var txt = isMailToLink ? href :RegExp.$1 ;
 						tmp = doc.createElement("div");
 						tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(txt));
 						tmp = tmp.firstChild;
@@ -449,12 +470,12 @@ ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 				node = next;
 			}
 
-                        // bug 28264: the only workaround possible seems to be
-                        // to remove textIndent styles that have a negative value:
-                        if (parseFloat(node.style.textIndent) < 0)
-                                node.style.textIndent = "";
-
-                        for (i = node.firstChild; i; i = recurse(i, handlers));
+			// bug 28264: the only workaround possible seems to be
+			// to remove textIndent styles that have a negative value:
+			if (parseFloat(node.style.textIndent) < 0) {
+				node.style.textIndent = "";
+			}
+            for (i = node.firstChild; i; i = recurse(i, handlers)) {}
 			return node.nextSibling;
 
 		    case 3:	// TEXT_NODE
@@ -579,7 +600,7 @@ function(node, re_discard, re_allow, callbacks) {
 				node.style.cssText = node.style.cssText;
 			}
 
-			for (i = node.firstChild; i; i = recurse(i, handlers));
+			for (i = node.firstChild; i; i = recurse(i, handlers)) {}
 			return node.nextSibling;
 
 		    case 3:	// TEXT_NODE
@@ -638,199 +659,6 @@ function(node, re_discard, re_allow, callbacks) {
 		recurse(df.lastChild, true, this);	 // parse tree and findObjects()
 	}
 	node.appendChild(df);	// put nodes back in the document
-};
-
-/**
- * Finds content by going through the content and return the result of the object handler's match call.
- * 
- * @param	{String}	content		the content
- * @param	{constant}	type		the content type
- * @return	{String}	the object
- * @private
- */
-ZmObjectManager.prototype.findMatch =
-function(content, type) {
-	if  (!content) {return "";}
-
-	var maxIndex = content.length;
-	var lastIndex = 0;
-
-	var lowestResult = null;
-	var lowestIndex = maxIndex;
-	var lowestHandler = null;
-
-	// if given a type, just go thru the handler defined for that type.
-	// otherwise, go thru every handler we have.
-	// when we are done, we take the handler with the lowest index.
-	var i;
-
-	var result = null;
-	if (type) {
-		//DBG.println(AjxDebug.DBG3, "findObjects type [" + type + "]");
-		var handlers = this.getHandlers()[type];
-		if (handlers) {
-			for (i = 0; i < handlers.length; i++) {
-				//DBG.println(AjxDebug.DBG3, "findObjects by TYPE (" + handlers[i] + ")");
-				result = handlers[i].findObject(content, lastIndex);
-				// No match keep trying.
-				if(!result) {continue;}
-				// Got a match let's handle it.
-				if (result.index >= lowestIndex) {break;}
-				lowestResult = result;
-				lowestIndex = result.index;
-				lowestHandler = handlers[i];
-			}
-		}
-	} else {
-		for (var j = 0; j < this._allObjectHandlers.length; j++) {
-			var handler = this._allObjectHandlers[j];
-			//DBG.println(AjxDebug.DBG3, "findObjects trying (" + handler + ")");
-			result = handler.findObject(content, lastIndex);
-			if (result && result.index < lowestIndex) {
-				lowestResult = result;
-				lowestIndex = result.index;
-				lowestHandler = handler;
-			}
-		}
-	}
-	return lowestResult;
-};
-
-/**
- * Dives recursively into the given DOM node.  Creates ObjectHandlers in text
- * nodes and cleans the mess in element nodes.  Discards by default "script",
- * "link", "object", "style", "applet" and "iframe" (most of them shouldn't
- * even be here since (1) they belong in the <head> and (2) are discarded on
- * the server-side, but we check, just in case).
- *
- * @private
- */
-ZmObjectManager.prototype.processHtmlNode =
-function(node, handlers, discard, ignore) {
-	var doc = node.ownerDocument;
-	handlers = handlers != null ? handlers : true;
-	var discardRe = discard instanceof RegExp ? discard : null;
-	if (!discardRe) {
-		discard = discard || [ "script", "link", "object", "style", "applet", "iframe" ];
-		discard = discard instanceof Array ? discard : [ discard ];
-		discardRe = new RegExp("^("+discard.join("|")+")$", "i");
-	}
-
-	var ignoreRe = ignore instanceof RegExp ? ignore : null;
-	if (!ignoreRe && ignore) {
-		ignore = ignore instanceof Array ? ignore : [ ignore ];
-		ignoreRe = new RegExp("^("+ignore.join("|")+")$", "i");
-	}
-
-	var tmp, i, val;
-	switch (node.nodeType) {
-	    case 1:	// ELEMENT_NODE
-		node.normalize();
-		tmp = node.tagName.toLowerCase();
-		if (/^(img|a)$/.test(tmp)) {
-			if (tmp == "a"
-			    && (ZmMailMsgView._URL_RE.test(node.href)
-				|| ZmMailMsgView._MAILTO_RE.test(node.href)))
-			{
-				// tricky.
-				var txt = RegExp.$1;
-				tmp = doc.createElement("div");
-				tmp.innerHTML = this.findObjects(AjxStringUtil.trim(RegExp.$1));
-				tmp = tmp.firstChild;
-				if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
-					// probably no objects were found.  A warning would be OK here
-					// since the regexps guarantee that objects _should_ be found.
-					// DBG.println(AjxDebug.DBG1, "No objects found for potentially valid text!");
-					return tmp.nextSibling;
-				}
-				// here, tmp is an object span, but it
-				// contains the URL (href) instead of
-				// the original link text.
-				node.parentNode.insertBefore(tmp, node); // add it to DOM
-				tmp.innerHTML = "";
-				tmp.appendChild(node); // we have the original link now
-				return tmp.nextSibling;	// move on
-			}
-			handlers = false;
-		}
-		else if (discardRe.test(tmp)) {
-			tmp = node.nextSibling;
-			node.parentNode.removeChild(node);
-			return tmp;
-		}
-		else if (ignoreRe && ignoreRe.test(tmp)) {
-			tmp = node.nextSibling;
-			var fragment = doc.createDocumentFragment();
-			for (var child = node.firstChild; child; child = child.nextSibling) {
-				fragment.appendChild(child);
-			}
-			node.parentNode.replaceChild(fragment, node);
-			return tmp;
-		}
-		else if (tmp == "style") {
-			return node.nextSibling;
-		}
-
-		if (AjxEnv.isIE) {
-			// strips expression()-s, bwuahahaha!
-			// granted, they get lost on the server-side anyway, but assuming some get through...
-			// the line below exterminates them.
-			node.style.cssText = node.style.cssText;
-		}
-
-		var child = node.firstChild;
-		while (child) {
-			child = this.processHtmlNode(child, handlers, discardRe, ignoreRe);
-		}
-		return node.nextSibling;
-
-	    case 3:	// TEXT_NODE
-	    case 4:	// CDATA_SECTION_NODE (just in case)
-		// generate ObjectHandler-s
-		if (handlers && /[^\s\xA0]/.test(node.data)) try {
-			var a = null, b = null;
-
-			if (!AjxEnv.isIE) {
-				// this block of code is supposed to free the object handlers from
-				// dealing with whitespace.  However, IE sometimes crashes here, for
-				// reasons that weren't possible to determine--hence we avoid this
-				// step for IE.  (bug #5345)
-				if (/^[\s\xA0]+/.test(node.data)) {
-					a = node;
-					node = node.splitText(RegExp.lastMatch.length);
-				}
-				if (/[\s\xA0]+$/.test(node.data))
-					b = node.splitText(node.data.length - RegExp.lastMatch.length);
-			}
-
-			tmp = doc.createElement("div");
-			var code  = this.findObjects(node.data, true, null, false);
-			var disembowel = false;
-			if (AjxEnv.isIE) {
-				// Bug #6481, #4498: innerHTML in IE massacrates whitespace
-				//            unless it sees a <pre> in the code.
-				tmp.innerHTML = [ "<pre>", code, "</pre>" ].join("");
-				disembowel = true;
-			} else {
-				tmp.innerHTML = code;
-			}
-
-			if (a)
-				tmp.insertBefore(a, tmp.firstChild);
-			if (b)
-				tmp.appendChild(b);
-
-			a = node.parentNode;
-			if (disembowel)
-				tmp = tmp.firstChild;
-			while (tmp.firstChild)
-				a.insertBefore(tmp.firstChild, node);
-			tmp = node.nextSibling;
-			a.removeChild(node);
-			return tmp;
-		} catch(ex) {};
-	}
-	return node.nextSibling;
 };
 
 /**
@@ -918,7 +746,7 @@ function(ev) {
 		span.className = object.handler.getClassName(object.object, object.context, span.id);
 		var shell = DwtShell.getShell(window);
 		var manager = shell.getHoverMgr();
-		manager.setHoverOutDelay(0);
+		manager.setHoverOutDelay(150);
 		manager.setHoverOutData(object);
 		manager.setHoverOutListener(this._hoverOutListener);
 		manager.hoverOut();
@@ -992,10 +820,7 @@ function(ev) {
 
 	span.className = object.handler.getActiveClassName(object.object, object.context, span.id);
 	if (ev.button == DwtMouseEvent.RIGHT) {
-		// NOTE: we need to know if the current view is a dialog since action
-		//       menu needs to be a higher z-index
-		var isDialog = (this._view instanceof DwtDialog);
-		var menu = object.handler.getActionMenu(object.object, span, object.context, isDialog);
+		var menu = object.handler.getActionMenu(object.object, span, object.context, ev);
 		if (menu) {
 			menu.popup(0, ev.docX, ev.docY);
 			// if we have an action menu, don't let the browser show its context menu too

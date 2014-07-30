@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -114,6 +120,7 @@ ZmId.SKIN_SEARCH_BUILDER_TR			= "skin_tr_search_builder";
 ZmId.SKIN_SEARCH					= "skin_container_search";
 ZmId.SKIN_SEARCH_RESULTS_TOOLBAR	= "skin_container_search_results_toolbar";
 ZmId.SKIN_REFRESH					= "skin_container_refresh";
+ZmId.SKIN_OFFLINE_STATUS			= "skin_container_offline";
 ZmId.SKIN_SHELL						= "skin_outer";
 ZmId.SKIN_SPACING_SEARCH			= "skin_spacing_search";
 ZmId.SKIN_SPLASH_SCREEN				= "skin_container_splash_screen";
@@ -658,10 +665,11 @@ ZmId.CMP_CC_INPUT			= "_cc_control";
 ZmId.CMP_BCC_ROW			= "_bcc_row";
 ZmId.CMP_BCC_PICKER			= "_bcc_picker";
 ZmId.CMP_BCC_INPUT			= "_bcc_control";
-ZmId.CMP_BCC_TOGGLE			= "_toggle_bcc";
 ZmId.CMP_OBO_CHECKBOX		= "_obo_checkbox";
 ZmId.CMP_OBO_LABEL			= "_obo_label";
 ZmId.CMP_OBO_ROW			= "_obo_row";
+ZmId.CMP_OBO_SPAN			= "_obo_span";
+ZmId.CMP_BWO_SPAN			= "_bwo_span";
 ZmId.CMP_SUBJECT_ROW		= "_subject_row";
 ZmId.CMP_SUBJECT_INPUT		= "_subject_control";
 ZmId.CMP_IDENTITY_ROW		= "_identity_row";
@@ -672,6 +680,7 @@ ZmId.CMP_ATT_ROW			= "_attachments_row";
 ZmId.CMP_ATT_DIV			= "_attachments_div";
 ZmId.CMP_ATT_BTN			= "_attachments_btn";
 ZmId.CMP_ATT_INP			= "_file_input";
+ZmId.CMP_ATT_COMPUTER_INP	= "_file_input_computer";
 ZmId.CMP_ATT_INLINE_INP		= "_file_input_inline";
 ZmId.CMP_ATT_INCL_ORIG_LINK	= "_show_orig";
 ZmId.CMP_DND_TOOLTIP        = "_zdnd_tooltip";
@@ -700,6 +709,7 @@ ZmId.APP_MAIL			= "Mail";
 ZmId.APP_PORTAL			= "Portal";
 ZmId.APP_PREFERENCES	= "Options";
 ZmId.APP_SEARCH			= "Search";
+ZmId.APP_SOCIAL			= "Social";
 ZmId.APP_TASKS			= "Tasks";
 ZmId.APP_VOICE			= "Voice";
 
@@ -779,6 +789,7 @@ ZmId.ITEM_CONTACT		= "CONTACT";
 ZmId.ITEM_CONV			= "CONV";
 ZmId.ITEM_DATA_SOURCE	= "DATA_SOURCE";
 ZmId.ITEM_DOCUMENT		= "DOCUMENT";
+ZmId.ITEM_GAL_CONTACT	= "GAL";
 ZmId.ITEM_GROUP			= "GROUP";
 ZmId.ITEM_MSG			= "MSG";
 ZmId.ITEM_PAGE			= "PAGE";
@@ -847,6 +858,7 @@ ZmId.FLD_WORK_PHONE		= "wp"; // Contacts
 ZmId.OP_ACCEPT_PROPOSAL         = "ACCEPT_PROPOSAL";
 ZmId.OP_ADD       		     	= "ADD";
 ZmId.OP_ADD_FILTER_RULE			= "ADD_FILTER_RULE";
+ZmId.OP_ADD_FILTER_RULE_ADDRESS	= "ADD_FILTER_RULE_ADDRESS";
 //ZmId.OP_ADD_QUICK_COMMAND		= "ADD_QUICK_COMMAND";
 ZmId.OP_ADD_SIGNATURE			= "ADD_SIGNATURE";
 ZmId.OP_ADD_EXTERNAL_CALENDAR	= "ADD_EXTERNAL_CALENDAR";
@@ -865,6 +877,7 @@ ZmId.OP_CHECKIN                 = "CHECKIN";
 ZmId.OP_CHECKOUT                = "CHECKOUT";
 ZmId.OP_CHECK_ALL				= "CHECK_ALL";
 ZmId.OP_CHECK_MAIL				= "CHECK_MAIL";
+ZmId.OP_GO_OFFLINE				= "GOOFFLINE";
 ZmId.OP_CALL_BACK				= "CALL_BACK";
 ZmId.OP_CLEAR_ALL				= "CLEAR_ALL";
 ZmId.OP_CLOSE					= "CLOSE";
@@ -872,9 +885,9 @@ ZmId.OP_COMPOSE_FORMAT			= "COMPOSE_FORMAT";
 ZmId.OP_COMPOSE_OPTIONS			= "COMPOSE_OPTIONS";
 ZmId.OP_CONTACT					= "CONTACT";
 ZmId.OP_CONTACTGROUP_MENU       = "CONTACTGROUP_MENU";
+ZmId.OP_COPY		     		= "COPY";
 ZmId.OP_CREATE_APPT     		= "CREATE_APPT";
 ZmId.OP_CREATE_TASK     		= "CREATE_TASK";
-ZmId.OP_CREATE_SLIDE_SHOW		= "CREATE_SLIDE_SHOW";
 ZmId.OP_DAY_VIEW				= "DAY_VIEW";
 ZmId.OP_DECLINE_PROPOSAL        = "DECLINE_PROPOSAL";
 ZmId.OP_DELETE					= "DELETE";
@@ -909,6 +922,9 @@ ZmId.OP_EXPAND					= "EXPAND";
 ZmId.OP_EXPAND_ALL				= "EXPAND_ALL";
 //ZmId.OP_EXPORT_FOLDER			= "EXPORT_FOLDER";
 ZmId.OP_FB_VIEW				    = "FB_VIEW";
+ZmId.OP_FLAG					= "FLAG";
+ZmId.OP_UNFLAG					= "UNFLAG";
+ZmId.OP_FIND_SHARES				= "FIND_SHARES";
 ZmId.OP_FORMAT_HTML				= "FORMAT_HTML";
 ZmId.OP_FORMAT_HTML_SOURCE		= "FORMAT_HTML_SOURCE";
 ZmId.OP_FORMAT_MEDIA_WIKI		= "FORMAT_MEDIA_WIKI";
@@ -918,6 +934,7 @@ ZmId.OP_FORMAT_TWIKI			= "FORMAT_TWIKI";
 ZmId.OP_FORWARD					= "FORWARD";
 ZmId.OP_FORWARD_ATT				= "FORWARD_ATT";
 ZmId.OP_FORWARD_BY_EMAIL		= "FORWARD_BY_EMAIL";
+ZmId.OP_FORWARD_CONV		    = "FORWARD_CONV";
 ZmId.OP_FORWARD_INLINE			= "FORWARD_INLINE";
 ZmId.OP_FORWARD_MENU			= "FORWARD_MENU";
 ZmId.OP_FORWARD_APPT			= "FORWARD_APPT";
@@ -1017,10 +1034,8 @@ ZmId.OP_NEW_MESSAGE				= "NEW_MESSAGE";
 ZmId.OP_NEW_MESSAGE_WIN			= "NEW_MESSAGE_WIN";
 ZmId.OP_NEW_BRIEFCASE_WIN		= "NEW_BRIEFCASE_WIN";
 ZmId.OP_NEW_PAGE				= "NEW_PAGE";
-ZmId.OP_NEW_PRESENTATION		= "NEW_PRESENTATION";
 ZmId.OP_NEW_ROSTER_GROUP		= "NEW_ROSTER_GROUP";
 ZmId.OP_NEW_ROSTER_ITEM			= "NEW_ROSTER_ITEM";
-ZmId.OP_NEW_SPREADSHEET         = "NEW_SPREADSHEET";
 ZmId.OP_NEW_TAG					= "NEW_TAG";
 ZmId.OP_NEW_TASK				= "NEW_TASK";
 ZmId.OP_NOTIFY                  = "NOTIFY";
@@ -1036,6 +1051,9 @@ ZmId.OP_PRINT_ADDRBOOK			= "PRINT_ADDRBOOK";
 ZmId.OP_PRINT_CALENDAR			= "PRINT_CALENDAR";
 ZmId.OP_PRINT_CONTACT			= "PRINT_CONTACT";
 ZmId.OP_PRIORITY_FILTER         = "PRIORITY_FILTER";
+ZmId.OP_PRIORITY_HIGH           = "PRIORITY_HIGH";
+ZmId.OP_PRIORITY_LOW            = "PRIORITY_LOW";
+ZmId.OP_PRIORITY_NORMAL         = "PRIORITY_NORMAL";
 ZmId.OP_PROPOSE_NEW_TIME        = "PROPOSE_NEW_TIME";
 ZmId.OP_OPTS         			= "OPTIONS";
 //ZmId.OP_QUICK_COMMANDS  	    = "QUICK_COMMANDS";
@@ -1144,3 +1162,286 @@ ZmId.GROUPBY_NONE               = "GROUPBY_NONE";
 ZmId.GROUPBY_PRIORITY           = "GROUPBY_PRIORITY";
 ZmId.GROUPBY_SIZE               = "GROUPBY_SIZE";
 ZmId.GROUPBY_TAG                = "GROUPBY_TAG";
+
+
+/*
+ * Experimental ID code below. The main idea is to make easier for a third party (such as QA) to find what they're
+ * looking for. A secondary goal is to ensure that we always use unique IDs. The systematic approach above is prone
+ * to failure in that regard, since the same set of inputs will produce the same ID.
+ *
+ * The new approach is to introduce a level of indirection between the fields and the ID. IDs will go back to being
+ * unique and opaque, based on an incrementing number. A hash will be maintained which maps a collection of fields
+ * to the actual ID used in the DOM.
+ *
+ * The core of the new system is related closely to the old system: a set of params which, taken together, should
+ * uniquely identify an element. The possible values for each param are typically constants defined in this class.
+ *
+ * To make it easy for clients of this ID system to successfully look up IDs, creators of IDs should provide as many
+ * parameters as possible. For example, providing both skinComponent and componentType may be redundant, but then
+ * the ID can be looked up using either parameter.
+ *
+ * The parameters and their values:
+ *
+ * skinComponent
+ *
+ *      The HTML skin for ZCS defines a number of components and provides containers for them. This param identifies
+ *      which skin component contains the element. Note that the IDs for the skin containers themselves (as well as
+ *      a few elements within those containers) are defined by the skin (in skin.html), and are not part of this set
+ *      of IDs. May often be omitted when looking up an ID.
+ *
+ *      ZmId.SKIN_*
+ *
+ * componentType
+ *
+ *      The general category of view component that maps to the element. It may be a type of widget such as a button
+ *      or a menu, something more general like a view, or even a subcomponent like a list view header.
+ *
+ *      DwtId.WIDGET_*
+ *      ZmId.WIDGET_*
+ *
+ * componentName
+ *
+ *      The component name identifies the component among components of a similar type. It may be the name of an
+ *      operation. For example, a search button would have the type "button" and the name "search". (There may be
+ *      more than one search button, so other params may be necessary to uniquely identify each one.)
+ *
+ *      ZmId.VIEW_*
+ *      ZmId.OP_*
+ *      ZmId.TB_*
+ *      ZmId.SEARCH_*
+ *      ZmId.MV_*
+ *      ZmId.CMP_*
+ *      ZmId.GROUPBY_*
+ *
+ * app
+ *
+ *      The name of the application that contains the element. Some elements are global and do not have an associated
+ *      application. Elements associated with an app appear within the main content area.
+ *
+ *      ZmId.APP_*
+ *
+ * containingView
+ *
+ *      For an element within the main content area, the identifier of the view that contains it.
+ *
+ *      ZmId.VIEW_*
+ *
+ * sessionId
+ *
+ *      A number identifying a session for a view which can appear in more than one tab at a time. For example, there
+ *      may be multiple compose sessions if the user replies to several different messages without sending the replies.
+ *
+ * itemType
+ *
+ *      The type of item, such as message, contact, or appointment.
+ *
+ *      ZmId.ITEM_*
+ *
+ * itemId
+ *
+ *      The ID of the item (for example, a mail message) that the element is tied to. For local items, it's a number.
+ *      For shared items, it's a compound string comprising an account ID and a local numeric ID.
+ *
+ * organizerType
+ *
+ *      The type of organizer, such as folder, tag, or zimlet. Organizers generally appear in the overview.
+ *
+ *      ZmId.ORG_*
+ *
+ * organizerId
+ *
+ *      The ID of the organizer (for example, a mail folder) that the element is tied to. For local organizers, it's a
+ *      number. For shared folders, it's a compound string comprising an account ID and a local numeric ID.
+ *
+ * field
+ *
+ *      A field identifies a specific sub-part of a component. It might be something that helps make up a widget,
+ *      such as the "left icon" in a button, or it might be something ZCS-specific like the "subject" field in a list
+ *      view that displays mail messages. The line between componentName and field can be a bit blurry. Generally a
+ *      componentName refers to a container of some sort, like a list row or header.
+ *
+ *      ZmId.FLD_*
+ *
+ * tagName
+ *
+ *      The tag name of the HTML element, such as "TABLE" or "TR". May usually be omitted when looking up an ID.
+ *
+ * sequence
+ *
+ *      A number used to diffentiate between otherwise identical IDs.
+ *
+ * parentId
+ *
+ *      The ID of the parent of this element.
+ *
+ */
+
+ZmId.BASE = "zcs";
+ZmId.SEQ = 1;
+
+ZmId._idList = [];
+
+ZmId._idHash = {};
+
+ZmId._valueToParam = {};
+
+/**
+ * Returns a unique ID that can later be looked up. As many params as possible should be provided, in order to
+ * make lookup easier. If one or more IDs is found to already have been created with the given set of params,
+ * a sequence number is added as a parameter.
+ *
+ * @param {hash}        params          set of fields describing the ID's element
+ * @param {string}      description     (optional) a brief description of the purpose of the ID
+ */
+ZmId.create = function(params, description) {
+
+	var idParams = AjxUtil.hashCopy(params);
+	var ids = ZmId.lookup(params);
+	if (ids) {
+		idParams.sequence = (typeof ids === "string") ? 1 : ids.length;
+	}
+	idParams.description = description || "";
+	var newId = ZmId.BASE + ZmId.SEQ++;
+	idParams.id = newId;
+	ZmId._idHash[newId] = idParams;
+	ZmId._idList.push(idParams);
+
+	for (var key in params) {
+		ZmId._valueToParam[params[key]] = key;
+	}
+
+	return newId;
+};
+
+/**
+ * Returns the DOM ID that matches the given set of params. If more than one ID matches, a list is returned.
+ * A partial set of params may be provided. The more params provided, the better the chance of finding just one ID.
+ * The best approach is to provide the minimal set of params that will uniquely differentiate the element. If no
+ * params are provided, returns all IDs.
+ *
+ * Optionally, a list of values can be given. An attempt will be made to reverse-engineer the params by figuring
+ * out the appropriate key for each value. This method will never be as reliable as providing a hash in the first place.
+ *
+ * @param {hash|array}  params    set of fields describing the ID(s) being sought
+ */
+ZmId.lookup = function(params) {
+
+	if (!params) {
+		return ZmId._idList;
+	}
+
+	if (AjxUtil.isArray(params)) {
+		params = ZmId._convertValues(params);
+	}
+
+	var ids = [];
+	for (var i = 0, len = ZmId._idList.length; i < len; i++) {
+		var idParams = ZmId._idList[i];
+		var add = true;
+		for (var param in params) {
+			if (idParams[param] && params[param] !== idParams[param]) {
+				add = false;
+				continue;
+			}
+		}
+		if (add) {
+			ids.push(idParams.id);
+		}
+	}
+	return (ids.length === 0) ? null : (ids.length === 1) ? ids[0] : ids;
+};
+
+/**
+ * Returns the set of params used to create the given ID.
+ *
+ * @param id
+ */
+ZmId.getParams = function(id) {
+	return ZmId._idHash[id];
+};
+
+/**
+ * Displays a list of matching IDs in a popup, with the params used to create them and their descriptions.
+ * Intended as a development tool.
+ *
+ * @param params    set of fields describing the ID(s) being sought
+ */
+ZmId.showIds = function(params) {
+
+	if (!DBG || DBG.isDisabled()) { return; }
+
+	var ids = ZmId.lookup(params),
+		len = ids.length,
+		text = "",
+		i;
+
+	for (i = 0; i < len; i++) {
+		var id = ids[i].id;
+		var params = ZmId._idHash[id];
+		text += "\n-----\n\n" + id + AjxStringUtil.repeat(" ", 16 - id.length) + params.description + "\n\n";
+		var paramNames = AjxUtil.keys(params).sort();
+		for (var j = 0; j < paramNames.length; j++) {
+			var paramName = paramNames[j];
+			if (paramName === 'id' || paramName === 'description') {
+				continue;
+			}
+			var value = params[paramName];
+			if (!value) {
+				continue;
+			}
+			value = ZmId._backMap[value] ? "ZmId." + ZmId._backMap[value] : value;
+			text += paramName + AjxStringUtil.repeat(" ", 16 - paramName.length) + value + "\n";
+		}
+	}
+
+	DBG.printRaw(text);
+};
+
+ZmId._backMap = AjxUtil.valueHash(ZmId, function(k) {
+	return typeof ZmId[k] === 'string';
+});
+
+// Create a static hash so we know if a string is a view type (eg "CLV")
+ZmId._isViewType = AjxUtil.arrayAsHash(AjxUtil.values(ZmId, function(k) {
+	return typeof ZmId[k] === "string" && k.indexOf("VIEW_") === 0;
+}));
+
+// Convert a list of values of ID parameters back into a hash by figuring out the matching key for each value.
+// View names (such as "CLV") are a bit tricky since they can be either a componentName (for a view widget), or
+// a containingView. A small number might be an organizer ID (eg Inbox is 2), or a session ID.
+ZmId._convertValues = function(values) {
+
+	var params = {},
+		viewValue, numValue;
+
+	for (var i = 0; i < values.length; i++) {
+		var value = values[i];
+		if (ZmId._isViewType[value]) {
+			viewValue = value;
+		}
+		else if (AjxUtil.isNumber(value) || AjxUtil.isNumeric(value)) {
+			var num = parseInt(value);
+			if (num < 10) {
+				numValue = num;
+			}
+		}
+		else {
+			var param = ZmId._valueToParam[value];
+			params[param] = value;
+		}
+	}
+
+	// A view value is a componentName only if the componentType is a view.
+	if (viewValue) {
+		var viewParam = (params.componentType === ZmId.WIDGET_VIEW) ? "componentName" : "containingView";
+		params[viewParam] = viewValue;
+	}
+
+	// A single-digit number is probably an organizer ID or a session ID.
+	if (numValue) {
+		var viewParam = params.organizerType ? "organizerId" : "sessionId";
+		params[viewParam] = viewValue;
+	}
+
+	return params;
+};

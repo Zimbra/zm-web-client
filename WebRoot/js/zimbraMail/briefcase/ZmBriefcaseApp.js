@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -79,9 +85,7 @@ function() {
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE, {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASE});
-	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", image:"Upload", textPrecedence:70});
-	ZmOperation.registerOp(ZmId.OP_NEW_PRESENTATION, {textKey:"newPresentationBeta", tooltipKey:"newPresentation", image:"Presentation", textPrecedence:10});
-	ZmOperation.registerOp(ZmId.OP_NEW_SPREADSHEET, {textKey:"newSpreadSheetBeta", tooltipKey:"newSpreadSheet", image:"ZSpreadSheet", textPrecedence:11});
+	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", textPrecedence:70, showImageInToolbar:true, showTextInToolbar:true});
 	ZmOperation.registerOp(ZmId.OP_NEW_DOC, {textKey:"newDocument", tooltipKey:"newDocument", image:"NewDoc", shortcut:ZmKeyMap.NEW_DOC, textPrecedence:12});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewDoc"});
@@ -91,7 +95,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE, {textKey:"sendLink", tooltipKey:"sendLink", image:"Send"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE_AS_ATT, {textKey:"sendAsAttachment", tooltipKey:"sendAsAttachment", image:"Attachment"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE_MENU, {textKey:"send", image:"Send", textPrecedence:75});
-	ZmOperation.registerOp(ZmId.OP_CREATE_SLIDE_SHOW, {textKey:"createSlideShow", image:"Presentation"});
     ZmOperation.registerOp(ZmId.OP_EDIT_FILE, {textKey: "edit", image:"Edit"});
     ZmOperation.registerOp(ZmId.OP_RENAME_FILE, {textKey: "rename", image:"FileRename"});
     ZmOperation.registerOp(ZmId.OP_CHECKIN, {textKey: "checkInFile", image:"Checkin"});
@@ -105,8 +108,6 @@ function() {
 ZmBriefcaseApp.prototype._registerSettings =
 function(settings) {
 	settings = settings || appCtxt.getSettings();
-	settings.registerSetting("SPREADSHEET_ENABLED",	{name:"zimbraFeatureBriefcaseSpreadsheetEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("SLIDES_ENABLED",		{name:"zimbraFeatureBriefcaseSlidesEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("DOCS_ENABLED",		{name:"zimbraFeatureBriefcaseDocsEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
     settings.registerSetting("PREVIEW_ENABLED",		{ type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("READING_PANE_LOCATION_BRIEFCASE",		{name:"zimbraPrefBriefcaseReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true});
@@ -117,7 +118,6 @@ function() {
 	ZmItem.registerItem(ZmItem.BRIEFCASE_ITEM,
 						{app:			ZmApp.BRIEFCASE,
 						 nameKey:		"file",
-                         countKey:      "typeFile",
 						 icon:			"GenericDoc",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmBriefcaseItem",
@@ -144,7 +144,7 @@ function() {
 							 orgClass       : "ZmBriefcase",
 							 orgPackage     : "BriefcaseCore",
 							 treeController : "ZmBriefcaseTreeController",
-							 labelKey       : "folders",
+							 labelKey       : "briefcaseFolders",
 							 itemsKey       : "files",
 							 treeType       : ZmOrganizer.FOLDER,
 							 views          : ["document"],
@@ -156,6 +156,7 @@ function() {
 							 newOp			: ZmOperation.NEW_BRIEFCASE,
 							 displayOrder	: 100,
 							 hasColor       : true,
+							 defaultColor	: ZmOrganizer.C_NONE,
 							 childWindow    : true
 							});
 };
@@ -169,7 +170,8 @@ function() {
 								 icon:			"Doc",
 								 shareIcon:		null, // the following doesn't work now, so keep the regular icon. doesn't really matter in my opinion --> "SharedBriefcase",
 								 setting:		ZmSetting.BRIEFCASE_ENABLED,
-								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_BRIEFCASE)
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_BRIEFCASE),
+								 disableOffline:true
 								});
 };
 
@@ -184,8 +186,6 @@ function() {
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_FILE]			= ZmOperation.NEW_FILE;
 	actionCodes[ZmKeyMap.NEW_BRIEFCASE]		= ZmOperation.NEW_BRIEFCASE;
-	actionCodes[ZmKeyMap.NEW_PRESENTATION]	= ZmOperation.NEW_PRESENTATION;
-	actionCodes[ZmKeyMap.NEW_SPREADSHEET]	= ZmOperation.NEW_SPREADSHEET;
 	actionCodes[ZmKeyMap.NEW_DOC]			= ZmOperation.NEW_DOC;
 
 	ZmApp.registerApp(ZmApp.BRIEFCASE,
@@ -263,22 +263,11 @@ function(op) {
 			AjxDispatcher.require(["BriefcaseCore", "Briefcase"], false, loadCallback, null, true);
 			break;
 		}
-		case ZmOperation.NEW_PRESENTATION: {
-			var loadCallback = new AjxCallback(this, this.newDoc, [ZmMimeTable.APP_ZIMBRA_SLIDES]);
-			AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, loadCallback, null);
+
+		case ZmOperation.NEW_DOC: {
+			var newDocCallback = new AjxCallback(this, this.newDoc, [ZmMimeTable.APP_ZIMBRA_DOC]);
+			AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, newDocCallback, null);
 			break;
-		}
-
-		 case ZmOperation.NEW_SPREADSHEET: {
-			 var newDocCallback = new AjxCallback(this, this.newDoc, [ZmMimeTable.APP_ZIMBRA_SPREADSHEET]);
-			 AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, newDocCallback, null);
-			 break;
-		}
-
-		 case ZmOperation.NEW_DOC: {
-			 var newDocCallback = new AjxCallback(this, this.newDoc, [ZmMimeTable.APP_ZIMBRA_DOC]);
-			 AjxDispatcher.require(["BriefcaseCore", "Briefcase"], true, newDocCallback, null);
-			 break;
 		}
 	}
 };
@@ -302,12 +291,11 @@ function(contentType, name, winName) {
 	}
 
     if (AjxDispatcher.run("GetBriefcaseController").chkFolderPermission(folderId)) {
-        var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + "&skin=" + appCurrentSkin + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
-		url += 	"&authTokenExpires=" + window.authTokenExpires;
-        if (window.appCoverageMode)
-            url = url + "&coverage=1";
-        var winname = winName || name || (new Date()).getTime().toString();
-        window.open(url, winname); //bug:44324 removed new launching window
+        if (contentType == ZmMimeTable.APP_ZIMBRA_DOC) {
+            var win = appCtxt.getNewWindow(false, null, null, winName);
+            win.command = "documentEdit";
+            win.params = { name: name, folderId: folderId };
+        }
     }
 };
 
@@ -324,56 +312,6 @@ function() {
         "scrollbars=yes,",
         "resizable=yes"
     ].join("");
-};
-
-/**
- * Adds the editor parameter to the REST URL.
- * 
- * @param	{String}	restUrl		the REST URL
- * @return	{String}	the resulting REST URL
- * @private
- */
-ZmBriefcaseApp.addEditorParam =
-function(restUrl) {
-    if(restUrl && window.isTinyMCE) {
-    //        restUrl += (restUrl.match(/\?/) ?  "&editor=tinymce" : "?editor=tinymce");
-    }
-    return restUrl;
-};
-
-/**
- * Gets the edit URL.
- * 
- * @param	{String}	contentType		the content type
- * 
- * @return	{String}	the URL
- */
-ZmBriefcaseApp.prototype.getEditURLForContentType =
-function(contentType) {
-	AjxDispatcher.require("Startup1_1");
-	var editPage = "Slides.jsp";
-	switch(contentType) {
-		case ZmMimeTable.APP_ZIMBRA_SLIDES:			editPage = "Slides.jsp"; break;
-		case ZmMimeTable.APP_ZIMBRA_SPREADSHEET:	editPage = "SpreadsheetDoc.jsp"; break;
-		case ZmMimeTable.APP_ZIMBRA_DOC:			editPage = "Docs.jsp"; break;
-		default: return null;
-	};
-	return (appContextPath + "/public/" + editPage);
-};
-
-/**
- * Checks if the item is a doclet.
- * 
- * @param	{ZmBriefcaseItem}	item		the item
- * @return	{Boolean}	<code>true</code> if the item is a doclet
- */
-ZmBriefcaseApp.prototype.isDoclet =
-function(item) {
-	var contentType = item.getContentType();
-	switch(contentType) {
-		case ZmMimeTable.APP_ZIMBRA_SLIDES: return true;
-		default: return false;
-	}
 };
 
 ZmBriefcaseApp.prototype._handleNewItem =
@@ -400,6 +338,12 @@ function(params, callback) {
 	this._setLaunchTime(this.toString(), new Date());
 	var loadCallback = this._handleLoadLaunch.bind(this, callback);
 	AjxDispatcher.require(["BriefcaseCore","Briefcase"], true, loadCallback, null, true);
+
+    // In case of external sharing we replace drop down button options with New Document button
+    if (appCtxt.isExternalAccount()) {
+        var newButton = appCtxt.getAppController().getNewButton();
+        newButton.removePullDownMenuOptions();
+    }
 };
 
 ZmBriefcaseApp.prototype._handleLoadLaunch =
@@ -526,3 +470,360 @@ function(type) {
 	AjxPackage.require("BriefcaseCore");
 	ZmApp.prototype._createDeferredFolders.call(this, type);
 };
+
+
+
+// --- Briefcase External DnD upload initiation
+
+ZmBriefcaseApp.prototype.initExternalDndUpload = function(files, node, isInline, selectionCallback, folderId) {
+	var name = "";
+
+	if (!AjxEnv.supportsHTML5File) {
+		// IE, FF 3.5 and lower - use the File browser
+		if (selectionCallback) {
+			selectionCallback.run();
+		}
+		return;
+	}
+
+	if (!files) {
+		files = node.files;
+	}
+
+	var size = 0;
+	if (files) {
+		var file;
+		var docFiles = [];
+		var errors   = {};
+		var aCtxt    = ZmAppCtxt.handleWindowOpener();
+		var maxSize  = aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT);
+		var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
+
+		if (!folderId) {
+			if (briefcaseController) {
+				folderId = briefcaseController.getFolderId();
+			}
+			if(!folderId || folderId == ZmOrganizer.ID_TRASH) {
+				folderId = ZmOrganizer.ID_BRIEFCASE;
+			}
+		}
+
+		if(this.chkFolderPermission(folderId)){
+			var cFolder = appCtxt.getById(folderId);
+			var uploadManager = appCtxt.getZmUploadManager();
+
+			var errors = [];
+			for (var i = 0; i < files.length; i++){
+				var newError = uploadManager.getErrors(files[i], maxSize);
+				if (newError) {
+					errors.push(newError);
+				}
+			}
+			if (errors.length > 0) {
+				var errorMsg = uploadManager.createUploadErrorMsg(errors, maxSize, "<br>");
+				var msgDlg = appCtxt.getMsgDialog();
+				msgDlg.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
+				msgDlg.popup();
+			} else {
+				var params = {
+					attachment:              false,
+					uploadFolder:            cFolder,
+					files:                   files,
+					notes:                   "",
+					allResponses:            null,
+					start:                   0,
+					curView:                 null,
+					preAllCallback:          null,
+					initOneUploadCallback:   null,
+					progressCallback:        null,
+					errorCallback:           null,
+					completeOneCallback:     null,
+					completeAllCallback:     this.uploadSaveDocs.bind(this),
+					completeDocSaveCallback: this._finishUpload.bind(this)
+				}
+				uploadManager.upload(params);
+			}
+		}
+	}
+};
+
+ZmBriefcaseApp.prototype.chkFolderPermission = function(folderId){
+	var briefcase = appCtxt.getById(folderId);
+	if(briefcase.isRemote() && briefcase.isReadOnly()){
+		var dialog = appCtxt.getMsgDialog();
+		dialog.setMessage(ZmMsg.errorPermissionCreate, DwtMessageDialog.WARNING_STYLE);
+		dialog.popup();
+		return false;
+	}
+	return true;
+};
+
+// --- Briefcase Upload Completion - SaveDocuments and Conflict resolution ------
+
+/**
+ * uploadSaveDocs performs SaveDocument calls, creating a document with an associated uploadId.  If the file
+ * already exists, conflict resolution is performed.
+ *
+ * @param	{object}	params		params to customize the upload flow:
+ *      uploadFolder                Folder to save associated document into
+ *      files:                      raw File object from the external HTML5 drag and drop
+ *      notes:                      Notes associated with each of the files being added
+ *      allResponses:               All the server responses.  Contains the uploadId (guid) for a file
+ *      errorCallback:              Run upon an error
+ *      conflictAction			    If specified, the action used to resolve a file conflict
+ *      preResolveConflictCallback: Standard processing (SaveDocument), Run prior to conflict resolution
+ *      completeDocSaveCallback:    Standard processing (SaveDocument), Run when all documents have been saved
+ *
+ */
+ZmBriefcaseApp.prototype.uploadSaveDocs = function(allResponses, params, status, guids) {
+	if (status != AjxPost.SC_OK) {
+		appCtxt.getAppController().popupUploadErrorDialog(ZmItem.BRIEFCASE, status);
+	} else {
+		var docFiles;
+		if (allResponses) {
+			// External DnD files
+		    docFiles = [];
+			var files    = params.files;
+			if (allResponses.length === files.length) {
+				for (var i = 0; i < files.length; i++){
+					var file = files[i];
+					var response = allResponses[i];
+					var aid = (response && response.aid);
+					docFiles.push(
+						{name:     file.name,
+						 fullname: file.name,
+						 notes:    params.notes,
+						 guid:     aid});
+				}
+				params.docFiles = docFiles;
+			}
+		} else {
+			// AjxPost callback, providing the guids separately
+			docFiles = params.docFiles;
+			if (guids) {
+				guids = guids.split(",");
+				for (var i = 0; i < docFiles.length; i++) {
+					DBG.println("guids[" + i + "]: " + guids[i] + ", files[" + i + "]: " + docFiles[i]);
+					docFiles[i].guid = guids[i];
+				}
+			}
+		}
+		if (params.uploadFolder) {
+			this._uploadSaveDocs2(params);
+		} else {
+			this._completeUpload(params);
+		}
+	}
+};
+
+ZmBriefcaseApp.prototype._popupErrorDialog = function(message) {
+	var dialog = appCtxt.getMsgDialog();
+	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
+	dialog.popup();
+};
+
+ZmBriefcaseApp.prototype._uploadSaveDocs2 = function(params) {
+
+	// create document wrappers
+	var request = [];
+	var foundOne = false;
+	var docFiles = params.docFiles;
+	for (var i = 0; i < docFiles.length; i++) {
+		var file = docFiles[i];
+		if (file.done) {
+			continue;
+		}
+		foundOne = true;
+
+		var SaveDocumentRequest = { _jsns: "urn:zimbraMail", requestId: i, doc: {}}
+		var doc = SaveDocumentRequest.doc;
+		if (file.id) {
+			doc.id = file.id;
+			doc.ver = file.version;
+		} else {
+			doc.l = params.uploadFolder.id;
+		}
+		if (file.notes) {
+			doc.desc = file.notes;
+		}
+		doc.upload = {
+			id: file.guid
+		}
+		request.push(SaveDocumentRequest);
+	}
+
+	if (foundOne) {
+		var json = {
+			BatchRequest: {
+				_jsns: "urn:zimbra",
+				onerror: "continue",
+				SaveDocumentRequest: ( (request.length == 1) ? request[0] : request )
+			}
+		};
+		var callback = this._uploadSaveDocsResponse.bind(this, params);
+		var saveDocParams = {
+			jsonObj:  json,
+			asyncMode:true,
+			callback: callback
+		};
+		var appController = appCtxt.getAppController();
+		appController.sendRequest(saveDocParams);
+	}
+	else {
+		// This calls the callback of the client - e.g. ZmHtmlEditor.prototype._imageUploaded since
+		// _uploadSaveDocsResponse is not called in this case, we still need the client callback since the
+		// user chose the "old" version of the image
+		this._completeUpload(params);
+	}
+};
+
+ZmBriefcaseApp.prototype._uploadSaveDocsResponse = function(params, response) {
+	var resp = response && response._data && response._data.BatchResponse;
+	var docFiles = params.docFiles;
+
+	// mark successful uploads
+	if (resp && resp.SaveDocumentResponse) {
+		for (var i = 0; i < resp.SaveDocumentResponse.length; i++) {
+			var saveDocResp = resp.SaveDocumentResponse[i];
+			docFiles[saveDocResp.requestId].done    = true;
+			docFiles[saveDocResp.requestId].name    = saveDocResp.doc[0].name;
+			docFiles[saveDocResp.requestId].id      = saveDocResp.doc[0].id;
+			docFiles[saveDocResp.requestId].ver     = saveDocResp.doc[0].ver;
+			docFiles[saveDocResp.requestId].version = saveDocResp.doc[0].ver;
+		}
+	}
+
+	// check for conflicts
+	var mailboxQuotaExceeded = false;
+	var uploadRejected = false;
+	var isItemLocked = false;
+	var code = 0;
+	var conflicts = [];
+	if (resp && resp.Fault) {
+		var errors = [];
+		for (var i = 0; i < resp.Fault.length; i++) {
+			var fault = resp.Fault[i];
+			var error = fault.Detail.Error;
+			code = error.Code;
+			var attrs = error.a;
+			isItemLocked = (code == ZmCsfeException.LOCKED);
+			if (code == ZmCsfeException.MAIL_ALREADY_EXISTS ||
+				code == ZmCsfeException.MODIFY_CONFLICT) {
+				var file = docFiles[fault.requestId];
+				for (var p in attrs) {
+					var attr = attrs[p];
+					switch (attr.n) {
+						case "itemId" : { file.id      = attr._content; break }
+						case "id":      { file.id      = attr._content; break; }
+						case "ver":     { file.version = attr._content; break; }
+						case "name":    { file.name    = attr._content; break; }
+					}
+				}
+				file.version = file.version || 1;
+				conflicts.push(file);
+			}else {
+				DBG.println("Unknown error occurred: " + code);
+				if (code == ZmCsfeException.MAIL_QUOTA_EXCEEDED) {
+					mailboxQuotaExceeded = true;
+				}  else if (code === ZmCsfeException.UPLOAD_REJECTED) {
+					uploadRejected = true;
+				}
+
+				errors[fault.requestId] = fault;
+			}
+		}
+	}
+
+	// dismiss dialog/enable the upload button
+	if (params.preResolveConflictCallback) {
+		params.preResolveConflictCallback.run();
+	}
+
+	// TODO: What to do about other errors?
+	// TODO: This should handle reporting several errors at once
+	if (mailboxQuotaExceeded) {
+		this._popupErrorDialog(ZmMsg.errorQuotaExceeded);
+		return;
+	}
+	else if (isItemLocked) {
+		this._popupErrorDialog(ZmMsg.errorItemLocked);
+		return;
+	} else if (uploadRejected) {
+		// Yes, its bogus, but strings are locked.  This allows us to get somewhat close to indicating what happened.
+		// TODO: Add an appropriate error string
+		var rejectedMsg = AjxMessageFormat.format(ZmMsg.uploadError, [ ZmMsg.dlReject ] );
+		this._popupErrorDialog(rejectedMsg);
+		return;
+	}
+	else if (code == ZmCsfeException.SVC_PERM_DENIED) {
+		this._popupErrorDialog(ZmMsg.errorPermissionDenied);
+		if (params.errorCallback) {
+			params.errorCallback.run();
+		}
+		return;
+	}
+
+	// resolve conflicts
+	var conflictCount = conflicts.length;
+
+	var action = params.conflictAction || ZmBriefcaseApp.ACTION_KEEP_MINE;
+	if (conflictCount > 0 && action == ZmBriefcaseApp.ACTION_ASK) {
+		var dialog = appCtxt.getUploadConflictDialog();
+		dialog.popup(params.uploadFolder, conflicts, this._uploadSaveDocs2.bind(this, params));
+	} else if (conflictCount > 0 && action == ZmBriefcaseApp.ACTION_KEEP_MINE) {
+		if (params.conflictAction) {
+			this._shieldSaveDocs(params);
+		} else {
+			this._uploadSaveDocs2(params);
+		}
+	} else {
+		this._completeUpload(params);
+	}
+};
+
+ZmBriefcaseApp.prototype._shieldSaveDocs = function(params) {
+	var dlg = appCtxt.getYesNoMsgDialog();
+	dlg.reset();
+	dlg.setButtonListener(DwtDialog.YES_BUTTON, new AjxListener(this, this._shieldSaveDocsYesCallback, [dlg, params]));
+	dlg.setMessage(ZmMsg.uploadConflictShield, DwtMessageDialog.WARNING_STYLE, ZmMsg.uploadConflict);
+	dlg.popup();
+};
+
+ZmBriefcaseApp.prototype._shieldSaveDocsYesCallback = function(dlg, params) {
+	this._uploadSaveDocs2(params);
+	dlg.popdown();
+};
+
+ZmBriefcaseApp.prototype._completeUpload = function(params) {
+	if (params.completeDocSaveCallback) {
+		params.completeDocSaveCallback.run(params.docFiles, params.uploadFolder);
+	}
+};
+
+ZmBriefcaseApp.prototype._finishUpload = function(docFiles, uploadFolder) {
+	var filenames = [];
+	for (var i in docFiles) {
+		var name = docFiles[i].name;
+		filenames.push(name);
+	}
+	this._handlePostUpload(uploadFolder, filenames, docFiles);
+};
+
+ZmBriefcaseApp.prototype._handlePostUpload = function(folder, filenames, files) {
+	var msg = ZmMsg.successfullyUploaded;
+	if(files.length > 1){
+		msg = AjxMessageFormat.format(ZmMsg.successfullyUploadedFiles, files.length);
+	}
+	appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);
+	// Remove the previous selection(s)
+	var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
+	briefcaseController.resetSelection();
+};
+
+
+
+ZmBriefcaseApp.ACTION_KEEP_MINE = "mine";
+ZmBriefcaseApp.ACTION_KEEP_THEIRS = "theirs";
+ZmBriefcaseApp.ACTION_ASK = "ask";
+
+

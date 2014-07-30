@@ -1,5 +1,5 @@
 <template id='share.Widgets#ZmToolBarSeparator'>
-	<table>
+	<table role="presentation">
 		<tr>
 			<td id='${itemId}' valign='middle'>
 				<div class='vertSep'></div>
@@ -9,8 +9,8 @@
 </template>
 
 <template id='share.Widgets#ZmAppChooser' class='ZWidget'>
-	<table class='ZToolbarTable'>
-		<tr valign='bottom' id='${id}_items'>
+	<table role="presentation" class='ZToolbarTable'>
+		<tr valign='middle' id='${id}_items'>
 			<td id='${id}_suffix' valign=bottom>
 				<div class='ZAppTabSpacer'></div>
 			</td>
@@ -27,7 +27,7 @@
 
 <template id='share.Widgets#ZmAppChooserButton' class='ZAppTab'>
 	<$ var buttonClass = data.buttonClass || "AppTab"; $>
-	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border'style='table-layout:auto;'>
+	<table role="presentation" class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border'style='table-layout:auto;'>
 		<tr>
 			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
 			<td id='${id}_title'		class='ZWidgetTitle'></td>
@@ -53,13 +53,13 @@
 </template>
 
 <template id='share.Widgets#ZmSearchToolBar'>
-	<table class='ZmSearchToolbarTable'>
+	<table role="presentation" class='ZmSearchToolbarTable'>
 		<tr>
 			<td id='${id}_searchMenuButton' class='ZmSearchToolbarCell'></td>
 			<td>
                 <div class='ZmSearchToolbarDiv'>
-				    <div id='${id}_inputField' style='margin-right:20px'></div>
-				    <div id='${id}_searchButton' hint='icon' style='position:absolute;right:4px;top:1px;'></div>
+				    <div id='${id}_inputField' class='ZmSearchInput'></div>
+				    <div id='${id}_searchButton' class='ZmSearchButton' hint='icon'></div>
 				</div>
 			</td>
 			<!-- UNCOMMENT THIS IF YOU WANT CUSTOM SEARCH TO APPEAR AS A SEPARATE BUTTON ON SEARCH TOOLBAR
@@ -77,11 +77,11 @@
 </template>
 
 <template id='share.Widgets#ZmSearchResultsToolBar'>
-	<table class='ZmSearchToolbarTable'>
+	<table role="presentation" class='ZmSearchToolbarTable'>
 		<tr>
 			<td class='ZmSearchResultText'><div id='${id}_icon' class='ImgWarning_12' style='display:none; margin-right:5px;'></div><span id='${id}_label'></span></td>
 			<td>
-			    <table><tr>
+			    <table role="presentation"><tr>
 			        <td id='${id}_inputFieldCell' class='ZmSearchResultInputField'></td>
 			        <td id='${id}_searchButton'   class='ZmSearchResultButton'></td>
 			        <td id='${id}_saveButton'     class='ZmSearchResultButton'></td>
@@ -110,7 +110,7 @@
 <template id='share.Widgets#ZmPeopleAutocompleteListView'>
 	<tr id='${rowId}'>
 		<td>
-			<table style="{padding-top:4px; padding-bottom:4px}">
+			<table role="presentation" style="{padding-top:4px; padding-bottom:4px}">
 				<tr>
 					<$ if (data.photoUrl) { $>
 						<td><img src="${photoUrl}" width=32 height=32></img></td>
@@ -146,7 +146,7 @@
 <template id='share.Widgets#ZmPeopleAutocompleteListView-MoreResults'>
 	<tr>
 		<td>
-		    <table>
+		    <table role="presentation">
 		        <tr>
 		            <td width='32'>&nbsp;</td>
 		            <td><$= ZmMsg.morePeopleResults $></td>
@@ -168,7 +168,7 @@
 
 <template id='share.Widgets#ZmChooseAccountDialog'>
 	<div class='ChooserDialog' style='width:300px'>
-		<table width=100%>
+		<table role="presentation" width=100%>
 			<tr>
 				<td>
 					<center>
@@ -195,7 +195,7 @@
 </template>
 
 <template id='share.Widgets#ZmDumpsterDialog'>
-	<table>
+	<table role="presentation">
 		<tr>
 			<td id='${id}_inputContainerId' class="DumpsterSearchInput"></td>
 			<td id='${id}_searchButtonContainerId'></td>
@@ -205,10 +205,6 @@
 	<div id='${id}_listview'></div>
 </template>
 
-<template id='share.Widgets#ZmAddShareLink'>
-    <a id="${id}_addshare_link" href="#"><$=ZmMsg.sharedFoldersLink$></a>
-</template>
-
 <template id='share.Widgets#ZmShareProxyToolTip'>
     <div style="width:250px">
         <div class="Img${icon}" style="float:left;vertical-align:top"></div>
@@ -216,7 +212,7 @@
             <$= AjxStringUtil.htmlEncode(data.normalizedFolderPath) $>
         </div>
         <div style="clear:both;">
-            <table class="ZPropertySheet" cellspacing="6">
+            <table role="presentation" class="ZPropertySheet" cellspacing="6">
                 <tr valign="top">
                     <th align="right"><$= ZmMsg.ownerLabel $></th>
                     <td><$= AjxStringUtil.htmlEncode(data.normalizedOwnerName) $></td>
@@ -251,7 +247,7 @@
         <div id="${id}_FILTER" tabindex="100"></div>
         <div id="${id}_TREE" tabindex="200"></div>
     </div>
-    <table width="100%" class="ZPropertySheet" cellspacing="6">
+    <table role="presentation" width="100%" class="ZPropertySheet" cellspacing="6">
         <tr><td><$=ZmMsg.sharedFoldersFindLabel$></td>
             <td><div id="${id}_EMAIL" tabindex="300"></div></td>
             <td><div id="${id}_SEARCH" tabindex="400"></div></td>
@@ -265,6 +261,6 @@
 <template id="share.Widgets#ZmAddressInputField">
 	<div id='${holderId}' class='addrBubbleHolder-empty'>
 		<span id='${dragInsertionBarId}' style='display:none' class='addrBubbleInsertionBar'>&nbsp;</span>
-		<input id='${inputId}'>
+		<${inputTagName} class='addrInputField user_font_system' id='${inputId}' />
 	</div>
 </template>

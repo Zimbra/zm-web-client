@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -31,6 +37,7 @@ ZmContactSplitView = function(params) {
 
 	params.className = params.className || "ZmContactSplitView";
 	params.posStyle = params.posStyle || Dwt.ABSOLUTE_STYLE;
+	params.id = Dwt.getNextId('ZmContactSplitView_');
 	DwtComposite.call(this, params);
 
 	this._controller = params.controller;
@@ -44,10 +51,9 @@ ZmContactSplitView = function(params) {
 	if (folderTree) {
 		folderTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
 	}
-	var tagTree = appCtxt.getTagTree();
-	if (tagTree) {
-		tagTree.addChangeListener(new AjxListener(this, this._tagChangeListener));
-	}
+
+	ZmTagsHelper.setupListeners(this);
+
 };
 
 ZmContactSplitView.prototype = new DwtComposite;
@@ -55,6 +61,7 @@ ZmContactSplitView.prototype.constructor = ZmContactSplitView;
 
 // Consts
 ZmContactSplitView.ALPHABET_HEIGHT = 35;
+
 ZmContactSplitView.NUM_DL_MEMBERS = 10;	// number of distribution list members to show initially
 
 ZmContactSplitView.LIST_MIN_WIDTH = 100;
@@ -156,7 +163,7 @@ function(contact, isGal) {
 	}
 
 	var oldContact = this._contact;
-	this._contact = contact;
+	this._contact = this._item = contact;
 
 	if (this._contact.isLoaded) {
 		this._setContact(contact, isGal, oldContact);
@@ -273,7 +280,7 @@ function() {
 		this._contactGroupView.getHtmlElement().innerHTML = "";
 	}
 
-	this._setHeaderInfo(true);
+	this._clearTags();
 };
 
 /**
@@ -286,6 +293,19 @@ function(enable) {
 	if (this._alphabetBar)
 		this._alphabetBar.enable(enable);
 };
+
+/**
+ * shows/hides the alphabet bar.
+ *
+ * @param	{Boolean}	visible		if <code>true</code>, show the alphabet bar
+ */
+ZmContactSplitView.prototype.showAlphabetBar =
+function(visible) {
+	if (this._alphabetBar) {
+		this._alphabetBar.setVisible(visible);
+	}
+};
+
 
 /**
  * @private
@@ -330,14 +350,14 @@ function(controller, dropTgt) {
 	this._detailsId		= this._htmlElId + "_details";
 
 	// contact groups is not child of DwtTabGroup
-	this._contactGroupView = new ZmContactView(this);
+	this._contactGroupView = new ZmContactView({ parent: this, controller: this._controller });
 	this._contactGroupView.setVisible(false);
 	this._contactGroupView.reparentHtmlElement(this._contentId);
 	this._contactGroupView._setMouseEventHdlrs();
 	this._groupObjectManager = new ZmObjectManager(this._contactGroupView);
 
 	// create an empty slate
-	this._contactView = new ZmContactView(this);
+	this._contactView = new ZmContactView({ parent: this, controller: this._controller });
 	this._contactView.reparentHtmlElement(this._contentId);
 	this._contactView._setMouseEventHdlrs();
 	this._objectManager = new ZmObjectManager(this._contactView);
@@ -406,7 +426,7 @@ function(ev, treeView) {
 				: this._contact.folderId;
 
 			if (organizer.id == folderId) {
-				this._setHeaderInfo();
+				this._setTags();
 			}
 		}
 	}
@@ -430,21 +450,18 @@ function(contact, isGal, oldContact, expandDL, isBack) {
 	//it is done with isBack set to true.
 	if (contact.isDistributionList() && !isBack) {
 		var callbackHere = this._setContact.bind(this, contact, isGal, oldContact, expandDL, true);
-		this._controller.gatherContactExtraDlStuff(contact, callbackHere);
+		contact.gatherExtraDlStuff(callbackHere);
 		return;
 	}
 
-	var folderId = contact.folderId;
-	var folder = folderId ? appCtxt.getById(folderId) : null;
-	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
-
-	var addrBook = contact.getAddressBook(); 
+	var addrBook = contact.getAddressBook();
+	var color = addrBook ? addrBook.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 	var subs = {
 		id: this._htmlElId,
 		contact: contact,
 		addrbook: addrBook,
 		contactHdrClass: (ZmOrganizer.COLOR_TEXT[color] + "Bg"),
-		isInTrash: (folder && folder.isInTrash())
+		isInTrash: (addrBook && addrBook.isInTrash())
 	};
 
 	if (contact.isGroup()) {
@@ -498,9 +515,16 @@ function(contact, isGal, oldContact, expandDL, isBack) {
 		this._showContact(subs);
 	}
 
-	this._setHeaderInfo();
+	this._setTags();
 	Dwt.setLoadedTime("ZmContactItem");
 };
+
+ZmContactSplitView.prototype.dispose =
+function() {
+	ZmTagsHelper.disposeListeners(this);
+	DwtComposite.prototype.dispose.apply(this, arguments);
+};
+
 
 ZmContactSplitView.prototype._showContact =
 function(subs) {
@@ -561,6 +585,9 @@ function(contact) {
 			: dlInfo.isOwner ? ZmMsg.youAreOwner
 			: dlInfo.isMember ? ZmMsg.youAreMember
 			: "";
+	if (statusMsg != '') {
+		statusMsg = "<li>" + statusMsg + "</li>";
+	}
 	var actionMsg;
 	if (!dlInfo.isMember) {
 		actionMsg =	policy == ZmContactSplitView.SUBSCRIPTION_POLICY_APPROVAL ? ZmMsg.dlSubscriptionRequiresApproval
@@ -573,7 +600,10 @@ function(contact) {
 			: "";
 
 	}
-	this._subscriptionMsg.innerHTML = statusMsg + (actionMsg != "" && statusMsg != "" ? "<br>" : "") + actionMsg;
+	if (actionMsg != '') {
+		actionMsg = "<li>" + actionMsg + "</li>";
+	}
+	this._subscriptionMsg.innerHTML = statusMsg + actionMsg;
 
 };
 
@@ -591,7 +621,7 @@ function(data, label, objectType) {
 };
 
 ZmContactSplitView._showContactList =
-function(data, names, typeFunc) {
+function(data, names, typeFunc, hideType) {
 
 	data.names = names;
 	var html = [];
@@ -599,6 +629,7 @@ function(data, names, typeFunc) {
 		var name = names[i];
 		data.name = name;
 		data.type = (typeFunc && typeFunc(data, name)) || ZmMsg["AB_FIELD_" + name];
+		data.type = hideType ? "" : data.type;
 		html.push(ZmContactSplitView._showContactListItem(data));
 	}
 
@@ -652,7 +683,7 @@ ZmContactSplitView.showContactEmails =
 function(data) {
 	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.emailLabel, ZmObjectManager.EMAIL);
 	var typeFunc = function(data, name) { return data.isDL && ZmMsg.distributionList; };
-	return ZmContactSplitView._showContactList(itemListData, ZmEditContactView.LISTS.EMAIL.attrs, typeFunc);
+	return ZmContactSplitView._showContactList(itemListData, ZmEditContactView.LISTS.EMAIL.attrs, typeFunc, !data.isDL);
 };
 
 ZmContactSplitView.showContactPhones =
@@ -676,8 +707,8 @@ function(data) {
 
 	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.addressLabel);
 	var types = {"work":ZmMsg.work, "home":ZmMsg.home, "other":ZmMsg.other};
-	var prefixes = ZmEditContactView.ADDR_PREFIXES;
-	var suffixes = ZmEditContactView.ADDR_SUFFIXES;
+	var prefixes = ZmContact.ADDR_PREFIXES;
+	var suffixes = ZmContact.ADDR_SUFFIXES;
 	var html = [];
 	for (var i = 0; i < prefixes.length; i++) {
 		var count = 0;
@@ -739,8 +770,8 @@ function(data) {
 			delete attrs[list.attrs[i]];
 		}
 	}
-	var prefixes = ZmEditContactView.ADDR_PREFIXES;
-	var suffixes = ZmEditContactView.ADDR_SUFFIXES;
+	var prefixes = ZmContact.ADDR_PREFIXES;
+	var suffixes = ZmContact.ADDR_SUFFIXES;
 	for (var i = 0; i < prefixes.length; i++) {
 		for (var j = 0; j < suffixes.length; j++) {
 			delete attrs[prefixes[i] + suffixes[j]];
@@ -749,6 +780,7 @@ function(data) {
 
 	// display custom
 	for (var a in attrs) {
+		if (a === "notesHtml") { continue; }
 		itemListData.name = a;
 		itemListData.type = AjxStringUtil.capitalizeWords(AjxStringUtil.fromMixed(a));
 		html.push(ZmContactSplitView._showContactListItem(itemListData));
@@ -868,7 +900,7 @@ function(subs, result) {
 
 	subs.dl = this._distributionList = result;
 	this._showContact(subs);
-	this._setHeaderInfo();
+	this._setTags();
 	if (!this._rowHeight) {
 		var table = document.getElementById(this._detailsId);
 		if (table) {
@@ -886,7 +918,7 @@ ZmContactSplitView.prototype._encodeIM =
 function(data) {
 	var result = ZmContactSplitView.IM_RE_VALUE.exec(data);
 	if (result) {
-		var params = [result[1], result[2], ZmMsg["AB_FIELD_", result[1]]];
+		var params = [result[1], result[2]]; //, ZmMsg["AB_FIELD_", result[1]]];  <-- this 3rd param looks like syntax error and ZmMsg.AB_DISPLAY_IM only accepts 2 params anyway.
 		return AjxMessageFormat.format(ZmMsg.AB_DISPLAY_IM, params);
 	} else {
 		return data;
@@ -911,81 +943,32 @@ function() {
 /**
  * @private
  */
-ZmContactSplitView.prototype._getTagHtml =
+ZmContactSplitView.prototype._setTags =
 function() {
-	var html = [];
-	var idx = 0;
-
-	var tagList = appCtxt.getAccountTagList(this._contact);
-
-	// get sorted list of tags for this msg
-	var tags = this._contact.tags;
-	var ta = [];
-	for (var i = 0; i < tags.length; i++) {
-		ta.push(tagList.getByNameOrRemote(tags[i]));
-	}
-	ta.sort(ZmTag.sortCompare);
-
-	for (var j = 0; j < ta.length; j++) {
-		var tag = ta[j];
-		if (!tag) { continue; }
-		var icon = tag.getIconWithColor();
-		var attr = ["id='", this._getTagsElementId(), tag.id, "'"].join("");
-		// XXX: set proper class name for link once defined!
-		html[idx++] = "<a href='javascript:;' class='' onclick='ZmContactSplitView._tagClicked(";
-		html[idx++] = '"';
-		html[idx++] = AjxStringUtil.encodeQuotes(tag.name);
-		html[idx++] = '"';
-		html[idx++] = "); return false;'>";
-		html[idx++] = AjxImg.getImageSpanHtml(icon, null, attr, AjxStringUtil.htmlEncode(tag.name));
-		html[idx++] = "</a>&nbsp;";
-	}
-	return html.join("");
+	//use the helper to get the tags.
+	var tagsHtml = ZmTagsHelper.getTagsHtml(this._item, this);
+	this._setTagsHtml(tagsHtml);
 };
 
 /**
  * @private
  */
-ZmContactSplitView.prototype._setHeaderInfo =
-function(clear) {
-	// set tags
+ZmContactSplitView.prototype._clearTags =
+function() {
+	this._setTagsHtml("");
+};
+
+/**
+ * note this is called from ZmTagsHelper
+ * @param html
+ */
+ZmContactSplitView.prototype._setTagsHtml =
+function(html) {
 	var tagCell = document.getElementById(this._getTagsElementId());
-	if (tagCell) {
-		tagCell.innerHTML = clear ? "" : this._getTagHtml();
-	}
+	if (!tagCell) { return; }
+	tagCell.innerHTML = html;
 };
 
-/**
- * @private
- */
-ZmContactSplitView.prototype._tagChangeListener =
-function(ev) {
-	if (ev.type != ZmEvent.S_TAG) { return; }
-
-	var fields = ev.getDetail("fields");
-	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
-	if ((ev.event == ZmEvent.E_MODIFY && changed) ||
-			ev.event == ZmEvent.E_DELETE ||
-			ev.event == ZmEvent.E_CREATE) { //could be tag that was not local (from share) becomes local now.
-		var tagCell = document.getElementById(this._getTagsElementId());
-        if (tagCell) {
-		    tagCell.innerHTML = this._getTagHtml();
-        }
-	}
-};
-
-/**
- * @private
- */
-ZmContactSplitView._tagClicked =
-function(tagId) {
-	var tagList = appCtxt.getAccountTagList(this._contact);
-	var tag = tagList.getByNameOrRemote(tagId);
-	if (!tag) {
-		return;
-	}
-	appCtxt.getSearchController().search({query: tag.createQuery(), inclSharedItems: true});
-};
 
 ZmContactSplitView.prototype._sashCallback = function(delta) {
 	var sashWidth = this._sash.getSize().x;
@@ -1020,11 +1003,14 @@ ZmContactSplitView.prototype._sashCallback = function(delta) {
 };
 
 /**
- * View for displaying the contact information. Provides events for enabling text selection. 
- * @param parent
+ * View for displaying the contact information. Provides events for enabling text selection.
+ * @param {Object}  params      hash of params:
+ *                  parent      parent control
+ *                  controller  owning controller
  */
-ZmContactView = function(parent) {
-	DwtComposite.call(this, {parent:parent});
+ZmContactView = function(params) {
+	DwtComposite.call(this, {parent:params.parent});
+	this._controller = params.controller;
 	this._setAllowSelection();
 	this.addListener(DwtEvent.ONSELECTSTART, this._selectStartListener.bind(this));
 };
@@ -1060,7 +1046,7 @@ ZmContactSimpleView = function(params) {
 	ZmContactsBaseView.call(this, params);
 
 	this._normalClass = DwtListView.ROW_CLASS + " SimpleContact";
-	this._selectedClass = [DwtListView.ROW_CLASS, DwtCssStyle.SELECTED].join("-") + " SimpleContact";
+	this._selectedClass = [DwtListView.ROW_CLASS, DwtCssStyle.SELECTED].join("-");
 };
 
 ZmContactSimpleView.prototype = new ZmContactsBaseView;
@@ -1075,9 +1061,10 @@ ZmContactSimpleView.prototype.toString = function() { return "ZmContactSimpleVie
  * @param	{ZmContactList}		list		the list
  * @param	{String}	defaultColumnSort		the sort field
  * @param	{String}	folderId		the folder id
+ * @param	{Boolean}	isSearchResults	is this a search tab?
  */
 ZmContactSimpleView.prototype.set =
-function(list, defaultColumnSort, folderId) {
+function(list, defaultColumnSort, folderId, isSearchResults) {
 	var fid = folderId || this._controller.getFolderId();
 	ZmContactsBaseView.prototype.set.call(this, list, defaultColumnSort, fid);
 
@@ -1085,7 +1072,8 @@ function(list, defaultColumnSort, folderId) {
 		this.parent.clear();
 	}
 
-	this.parent.enableAlphabetBar(!(list && list.isGal));
+	this.parent.showAlphabetBar(!isSearchResults);
+	this.parent.enableAlphabetBar(fid != ZmOrganizer.ID_DLS);
 };
 
 /**
@@ -1199,6 +1187,11 @@ function() {
 	}
 };
 
+ZmContactSimpleView.prototype.useListElement =
+function() {
+	return true;
+}
+
 /**
  * A contact is normally displayed in a list view with no headers, and shows
  * just an icon and name.
@@ -1209,72 +1202,70 @@ function() {
  * @private
  */
 ZmContactSimpleView.prototype._createItemHtml =
-function(contact, params) {
+function(contact, params, asHtml, count) {
 
 	params = params || {};
 
-	var div = this._getDiv(contact, params);
-	var folder = this._folderId && appCtxt.getById(this._folderId);
-	if (params.isDragProxy) {
-		div.style.width = "175px";
-		div.style.padding = "4px";
-	} else {
-		div.className = this._normalClass + " SimpleContact";
-	}
-
 	var htmlArr = [];
 	var idx = 0;
+	if (!params.isDragProxy) {
+		params.divClass = this._normalClass;
+	}
+	if (asHtml) {
+		idx = this._getDivHtml(contact, params, htmlArr, idx, count);
+	} else {
+		var div = this._getDiv(contact, params);
+	}
+	var folder = this._folderId && appCtxt.getById(this._folderId);
+	if (div) {
+		if (params.isDragProxy) {
+			div.style.width = "175px";
+			div.style.padding = "4px";
+		}
+	}
 
-	// table/row
-	idx = this._getTable(htmlArr, idx, params);
 	idx = this._getRow(htmlArr, idx, contact, params);
 
 	// checkbox selection
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
 		idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(contact, ZmItem.F_SELECTION));
-		htmlArr[idx++] = "</center></td>";
 	}
 
 	// icon
-	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
-	htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon(folder), null, "id=" + this._getFieldId(contact, "type"));
-	htmlArr[idx++] = "</center></td>";
+	htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon(folder), null, "id=" + this._getFieldId(contact, "type"),null, null, ["ZmContactIcon"]);
 
 	// file as
-	htmlArr[idx++] = "<td id='" + this._getFieldId(contact, "fileas") + "' style='vertical-align:middle;'>&nbsp;";
+	htmlArr[idx++] = "<div id='" + this._getFieldId(contact, "fileas") + "'>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs() || contact.getFileAsNoName());
-	htmlArr[idx++] = "</td>";
+	htmlArr[idx++] = "</div>";
+	htmlArr[idx++] = "<div class='ZmListFlagsWrapper'>";
 
 	if (!params.isDragProxy) {
 		// if read only, show lock icon in place of the tag column since we dont
 		// currently support tags for "read-only" contacts (i.e. shares)
 		var isLocked = folder ? folder.link && folder.isReadOnly() : contact.isLocked();
 		if (isLocked) {
-			htmlArr[idx++] = "<td width=16>";
 			htmlArr[idx++] = AjxImg.getImageHtml("ReadOnly");
-			htmlArr[idx++] = "</td>";
 		} else if (!contact.isReadOnly() && appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 			// otherwise, show tag if there is one
-			htmlArr[idx++] = "<td style='vertical-align:middle;' width=16 class='Tag'>";
-			idx = this._getImageHtml(htmlArr, idx, contact.getTagImageInfo(), this._getFieldId(contact, ZmItem.F_TAG));
-			htmlArr[idx++] = "</td>";
+			idx = this._getImageHtml(htmlArr, idx, contact.getTagImageInfo(), this._getFieldId(contact, ZmItem.F_TAG), ["Tag"]);
 		}
 	}
 
 	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-		htmlArr[idx++] = "<td style='vertical-align:middle' width=16 class='Presence'>";
 		var presence = contact.getImPresence();
 		var img = presence ? presence.getIcon() : "Blank_16";
-		idx = this._getImageHtml(htmlArr, idx, img, this._getFieldId(contact, ZmItem.F_PRESENCE));
-		htmlArr[idx++] = "</td>";
+		idx = this._getImageHtml(htmlArr, idx, img, this._getFieldId(contact, ZmItem.F_PRESENCE), ["Presence"]);
 	}
 
-	htmlArr[idx++] = "</tr></table>";
+	htmlArr[idx++] = "</div></div></li>";
 
-	div.innerHTML = htmlArr.join("");
-
-	return div;
+	if (div) {
+		div.innerHTML = htmlArr.join("");
+		return div;
+	} else {
+		return htmlArr.join("");
+	}
 };
 
 /**

@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2010, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -65,7 +71,7 @@ function(list) {
 		var appt = list.get(i);
 		var uid = appt.getUniqueId(true);
 		var data = this._apptData[uid] = {appt:appt};
-		idx = this._addAppt(html, idx, appt, data, (i > 0));
+		idx = this._addAppt(html, idx, appt, data, (i === size - 1));
 	}
     if(size == 0) {
         html[idx++] = '<tr name="rdsep">';
@@ -92,9 +98,8 @@ function(list) {
 		var data = this._apptData[uid];
 
 		// open button
-		var openBtn = this._openButtons[data.openBtnId] = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:data.openBtnId});
-		openBtn.setImage(appt.otherAttendees ? "ApptMeeting" : "Appointment");
-		openBtn.setText(ZmMsg.viewAppointment);
+		var openBtn = this._openButtons[data.openBtnId] = new DwtLinkButton({id: "openBtn_" + id, parent: this, parentElement: data.openLinkId, noDropDown: true});
+		openBtn.setText(appt.getName());
 		openBtn.addSelectionListener(openListener);
 		openBtn.apptUid = uid;
 
@@ -123,9 +128,9 @@ function(data) {
 };
 
 ZmQuickReminderDialog.prototype._addAppt =
-function(html, idx, appt, data, needSep) {
+function(html, idx, appt, data, noSep) {
 
-	data.openBtnId = Dwt.getNextId();
+	data.openLinkId = Dwt.getNextId();
 	data.deltaId = Dwt.getNextId();
 	data.rowId = Dwt.getNextId();
 
@@ -137,7 +142,7 @@ function(html, idx, appt, data, needSep) {
     var apptLabel = appt.isUpcomingEvent ? " (" + ZmMsg.upcoming + ")" : ""
 
 	var params = {
-		needSep: needSep,
+		noSep: noSep,
 		rowId: data.rowId,
 		calName: calName,
 		accountName: (appCtxt.multiAccounts && calendar && calendar.getAccount().getDisplayName()),
@@ -147,7 +152,7 @@ function(html, idx, appt, data, needSep) {
 		reminderName: (AjxStringUtil.htmlEncode(appt.name + apptLabel)),
 		durationText: (AjxStringUtil.trim(this._getDurationText(appt))),
 		deltaId: data.deltaId,
-		openBtnId: data.openBtnId
+		openLinkId: data.openLinkId
 	};
 	html[idx++] = AjxTemplate.expand("calendar.Calendar#ReminderDialogRow", params);
 	return idx;
@@ -160,7 +165,7 @@ function(ev) {
 	var data = this._apptData[obj.apptUid];
 	var appt = data ? data.appt : null;
 	if (appt) {
-		AjxDispatcher.require(["CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 
 		var cc = AjxDispatcher.run("GetCalController");
 

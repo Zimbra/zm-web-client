@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -359,8 +365,10 @@ function(ev){
         appCtxt.accountList.setActiveAccount(item.getAccount());
     }
     var noChange = ev && ev._details && ev._details.oldFolderId == item.folderId;
-    if ((ev.event == ZmEvent.E_MOVE && noChange) || ev.event == ZmEvent.E_DELETE)
+    // Ignore (no preview change) if move to same folder, deletion, or multi-select (shift key)
+    if ((ev.event === ZmEvent.E_MOVE && noChange) || ev.event === ZmEvent.E_DELETE || ev.shiftKey) {
         return;
+    }
 
     if(ev.field == ZmItem.F_EXPAND && this._detailListView._isExpandable(item)){
         this._detailListView.expandItem(item);   
@@ -513,6 +521,7 @@ function(){
 
     this._headerEl = document.getElementById(htmlElId+"_header");
     this._bodyEl   = document.getElementById(htmlElId+"_body");
+    this._containerEl   = document.getElementById(htmlElId+"_container");
 
     //Create DWT IFrame
     var params = {
@@ -554,6 +563,9 @@ function(){
     Dwt.setHandler(this._headerExpand, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleExpand, this));
 
     this._iframePreview.getIframe().onload = AjxCallback.simpleClosure(this._updatePreview, this);
+
+    DwtShell.getShell(window).addControlListener(new AjxListener(this, function() { return this._onResize.apply(this, arguments); }));
+    this.addControlListener(new AjxListener(this, function() { return this._onResize.apply(this, arguments); }));
 };
 
 ZmPreviewView._errorCallback =
@@ -728,8 +740,6 @@ function(){
 			    }
 		    }
 	    }
-	    
-	    this._iframePreview
     }
 };
 
@@ -790,7 +800,7 @@ function(item){
         this._headerCreator.innerHTML = item.creator;
 
     if(this._lockStatus)
-        this._lockStatus.innerHTML = AjxImg.getImageHtml(item.locked ? "PadLock" : "Blank_16");
+        this._lockStatus.innerHTML = AjxImg.getImageHtml(item.locked ? "Padlock" : "Blank_16");
 
     if(this._headerLockTime){
         if(item.locked){
@@ -806,6 +816,8 @@ function(item){
     }
 
     this.setNotes(item);
+
+    this._onResize();
 };
 
 ZmPreviewView.prototype.setNotes =
@@ -867,5 +879,14 @@ function(enabled){
     }
 };
 
+ZmPreviewView.prototype._onResize =
+function() {
+    if (this._containerEl && this._bodyEl) {
+        // in order to adapt to decreasing sizes in IE, make the body
+        // very small before getting its parent's size
+        Dwt.setSize(this._bodyEl, 1, 1);
 
-
+        var size = Dwt.getSize(this._containerEl);
+        Dwt.setSize(this._bodyEl, size.x, size.y);
+    }
+};

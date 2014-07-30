@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -87,7 +93,21 @@ function(msg, parentController, callback, markRead, hidePagination, forceLoad, n
 			msg.load({callback:respCallback, markRead:markRead, forceLoad:forceLoad, noTruncate:noTruncate});
 		}
 	} else {
-		this._handleResponseShow(callback, hidePagination);
+		// May have been explicitly marked as unread
+		var marked = false;
+		if (msg.isUnread && (appCtxt.get(ZmSetting.MARK_MSG_READ) != ZmSetting.MARK_READ_NONE)) {
+			if (msg.list) {
+				// Need to mark it on the server
+				marked = true;
+				var markCallback =  this._handleResponseShow.bind(this, callback, hidePagination);
+				msg.list.markRead({items: msg, value: true, callback: markCallback, noBusyOverlay: true});
+			}  else {
+				msg.markRead();
+			}
+		}
+		if (!marked) {
+			this._handleResponseShow(callback, hidePagination);
+		}
 	}
 };
 
@@ -171,8 +191,9 @@ function(actionCode) {
 			break;
 		
 		default:
-			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
-			break;
+			if (ZmMsgController.ALLOWED_SHORTCUT[actionCode]) {
+				return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
+			}
 	}
 	return true;
 };
@@ -360,6 +381,10 @@ function (msg) {
 	this._msg = msg;
 };
 
+ZmMsgController.prototype.getItemView = function() {
+	return this._view[this._currentViewId];
+};
+
 // No-op replenishment
 ZmMsgController.prototype._checkReplenish =
 function(params) {
@@ -369,7 +394,9 @@ function(params) {
 
 ZmMsgController.prototype._checkItemCount =
 function() {
-	this._backListener();
+	if (!appCtxt.isChildWindow) {
+		this._backListener();
+	}
 };
 
 ZmMsgController.prototype._getDefaultFocusItem = 
@@ -444,9 +471,36 @@ function(ev) {
     window.open(appContextPath+url, "_blank");
 };
 
+ZmMsgController.prototype._subscribeResponseHandler =
+function(statusMsg, ev) {
+    ZmMailListController.prototype._subscribeResponseHandler.call(this, statusMsg, ev);
+    //Close View
+    appCtxt.getAppViewMgr().popView();
+};
+
 ZmMsgController.prototype._acceptShareHandler =
 function(ev) {
     ZmMailListController.prototype._acceptShareHandler.call(this, ev);
     //Close View
     appCtxt.getAppViewMgr().popView();
+};
+
+ZmMsgController.prototype._setStatics = function() {
+
+	if (!ZmMsgController.ALLOWED_SHORTCUT) {
+		ZmMsgController.ALLOWED_SHORTCUT = AjxUtil.arrayAsHash([
+			ZmKeyMap.FORWARD,
+			ZmKeyMap.MOVE,
+			ZmKeyMap.PRINT,
+			ZmKeyMap.TAG,
+			ZmKeyMap.REPLY,
+			ZmKeyMap.REPLY_ALL,
+			ZmKeyMap.SPAM,
+			ZmKeyMap.MARK_READ,
+			ZmKeyMap.MARK_UNREAD,
+			ZmKeyMap.FLAG
+		]);
+	}
+
+	ZmMailListController.prototype._setStatics();
 };

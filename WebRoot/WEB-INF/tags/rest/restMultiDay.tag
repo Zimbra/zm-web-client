@@ -1,15 +1,17 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software Foundation,
+ * version 2 of the License.
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
@@ -44,7 +46,7 @@
         </c:choose>
     <c:set var="workDays" value="${zm:getWorkDays(wdays)}"/>
     <c:choose>
-        <c:when test="${requestScope.zimbra_freebusy}">
+        <c:when test="${zm:boolean(requestScope.zimbra_freebusy)}">
             <zm:getFreeBusyAppointments box="${mailbox}"
                                         email="${requestScope.zimbra_target_account_name}"
                                         var="appts"
@@ -70,6 +72,16 @@
             var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}" wdays="${wdays}" weekStart="${firstDOW}"
             hourstart="${requestScope.zimbra_target_account_prefCalendarDayHourStart}" hourend="${requestScope.zimbra_target_account_prefCalendarDayHourEnd}"/>
 </rest:handleError>
+
+<c:choose>
+    <c:when test="${param.view eq 'day'}">
+        <c:set var="layoutRows" value="${layout.rowsSeperatedByDays}"/>
+        <c:set var="rows" value="${layoutRows[0]}"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="rows" value="${layout.rows}"/>
+    </c:otherwise>
+</c:choose>
 
 <table class='ZhCalDayGrid' width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; height:100%;'>
 <tr class='ZhCalMonthHeaderRow'>
@@ -171,7 +183,7 @@
         </c:if>
     </c:forEach>
 </tr>
-<c:forEach var="row" items="${layout.rows}">
+<c:forEach var="row" items="${rows}">
     <tr style='height:100%'>
         <c:if test="${row.rowNum % 4 eq 0}">
             <td valign="top" class='ZhCalDayHour' nowrap width="1%" rowspan="4" style='border-left:none'>

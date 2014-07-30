@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -25,6 +31,8 @@
  * 
  * @param	{DwtComposite}	parent		the parent
  * @param	{ZmContactController}		controller		the controller
+ *
+ * @constructor
  * 
  * @extends		DwtComposite
  */
@@ -35,7 +43,6 @@ ZmGroupView = function(parent, controller) {
 
 	this._controller = controller;
 
-	this._defaultQuery = ".";
 	this._view = ZmId.VIEW_GROUP;
 
 	this._tagList = appCtxt.getTagTree();
@@ -56,6 +63,8 @@ ZmGroupView = function(parent, controller) {
 
 ZmGroupView.prototype = new DwtComposite;
 ZmGroupView.prototype.constructor = ZmGroupView;
+ZmGroupView.prototype.isZmGroupView = true;
+
 
 /**
  * Returns a string representation of the object.
@@ -138,7 +147,7 @@ function(contact, isDirty) {
 		this._contact.removeChangeListener(this._changeListener);
 	}
 	contact.addChangeListener(this._changeListener);
-	this._contact = contact;
+	this._contact = this._item = contact;
 
 	if (!this._htmlInitialized) {
 		this._createHtml();
@@ -286,12 +295,15 @@ function() {
 ZmGroupView.prototype._getGroupName =
 function() {
 	if (this.isDistributionList()) {
-		var username = this._usernameEditable 
-				? AjxStringUtil.trim(this._groupNameInput.getValue())
-				: this._emailUsername;
+		var username = this._getDlAddressLocalPart();
 		return username + "@" + this._getGroupDomainName();
 	}
 	return AjxStringUtil.trim(this._groupNameInput.getValue());
+};
+
+ZmGroupView.prototype._getDlAddressLocalPart =
+function() {
+	return this._usernameEditable ? AjxStringUtil.trim(this._groupNameInput.getValue()) : this._emailUsername;
 };
 
 ZmGroupView.prototype._getDlDisplayName =
@@ -383,8 +395,8 @@ function() {
 	if (!this._usernameEditable) {
 		return true; //to be on the safe and clear side. no need to check.
 	}
-	var groupName = this._getGroupName();
-	return AjxEmailAddress.isValid(groupName);
+	var account = this._getDlAddressLocalPart();
+	return AjxEmailAddress.accountPat.test(account);
 };
 
 ZmGroupView.prototype.isValidDlDomainName =
@@ -541,9 +553,14 @@ function(x, y, width, height) {
 		Dwt.setSize(this._addNewField, Dwt.DEFAULT, 50);
 	}
 	this._groupMembersListView.setSize(Dwt.DEFAULT, height-150);
-	var fudge = (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED))
-		? 185 : 160;
-	this._listview.setSize(Dwt.DEFAULT, height-fudge-(this._addNewField? 100 : 0));
+
+	var headerTableHeight = Dwt.getSize(this._headerTable).y;
+	var tabBarHeight = this._tabBar ? Dwt.getSize(this._tabBar).y : 0; //only DL
+	var searchFieldsRowHeight = Dwt.getSize(this._searchFieldsRow).y;
+	var manualAddRowHeight = Dwt.getSize(this._manualAddRow).y;
+	var navButtonsRowHeight = Dwt.getSize(this._navButtonsRow).y;
+	var listHeight = height - headerTableHeight - tabBarHeight - searchFieldsRowHeight - manualAddRowHeight - navButtonsRowHeight - 40;
+	this._listview.setSize(Dwt.DEFAULT, listHeight);
 };
 
 ZmGroupView.prototype.cleanup  =
@@ -689,7 +706,7 @@ function() {
 		this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#DlView", params);
 		this._tabViewContainerId = this._htmlElId + "_tabViewContainer";
 		var tabViewContainer = document.getElementById(this._tabViewContainerId);
-		this._tabView = new DwtTabView({parent: this, posStyle: Dwt.STATIC_STYLE});
+		this._tabView = new DwtTabView({parent: this, posStyle: Dwt.STATIC_STYLE, id: this._htmlElId + "_tabView"});
 		this._tabView.reparentHtmlElement(tabViewContainer);
 		this._dlMembersTabView = new ZmDlMembersTabView(this);
 		this._tabView.addTab(ZmMsg.dlMembers, this._dlMembersTabView);
@@ -700,14 +717,20 @@ function() {
 		this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupView", params);
 	}
 
+	this._headerTable = document.getElementById(this._htmlElId + "_headerTable");
+	this._tabBar = document.getElementById(this._htmlElId + "_tabView_tabbar"); //only for DLs
+	this._searchFieldsRow = document.getElementById(this._htmlElId + "_searchFieldsRow");
+	this._manualAddRow = document.getElementById(this._htmlElId + "_manualAddRow");
+	this._navButtonsRow = document.getElementById(this._htmlElId + "_navButtonsRow");
+
 	this._htmlInitialized = true;
 };
 
 ZmGroupView.prototype._addWidgets =
 function() {
-	this._groupNameInput = new DwtInputField({parent:this, size: this.isDistributionList() ? 20: 40, inputId: this._htmlElId + "_groupName"});
-	this._groupNameInput.setHint(this.isDistributionList() ? ZmMsg.distributionList : ZmMsg.groupNameLabel);
-	if (document.getElementById(this._htmlElId + "_groupNameParent")) {
+	if (!this.isDistributionList() || this._usernameEditable) {
+		this._groupNameInput = new DwtInputField({parent:this, size: this.isDistributionList() ? 20: 40, inputId: this._htmlElId + "_groupName"});
+		this._groupNameInput.setHint(this.isDistributionList() ? ZmMsg.distributionList : ZmMsg.groupNameLabel);
 		this._groupNameInput.reparentHtmlElement(this._htmlElId + "_groupNameParent");
 	}
 	
@@ -1113,23 +1136,7 @@ function() {
 	var tagCell = this._getTagCell();
 	if (!tagCell) { return; }
 
-	// get sorted list of tags for this msg
-	var ta = [];
-	for (var i = 0; i < this._contact.tags.length; i++)
-		ta.push(this._tagList.root.getByNameOrRemote(this._contact.tags[i]));
-	ta.sort(ZmTag.sortCompare);
-
-	var html = [];
-	var i = 0;
-	for (var j = 0; j < ta.length; j++) {
-		var tag = ta[j];
-		if (!tag) continue;
-		var icon = tag.getIconWithColor();
-		html[i++] = AjxImg.getImageSpanHtml(icon, null, null, AjxStringUtil.htmlEncode(tag.name));
-		html[i++] = "&nbsp;";
-	}
-
-	tagCell.innerHTML = html.join("");
+	tagCell.innerHTML = ZmTagsHelper.getTagsHtml(this._contact, this);
 };
 
 // Consistent spot to locate various dialogs
@@ -1153,8 +1160,8 @@ function(ev){
 	}
 	else if (ev && ev.target && this._groupMembersListView.quickAddButtons[ev.target.id]) {
 		if (AjxUtil.isArray(selection)) {
-			var value = selection[0].value || selection[0];
-			this.quickAddContact(value);
+			var address = selection[0].address || selection[0];
+			this.quickAddContact(address);
 		}
 	}
 		
@@ -1546,6 +1553,7 @@ ZmGroupListView = function(parent) {
 	if (arguments.length == 0) { return; }
 	DwtListView.call(this, {parent:parent, className:"DwtChooserListView ZmEditGroupContact",
 							headerList:this._getHeaderList(parent), view:this._view, posStyle: Dwt.RELATIVE_STYLE});
+	Dwt.setScrollStyle(this._elRef, Dwt.CLIP);
 };
 
 ZmGroupListView.prototype = new DwtListView;

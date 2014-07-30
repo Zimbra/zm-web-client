@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -89,19 +95,20 @@ function(item) {
 
 // Reset row style
 ZmMailListView.prototype.markUIAsRead =
-function(item) {
-	this._setImage(item, ZmItem.F_READ, item.getReadIcon());
+function(item, oldValue) {
+	this._setImage(item, ZmItem.F_READ, item.getReadIcon(), this._getClasses(ZmItem.F_READ));
 
-	var rowClass = this._getRowClass(item);
-	if (this._isMultiColumn) {
-		var row = this._getElement(item, ZmItem.F_ITEM_ROW);
-		if (row) { row.className = rowClass; }
-	} else {
-		var row = this._getElement(item, ZmItem.F_ITEM_ROW);
-		if (row) { row.className = rowClass; }
-
-		var row2 = this._getElement(item, ZmItem.F_ITEM_ROW_3PANE);
-		if (row2) { row2.className = rowClass; }
+	var newCssClass = this._getRowClass(item);
+	var oldCssClass = this._getRowClassValue(oldValue);
+	var oldCssClass = this._getRowClassValue(oldValue);
+	var row = this._getElement(item, ZmItem.F_ITEM_ROW);
+	if (row) {
+		if (oldCssClass) {
+			$(row).removeClass(oldCssClass);
+		}
+		if (newCssClass) {
+			$(row).addClass(newCssClass);
+		}
 	}
 	this._controller._checkKeepReading();
 };
@@ -161,12 +168,6 @@ ZmMailListView.prototype.handleKeyAction =
 function(actionCode, ev) {
 
 	switch (actionCode) {
-		// Block widget shortcut for space since we want to handle it as app shortcut.
-		case DwtKeyMap.SELECT_NEXT:
-			if (ev.charCode == 32) {
-				return false;
-			}
-		
 		case DwtKeyMap.SELECT_ALL:
 			DwtListView.prototype.handleKeyAction.apply(this, arguments);
 			var ctlr = this._controller;
@@ -175,6 +176,10 @@ function(actionCode, ev) {
 
 		case DwtKeyMap.SELECT_NEXT:
 		case DwtKeyMap.SELECT_PREV:
+			// Block widget shortcut for space since we want to handle it as app shortcut.
+			if (ev.charCode === 32) {
+				return false;
+			}
 			this._controller.lastListAction = actionCode;
 		
 		default:
@@ -199,6 +204,8 @@ function(newWidth, newHeight) {
 	this.setSize(newWidth, newHeight);
 	var height = (newHeight == Dwt.DEFAULT) ? newHeight : newHeight - DwtListView.HEADERITEM_HEIGHT;
 	Dwt.setSize(this._parentEl, newWidth, height);
+	//recalculate the css styles after resize
+	this.recalculateCssStyle();
 };
 
 ZmMailListView.prototype.calculateMaxEntries =
@@ -218,7 +225,7 @@ function() {
 
 
 ZmMailListView.prototype._getExtraStyle =
-function(item) {
+function(item,start,end) {
 	if (!appCtxt.get(ZmSetting.COLOR_MESSAGES)) {
 		return null;
 	}
@@ -226,14 +233,29 @@ function(item) {
 	if (!color) {
 		return null;
 	}
+	start = start || 0.75;
+	end = end || 0.25;
 
-	return Dwt.createLinearGradientCss(AjxColor.lighten(color, 0.75), AjxColor.lighten(color, 0.25), "v");
+	return Dwt.createLinearGradientCss(AjxColor.lighten(color, start), AjxColor.lighten(color, end), "v");
 };
 
 
 ZmMailListView.prototype._getAbridgedContent =
 function(item, colIdx) {
 	// override me
+};
+
+ZmMailListView.prototype._getListFlagsWrapper =
+function(htmlArr, idx, item) {
+	htmlArr[idx++] = "<div class='ZmListFlagsWrapper'";
+	//compute the start and end of gradient based on height of this div and its position
+	var extraStyle = this._getExtraStyle(item,0.49,0.33);
+	if (extraStyle) {
+		htmlArr[idx++] = " style='" + extraStyle + ";'>";
+	} else {
+		htmlArr[idx++] = ">";
+	}
+	return idx;
 };
 
 //apply colors to from and subject cells via zimlet
@@ -260,49 +282,42 @@ function(field, item) {
 
 
 ZmMailListView.prototype._getAbridgedCell =
-function(htmlArr, idx, item, field, colIdx, width, attr) {
+function(htmlArr, idx, item, field, colIdx, width, attr, classes) {
 	var params = {};
+	classes = classes || [];
 
-	htmlArr[idx++] = "<td";
+	/* TODO: Find an alternate way for Zimlets to add styles to the field.
 	htmlArr[idx++] = this._getStyleViaZimlet(field, item);
-	if (width) {
-		htmlArr[idx++] = " width='";
-		htmlArr[idx++] = width;
-		htmlArr[idx++] = "'";
-	}
-	var cellId = this._getCellId(item, field, params);
-	if (cellId) {
-		htmlArr[idx++] = " id='";
-		htmlArr[idx++] = cellId;
-		htmlArr[idx++] = "'";
-	}
+	*/
+
 	var className = this._getCellClass(item, field, params);
 	if (className) {
-		htmlArr[idx++] = " class='";
-		htmlArr[idx++] = className;
-		htmlArr[idx++] = "'";
+		classes.push(className);
 	}
-	if (attr) {
-		htmlArr[idx++] = " ";
-		htmlArr[idx++] = attr;
-	}
-	htmlArr[idx++] = ">";
-	idx = this._getCellContents(htmlArr, idx, item, field, colIdx, params);
-	htmlArr[idx++] = "</td>";
+	idx = this._getCellContents(htmlArr, idx, item, field, colIdx, params, classes);
 
 	return idx;
 };
 
 ZmMailListView.prototype._getCellContents =
-function(htmlArr, idx, item, field, colIdx, params) {
+function(htmlArr, idx, item, field, colIdx, params, classes) {
 	if (field == ZmItem.F_ACCOUNT) {
-		idx = this._getImageHtml(htmlArr, idx, item.getAccount().getIcon(), this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, item.getAccount().getIcon(), this._getFieldId(item, field), classes);
 	} 
 	else if (field == ZmItem.F_DATE) {
 		var date = AjxDateUtil.computeDateStr(params.now || new Date(), item.date);
-		htmlArr[idx++] = "<span style='white-space: nowrap' id='";
+		htmlArr[idx++] = "<div id='";
 		htmlArr[idx++] = this._getFieldId(item, field);
-		htmlArr[idx++] = "'>" + date + "</span>";
+		htmlArr[idx++] = "' ";
+		if (!this.isMultiColumn()) {
+			//compute the start and end of gradient based on height of this div and its position
+			var extraStyle = this._getExtraStyle(item,0.69,0.55);
+			if (extraStyle) {
+				htmlArr[idx++] = " style='" + extraStyle + "'";
+			}
+		}
+		htmlArr[idx++] = AjxUtil.getClassAttr(classes);
+		htmlArr[idx++] = ">" + date + "</div>";
 	}
 	else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
@@ -340,20 +355,20 @@ ZmMailListView.prototype._initHeaders =
 function() {
 	if (!this._headerInit) {
 		this._headerInit = {};
-		this._headerInit[ZmItem.F_SELECTION]	= {icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, precondition:ZmSetting.SHOW_SELECTION_CHECKBOX};
-		this._headerInit[ZmItem.F_FLAG]			= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag, sortable:ZmItem.F_FLAG, noSortArrow:true, precondition:ZmSetting.FLAGGING_ENABLED};
-		this._headerInit[ZmItem.F_PRIORITY]		= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, sortable:ZmItem.F_PRIORITY, noSortArrow:true, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};
-		this._headerInit[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, precondition:ZmSetting.TAGGING_ENABLED};
-		this._headerInit[ZmItem.F_ACCOUNT]		= {icon:"AccountAll", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.account, noRemove:true, resizeable:true};
-		this._headerInit[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status};
-		this._headerInit[ZmItem.F_MUTE]			= {icon:"Mute", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.muteUnmute, sortable: false /*ZmItem.F_MUTE*/, noSortArrow:true}; //todo - once server supports readAsc/readDesc sort orders, uncomment the sortable
-		this._headerInit[ZmItem.F_READ]			= {icon:"MsgUnread", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.readUnread, sortable: ZmItem.F_READ, noSortArrow:true};
-		this._headerInit[ZmItem.F_FROM]			= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_MLV, resizeable:true, sortable:ZmItem.F_FROM};
-		this._headerInit[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, sortable:ZmItem.F_ATTACHMENT, noSortArrow:true};
-		this._headerInit[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
-		this._headerInit[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true};
-		this._headerInit[ZmItem.F_SIZE]			= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, sortable:ZmItem.F_SIZE, resizeable:true};
-		this._headerInit[ZmItem.F_DATE]			= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true};
+		this._headerInit[ZmItem.F_SELECTION]	= {icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, precondition:ZmSetting.SHOW_SELECTION_CHECKBOX, cssClass:"ZmMsgListColSelection"};
+		this._headerInit[ZmItem.F_FLAG]			= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag, sortable:ZmItem.F_FLAG, noSortArrow:true, precondition:ZmSetting.FLAGGING_ENABLED, cssClass:"ZmMsgListColFlag"};
+		this._headerInit[ZmItem.F_PRIORITY]		= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, sortable:ZmItem.F_PRIORITY, noSortArrow:true, precondition:ZmSetting.MAIL_PRIORITY_ENABLED, cssClass:"ZmMsgListColPriority"};
+		this._headerInit[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, precondition:ZmSetting.TAGGING_ENABLED, cssClass:"ZmMsgListColTag"};
+		this._headerInit[ZmItem.F_ACCOUNT]		= {icon:"AccountAll", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.account, noRemove:true, resizeable:true, cssClass:"ZmMsgListColAccount"};
+		this._headerInit[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status, cssClass:"ZmMsgListColStatus"};
+		this._headerInit[ZmItem.F_MUTE]			= {icon:"Mute", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.muteUnmute, sortable: false /*ZmItem.F_MUTE*/, noSortArrow:true, cssClass:"ZmMsgListColMute"}; //todo - once server supports readAsc/readDesc sort orders, uncomment the sortable
+		this._headerInit[ZmItem.F_READ]			= {icon:"MsgUnread", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.readUnread, sortable: ZmItem.F_READ, noSortArrow:true, cssClass:"ZmMsgListColRead"};
+		this._headerInit[ZmItem.F_FROM]			= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_MLV, resizeable:true, sortable:ZmItem.F_FROM, cssClass:"ZmMsgListColFrom"};
+		this._headerInit[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, sortable:ZmItem.F_ATTACHMENT, noSortArrow:true, cssClass:"ZmMsgListColAttachment"};
+		this._headerInit[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true, cssClass:"ZmMsgListColSubject"};
+		this._headerInit[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true, cssClass:"ZmMsgListColFolder"};
+		this._headerInit[ZmItem.F_SIZE]			= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, sortable:ZmItem.F_SIZE, resizeable:true, cssClass:"ZmMsgListColSize"};
+		this._headerInit[ZmItem.F_DATE]			= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true, cssClass:"ZmMsgListColDate"};
 		this._headerInit[ZmItem.F_SORTED_BY]	= {text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY, resizeable:false};
 	}
 };
@@ -370,7 +385,7 @@ function(viewId, headerList) {
 	var headers = headerList;
 	if (userHeaders && isMultiColumn) {
 		headers = userHeaders.split(ZmListView.COL_JOIN);
-		//we have to do it regardless of the size of headers and headerList, as items could be added and removed, masking each other as far as length (previous code compared length) 
+		//we have to do it regardless of the size of headers and headerList, as items could be added and removed, masking each other as far as length (previous code compared length)
 		headers = this._normalizeHeaders(headers, headerList);
 	}
     // adding account header in _normalizeHeader method
@@ -408,8 +423,17 @@ function(viewId, headerList) {
 				hdrParams.visible = true;
 				this._showingAccountColumn = true;
 			} else {
-				hdrParams.visible = (appCtxt.multiAccounts && header == ZmItem.F_ACCOUNT && !userHeaders)
+				var visible = (appCtxt.multiAccounts && header == ZmItem.F_ACCOUNT && !userHeaders)
 					? false : (header.indexOf("*") == -1);
+                if (!userHeaders && isMultiColumn) {
+                    //this is the default header
+                    if (typeof hdrParams.visible === "undefined") {
+                        //if the visible header is not set than use the computed value
+                        hdrParams.visible = visible;
+                    }
+                } else {
+                    hdrParams.visible = visible;
+                }
 			}
 			hList.push(new DwtListHeaderItem(hdrParams));
 		}
@@ -502,7 +526,7 @@ function(defaultColumnSort) {
 		if (activeSortBy && ZmMailListView.SORTBY_HASH[activeSortBy]) {
 			defaultColumnSort = ZmMailListView.SORTBY_HASH[activeSortBy].field;
 		}
-		DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
+		DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort, this._isMultiColumn);
 
 		if (rpLoc == ZmSetting.RP_RIGHT) {
 			var td = document.getElementById(this._itemCountTextTdId);
@@ -685,11 +709,25 @@ function() {
 	return this._folderId && appCtxt.getById(this._folderId);
 };
 
+ZmMailListView.prototype.useListElement =
+function() {
+	return true;
+}
 
 ZmMailListView.prototype._getRowClass =
 function(item) {
-	return item.isUnread && !item.isMute ? "Unread" : null;
+	var classes = this._isMultiColumn ? ["DwtMsgListMultiCol"]:["ZmRowDoubleHeader"];
+	var value = this._getRowClassValue(item.isUnread && !item.isMute);
+	if (value) {
+		classes.push(value);
+	}
+	return classes.join(" ");
 };
+
+ZmMailListView.prototype._getRowClassValue =
+	function(value) {
+		return value ? "Unread" : null;
+	};
 
 ZmMailListView.prototype._getCellId =
 function(item, field) {
@@ -726,19 +764,35 @@ function(field, itemIdx) {
 
 ZmMailListView.prototype._getToolTip =
 function(params) {
-	var tooltip, field = params.field, item = params.item, matchIndex = params.match.participant;
-	if (!item) { return; }
 
-	if (field == ZmItem.F_STATUS) {
+	var tooltip,
+		field = params.field,
+		item = params.item,
+		matchIndex = params.match.participant || 0;
+
+	if (!item) {
+		return;
+	}
+
+	if (field === ZmItem.F_STATUS) {
 		tooltip = item.getStatusTooltip();
 	}
-	else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT)) {
+	else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && (field === ZmItem.F_FROM || field === ZmItem.F_PARTICIPANT)) {
 		var addr;
-		if (!item.getAddress) { return; }
-		if (field == ZmItem.F_FROM) { 
-			addr = item.getAddress(this._isOutboundFolder() ? AjxEmailAddress.TO : AjxEmailAddress.FROM);
-		} else if (field == ZmItem.F_PARTICIPANT) {
-			var matchIndex = (matchIndex != null) ? parseInt(matchIndex) : 0;
+		if (!item.getAddress) {
+			return;
+		}
+		if (field === ZmItem.F_FROM) {
+			if (this._isOutboundFolder()) {
+				// this needs to be in sync with code that sets field IDs in ZmMailMsgListView::_getCellContents
+				var addrs = item.getAddresses(AjxEmailAddress.TO).getArray();
+				addr = addrs[matchIndex];
+			}
+			else {
+				addr = item.getAddress(AjxEmailAddress.FROM);
+			}
+		}
+		else if (field === ZmItem.F_PARTICIPANT) {
 			addr = item.participants && item.participants.get(matchIndex);
 		}
 		if (!addr) {
@@ -753,10 +807,10 @@ function(params) {
 			function(callback) {
 				appCtxt.getToolTipMgr().getToolTip(ZmToolTipMgr.PERSON, ttParams, callback);
 			});
-		tooltip = {callback:ttCallback};
+		tooltip = { callback:ttCallback };
 	}
-	else if (field == ZmItem.F_SUBJECT || field ==  ZmItem.F_FRAGMENT) {
-		var invite = (item.type == ZmItem.MSG) && item.isInvite() && item.invite;
+	else if (field === ZmItem.F_SUBJECT || field === ZmItem.F_FRAGMENT) {
+		var invite = (item.type === ZmItem.MSG) && item.isInvite() && item.invite;
 		if (invite && item.needsRsvp()) {
 			tooltip = invite.getToolTip();
 		}
@@ -768,25 +822,25 @@ function(params) {
 		else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
         }
+        // Strip surrounding whitespace from the tooltip
+        tooltip = AjxStringUtil.trim(tooltip, false, "\\s");
 	}
-	else if (field == ZmItem.F_FOLDER) {
+	else if (field === ZmItem.F_FOLDER) {
 		var folder = appCtxt.getById(item.folderId);
 		if (folder && folder.parent) {
-			var name = folder.getName();
 			var path = folder.getPath();
-			if (path != name) {
+			if (path !== folder.getName()) {
 				tooltip = path;
 			}
 		}
 	}
-	else if (field == ZmItem.F_ACCOUNT) {
+	else if (field === ZmItem.F_ACCOUNT) {
 		tooltip = item.getAccount().getDisplayName();
 	}
 	else {
 		tooltip = ZmListView.prototype._getToolTip.apply(this, arguments);
 	}
-	
-	return tooltip;
+    return tooltip;
 };
 
 /**
@@ -805,11 +859,13 @@ function(params) {
  */
 ZmMailListView.prototype._getCell =
 function(htmlArr, idx, item, field, colIdx, params) {
+	var className = this._getCellClass(item, field, params, colIdx);
+
+	/* TODO Identify a way for Zimlets to add styles to fields.
 	var cellId = this._getCellId(item, field, params);
 	var idText = cellId ? [" id=", "'", cellId, "'"].join("") : "";
 	var width = this._getCellWidth(colIdx, params);
 	var widthText = width ? ([" width=", width].join("")) : (" width='100%'");
-	var className = this._getCellClass(item, field, params);
 	var classText = className ? [" class=", className].join("") : "";
 	var alignValue = this._getCellAlign(colIdx, params);
 	var alignText = alignValue ? [" align=", alignValue].join("") : "";
@@ -820,17 +876,24 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	htmlArr[idx++] = this._getStyleViaZimlet(field, item);
 	htmlArr[idx++] = attrText ? (" " + attrText) : "";
 	htmlArr[idx++] = ">";
-	
+
 	idx = this._getCellContents(htmlArr, idx, item, field, colIdx, params);
-	htmlArr[idx++] = "</td>";
+	htmlArr[idx++] = "</td>";*/
+
+	idx = this._getCellContents(htmlArr, idx, item, field, colIdx, params, [className || ""]);
 
 	return idx;
 };
 
 ZmMailListView.prototype._getCellClass =
-function(item, field, params) {
-	return (!this._isMultiColumn && field == ZmItem.F_SUBJECT)
-		? "SubjectDoubleRow" : null;
+function(item, field, params, colIdx) {
+	var classes = null;
+	if (!this._isMultiColumn && field == ZmItem.F_SUBJECT) {
+		classes = "SubjectDoubleRow ";
+	}
+	if (colIdx == null) { return classes; }
+	var headerList = params.headerList || this._headerList;
+	return classes ? classes + headerList[colIdx]._cssClass: headerList[colIdx]._cssClass;
 };
 
 ZmMailListView.prototype._getFlagIcon =
@@ -1021,7 +1084,8 @@ function(ev) {
 			&& (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL)) {
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: TAG");
 		this.redrawItem(item);
-		ev.handled = true;
+        ZmListView.prototype._changeListener.call(this, ev);
+        ev.handled = true;
 	}
 
 	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" flag
@@ -1066,7 +1130,9 @@ function(ev) {
 		// we handle is where the user is on the first page.
 		//
 		// TODO: handle other sort orders, arbitrary insertion points
-		if ((this._isPageless || this.offset == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
+		//about the above - for now we insert new items on top (index would be 0 if not sorted by date).
+		// I believe that way the users won't lose new messages if they are sorted by a different order.
+		if (this._isPageless || this.offset == 0) {
 			var sortIndex = ev.getDetail("sortIndex") || 0;
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailListView: adding item " + item.id + " at index " + sortIndex);
 			this.addItem(item, sortIndex);
@@ -1114,7 +1180,8 @@ function(clickedEl, ev) {
 		if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) && ev.button == DwtMouseEvent.LEFT) {
 			if (!ev.shiftKey && !ev.ctrlKey) {
 				// get the field being clicked
-				var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : clickedEl.id;
+				var target = this._getEventTarget(ev);
+				var id = (target && target.id && target.id.indexOf("AjxImg") == -1) ? target.id : clickedEl.id;
 				var m = id ? this._parseId(id) : null;
 				if (m && m.field == ZmItem.F_SELECTION) {
 					if (this.getSelectionCount() == 1) {
@@ -1187,8 +1254,13 @@ function(columnItem) {
 
 ZmMailListView.prototype._getDefaultSortbyForCol =
 function(colHeader) {
-	// if not date field, sort asc by default
-	return (colHeader._sortable != ZmItem.F_DATE);
+	// if date, flag, attachment or size fields, sort desc by default - otherwise ascending.
+	var sortable = colHeader._sortable;
+	var desc = sortable === ZmItem.F_DATE
+			|| sortable === ZmItem.F_FLAG
+			|| sortable === ZmItem.F_ATTACHMENT
+			|| sortable === ZmItem.F_SIZE;
+	return !desc; //this method returns whether it's ascending (despite the confusing name which we might want to change).
 };
 
 //GROUP SUPPORT
@@ -1278,7 +1350,7 @@ function(parent) {
     var sortActionListener = new AjxListener(this, this._sortByActionListener);
     var menu = new ZmPopupMenu(parent);
     parent.createSeparator();
-	var menuItem = parent.createMenuItem(ZmId.GROUPBY, {text:ZmMsg.groupBy, style:DwtMenuItem.NO_STYLE});
+	var menuItem = parent.createMenuItem(Dwt.getNextId("GROUP_BY_"), {text:ZmMsg.groupBy, style:DwtMenuItem.NO_STYLE});
     var groupById = Dwt.getNextId("GroupByActionMenu_");
     var sortById = Dwt.getNextId("SortByActionMenu_");
     for (var i=0; i<list.length; i++) {

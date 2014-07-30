@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -533,8 +539,7 @@ function() {
         allDaySepEl = document.getElementById(this._allDaySepDivId),
         allDayDivEl = document.getElementById(this._allDayDivId),
         cal,
-        calName,
-        calColor,
+         calColor,
         mergedCal,
         calMergerdTabColor,
         col,
@@ -618,26 +623,13 @@ function() {
         // Fix for bug: 66603. The class adjusts width of calendar title bubbles
         div = this._createDivForColumn(col.titleId, titleParentEl, this._mergedView ? "" : "ZmCalDayTab ZmCalDayMerged", calColor, calColor);
         div.style.top = ZmCalDayTabView._TAB_BORDER_WIDTH + 'px';
-		if (this._mergedView) {
-            //var div = this._createDivForColumn(Dwt.getNextId(), titleParentEl, "ZmCalDayTab", calColor, calColor);
-            html = ["<table border=0><tr>"];
-            for (k=0; k<this._calendars.length; k++) {
-                mergedCal = this._calendars[k];
-                calMergerdTabColor = mergedCal.rgb;
-                calName = AjxStringUtil.clipByLength(mergedCal.getName(), ZmCalDayTabView._TAB_TITLE_MAX_LENGTH);
-                // Fix for bug: 66603. The class adjusts width of calendar title bubbles
-                html.push('<td class="ZmCalDayTab ZmCalDaySplit" style="background-color: ', calMergerdTabColor, ';" valign="top">');
-                html.push(calName);
-                html.push('</td>');
-                html.push('<td>&nbsp;</td>');
-            }
-            html.push('</tr</table>');
-            div.innerHTML = html.join("");
-		} else {
-            calName = AjxStringUtil.clipByLength(cal.getName(), ZmCalDayTabView._TAB_TITLE_MAX_LENGTH);
+
+        // Fix for bug: 84268. Removed calendar titles from the merged view.
+        if (!this._mergedView) {
             div.style.top = ZmCalDayTabView._TAB_BORDER_WIDTH + 'px';
-			div.innerHTML = calName;
-		}
+			div.style.color = AjxUtil.getForegroundColor(calColor);
+            div.innerHTML = cal.getName();
+        }
 
         this._createDivForColumn(col.borderLeftAllDayDivId, allDayDivEl, "ZmDayTabSeparator", calColor, calColor);
         this._createDivForColumn(col.borderTopAllDayDivId, allDayDivEl, "ZmDayTabSeparator", calColor, calColor);
@@ -684,7 +676,7 @@ function() {
                     if (!this._mergedView) {
                         var cal = this._getColForFolderId(appt.folderId);
                         this._positionAppt(div, cal.allDayX+0, rowY);
-                        this._sizeAppt(div, ((cal.allDayWidth + this._daySepWidth) * slot.data.numDays) - this._daySepWidth - 1 - ZmCalDayTabView._TAB_SEP_WIDTH,
+                        this._sizeAppt(div, (cal.allDayWidth + this._daySepWidth) - this._daySepWidth - 1 - ZmCalDayTabView._TAB_SEP_WIDTH,
                                      ZmCalColView._ALL_DAY_APPT_HEIGHT);
                     } else {
                         this._positionAppt(div, this._columns[j].allDayX+0, rowY);

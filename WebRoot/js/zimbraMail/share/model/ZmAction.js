@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -56,12 +62,28 @@ ZmAction.prototype.redo = function() {
 };
 
 ZmAction.prototype.setComplete = function() {
-	this._complete = true;
-	this._notify(ZmEvent.E_COMPLETE);
+	if (!this._complete) {
+		this._complete = true;
+		this._notify(ZmEvent.E_COMPLETE);
+	}
 };
 
 ZmAction.prototype.getComplete = function() {
 	return this._complete;
+};
+
+ZmAction.prototype.onComplete = function(callback) {
+	if (this._complete) {
+		callback.run(this);
+	} else {
+		this.addChangeListener(new AjxListener(this, this._handleComplete, [callback]));
+	}
+};
+
+ZmAction.prototype._handleComplete = function(callback, event) {
+	if (event.event===ZmEvent.E_COMPLETE) {
+		callback.run(this);
+	}
 };
 
 /**
@@ -175,14 +197,16 @@ ZmItemMoveAction.prototype.getToFolderId = function() {
 };
 
 ZmItemMoveAction.prototype._doMove = function(callback, errorCallback, folderId) {
-	this._item.list.moveItems({
-		items:			[this._item],
+
+	var items = ZmItemMoveAction._realizeItems(this._item), // probably unnecessary since conv forces multipleUndo
+		list = items[0] && items[0].list;
+
+	list.moveItems({
+		items:			items,
 		folder:			appCtxt.getById(folderId),
 		noUndo:			true,
 		finalCallback:	this._handleDoMove.bind(this, this._item.folderId, folderId),
-		actionText:		ZmItemMoveAction.UNDO_MSG[this._op],
-
-		fromFolderId: this._toFolderId
+		fromFolderId:   this._toFolderId
 	});
 };
 
@@ -212,9 +236,9 @@ ZmItemMoveAction.prototype.redo = function(callback, errorCallback) {
 };
 
 ZmItemMoveAction.multipleUndo = function(actions, redo, fromFolderId) {
-	var masterAction = actions && actions.length && actions[0];
+
 	var sortingTable = {};
-	for (var i=0; i<actions.length; i++) {
+	for (var i = 0; i < actions.length; i++) {
 		var action = actions[i];
 		if (action instanceof ZmItemMoveAction) {
 			var from = action.getFromFolderId();
@@ -227,35 +251,26 @@ ZmItemMoveAction.multipleUndo = function(actions, redo, fromFolderId) {
 			sortingTable[from][to][type].push(action);
 		}
 	}
+
 	for (var from in sortingTable) {
 		for (var to in sortingTable[from]) {
 			for (var type in sortingTable[from][to]) {
 				var subset = sortingTable[from][to][type];
 				var items = [];
 				var list = null;
-				var hasMasterAction = false;
-				var commonop;
-				for (var i=0; i<subset.length; i++) {
+				for (var i = 0; i < subset.length; i++) {
 					var action = subset[i];
-					if (action == masterAction)
-						hasMasterAction = true;
 					var item = action.getItem();
 					items.push(item);
-					if (!list && item.list)
-						list = item.list;
-					var op = action.getOp && action.getOp();
-					if (!commonop)
-						commonop = op;
-					else if (commonop != op)
-						commonop = "move";
 				}
+				items = ZmItemMoveAction._realizeItems(items);
+				list = items[0] && items[0].list;
 				if (list) {
 					list.moveItems({
-						items: items,
-						folder: appCtxt.getById(redo ? to : from),
-						noUndo: true,
-						fromFolderId: fromFolderId,
-						actionText: hasMasterAction ? (commonop && ZmItemMoveAction.UNDO_MSG[commonop]) : null
+						items:          items,
+						folder:         appCtxt.getById(redo ? to : from),
+						noUndo:         true,
+						fromFolderId:   fromFolderId
 					});
 				}
 			}
@@ -265,6 +280,23 @@ ZmItemMoveAction.multipleUndo = function(actions, redo, fromFolderId) {
 
 ZmItemMoveAction.multipleRedo = function(actions) {
 	ZmItemMoveAction.multipleUndo(actions, true);
+};
+
+// Creates ZmMailMsg out of anonymous msg-like objects
+ZmItemMoveAction._realizeItems = function(items) {
+
+	var list, msg;
+	return AjxUtil.map(AjxUtil.toArray(items), function(item) {
+		if (item.isConvMsg) {
+			list = list || new ZmMailList(ZmItem.MSG);
+			msg = new ZmMailMsg(item.id, list, true);
+			msg.folderId = item.folderId;
+			return msg;
+		}
+		else {
+			return item;
+		}
+	});
 };
 
 /**
@@ -305,7 +337,7 @@ ZmOrganizerMoveAction.prototype.getToFolderId = function() {
 ZmOrganizerMoveAction.prototype._doMove = function(callback, errorCallback, folderId) {
 	var folder = appCtxt.getById(folderId);
 	if (folder) {
-		this._organizer.move(folder, true, ZmMsg.actionUndoMove);
+		this._organizer.move(folder, true);
 	}
 };
 

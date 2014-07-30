@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -466,7 +472,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 			var dwtInputField = new DwtInputField({parent: this, type: DwtInputField.STRING, maxLen: 256});
 			dwtInputField.setDisplay(Dwt.DISPLAY_INLINE);
 			var inputEl = dwtInputField.getInputElement();
-            Dwt.setSize(inputEl, Dwt.DEFAULT, "22px")
+            Dwt.setSize(inputEl, Dwt.DEFAULT, "2rem")
 			inputEl.className = "ZmSchedulerInput";
 			inputEl.id = sched.dwtInputId;
             inputEl.style.border = "0px";
@@ -671,7 +677,9 @@ function(inputEl, attendee, useException) {
             if (!curAttendee) {
 				// user added attendee in empty slot
 				var value = this._emptyRowIndex = this._addAttendeeRow(false, null, true, null, true, true); // add new empty slot
-                if(this.isComposeMode) this._editView.autoSize();
+                if (this.isComposeMode) {
+                    this._editView.resize();
+                }
                 return value;
 			}
 		} else {
@@ -849,7 +857,9 @@ function(list, updateCycle) {
         this.addAttendee(att, type, isOrganizer, emails);
     }
     
-    if(this.isComposeMode) this._editView.autoSize();
+    if (this.isComposeMode) {
+        this._editView.resize();
+    }
     this.batchUpdateSequence(list, updateCycle+1);
 };
 
@@ -1550,8 +1560,8 @@ function(dateInfo) {
         endDate.setHours(23,59,59,999);
         this._endDate   = endDate;
     } else {
-        this._startDate = ZmTimeInput.getDateFromFields(dateInfo.startTimeStr,startDate);
-        this._endDate   = ZmTimeInput.getDateFromFields(dateInfo.endTimeStr,  endDate);
+        this._startDate = DwtTimeInput.getDateFromFields(dateInfo.startTimeStr,startDate);
+        this._endDate   = DwtTimeInput.getDateFromFields(dateInfo.endTimeStr,  endDate);
     }
 }
 

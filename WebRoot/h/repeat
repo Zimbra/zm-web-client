@@ -42,7 +42,7 @@
 
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${title}" selected='calendar' calendars="true" context="${null}" keys="false" minical="true">
+<app:view mailbox="${mailbox}" title="${title}" selected='calendar' calendars="true" context="${null}" keys="false" minical="true" date="${requestScope.dateContext}">
 
 <c:set var="toolbar">
     <table width=100% cellspacing=0>

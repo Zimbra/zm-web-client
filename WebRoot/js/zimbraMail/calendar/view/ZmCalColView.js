@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -663,7 +669,9 @@ function(appt) {
 	if (is30 &&
 		(this.view != ZmId.VIEW_CAL_DAY) )
 	{
-		var widthLimit = Math.floor(8 * apptWidthPercent)
+        // Fix for bug: 57930. Adjust the width of appointment based on duration text.
+        var adjustWidth = appt.getDurationText(true, true).length * 2;
+		var widthLimit = Math.floor(adjustWidth * apptWidthPercent);
 		if (apptName.length > widthLimit) {
 			apptName = apptName.substring(0, widthLimit) + "...";
 		}
@@ -895,7 +903,7 @@ function(abook) {
 
 	// all day headings
     // Fix for bug: 66603. Adding a container to calendar headings
-    html.append("<div id='", this._tabsContainerDivId, "' name='_tabsContainerDivId' style='position:absolute;height:25px;bottom:0px;'>");
+    html.append("<div id='", this._tabsContainerDivId, "' name='_tabsContainerDivId' style='position:absolute;height:25px;bottom:0px;top:0px'>");
 	html.append("<div id='", this._allDayHeadingDivId, "' class='calendar_heading' style='", headerStyle,	"'>");
 	if (!this._scheduleMode) {
 		for (var i =0; i < this.numDays; i++) {
@@ -983,26 +991,30 @@ function(abook) {
 	this._scrollToTime(8);
 };
 
-ZmCalColView.prototype.updateTimeIndicator=function(force){
+ZmCalColView.prototype.updateTimeIndicator = function(force) {
+	this._updateTimeIndicator(force);
+	return this.setTimer(1);
+}
+
+
+ZmCalColView.prototype._updateTimeIndicator = function(force) {
     var curDate = new Date();
-    var  hr = curDate.getHours();
+    var hr  = curDate.getHours();
     var min = curDate.getMinutes();
-    var curHourDiv = document.getElementById(this._hourColDivId+"_"+hr);
+    var curHourDiv = document.getElementById(this._hourColDivId + "_" + hr);
     var curTimeHourIndicator = document.getElementById(this._curTimeIndicatorHourDivId);
-    curTimeHourIndicator.style.left=curHourDiv.offsetParent.offsetLeft;
-    var currentTopPosition = Math.round((ZmCalColView._HOUR_HEIGHT/60)*min)+parseInt(curHourDiv.offsetParent.offsetTop);
-    curTimeHourIndicator.style.top=(currentTopPosition+3)+"px";
+	var currentTopPosition = Math.round((ZmCalColView._HOUR_HEIGHT/60)*min)+parseInt(curHourDiv.offsetParent.offsetTop);
+    Dwt.setLocation(curTimeHourIndicator, curHourDiv.offsetParent.offsetLeft, currentTopPosition - 5);
     var calendarStrip = document.getElementById(this._curTimeIndicatorGridDivId);
     Dwt.setVisibility(calendarStrip,true);
     var todayColDiv = document.getElementById(this._calendarTodayHeaderDivId);
-    if (todayColDiv && (force || this._isValidIndicatorDuration)){
-     calendarStrip.style.left=todayColDiv.offsetLeft;
-     calendarStrip.style.top=currentTopPosition+"px";
-     calendarStrip.style.width=todayColDiv.offsetWidth;
-    }
-    else{Dwt.setVisibility(calendarStrip,false);}
-    return this.setTimer(1);
+    if (todayColDiv && (force || this._isValidIndicatorDuration)) {
+        Dwt.setBounds(calendarStrip, todayColDiv.offsetLeft, currentTopPosition, todayColDiv.offsetWidth, null);
+    } else {
+		Dwt.setVisibility(calendarStrip,false);
+	}
 };
+
 
 ZmCalColView.prototype.startIndicatorTimer=function(force){
    if(force || !this._indicatorTimer){
@@ -1071,8 +1083,13 @@ ZmCalColView.prototype._checkForOffscreenAppt=function(bodyElement){
     }
 };
 
-ZmCalColView.__onScroll = function(myView) {
-    myView._syncScroll();
+ZmCalColView.__onScroll = 
+function(myView) {
+    if(this.__scrollActionId) {  // Fix for Bug 84928
+	AjxTimedAction.cancelAction(this.__scrollActionId);
+	delete this.__scrollActionId;
+    } 
+    this.__scrollActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(myView,myView._syncScroll), 30); 
 };
 
 ZmCalColView.prototype._computeMaxCols =
@@ -2062,7 +2079,8 @@ function(ev) {
 	try {
 		if ((ev.oldWidth != ev.newWidth) || (ev.oldHeight != ev.newHeight)) {
 			this._layout(true);
-		}
+			this._updateTimeIndicator();
+	 	}
 	} catch(ex) {
 		DBG.dumpObj(ex);
 	}
@@ -2213,16 +2231,18 @@ function(ev, div) {
 			}
 			break;
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
-			this._timeSelectionAction(ev, div, false);
-			if (ev.button == DwtMouseEvent.LEFT) {
-				// save grid location here, since timeSelection might move the time selection div
-				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div, true);
-				return this._gridMouseDownAction(ev, div, gridLoc);
-			} else if (ev.button == DwtMouseEvent.RIGHT) {
-				DwtUiEvent.copy(this._actionEv, ev);
-				this._actionEv.item = this;
-				this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);
-			}
+            if (!appCtxt.isWebClientOffline()) {
+                this._timeSelectionAction(ev, div, false);
+                if (ev.button == DwtMouseEvent.LEFT) {
+                    // save grid location here, since timeSelection might move the time selection div
+                    var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div, true);
+                    return this._gridMouseDownAction(ev, div, gridLoc);
+                } else if (ev.button == DwtMouseEvent.RIGHT) {
+                    DwtUiEvent.copy(this._actionEv, ev);
+                    this._actionEv.item = this;
+                    this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);
+                }
+            }
 			break;
 		case ZmCalBaseView.TYPE_ALL_DAY:
 			this._timeSelectionAction(ev, div, false);

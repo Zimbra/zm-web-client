@@ -1,0 +1,74 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2014 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2014 Zimbra, Inc. All Rights Reserved. 
+ * ***** END LICENSE BLOCK *****
+ */
+
+/**
+ * @overview
+ * This file contains the briefcase tree view class.
+ *
+ */
+
+/**
+ * Creates the briefcase tree view.
+ * @class
+ * This class is a view for the tree view used by the briefcase application, supporting external DnD
+ *
+ * @param	params		params passed to create TreeView
+ *
+ * @author Vince Bellows
+ *
+ * @extends		ZmTreeView
+ */
+ZmBriefcaseTreeView = function(params) {
+
+	ZmTreeView.call(this,  params);
+};
+
+ZmBriefcaseTreeView.prototype = new ZmTreeView;
+ZmBriefcaseTreeView.prototype.constructor = ZmBriefcaseTreeView;
+
+/**
+ * Returns a string representation of the object.
+ *
+ * @return		{String}		a string representation of the object
+ */
+ZmBriefcaseTreeView.prototype.toString = function() {
+	return "ZmBriefcaseTreeView";
+};
+
+ZmBriefcaseTreeView.prototype._submitMyComputerAttachments = function(files, node, isInline, ev) {
+	var el = ev.target;
+	var folderId;
+	if (el != null) {
+		// Walk up the parents and find one that has an associated folder id (if any)
+		while ((el != null) && !folderId) {
+			if (el.id) {
+				folderId = this._idToOrganizer[el.id];
+			}
+			el = el.parentNode;
+		}
+	}
+	if (folderId) {
+		var briefcaseApp = appCtxt.getApp(ZmApp.BRIEFCASE);
+		briefcaseApp.initExternalDndUpload(files, null, isInline, null, folderId);
+	}
+};
+
+

@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -53,6 +59,7 @@ ZmTreeController = function(type) {
 	this._listeners[ZmOperation.SYNC_ALL]		= new AjxListener(this, this._syncAllListener);
 	this._listeners[ZmOperation.EDIT_PROPS]		= new AjxListener(this, this._editPropsListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER]   = new AjxListener(this, this._emptyListener);
+	this._listeners[ZmOperation.FIND_SHARES]	= this._findSharesListener.bind(this);
 
 	// drag-and-drop
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -157,6 +164,56 @@ function (parent, isTrash) {
 	op.setEnabled(isTrash);
 };
 
+ZmTreeController.prototype._findSharesListener =
+function(ev) {
+	var folder = this._getActionedOrganizer(ev);
+	var account = folder.getAccount();
+
+	if (appCtxt.multiAccounts && account && account.isZimbraAccount) {
+		appCtxt.accountList.setActiveAccount(account);
+	}
+	var dialog = appCtxt.getShareSearchDialog();
+	var addCallback = this._handleAddShare.bind(this);
+	dialog.popup(folder.type, addCallback);
+};
+
+ZmTreeController.prototype._handleAddShare = function () {
+	var dialog = appCtxt.getShareSearchDialog();
+	var shares = dialog.getShares();
+	dialog.popdown();
+	if (shares.length === 0) {
+		return;
+	}
+
+	AjxDispatcher.require("Share");
+	var requests = [];
+	for (var i = 0; i < shares.length; i++) {
+		var share = shares[i];
+		requests.push({
+			_jsns: "urn:zimbraMail",
+			link: {
+				l: ZmOrganizer.ID_ROOT,
+				name: share.defaultMountpointName,
+				view: share.view,
+				zid: share.ownerId,
+				rid: share.folderId
+			}
+		});
+	}
+
+	var params = {
+		jsonObj: {
+			BatchRequest: {
+				_jsns: "urn:zimbra",
+				CreateMountpointRequest: requests
+			}
+		},
+		asyncMode: true
+	};
+	appCtxt.getAppController().sendRequest(params);
+};
+
+
 
 
 
@@ -222,7 +279,6 @@ function(params) {
 		this._treeViewCreated = true;
 		this._postSetup(id, params.account);
 	}
-
 	return this._treeView[id];
 };
 
@@ -689,16 +745,23 @@ function(organizer) {
 ZmTreeController.prototype._doEmpty =
 function(organizer) {
     var recursive = false;
-    organizer.empty(recursive);
+    organizer.empty(recursive, null, this._doEmptyHandler.bind(this, organizer));
+};
+
+ZmTreeController.prototype._doEmptyHandler =
+function(organizer) {
+	appCtxt.setStatusMsg({msg: AjxMessageFormat.format(ZmMsg.folderEmptied, organizer.getName())});
 	var ctlr = appCtxt.getCurrentController();
-	if (ctlr && ctlr._getSearchFolderId && ctlr.getListView) {
-		var folderId = ctlr._getSearchFolderId();
-		if (folderId && (folderId == organizer.id)) {
-			var view = ctlr.getListView();
-			view._resetList();
-			view._setNoResultsHtml();
-		}
+	if (!ctlr || !ctlr._getSearchFolderId || !ctlr.getListView) {
+		return;
 	}
+	var folderId = ctlr._getSearchFolderId();
+	if (folderId !== organizer.id) {
+		return;
+	}
+	var view = ctlr.getListView();
+	view._resetList();
+	view._setNoResultsHtml();
 };
 
 /**
@@ -723,8 +786,8 @@ function(organizer, name) {
  * @private
  */
 ZmTreeController.prototype._doMove =
-function(organizer, folder, folderName) {
-	organizer.move(folder, false, null, null, folderName);
+function(organizer, folder) {
+	organizer.move(folder);
 };
 
 /**
@@ -1019,7 +1082,9 @@ function(ev, treeView, overviewId) {
 			if (parentNode && (ev.event == ZmEvent.E_CREATE)) {
 				// parent's tree controller should handle creates - root is shared by all folder types
 				var type = (organizer.parent.nId == ZmOrganizer.ID_ROOT) ? ev.type : organizer.parent.type;
-				if (type != this.type) { continue; }
+				if (type !== this.type || !treeView._isAllowed(organizer.parent, organizer)) {
+					continue;
+				}
 				if (organizer.isOfflineGlobalSearch) {
 					appCtxt.getApp(ZmApp.MAIL).getOverviewContainer().addSearchFolder(organizer);
 					return;
@@ -1078,10 +1143,15 @@ function(parentNode, node, fields, organizer, treeView) {
 	node.setText(organizer.getName(treeView._showUnread));
 	if (fields && fields[ZmOrganizer.F_NAME]) {
 		if (parentNode && (parentNode.getNumChildren() > 1)) {
+			var nodeSelected = node._selected;
 			// remove and re-insert the node (if parent has more than one child)
 			node.dispose();
 			var idx = ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type]));
 			node = treeView._addNew(parentNode, organizer, idx);
+			if (nodeSelected) {
+				//if it was selected, re-select it so it is highlighted. No need for notifications.
+				treeView.setSelected(organizer, true);
+			}
 		} else {
 			node.setDndText(organizer.getName());
 		}
@@ -1215,7 +1285,7 @@ function(dlg) {
 	return {
 		data:			this._pendingActionData,
 		treeIds:		[this.type],
-		overviewId:		dlg.getOverviewId(ZmOrganizer.APP[this.type]),
+		overviewId:		dlg.getOverviewId(appCtxt.getCurrentAppName() + '_' + this.type),
 		omit:			omit,
 		title:			AjxStringUtil.htmlEncode(this._getMoveDialogTitle()),
 		description:	ZmMsg.targetFolder,

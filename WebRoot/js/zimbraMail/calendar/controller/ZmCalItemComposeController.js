@@ -2,15 +2,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -86,7 +92,6 @@ function(view) {
 
 ZmCalItemComposeController.prototype._preShowCallback =
 function() {
-	this._setSearchToolbarVisibilityPerSkin(false);
 	return true;
 };
 
@@ -99,7 +104,6 @@ function(view, force) {
 ZmCalItemComposeController.prototype._postHideCallback =
 function() {
 	// overload me
-	this._setSearchToolbarVisibilityPerSkin(true);
 };
 
 ZmCalItemComposeController.prototype.popShield =
@@ -139,8 +143,17 @@ function() {
 };
 
 /**
- * Gets the toolbar.
+ * Gets the appt view.
  * 
+ * @return	{ZmApptView}	the appt view
+ */
+ZmCalItemComposeController.prototype.getItemView = function() {
+	return this._composeView;
+};
+
+/**
+ * Gets the toolbar.
+ *
  * @return	{ZmButtonToolBar}	the toolbar
  */
 ZmCalItemComposeController.prototype.getToolbar =
@@ -243,12 +256,12 @@ function(actionCode) {
 		case ZmKeyMap.HTML_FORMAT:
 			if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 				var mode = this._composeView.getComposeMode();
-				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+				var newMode = (mode == Dwt.TEXT) ? Dwt.HTML : Dwt.TEXT;
 				this._formatListener(null, newMode);
 				// reset the radio button for the format button menu
 				var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 				if (formatBtn) {
-					formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, newMode, true);
+					formatBtn.getMenu().checkItem(ZmHtmlEditor.VALUE, newMode, true);
 				}
 			}
 			break;
@@ -284,14 +297,14 @@ function(skipNotify, composeMode) {
 		var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 		var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 		mode = (bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML)
-			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+			? Dwt.HTML : Dwt.TEXT;
 	}
 
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
         var menu = formatBtn.getMenu ? formatBtn.getMenu() : null;
         if(menu) {
-		    menu.checkItem(ZmHtmlEditor._VALUE, mode, skipNotify);
+		    menu.checkItem(ZmHtmlEditor.VALUE, mode, skipNotify);
         }
 	}
 };
@@ -305,12 +318,12 @@ function(skipNotify, composeMode) {
 		var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 		var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 		mode = (bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML)
-			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+			? Dwt.HTML : Dwt.TEXT;
 	}
 
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
-		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, mode, skipNotify);
+		formatBtn.getMenu().checkItem(ZmHtmlEditor.VALUE, mode, skipNotify);
 	}
 };
 
@@ -367,7 +380,13 @@ function() {
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_OPTIONS);
 
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentViewId, controller:this});
+	this._toolbar = new ZmButtonToolBar({
+		parent:     this._container,
+		buttons:    buttons,
+		overrides:  this._getButtonOverrides(buttons),
+		context:    this._currentViewId,
+		controller: this
+	});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 
@@ -402,13 +421,13 @@ function() {
 		var mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_HTML].join("_")});
 		mi.setImage("HtmlDoc");
 		mi.setText(ZmMsg.formatAsHtml);
-		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
+		mi.setData(ZmHtmlEditor.VALUE, Dwt.HTML);
         mi.addSelectionListener(new AjxListener(this, this._formatListener));
 
 		mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_TEXT].join("_")});
 		mi.setImage("GenericDoc");
 		mi.setText(ZmMsg.formatAsText);
-		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
+		mi.setData(ZmHtmlEditor.VALUE, Dwt.TEXT);
         mi.addSelectionListener(new AjxListener(this, this._formatListener));
 	}
 
@@ -566,10 +585,10 @@ ZmCalItemComposeController.prototype._formatListener =
 function(ev, mode) {
 	if (!mode && !(ev && ev.item.getChecked())) return;
 
-	mode = mode || ev.item.getData(ZmHtmlEditor._VALUE);
+	mode = mode || ev.item.getData(ZmHtmlEditor.VALUE);
 	if (mode == this._composeView.getComposeMode()) return;
 
-	if (mode == DwtHtmlEditor.TEXT) {
+	if (mode == Dwt.TEXT) {
 		// if formatting from html to text, confirm w/ user!
 		if (!this._textModeOkCancel) {
 			var dlgId = this._composeView.getHTMLElId() + "_formatWarning";
@@ -661,7 +680,7 @@ function() {
 ZmCalItemComposeController.prototype._textModeOkCallback =
 function(ev) {
 	this._textModeOkCancel.popdown();
-	this._composeView.setComposeMode(DwtHtmlEditor.TEXT);
+	this._composeView.setComposeMode(Dwt.TEXT);
 };
 
 ZmCalItemComposeController.prototype._textModeCancelCallback =
@@ -670,7 +689,7 @@ function(ev) {
 	// reset the radio button for the format button menu
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
-		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
+		formatBtn.getMenu().checkItem(ZmHtmlEditor.VALUE, Dwt.HTML, true);
 	}
 	this._composeView.reEnableDesignMode();
 };

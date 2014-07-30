@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -47,6 +53,10 @@ ZmMailList.prototype.constructor = ZmMailList;
 ZmMailList.prototype.isZmMailList = true;
 ZmMailList.prototype.toString = function() { return "ZmMailList"; };
 
+ZmMailList._SPECIAL_FOLDERS = [ZmFolder.ID_DRAFTS, ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
+ZmMailList._SPECIAL_FOLDERS_HASH = AjxUtil.arrayAsHash(ZmMailList._SPECIAL_FOLDERS);
+
+
 /**
  * Override so that we can specify "tcon" attribute for conv move - we don't want
  * to move messages in certain system folders as a side effect. Also, we need to
@@ -74,7 +84,7 @@ function(params) {
 		return ZmList.prototype.moveItems.apply(this, arguments);
 	}
 
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback", "noUndo", "actionText", "fromFolderId"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "finalCallback", "noUndo", "actionTextKey", "fromFolderId"]);
 	params.items = AjxUtil.toArray(params.items);
 
 	var params1 = AjxUtil.hashCopy(params);
@@ -88,9 +98,9 @@ function(params) {
 	params1.attrs.l = params.folder.id;
 	params1.action = (params.folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
     if (params1.folder.id == ZmFolder.ID_TRASH) {
-        params1.actionText = params.actionText || ZmMsg.actionTrash;
+        params1.actionTextKey = params.actionTextKey || "actionTrash";
     } else {
-        params1.actionText = params.actionText || ZmMsg.actionMove;
+        params1.actionTextKey = params.actionTextKey || "actionMove";
         params1.actionArg = params1.folder.getName(false, false, true);
     }
 	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, [params]);
@@ -178,14 +188,17 @@ function(params) {
 
 	params1.action = params.markAsSpam ? "spam" : "!spam";
 	params1.attrs = {};
-	var tcon = this._getTcon(params.items);
-	if (tcon) {
-		params1.attrs.tcon = tcon;
+	if (this.type === ZmItem.CONV) {
+		var tcon = this._getTcon(params.items);
+		//the reason not to set "" as tcon is from bug 58727. (though I think it should have been a server fix).
+		if (tcon) {
+			params1.attrs.tcon = tcon;
+		}
 	}
 	if (params.folder) {
 		params1.attrs.l = params.folder.id;
 	}
-	params1.actionText = params.markAsSpam ? ZmMsg.actionMarkAsJunk : ZmMsg.actionMarkAsNotJunk;
+	params1.actionTextKey = params.markAsSpam ? 'actionMarkAsJunk' : 'actionMarkAsNotJunk';
 
 	params1.callback = new AjxCallback(this, this._handleResponseSpamItems, params);
 	this._itemAction(params1);
@@ -233,7 +246,7 @@ function(params, result) {
 			list._notify(ZmEvent.E_MOVE, details);
 		}
 		if (params.actionText) {
-			summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
+			summary = ZmList.getActionSummary(params);
 		}
 
 		if (params.childWin) {
@@ -286,7 +299,7 @@ function(params) {
 			params.attrs = params.attrs || {};
 			params.attrs.tcon = ZmFolder.TCON_CODE[searchFolder.nId];
 			params.action = "delete";
-            params.actionText = ZmMsg.actionDelete;
+            params.actionTextKey = 'actionDelete';
 			params.callback = new AjxCallback(this, this._handleResponseDeleteItems, instantOn);
 			return this._itemAction(params);
 		}
@@ -351,7 +364,7 @@ function(params) {
 		params.items = items1;
 		params.op = "read";
 		if (items1.length > 1) {
-        	params.actionText = params.value ? ZmMsg.actionMarkRead : ZmMsg.actionMarkUnread;
+        	params.actionTextKey = params.value ? 'actionMarkRead' : 'actionMarkUnread';
 		}
 		this.flagItems(params);
 	}
@@ -400,7 +413,7 @@ function(params) {
 	if (items1.length) {
 		params.items = items1;
 		params.op = "mute";
-        params.actionText = params.value ? ZmMsg.actionMarkMute : ZmMsg.actionMarkUnmute;
+        params.actionTextKey = params.value ? 'actionMarkMute' : 'actionMarkUnmute';
 		this.flagItems(params);
 	}
     else if(params.forceCallback) {
@@ -499,6 +512,7 @@ function(convs, msgs) {
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: CLV msg matches: " + msgMatches);
 			var isActiveAccount = (!appCtxt.multiAccounts || (appCtxt.multiAccounts && msg.getAccount() == appCtxt.getActiveAccount()));
 			var conv = newConvId[cid] || this.getById(cid);
+			var updateConv = false;
 			if (msgMatches && isActiveAccount) {
 				if (!conv) {
 					// msg will have _convCreateNode if it is 2nd msg and caused promotion of virtual conv;
@@ -508,8 +522,13 @@ function(convs, msgs) {
 						if (msg._convCreateNode._newId) {
 							msg._convCreateNode.id = msg._convCreateNode._newId;
 						}
-						conv = ZmConv.createFromDom(msg._convCreateNode, args);
-					} else {
+						//sometimes the conv is already in the app cache. Make sure not to re-create it and with the wrong msgs. This is slight improvement of bug 87861.
+						conv = appCtxt.getById(cid);
+						if (!conv) {
+							conv = ZmConv.createFromDom(msg._convCreateNode, args);
+						}
+					}
+					else {
 						conv = appCtxt.getById(cid) || ZmConv.createFromMsg(msg, args);
 					}
 					newConvId[cid] = conv;
@@ -542,6 +561,20 @@ function(convs, msgs) {
 						conv.date = msg.date;
 						// recalculate conv's sort position since we changed its date
 						fields[ZmItem.F_DATE] = true;
+					}
+					if (conv.numMsgs === 1) {
+						//there is only one message in this conv so set the size of conv to msg size
+						conv.size = msg.size;
+					}
+					else {
+						//So it shows the message count, and not the size (see ZmConvListView.prototype._getCellContents)
+						//this size is no longer relevant (was set in the above if previously, see bug 87416)
+						conv.size = null;
+					}
+					if (msg._convCreateNode) {
+						//in case of single msg virtual conv promoted to a real conv - update the size
+						// (in other cases of size it's updated elsewhere - see ZmConv.prototype.notifyModify, the server sends the update notification for the conv size)
+						fields[ZmItem.F_SIZE] = true;
 					}
 					// conv gained a msg, may need to be moved to top/bottom
 					if (!newConvId[conv.id] && this._vector.contains(conv)) {
@@ -656,16 +689,19 @@ function() {
 };
 
 /**
- * Gets the first msg in the list which was marked by the server as matching
- * the search used to create the list.
+ * Gets the first msg in the list that's not in one of the given folders (if any).
  * 
  * @param {int}	offset	the starting point within list
  * @param {int}	limit		the ending point within list
+ * @param {foldersToOmit}	A hash of folders to omit
  * @return	{ZmMailMsg}		the message
  */
 ZmMailList.prototype.getFirstHit =
-function(offset, limit) {
-	if (this.type != ZmItem.MSG) { return null; }
+function(offset, limit, foldersToOmit) {
+
+	if (this.type !== ZmItem.MSG) {
+		return null;
+	}
 
 	var msg = null;	
 	offset = offset || 0;
@@ -676,13 +712,13 @@ function(offset, limit) {
 		var end = (offset + limit > numMsgs) ? numMsgs : offset + limit;
 		var list = this.getArray();
 		for (var i = offset; i < end; i++) {
-			if (list[i].inHitList) {
+			if (!(foldersToOmit && list[i].folderId && foldersToOmit[list[i].folderId])) {
 				msg = list[i];
 				break;
 			}
 		}
 		if (!msg) {
-			msg = list[0];	// no hot messages, use first msg
+			msg = list[0];	// no qualifying messages, use first msg
 		}
 	}
 	
@@ -739,7 +775,8 @@ function(items, sortBy, event, details) {
 			var doAdd = (itemType == this.type);
 			var listSortIndex = 0, viewSortIndex = 0;
 			if (this.type == ZmItem.CONV && itemType == ZmItem.MSG) {
-				var conv = this.getById(item.cid);
+				//Bug 87861 - we still want to add the message to the conv even if the conv is not in this view. So look for it in appCtxt cache too. (case in point - it's in "sent" folder)
+				var conv = this.getById(item.cid) || appCtxt.getById(item.cid);
 				if (conv) {
 					// server always orders msgs within a conv by DATE_DESC, so maintain that
 					listSortIndex = conv.msgs._getSortIndex(item, ZmSearch.DATE_DESC);
@@ -768,38 +805,76 @@ function(items, sortBy, event, details) {
 	}
 };
 
-ZmMailList.prototype._getTcon =
-function(items, nId) {
-	var chars = [];
-	var folders = [ZmFolder.ID_DRAFTS, ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
-    var id;
-    if(!nId){
-        var searchFolder = this.search && appCtxt.getById(this.search.folderId);
-        if(searchFolder){
-            nId = searchFolder.isRemote() ? searchFolder.rid : searchFolder.nId;
-            id = searchFolder.id;
-        }
-    }
+ZmMailList.prototype._isItemInSpecialFolder =
+function(item) {
+//	if (item.folderId) { //case of one message in conv, even if not loaded yet, we know the folder.
+//		return ZmMailList._SPECIAL_FOLDERS_HASH[item.folderId];
+//	}
+	var msgs = item.msgs;
+	if (!msgs) { //might not be loaded yet. In this case, tough luck - the tcon will be set as usual - based on searched folder, if set
+		return false;
+	}
+	for (var i = 0; i < msgs.size(); i++) {
+		var msg = msgs.get(i);
+		var msgFolder = appCtxt.getById(msg.folderId);
+		var msgFolderId = msgFolder && msgFolder.getLocalId();
 
-	for (var i = 0; i < folders.length; i++) {
-		var folderId = folders[i];
-        var folder;
+		if (!ZmMailList._SPECIAL_FOLDERS_HASH[msgFolderId]) {
+			return false;
+		}
+	}
+	return true;
+};
+
+ZmMailList.prototype._getTcon =
+function(items, nFromFolderId) {
+
+	//if all items are in a special folder (draft/trash/spam/sent) - then just allow the move without any restriction
+	var allItemsSpecial = true;
+	for (var i = 0; i < items.length; i++) {
+		if (!this._isItemInSpecialFolder(items[i])) {
+			allItemsSpecial = false;
+			break;
+		}
+	}
+
+	if (allItemsSpecial) {
+		return "";
+	}
+
+	var fromFolderId = nFromFolderId || (this.search && this.search.folderId);
+	var	fromFolder = fromFolderId && appCtxt.getById(fromFolderId);
+
+	fromFolderId = fromFolder && fromFolder.getLocalId();
+	var tcon = [];
+	for (i = 0; i < ZmMailList._SPECIAL_FOLDERS.length; i++) {
+		var specialFolderId = ZmMailList._SPECIAL_FOLDERS[i];
+		if (!fromFolder) {
+			tcon.push(ZmFolder.TCON_CODE[specialFolderId]);
+			continue;
+		}
+		// == instead of === since we compare numbers to strings and want conversion.
+		if (fromFolderId == specialFolderId) {
+			continue; //we're moving out of the special folder - allow  items under it
+		}
+        var specialFolder;
         // get folder object from qualified Ids for multi-account
         if (appCtxt.multiAccounts) {
             var acct  = items && items[0].getAccount && items[0].getAccount();
             var acctId = acct ? acct.id : appCtxt.getActiveAccount().id;
-            var fId = [acctId, ":", folderId].join("");
-            folder = appCtxt.getById(fId);
-        } else {
-            folder = appCtxt.getById(folderId);
+			var fId = [acctId, ":", specialFolderId].join("");
+			specialFolder = appCtxt.getById(fId);
         }
-        var nFolder = (id) ? appCtxt.getById(id) : appCtxt.getById(nId);
-        // if nId is undefined send the default tcon [-tjs].
-		if (!nId || (nId != folderId && folder && nFolder && !nFolder.isChildOf(folder))) {
-			chars.push(ZmFolder.TCON_CODE[folderId]);
+		else {
+            specialFolder = appCtxt.getById(specialFolderId);
+        }
+
+		if (!fromFolder.isChildOf(specialFolder)) {
+			//if origin folder (searched folder) not descendant of the special folder - add the tcon code - don't move items from under the special folder.
+			tcon.push(ZmFolder.TCON_CODE[specialFolderId]);
 		}
 	}
-	return (chars.length) ?  ("-" + chars.join("")) : "";
+	return (tcon.length) ?  ("-" + tcon.join("")) : "";
 };
 
 // If this list is the result of a search that is constrained by the read

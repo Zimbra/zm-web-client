@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -42,7 +48,6 @@ ZmChooseFolderDialog = function(parent, className) {
 	this._treeViewListener = new AjxListener(this, this._treeViewSelectionListener);
 
 	this._multiAcctOverviews = {};
-    this._showRemainingFolders = AjxMessageFormat.format(ZmMsg.showRemainingFolders, "folders");
 };
 
 ZmChooseFolderDialog.prototype = new ZmDialog;
@@ -135,7 +140,7 @@ function(params) {
 	var searchOnly = (treeIds.length == 1 && treeIds[0] == ZmOrganizer.SEARCH);
 	var newButton = this._getNewButton();
 	if (newButton) {
-		newButton.setVisible(!searchOnly && !params.hideNewButton && !appCtxt.isExternalAccount());
+		newButton.setVisible(!searchOnly && !params.hideNewButton && !appCtxt.isExternalAccount() && !appCtxt.isWebClientOffline());
 	}
 
 	this._data = params.data;
@@ -174,7 +179,7 @@ function(params) {
 	// TODO: I opened bug 34447 for this performance enhancement.
 	var pkg = [];
 	if (treeIdMap[ZmOrganizer.BRIEFCASE]) pkg.push("BriefcaseCore","Briefcase");
-	if (treeIdMap[ZmOrganizer.CALENDAR]) pkg.push("CalendarCore","Calendar");
+	if (treeIdMap[ZmOrganizer.CALENDAR]) pkg.push("MailCore","CalendarCore","Calendar");
 	if (treeIdMap[ZmOrganizer.ADDRBOOK]) pkg.push("ContactsCore","Contacts");
 	if (treeIdMap[ZmOrganizer.FOLDER]) pkg.push("MailCore","Mail");
 	if (treeIdMap[ZmOrganizer.TASKS]) pkg.push("TasksCore","Tasks");
@@ -223,8 +228,8 @@ function(params) {
 
 
 ZmChooseFolderDialog.prototype.getOverviewId =
-function(part) {
-	return appCtxt.getOverviewId([this.toString(), part], null);
+function(part, appName) {
+	return appCtxt.getOverviewId([this.toString(), part, appName], null);
 };
 
 ZmChooseFolderDialog.prototype._resetTree =
@@ -342,8 +347,9 @@ function(ev) {
 
 ZmChooseFolderDialog.prototype._okButtonListener =
 function(ev) {
-    var tgtFolder = this._getOverview().getSelected();
-	var folderList = (tgtFolder && (!(tgtFolder instanceof Array)))
+    var tgtFolder = this._getOverview().getSelected(false);
+    var tgtType   = this._getOverview().getSelected(true);
+    var folderList = (tgtFolder && (!(tgtFolder instanceof Array)))
 		? [tgtFolder] : tgtFolder;
 
 	var msg = (!folderList || (folderList && folderList.length == 0))
@@ -353,7 +359,13 @@ function(ev) {
 	if (!msg && this._data) {
 		for (var i = 0; i < folderList.length; i++) {
 			var folder = folderList[i];
-			if (folder.mayContain && !folder.mayContain(this._data, null, this._acceptFolderMatch)) {
+			//Note - although this case is checked in mayContain, I do not change mayContain since mayContain is complicated and returns a boolean and used from DnD and is overridden a bunch of times.
+			//Only here we need the special message (see bug 82064) so I settle for that for now.
+			if (this._data.isZmFolder && !folder.isInTrash() && folder.hasChild(this._data.name) && !this._acceptFolderMatch) {
+				msg = ZmMsg.folderAlreadyExistsInDestination;
+				break;
+			}
+			else if (folder.mayContain && !folder.mayContain(this._data, tgtType, this._acceptFolderMatch)) {
 				if (this._data.isZmFolder) {
 					msg = ZmMsg.badTargetFolder; 
 				} else {
@@ -408,14 +420,16 @@ function() {
 			var items = treeView.getTreeItemList();
 			for (var i = 0, len = items.length; i < len; i++) {
 				var ti = items[i];
-				if (ti.getData) {
-					var folder = items[i].getData(Dwt.KEY_OBJECT);
-					if (folder && (folder.nId != ZmOrganizer.ID_ROOT)) {
-						var name = folder.getName(false, null, true, true).toLowerCase();
-						var path = "/" + folder.getPath(false, false, null, true).toLowerCase();
-						this._folders.push({id:folder.id, type:type, name:name, path:path, accountId:accountId});
-					}
+				if (!ti.getData) {  //not sure if this could happen but it was here before my refactoring.
+					continue;
 				}
+				var folder = items[i].getData(Dwt.KEY_OBJECT);
+				if (!folder || folder.nId == ZmOrganizer.ID_ROOT) {
+					continue;
+				}
+				var name = folder.getName(false, null, true, true).toLowerCase();
+				var path = "/" + folder.getPath(false, false, null, true).toLowerCase();
+				this._folders.push({id: folder.id, type: type, name: name, path: path, accountId: accountId});
 			}
 		}
 	}
@@ -544,8 +558,10 @@ function(ev) {
 	}
 
 	var organizer = ev.item && ev.item.getData(Dwt.KEY_OBJECT);
+	if (organizer.id == ZmFolder.ID_LOAD_FOLDERS) {
+		return;
+	}
 	var value = organizer ? organizer.getName(null, null, true) : ev.item.getText();
-    if (this._showRemainingFolders == organizer.getName(null, null, true) ) value = "";
 	this._inputField.setValue(value);
 	if (ev.detail == DwtTree.ITEM_DBL_CLICKED || ev.enter) {
 		this._okButtonListener();

@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -66,10 +72,9 @@ ZmBaseController = function(container, app, type, sessionId, searchResultsContro
 	this._listeners[ZmOperation.DELETE_WITHOUT_SHORTCUT]			= this._deleteListener.bind(this);
 	this._listeners[ZmOperation.CLOSE]			= this._backListener.bind(this);
 	this._listeners[ZmOperation.MOVE]			= this._moveListener.bind(this);
-	this._listeners[ZmOperation.SEARCH]			= this._participantSearchListener.bind(this);
-	this._listeners[ZmOperation.BROWSE]			= this._participantBrowseListener.bind(this);
-	this._listeners[ZmOperation.NEW_MESSAGE]	= this._participantComposeListener.bind(this);
-	this._listeners[ZmOperation.CONTACT]		= this._participantContactListener.bind(this);
+	this._listeners[ZmOperation.SEARCH]			= this._searchListener.bind(this);
+	this._listeners[ZmOperation.NEW_MESSAGE]	= this._composeListener.bind(this);
+	this._listeners[ZmOperation.CONTACT]		= this._contactListener.bind(this);
 	this._listeners[ZmOperation.VIEW]			= this._viewMenuItemListener.bind(this);
 
 	// TODO: do this better - avoid referencing specific apps
@@ -135,6 +140,13 @@ function() {
 };
 
 /**
+ * Returns the view used to display a single item, if any.
+ */
+ZmBaseController.prototype.getItemView = function() {
+	return null;
+};
+
+/**
  * Gets the current tool bar.
  * 
  * @return	{ZmButtonToolbar}		the toolbar
@@ -168,20 +180,13 @@ function(actionCode, ev) {
 
 	switch (actionCode) {
 
-		case ZmKeyMap.FLAG:
-            if (isExternalAccount) { break; }
-			this._doFlag(this.getItems());
-			break;
-
 		case ZmKeyMap.MOVE:
             if (isExternalAccount) { break; }
-			if (!appCtxt.isChildWindow) {
-				this._moveListener();
-			}
+			this._moveListener();
 			break;
 
 		case ZmKeyMap.PRINT:
-			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+			if (appCtxt.get(ZmSetting.PRINT_ENABLED) && !appCtxt.isWebClientOffline()) {
 				this._printListener();
 			}
 			break;
@@ -221,7 +226,7 @@ function() {
 
 ZmBaseController.prototype.supportsDnD =
 function() {
-	return !(this.isSearchResults || appCtxt.isExternalAccount());
+	return !appCtxt.isExternalAccount();
 };
 
 // abstract protected methods
@@ -295,8 +300,8 @@ function(view, className) {
 	if (this._toolbar[view]) { return; }
 
 	var buttons = this._getToolBarOps();
-	var secondaryButtons = this._getSecondaryToolBarOps();
-	var rightSideButtons = this._getRightSideToolBarOps();
+	var secondaryButtons = this._getSecondaryToolBarOps() || [];
+	var rightSideButtons = this._getRightSideToolBarOps() || [];
 	if (!(buttons || secondaryButtons)) { return; }
 
 	var tbParams = {
@@ -304,6 +309,7 @@ function(view, className) {
 		buttons:			buttons,
 		secondaryButtons:	secondaryButtons,
 		rightSideButtons: 	rightSideButtons,
+		overrides:          this._getButtonOverrides(buttons.concat(secondaryButtons).concat(rightSideButtons)),
 		context:			view,
 		controller:			this,
 		refElementId:		ZmId.SKIN_APP_TOP_TOOLBAR,
@@ -346,6 +352,8 @@ function(view, className) {
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
+
+ZmBaseController.prototype._getButtonOverrides = function(buttons) {};
 
 /**
  * Initializes the view and its listeners.
@@ -410,6 +418,7 @@ function(params) {
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE]		= this._preHideCallback.bind(this);
 		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD]	= this._preUnloadCallback.bind(this);
 		callbacks[ZmAppViewMgr.CB_POST_HIDE]	= this._postHideCallback.bind(this);
+		callbacks[ZmAppViewMgr.CB_POST_REMOVE]	= this._postRemoveCallback.bind(this);
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW]		= this._preShowCallback.bind(this);
 		callbacks[ZmAppViewMgr.CB_POST_SHOW]	= this._postShowCallback.bind(this);
 
@@ -477,6 +486,10 @@ function(ev, list) {
 		//need to update this._data so the chooser knows from which folder we are trying to move.
 		this._folderChooser.updateData(this._getMoveParams(this._folderChooser).data);
 	}
+	var newButton = this._folderChooser._getNewButton();
+	if (newButton) {
+		newButton.setVisible(!appCtxt.isWebClientOffline());
+	}
 	moveButton.popup();
 	moveButton.getMenu().getHtmlElement().style.width = "auto"; //reset the width so it's dynamic. without this it is set to 0, and in any case even if it was set to some other > 0 value, it needs to be dynamic due to collapse/expand (width changes)
 	this._folderChooser.focus();
@@ -506,6 +519,13 @@ function(ev, items) {
 		var tagEvent = menuItem.getData(ZmTagMenu.KEY_TAG_EVENT);
 		var tagAdded = menuItem.getData(ZmTagMenu.KEY_TAG_ADDED);
 		items = items || this.getItems();
+
+		for (var i=0; i<items.length; i++) {
+			if (items[i].cloneOf) {
+				items[i] = items[i].cloneOf;
+			}
+		}
+
 		if (tagEvent == ZmEvent.E_TAGS && tagAdded) {
 			this._doTag(items, menuItem.getData(Dwt.KEY_OBJECT), true);
 		} else if (tagEvent == ZmEvent.E_CREATE) {
@@ -585,42 +605,6 @@ function(ev, list) {
 };
 
 /**
- * From Search based on email address.
- *
- * @private
- */
-ZmBaseController.prototype._participantSearchListener =
-function(ev) {
-};
-
-/**
- * Browse based on email address.
- *
- * @private
- */
-ZmBaseController.prototype._participantBrowseListener =
-function(ev) {
-};
-
-/**
- * Compose message to participant.
- *
- * @private
- */
-ZmBaseController.prototype._participantComposeListener =
-function(ev) {
-};
-
-/**
- * If there's a contact for the participant, edit it, otherwise add it.
- *
- * @private
- */
-ZmBaseController.prototype._participantContactListener =
-function(ev) {
-};
-
-/**
  * @protected
  */
 ZmBaseController.prototype._getMoveParams =
@@ -634,6 +618,7 @@ function(dlg) {
 		title:			this._getMoveDialogTitle(this._pendingActionData.length, this._pendingActionData),
 		description:	ZmMsg.targetFolder,
 		treeStyle:		DwtTree.SINGLE_STYLE,
+		noRootSelect: 	true, //I don't think you can ever use the "move" dialog to move anything to a root folder... am I wrong?
 		appName:		this._app._name
 	};
 };
@@ -760,12 +745,13 @@ function(items, on) {
 	}
 
 	var params = {items:items1, op:"flag", value:on};
-    params.actionText = on ? ZmMsg.actionFlag : ZmMsg.actionUnflag;
+    params.actionTextKey = on ? 'actionFlag' : 'actionUnflag';
 	var list = params.list = this._getList(params.items);
 	this._setupContinuation(this._doFlag, [on], params);
 	list.flagItems(params);
 };
 
+// TODO: shouldn't this be in ZmMailItemController?
 ZmBaseController.prototype._doMsgPriority = 
 function(items, on) {
 	items = AjxUtil.toArray(items);
@@ -786,7 +772,7 @@ function(items, on) {
 	}
 
 	var params = {items:items1, op:"priority", value:on};
-    params.actionText = on ? ZmMsg.actionMsgPriority : ZmMsg.actionUnMsgPriority; 
+    params.actionTextKey = on ? 'actionMsgPriority' : 'actionUnMsgPriority';
 	var list = params.list = this._getList(params.items);
 	this._setupContinuation(this._doMsgPriority, [on], params);
 	list.flagItems(params);	
@@ -842,6 +828,15 @@ function(items, hardDelete, attrs, confirmDelete) {
 	items = AjxUtil.toArray(items);
 	if (!items.length) { return; }
 
+	// If the initial set of deletion items is incomplete (we will be using continuation) then if its deletion
+	// from the trash folder mark it as a hardDelete.  Otherwise, upon continuation the items will be moved
+	// (Trash to Trash) instead of deleted.
+	var folder = this._getSearchFolder();
+	var inTrashFolder = (folder && folder.nId == ZmFolder.ID_TRASH);
+	if (inTrashFolder) {
+		hardDelete = true;
+	}
+
 	var params = {
 		items:			items,
 		hardDelete:		hardDelete,
@@ -852,7 +847,7 @@ function(items, hardDelete, attrs, confirmDelete) {
 	};
 	var allDoneCallback = this._getAllDoneCallback();
 	var list = params.list = this._getList(params.items);
-	this._setupContinuation(this._doDelete, [hardDelete, attrs], params, allDoneCallback);
+	this._setupContinuation(this._doDelete, [hardDelete, attrs, true], params, allDoneCallback);
 	
 	if (!hardDelete) {
 		var anyScheduled = false;
@@ -1076,6 +1071,12 @@ function(parent, items) {
 		// dynamically build tag menu add/remove lists
 		items = items || AjxUtil.toArray(this.getItems());
 
+		for (var i=0; i<items.length; i++) {
+			if (items[i].cloneOf) {
+				items[i] = items[i].cloneOf;
+			}
+		}
+
 		var account = (appCtxt.multiAccounts && items.length == 1) ? items[0].getAccount() : null;
 
 		// fetch tag tree from appctxt (not cache) for multi-account case
@@ -1087,7 +1088,7 @@ function(parent, items) {
 			tagMenu.parent.popup();
 
 			// bug #17584 - we currently don't support creating new tags in new window
-			if (appCtxt.isChildWindow) {
+			if (appCtxt.isChildWindow || appCtxt.isWebClientOffline()) {
 				var mi = tagMenu.getMenuItem(ZmTagMenu.MENU_ITEM_ADD_ID);
 				if (mi) {
 					mi.setVisible(false);
@@ -1213,101 +1214,373 @@ function(params) {
 	ZmBaseController.showSummary(params.actionSummary, params.actionLogItem, params.closeChildWin);
 };
 
-/* ZmBaseController.prototype._quickCommandMenuHandler = function(evt, batchCmd) {
-    var selectedItems = this.getItems();
-    if (!selectedItems || !selectedItems.length) {return;}
 
-    var menuItem = evt.dwtObj;
-    var quickCommand = menuItem.getData(Dwt.KEY_OBJECT);
-    if (!quickCommand) {return;}
 
-    var actions = quickCommand.actions;
-    var len = actions.length;
-    for (var i = 0; i < len; i++) {
-        var action = actions[i];
-        if (!action.isActive) {continue;}
-        var actionValue = action.value;
-        if (action.type == ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_TAG]) {
-            if (actionValue) {
-                var tag = appCtxt.getById(actionValue);
-                if (tag) {
-                    this._doTag(selectedItems, tag, true);
-                }
-            }
-        } else if (action.type == ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FLAG]) {
-            if (actionValue == "flagged" || actionValue == "unflagged") {
-                this._doFlag(selectedItems, actionValue == "flagged");
-            }
+ZmBaseController.prototype._bubbleSelectionListener = function(ev) {
 
-        } else if (action.type == ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FOLDER]) {
-            if (actionValue) {
-                var folder = appCtxt.getById(actionValue);
-                if (folder) {
-                    this._doMove(selectedItems, folder);
-                }
-            }
-        }
-    }
+	this._actionEv = ev;
+	var bubble = ev.item;
+	if (ev.detail === DwtEvent.ONDBLCLICK) {
+		this._actionEv.bubble = bubble;
+		this._actionEv.address = bubble.addrObj || bubble.address;
+		this._composeListener(ev);
+	}
+	else {
+		var view = this.getItemView(),
+			bubbleList = view && view._bubbleList;
+
+		if (bubbleList && bubbleList.selectAddressText) {
+			bubbleList.selectAddressText();
+		}
+	}
 };
 
-ZmBaseController.prototype._refreshQuickCommands = function(evt) {
-    if (!this._app) {return;}
+ZmBaseController.prototype._bubbleActionListener = function(ev, addr) {
 
-    var quickCommandType = ZmApp.QUICK_COMMAND_TYPE[this._app._name];
-    if (!quickCommandType) {return;}
-    
-    var quickCommand;
-    var quickCommandMenuItem = evt.dwtObj;
-    var quickCommands = ZmQuickCommands.getInstance().getQuickCommandsByItemType(quickCommandType, false);
-    var quickCommandSubMenu = quickCommandMenuItem.getMenu(true);
-    var existingMenuItems = quickCommandSubMenu.getMenuItems();
-    existingMenuItems = AjxUtil.hashCopy(existingMenuItems);
+	this._actionEv = ev;
+	var bubble = this._actionEv.bubble = ev.item,
+		address = this._actionEv.address = addr || bubble.addrObj || bubble.address,
+		menu = this._getBubbleActionMenu();
 
-    if (quickCommands) {
-        for (var i = 0; i < quickCommands.length; i++) {
-            quickCommand = quickCommands[i];
-
-            if (quickCommand.isActive) {
-                var mi = existingMenuItems[quickCommand.id];
-                if (!mi) {
-                    mi = quickCommandSubMenu.createMenuItem(quickCommand.id, {text:quickCommand.name, id: Dwt.getNextId("quickCommand_")});
-                    mi.setData(Dwt.KEY_OBJECT, quickCommand);
-                    mi.addSelectionListener(this._quickCommandMenuHandlerClosure);
-                } else {
-                    //refresh the object reference and the text.
-                    mi.setText(quickCommand.name);
-                    mi.setData(Dwt.KEY_OBJECT, quickCommand);
-                    delete existingMenuItems[quickCommand.id];
-                }
-            }
-        }
-    }
-
-    for (var quickCommandId in existingMenuItems) {
-        quickCommandSubMenu.removeMenuItemById(quickCommandId);
-    }
+	if (menu) {
+		menu.enable(
+			[
+				ZmOperation.CONTACT,
+				ZmOperation.ADD_FILTER_RULE_ADDRESS
+			],
+			!appCtxt.isWebClientOffline()
+		);
+		this._loadContactForMenu(menu, address, ev);
+	}
 };
 
-ZmBaseController.prototype._resetQuickCommandOperations = function(parent) {
-    if (!this._app) {return;}
+ZmBaseController.prototype._getBubbleActionMenu = function() {
 
-    var quickCommandType = ZmApp.QUICK_COMMAND_TYPE[this._app._name];
-    if (quickCommandType) {
-        var quickCommandMenuItem = parent.getOp(ZmOperation.QUICK_COMMANDS);
-        if (quickCommandMenuItem) {
-            var quickCommands = ZmQuickCommands.getInstance().getQuickCommandsByItemType(quickCommandType, false);
-			if (quickCommands) {
-				var quickCommandSubMenu = quickCommandMenuItem.getMenu(true);
-				if (!quickCommandSubMenu) {
-					//add listener and quickCommandSubMenu one time only
-					quickCommandMenuItem.addListener(AjxEnv.isIE ? DwtEvent.ONMOUSEENTER : DwtEvent.ONMOUSEOVER, this._refreshQuickCommandsClosure);
-					quickCommandSubMenu = new ZmActionMenu({parent:parent, menuItems:ZmOperation.NONE, id: Dwt.getNextId("quickCommandSubMenu_")});
-					quickCommandMenuItem.setMenu(quickCommandSubMenu);
-				}
-			}
-			parent._hasQuickCommands = (quickCommands && quickCommands.length);
-			parent.setItemVisible(ZmOperation.QUICK_COMMANDS, parent._hasQuickCommands);
-        }
-    }
+	if (this._bubbleActionMenu) {
+		return this._bubbleActionMenu;
+	}
+
+	var menuItems = this._getBubbleActionMenuOps();
+	var menu = this._bubbleActionMenu = new ZmActionMenu({
+		parent:     this._shell,
+		menuItems:  menuItems,
+		controller: this,
+		id:         ZmId.create({
+			componentType:  ZmId.WIDGET_MENU,
+			componentName:  this._currentViewId,
+			app:            this._app
+		})
+	});
+
+	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+		this._setSearchMenu(menu, false);
+	}
+
+	menu.addPopdownListener(this._bubbleMenuPopdownListener.bind(this));
+
+	for (var i = 0; i < menuItems.length; i++) {
+		var menuItem = menuItems[i];
+		if (this._listeners[menuItem]) {
+			menu.addSelectionListener(menuItem, this._listeners[menuItem]);
+		}
+	}
+
+	var clipboard = appCtxt.getClipboard();
+	if (clipboard) {
+		clipboard.addClient([ this.toString(), this._currentViewId ].join('-'), menu.getOp(ZmOperation.COPY), {
+			onMouseDown:    this._clipCopy.bind(this),
+			onComplete:     this._clipCopyComplete.bind(this)
+		});
+	}
+
+	return menu;
 };
-*/
+
+ZmBaseController.prototype._getBubbleActionMenuOps = function() {
+
+	var ops = [];
+	if (AjxClipboard.isSupported()) {
+		// we use Zero Clipboard (a Flash hack) to copy address
+		ops.push(ZmOperation.COPY);
+	};
+	ops.push(ZmOperation.SEARCH_MENU);
+	ops.push(ZmOperation.NEW_MESSAGE);
+	ops.push(ZmOperation.CONTACT);
+	if (appCtxt.get(ZmSetting.FILTERS_ENABLED) && this._filterListener) {
+		ops.push(ZmOperation.ADD_FILTER_RULE_ADDRESS);
+	}
+
+	return ops;
+};
+
+// Copies address text from the active bubble to the clipboard.
+ZmBaseController.prototype._clipCopy = function(clip) {
+	clip.setText(this._actionEv.address + AjxEmailAddress.SEPARATOR);
+};
+
+ZmBaseController.prototype._clipCopyComplete = function(clip) {
+	this._bubbleActionMenu.popdown();
+};
+
+// This will get called before the menu item listener. If that causes issues,
+// we can run this function on a timer.
+ZmBaseController.prototype._bubbleMenuPopdownListener = function() {
+
+	var itemView = this.getItemView(),
+		bubbleList = itemView && itemView._bubbleList,
+		bubble = this._actionEv && this._actionEv.bubble;
+
+	if (bubbleList) {
+		bubbleList.clearRightSelection();
+		if (bubble) {
+			bubble.setClassName(bubbleList._normalClass);
+		}
+	}
+	this._actionEv.bubble = null;
+};
+
+// handle click on an address (or "Select All") in popup DL expansion list
+ZmBaseController.prototype._dlAddrSelected = function(match, ev) {
+	this._actionEv.address = match;
+	this._composeListener(ev);
+};
+
+ZmBaseController.prototype._loadContactForMenu = function(menu, address, ev, imItem) {
+
+	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS),
+		address = address.isAjxEmailAddress ? address : new AjxEmailAddress(address),
+		email = address.getAddress();
+
+	if (!email) {
+		return;
+	}
+
+	// first check if contact is cached, and no server call is needed
+	var contact = contactsApp.getContactByEmail(email);
+	if (contact) {
+		this._handleResponseGetContact(menu, address, ev, imItem, contact);
+		return;
+	}
+
+	var op = menu.getOp(ZmOperation.CONTACT);
+	if (op) {
+		op.setText(ZmMsg.loading);
+	}
+	if (imItem) {
+		if (ZmImApp.updateImMenuItemByAddress(imItem, address, false)) {
+			imItem.setText(ZmMsg.loading);
+		}
+		else {
+			imItem = null;	// done updating item, didn't need server call
+		}
+	}
+	menu.popup(0, ev.docX, ev.docY);
+	var respCallback = this._handleResponseGetContact.bind(this, menu, address, ev, imItem);
+	contactsApp.getContactByEmail(email, respCallback);
+};
+
+ZmBaseController.prototype._handleResponseGetContact = function(menu, address, ev, imItem, contact) {
+
+	this._actionEv.contact = contact;
+	this._setContactText(contact, menu);
+
+	if (imItem) {
+		if (contact) {
+			ZmImApp.updateImMenuItemByContact(imItem, contact, address);
+		}
+		else {
+			ZmImApp.handleResponseGetContact(imItem, address, true);
+		}
+	}
+	menu.popup(0, ev.docX, ev.docY);
+};
+
+/**
+ * Sets text to "add" or "edit" based on whether a participant is a contact or not.
+ * contact - the contact (or null)
+ * extraMenu - see ZmMailListController.prototype._setContactText
+ *
+ * @private
+ */
+ZmBaseController.prototype._setContactText = function(contact, menu) {
+	ZmBaseController.setContactTextOnMenu(contact, menu || this._actionMenu);
+};
+
+/**
+ * Sets text to "add" or "edit" based on whether a participant is a contact or not.
+ * contact - the contact (or null)
+ * menus - array of one or more menus
+ *
+ * @private
+ */
+ZmBaseController.setContactTextOnMenu = function(contact, menu) {
+
+	if (!menu) {
+		return;
+	}
+
+	var newOp = ZmOperation.EDIT_CONTACT;
+	var newText = null; //no change ("edit contact")
+
+	if (contact && contact.isDistributionList()) {
+		newText = ZmMsg.AB_EDIT_DL;
+	}
+	else if (contact && contact.isGroup()) {
+		newText = ZmMsg.AB_EDIT_GROUP;
+	}
+	else if (!contact || contact.isGal) {
+		// if there's no contact, or it's a GAL contact - there's no "edit" - just "add".
+		newText = ZmMsg.AB_ADD_CONTACT;
+		newOp = ZmOperation.NEW_CONTACT;
+	}
+
+	ZmOperation.setOperation(menu, ZmOperation.CONTACT, newOp, newText);
+
+	if (appCtxt.isWebClientOffline()) {
+		menu.enable(ZmOperation.CONTACT, false);
+	}
+};
+
+/**
+ * Add listener to search menu
+ *
+ * @param parent
+ */
+ZmBaseController.prototype._setSearchMenu = function(parent, isToolbar) {
+
+	var searchMenu = parent && parent.getSearchMenu && parent.getSearchMenu();
+	if (!searchMenu) {
+		return;
+	}
+	searchMenu.addSelectionListener(ZmOperation.SEARCH, this._searchListener.bind(this, AjxEmailAddress.FROM, isToolbar));
+	searchMenu.addSelectionListener(ZmOperation.SEARCH_TO, this._searchListener.bind(this, AjxEmailAddress.TO, isToolbar));
+
+	if (this.getSearchFromText()) {
+		searchMenu.getMenuItem(ZmOperation.SEARCH).setText(this.getSearchFromText());
+	}
+	if (this.getSearchToText()) {
+		searchMenu.getMenuItem(ZmOperation.SEARCH_TO).setText(this.getSearchToText());
+	}
+};
+
+/**
+ * From Search based on email address.
+ *
+ * @private
+ */
+ZmBaseController.prototype._searchListener = function(addrType, isToolbar, ev) {
+
+	var folder = this._getSearchFolder(),
+		item = this._actionEv.item,
+		address = this._actionEv.address,
+		name;
+
+	if (item && item.isZmMailMsg && folder && folder.isOutbound()) {
+		/* sent/drafts search from all recipients */
+		var toAddrs = item.getAddresses(AjxEmailAddress.TO).getArray(),
+			ccAddrs = item.getAddresses(AjxEmailAddress.CC).getArray();
+
+		name = toAddrs.concat(ccAddrs);
+	}
+	else if (address) {
+		name = address.isAjxEmailAddress ? address.getAddress() : address;
+	}
+
+	if (name) {
+		var srchCtlr = appCtxt.getSearchController();
+		if (addrType === AjxEmailAddress.FROM) {
+			srchCtlr.fromSearch(name);
+		}
+		else if (addrType === AjxEmailAddress.TO) {
+			srchCtlr.toSearch(name);
+		}
+	}
+};
+
+/**
+ * Compose message to participant.
+ *
+ * @private
+ */
+ZmBaseController.prototype._composeListener = function(ev, addr) {
+
+	var addr = addr || (this._actionEv && this._actionEv.address),
+		email = addr && addr.toString();
+
+	if (email) {
+		AjxDispatcher.run("Compose", {
+			action:         ZmOperation.NEW_MESSAGE,
+			inNewWindow:    this._app._inNewWindow(ev),
+			toOverride:     email + AjxEmailAddress.SEPARATOR
+		});
+	}
+};
+
+/**
+ * If there's a contact for the participant, edit it, otherwise add it.
+ *
+ * @private
+ */
+ZmBaseController.prototype._contactListener = function(ev) {
+	var loadCallback = this._handleLoadContactListener.bind(this);
+	AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
+};
+
+/**
+ * @private
+ */
+ZmBaseController.prototype._handleLoadContactListener = function() {
+
+	var cc = AjxDispatcher.run("GetContactController");
+	var contact = this._actionEv.contact;
+	if (contact) {
+		if (contact.isDistributionList()) {
+			this._editListener(this._actionEv, contact);
+			return;
+		}
+		if (contact.isLoaded) {
+			var isDirty = contact.isGal;
+			cc.show(contact, isDirty);
+		} else {
+			var callback = this._loadContactCallback.bind(this);
+			contact.load(callback);
+		}
+	} else {
+		var contact = this._createNewContact(this._actionEv);
+		cc.show(contact, true);
+	}
+};
+
+ZmBaseController.prototype.getSearchFromText = function() {
+	return null;
+};
+
+ZmBaseController.prototype.getSearchToText = function() {
+	return null;
+};
+
+ZmBaseController.prototype._createNewContact = function(ev) {
+	var contact = new ZmContact(null);
+	contact.initFromEmail(ev.address);
+	return contact;
+};
+
+ZmBaseController.prototype._loadContactCallback = function(resp, contact) {
+	AjxDispatcher.run("GetContactController").show(contact);
+};
+
+ZmBaseController.prototype._getSearchFolder = function() {
+	var id = this._getSearchFolderId();
+	return id && appCtxt.getById(id);
+};
+
+/**
+ * This method gets overridden if folder id is retrieved another way
+ *
+ * @param {boolean}		allowComplex	if true, search can have other terms aside from the folder term
+ * @private
+ */
+ZmBaseController.prototype._getSearchFolderId = function(allowComplex) {
+	var s = this._activeSearch && this._activeSearch.search;
+	return s && (allowComplex || s.isSimple()) && s.folderId;
+};

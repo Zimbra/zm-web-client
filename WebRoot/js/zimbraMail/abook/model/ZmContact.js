@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -69,6 +75,7 @@ ZmContact = function(id, list, type, newDl) {
 
 ZmContact.prototype = new ZmItem;
 ZmContact.prototype.constructor = ZmContact;
+ZmContact.prototype.isZmContact = true;
 
 // fields
 ZmContact.F_anniversary				= "anniversary";
@@ -186,15 +193,17 @@ ZmContact.GAL_CAL_RES_TYPE			= "zimbraCalResType";
 ZmContact.GAL_CAL_RES_LOC_NAME		= "zimbraCalResLocationDisplayName";
 
 // file as
-var i = 1;
-ZmContact.FA_LAST_C_FIRST			= i++;
-ZmContact.FA_FIRST_LAST 			= i++;
-ZmContact.FA_COMPANY 				= i++;
-ZmContact.FA_LAST_C_FIRST_COMPANY	= i++;
-ZmContact.FA_FIRST_LAST_COMPANY		= i++;
-ZmContact.FA_COMPANY_LAST_C_FIRST	= i++;
-ZmContact.FA_COMPANY_FIRST_LAST		= i++;
-ZmContact.FA_CUSTOM					= i++;
+(function() {
+	var i = 1;
+	ZmContact.FA_LAST_C_FIRST			= i++;
+	ZmContact.FA_FIRST_LAST 			= i++;
+	ZmContact.FA_COMPANY 				= i++;
+	ZmContact.FA_LAST_C_FIRST_COMPANY	= i++;
+	ZmContact.FA_FIRST_LAST_COMPANY		= i++;
+	ZmContact.FA_COMPANY_LAST_C_FIRST	= i++;
+	ZmContact.FA_COMPANY_FIRST_LAST		= i++;
+	ZmContact.FA_CUSTOM					= i++;
+})();
 
 // Field information
 
@@ -300,7 +309,16 @@ ZmContact.X_FIELDS = [
 
 ZmContact.IGNORE_NORMALIZATION = [];
 
+ZmContact.ADDR_PREFIXES = ["work","home","other"];
+ZmContact.ADDR_SUFFIXES = ["Street","City","State","PostalCode","Country"];
+
 ZmContact.updateFieldConstants = function() {
+
+	for (var i = 0; i < ZmContact.ADDR_PREFIXES.length; i++) {
+		for (var j = 0; j < ZmContact.ADDR_SUFFIXES.length; j++) {
+			ZmContact.IGNORE_NORMALIZATION.push(ZmContact.ADDR_PREFIXES[i] + ZmContact.ADDR_SUFFIXES[j]);
+		}
+	}
 
 ZmContact.DISPLAY_FIELDS = [].concat(
 	ZmContact.ADDRESS_FIELDS,
@@ -326,10 +344,7 @@ ZmContact.IS_DATE = {};
 ZmContact.IS_DATE[ZmContact.F_birthday] = true;
 ZmContact.IS_DATE[ZmContact.F_anniversary] = true;
 
-ZmContact.IS_IGNORE = {};
-for (var i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
-	ZmContact.IS_IGNORE[ZmContact.IGNORE_FIELDS[i]] = true;
-}
+ZmContact.IS_IGNORE = AjxUtil.arrayAsHash(ZmContact.IGNORE_FIELDS);
 
 // number of distribution list members to fetch at a time
 ZmContact.DL_PAGE_SIZE = 100;
@@ -395,12 +410,17 @@ function(node, args) {
 			contact.isGal = args.isGal;
 		}
 		contact._loadFromDom(node);
+		//update the canonical list
+		appCtxt.getApp(ZmApp.CONTACTS).getContactList().add(contact);
 	} else {
 		if (node.m) {
 			contact.attr[ZmContact.F_groups] = node.m;
 		}
 		if (node.ref) {
 			contact.ref = node.ref;
+		}
+		if (node.tn) {
+			contact._parseTagNames(node.tn);
 		}
 		AjxUtil.hashUpdate(contact.attr, node._attrs);	// merge new attrs just in case we don't have them
 		contact.list = args.list || new ZmContactList(null);
@@ -897,6 +917,136 @@ function() {
 };
 
 
+ZmContact.prototype.gatherExtraDlStuff =
+function(callback) {
+	if (this.dlInfo && !this.dlInfo.isMinimal) {
+		//already there, skip to next step, loading DL Members
+		this.loadDlMembers(callback);
+		return;
+	}
+	var callbackFromGettingInfo = this._handleGetDlInfoResponse.bind(this, callback);
+	this.loadDlInfo(callbackFromGettingInfo);
+};
+
+
+ZmContact.prototype._handleGetDlInfoResponse =
+function(callback, result) {
+	var response = result._data.GetDistributionListResponse;
+	var dl = response.dl[0];
+	var attrs = dl._attrs;
+	var isMember = dl.isMember;
+	var isOwner = dl.isOwner;
+	var mailPolicySpecificMailers = [];
+	this.dlInfo = {	isMember: isMember,
+						isOwner: isOwner,
+						subscriptionPolicy: attrs.zimbraDistributionListSubscriptionPolicy,
+						unsubscriptionPolicy: attrs.zimbraDistributionListUnsubscriptionPolicy,
+						description: attrs.description || "",
+						displayName: attrs.displayName || "",
+						notes: attrs.zimbraNotes || "",
+						hideInGal: attrs.zimbraHideInGal == "TRUE",
+						mailPolicy: isOwner && this._getMailPolicy(dl, mailPolicySpecificMailers),
+						owners: isOwner && this._getOwners(dl)};
+	this.dlInfo.mailPolicySpecificMailers = mailPolicySpecificMailers;
+
+	this.loadDlMembers(callback);
+};
+
+ZmContact.prototype.loadDlMembers =
+function(callback) {
+	if ((!appCtxt.get("EXPAND_DL_ENABLED") || this.dlInfo.hideInGal) && !this.dlInfo.isOwner) {
+		// can't get members if dl has zimbraHideInGal true, and not owner
+		//also, if zimbraFeatureDistributionListExpandMembersEnabled is false - also do not show the members (again unless it's the owner)
+		this.dlMembers = [];
+		if (callback) {
+			callback();
+		}
+		return;
+	}
+	if (this.dlMembers) {
+		//already there - just callback
+		if (callback) {
+			callback();
+		}
+		return;
+	}
+	var respCallback = this._handleGetDlMembersResponse.bind(this, callback);
+	this.getAllDLMembers(respCallback);
+};
+
+
+ZmContact.prototype._handleGetDlMembersResponse =
+function(callback, result) {
+	var list = result.list;
+	if (!list) {
+		this.dlMembers = [];
+		callback();
+		return;
+	}
+	var members = [];
+	for (var i = 0; i < list.length; i++) {
+		members.push({type: ZmContact.GROUP_INLINE_REF,
+						value: list[i],
+						address: list[i]});
+	}
+
+	this.dlMembers = members;
+	callback();
+};
+
+ZmContact.prototype._getOwners =
+function(dl) {
+	var owners = dl.owners[0].owner;
+	var ownersArray = [];
+	for (var i = 0; i < owners.length; i++) {
+		var owner = owners[i].name;
+		ownersArray.push(owner); //just the email address, I think and hope.
+	}
+	return ownersArray;
+};
+
+ZmContact.prototype._getMailPolicy =
+function(dl, specificMailers) {
+	var mailPolicy;
+
+	var rights = dl.rights[0].right;
+	var right = rights[0];
+	var grantees = right.grantee;
+	if (!grantees) {
+		return ZmGroupView.MAIL_POLICY_ANYONE;
+	}
+	for (var i = 0; i < grantees.length; i++) {
+		var grantee = grantees[i];
+
+		mailPolicy = ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP[grantee.type];
+
+		if (mailPolicy == ZmGroupView.MAIL_POLICY_SPECIFIC) {
+			specificMailers.push(grantee.name);
+		}
+		else if (mailPolicy == ZmGroupView.MAIL_POLICY_ANYONE) {
+			break;
+		}
+		else if (mailPolicy == ZmGroupView.MAIL_POLICY_INTERNAL) {
+			break;
+		}
+		else if (mailPolicy == ZmGroupView.MAIL_POLICY_MEMBERS) {
+			if (grantee.name == this.getEmail()) {
+				//this means only members of this DL can send.
+				break;
+			}
+			else {
+				//must be another DL, and we do allow it, so treat it as regular user.
+				specificMailers.push(grantee.name);
+				mailPolicy = ZmGroupView.MAIL_POLICY_SPECIFIC;
+			}
+		}
+	}
+	mailPolicy = mailPolicy || ZmGroupView.MAIL_POLICY_ANYONE;
+
+	return mailPolicy;
+};
+
+
 ZmContact.prototype.loadDlInfo =
 function(callback) {
 	var soapDoc = AjxSoapDoc.create("GetDistributionListRequest", "urn:zimbraAccount", null);
@@ -952,9 +1102,9 @@ function() {
 	if (this.isDistributionList()) {
 		return "Group_48";
 	}
-	if (this.isGal) {
-		//todo - get a big version of ImgGalContact.png 
-	}
+	//todo - get a big version of ImgGalContact.png
+//	if (this.isGal) {
+//	}
 	return "Person_48";
 };
 
@@ -1130,6 +1280,8 @@ function(attr, batchCmd, isAutoCreate) {
 		}
 	}
 
+	this._addRequestAttr(cn, ZmContact.X_fullName, ZmContact.computeFileAs(attr));
+
 	var respCallback = new AjxCallback(this, this._handleResponseCreate, [attr, batchCmd != null, isAutoCreate]);
 
 	if (batchCmd) {
@@ -1170,7 +1322,8 @@ function(attr, isBatchMode, isAutoCreate, result) {
 			var msg = this.isGroup() ? ZmMsg.groupCreated : ZmMsg.contactCreated;
 			appCtxt.getAppController().setStatusMsg(msg);
 		}
-		appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(cn, false);
+		//update the canonical list. (this includes adding to the _idHash like before (bug 44132) calling updateIdHash. But calling that left the list inconcistant.
+		appCtxt.getApp(ZmApp.CONTACTS).getContactList().add(cn);
 	} else {
 		var msg = this.isGroup() ? ZmMsg.errorCreateGroup : ZmMsg.errorCreateContact;
 		var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
@@ -1348,7 +1501,9 @@ function(attr) {
 
 	var newEmail = attr[ZmContact.F_email];
 
+	var emailChanged = false;
 	if (newEmail !== undefined) {
+		emailChanged = true;
 		reqs.push(this._getRenameDlReq(newEmail));
 		this.setAttr(ZmContact.F_email, newEmail);
 	}
@@ -1372,6 +1527,7 @@ function(attr) {
 	this._addMailPolicyAndOwnersReqs(reqs, attr);
 
 	if (reqs.length == 0) {
+		this._modifyDlResponseHandler(false, null); //pretend it was saved
 		return;
 	}
 	var jsonObj = {
@@ -1380,7 +1536,7 @@ function(attr) {
 			DistributionListActionRequest: reqs
 		}
 	};
-	var respCallback = this._modifyDlResponseHandler.bind(this, fileAsChanged);
+	var respCallback = this._modifyDlResponseHandler.bind(this, fileAsChanged || emailChanged); //there's some issue with fileAsChanged so adding the emailChanged to be on safe side
 	appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
 
 };
@@ -1519,7 +1675,8 @@ function(attr) {
 	return {
 		_jsns: "urn:zimbraAccount",
 		name: attr[ZmContact.F_email],
-		a: this._getDlAttributes(attr)
+		a: this._getDlAttributes(attr),
+		dynamic: false
 	};
 };
 
@@ -1542,7 +1699,10 @@ function(attr) {
 };
 
 ZmContact.prototype._modifyDlResponseHandler =
-function(ev, fileAsChanged) {
+function(fileAsChanged, result) {
+	if (this._handleErrorDl(result)) {
+		return;
+	}
 	appCtxt.setStatusMsg(ZmMsg.dlSaved);
 
 	//for DLs we reload from the server since the server does not send notifications.
@@ -1552,36 +1712,49 @@ function(ev, fileAsChanged) {
 		fileAsChanged: fileAsChanged
 	};
 
+	this._popView(fileAsChanged);
+
 	this._notify(ZmEvent.E_MODIFY, details);
 };
 
 ZmContact.prototype._createDlResponseHandler =
 function(result) {
-	var batchResp = result.getResponse().BatchResponse;
-	if (this._handleErrorCreateDl(batchResp)) {
+	if (this._handleErrorDl(result, true)) {
+		this.attr = {}; //since above in _createDl, we set it to new values prematurely. which would affect next gathering of modified attributes.
 		return;
 	}
 	appCtxt.setStatusMsg(ZmMsg.distributionListCreated);
 
-	if (!ZmAddrBookTreeController) {
+	this._popView(true);
+};
+
+ZmContact.prototype._popView =
+function(updateDlList) {
+	var controller = AjxDispatcher.run("GetContactController");
+	controller.popView(true);
+	if (!updateDlList) {
 		return;
 	}
 	var clc = AjxDispatcher.run("GetContactListController");
 	if (clc.getFolderId() != ZmFolder.ID_DLS) {
 		return;
 	}
-	ZmAddrBookTreeController.dlFolderClicked();
+	ZmAddrBookTreeController.dlFolderClicked(); //This is important in case of new DL created OR a renamed DL, so it would reflect in the list.
 };
 
-ZmContact.prototype._handleErrorCreateDl =
-function(batchResp) {
+ZmContact.prototype._handleErrorDl =
+function(result, creation) {
+	if (!result) {
+		return false;
+	}
+	var batchResp = result.getResponse().BatchResponse;
 	var faults = batchResp.Fault;
 	if (!faults) {
 		return false;
 	}
 	var ex = ZmCsfeCommand.faultToEx(faults[0]);
 	var controller = AjxDispatcher.run("GetContactController");
-	controller.popupErrorDialog(ZmMsg.dlCreateFailed, ex);
+	controller.popupErrorDialog(creation ? ZmMsg.dlCreateFailed : ZmMsg.dlModifyFailed, ex);
 	return true;
 
 };
@@ -1633,8 +1806,14 @@ ZmContact.prototype._handleResponseMove =
 function(newFolderId, resp) {
 	var newFolder = newFolderId && appCtxt.getById(newFolderId);
 	var count = 1;
-	if (newFolder)
-		appCtxt.setStatusMsg(AjxMessageFormat.format(ZmMsg.actionMove, [count, AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[ZmItem.CONTACT]], count), newFolder.name]));
+	if (newFolder) {
+		appCtxt.setStatusMsg(ZmList.getActionSummary({
+			actionTextKey:  'actionMove',
+			numItems:       count,
+			type:           ZmItem.CONTACT,
+			actionArg:      newFolder.name
+		}));
+	}
 	
 	this._notify(ZmEvent.E_MODIFY, resp);
 };
@@ -1711,7 +1890,12 @@ function(obj, batchMode) {
 	};
 
 	// update this contact's list per old/new attrs
-	this.list.modifyLocal(obj, details);
+	for (var listId in this._list) {
+		var list = listId && appCtxt.getById(listId);
+		if (!list) { continue; }
+		list.modifyLocal(obj, details);
+	}
+
 	this._notify(ZmEvent.E_MODIFY, obj);
 
 	var buddy = this.getBuddy();
@@ -1777,7 +1961,7 @@ function(asObj) {
 	if (asObj) {
 		email = AjxEmailAddress.parse(email);
         if(email){
-		    email.isGroup = this.isGroup;
+		    email.isGroup = this.isGroup();
 		    email.canExpand = this.canExpand;
         }
 	}
@@ -1813,7 +1997,7 @@ function(asObj) {
 
     if (asObj && email) {
         email = AjxEmailAddress.parse(email);
-        email.isGroup = this.isGroup;
+        email.isGroup = this.isGroup();
         email.canExpand = this.canExpand;
     }
 
@@ -2044,16 +2228,20 @@ function() {
 	return this.id ? this.getFileAs() : ZmMsg.newContact;
 };
 
-ZmContact.NO_MAX_IMAGE_WIDTH = - 1;
+ZmContact.NO_MAX_IMAGE_WIDTH = ZmContact.NO_MAX_IMAGE_HEIGHT = - 1;
 
 /**
  * Get the image URL.
  *
+ * Please note that maxWidth and maxHeight are hints, as they have no
+ * effect on Zimlet-supplied images.
+ *
  * maxWidth {int} max pixel width (optional - default 48, or pass ZmContact.NO_MAX_IMAGE_WIDTH if full size image is required)
+ * maxHeight {int} max pixel height (optional - default to maxWidth, or pass ZmContact.NO_MAX_IMAGE_HEIGHT if full size image is required)
  * @return	{String}	the image URL
  */
 ZmContact.prototype.getImageUrl =
-function(maxWidth) {
+function(maxWidth, maxHeight) {
   	var image = this.getAttr(ZmContact.F_image);
 	var imagePart  = image && image.part || this.getAttr(ZmContact.F_imagepart); //see bug 73146
 
@@ -2066,7 +2254,13 @@ function(maxWidth) {
 		maxWidth = maxWidth || 48;
 		maxWidthStyle = ["&max_width=", maxWidth].join("");
 	}
-  	return  [msgFetchUrl, "&id=", this.id, "&part=", imagePart, maxWidthStyle, "&t=", (new Date()).getTime()].join("");
+	var maxHeightStyle = "";
+	if (maxHeight !== ZmContact.NO_MAX_IMAGE_HEIGHT) {
+		maxHeight = maxHeight ||
+			(maxWidth !== ZmContact.NO_MAX_IMAGE_WIDTH ? maxWidth : 48);
+		maxHeightStyle = ["&max_height=", maxHeight].join("");
+	}
+  	return  [msgFetchUrl, "&id=", this.id, "&part=", imagePart, maxWidthStyle, maxHeightStyle, "&t=", (new Date()).getTime()].join("");
 };
 
 ZmContact.prototype.addModifyZimletImageToBatch =
@@ -2359,7 +2553,9 @@ function(node) {
 	this.isLoaded = true;
 	this.rev = node.rev;
 	this.sf = node.sf || node._attrs.sf;
-	this.folderId = node.l;
+	if (!this.isGal) {
+		this.folderId = node.l;
+	}
 	this.created = node.cd;
 	this.modified = node.md;
 

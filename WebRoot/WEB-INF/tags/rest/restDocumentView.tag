@@ -1,15 +1,19 @@
+<!DOCTYPE html>
+<html>
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2009, 2010, 2011, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software Foundation,
+ * version 2 of the License.
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
@@ -39,15 +43,11 @@ response.setHeader("Pragma", "no-cache");
 </c:if>
 
 <c:set var="isDevMode" value="${not empty requestScope.mode and requestScope.mode eq 'mjsf'}" scope="request"/>
-<%-- Support for tinymce suspended --%>
-<%--<c:set var="isTinyMce" value="${not empty param.editor and param.editor eq 'tinymce'}" scope="request"/>--%>
-<c:set var="isTinyMce" value="false" />
-
 <c:set var="isSkinDebugMode" value="${not empty requestScope.mode} and ${requestScope.mode eq 'skindebug'}" scope="request"/>
 
-<c:set var="packages" value="Startup1_1,Startup1_2,Startup2,Docs" scope="request"/>
+<c:set var="packages" value="Ajax,Startup1_1,Startup1_2,Startup2,Docs" scope="request"/>
 <c:if test="${not empty param.packages}">
-    <c:set var="packages" value="Startup1_1,Startup1_2,Startup2,Docs,${param.packages}" scope="request"/>
+    <c:set var="packages" value="Ajax,Startup1_1,Startup1_2,Startup2,Docs,${param.packages}" scope="request"/>
 </c:if>
 <c:set var="pnames" value="${fn:split(packages,',')}" scope="request"/>
 
@@ -86,11 +86,8 @@ response.setHeader("Pragma", "no-cache");
         <jsp:param name="skin" value="${skin}" />
         <jsp:param name="localeId" value="${localeId}"/>
     </jsp:include>
-
     <script type="text/javascript">
-        <jsp:include>
-        <jsp:attribute name='page'>/js/Boot_all.js</jsp:attribute>
-        </jsp:include>
+        <jsp:include page="/js/Boot_all.js" />
     </script>
     <script type="text/javascript">
         AjxPackage.setBasePath("${pageContext.request.contextPath}/js");
@@ -106,6 +103,13 @@ response.setHeader("Pragma", "no-cache");
     <script>
         //AjxEnv.DEFAULT_LOCALE = "${localeId}";
         <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
+
+        window.isRestView = true;
+        window.contextPath = '${pageContext.request.contextPath}';
+        window.appContextPath = '${pageContext.request.contextPath}';
+        window.appRequestLocaleId = "${zm:cook(localeId)}";
+        window.appDevMode     = ${isDevMode};
+
     </script>
 
     <c:forEach var="pname" items="${pnames}">
@@ -122,9 +126,6 @@ response.setHeader("Pragma", "no-cache");
         </c:choose>
     </c:forEach>
 
-    <c:if test="${isTinyMce}">
-        <script type="text/javascript" src="${pageContext.request.contextPath}/tiny_mce/3.2.6/tiny_mce.js"></script>
-    </c:if>
     <c:if test="${param.embed eq '1'}">
         <script type="text/javascript">
             window.viewMode = "embed";
@@ -134,21 +135,11 @@ response.setHeader("Pragma", "no-cache");
 </head>
 
 <body class="editorBody">
-
+<div id="main_shell"></div>
 <noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
 
 <script type="text/javascript" language="JavaScript">
-
-    window.isRestView = true;
-    window.isTinyMCE = ${isTinyMce};
-    window.contextPath = '${pageContext.request.contextPath}';
-    window.appContextPath = '${pageContext.request.contextPath}';
-    window.appRequestLocaleId = "${zm:cook(localeId)}";
-    window.appDevMode     = ${isDevMode};
-
-    window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
-
-    ZmDocsEditApp.setFile('${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}');
+    if(!ZmCsfeCommand.noAuth){
 
     var itemInfo = ${fileInfoJSON};
     itemInfo = itemInfo.Body && itemInfo.Body.GetItemResponse;
@@ -158,10 +149,18 @@ response.setHeader("Pragma", "no-cache");
         //REST URL will not be generated on server side
         item.rest = location.href;
         ZmDocsEditApp.setItemInfo(item);
+    } else {
+        ZmDocsEditApp.setFile('${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}');
+    }
+
+    ZmDocsEditApp.launch();
+
+    }else{
+        window.location = window.appContextPath;
     }
 
 </script>
 
 
 </body>
-
+</html>

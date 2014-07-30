@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -111,6 +117,39 @@ ZmCalBaseView._getColors = function(color) {
 
 	return { standard: { header: hs, body: bs }, deeper: { header: hd, body: bd } };
 };
+
+/**
+ * Gets the key map name.
+ *
+ * @return	{String}	the key map name
+ */
+ZmCalBaseView.prototype.getKeyMapName =
+    function() {
+        return DwtKeyMap.MAP_MENU;
+    };
+
+/**
+ * Handles the key action.
+ *
+ * @param	{constant}		actionCode		the action code
+ * @param	{Object}	ev		the event
+ * @see		ZmApp.ACTION_CODES_R
+ * @see		ZmKeyMap
+ * @see     DwtControl
+ */
+ZmCalBaseView.prototype.handleKeyAction =
+    function(actionCode, ev) {
+        switch (actionCode) {
+            //Gets the Esc key handle
+            case DwtKeyMap.CANCEL:
+                this.deselectAppt();
+                return true;
+
+            default:
+                return false;
+        }
+        return true;
+    };
 
 ZmCalBaseView._toColorsCss =
 function(object) {
@@ -514,12 +553,8 @@ function(clickedEl, ev) {
 	var type = this._getItemData(clickedElSet[0], "type");
 
 	if (ev.shiftKey && bContained) {
-        for (var i = 0; i < clickedElSet.length; i++) {
-		    this._selectedItems.remove(clickedElSet[i]);
-            clickedElSet[i].className = this._getStyle(type);
-        }
-		this._selEv.detail = DwtListView.ITEM_DESELECTED;
-		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
+        //Deselect the current selected appointment
+        this.deselectAppt(clickedElSet);
 	} else if (!bContained) {
 		// clear out old left click selection(s)
 		for (i = 0; i < numSelectedItems; i++) {
@@ -575,6 +610,10 @@ function(item, skipNotify) {
 			this._evtMgr.notifyListeners(DwtEvent.SELECTION, selEv);
 		}	
 	}
+};
+
+ZmCalBaseView.prototype._getItemCountType = function() {
+	return ZmId.ITEM_APPOINTMENT;
 };
 
 ZmCalBaseView.prototype.getSelectionCount =
@@ -981,7 +1020,7 @@ function(ev, apptEl, appt) {
     }
 	var calendar = appCtxt.getById(appt.folderId);
 	var isRemote = Boolean(calendar.url);
-    if (appt.isReadOnly() || isRemote) return false;
+    if (appt.isReadOnly() || isRemote || appCtxt.isWebClientOffline()) return false;
 
 	var apptOffset = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, apptEl, false);
 
@@ -1331,3 +1370,24 @@ ZmCalBaseView.prototype.setTimer=function(min){
 };
 
 ZmCalBaseView.prototype.updateTimeIndicator=function() { };
+
+/**
+ * De-selects a selected appointment
+ *
+ * @param   {array}  clickedAppts an array of appointments
+ */
+ZmCalBaseView.prototype.deselectAppt =
+function (clickedAppts) {
+    clickedAppts = clickedAppts || this._selectedItems.getArray();
+
+    if(clickedAppts.length > 0) {
+        var type = this._getItemData(this._getItemClickedSet(clickedAppts), "type");
+
+        for(var i = 0; i < clickedAppts.length; i++) {
+            clickedAppts[i].className = this._getStyle(type);
+            this._selectedItems.remove(clickedAppts[i]);
+        }
+        this._selEv.detail = DwtListView.ITEM_DESELECTED;
+        this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
+    }
+};

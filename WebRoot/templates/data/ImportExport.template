@@ -1,44 +1,26 @@
 <template id='data.ImportExport#ImportExportPrefPage'>
 	<$ if (appCtxt.get(ZmSetting.IMPORT_ENABLED)) { $>
-		<table width=100%>
-			<tr class='ZOptionsHeaderRow'>
-				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg._import$></td>
-				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-			</tr>
-		</table>
-		<table class='ZOptionsSectionTable' width=100%>
-			<tr><td class='ZOptionsSectionMain'>
-				<table width="100%" cellspacing='6'>
-					<tr><td><div id='${id}_IMPORT_FOLDER' tabindex="100"></div></td></tr>
-					<tr><td>
-						<table align="right">
-							<tr><td><button id="${id}_IMPORT_BUTTON" tabindex="200"></button></td></tr>
-						</table>
-					</td></tr>
-				</table>
+		<div class='prefHeader'><$=ZmMsg._import$></div>
+		<table role="presentation" class='ZOptionsSectionTable' width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain'>
+					<table role="presentation" width="100%">
+						<tr><td><div id='${id}_IMPORT_FOLDER' tabindex="100"></div></td></tr>
+						<tr><td align="right"><button id="${id}_IMPORT_BUTTON" tabindex="200" style="display:inline-block;"></button></td></tr>
+					</table>
 				</td>
 			</tr>
 		</table>
 	<$ } $>
 	<$ if (appCtxt.get(ZmSetting.EXPORT_ENABLED)) { $>
-		<table width=100%>
-			<tr class='ZOptionsHeaderRow'>
-				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg._export$></td>
-				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-			</tr>
-		</table>
-		<table class='ZOptionsSectionTable' width=100%>
-			<tr><td class='ZOptionsSectionMain'>
-				<table width="100%" cellspacing='6'>
-					<tr><td><div id='${id}_EXPORT_FOLDER' tabindex="300"></div></td></tr>
-					<tr><td>
-						<table align="right">
-							<tr><td><button id="${id}_EXPORT_BUTTON" tabindex="400"></button></td></tr>
-						</table>
-					</td></tr>
-				</table>
+		<div class='prefHeader'><$=ZmMsg._export$></div>
+		<table role="presentation" class='ZOptionsSectionTable' width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain'>
+					<table role="presentation" width="100%" >
+						<tr><td><div id='${id}_EXPORT_FOLDER' tabindex="300"></div></td></tr>
+						<tr><td align="right"><button id="${id}_EXPORT_BUTTON" tabindex="400" style="display:inline-block;"></button></td></tr>
+					</table>
 				</td>
 			</tr>
 		</table>
@@ -46,7 +28,7 @@
 </template>
 
 <template id="data.ImportExport#ImportView" class="ZmImportView">
-	<table width=100% class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.fileLabel$></td>
 			<td class="ZOptionsField" style='padding-left:0.5em;'>
 				<form id="${id}_FORM" method="POST" enctype="multipart/form-data">
@@ -61,14 +43,14 @@
 		<tr id="${id}_FOLDER_row">
 			<td class="ZOptionsLabelTop"><$=ZmMsg.destinationLabel$></td>
 			<td class="ZOptionsField">
-				<table>
+				<table role="presentation">
 					<tr><td><button id="${id}_FOLDER_BUTTON" tabindex="300"></button></td></tr>
 				</table>
 			</td>
 		</tr>
 		<tr id='${id}_RESOLVE_row'>
 			<td class="ZOptionsLabelTop"><$=ZmMsg.resolveDuplicatesLabel$></td>
-			<td class="ZOptionsField"><table><tr>
+			<td class="ZOptionsField"><table role="presentation"><tr>
 				<td><div id="${id}_RESOLVE_IGNORE" tabindex="500"></div></td>
 				<td><div id="${id}_RESOLVE_MODIFY" tabindex="501"></div></td>
 				<td><div id="${id}_RESOLVE_REPLACE" tabindex="502"></div></td>
@@ -93,11 +75,11 @@
 </template>
 
 <template id="data.ImportExport#ExportView" class="ZmExportView">
-	<table width=100% class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 		<$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) || appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { $>
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.typeLabel$></td>
 			<td class="ZOptionsField">
-				<table>
+				<table role="presentation">
 					<tr>
 						<td><div id="${id}_TYPE_TGZ" tabindex="100"></div></td>
 					<$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) { $>
@@ -115,7 +97,7 @@
 		<$ } $>
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.sourceLabel$></td>
 			<td class="ZOptionsField">
-				<table>
+				<table role="presentation">
 					<tr><td><button id="${id}_FOLDER_BUTTON" tabindex="300"></button></td></tr>
 				</table>
 				<$ if (appCtxt.get(ZmSetting.OFFLINE_ENABLED)) { $>
@@ -156,7 +138,7 @@
 </template>
 
 <template id="data.ImportExport#DataTypes">
-	<table class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 		<$ var count = data.count; $>
 		<$ var rows = count / 3; $>
 		<$ for (var i = 0; i < count; i++) { $>
@@ -169,7 +151,7 @@
 </template>
 
 <template id="data.ImportExport#DataTypeCheckbox">
-	<table>
+	<table role="presentation">
 	  <tr>
 		<td><input id='${id}_input' name='${name}' value='${value}' type='checkbox' ${checked}></td>
 		<td><div id='${id}_image'></div></td>
@@ -183,7 +165,7 @@
 </template>
 
 <template id='data.ImportExport#DatePickers'>
-	<td><table><tr>
+	<td><table role="presentation"><tr>
 		<$= AjxTemplate.expand("#StartDate", data) $>
 		<$= AjxTemplate.expand("#EndDate", data) $>
 	</tr></table></td>

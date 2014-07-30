@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2007, 2008, 2009, 2010, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -51,6 +57,7 @@ ZmLiteHtmlEditor.UNDERLINE_STYLE = "underline";
 
 ZmLiteHtmlEditor.FONT_SIZE_STYLE = "fontsize";
 ZmLiteHtmlEditor.FONT_FAMILY_STYLE = "fontfamily";
+ZmLiteHtmlEditor.FONT_SIZE_VALUES = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
 
 ZmLiteHtmlEditor.FONT_COLOR = "fontcolor";
 
@@ -268,7 +275,7 @@ ZmLiteHtmlEditor.prototype._initEditor = function(){
 	var html = [
 			"<textarea id='",
 			this._textAreaId,
-			"' class='DwtHtmlEditorTextArea' style='width:100%;'></textarea>"
+			"' class='ZmHtmlEditorTextArea' style='width:100%;'></textarea>"
 	].join("");
 	htmlEl.innerHTML = html; 
 	return Dwt.byId(this._textAreaId);
@@ -410,13 +417,13 @@ function(tb) {
 	var menu = new ZmPopupMenu(this._fontSizeButton);
 	var listener = new AjxListener(this, this._fontSizeListener);
 
-	for (var i = 0; i < ZmHtmlEditor.FONT_SIZE_VALUES.length; i++) {
-		var item = ZmHtmlEditor.FONT_SIZE_VALUES[i];
+	for (var i = 0; i < ZmLiteHtmlEditor.FONT_SIZE_VALUES.length; i++) {
+		var item = ZmLiteHtmlEditor.FONT_SIZE_VALUES[i];
 		var num = i+1;
 		var text = num + " (" + item + ")";
 		var mi = menu.createMenuItem(i, {text:text});
 		mi.addSelectionListener(listener);
-		mi.setData(ZmHtmlEditor._VALUE, num);
+		mi.setData(ZmHtmlEditor.VALUE, num);
 		if(i == 0){
 				this._fontSizeButton.setText(text);
 		}
@@ -446,7 +453,7 @@ function(ev) {
 ZmLiteHtmlEditor.prototype._fontStyleListener =
 function(ev) {
 
-	var styleType = ev.item.getData(ZmHtmlEditor._VALUE);
+	var styleType = ev.item.getData(ZmHtmlEditor.VALUE);
 	var style = ZmLiteHtmlEditor.STYLE[styleType];
 	if(!style) return;
 

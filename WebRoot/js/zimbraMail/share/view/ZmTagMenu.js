@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -134,30 +140,33 @@ ZmTagMenu.prototype._getAddRemove =
 function(items, tagList) {
 	// find out how many times each tag shows up in the items
 	var tagCount = {};
+	var tagRemoveHash = {};
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		if (!item || !item.tags || !item.tags.length) {
+		if (!item.tags) {
 			continue;
 		}
 		for (var j = 0; j < item.tags.length; j++) {
 			var tagName = item.tags[j];
 			tagCount[tagName] = tagCount[tagName] || 0;
-			tagCount[tagName] += 1;
+			tagRemoveHash[tagName]  = true;
+			//NOTE hasTag and canAddTag are not interchangeable - for Conv it's possible you can both add the tag and remove (if only some messages are tagged)
+			if (!item.canAddTag(tagName)) {
+				tagCount[tagName] += 1;
+			}
 		}
 	}
-	var add = {};
-	var remove = [];
+	var remove = AjxUtil.keys(tagRemoveHash);
+
+	var add = [];
 	// any tag held by fewer than all the items can be added
 	var a = tagList.children.getArray();
-	for (var i = 0; i < a.length; i++) {
-		var tagName = a[i].name;
+	for (i = 0; i < a.length; i++) {
+		var tag = a[i];
+		tagName = tag.name;
 		if (!tagCount[tagName] || (tagCount[tagName] < items.length)) {
-			add[tagName] = true;
+			add.push(tagName);
 		}
-	}
-	// any tag we saw can be removed
-	for (var tagName in tagCount) {
-		remove.push(tagName);
 	}
 
 	return {add: add, remove: remove};
@@ -168,17 +177,12 @@ function(items, tagList) {
 ZmTagMenu.prototype._render =
 function(tagList, addRemove) {
 
-	var sz = tagList.size();
-	var a = tagList.children.getArray();
-	for (var i = 0; i < sz; i++) {
-		var tag = a[i];
-		var tagName = tag.name;
-		if (addRemove.add[tagName]) {
-			this._addNewTag(this, tag, true, null, this._addHash);
-		}
+	for (var i = 0; i < addRemove.add.length; i++) {
+		var tagName = addRemove.add[i];
+		this._addNewTag(this, tagName, tagList, true, null, this._addHash);
 	}
 
-	if (this._tagList.size()) {
+	if (addRemove.add.length) {
 		new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});
 	}
 
@@ -193,6 +197,7 @@ function(tagList, addRemove) {
 	miNew.setShortcut(appCtxt.getShortcutHint(this._keyMap, ZmKeyMap.NEW_TAG));
 	miNew.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_CREATE);
 	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
+	miNew.setEnabled(!appCtxt.isWebClientOffline());
 
 	// add static "Remove Tag" menu item
 	var miRemove = this._menuItems[ZmTagMenu.MENU_ITEM_REM_ID] = new DwtMenuItem({parent:this, id: removeid});
@@ -211,9 +216,9 @@ function(tagList, addRemove) {
 					miRemove.setMenu(removeMenu);
                     removeMenu.setHtmlElementId('REMOVE_TAG_MENU_' + this.getHTMLElId());
 				}
-				var tag = tagList.getByNameOrRemote(removeList[i]);
+				var tagName = removeList[i];
                 var tagHtmlId = 'Remove_tag_' + i;
-				this._addNewTag(removeMenu, tag, false, null, this._removeHash, tagHtmlId);
+				this._addNewTag(removeMenu, tagName, tagList, false, null, this._removeHash, tagHtmlId);
 			}
 			// if multiple removable tags, offer "Remove All"
 			new DwtMenuItem({parent:removeMenu, style:DwtMenuItem.SEPARATOR_STYLE});
@@ -238,7 +243,8 @@ function(tagList, addRemove) {
 
 ZmTagMenu.tagNameLength = 20;
 ZmTagMenu.prototype._addNewTag =
-function(menu, newTag, add, index, tagHash, tagHtmlId) {
+function(menu, newTagName, tagList, add, index, tagHash, tagHtmlId) {
+	var newTag = tagList.getByNameOrRemote(newTagName);
 	var mi = new DwtMenuItem({parent:menu, index:index, id:tagHtmlId});
     var tagName = AjxStringUtil.clipByLength(newTag.getName(false),ZmTagMenu.tagNameLength);
 	var nameText = newTag.notLocal ? AjxMessageFormat.format(ZmMsg.tagNotLocal, tagName) : tagName;

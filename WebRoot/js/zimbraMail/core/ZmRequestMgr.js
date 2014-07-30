@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -67,6 +73,7 @@ ZmRequestMgr._nextReqId = 1;
 
 ZmRequestMgr.OFFLINE_HEAP_DUMP          = "heapdump_upload";
 ZmRequestMgr.OFFLINE_MUST_RESYNC        = "resync";
+ZmRequestMgr.OFFLINE_MUST_GAL_RESYNC        = "gal_resync";
 ZmRequestMgr.OFFLINE_FOLDER_MOVE_FAILED = "foldermove_failed";
 /**
  * Returns a string representation of the object.
@@ -93,6 +100,7 @@ function() {
  * @param {AjxCallback}	callback			the next callback in chain for async request
  * @param {AjxCallback}	errorCallback		the callback to run if there is an exception
  * @param {AjxCallback}	continueCallback	the callback to run after user re-auths
+ * @param {AjxCallback}	offlineCallback	    the callback to run if the user is offline
  * @param {int}			timeout				the timeout value (in seconds)
  * @param {Boolean}		noBusyOverlay		if <code>true</code>, don't use the busy overlay
  * @param {String}		accountName			the name of account to execute on behalf of
@@ -103,11 +111,11 @@ function() {
  * @param {Boolean}		noSession			if <code>true</code>, no session info is included
  * @param {String}		restUri				the REST URI to send the request to
  * @param {boolean}		emptyResponseOkay	if true, empty or no response from server is not an erro
+ * @param {boolean}		offlineRequest	    if true, request will not be send to server
  * @param {boolean}		useChangeToken	    if true, request will try to use change token in header
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
-
 	var response = params.response;
 	if (response) {
 		if (params.reqId) {
@@ -116,6 +124,12 @@ function(params) {
 		}
 		params.asyncMode = true;	// canned response set up async style
 		return this._handleResponseSendRequest(params, new ZmCsfeResult(response));
+	}
+	if (params.offlineRequest || appCtxt.isWebClientOffline()) {
+		if (params.offlineCallback) {
+			params.offlineCallback.run(params);
+		}
+		return;
 	}
 	
 	var reqId = params.reqId = ("Req_"+ZmRequestMgr._nextReqId++);
@@ -173,7 +187,7 @@ function(params) {
 						skipAuthCheck:		params.skipAuthCheck,
 						resend:				params.resend,
 						noSession:			params.noSession,
-						useStringify1:		AjxEnv.isIE && params.fromChildWindow,
+						useStringify1:		(AjxEnv.isIE || AjxEnv.isModernIE) && params.fromChildWindow,
 						emptyResponseOkay:	params.emptyResponseOkay
 					};
 		methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
@@ -222,7 +236,7 @@ ZmRequestMgr.prototype._handleResponseSendRequest =
 function(params, result) {
 	DBG.println("req", "ZmRequestMgr.handleResponseSendRequest for req: " + params.reqId);
 	var isCannedResponse = (params.response != null);
-	if (!isCannedResponse) {
+	if (!isCannedResponse && !appCtxt.isWebClientOffline()) {
 		if (!this._pendingRequests[params.reqId]) {
 			DBG.println("req", "ZmRequestMgr.handleResponseSendRequest no pending request for " + params.reqId);
 			return;
@@ -236,7 +250,6 @@ function(params, result) {
 	
 		if (!params.noBusyOverlay) {
 			this._shell.setBusy(false, params.reqId); // remove busy overlay
-		} else if (params.timeout) {
 		}
 	}
 
@@ -259,7 +272,7 @@ function(params, result) {
 		DBG.println("req", "Request " + params.reqId + " got an exception");
 		var ecb = params.errorCallback;
 		if (ecb) {
-			var handled = ecb.isAjxCallback ? ecb.run(ex) : ecb(ex);
+            var handled = ecb.run(ex, params);
 			if (!handled) {
 				this._handleException(ex, params);
 			}
@@ -275,7 +288,14 @@ function(params, result) {
 				}
 				return false;
 			}(params.ignoreErrs, ex.code)
-			
+
+            if (ex.code === ZmCsfeException.EMPTY_RESPONSE && params.offlineCallback) {
+                params.offlineCallback(params);
+				if (appCtxt.isWebClientOffline() && !params.noBusyOverlay) {
+					this._shell.setBusy(false, params.reqId); // remove busy overlay
+				}
+                ignore = true;
+            }
 			if (!ignore)
 				this._handleException(ex, params);
 		}
@@ -288,8 +308,8 @@ function(params, result) {
 		return;
 	}
 
-	if (params.asyncMode && !params.restUri) {
-		result.set(response.Body);
+    if (params.asyncMode && !params.restUri) {
+	    result.set(response.Body);
 	}
 
     // if we didn't get an exception, then we should make sure that the
@@ -301,12 +321,11 @@ function(params, result) {
 	var methodName = ZmCsfeCommand.getMethodName(params.jsonObj || params.soapDoc);
 	if (params.asyncMode && params.callback) {
 		DBG.println(AjxDebug.DBG1, "------------------------- Running response callback for " + methodName);
-		var cb = params.callback;
-		cb.isAjxCallback ? cb.run(result) : cb(result);
+		params.callback.run(result);
 	}
 
 	DBG.println(AjxDebug.DBG1, "------------------------- Processing notifications for " + methodName);
-	this._handleNotifications(response.Header);
+	this._handleNotifications(response.Header, methodName);
 
 	this._clearPendingRequest(params.reqId);
 
@@ -444,17 +463,17 @@ function(dlg, acct) {
             cont = AjxMessageFormat.format(ZmMsg.offlineMustReSync, acct.name);
             break;
         }
+		case ZmRequestMgr.OFFLINE_MUST_GAL_RESYNC: {
+			cont = AjxMessageFormat.format(ZmMsg.offlineMustGalReSync, acct.name);
+			break;
+		}
         case ZmRequestMgr.OFFLINE_FOLDER_MOVE_FAILED: {
             appCtxt.setStatusMsg(ZmMsg.offlineMoveFolderError);
-            cont = "";
             break;
         }
-        default: {
-            cont = "";
-            break;
-        }
+        default:
     }
-    if(!cont || cont == "") {
+    if (!cont) {
         return;
     }
     var dialog = appCtxt.getOkCancelMsgDialog();
@@ -530,7 +549,7 @@ function(ex, params) {
  * @private
  */
 ZmRequestMgr.prototype._handleNotifications =
-function(hdr) {
+function(hdr, methodName) {
 
 	if (hdr && hdr.context && hdr.context.notify) {
         for (var i = 0; i < hdr.context.notify.length; i++) {
@@ -541,7 +560,7 @@ function(hdr) {
             if (notify.seq > this._highestNotifySeen && !(sid && ZmCsfeCommand._staleSession[sid])) {
                 DBG.println(AjxDebug.DBG1, "Handling notification[" + i + "] seq=" + seq);
                 this._highestNotifySeen = seq;
-                this._notifyHandler(notify);
+                this._notifyHandler(notify, methodName);
             } else {
             	DBG.println(AjxDebug.DBG1, "SKIPPING notification[" + i + "] seq=" + seq + " highestNotifySeen=" + this._highestNotifySeen);
 	      	}
@@ -579,6 +598,7 @@ function(refresh) {
 					var msg = AjxMessageFormat.format(ZmMsg.versionChangeRestart, [curVersion, refresh.version]);
 					dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 					dlg.popup();
+					appCtxt.reloadAppCache(true);
 					return;
 				}
 			}
@@ -669,7 +689,7 @@ function(type, unread, obj, objType, account) {
  * @private
  */
 ZmRequestMgr.prototype._notifyHandler =
-function(notify) {
+function(notify, methodName) {
 	DBG.println(AjxDebug.DBG1, "Handling NOTIFY");
 	AjxDebug.println(AjxDebug.NOTIFY, "Notification block:");
 	AjxDebug.dumpObj(AjxDebug.NOTIFY, notify);
@@ -682,6 +702,10 @@ function(notify) {
 	}
 	if (notify.modified) {
 		this._handleModifies(notify.modified);
+	}
+
+	if (ZmOffline.isOnlineMode() && (notify.deleted || notify.created || notify.modified)) {
+		appCtxt.webClientOfflineHandler.scheduleSyncRequest(notify, methodName);
 	}
 	this._controller.runAppFunction("postNotify", false, notify);
 };

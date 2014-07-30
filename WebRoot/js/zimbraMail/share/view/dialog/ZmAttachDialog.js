@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -63,8 +69,6 @@ ZmAttachDialog.prototype.constructor = ZmAttachDialog;
  * Defines the "briefcase" tab key.
  */
 ZmAttachDialog.TABKEY_BRIEFCASE		= "BRIEFCASE";
-
-ZmAttachDialog.supportsHTML5 = ( window.FileReader/*Firefox*/ || AjxEnv.isChrome || AjxEnv.isSafari4up );
 
 //Listeners
 
@@ -165,7 +169,7 @@ ZmAttachDialog.prototype._setAttachmentSizeSection =
 function(view) {
 	var div = document.createElement("div");
 	div.className = "ZmAttachDialog-note";
-    var attSize = AjxUtil.formatSize(appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT) || 0, true)
+    var attSize = AjxUtil.formatSize(appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT) || 0, true)
 	div.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentLimitMsg, attSize);
 	view.getHtmlElement().appendChild(div);
 };
@@ -276,17 +280,7 @@ function(callback, status, attId) {
 		appCtxt.getAppController()._handleException(ex, {continueCallback:callback});
 	} else {
 		// bug fix #2131 - handle errors during attachment upload.
-		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));
-
-		switch (status) {
-			// add other error codes/message here as necessary
-			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE:	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
-			default:									msg += " "; break;
-		}
-		var dialog = appCtxt.getMsgDialog();
-		dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-		dialog.popup();
-
+		appCtxt.getAppController().popupUploadErrorDialog(ZmItem.MSG, status);
 		this.setFooter(ZmMsg.attachingFilesError);
 	}
 
@@ -364,6 +358,14 @@ ZmAttachDialog.prototype.isInline =
 function() {
 	var inlineOption = document.getElementById(this._htmlElId+"_inlineCheckbox");
 	return (inlineOption && inlineOption.checked);
+};
+
+ZmAttachDialog.prototype.setInline =
+function(checked) {
+	var inlineOption = document.getElementById(this._htmlElId+"_inlineCheckbox");
+
+	if (inlineOption)
+		inlineOption.checked = checked;
 };
 
 
@@ -477,7 +479,7 @@ function() {
     var sizeEl = document.getElementById(fieldId+"_size");
 
     //HTML5
-    if(ZmAttachDialog.supportsHTML5){
+    if(AjxEnv.supportsHTML5File){
         Dwt.setHandler(inputEl, "onchange", AjxCallback.simpleClosure(this._handleFileSize, this, inputEl, sizeEl));
     }
 
@@ -497,8 +499,8 @@ function(inputEl, sizeEl){
     for(var i=0; i<files.length;i++){
         var file = files[i];
         var size = file.size || file.fileSize /*Safari*/;
-        if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)) &&
-            (size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))) {
+        if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)) &&
+            (size > appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT))) {
             className = "RedC";
         }
         totalSize += size;
@@ -600,8 +602,8 @@ function(){
         for(var j=0; j<file.length;j++){
             var f = file[j];
             size = f.size || f.fileSize /*Safari*/;
-            if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)) &&
-                (size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT))) {
+            if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)) &&
+                (size > appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT))) {
                 return false;
             }
         }
@@ -612,9 +614,9 @@ function(){
 ZmMyComputerTabViewPage.prototype.validate =
 function(){
     var status, errorMsg;
-    if(ZmAttachDialog.supportsHTML5){
+    if(AjxEnv.supportsHTML5File){
         status = this._validateFileSize();
-        errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)));
+        errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)));
     }else{
         status = true;
     }

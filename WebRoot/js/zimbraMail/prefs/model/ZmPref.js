@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -44,6 +50,7 @@ ZmPref.TYPE_SHORTCUTS		= "SHORTCUTS";
 ZmPref.TYPE_CUSTOM			= "CUSTOM";
 ZmPref.TYPE_LOCALES			= "LOCALES";
 ZmPref.TYPE_FONT			= "FONT";
+ZmPref.TYPE_FONT_SIZE		= "FONT_SIZE";
 
 ZmPref.ORIENT_VERTICAL		= "vertical";
 ZmPref.ORIENT_HORIZONTAL	= "horizontal";
@@ -141,7 +148,7 @@ function(value) {
 ZmPref.validatePollingInterval =
 function(interval) {
 	var minimum = appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL);
-	if (interval && minimum && interval >= minimum) {
+	if (interval && (!minimum || interval >= minimum)) {
 		return true;
 	} else {
 		var min = minimum / 60;
@@ -648,40 +655,59 @@ function(a, b) {
 
 ZmPref.regenerateSignatureEditor =
 function( control ) {
-    if( appCtxt.isTinyMCEEnabled() ){
-        var signaturePage = control.parent;
-        var valueEl = document.getElementById(signaturePage._htmlElId + "_SIG_EDITOR");
-        signaturePage.isSignatureEditor = true;
-        var htmlEditor = new ZmAdvancedHtmlEditor(signaturePage, null, null, null, null, valueEl.parentNode, "TEXTAREA_SIGNATURE");
-        valueEl.parentNode.removeChild(valueEl);
-        delete signaturePage.isSignatureEditor;
-        signaturePage._sigEditor = htmlEditor;
-        signaturePage._populateSignatures();
-    }
+    var signaturePage = control.parent;
+    var valueEl = document.getElementById(signaturePage._htmlElId + "_SIG_EDITOR");
+    var htmlEditor = new ZmHtmlEditor({
+        parent: signaturePage,
+        parentElement: valueEl.parentNode,
+        textAreaId: "TEXTAREA_SIGNATURE",
+        attachmentCallback:
+            signaturePage._insertImagesListener.bind(signaturePage)
+    });
+    valueEl.parentNode.removeChild(valueEl);
+    signaturePage._sigEditor = htmlEditor;
+    signaturePage._populateSignatures();
 };
 
-/**
- * Bubbles are currently only available if the com_zimbra_email zimlet is enabled.  Show a warning 
- * to the user if the zimlet is not enabled and they try to enable bubbles.
- * @param useBubbles
- */
-ZmPref.validateBubbles =
-function(useBubbles) {
-	
-	if (useBubbles) {
-		var emailZimlet = appCtxt.getZimletMgr().getZimletByName("com_zimbra_email");
-		var canUseBubbles = emailZimlet && emailZimlet.handlerObject;
-		if (canUseBubbles && canUseBubbles.getEnabled()) {
-			return true;
+ZmPref._normalizeFontId = function(id, dontFallback) {
+	var oldid = id;
+	id = id.replace(/,\s/g,",").replace(/'/g,"").toLowerCase(); // Make sure all ids that are supposed to be found in ZmPref.FONT_FAMILY are actually found
+	if (!dontFallback) {
+		var map = ZmPref.FONT_FAMILY;
+		if (map && !map[id]) {
+			var keys = AjxUtil.keys(map);
+			if (keys.length) {
+				var splitId = id.split(","); // e.g. ["times new roman","helvetica"]
+				for (var i=0; i<splitId.length; i++) { // Loop over input font names
+					for (var j=0; j<keys.length; j++) { // Loop over candidate styles, e.g. ["arial,sans-serif","times new roman,serif"]
+						if (keys[j].indexOf(splitId[i]) != -1) {
+							return keys[j];
+						}
+					}
+				}
+				return keys[0];
+			}
 		}
-		else if (!canUseBubbles) {
-			//did user just check on email zimlet?  Check the DOM
-			emailZimlet = document.getElementById("com_zimbra_email_zimletCheckbox");
-			canUseBubbles = emailZimlet && emailZimlet.checked;
-			if (canUseBubbles) { return true;}
-		}
-		ZmPref.SETUP[ZmSetting.USE_ADDR_BUBBLES].errorMessage = AjxMessageFormat.format(ZmMsg.invalidBubblePrefs, ZmMsg.emailZimletLabel);
-		return false;
 	}
-	return true;
+	return id;
 };
+ZmPref._normalizeFontName = function(fontId) {
+	return ZmPref.FONT_FAMILY[ZmPref._normalizeFontId(fontId)].name;
+};
+ZmPref._normalizeFontValue = function(fontId) {
+	return ZmPref.FONT_FAMILY[ZmPref._normalizeFontId(fontId)].value;
+};
+
+ZmPref.FONT_FAMILY = {};
+(function() {
+	var KEYS = [ "fontFamilyIntl", "fontFamilyBase" ];
+	var i, j, key, value, name;
+	for (j = 0; j < KEYS.length; j++) {
+		for (i = 1; value = AjxMsg[KEYS[j]+i+".css"]; i++) {
+			if (value.match(/^#+$/)) break;
+			value = ZmPref._normalizeFontId(value,true);
+			name = AjxMsg[KEYS[j]+i+".display"];
+			ZmPref.FONT_FAMILY[value] = {name:name, value:value};
+		}
+	}
+})();

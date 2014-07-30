@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2011, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2011, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 function ZmSkin(hints) {
@@ -35,9 +41,9 @@ ZmSkin.hints = {
 	searchResultsToolbar:	{ containers: ["skin_tr_search_results_toolbar"] },
 
 	newButton:		{ containers: ["skin_td_new_button"] },
-	tree:			{ minWidth:parseInt("@TreeMinWidth@"), maxWidth:parseInt("@TreeMaxWidth@"), 
+	tree:			{ minWidth: "@TreeMinWidth@", maxWidth: "@TreeMaxWidth@",
 					  containers: ["skin_td_tree","skin_td_tree_app_sash"],
-					  resizeContainers : ["skin_td_tree"]
+					  resizeContainers : ["skin_td_tree", "skin_container_app_new_button"]
 					},
 	
 	topToolbar:	 	{ containers: "skin_spacing_app_top_toolbar" },
@@ -186,7 +192,7 @@ ZmSkin.prototype = {
 	
 	showSidebarAd : function(width) {
 		var id = "skin_td_sidebar_ad";
-		if (width != null) skin._setSize(id, width);
+		if (width != null) Dwt.setSize(id, width);
 		if (skin._showEl(id)) {
 			skin._reflowApp();
 		}
@@ -229,8 +235,8 @@ ZmSkin.prototype = {
 		}
 		else {
 			var tagName = el.tagName;
-			if (tagName == "TD" && !document.all)		value = "table-cell";
-			else if (tagName == "TR" && !document.all) 	value = "table-row";
+			if (tagName == "TD")		value = "table-cell";
+			else if (tagName == "TR") 	value = "table-row";
 			else value = "block";
 		}
 		if (value != el.style.display) {
@@ -254,17 +260,10 @@ ZmSkin.prototype = {
 		}
 	},
 	
-	_setSize : function(id, width, height) {
-		var el = this._getEl(id);
-		if (!el) return;
-		if (width != null) el.style.width = width;
-		if (height != null) el.style.height = height;
-	},
-	
 	_setContainerSizes : function(containerName, width, height) {
 		var containers = this.hints[containerName].resizeContainers || this.hints[containerName].containers;
 		for (var i = 0; i < containers.length; i++) {
-			this._setSize(containers[i], width, null);
+			Dwt.setSize(containers[i], width, null);
 		}
 	},
 	

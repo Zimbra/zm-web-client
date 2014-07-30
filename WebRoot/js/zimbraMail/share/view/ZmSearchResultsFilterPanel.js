@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -44,6 +50,7 @@ ZmSearchResultsFilterPanel = function(params) {
 	
 	// advanced filters
 	this._menu		= {};
+	this._advancedFilterHandlers = {};
 	
 	this._createHtml();
 	this._addFilters();
@@ -69,6 +76,7 @@ ZmSearchResultsFilterPanel.ID_UNREAD		= "UNREAD";
 ZmSearchResultsFilterPanel.ID_TO			= "TO";
 ZmSearchResultsFilterPanel.ID_FROM			= "FROM";
 ZmSearchResultsFilterPanel.ID_DATE			= "DATE";
+ZmSearchResultsFilterPanel.ID_DATE_BRIEFCASE = "DATE_BRIEFCASE";
 ZmSearchResultsFilterPanel.ID_DATE_SENT		= "DATE_SENT";
 ZmSearchResultsFilterPanel.ID_SIZE			= "SIZE";
 ZmSearchResultsFilterPanel.ID_STATUS		= "STATUS";
@@ -90,6 +98,7 @@ ZmSearchResultsFilterPanel.ADVANCED_FILTER_LIST = [
 	ZmSearchResultsFilterPanel.ID_FROM,
 	ZmSearchResultsFilterPanel.ID_TO,
 	ZmSearchResultsFilterPanel.ID_DATE,
+	ZmSearchResultsFilterPanel.ID_DATE_BRIEFCASE,
 	ZmSearchResultsFilterPanel.ID_DATE_SENT,
 	ZmSearchResultsFilterPanel.ID_ATTACHMENT,
 	ZmSearchResultsFilterPanel.ID_SIZE,
@@ -138,6 +147,11 @@ function() {
 		text: 		ZmMsg.filterDateSent,
 		handler:	"ZmDateSearchFilter"
 	};
+	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_DATE_BRIEFCASE] = {
+		text: 		ZmMsg.filterDate,
+		handler:	"ZmDateSearchFilter",
+		apps:       [ZmApp.BRIEFCASE]
+	};
 	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_ATTACHMENT] = {
 		text: 		ZmMsg.filterAttachments,
 		handler:	"ZmAttachmentSearchFilter",
@@ -146,7 +160,8 @@ function() {
 	};
 	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_SIZE] = {
 		text: 		ZmMsg.filterSize,
-		handler:	"ZmSizeSearchFilter"
+		handler:	"ZmSizeSearchFilter",
+		apps:       [ZmApp.MAIL, ZmApp.BRIEFCASE]
 	};
 	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_STATUS] = {
 		text: 		ZmMsg.filterStatus,
@@ -324,7 +339,7 @@ function(parent, id, filter) {
 		resultsApp:		this._resultsApp
 	}
 	var filterClass = eval(handler);
-	new filterClass(params);
+	this._advancedFilterHandlers[id] = new filterClass(params);
 };
 
 /**
@@ -377,6 +392,28 @@ function() {
 		if (cb) {
 			cb.setSelected(false);
 		}
+	}
+	//reset all the advanced filters.
+	for (var i in this._advancedFilterHandlers) {
+		var handler = this._advancedFilterHandlers[i];
+		if (handler && handler.reset) {
+			handler.reset();
+		}
+	}
+};
+
+ZmSearchResultsFilterPanel.prototype.resetBasicFiltersToQuery =
+function(query) {
+	var filtersIds = ZmSearchResultsFilterPanel.BASIC_FILTER_LIST;
+	for (var i = 0; i < filtersIds.length; i++) {
+		var id = filtersIds[i];
+		cb = this._checkbox[id];
+		if (!cb) {
+			continue;
+		}
+		var filter = ZmSearchResultsFilterPanel.BASIC_FILTER[id];
+		//checked if query has the filter term in it.
+		cb.setSelected(query.indexOf(filter.term.toString()) !== -1);
 	}
 };
 
@@ -537,6 +574,7 @@ function(menu, text, width) {
 			});
 	comboBox.addChangeListener(this._domainChangeListener.bind(this));
 	comboBox.input.addListener(DwtEvent.ONKEYUP, this._keyUpListener.bind(this));
+	subMenu.addPopdownListener(comboBox.popdown.bind(comboBox));
 	return comboBox;
 };
 
@@ -621,7 +659,15 @@ function(menu, domains) {
 	}
 };
 
-
+ZmAddressSearchFilter.prototype.reset =
+function() {
+	if (this._domainBox) {
+		this._domainBox.setText('');
+	}
+	if (this._addressBox) {
+		this._addressBox.setValue('');
+	}
+}
 
 /**
  * Allows the user to search by date (before, after, or on a particular date).
@@ -869,9 +915,17 @@ function(menu) {
 				});
 		subMenu.addClassName(this.toString() + "SubMenu");
 		menuItem.setMenu({menu: subMenu, menuPopupStyle: DwtButton.MENU_POPUP_STYLE_CASCADE});
-		var input = this._input[type] = new DwtInputField({parent:subMenu, size: 5});
+		var input = this._input[type] = new DwtInputField({
+			parent:          subMenu,
+			type:            DwtInputField.FLOAT,
+			errorIconStyle:  DwtInputField.ERROR_ICON_LEFT,
+			validationStyle: DwtInputField.CONTINUAL_VALIDATION,
+			size:            5
+		});
+		input.setValidNumberRange(0, 1e6);
 		var comboBox = new DwtComboBox({
 			parent:			input,
+			parentElement: input.getInputElement().parentNode,
 			id:		DwtId.makeId(ZmId.WIDGET_COMBOBOX, this._viewId, this.id, type+ZmSizeSearchFilter.UNIT),
 			inputParams:	{size: ZmSizeSearchFilter.COMBO_INPUT_WIDTH},
 			useLabel: true,
@@ -897,9 +951,16 @@ function(type, comboBox, ev) {
 ZmSizeSearchFilter.prototype._keyUpListener =
 function(type, comboBox, ev) {
 	var keyCode = DwtKeyEvent.getCharCode(ev);
+	var input = this._input[type];
 	if (keyCode == 13 || keyCode == 3) {
-		var term = new ZmSearchToken(ZmSizeSearchFilter.OP[type], this._input[type].getValue() + comboBox.getValue());
-		this._updateCallback(term);
+		var errorMsg = input.getValidationError();
+		if (errorMsg) {
+			appCtxt.setStatusMsg(errorMsg, ZmStatusView.LEVEL_WARNING);
+		} else {
+			var term = new ZmSearchToken(ZmSizeSearchFilter.OP[type],
+			                             input.getValue() + comboBox.getValue());
+			this._updateCallback(term);
+		}
 	}
 };
 

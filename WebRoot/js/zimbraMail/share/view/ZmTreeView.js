@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -37,6 +43,7 @@
  * @param {Boolean}	params.isCheckedByDefault	sets the default state of "checked" tree style
  * @param {Hash}	params.allowedTypes			a hash of org types this tree may display
  * @param {Hash}	params.allowedSubTypes		a hash of org types this tree may display below top level
+ * @param {boolean}    params.actionSupported     (default to value from Overview if not passed)
  *
  * @extends		DwtTree
  */
@@ -65,8 +72,16 @@ ZmTreeView = function(params) {
 	this._dragSrc = params.dragSrc;
 	this._dropTgt = params.dropTgt;
 
+	this.actionSupported = params.actionSupported !== undefined
+							? params.actionSupported
+							: this._overview.actionSupported;
+
+	this.dynamicWidth = this._overview.dynamicWidth;
+
 	this._dataTree = null;
-	this._treeItemHash = {};	// map organizer to its corresponding tree item by ID
+	this._treeItemHash  = {};	// map organizer to its corresponding tree item by ID
+	this._idToOrganizer = {};	// map DwtControl htmlElId to the organizer for external Drag and Drop
+
 };
 
 ZmTreeView.KEY_TYPE	= "_type_";
@@ -124,7 +139,6 @@ function() {
 	return "ZmTreeView";
 };
 
-ZmTreeView.prototype.SHARE_LINK_TEMPLATE = "share.Widgets#ZmAddShareLink";
 
 /**
  * Populates the tree view with the given data and displays it.
@@ -186,46 +200,6 @@ function(params) {
 		this.addSeparator();
 	}
 
-    //determine if call is from dialog/picker rather than nav tree
-    var isApp = this._overview && this._overview.isAppOverview;
-    var isZimbraAccount = true;
-    var acct;
-    if(appCtxt.multiAccounts && params.account){
-        acct = params.account;
-        isZimbraAccount = acct.isZimbraAccount && !acct.isMain;
-    }
-
-
-    // TODO: Find a better way to indicate which trees show the share link
-    var addShareLink =
-        appCtxt.get(ZmSetting.SHARING_ENABLED, null, acct)  && isApp  && isZimbraAccount &&
-        (
-            this.type == ZmOrganizer.FOLDER   ||
-            this.type == ZmOrganizer.ADDRBOOK ||
-            this.type == ZmOrganizer.CALENDAR ||
-            this.type == ZmOrganizer.TASKS    ||
-            this.type == ZmOrganizer.BRIEFCASE
-        )
-    ;
-    if (addShareLink) {
-        //bug 56122: If folderes are deferred for creation, the sort order is messed up.
-        var parentNode = this._treeItemHash[root.id];
-        parentNode._realizeDeferredChildren();
-
-        var item = new DwtTreeItem({
-            parent: parentNode,
-            deferred:false // NOTE: Needed so we can grab link element
-        });
-        item.setImage("Blank_16");
-        item.enableSelection(false);
-        item.showCheckBox(false);
-
-        var id = item.getHTMLElId();
-        item.setText(AjxTemplate.expand(this.SHARE_LINK_TEMPLATE, id));
-        var linkEl = document.getElementById(id+"_addshare_link");
-        linkEl.onclick = AjxCallback.simpleClosure(this._handleAddShareLink, this, (acct? acct.id : null));
-        this._addShareLink = item;
-    }
 
 	if (appCtxt.getSkinHint("noOverviewHeaders") ||
 		this._hideHeaderTreeItem())
@@ -362,17 +336,7 @@ function(params) {
 		var child = children[i];
 		if (!child || (params.omit && params.omit[child.nId])) { continue; }
 		if (!(params.include && params.include[child.nId])) {
-			var allowed = ((org.nId == ZmOrganizer.ID_ROOT) && this.allowedTypes[child.type]) ||
-						  ((org.nId != ZmOrganizer.ID_ROOT) && this.allowedSubTypes[child.type]);
-			if (!allowed) {
-				if (params.omitParents) continue;
-				var proxy = AjxUtil.createProxy(params);
-				proxy.treeNode = null;
-				proxy.organizer = child;
-				this._render(proxy);
-				continue;
-			}
-			if (this._allowedTypes && !this._allowedTypes[child.type]) {
+			if (!this._isAllowed(org, child)) {
 				if (params.omitParents) continue;
 				var proxy = AjxUtil.createProxy(params);
 				proxy.treeNode = null;
@@ -416,9 +380,14 @@ function(params) {
 				if (this.isCheckedStyle) {
 					ti.showCheckBox(false);
 				}
-                params.lastRenderedFolder  = children[i-1];
+                params.lastRenderedFolder  = children[i - 1];
 				params.showRemainingFoldersNode = ti;
 				child._showFoldersCallback = new AjxCallback(this, this._showRemainingFolders, [params]);
+				if (this._dragSrc) {
+					// Bug 55763 - expand placeholder on hover; replacing the _dragHover function is the easiest way, if a bit hacky
+					ti._dragHover = this._showRemainingFolders.bind(this, params);
+				}
+
 				return;
 			}
 		}
@@ -431,6 +400,60 @@ function(params) {
 		this._addNew(parentNode, child, null, params.noTooltips, params.omit);
 		numItems++;
 	}
+};
+
+/**
+ * a bit complicated and hard to explain - We should only allow (render on this view)
+ * a child of an "allowedSubTypes", if all its ancestors are allowed all the way to the root ("Folders"), meaning
+ * it has an ancestor that is of the allowedTypes (but is not the root)
+ * e.g.
+ * allowed:
+ * Folders-->folder1--->searchFolder1
+ * Folders--->folder1--->folder2--->folder3--->searchFolder1
+ *
+ * not allowed:
+ * Folders-->searchFolder1
+ * Folders-->searchFolder1--->searchFolder2
+ *
+ * @param org
+ * @param child
+ * @returns {*}
+ * @private
+ */
+ZmTreeView.prototype._isAllowed =
+function(org, child) {
+
+	if (!org) { //could happen, for example the Zimlets root doesn't have a parent.
+		return true; //seems returning true in this case works... what a mess.
+	}
+
+	// Within the Searches tree, only show saved searches that return a type that belongs to this app
+	if (this.type === ZmOrganizer.SEARCH && child.type === ZmOrganizer.SEARCH && this._overview.appName) {
+		var searchTypes = child.search.types && child.search.types.getArray();
+		if (!searchTypes || searchTypes.length === 0) {
+			searchTypes = [ ZmItem.MSG ];   // search with no types defaults to "message"
+		}
+		var common = AjxUtil.intersection(searchTypes,
+			ZmApp.SEARCH_TYPES[this._overview.appName] ||  ZmApp.SEARCH_TYPES[appCtxt.getCurrentAppName()]);
+		if (common.length === 0) {
+			return false;
+		}
+	}
+
+	if (org.nId == ZmOrganizer.ID_ROOT) {
+		return this.allowedTypes[child.type];
+	}
+
+	//org is not root
+	if (this.allowedTypes[child.type]) {
+		return true; //optimization, end the recursion if we find a non root allowed ancestor.
+	}
+
+	if (this.allowedSubTypes[child.type]) {
+		return this._isAllowed(org.parent, org); //go up parent to see if eventually it's allowed.
+	}
+
+	return false;
 };
 
 /**
@@ -447,6 +470,7 @@ function(params) {
 ZmTreeView.prototype._addNew =
 function(parentNode, organizer, index, noTooltips, omit) {
 	var ti;
+	var parentControlId;
 	// check if we're adding a datasource folder
 	var dsColl = (organizer.type == ZmOrganizer.FOLDER) && appCtxt.getDataSourceCollection();
 	var dss = dsColl && dsColl.getByFolderId(organizer.nId);
@@ -455,7 +479,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 	if (ds && ds.type == ZmAccount.TYPE_IMAP) {
 		var cname = appCtxt.isFamilyMbox ? null : this._headerClass;
 		var icon =  "Folder";
-		ti = new DwtTreeItem({parent:this, text:organizer.getName(), className:cname, imageInfo:icon, selectable: false});
+		ti = new DwtHeaderTreeItem({parent:this, text:organizer.getName(), className:cname, imageInfo:icon, selectable: false});
 	} else {
 		// create parent chain
 		if (!parentNode) {
@@ -469,31 +493,32 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			}
 			while (parentOrganizer = stack.pop()) {
 				parentNode = this.getTreeItemById(parentOrganizer.parent.id);
+				parentControlId = ZmId.getTreeItemId(this.overviewId, parentOrganizer.id);
 				parentNode = new DwtTreeItem({
 					parent:					parentNode,
 					text:					parentOrganizer.getName(),
 					imageInfo:				parentOrganizer.getIconWithColor(),
 					forceNotifySelection:	true,
+					arrowDisabled:			!this.actionSupported,
+					dynamicWidth:			this.dynamicWidth,
 					dndScrollCallback:		this._overview && this._overview._dndScrollCallback,
 					dndScrollId:			this._overview && this._overview._scrollableContainerId,
-					id:						ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
+					id:						parentControlId
 				});
 				parentNode.setData(Dwt.KEY_ID, parentOrganizer.id);
 				parentNode.setData(Dwt.KEY_OBJECT, parentOrganizer);
 				parentNode.setData(ZmTreeView.KEY_ID, this.overviewId);
 				parentNode.setData(ZmTreeView.KEY_TYPE, parentOrganizer.type);
 				this._treeItemHash[parentOrganizer.id] = parentNode;
+				this._idToOrganizer[parentControlId] = parentOrganizer.id;
 			}
-		}
-		if (this._addShareLink && this._addShareLink.parent == parentNode) {
-			var addShareIndex = parentNode.getChildIndex(this._addShareLink);
-			if (addShareIndex >= 0 && (!index || index > addShareIndex))
-				index = addShareIndex; // Bug 52053: We must make sure nothing has a higher index than that of this._addShareLink
 		}
 		var params = {
 			parent:				parentNode,
 			index:				index,
 			text:				organizer.getName(this._showUnread),
+			arrowDisabled:		!this.actionSupported,
+			dynamicWidth:		this.dynamicWidth,
 			dndScrollCallback:	this._overview && this._overview._dndScrollCallback,
 			dndScrollId:		this._overview && this._overview._scrollableContainerId,
 			imageInfo:			organizer.getIconWithColor(),
@@ -501,6 +526,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 		};
 		// now add item
 		ti = new DwtTreeItem(params);
+		this._idToOrganizer[params.id] = organizer.id;
 	}
 
 	if (appCtxt.multiAccounts &&
@@ -653,68 +679,4 @@ function() {
 		if (this.type == ZmOrganizer.TAG)		{ return "TagStack"; }
 	}
 	return null;
-};
-
-ZmTreeView.prototype._handleAddShareLink = function(acctId, htmlEvent) {
-
-    if( appCtxt.multiAccounts && acctId) {
-        var account  = appCtxt.accountList.getAccount(acctId);
-        if (account && account.isZimbraAccount) {
-            appCtxt.accountList.setActiveAccount(account);
-        }
-    }
-    try {
-        var dialog = appCtxt.getShareSearchDialog();
-        var addCallback = new AjxCallback(this, this._handleAddShare);
-        dialog.popup(this.type, addCallback);
-    }
-    finally {
-        // make sure link is not followed, no matter what!
-        return false;
-    }
-};
-
-ZmTreeView.prototype._handleAddShare = function() {
-    var dialog = appCtxt.getShareSearchDialog();
-    var shares = dialog.getShares();
-    dialog.popdown();
-    if (shares.length == 0) return;
-
-    AjxDispatcher.require("Share");
-    var requests = [];
-    for (var i = 0; i < shares.length; i++) {
-        var share = shares[i];
-        var name = share.folderPath.substr(1).replace(/\//g," ");
-        var ownerName = (share.normalizedOwnerName.indexOf('@') >1) ? share.normalizedOwnerName.substr(0, share.normalizedOwnerName.indexOf('@')) : share.normalizedOwnerName;
-        requests.push({
-            _jsns: "urn:zimbraMail",
-            link: {
-                l: ZmOrganizer.ID_ROOT,
-                name: ZmShare.getDefaultMountpointName(ownerName, name),
-                view: share.view,
-                zid: share.ownerId,
-                rid: share.folderId
-            }
-        });
-        var params = {
-            jsonObj: {
-                BatchRequest: {
-                    _jsns: "urn:zimbra",
-                    CreateMountpointRequest: requests
-                }
-            },
-            asyncMode: true,
-            callback: new AjxCallback(this, this._handleAddShareResponse),
-            errorCallback: new AjxCallback(this, this._handleAddShareError)
-        };
-        appCtxt.getAppController().sendRequest(params);
-    }
-};
-
-ZmTreeView.prototype._handleAddShareResponse = function(resp) {
-    // TODO
-};
-
-ZmTreeView.prototype._handleAddShareError = function(resp) {
-    // TODO
 };

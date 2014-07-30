@@ -1,15 +1,17 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software Foundation,
+ * version 2 of the License.
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
@@ -40,7 +42,7 @@
 <c:set var="phoneticFirstName" value="${not empty contact ? contact.phoneticFirstName : phoneticFirstName}" />
 <c:set var="phoneticLastName" value="${not empty contact ? contact.phoneticLastName : phoneticLastName}" />
 <c:set var="phoneticCompany" value="${not empty contact ? contact.phoneticCompany : phoneticCompany}" />
-<c:if test="${ruby}">
+<c:if test="${zm:boolean(ruby)}">
     <c:set var="firstName"><app:ruby base="${firstName}" text="${phoneticFirstName}" /></c:set>
     <c:set var="lastName"><app:ruby base="${lastName}" text="${phoneticLastName}" /></c:set>
     <c:set var="company"><app:ruby base="${company}" text="${phoneticCompany}" /></c:set>
@@ -102,7 +104,7 @@
     <c:otherwise>
         <c:choose>
             <c:when test="${contact.isGalContact and not empty fullName}">${fullName}</c:when>
-            <c:when test="${contact.isGalContact}">${fn:escapeXml(contact.email)}</c:when>
+            <c:when test="${zm:boolean(contact.isGalContact)}">${fn:escapeXml(contact.email)}</c:when>
             <c:otherwise>
                 <% set("text", fileAsLastFirst(firstName, lastName, fullName, nickname)); %>
                 ${text}

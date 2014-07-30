@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -32,7 +38,7 @@ ZmApptList.prototype.isZmApptList = true;
 ZmApptList.prototype.toString = function() { return "ZmApptList"; };
 
 ZmApptList.prototype.loadFromSummaryJs =
-function(appts) {
+function(appts, noCache) {
 	if (!appts) { return; }
 
 	for (var i = 0; i < appts.length; i++) {
@@ -41,7 +47,7 @@ function(appts) {
 		if (instances) {
 			var args = {list:this};
 			for (var j = 0; j < instances.length; j++) {
-				var appt = ZmAppt.createFromDom(apptNode, args, instances[j]);
+				var appt = ZmAppt.createFromDom(apptNode, args, instances[j], noCache);
 				if (appt) this.add(appt);
 			}
 		}
@@ -206,17 +212,17 @@ function(startTime, endTime) {
  * @param	{closure}		params.finalCallback	the callback to run after all items have been processed
  * @param	{int}			params.count			the starting count for number of items processed
  * @param	{boolean}		params.noUndo			true if the action is not undoable (e.g. performed as an undo)
- * @param	{String}		params.actionText		optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast entirely
+ * @param	{String}		params.actionTextKey	key for optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast entirely
  */
 ZmApptList.prototype.moveItems =
 function(params) {
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo", "actionText"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo", "actionTextKey"]);
 
 	var params1 = AjxUtil.hashCopy(params);
 	params1.items = AjxUtil.toArray(params.items);
 	params1.attrs = params.attrs || {};
 	if (params1.folder.id == ZmFolder.ID_TRASH) {
-		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionTrash) : null;
+		params1.actionTextKey = (params.actionTextKey !== null) ? (params.actionTextKey || 'actionTrash') : null;
 		params1.action = "trash";
         //This code snippet differs from the ZmList.moveItems
         var currentView = appCtxt.getCurrentView();
@@ -228,7 +234,7 @@ function(params) {
             }
         }
 	} else {
-		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionMove) : null;
+		params1.actionTextKey = (params.actionTextKey !== null) ? (params.actionTextKey || 'actionMove') : null;
 		params1.actionArg = params.folder.getName(false, false, true);
 		params1.action = "move";
 		params1.attrs.l = params.folder.id;

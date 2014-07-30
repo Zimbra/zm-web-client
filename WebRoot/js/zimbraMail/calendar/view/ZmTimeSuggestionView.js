@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -93,7 +99,7 @@ function(itemDiv, ev) {
     if(item) {
         this._editView.setDate(new Date(item.startTime), new Date(item.endTime));
         //user clicked the link directly
-        if (ev.target && (ev.target.className == "fakeAnchor" || ev.target.className == "ImgLocationGreen" || ev.target.className == "ImgLocationRed")) {
+        if (ev.target && (ev.target.className == "FakeAnchor" || ev.target.className == "ImgLocationGreen" || ev.target.className == "ImgLocationRed")) {
             var menu = this._createLocationsMenu(item);
             menu.popup(0, ev.docX, ev.docY);
         }
@@ -206,7 +212,7 @@ function(item, id, ev) {
     }
 
     //user clicked the link directly
-    if (ev.target && (ev.target.className == "fakeAnchor")) {
+    if (ev.target && (ev.target.className == "FakeAnchor")) {
         this._locSelect.popup();        
     }
 
@@ -279,7 +285,7 @@ function() {
     var prevItem = prevItemDiv ? this.getItemFromElement(prevItemDiv) : null;
     if(prevItem) {
         var prevLoc = document.getElementById(prevId + '_loc');
-        prevLoc.innerHTML = '<span class="fakeAnchor">' + AjxMessageFormat.format(ZmMsg.availableRoomsCount, [prevItem.availableLocations]) + '</span>';
+        prevLoc.innerHTML = '<span class="FakeAnchor">' + AjxMessageFormat.format(ZmMsg.availableRoomsCount, [prevItem.availableLocations]) + '</span>';
     }
 };
 
@@ -338,7 +344,7 @@ function(date) {
     this.removeAll();
 	var	div = document.createElement("div");
     var params = [
-        '<span class="fakeanchor" id="' + this.getHTMLElId() + '_showsuggestions">',
+        '<span class="FakeAnchor" id="' + this.getHTMLElId() + '_showsuggestions">',
         '</span>',
         date
     ];

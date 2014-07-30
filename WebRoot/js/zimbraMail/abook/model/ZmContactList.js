@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -144,7 +150,7 @@ function(callback, errorCallback, accountName) {
 		args.sid = ZmCsfeCommand.getSessionId();
 	}
 
-	var params = {asyncMode:true, noBusyOverlay:true, callback:respCallback, errorCallback:errorCallback};
+	var params = {asyncMode:true, noBusyOverlay:true, callback:respCallback, errorCallback:errorCallback, offlineCallback:callback};
 	params.restUri = AjxUtil.formatUrl({
 		path:["/home/", (accountName || appCtxt.getUsername()),
 	          ZmContactList.URL].join(""),
@@ -164,6 +170,9 @@ ZmContactList.prototype._handleResponseLoad =
 function(callback, result) {
 	DBG.timePt("got contact list");
 	var text = result.getResponse();
+    if (text && typeof text !== 'string'){
+        text = text._data;
+    }
 	var derefList = [];
 	if (text) {
 		var contacts = text.split(ZmContactList.CONTACT_SPLIT_CHAR);
@@ -196,7 +205,9 @@ function(callback, result) {
 					}
 				}
 			}
-			attrs[ZmContact.F_groups] = groupMembers;
+			if (attrs[ZmContact.F_type] === "group") { //set only for group.
+				attrs[ZmContact.F_groups] = groupMembers;
+			}
 			if (foundDeref) {
 				//batch group members for deref loading
 				var dummy = new ZmContact(contact["id"], this);
@@ -521,11 +532,11 @@ function(params) {
 		params1.action = "move";
         params1.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
         if (params1.folder.id == ZmFolder.ID_TRASH) {
-            params1.actionText = ZmMsg.actionTrash;
+            params1.actionTextKey = 'actionTrash';
             // bug: 47389 avoid moving to local account's Trash folder.
             params1.accountName = appCtxt.multiAccounts && params.items[0].getAccount().name;
         } else {
-            params1.actionText = ZmMsg.actionMove;
+            params1.actionTextKey = 'actionMove';
             params1.actionArg = toFolder.getName(false, false, true);
         }
 		params1.callback = params.outOfTrash && new AjxCallback(this, this._handleResponseMoveItems, params);
@@ -662,6 +673,12 @@ function(items, confirmDelete) {
 
 ZmContactList.prototype._deleteDlsResponseHandler =
 function(items) {
+	if (appCtxt.getCurrentView().isZmGroupView) {
+		//this is the case we were editing the DL (different than viewing it in the DL list, in which case it's the contactListController).
+		//so we now need to pop up the view.
+		this.controller.popView();
+	}
+
 	appCtxt.setStatusMsg(items.length == 1 ? ZmMsg.dlDeleted : ZmMsg.dlsDeleted);
 
 	for (var i = 0; i < items.length; i++) {
@@ -741,7 +758,8 @@ ZmContactList.prototype.modifyLocal =
 function(item, details) {
 	if (details) {
 		// notify item's list
-		details.items = [item];
+		this._evt.items = details.items = [item];
+		this._evt.item = details.contact; //somehow this was set to something obsolete. What a mess. Also note that item is Object while details.contact is ZmContact
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 

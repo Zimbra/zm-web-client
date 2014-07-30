@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2010, 2011, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -200,19 +206,25 @@ function(searchResp, params) {
 
 	var newList = new AjxVector();
 	if (this._rawTasks && this._rawTasks.length) {
-		this._list = new ZmList(ZmItem.TASK);
+		//this._list = new ZmList(ZmItem.TASK);
 		for (var i = 0; i < this._rawTasks.length; i++) {
 			DBG.println(AjxDebug.DBG2, "task[j]:" + this._rawTasks[i].name);
 			var taskNode = this._rawTasks[i];
-			//var instances = taskNode ? taskNode.inst : null;
-			//if (instances) {
-				var args = {list:this._list};
-				//for (var j = 0; j < instances.length; j++) {
+			////var instances = taskNode ? taskNode.inst : null;
+			////if (instances) {
+            //var args = {list:this._list};
+            // Pass null as the list - otherwise the list, created above and used nowhere else
+            // for viewing will be the one associated with teh
+            var args = {list:null};
+				////for (var j = 0; j < instances.length; j++) {
 					var task = ZmTask.createFromDom(taskNode, args, null);
 					DBG.println(AjxDebug.DBG2, "lite task :" + task);
 					if (task) newList.add(task);
-				//}
-			//}
+				////}
+			////}
+
+            // Accumulate this list to be processed by the reminderController callback
+            newList.add(task);
 		}
 
 	}

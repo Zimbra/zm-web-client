@@ -1,15 +1,17 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software Foundation,
+ * version 2 of the License.
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
@@ -323,8 +325,8 @@
             </table>
             <c:set var="date" value="${zm:addDay(date, 1)}"/>
             <br/>
-            <c:if test="${param.od}">
-                <p style="page-break-before: always">
+            <c:if test="${zm:boolean(param.od)}">
+                <p style="page-break-before: always"></p>
             </c:if>
         </c:forEach>
     </c:when>
@@ -499,8 +501,8 @@
         <c:set var="beginLoop" value="${endLoop+1}"/>
         <c:set var="endLoop" value="${beginLoop+6}"/>
         <br/>
-        <c:if test="${param.od}">
-           <p style="page-break-before: always">
+        <c:if test="${zm:boolean(param.ow)}">
+           <p style="page-break-before: always"></p>
         </c:if>
         </c:forEach>
     </c:otherwise>

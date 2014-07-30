@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -333,7 +339,7 @@ function(offset, newList) {
  * @param	{AjxCallback}		params.callback			the callback to run after each sub-request
  * @param	{closure}			params.finalCallback	the callback to run after all items have been processed
  * @param	{int}				params.count			the starting count for number of items processed
- * @param   {String}    		params.actionText   	pattern for generating action summary
+ * @param   {String}    		params.actionTextKey   	pattern for generating action summarykey to action summary message
  */
 ZmList.prototype.flagItems =
 function(params) {
@@ -405,7 +411,7 @@ function(params) {
 	params.items = items1;
 	params.attrs = {tn: tagName};
 	params.action = doTag ? "tag" : "!tag";
-    params.actionText = doTag ? ZmMsg.actionTag : ZmMsg.actionUntag;
+    params.actionTextKey = doTag ? 'actionTag' : 'actionUntag';
 	params.actionArg = params.tag && params.tag.name;
 
 	this._itemAction(params);
@@ -441,7 +447,7 @@ function(params) {
 	params.items = items1;
 	params.action = "update";
 	params.attrs = {t: ""};
-    params.actionText = ZmMsg.actionRemoveTags;
+    params.actionTextKey = 'actionRemoveTags';
 
 	this._itemAction(params);
 };
@@ -463,12 +469,11 @@ function(params) {
  * @param	{closure}		params.finalCallback	the callback to run after all items have been processed
  * @param	{int}			params.count			the starting count for number of items processed
  * @param	{boolean}		params.noUndo			true if the action is not undoable (e.g. performed as an undo)
- * @param	{String}		params.actionText		optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast entirely
  */
 ZmList.prototype.moveItems =
 function(params) {
 	
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo", "actionText"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo"]);
 
 	var params1 = AjxUtil.hashCopy(params);
 	params1.items = AjxUtil.toArray(params.items);
@@ -477,15 +482,18 @@ function(params) {
 	params1.closeChildWin = params.closeChildWin;
 	
 	if (params1.folder.id == ZmFolder.ID_TRASH) {
-		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionTrash) : null;
+		params1.actionTextKey = 'actionTrash';
 		params1.action = "trash";
 	} else {
-		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionMove) : null;
+		params1.actionTextKey = 'actionMove';
 		params1.actionArg = params.folder.getName(false, false, true);
 		params1.action = "move";
 		params1.attrs.l = params.folder.id;
 	}
 	params1.callback = new AjxCallback(this, this._handleResponseMoveItems, [params]);
+	if (params.noToast) {
+		params1.actionTextKey = null;
+	}
 
     if (appCtxt.multiAccounts) {
 		// Reset accountName for multi-account to be the respective account if we're
@@ -523,6 +531,7 @@ function(params, params1) {
 
 	// Bug 26103: when deleting an item in a folder shared to us, save a copy in our own trash
 	if (params.folder && params.folder.id == ZmFolder.ID_TRASH) {
+		var fromFolder;
 		var toCopy = [];
 		for (var i = 0; i < params.items.length; i++) {
 			var item = params.items[i];
@@ -530,7 +539,11 @@ function(params, params1) {
 			if (index != -1) { //might be shared
 				var acctId = item.id.substring(0, index);
 				if (!appCtxt.accountList.getAccount(acctId)) {
-					toCopy.push(item);
+					fromFolder = appCtxt.getById(item.folderId);
+					// Don't do the copy if the source folder is shared with view only rights
+					if (fromFolder && !fromFolder.isReadOnly()) {
+						toCopy.push(item);
+					}
 				}
 			}
 		}
@@ -539,7 +552,7 @@ function(params, params1) {
 				items:			toCopy,
 				folder:			params.folder, // Should refer to our own trash folder
 				finalCallback:	this._itemAction.bind(this, params1, null),
-				actionText:		null
+				actionTextKey:	null
 			};
 			this.copyItems(params2);
 			return true;
@@ -587,18 +600,23 @@ function(params, result) {
  * @param {Hash}		params.attrs			the additional attrs for SOAP command
  * @param {closure}		params.finalCallback	the callback to run after all items have been processed
  * @param {int}			params.count			the starting count for number of items processed
- * @param {String}		params.actionText		optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast
+ * @param {String}		params.actionTextKey	key to optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast
  */
 ZmList.prototype.copyItems =
 function(params) {
 
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "actionText"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "actionTextKey"]);
 
 	params.items = AjxUtil.toArray(params.items);
 	params.attrs = params.attrs || {};
-	params.attrs.l = params.folder.id;
-	params.action = "copy";
-	params.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.itemCopied) : null;
+    if (!appCtxt.isExternalAccount()) {
+        params.attrs.l = params.folder.id;
+        params.action = "copy";
+        params.actionTextKey = 'itemCopied';
+    }
+    else {
+        params.action = 'trash';
+    }
 	params.actionArg = params.folder.getName(false, false, true);
 	params.callback = new AjxCallback(this, this._handleResponseCopyItems, params);
 
@@ -616,8 +634,8 @@ ZmList.prototype._handleResponseCopyItems =
 function(params, result) {
 	var resp = result.getResponse();
 	if (resp.length > 0) {
-		if (params.actionText) {
-			var msg = AjxMessageFormat.format(params.actionText, resp.length);
+		if (params.actionTextKey) {
+			var msg = AjxMessageFormat.format(ZmMsg[params.actionTextKey], resp.length);
 			appCtxt.getAppController().setStatusMsg(msg);
 		}
 	}
@@ -647,12 +665,14 @@ function(params) {
 	// figure out which items should be moved to Trash, and which should actually be deleted
 	var toMove = [];
 	var toDelete = [];
-	if (items[0] && items[0] instanceof ZmItem) {
+	if (params.hardDelete) {
+		toDelete = items;
+	} else if (items[0] && items[0] instanceof ZmItem) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			var folderId = item.getFolderId();
 			var folder = appCtxt.getById(folderId);
-			if (params.hardDelete || (folder && folder.isHardDelete())) {
+			if (folder && folder.isHardDelete()) {
 				toDelete.push(item);
 			} else {
 				toMove.push(item);
@@ -691,7 +711,7 @@ function(params) {
 	if (toDelete.length) {
 		params.items = toDelete;
 		params.action = "delete";
-        params.actionText = ZmMsg.actionDelete;
+        params.actionTextKey = 'actionDelete';
 		this._itemAction(params);
 	}
 };
@@ -937,7 +957,7 @@ function(params, batchCmd) {
 		errorCallback:	params.errorCallback,
 		batchCmd:		batchCmd,
 		numItems:		params.count || 0,
-		actionText:		params.actionText,
+		actionTextKey:	params.actionTextKey,
 		actionArg:		params.actionArg,
 		actionLogItem:	actionLogItem,
 		childWin:		params.childWin,
@@ -989,11 +1009,13 @@ function(params) {
 	var more = Boolean(params.ids.length && !params.cancelled);
 
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [params]);
+    var isOutboxFolder = this.controller && this.controller.isOutboxFolder();
+    var offlineCallback = this._handleOfflineResponseDoAction.bind(this, params, isOutboxFolder);
 
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(params.request, respCallback, params.errorCallback);
 	} else {
-		var reqParams = {asyncMode:true, callback:respCallback, errorCallback: params.errorCallback, accountName:params.accountName, more:more};
+		var reqParams = {asyncMode:true, callback:respCallback, errorCallback: params.errorCallback, offlineCallback: offlineCallback, accountName:params.accountName, more:more};
 		if (useJson) {
 			reqParams.jsonObj = params.request;
 		} else {
@@ -1002,6 +1024,9 @@ function(params) {
 		if (params.safeMove) {
 			reqParams.useChangeToken = true;
 		}
+        if (isOutboxFolder) {
+            reqParams.offlineRequest = true;
+        }
 		DBG.println("sa", "*** do action: " + list.length + " items");
 		params.reqId = appCtxt.getAppController().sendRequest(reqParams);
 	}
@@ -1031,8 +1056,8 @@ function(params, result) {
 				params.callback.run(items, result);
 			}
 
-			if (params.actionText) {
-				summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
+			if (params.actionTextKey) {
+				summary = ZmList.getActionSummary(params);
 				var pdParams = {
 					state:		ZmListController.PROGRESS_DIALOG_UPDATE,
 					summary:	summary
@@ -1060,11 +1085,233 @@ function(params, result) {
 	}
 };
 
+/**
+ * @private
+ */
+ZmList.prototype._handleOfflineResponseDoAction =
+function(params, isOutboxFolder, requestParams) {
+
+    var action = params.action,
+        callback = this._handleOfflineResponseDoActionCallback.bind(this, params, isOutboxFolder, requestParams.callback);
+
+    if (isOutboxFolder && action.op === "trash") {
+        var key = {
+            methodName : "SendMsgRequest", //Outbox folder only contains offline sent emails
+			id : action.id.split(",")
+        };
+        ZmOfflineDB.deleteItemInRequestQueue(key, callback);
+    }
+    else {
+        var obj = requestParams.jsonObj;
+        obj.methodName = ZmItem.SOAP_CMD[params.type] + "Request";
+        obj.id = action.id;
+        ZmOfflineDB.setItem(obj, ZmOffline.REQUESTQUEUE, callback);
+    }
+};
+
+/**
+ * @private
+ */
+ZmList.prototype._handleOfflineResponseDoActionCallback =
+function(params, isOutboxFolder, callback) {
+
+    var data = {},
+        header = this._generateOfflineHeader(params),
+        result,
+        hdr,
+        notify;
+
+    data[ZmItem.SOAP_CMD[params.type] + "Response"] = params.request[ZmItem.SOAP_CMD[params.type] + "Request"];
+    result = new ZmCsfeResult(data, false, header);
+    hdr = result.getHeader();
+    if (callback) {
+        callback.run(result);
+    }
+    if (hdr) {
+        notify = hdr.context.notify[0];
+        if (notify) {
+            appCtxt._requestMgr._notifyHandler(notify);
+            this._updateOfflineData(params, isOutboxFolder, notify);
+        }
+    }
+};
+
+/**
+ * @private
+ */
+ZmList.prototype._generateOfflineHeader =
+function(params) {
+
+    var action = params.action,
+        op = action.op,
+        ids = action.id.split(","),
+        idsLength = ids.length,
+        id,
+        msg,
+        flags,
+        folderId,
+        folder,
+        targetFolder,
+        mObj,
+        cObj,
+        folderObj,
+        m = [],
+        c = [],
+        folderArray = [],
+        header;
+
+    for (var i = 0; i < idsLength; i++) {
+
+        id = ids[i];
+        msg = this.getById(id);
+        flags =  msg.flags || "";
+        folderId = msg.getFolderId();
+        folder = appCtxt.getById(folderId);
+        mObj = {
+            id : id
+        };
+        cObj = {
+            id : "-" + mObj.id
+        };
+        folderObj = {
+            id : folderId
+        };
+
+        switch (op)
+        {
+            case "flag":
+                mObj.f = flags + "f";
+                break;
+            case "!flag":
+                mObj.f = flags.replace("f", "");
+                break;
+            case "read":
+                mObj.f = flags.replace("u", "");
+                folderObj.u = folder.numUnread - 1;
+                break;
+            case "!read":
+                mObj.f = flags + "u";
+                folderObj.u = folder.numUnread + 1;
+                break;
+            case "trash":
+                mObj.l = ZmFolder.ID_TRASH;
+                break;
+            case "spam":
+                mObj.l = ZmFolder.ID_SPAM;
+                break;
+            case "!spam":
+                mObj.l = ZmFolder.ID_INBOX;// Have to set the old folder id. Currently point to inbox
+                break;
+            case "move":
+                if (action.l) {
+                    mObj.l = action.l;
+                }
+                folderObj.n = folder.numTotal - 1;
+                if (msg.isUnread && folder.numUnread > 1) {
+                    folderObj.u = folder.numUnread - 1;
+                }
+                targetFolder = appCtxt.getById(mObj.l);
+                folderArray.push({
+                    id : targetFolder.id,
+                    n : targetFolder.numTotal + 1,
+                    u : (msg.isUnread ? targetFolder.numUnread + 1 : targetFolder.numUnread)
+                });
+                break;
+            case "tag":
+                msg.tags.push(action.tn);
+                mObj.tn = msg.tags.join();
+                break;
+            case "!tag":
+                AjxUtil.arrayRemove(msg.tags, action.tn);
+                mObj.tn = msg.tags.join();
+                break;
+            case "update":
+                if (action.t === "") {//Removing all tag names for a msg
+                    mObj.tn = "";
+                    mObj.t = "";
+                }
+                break;
+        }
+        m.push(mObj);
+        c.push(cObj);
+        folderArray.push(folderObj);
+    }
+
+    header = {
+        context : {
+            notify : [{
+                modified : {
+                    m : m,
+                    c : c,
+                    folder : folderArray
+                }
+            }]
+        }
+    };
+
+    return header;
+};
+
+ZmList.prototype._updateOfflineData =
+function(params, isOutboxFolder, notify) {
+
+    var modified = notify.modified;
+    if (!modified) {
+        return;
+    }
+
+    var m = modified.m;
+    if (!m) {
+        return;
+    }
+
+    var callback = this._updateOfflineDataCallback.bind(this, params, m);
+    ZmOfflineDB.getItem(params.action.id.split(","), ZmApp.MAIL, callback);
+};
+
+ZmList.prototype._updateOfflineDataCallback =
+function(params, msgArray, result) {
+    result = ZmOffline.recreateMsg(result);
+    var newMsgArray = [];
+    result.forEach(function(res) {
+        msgArray.forEach(function(msg) {
+            if (msg.id === res.id) {
+                newMsgArray.push($.extend(res, msg));
+            }
+        });
+    });
+    ZmOfflineDB.setItem(newMsgArray, ZmApp.MAIL);
+};
+
+/**
+ * Returns a string describing an action, intended for display as toast to tell the
+ * user what they just did.
+ *
+ * @param   {Object}        params          hash of params:
+ *          {String}        type            item type (ZmItem.*)
+ *          {Number}        numItems        number of items affected
+ *          {String}        actionTextKey   ZmMsg key for text string describing action
+ *          {String}        actionArg       (optional) additional argument
+ *
+ * @return {String}     action summary
+ */
 ZmList.getActionSummary =
-function(text, num, type, arg) {
-	var typeTextAuto = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num);
-	var typeTextSingular = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], 1);
-	return AjxMessageFormat.format(text, [num, typeTextAuto, AjxStringUtil.htmlEncode(arg), typeTextSingular]);
+function(params) {
+
+	var type = params.type,
+		typeKey = ZmItem.MSG_KEY[type],
+		typeText = ZmMsg[typeKey],
+		capKey = AjxStringUtil.capitalizeFirstLetter(typeKey),
+		countKey = 'type' + capKey,
+		num = params.numItems,
+		alternateKey = params.actionTextKey + capKey,
+		text = ZmMsg[alternateKey] || ZmMsg[params.actionTextKey],
+		countText = ZmMsg[countKey],
+		arg = AjxStringUtil.htmlEncode(params.actionArg),
+		textAuto = countText ? AjxMessageFormat.format(countText, num) : typeText,
+		textSingular = countText ? AjxMessageFormat.format(ZmMsg[countKey], 1) : typeText;
+
+	return AjxMessageFormat.format(text, [ num, textAuto, arg, textSingular ]);
 };
 
 /**
@@ -1204,7 +1451,7 @@ function(ev) {
 	var tag = ev.getDetail("organizers")[0];
 	var fields = ev.getDetail("fields");
 	var ctlr = appCtxt.getCurrentController();
-	if (!ctlr || (appCtxt.getCurrentList() != this)) { return; }
+	if (!ctlr) { return; }
 
 	var a = this.getArray();
 
@@ -1220,7 +1467,7 @@ function(ev) {
 		var newName = tag.name;
 		for (var i = 0; i < a.length; i++) {
 			var item = a[i]; //not using the following here as it didn't seem to work for contacts, the list is !isCanonical and null is returned, even though a[i] is fine ==> this.getById(a[i].id); // make sure item is realized (contact may not be)
-			if (!item || !item.hasTag(oldName)) {
+			if (!item || !item.isZmItem || !item.hasTag(oldName)) {
 				continue; //nothing to do if item does not have tag
 			}
 			if (item.isShared()) {
