@@ -59,11 +59,11 @@ onconnect = function(e) {
         }
         if (msg.topic === "social.initialize") {
             apiPort = port;
-			fetchData();
+			fetchData(msg.data.csrfToken);
 			//setInterval(fetchData, CHECK_INTERVAL);
         }
         if (msg.topic === "worker.reload") {
-            fetchData();
+            fetchData(msg.data.csrfToken);
         }
     }
 
@@ -79,12 +79,12 @@ onconnect = function(e) {
         }
     }
 
-    fetchData = function () {
+    fetchData = function (csrfToken) {
         if (fetchTimer) {
             clearTimeout(fetchTimer);
         }
         fetchTimer = setTimeout(fetchData, CHECK_INTERVAL);
-		var requestStr = '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><userAgent xmlns="" name="ZimbraWebClient - FF24 (Mac)"/><session xmlns=""/><format xmlns="" type="js"/></context></soap:Header><soap:Body><GetInfoRequest xmlns="urn:zimbraAccount" sections=""/></soap:Body></soap:Envelope>';
+		var requestStr = '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><csrfToken>' + csrfToken + '</csrfToken><userAgent xmlns="" name="ZimbraWebClient - FF24 (Mac)"/><session xmlns=""/><format xmlns="" type="js"/></context></soap:Header><soap:Body><GetInfoRequest xmlns="urn:zimbraAccount" sections=""/></soap:Body></soap:Envelope>';
 
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.open("POST", "/service/soap/GetInfoRequest", false);

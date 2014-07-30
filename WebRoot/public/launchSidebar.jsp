@@ -29,7 +29,7 @@
         //pageContext.setAttribute("localeId", request.getAttribute("localeId"));
     %>
 
-    <zm:getInfoJSON var="getInfoJSON" authtoken="<%= auth %>" dosearch="false" itemsperpage="20" types="message"/>
+    <zm:getInfoJSON var="getInfoJSON" authtoken="<%= auth %>" csrftoken="${mailbox.csrfToken}" dosearch="false" itemsperpage="20" types="message"/>
 </c:catch>
 <c:if test="${not empty exception}">
     <zm:getException var="error" exception="${exception}"/>
@@ -208,7 +208,13 @@
                         query:"in:inbox",
                         types:"message"
                     }
-                }
+                },
+				Header: {
+					context: {
+						_jsns: "urn:zimbra",
+						csrfToken: "${mailbox.csrfToken}"
+					}
+				}
             }
         var xmlhttp=new XMLHttpRequest();
         xmlhttp.open("POST","/service/soap/SearchRequest",false);
@@ -224,7 +230,10 @@
             if (navigator.mozSocial) {
                 //reload the worker.
                 var worker = navigator.mozSocial.getWorker();
-                worker.port.postMessage({topic: "worker.reload", data: true});
+				var data = {
+					csrfToken:"${mailbox.csrfToken}"
+				};
+                worker.port.postMessage({topic: "worker.reload", data: data});
             }
         } else {
             //this is an error.
