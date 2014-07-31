@@ -256,8 +256,14 @@ function(creates, force) {
 			} else if (name == "task") {
 				// bug fix #29833 - always attempt to process new tasks
 				var taskList = AjxDispatcher.run("GetTaskListController").getList();
-				if (taskList) {
-					taskList.notifyCreate(create);
+				if (taskList &&
+				!AjxUtil.isEmpty(create.inv) &&
+				!AjxUtil.isEmpty(create.inv[0].comp)) {
+					var filter = taskList.controller.getAllowableTaskStatus();
+					var taskStatus = create.inv[0].comp[0].status;
+					if (!filter || filter.indexOf(taskStatus) !== -1) {
+						taskList.notifyCreate(create);
+					}
 				}
 			}
 		}

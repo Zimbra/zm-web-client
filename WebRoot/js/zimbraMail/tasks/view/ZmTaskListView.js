@@ -769,8 +769,8 @@ function(ev) {
                 this._list.add(item, 0);
                 this._renderList(this.getList(),true,false);
                 if(this._list && this._list.size() == 1) { this.setSelection(this._list.get(0)); }
+				this.checkTaskReplenishListView();
             }
-			this.checkTaskReplenishListView();
 		}
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var task = items[0];
