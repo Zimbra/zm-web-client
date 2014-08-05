@@ -966,9 +966,9 @@ function(composeMode, initOnly) {
 	if (htmlMode && !appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) { return; }
 		
 	var previousMode = this._composeMode;
-	this.modeSwitch = (!initOnly && previousMode && composeMode && previousMode !== composeMode);
-	var userText = this.modeSwitch && this.getUserText();
-	var quotedText = this.modeSwitch && this._getQuotedText();
+	var modeSwitch = (!initOnly && previousMode && composeMode && previousMode !== composeMode);
+	var userText = modeSwitch && this.getUserText();
+	var quotedText = modeSwitch && this._getQuotedText();
 	this._composeMode = composeMode;
 	this._setReturns();
 	var curMember = htmlMode ? this._htmlEditor : this._bodyField;
@@ -977,7 +977,7 @@ function(composeMode, initOnly) {
 	this._htmlEditor.setContent("");
 	this._htmlEditor.setMode(composeMode);
 		
-	if (this.modeSwitch) {
+	if (modeSwitch) {
 		userText = htmlMode ? AjxStringUtil.convertToHtml(userText) : AjxStringUtil.trim(this._htmlToText(userText)) + this._crlf;
 		var op = htmlMode ? ZmOperation.FORMAT_HTML : ZmOperation.FORMAT_TEXT;
 		this.resetBody({ extraBodyText:userText, quotedText:quotedText, op:op, keepAttachments:true });
@@ -1011,7 +1011,6 @@ function(composeMode, initOnly) {
 	if (this._msg && this._isInline(this._msg) && composeMode === Dwt.TEXT) {
 		this._showForwardField(this._msg, this._action, null, true);
 	}
-	this.modeSwitch = false; //reset the mode switch option
 };
 
 ZmComposeView.prototype._retryHtmlEditorFocus =
@@ -1950,7 +1949,7 @@ function(action, msg, subjOverride) {
 };
 
 ZmComposeView.prototype._setBody =
-function(action, msg, extraBodyText, noEditorUpdate) {
+function(action, msg, extraBodyText, noEditorUpdate, keepAttachments) {
 		
 	this._setReturns();
 	var htmlMode = (this._composeMode === Dwt.HTML);
@@ -1989,10 +1988,10 @@ function(action, msg, extraBodyText, noEditorUpdate) {
 	// make sure we've loaded the part with the type we want to reply in, if it's available
 	if (msg && (incOptions.what === ZmSetting.INC_BODY || incOptions.what === ZmSetting.INC_SMART)) {
 		var desiredPartType = htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
-		msg.getBodyPart(desiredPartType, this._setBody1.bind(this, action, msg, extraBodyText, noEditorUpdate));
+		msg.getBodyPart(desiredPartType, this._setBody1.bind(this, action, msg, extraBodyText, noEditorUpdate, keepAttachments));
 	}
 	else {
-		this._setBody1(action, msg, extraBodyText, noEditorUpdate);
+		this._setBody1(action, msg, extraBodyText, noEditorUpdate, keepAttachments);
 	}
 };
 
@@ -2037,7 +2036,7 @@ ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_SIG_POST]		= '\u200B\u200D';
 ZmComposeView.BC_HTML_MARKER_ATTR = "data-marker";
 
 ZmComposeView.prototype._setBody1 =
-function(action, msg, extraBodyText, noEditorUpdate) {
+function(action, msg, extraBodyText, noEditorUpdate, keepAttachments) {
 		
 	var htmlMode = (this._composeMode === Dwt.HTML);
 	var isDraft = (action === ZmOperation.DRAFT);
@@ -2093,7 +2092,7 @@ function(action, msg, extraBodyText, noEditorUpdate) {
 
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var hasInlineImages = (bodyInfo.hasInlineImages) || !ac.get(ZmSetting.VIEW_AS_HTML);
-	if (!this.modeSwitch) {
+	if (!keepAttachments) {
 		//do not call this when switching between text and html editor.
 		this._showForwardField(msg || this._msg, action, incOptions, hasInlineImages, bodyInfo.hasInlineAtts);
 	}
@@ -2870,7 +2869,7 @@ function(params, noEditorUpdate) {
 		this.cleanupAttachments(true);
 	}
 	this._isDirty = this._isDirty || this.isDirty();
-	this._setBody(action, msg, params.extraBodyText, noEditorUpdate);
+	this._setBody(action, msg, params.extraBodyText, noEditorUpdate, params.keepAttachments);
 	this._setFormValue();
 	this._resetBodySize();
 };
