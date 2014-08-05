@@ -852,6 +852,7 @@ ZmComposeController.prototype._switchSignature =
 function(sigId) {
 	this.setSelectedSignature(sigId);
 	var params = {
+		keepAttachments: true,
 		action:			this._action,
 		msg:			this._msg,
 		extraBodyText:	this._composeView.getUserText(),
