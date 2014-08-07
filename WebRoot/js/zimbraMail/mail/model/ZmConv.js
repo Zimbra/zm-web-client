@@ -117,7 +117,7 @@ function(params, callback) {
 	var limit = params.limit || appCtxt.get(ZmSetting.CONVERSATION_PAGE_SIZE);
 
 	var doSearch = true;
-	if (this._loaded && this.msgs && this.msgs.size() && !params.forceLoad) {
+	if (this._loaded && this._expanded && this.msgs && this.msgs.size() && !params.forceLoad) {
 		var size = this.msgs.size();
 		if (this._sortBy != sortBy || this._query != query || (size != this.numMsgs && !offset)) {
 			this.msgs.clear();
@@ -149,20 +149,21 @@ function(params, callback) {
 		var search = this.search = new ZmSearch(searchParams),
 			fetch = (params.fetch === true) ? ZmSetting.CONV_FETCH_UNREAD_OR_FIRST : params.fetch || ZmSetting.CONV_FETCH_NONE;
 
+		var needExp = fetch !== ZmSetting.CONV_FETCH_NONE;
 		var	convParams = {
 			cid:		this.id,
-			callback:	(new AjxCallback(this, this._handleResponseLoad, [params, callback])),
+			callback:	(new AjxCallback(this, this._handleResponseLoad, [params, callback, needExp])),
 			fetch:      fetch,
 			markRead:	params.markRead,
 			noTruncate:	params.noTruncate,
-			needExp:	fetch !== ZmSetting.CONV_FETCH_NONE
+			needExp:	needExp
 		};
 		search.getConv(convParams);
 	}
 };
 
 ZmConv.prototype._handleResponseLoad =
-function(params, callback, result) {
+function(params, callback, expanded, result) {
 	var results = result.getResponse();
 	if (!params.offset) {
 		this.msgs = results.getResults(ZmItem.MSG);
@@ -170,6 +171,7 @@ function(params, callback, result) {
 		this.msgs.addChangeListener(this._listChangeListener);
 		this.msgs.setHasMore(results.getAttribute("more"));
 		this._loaded = true;
+		this._expanded = expanded;
 	}
 	if (callback) {
 		callback.run(result);
