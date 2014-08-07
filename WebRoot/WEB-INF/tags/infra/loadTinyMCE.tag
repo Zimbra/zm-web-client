@@ -20,8 +20,10 @@
 
 <%-- include TinyMCE code inline, saving a request/response per file --%>
 
+<c:set var="tinyMCEBaseDir"
+       value="/js/ajax/3rdparty/tinymce" />
 <c:set var="tinyMCEBasePath"
-       value="${pageContext.request.contextPath}/js/ajax/3rdparty/tinymce" />
+       value="${pageContext.request.contextPath}${tinyMCEBaseDir}" />
 
 <c:choose>
     <c:when test="${param.dev eq '1'}">
@@ -52,24 +54,24 @@
                 base: "${tinyMCEBasePath}"
             };
 
-            <jsp:include page="${tinyMCEBasePath}/tinymce_min.js" />
-            <jsp:include page="${tinyMCEBasePath}/locales.js" />
-            <jsp:include page="${tinyMCEBasePath}/localeconv.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/zemoticons/data.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/zemoticons/plugin.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/advlist/plugin_min.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/autolink/plugin_min.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/charmap/plugin_min.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/contextmenu/plugin_min.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/directionality/plugin_min.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/emoticons/plugin_min.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/image/plugin_min.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/hr/plugin_min.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/link/plugin_min.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/paste/plugin_min.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/table/plugin_min.js" />
-            <jsp:include page="${tinyMCEBasePath}/plugins/textcolor/plugin_min.js" />
-            <jsp:include page="${tinyMCEBasePath}/themes/modern/theme_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/tinymce_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/locales.js" />
+            <jsp:include page="${tinyMCEBaseDir}/localeconv.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/zemoticons/data.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/zemoticons/plugin.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/advlist/plugin_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/autolink/plugin_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/charmap/plugin_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/contextmenu/plugin_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/directionality/plugin_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/emoticons/plugin_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/image/plugin_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/hr/plugin_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/link/plugin_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/paste/plugin_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/table/plugin_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/plugins/textcolor/plugin_min.js" />
+            <jsp:include page="${tinyMCEBaseDir}/themes/modern/theme_min.js" />
         </script>
     </c:otherwise>
 </c:choose>
