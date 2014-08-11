@@ -139,7 +139,7 @@
                                                     <fmt:message key="red"/></option>
                                                 <option value="orange" ${efolder.color eq 'orange' ? 'selected=selected' : ''}>
                                                     <fmt:message key="orange"/></option>
-                                                <option value="yellow ${efolder.color eq 'yellow' ? 'selected=selected' : ''}">
+                                                <option value="yellow" ${efolder.color eq 'yellow' ? 'selected=selected' : ''}>
                                                     <fmt:message key="yellow"/></option>
                                                 <option value="green" ${efolder.color eq 'green' ? 'selected=selected' : ''}>
                                                     <fmt:message key="green"/></option>
