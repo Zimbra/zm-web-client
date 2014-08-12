@@ -867,7 +867,8 @@ function(msg) {
 		var inviteMode = notifyActionMap[this._action] ? notifyActionMap[this._action] : this._action;
 		msg.inviteMode = isInviteReply ? inviteMode : null;
         if (this._action !== ZmOperation.NEW_MESSAGE && (!msg.isDraft  || msg.isReplied)){  //Bug: 82942 - in-reply-to shouldn't be added to new messages.
-            msg.irtMessageId = this._msg.messageId;
+			 //when editing a saved draft (only from the drafts folder "edit") - _origMsg is the draft msg instead of the replied to message.
+            msg.irtMessageId = this._origMsg.isDraft ? this._origMsg.irtMessageId : this._origMsg.messageId;
         }
         msg.folderId = this._msg.folderId;
     }
