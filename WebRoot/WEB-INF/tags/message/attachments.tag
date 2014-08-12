@@ -74,7 +74,9 @@
                                 <a target="_blank" href="${url}&amp;view=html"><fmt:message key="viewAsHtml"/></a>
                                 &nbsp;
                             </c:if>
-                            <a href="${url}&amp;disp=a"><fmt:message key="download"/></a>
+                            <c:if test="${not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsViewInHtmlOnly')}">
+                                <a href="${url}&amp;disp=a"><fmt:message key="download"/></a>
+                            </c:if>    
                         </c:if>
                     </c:if>
                 </td>
@@ -84,7 +86,7 @@
 </c:forEach>
 
 <c:if test="${message.numberOfAttachments gt 1 and not print}" >
-    <c:if test="${not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked')}">
+    <c:if test="${not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked') and not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsViewInHtmlOnly')}">
         <c:set var="url" value="/service/home/~/?id=${message.id}&part=${message.attachmentIds}&amp;auth=co&amp;disp=a&amp;fmt=zip"/>
         <table cellspacing="8">
             <tr>
