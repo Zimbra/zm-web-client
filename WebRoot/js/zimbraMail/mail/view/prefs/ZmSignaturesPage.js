@@ -53,9 +53,10 @@ function() {
 
 	ZmPreferencesPage.prototype.showMe.call(this);
 
-	// bug fix #41719 - always resize when in multi-account mode.
+	// bug #41719 & #94845 - always update size on display
+	this._resetSize();
+
 	if (!this._firstTime) {
-		this._resetSize();
 		this._firstTime = true;
 	}
 
