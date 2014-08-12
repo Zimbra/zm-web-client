@@ -11,8 +11,10 @@
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
---%><%@ tag body-content="empty" import="java.io.*,java.util.*,com.zimbra.webClient.servlet.SkinResources"
-%><%@ attribute name="var" rtexprvalue="false" required="true"
+--%>
+<%@ tag body-content="empty" import="java.io.*,java.util.*,com.zimbra.webClient.servlet.SkinResources"%>
+<%@ tag import="java.util.concurrent.ConcurrentHashMap" %>
+<%@ attribute name="var" rtexprvalue="false" required="true"
 %><%@ attribute name="value" rtexprvalue="true" required="true"
 %><%@ variable name-from-attribute="var" alias="info" scope="AT_END"
 %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"
@@ -67,14 +69,14 @@ synchronized (this) {
     if (resources != null) {
         cache = (Map<String,SkinResources.ImageInfo>)resources.getAttribute(SkinResources.A_IMAGE_CACHE);
         if (cache == null) {
-            cache = new HashMap<String,SkinResources.ImageInfo>();
+            cache = new ConcurrentHashMap<String, SkinResources.ImageInfo>();
             resources.setAttribute(SkinResources.A_IMAGE_CACHE, cache);
         }
     }
     else {
        // Initialize the cache for future references
        if (cache == null)
-            cache = new HashMap<String,SkinResources.ImageInfo>();
+            cache = new ConcurrentHashMap<String, SkinResources.ImageInfo>();
     }
 }
 
