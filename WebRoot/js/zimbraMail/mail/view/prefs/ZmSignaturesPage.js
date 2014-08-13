@@ -55,16 +55,6 @@ function() {
 
 	// bug #41719 & #94845 - always update size on display
 	this._resetSize();
-
-	if (!this._firstTime) {
-		this._firstTime = true;
-	}
-
-	// bug fix #31849 - reset the signature html editor when in multi-account mode
-	// since the view gets re-rendered whenever the account changes
-	if (appCtxt.multiAccounts) {
-		this._signatureEditor = null;
-	}
 };
 
 ZmSignaturesPage.prototype._rehashByName =
@@ -196,7 +186,6 @@ ZmSignaturesPage.prototype.resetOnAccountChange =
 function() {
 	ZmPreferencesPage.prototype.resetOnAccountChange.apply(this, arguments);
 	this._selSignature = null;
-	this._firstTime = false;
 };
 
 ZmSignaturesPage.prototype.isDirty =
@@ -876,7 +865,6 @@ function(signature, clear) {
     this._sigEditor.clear();
 	var editorMode = (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && signature.getContentType() === ZmMimeTable.TEXT_HTML)
 		? Dwt.HTML : Dwt.TEXT;
-	var htmlModeInited = this._sigEditor.isHtmlModeInited();
 	if (editorMode !== this._sigEditor.getMode()) {
 		this._sigEditor.setMode(editorMode);
 		this._resetSize();
