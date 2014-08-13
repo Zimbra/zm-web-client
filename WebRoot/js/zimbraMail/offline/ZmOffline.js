@@ -421,17 +421,17 @@ function(startTime, endTime, callback, getMessages, previousMessageIds, apptIds,
         // update will be a delete then rewrite).
         if (apptIds) {
             var search;
-            var offlineDeleteTrashedAppts = this._offlineDeleteAppts.bind(this);
+            var offlineDeleteTrashedAppts = this._offlineUpdateAppts.bind(this, apptContainers);
             for (var apptId in apptIds) {
                 search = [apptId];
                 // If its a recurring appt, several ZmAppts may share the same id.  Find them and delete them all
                 ZmOfflineDB.doIndexSearch(search, ZmApp.CALENDAR, null, offlineDeleteTrashedAppts,
                     this.calendarDeleteErrorCallback.bind(this), "id");
             }
-        }
-
-        // Store the new/modified entries.  This will execute after the deletion transactions above complete
-        ZmOfflineDB.setItem(apptContainers, ZmApp.CALENDAR, null, this.calendarDownloadErrorCallback.bind(this));
+        }  else {
+			// Store the new/modified entries.
+			ZmOfflineDB.setItem(apptContainers, ZmApp.CALENDAR, null, this.calendarDownloadErrorCallback.bind(this));
+		}
 
         // Now make a server read to get the detailed appt invites, for edit view and tooltips
         if (getMessages) {
@@ -895,17 +895,24 @@ function(items, type){
     // Search for items whose endTime is from 0 to newStartTime
     var search = [0, newStartTime];
     var errorCallback = this._expiredErrorCallback.bind(this);
-    var offlineSearchExpiredAppts = this._offlineDeleteAppts.bind(this);
+    var offlineSearchExpiredAppts = this._offlineUpdateAppts.bind(this, null);
     ZmOfflineDB.doIndexSearch(search, ZmApp.CALENDAR, null, offlineSearchExpiredAppts, errorCallback, "endDate");
 };
 
-ZmOffline.prototype._offlineDeleteAppts =
-function(apptContainers) {
+ZmOffline.prototype._offlineUpdateAppts =
+function(apptContainersToDelete, apptContainersToAdd) {
     var appt;
-    for (var i = 0; i < apptContainers.length; i++) {
-        appt = apptContainers[i].appt;
-        ZmOfflineDB.deleteItem(this._createApptPrimaryKey(appt), ZmApp.CALENDAR, this.calendarDeleteErrorCallback.bind(this));
-    }
+	if (apptContainersToDelete) {
+		for (var i = 0; i < apptContainersToDelete.length; i++) {
+			appt = apptContainersToDelete[i].appt;
+			ZmOfflineDB.deleteItem(this._createApptPrimaryKey(appt), ZmApp.CALENDAR, this.calendarDeleteErrorCallback.bind(this));
+		}
+	}
+
+	// Store the new/modified entries.
+	if (apptContainersToAdd) {
+		ZmOfflineDB.setItem(apptContainersToAdd, ZmApp.CALENDAR, null, this.calendarDownloadErrorCallback.bind(this));
+	}
 }
 
 ZmOffline.prototype._expiredErrorCallback =
