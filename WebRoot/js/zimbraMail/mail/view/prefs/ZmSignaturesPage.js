@@ -434,9 +434,10 @@ function(container) {
 	var formatEl = document.getElementById(this._htmlElId + "_SIG_FORMAT");
 	if (formatEl && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		var select = new DwtSelect(this);
+		var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 		select.setToolTipContent(ZmMsg.formatTooltip);
-		select.addOption(ZmMsg.formatAsText, 1 , true);
-		select.addOption(ZmMsg.formatAsHtml, 0, false);
+		select.addOption(ZmMsg.formatAsText, composeFormat == ZmSetting.COMPOSE_TEXT, true);
+		select.addOption(ZmMsg.formatAsHtml, composeFormat == ZmSetting.COMPOSE_HTML, false);
 		select.addChangeListener(this._handleFormatSelect.bind(this));
 		this._replaceControlElement(formatEl, select);
 		this._sigFormat = select;
@@ -738,7 +739,13 @@ function(reset) {
 
 ZmSignaturesPage.prototype._getNewSignature =
 function() {
+	var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 	var signature = new ZmSignature(null);
+	if (composeFormat == ZmSetting.COMPOSE_TEXT) {
+		signature.setContentType(ZmMimeTable.TEXT_PLAIN);
+	} else if (composeFormat == ZmSetting.COMPOSE_HTML) {
+		signature.setContentType(ZmMimeTable.TEXT_HTML);
+	}
 	signature.id = Dwt.getNextId();
 	signature.name = '';
 	signature._new = true;
