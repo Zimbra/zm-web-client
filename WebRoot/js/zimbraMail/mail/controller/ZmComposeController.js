@@ -1120,7 +1120,10 @@ function(params) {
 		}
 		cv.reEnableDesignMode();
 
-		if (msg && (action == ZmOperation.DRAFT)) {
+		if (this._msgIds) {
+			this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);
+		}
+		else if (msg && (action == ZmOperation.DRAFT)) {
 			this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
 			if (msg.autoSendTime) {
 				this.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL, null, null, msg.setAutoSendTime.bind(msg));
