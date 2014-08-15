@@ -2140,7 +2140,7 @@ function(comp, mode, params) {
 		
 	mode = mode || this._composeMode;
 	var value = this._components[mode] && this._components[mode][comp];
-	if (value) {
+	if (value || (value === "")) {
 		return value;
 	}
 
