@@ -5624,9 +5624,14 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmEditContactView .rowLabel, .ZmEditContactView .rowType, 
 .ZmContactSplitView .rowLabel, .ZmContactSplitView .rowType,
 .ZmContactSplitView .rowValue, .ZmContactSplitView .rowValue[colspan] {
-	padding:.75em .5em .4em;
-	vertical-align:top;
+    padding:.75em .5em .4em;
+    vertical-align:top;
 }
+.ZmEditContactView .rowLabel, .ZmEditContactView .rowType,
+.ZmContactSplitView .rowLabel, .ZmContactSplitView .rowType {
+    white-space: nowrap;
+}
+
 /* cells with inputs generally need less top padding,
  * but there are variations for checkboxes and radiobuttons
  */
