@@ -89,6 +89,7 @@ ZmImportExportController.TYPE_EXTS = {};
 ZmImportExportController.TYPE_EXTS[ZmImportExportController.TYPE_CSV] = [ "csv", "vcf" ];
 ZmImportExportController.TYPE_EXTS[ZmImportExportController.TYPE_ICS] = [ "ics" ];
 ZmImportExportController.TYPE_EXTS[ZmImportExportController.TYPE_TGZ] = [ "tgz", "zip" ];
+ZmImportExportController.TYPE_EXTS[ZmImportExportController.TYPE_TAR] = [ "tar" ];
 
 ZmImportExportController.EXTS_TYPE = {};
 AjxUtil.foreach(ZmImportExportController.TYPE_EXTS, function(exts, p) {
