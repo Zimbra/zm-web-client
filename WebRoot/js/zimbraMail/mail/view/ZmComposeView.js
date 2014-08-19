@@ -3236,10 +3236,6 @@ function(err) {
 		this._controller._uploadAttReq = null;
 	}
 
-	if (this._msgIds) {
-	  this._msgIds = [];
-	}
-
 	if (this.si) {
 		clearTimeout(this.si);
 	}
@@ -3528,14 +3524,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 		this._originalAttachments = []; //keep it associated by label and size (label => size => true) since that's the only way the client has to identify attachments from previous msg version.
 		this._hideOriginalAttachments = msg && hasAttachments && (action === ZmOperation.REPLY || action === ZmOperation.REPLY_ALL);
 	}
-	if (!(this._msgIds && this._msgIds.length) &&
-		((incOptions && incOptions.what === ZmSetting.INC_ATTACH) || action === ZmOperation.FORWARD_ATT))
-	{
-		html = AjxTemplate.expand("mail.Message#ForwardOneMessage", {message:msg});
-		this._attachCount = 1;
-	}
-	else if (msg && (hasAttachments || includeInlineImages || includeInlineAtts || (action === ZmComposeView.ADD_ORIG_MSG_ATTS)))
-	{
+	if (msg && (hasAttachments || includeInlineImages || includeInlineAtts || (action === ZmComposeView.ADD_ORIG_MSG_ATTS))) {
 		var attInfo = msg.getAttachmentInfo(false, includeInlineImages, includeInlineAtts);
 
 		if (action === ZmComposeView.ADD_ORIG_MSG_ATTS) {
@@ -3581,17 +3570,9 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 			if (action === ZmComposeView.ADD_ORIG_MSG_ATTS) {
 				action = this._action;
 			}
-			if (this._msgIds && this._msgIds.length) {
-				for (var i = 0; i < this._msgIds.length; i++) {
-					var message = appCtxt.cacheGet(this._msgIds[i]);
-					if (!message) continue;
-					messages.push(message);
-				};
-			}
 
 			var data = {
 				attachments:				attInfo,
-				messages:					messages,
 				messagesFwdFieldName: 		(ZmComposeView.FORWARD_MSG_NAME + this._sessionId),
 				isNew:						(action === ZmOperation.NEW_MESSAGE),
 				isForward:					(action === ZmOperation.FORWARD),
@@ -3603,22 +3584,9 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 				fwdFieldName:				(ZmComposeView.FORWARD_ATT_NAME + this._sessionId)
 			};
 			html = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
-			this._attachCount = attInfo.length + messages.length;
+			this._attachCount = attInfo.length;
 			this.checkAttachments();
 		}
-	} else if (this._msgIds && this._msgIds.length) {
-		// use main window's appCtxt
-		for (var i = 0; i < this._msgIds.length; i++) {
-			var message = appCtxt.cacheGet(this._msgIds[i]);
-			if (!message) continue;
-			messages.push(message);
-		}
-		var data = {
-			messages: messages,
-			fwdFieldName: (ZmComposeView.FORWARD_MSG_NAME + this._sessionId)
-		};
-		html = AjxTemplate.expand("mail.Message#ForwardMessages", data);
-		this._attachCount = messages.length;
 	}
 
 	this._originalAttachmentsInitialized  = true; //ok, done setting it for the first time.
@@ -3900,14 +3868,7 @@ function() {
 
 ZmComposeView.prototype._setAttachedMsgIds =
 function(msgIds) {
-	if (!this._msgIds) {
-		this._msgIds = msgIds;
-	} else {
-		 for (val in msgIds) {
-		   if (AjxUtil.indexOf(this._msgIds, msgIds[val]) === -1) // Do not attach if the same message is forwarded
-			 this._msgIds.push(msgIds[val]);
-		 }
-	}
+	this._msgIds = msgIds;
 };
 
 // Files have been uploaded, re-initiate the send with an attachment ID.
