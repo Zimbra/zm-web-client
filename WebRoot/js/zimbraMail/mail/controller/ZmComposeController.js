@@ -312,7 +312,6 @@ function() {
 		accountName:	this._accountName,
 		backupForm:		backupForm,
 		sendUID:		sendUID,
-		msgIds:			this._msgIds,
 		forAttIds:		this._forAttIds,
 		sessionId:		this.getSessionId(),
         readReceipt:	requestReadReceipt,
@@ -1859,6 +1858,9 @@ function(op) {
 		op:				op
 	};
 	this._composeView.resetBody(params);
+	if (op === ZmOperation.INC_ATTACHMENT) {
+		this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);
+	}
 };
 
 ZmComposeController.prototype._detachListener =
