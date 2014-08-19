@@ -421,11 +421,11 @@ function(startTime, endTime, callback, getMessages, previousMessageIds, apptIds,
         // update will be a delete then rewrite).
         if (apptIds) {
             var search;
-            var offlineDeleteTrashedAppts = this._offlineUpdateAppts.bind(this, apptContainers);
+            var offlineUpdateAppts = this._offlineUpdateAppts.bind(this, apptContainers);
             for (var apptId in apptIds) {
                 search = [apptId];
                 // If its a recurring appt, several ZmAppts may share the same id.  Find them and delete them all
-                ZmOfflineDB.doIndexSearch(search, ZmApp.CALENDAR, null, offlineDeleteTrashedAppts,
+                ZmOfflineDB.doIndexSearch(search, ZmApp.CALENDAR, null, offlineUpdateAppts,
                     this.calendarDeleteErrorCallback.bind(this), "id");
             }
         }  else {
@@ -900,7 +900,7 @@ function(items, type){
 };
 
 ZmOffline.prototype._offlineUpdateAppts =
-function(apptContainersToDelete, apptContainersToAdd) {
+function(apptContainersToAdd, apptContainersToDelete) {
     var appt;
 	if (apptContainersToDelete) {
 		for (var i = 0; i < apptContainersToDelete.length; i++) {
