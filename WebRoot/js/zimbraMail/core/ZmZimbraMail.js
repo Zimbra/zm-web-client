@@ -416,18 +416,19 @@ function(sendRights, sendRight) {
 		return emails;
 	}
 	for (var i = 0; i < sendRights.length; i++) {
-		var target = sendRights[i].target;
+		var targets = sendRights[i].target;
 		var right = sendRights[i].right;
 		var sendRightDistList = sendRight + "DistList";
 		if (right !== sendRight && right !== sendRightDistList) {
 			continue;
 		}
 		var isDL = right === sendRightDistList;
-		for (var j = 0; j < target.length; j++) {
-			var emailList = target[j].email;
+		for (var j = 0; j < targets.length; j++) {
+			var target = targets[j];
+			var emailList = target.email;
 			for (var k = 0; k < emailList.length; k++) {
 				var addr = emailList[k].addr;
-				emails.push({addr: addr, isDL: isDL});
+				emails.push({addr: addr, isDL: isDL, displayName: target.d});
 			}
 		}
 
