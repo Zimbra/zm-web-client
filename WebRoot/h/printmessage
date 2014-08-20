@@ -96,9 +96,9 @@ ${zm:clearMessageCache(mailbox)}
 	<div class='NoResults'><fmt:message key="noResultsFound"/></div>
 </c:if>
 <style type="text/css">
-    .ZhCallListPrintView td, .zPrintMsgs *{
-        font-family:Tahoma,Arial,Helvetica,sans-serif;
-        font-size:${mailbox.prefs.defaultPrintFontSize};
+    .ZhCallListPrintView td, .zPrintMsgs :not(font){
+            font-family: Tahoma,Arial,Helvetica,sans-serif;
+            font-size: ${mailbox.prefs.defaultPrintFontSize};
     }
     .ZhPrintSubject {
         padding: 10px;
