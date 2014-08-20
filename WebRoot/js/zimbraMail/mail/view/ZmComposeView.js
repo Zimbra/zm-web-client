@@ -3004,9 +3004,13 @@ ZmComposeView.prototype._addSendAsAndSendOboAddresses  =
 function(menu) {
 
 	var optData = null;
-	var displayName = appCtxt.getUsername();
-	this._addSendAsOrSendOboAddresses(menu, appCtxt.sendAsEmails, false, function(addr) {return addr;});
-	this._addSendAsOrSendOboAddresses(menu, appCtxt.sendOboEmails, true, function(addr) {return displayName + " " + ZmMsg.sendOnBehalfOf + " "  + addr;});
+	var myDisplayName = appCtxt.getUsername();
+	this._addSendAsOrSendOboAddresses(menu, appCtxt.sendAsEmails, false, function(addr, displayName) {
+		return displayName ? AjxMessageFormat.format(ZmMsg.sendAsAddress, [addr, displayName]) : addr;
+	});
+	this._addSendAsOrSendOboAddresses(menu, appCtxt.sendOboEmails, true, function(addr, displayName) {
+		return  AjxMessageFormat.format(displayName ? ZmMsg.sendOboAddressAndDispName : ZmMsg.sendOboAddress, [myDisplayName, addr, displayName]);
+	});
 };
 
 ZmComposeView.prototype._addSendAsOrSendOboAddresses  =
@@ -3015,7 +3019,7 @@ function(menu, emails, isObo, displayValueFunc) {
 		var email = emails[i];
 		var addr = email.addr;
 		var extraData = {isDL: email.isDL, isObo: isObo};
-		var displayValue = displayValueFunc(addr);
+		var displayValue = displayValueFunc(addr, email.displayName);
 		var optData = new DwtSelectOptionData(addr, displayValue, null, null, null, null, extraData);
 		menu.addOption(optData);
 	}
