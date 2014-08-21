@@ -408,6 +408,7 @@ function(files, status, guids, response) {
 	var conflicts = [];
 	if (resp && resp.Fault) {
 		var errors = [], mailboxQuotaExceeded=false, isItemLocked=false;
+		var uploadRejected = false, rejectedFile = "Unknown", rejectedReason = "Unknown";
 		for (var i = 0; i < resp.Fault.length; i++) {
 			var fault = resp.Fault[i];
 			var error = fault.Detail.Error;
@@ -432,7 +433,16 @@ function(files, status, guids, response) {
 				DBG.println("Unknown error occurred: "+code);
                 if(code == ZmCsfeException.MAIL_QUOTA_EXCEEDED){
                     mailboxQuotaExceeded = true;
-                }
+				}  else if (code === ZmCsfeException.UPLOAD_REJECTED) {
+					uploadRejected = true;
+					for (var p in attrs) {
+						var attr = attrs[p];
+						switch (attr.n) {
+							case "reason" : rejectedReason = attr._content; break;
+							case "name":    rejectedFile   = attr._content; break;
+						}
+					}
+				}
 				errors[fault.requestId] = fault;
 			}
 		}
@@ -440,12 +450,14 @@ function(files, status, guids, response) {
         if(mailboxQuotaExceeded){
             this._popupErrorDialog(ZmMsg.errorQuotaExceeded);
             return;
-        }
-        else if(isItemLocked){
+        } else if(isItemLocked){
             this._popupErrorDialog(ZmMsg.errorItemLocked);
             return;
-        }
-        else if(code==ZmCsfeException.SVC_PERM_DENIED){
+		} else if (uploadRejected) {
+			var rejectedMsg = AjxMessageFormat.format(ZmMsg.uploadRejectedError, [ rejectedFile, rejectedReason ] );
+			this._popupErrorDialog(rejectedMsg);
+			return;
+		} else if(code==ZmCsfeException.SVC_PERM_DENIED){
             this._popupErrorDialog(ZmMsg.errorPermissionDenied);
             this.popdown();
             return;
