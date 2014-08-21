@@ -989,8 +989,11 @@ function(ev) {
 		if (typeof(setExpanded) == "string") {//I can't figure out why it becomes a string sometimes. That's nasty.
 			setExpanded = (setExpanded === "true");
 		}
-		if (setExpanded != isExpand) { //set only if changed (ZmSetting.prototype.setValue is supposed to not send a request if no change, but it might have bugs)
-			appCtxt.set(ZmSetting.FOLDERS_EXPANDED, isExpand, folderId, null, null, null, overview.skipImplicit);
+		//setting in case of skipImplicit is still causing problems (the fix to bug 72590 was not good enough), since even if this "set" is not persisting,
+		//future ones (collapse/expand in the mail tab) would cause it to save implicitly, which is not what we want.
+		//so I simply do not call "set" in case of skipImplicit. Might want to change the name of this variable slightly, but not sure to what.
+		if (!overview.skipImplicit && setExpanded !== isExpand) { //set only if changed (ZmSetting.prototype.setValue is supposed to not send a request if no change, but it might have bugs)
+			appCtxt.set(ZmSetting.FOLDERS_EXPANDED, isExpand, folderId);
 		}
 
 		// check if any of this treeItem's children need to be expanded as well
