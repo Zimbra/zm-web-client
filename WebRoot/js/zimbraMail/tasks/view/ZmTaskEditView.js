@@ -83,7 +83,7 @@ ZmTaskEditView.DIALOG_X = 50;
 ZmTaskEditView.DIALOG_Y = 100;
 
 // Characters disallowed in the Task subject name
-ZmTaskEditView.INVALID_SUBJECT_REGEX = /[/\":]/;
+ZmTaskEditView.INVALID_SUBJECT_REGEX = /[\/\":]/;
 
 
 // Public Methods

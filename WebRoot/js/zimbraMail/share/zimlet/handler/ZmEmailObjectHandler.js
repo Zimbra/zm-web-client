@@ -39,7 +39,7 @@ ZmEmailObjectHandler.prototype.toString = function() {
 };
 
 // email regex that recognizes mailto: links as well
-ZmEmailObjectHandler.RE = /\b(mailto:[ ]*)?([0-9a-zA-Z]+[.&#!$%'*+-/=?^_`{}|~])*[0-9a-zA-Z_-]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}([\w/_\.]*(\?\S+)?)/gi;
+ZmEmailObjectHandler.RE = /\b(mailto:[ ]*)?([0-9a-zA-Z]+[.&#!$%'*+-\/=?^_`{}|~])*[0-9a-zA-Z_-]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}([\w\/_\.]*(\?\S+)?)/gi;
 
 
 ZmEmailObjectHandler.prototype.match = function(content, startIndex, objectMgr) {

@@ -91,7 +91,7 @@ ZmMailMsgView._inited 				= false;
 ZmMailMsgView.SHARE_EVENT 			= "share";
 ZmMailMsgView.SUBSCRIBE_EVENT 		= "subscribe";
 ZmMailMsgView.IMG_FIX_RE			= new RegExp("(<img\\s+.*dfsrc\\s*=\\s*)[\"']http[^'\"]+part=([\\d\\.]+)[\"']([^>]*>)", "gi");
-ZmMailMsgView.FILENAME_INV_CHARS_RE = /[\./?*:;{}'\\]/g; // Chars we do not allow in a filename
+ZmMailMsgView.FILENAME_INV_CHARS_RE = /[\.\/?*:;{}'\\]/g; // Chars we do not allow in a filename
 ZmMailMsgView.SETHEIGHT_MAX_TRIES	= 3;
 
 ZmMailMsgView._URL_RE = /^((https?|ftps?):\x2f\x2f.+)$/;
