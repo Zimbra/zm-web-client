@@ -373,38 +373,43 @@
             <fileset dir='${common.lib.dir}' includes='streambuffer-*.jar'/>
         </copy>
 
+        <taskdef name="jscopy"
+                 classname="com.zimbra.webClient.build.JSCopyTask"
+                 classpath="${build.classes.dir}" classpathref="class.path"
+                />
+
         <!-- primary files from source trees -->
-        <copy todir='${webapp.dir}' verbose='${sync.verbose}'>
+        <jscopy todir='${webapp.dir}' verbose='${sync.verbose}'>
             <fileset refid="web.fileset" />
             <fileset refid="overlay.web.fileset" />
             <fileset refid='customer.web.fileset'/>
-        </copy>
+        </jscopy>
 
-        <copy todir='${webapp.dir}/public' verbose='${sync.verbose}'>
+        <jscopy todir='${webapp.dir}/public' verbose='${sync.verbose}'>
             <fileset refid="jsp.fileset" />
             <fileset refid="overlay.jsp.fileset" />
             <fileset refid="customer.jsp.fileset" />
-        </copy>
+        </jscopy>
 
         <copy todir='${webapp.dir}/img' verbose='${sync.verbose}'>
             <fileset refid="img.fileset" />
             <fileset refid="overlay.img.fileset" />
         </copy>
 
-        <copy todir='${webapp.dir}/skins' verbose='${sync.verbose}'>
+        <jscopy todir='${webapp.dir}/skins' verbose='${sync.verbose}'>
             <fileset refid="skins.fileset" />
             <fileset refid="overlay.skins.fileset" />
-        </copy>
+        </jscopy>
 
-		<copy todir='${webapp.dir}/help'>
+		<jscopy todir='${webapp.dir}/help'>
 			<fileset refid='help.fileset' />
 			<fileset refid='network.help.fileset' />
-		</copy>
+		</jscopy>
 
         <!-- files from build tree -->
-        <copy todir='${webapp.dir}' verbose='${sync.verbose}'>
+        <jscopy todir='${webapp.dir}' verbose='${sync.verbose}'>
             <fileset dir='${build.web.dir}' excludes='js/*${depends.ext}'/>
-        </copy>
+        </jscopy>
 
         <!-- replace web.xml tokens -->
 		<antcall target='webxml-package-replace' />
