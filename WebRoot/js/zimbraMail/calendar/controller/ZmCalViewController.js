@@ -1171,8 +1171,11 @@ function() {
 
 ZmCalViewController.prototype._miniCalDropTargetListener =
 function(ev) {
+
+	if (appCtxt.isWebClientOffline()) return;
+
 	var data = ((ev.srcData.data instanceof Array) && ev.srcData.data.length == 1)
-		? ev.srcData.data[0] : ev.srcData.data;
+	? ev.srcData.data[0] : ev.srcData.data;
 
 	// use shiftKey to create new Tasks if enabled. NOTE: does not support Contacts yet
 	var shiftKey = appCtxt.get(ZmSetting.TASKS_ENABLED) && ev.uiEvent.shiftKey;
