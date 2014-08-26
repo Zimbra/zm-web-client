@@ -103,6 +103,10 @@ function(listener) {
 ZmAppCtxt.prototype._authTokenWarningTimeout =
 function () {
 
+	if (!window.authTokenExpires) {
+		return; //for cases we the auth token expires is not available. (e.g. some new windows we didn't set it for yet, or for saved rest URLs
+	}
+
 	var now = new Date().getTime();
 	var millisToLive = window.authTokenExpires - now;
 	var minutesToLive = Math.floor(millisToLive / ZmAppCtxt.ONE_MINUTE);
