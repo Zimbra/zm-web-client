@@ -701,6 +701,7 @@ ZmBriefcaseApp.prototype._uploadSaveDocsResponse = function(params, response) {
 	var conflicts = [];
 	if (resp && resp.Fault) {
 		var errors = [];
+		var uploadRejected = false, rejectedFile = "Unknown", rejectedReason = "Unknown";
 		for (var i = 0; i < resp.Fault.length; i++) {
 			var fault = resp.Fault[i];
 			var error = fault.Detail.Error;
@@ -727,6 +728,13 @@ ZmBriefcaseApp.prototype._uploadSaveDocsResponse = function(params, response) {
 					mailboxQuotaExceeded = true;
 				}  else if (code === ZmCsfeException.UPLOAD_REJECTED) {
 					uploadRejected = true;
+					for (var p in attrs) {
+						var attr = attrs[p];
+						switch (attr.n) {
+							case "reason" : rejectedReason = attr._content; break;
+							case "name":    rejectedFile   = attr._content; break;
+						}
+					}
 				}
 
 				errors[fault.requestId] = fault;
@@ -749,9 +757,7 @@ ZmBriefcaseApp.prototype._uploadSaveDocsResponse = function(params, response) {
 		this._popupErrorDialog(ZmMsg.errorItemLocked);
 		return;
 	} else if (uploadRejected) {
-		// Yes, its bogus, but strings are locked.  This allows us to get somewhat close to indicating what happened.
-		// TODO: Add an appropriate error string
-		var rejectedMsg = AjxMessageFormat.format(ZmMsg.uploadError, [ ZmMsg.dlReject ] );
+		var rejectedMsg = AjxMessageFormat.format(ZmMsg.uploadRejectedError, [ rejectedFile, rejectedReason ] );
 		this._popupErrorDialog(rejectedMsg);
 		return;
 	}
