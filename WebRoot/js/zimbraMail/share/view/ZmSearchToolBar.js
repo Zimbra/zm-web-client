@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -61,6 +67,7 @@ ZmSearchToolBar.TT_MSG_KEY 			= {};		// tooltip text for menu item
 ZmSearchToolBar.ICON 				= {};		// icon for menu item
 ZmSearchToolBar.SHARE_ICON			= {};		// icon for shared menu item
 ZmSearchToolBar.ID 					= {};		// ID for menu item
+ZmSearchToolBar.DISABLE_OFFLINE     = {};       // Disable when offline detected
 
 
 // Public static methods
@@ -75,12 +82,13 @@ ZmSearchToolBar.ID 					= {};		// ID for menu item
 ZmSearchToolBar.addMenuItem =
 function(id, params) {
 
-	if (params.msgKey)		{ ZmSearchToolBar.MSG_KEY[id]		= params.msgKey; }
-	if (params.tooltipKey)	{ ZmSearchToolBar.TT_MSG_KEY[id]	= params.tooltipKey; }
-	if (params.icon)		{ ZmSearchToolBar.ICON[id]			= params.icon; }
-	if (params.shareIcon)	{ ZmSearchToolBar.SHARE_ICON[id]	= params.shareIcon; }
-	if (params.setting)		{ ZmSearchToolBar.SETTING[id]		= params.setting; }
-	if (params.id)			{ ZmSearchToolBar.ID[id]			= params.id; }
+	if (params.msgKey)		   { ZmSearchToolBar.MSG_KEY[id]		 = params.msgKey; }
+	if (params.tooltipKey)	   { ZmSearchToolBar.TT_MSG_KEY[id]	 	 = params.tooltipKey; }
+	if (params.icon)		   { ZmSearchToolBar.ICON[id]			 = params.icon; }
+	if (params.shareIcon)	   { ZmSearchToolBar.SHARE_ICON[id]	 	 = params.shareIcon; }
+	if (params.setting)		   { ZmSearchToolBar.SETTING[id]		 = params.setting; }
+	if (params.id)			   { ZmSearchToolBar.ID[id]				 = params.id; }
+	if (params.disableOffline) { ZmSearchToolBar.DISABLE_OFFLINE[id] = params.disableOffline; }
 
 	if (params.index == null || params.index < 0 || params.index >= ZmSearchToolBar.MENU_ITEMS.length) {
 		ZmSearchToolBar.MENU_ITEMS.push(id);
@@ -289,15 +297,17 @@ ZmMainSearchToolBar = function(params) {
 
 	if (arguments.length == 0) { return; }
 
+
 	ZmSearchToolBar.apply(this, arguments);
 
 	// setup "include shared" menu item
 	var miParams = {
-		msgKey:		"searchShared",
-		tooltipKey:	"searchShared",
-		icon:		"Group",
-		setting:	ZmSetting.SHARING_ENABLED,
-		id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED)
+		msgKey:			"searchShared",
+		tooltipKey:		"searchShared",
+		icon:			"Group",
+		setting:		ZmSetting.SHARING_ENABLED,
+		id:				ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED),
+		disableOffline: true
 	};
 	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_SHARED, miParams);
 
@@ -438,6 +448,21 @@ function() {
 
 	return menu;
 };
+
+ZmMainSearchToolBar.prototype.setOfflineState = function(offline) {
+	var button   = this._button[ZmSearchToolBar.TYPES_BUTTON];
+	var menu     = button && button.getMenu();
+	var numItems = menu.getItemCount();
+	for (var i = 0; i < numItems; i++) {
+	    var item = menu.getItem(i);
+		if (item) {
+			var id   = item.getData(ZmSearchToolBar.MENUITEM_ID);
+			if (id && ZmSearchToolBar.DISABLE_OFFLINE[id])  {
+				item.setEnabled(!offline);
+			}
+		}
+	}
+}
 
 ZmMainSearchToolBar.prototype.getSearchType =
 function() {
@@ -593,57 +618,16 @@ function(ev) {
 
 ZmMainSearchToolBar.prototype._setInputExpanded =
 function(expanded) {
-	this._searchField.getInputElement().className = expanded ? "search_input-expanded" : "search_input";
-};
+	var input = this._searchField.getInputElement();
+	var cls = expanded ? "search_input-expanded" : "search_input";
 
-/**
- * Initializes people autocomplete and search autocomplete.
- */
-ZmMainSearchToolBar.prototype.initAutocomplete =
-function() {
-
-	ZmSearchToolBar.prototype.initAutocomplete.apply(this, arguments);
-	
-	var id = this.getSearchType();
-	var needPeople = (id == ZmItem.CONTACT || id == ZmId.SEARCH_GAL);
-
-	if (false && !this._peopleAutocomplete) {
-		var params = {
-			parent:			appCtxt.getShell(),
-			dataClass:		(new ZmPeopleSearchAutocomplete()),
-			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
-			options:		{type:ZmAutocomplete.AC_TYPE_GAL},
-			separator:		""
-		};
-		this._peopleAutocomplete = new ZmPeopleAutocompleteListView(params);
-		if (needPeople) {
-			this._peopleAutocomplete.handle(this.getSearchField());
-		}
-	}
-};
-
-/**
- * Enables or disables people autocomplete depending on what user is searching for.
- * 
- * @param {string}	id		ID of menu item selected in "search for" menu
- */
-ZmMainSearchToolBar.prototype.setPeopleAutocomplete =
-function(id) {
-	
-	return;
-
-	//no change required when checking/unchecking the "include shared items" checkbox
-	if (id == ZmId.SEARCH_SHARED || !this._peopleAutocomplete) { return; }
-	
-	var needPeople = (id == ZmItem.CONTACT || id == ZmId.SEARCH_GAL);
-	if (this._peopleAutocomplete.isActive != needPeople) {
-		var input = this.getSearchField();
-		if (needPeople) {
-			this._peopleAutocomplete.handle(input);
-		}
-		else {
-			this._peopleAutocomplete.unhandle(input);
-		}
+	if (AjxEnv.isIE9) {
+		// bug 83493: IE9 gets the layout wrong on the first try
+		setTimeout(function() {
+			input.className = cls;
+		}, 0);
+	} else {
+		input.className = cls;
 	}
 };
 

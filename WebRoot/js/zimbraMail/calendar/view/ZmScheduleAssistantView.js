@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -101,6 +107,8 @@ function() {
 
     this._locationSuggestions = new ZmLocationSuggestionView(this, this._controller, this._apptView);
     this._locationSuggestions.reparentHtmlElement(this._suggestionsView);
+
+    this._resetSize();
 }
 
 ZmScheduleAssistantView.prototype.show =
@@ -122,6 +130,8 @@ function(suggestTime) {
         this._locationSuggestions.setVisible(true);
         this._currentSuggestions = this._locationSuggestions;
     }
+
+    this._resetSize();
 };
 
 ZmScheduleAssistantView.prototype.suggestAction =
@@ -137,7 +147,9 @@ function(focusOnSuggestion, showAllSuggestions) {
     };
 
     this._currentSuggestions.setLoadingHtml();
-    if(this._resources.length == 0 && !this._suggestTime) {
+	// Location information is required even for a time search, since the time display indicates locations available
+	// at that time.  Use isSuggestRooms to only do so when GAL_ENABLED is true.
+    if ((this._resources.length == 0) && this.isSuggestRooms()) {
         this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo, [params]));
     } else {
         this._findFreeBusyInfo(params);
@@ -276,6 +288,7 @@ function(date, attendees, forceRefresh) {
         if(!this.isSuggestionsEnabled()) {
            if(isGalEnabled) this._timeSuggestions.setShowSuggestionsHTML(this._date);
         }
+        this._resetSize();
         return;
     }
 
@@ -288,6 +301,8 @@ function(date, attendees, forceRefresh) {
         }
         if(forceRefresh) this.suggestAction(false, false);
     }
+
+    this._resetSize();
 };
 
 ZmScheduleAssistantView.prototype._miniCalDateRangeListener =
@@ -562,8 +577,8 @@ function(enable) {
 
 ZmScheduleAssistantView.prototype.isSuggestRooms =
 function() {
-    // Keep for the moment - no preference now, but may need some sort of function
-    return true;
+    // Assume desire room checking if it is possible
+    return appCtxt.get(ZmSetting.GAL_ENABLED);
 };
 
 ZmScheduleAssistantView.prototype.getAttendees =
@@ -648,7 +663,7 @@ function(startTime, endTime, params) {
     }
 
     //mini calendar suggestions should avoid collecting all computed information in array for optimiziation
-    if(!params.miniCalSuggestions && fbInfo.availableUsers > 0) {
+    if (!params.miniCalSuggestions) {
         var showOnlyGreenSuggestions = params.showOnlyGreenSuggestions;
         if(!showOnlyGreenSuggestions || (fbInfo.availableUsers == this._totalUsers)) {
             this._fbStat.add(fbInfo);
@@ -745,6 +760,7 @@ function(params) {
 
     this._currentSuggestions.set(params);
     if(params.focus) this._currentSuggestions.focus();
+    this._resetSize();
 };
 
 //modules for handling mini calendar suggestions
@@ -946,9 +962,7 @@ function(params) {
             fbStat = this.computeAvailability(dayStartTime, dayStartTime + duration, params);
             dayStartTime += AjxDateUtil.MSEC_PER_HALF_HOUR;
 
-            var roomsAvailable = (fbStat.availableLocations > 0);
-            var includeRooms   = this.isSuggestRooms();
-            if(fbStat && fbStat.availableUsers == this._totalUsers && (!includeRooms || roomsAvailable)) {
+            if(fbStat && fbStat.availableUsers == this._totalUsers) {
                 this._addColorCode(params, startTime, ZmMiniCalendar.COLOR_GREEN);
                 freeSlotFound = true;
                 //found atleast one free slot that can accomodate all attendees and atleast one recources
@@ -972,4 +986,22 @@ function(params, startTime, code) {
     var str = AjxDateFormat.format("yyyyMMdd", sd);
     params.dates[str] = sd;
     params.colors[str] = code;
+};
+
+ZmScheduleAssistantView.prototype._resetSize = function() {
+	ZmApptAssistantView.prototype._resetSize.call(this);
+
+    if (!this._currentSuggestions) {
+        return;
+    }
+
+    var width = this.boundsForChild(this._currentSuggestions).width;
+    width -= Dwt.getScrollbarSizes(this._suggestionsView).x;
+
+    if (AjxEnv.isIE || AjxEnv.isModernIE) {
+        var insets = this._currentSuggestions.getInsets();
+        width -= insets.left + insets.right;
+    }
+
+    this._currentSuggestions.setSize(width);
 };

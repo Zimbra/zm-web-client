@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -211,9 +217,6 @@ function() {
 
 	// Button listeners
 	this._searchToolBar.addSelectionListener(ZmSearchToolBar.SEARCH_BUTTON, this._searchButtonListener.bind(this));
-	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-		this._searchToolBar.addSelectionListener(ZmSearchToolBar.SAVE_BUTTON, this._saveButtonListener.bind(this));
-	}
 };
 
 /**
@@ -299,6 +302,7 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.query		= search.query;
 	params.queryHint	= search.queryHint;
 	params.types		= search.types;
+	params.forceTypes	= search.forceTypes;
 	params.sortBy		= search.sortBy;
 	params.offset		= search.offset;
 	params.limit		= search.limit;
@@ -314,6 +318,8 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.inDumpster   = search.inDumpster;
 	params.userInitiated = search.userInitiated;
 	params.sessionId	= search.sessionId;
+    params.isEmpty      = search.isEmpty;
+	params.markRead     = search.markRead;
 
 	if (changes) {
 		for (var key in changes) {
@@ -361,32 +367,31 @@ function() {
 };
 
 /**
- * Gets the item types. Assembles a list of item types to return based on a search menu value (which can
- * be passed in).
+ * Gets the item type, based on searchFor. The type is the same as the searchFor, except for mail in which the type is either msg or conv based on view.
  *
- * @param {Hash}	params			a hash of arguments for the search
  * @param {String}	searchFor		general description of what to search for
- * @return	{AjxVector}		a list of types
+ * @return	{String}	type
  * 
  * @see		#search
  */
-ZmSearchController.prototype.getTypes =
-function(params) {
-	var types = new AjxVector();
-	var searchFor = params.searchFor || this._searchFor;
+ZmSearchController.prototype.getTypeFromSearchFor =
+function(searchFor) {
 
-	var groupBy;
-	if ((searchFor == ZmId.SEARCH_MAIL) && appCtxt.get(ZmSetting.MAIL_ENABLED))	{
-		groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
-	}
+	return searchFor === ZmId.SEARCH_MAIL ? appCtxt.getApp(ZmApp.MAIL).getGroupMailBy() : searchFor;
+};
 
-	if (searchFor == ZmId.SEARCH_MAIL) {
-		types.add(groupBy);
-	} else {
-		types.add(searchFor);
-	}
 
-	return types;
+/**
+ * Get the searchFor var which is the same as type except for mail, in which case the type is either msg or conv but searchFor is mail.
+ *
+ * @param {String} type	type of items to search for
+ * @return	{String}	searchFor
+ *
+ * @see		#search
+ */
+ZmSearchController.prototype.getSearchForFromType =
+function(type) {
+	return (type === ZmItem.MSG || type === ZmItem.CONV) ? ZmId.SEARCH_MAIL : type;
 };
 
 /**
@@ -432,41 +437,40 @@ function(searchObj) {
  * @private
  */
 ZmSearchController.prototype._getSuitableSortBy =
-function(types) {
+function(type) {
 	var sortBy;
 
-	if (types.size() == 1) {
-		var type = types.get(0);
-		var viewType;
-		switch (type) {
-			case ZmItem.CONV:		viewType = ZmId.VIEW_CONVLIST; break;
-			case ZmItem.MSG:		viewType = ZmId.VIEW_TRAD; break;
-			case ZmItem.CONTACT:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
-			case ZmItem.APPT:		viewType = ZmId.VIEW_CAL; break;
-			case ZmItem.TASK:		viewType = ZmId.VIEW_TASKLIST; break;
-			case ZmId.SEARCH_GAL:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
-			case ZmItem.BRIEFCASE_ITEM:	viewType = ZmId.VIEW_BRIEFCASE_DETAIL; break;
-			// more types go here as they are suported...
-		}
+	var viewType;
+	switch (type) {
+		case ZmItem.CONV:		viewType = ZmId.VIEW_CONVLIST; break;
+		case ZmItem.MSG:		viewType = ZmId.VIEW_TRAD; break;
+		case ZmItem.CONTACT:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
+		case ZmItem.APPT:		viewType = ZmId.VIEW_CAL; break;
+		case ZmItem.TASK:		viewType = ZmId.VIEW_TASKLIST; break;
+		case ZmId.SEARCH_GAL:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
+		case ZmItem.BRIEFCASE_ITEM:	viewType = ZmId.VIEW_BRIEFCASE_DETAIL; break;
+		// more types go here as they are suported...
+	}
 
-		if (viewType) {
-			sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
+	if (viewType) {
+		sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
+	}
+	//bug:1108 & 43789#c19 (changelist 290073) since sort-by-[RCPT|ATTACHMENT|FLAG|PRIORITY] gives exception with querystring.
+	// Avoided [RCPT|ATTACHMENT|FLAG|PRIORITY] sorting with querysting instead used date sorting
+	var queryString = this._searchToolBar.getSearchFieldValue();
+	if (queryString && queryString.length > 0) {
+		if (sortBy === ZmSearch.RCPT_ASC || sortBy === ZmSearch.RCPT_DESC) {
+			sortBy = sortBy === ZmSearch.RCPT_ASC ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
 		}
-        //bug:1108 & 43789#c19 (changelist 290073) since sort-by-[RCPT|ATTACHMENT|FLAG|PRIORITY] gives exception with querystring.
-        // Avoided [RCPT|ATTACHMENT|FLAG|PRIORITY] sorting with querysting instead used date sorting
-        var queryString = this._searchToolBar.getSearchFieldValue();
-        if(queryString && queryString.length > 0)
-        {
-            if((sortBy == ZmSearch.RCPT_ASC || sortBy == ZmSearch.RCPT_DESC)) {
-               sortBy = (sortBy == ZmSearch.RCPT_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
-            } else if((sortBy == ZmSearch.FLAG_ASC || sortBy == ZmSearch.FLAG_DESC)) {
-               sortBy = (sortBy == ZmSearch.FLAG_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
-            } else if((sortBy == ZmSearch.ATTACH_ASC || sortBy == ZmSearch.ATTACH_DESC)) {
-               sortBy = (sortBy == ZmSearch.ATTACH_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
-            } else if((sortBy == ZmSearch.PRIORITY_ASC || sortBy == ZmSearch.PRIORITY_DESC)) {
-               sortBy = (sortBy == ZmSearch.PRIORITY_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
-            }
-        }
+		else if (sortBy === ZmSearch.FLAG_ASC || sortBy === ZmSearch.FLAG_DESC) {
+			sortBy = sortBy === ZmSearch.FLAG_ASC ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
+		}
+		else if (sortBy === ZmSearch.ATTACH_ASC || sortBy === ZmSearch.ATTACH_DESC) {
+			sortBy = sortBy === ZmSearch.ATTACH_ASC ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
+		}
+		else if (sortBy === ZmSearch.PRIORITY_ASC || sortBy === ZmSearch.PRIORITY_DESC) {
+			sortBy = sortBy === ZmSearch.PRIORITY_ASC ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
+		}
 	}
 
 	return sortBy;
@@ -480,6 +484,7 @@ function(types) {
  * @param {String}	params.query	the search query
  * @param {String}	params.userText	the user text
  * @param {Array}	params.type		an array of types
+ * @param {Boolean}	params.forceTypes	use the types we pass, do not override (in case of mail) to the current user's view pref (MSG vs. CONV).
  * @param {boolean}	params.inclSharedItems		overrides this._inclSharedItems - see ZmTagsHelper._tagClick
  * @param {boolean} params.forceSearch     Ignores special processing and just executes the search.
  * @param {Boolean}	noRender		if <code>true</code>, the search results will not be rendered
@@ -510,21 +515,23 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	// get types from search type if not passed in explicitly
+	// Note - types is now always one value (used to allow all types case, but not anymore).
 	var types = params.types;
+	// Support calling it with null, scalar, array or vector, to make sure different clients of this method work.
+	var type = !types ? searchFor : AjxUtil.toArray(types)[0];
 
-	if (types && !types.isAjxVector) { // change a scalar type to array. (unless it's a vector)
-		types = AjxUtil.toArray(types);
+	//now make sure the searchFor matches the type (searchFor can be taken from the toolbar, but it's not always what we want, for example
+	//in the case of saved search)
+	searchFor = this.getSearchForFromType(type);
+
+	//this makes sure for mail we get the type from the user's setting (CONV/MSG).
+	if (!params.forceTypes) {
+		type = this.getTypeFromSearchFor(searchFor);
 	}
 
-	if (!types || (types.length == 0) || (types.isAjxVector && types.size() == 0)) {
-		types = (params.skipUpdateSearchToolbar && searchFor == ZmId.SEARCH_MAIL && this._prevTypes) || this.getTypes(params);
-	}
+	var types = AjxVector.fromArray([type]); //need this Vector (one item) only for couple more usages below that I'm afraid to change now.
 
-	if (types instanceof Array) { // convert array to AjxVector if necessary
-		types = AjxVector.fromArray(types);
-	}
 	if (searchFor == ZmId.SEARCH_MAIL) {
-        this._prevTypes = types || this._prevTypes; // Saves previous user action, if user selects view
 		params = appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
 	}
 
@@ -539,30 +546,38 @@ function(params, noRender, callback, errorCallback) {
 	}
 	else if (params.inclSharedItems || this._inclSharedItems) {
 		// a query hint is part of the query that the user does not see
-		params.queryHint = ZmSearchController.generateQueryForShares(types.getArray());
+		params.queryHint = ZmSearchController.generateQueryForShares(type);
 	}
 
 	// only set contact source if we are searching for contacts
-	params.contactSource = !params.noGal && (types.contains(ZmItem.CONTACT) || types.contains(ZmId.SEARCH_GAL))
+	params.contactSource = !params.noGal && (type === ZmItem.CONTACT || type === ZmId.SEARCH_GAL)
 		? this._contactSource : null;
 	if (params.contactSource == ZmId.SEARCH_GAL) {
 		params.expandDL = true;
 	}
 
 	// find suitable sort by value if not given one (and if applicable)
-	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
+	params.sortBy = params.sortBy || this._getSuitableSortBy(type);
 	params.types = types;
 	var search = new ZmSearch(params);
 
 	// force drafts folder into msg view
-		if (searchFor === ZmId.SEARCH_MAIL && !params.isViewSwitch && search.folderId && Number(search.folderId) === ZmFolder.ID_DRAFTS) {
-		search.types = new AjxVector([ZmItem.MSG]);
+	//Also force dumpster search into msg view
+	if (searchFor === ZmId.SEARCH_MAIL && (params.inDumpster || (!params.isViewSwitch && search.folderId && search.folderId == ZmFolder.ID_DRAFTS))) {
+		search.types = AjxVector.fromArray([ZmItem.MSG]);
 		search.isDefaultToMessageView = true;
 	}
 
 	var respCallback = this._handleResponseDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
+    var offlineCallback = this._handleOfflineDoSearch.bind(this, search, respCallback);
+    if (search.folderId == ZmFolder.ID_OUTBOX) {
+        var offlineRequest = true;
+    }
 	if (!errorCallback) {
 		errorCallback = this._handleErrorDoSearch.bind(this, search);
+		if (!params.errorCallback) {
+			params.errorCallback = errorCallback;
+		}
 	}
 
 	// calendar searching is special so hand it off if necessary
@@ -574,14 +589,14 @@ function(params, noRender, callback, errorCallback) {
 			sessionId = searchResultsController.getCurrentViewId();
 		}
 		var controller = AjxDispatcher.run("GetCalController", sessionId, searchResultsController);
-		if (controller && types.contains(ZmItem.APPT)) {
+		if (controller && type === ZmItem.APPT) {
 			search.calController = controller;
 			controller.handleUserSearch(params, respCallback);
 		} else {
-            search.execute({callback:respCallback, errorCallback:errorCallback});            
+            search.execute({offlineCache:params && params.offlineCache, callback:respCallback, errorCallback:errorCallback, offlineCallback:offlineCallback, offlineRequest:offlineRequest});
         }
 	} else {
-		search.execute({callback:respCallback, errorCallback:errorCallback});
+		search.execute({offlineCache:params && params.offlineCache, callback:respCallback, errorCallback:errorCallback, offlineCallback:offlineCallback, offlineRequest:offlineRequest});
 	}
 };
 
@@ -615,6 +630,22 @@ function(search, noRender, callback, noUpdateOverview, result) {
 	if (callback) {
 		callback.run(result);
 	}
+};
+
+/**
+ * Takes the search result and hands it to the appropriate controller for display.
+ *
+ * @param {ZmSearch}	search			contains search info used to run search against server
+ * @param {AjxCallback}	callback		the callback to run after generating offline result
+ */
+ZmSearchController.prototype._handleOfflineDoSearch =
+function(search, callback) {
+	//force webclient offline mode into msg view for mail search
+	if (search.types && search.types.replaceObject(ZmItem.CONV, ZmItem.MSG)) {
+		search.isDefaultToMessageView = true;
+	}
+    var respCallback = this._handleOfflineResponseDoSearch.bind(this, search, callback);
+    ZmOfflineDB.search(search, respCallback);
 };
 
 /**
@@ -652,6 +683,14 @@ function(results, search, noUpdateOverview) {
 	}
 };
 
+// Opens a new, empty search tab
+ZmSearchController.prototype.openNewSearchTab = function() {
+	this._toolbarSearch({
+		isEmpty:    true,
+		origin:     ZmId.SEARCH
+	});
+};
+
 /**
  * @private
  */
@@ -670,23 +709,19 @@ function(results, search, noUpdateOverview) {
  * folder, no such tag, and bad query. If it's a "no such folder" error caused
  * by the deletion of a folder backing a mountpoint, we pass it along for
  * special handling by ZmZimbraMail.
- * 
+ *
  * @private
  */
 ZmSearchController.prototype._handleErrorDoSearch =
 function(search, ex) {
 	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
-
-	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
+    if (ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
 		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR ||
 		ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS ||
 		(ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER && !(ex.data.itemId && ex.data.itemId.length)))
 	{
 		var msg = ex.getErrorMsg();
 		appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
-		var results = new ZmSearchResult(search);
-		results.type = search.types ? search.types.get(0) : null;
-		this._showResults(results, search);
 		return true;
 	}
 	return false;
@@ -695,25 +730,23 @@ function(search, ex) {
 /**
  * Provides a string to add to the query when the search includes shared items.
  * 
- * @param types		[array]		list of item types
+ * @param {String} type		item type
  * 
  * @private
  */
 ZmSearchController.generateQueryForShares =
-function(types, account) {
+function(type, account) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var list = [];
-	for (var j = 0; j < types.length; j++) {
-		var type = types[j];
-		var app = ac.getApp(ZmItem.APP[type]);
-		if (app) {
-			var ids = app.getRemoteFolderIds(account);
-			for (var i = 0; i < ids.length; i++) {
-				var id = ids[i];
-				var idText = AjxUtil.isNumeric(id) ? id : ['"', id, '"'].join("");
-				list.push("inid:" + idText);
-			}
-		}
+	var app = ac.getApp(ZmItem.APP[type]);
+	if (!app) {
+		return null;
+	}
+	var ids = app.getRemoteFolderIds(account);
+	for (var i = 0; i < ids.length; i++) {
+		var id = ids[i];
+		var idText = AjxUtil.isNumeric(id) ? id : ['"', id, '"'].join("");
+		list.push("inid:" + idText);
 	}
 
 	if (list.length > 0) {
@@ -742,6 +775,7 @@ function(ev) {
  * @param {Event}		ev							browser event	
  * @param {string}		zimletEvent					type of notification to send zimlets
  * @param {string}		query						search string (optional, overrides input field)
+ * @param {Boolean}     isEmpty                     force a search for ""
  * @param {string}		origin						indicates what initiated the search
  * @param {string}		sessionId					session ID of search results tab (if search came from one)
  * @param {boolean}		skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
@@ -757,7 +791,7 @@ function(params) {
 	if (result && result.listener) {
 		result.listener.run(params.ev);
 	} else {
-		var queryString = params.query || this._searchToolBar.getSearchFieldValue();
+		var queryString = !params.isEmpty ? params.query || this._searchToolBar.getSearchFieldValue() : "";
 		var userText = (queryString.length > 0);
 		if (queryString) {
 			this._currentQuery = null;
@@ -786,23 +820,6 @@ function(params) {
 /**
  * @private
  */
-ZmSearchController.prototype._saveButtonListener =
-function(ev) {
-	var stc = appCtxt.getOverviewController().getTreeController(ZmOrganizer.SEARCH);
-	if (!stc._newCb) {
-		stc._newCb = stc._newCallback.bind(stc);
-	}
-
-	var params = {
-		search: this._results && this._results.search,
-		showOverview: (this._searchFor == ZmId.SEARCH_MAIL)
-	};
-	ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
-};
-
-/**
- * @private
- */
 ZmSearchController.prototype._searchMenuListener =
 function(ev, id, noFocus) {
 	var btn = this._searchToolBar.getButton(ZmSearchToolBar.TYPES_BUTTON);
@@ -817,8 +834,6 @@ function(ev, id, noFocus) {
 	var selItem = menu.getSelectedItem();
 	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED);
 
-	this._searchToolBar.setPeopleAutocomplete(id);
-
 	// enable shared menu item if not a gal search
 	if (id == ZmId.SEARCH_GAL) {
 		this._contactSource = ZmId.SEARCH_GAL;
@@ -831,10 +846,17 @@ function(ev, id, noFocus) {
 			// we allow user to check "Shared Items" for appointments since it
 			// is based on whats checked in their tree view
 			if (id == ZmItem.APPT || id == ZmId.SEARCH_CUSTOM) {
+				if (this._sharedMenuItemChecked == null) {
+					this._sharedMenuItemChecked = sharedMI.getChecked();
+				}
 				sharedMI.setChecked(false, true);
 				sharedMI.setEnabled(false);
 			} else {
 				sharedMI.setEnabled(true);
+				if (this._sharedMenuItemChecked) {
+					sharedMI.setChecked(true, true);
+				}
+				this._sharedMenuItemChecked = null;
 			}
 		}
 		this._contactSource = ZmItem.CONTACT;
@@ -920,4 +942,58 @@ function(id) {
 	}
 
 	return nid;
+};
+
+/**
+ * Takes the search result and hands it to the appropriate controller for display.
+ *
+ * @param {ZmSearch}	search			contains search info used to run search against server
+ * @param {AjxCallback}	callback		online response callback to run after generating search response
+ * @param {Object}	    result			the object stored in indexedDB
+ *
+ * @private
+ */
+ZmSearchController.prototype._handleOfflineResponseDoSearch =
+function(search, callback, result) {
+
+    if (search.sortBy === ZmSearch.DATE_DESC) {
+		//Sort by received date descending
+		result.sort(function(a, b) {
+			return b.d - a.d;
+	    });
+    }
+	else if (search.sortBy === ZmSearch.DATE_ASC) {
+	    //Sort by received date ascending
+	    result.sort(function(a, b) {
+		    return a.d - b.d;
+	    });
+    }
+
+    var searchResult = new ZmSearchResult(search);
+    if (search.searchFor === ZmId.SEARCH_MAIL || search.parsedSearchFor === ZmId.SEARCH_MAIL) {
+        search.types =  new AjxVector([ZmItem.MSG]);
+        searchResult.set({m : result});
+    }
+    else if (search.searchFor === ZmItem.CONTACT || search.contactSource === ZmItem.CONTACT) {
+        searchResult.set({cn : result});
+    }
+    var zmCsfeResult = new ZmCsfeResult(searchResult);
+    callback(zmCsfeResult);
+
+    if (search.folderId == ZmFolder.ID_OUTBOX || search.folderId == ZmFolder.ID_DRAFTS) {
+		ZmOffline.updateFolderCountCallback(search.folderId, result.length);
+    }
+};
+
+ZmSearchController.prototype._addOfflineDrafts =
+function(search, result) {
+    var callback = this._addOfflineDraftsCallback.bind(this, search, result);
+    var key = {methodName : "SaveDraftRequest"};
+    ZmOfflineDB.getItemInRequestQueue(key, callback, callback);
+};
+
+ZmSearchController.prototype._addOfflineDraftsCallback =
+function(search, result, newResult) {
+    var respEl = ZmOffline.generateMsgResponse(newResult);
+    this._handleResponseDoIndexedDBSearch(search, [].concat(result).concat(respEl));
 };

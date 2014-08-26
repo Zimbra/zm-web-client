@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
  
@@ -148,14 +154,18 @@ ZmCalItem.FORWARD_MAPPING[ZmCalItem.MODE_FORWARD_INVITE]            = ZmCalItem.
  * Defines the "low" priority.
  */
 ZmCalItem.PRIORITY_LOW				= 9;
+ZmCalItem.PRIORITY_LOW_RANGE		= [6,7,8,9];
+
 /**
  * Defines the "normal" priority.
  */
 ZmCalItem.PRIORITY_NORMAL			= 5;
+ZmCalItem.PRIORITY_NORMAL_RANGE		= [0,5];
 /**
  * Defines the "high" priority.
  */
 ZmCalItem.PRIORITY_HIGH				= 1;
+ZmCalItem.PRIORITY_HIGH_RANGE		= [1,2,3,4];
 
 /**
  * Defines the "chair" role.
@@ -177,6 +187,9 @@ ZmCalItem.ROLE_NON_PARTICIPANT		= "NON";
 ZmCalItem.SERVER_WEEK_DAYS			= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
 ZmCalItem.ATTACHMENT_CHECKBOX_NAME	= "__calAttCbox__";
+ZmCalItem.ATT_LINK_IMAGE            = "mainImage";
+ZmCalItem.ATT_LINK_MAIN			    = "main";
+ZmCalItem.ATT_LINK_DOWNLOAD		    = "download";
 
 /**
  * Defines "minutes "reminder units.
@@ -204,6 +217,14 @@ ZmCalItem.ALARM_DISPLAY	= "DISPLAY";
 ZmCalItem.ALARM_EMAIL	= "EMAIL";
 ZmCalItem.ALARM_DEVICE_EMAIL = "DEVICE_EMAIL"; // SMS
 
+// Duration Checks
+ZmCalItem.MSEC_LIMIT_PER_WEEK  = AjxDateUtil.MSEC_PER_DAY * 7;
+// Because recurrences can be on the first (or 2nd, 3rd...) Day-of-week of a
+// month, play it safe and make the limit 5 weeks
+ZmCalItem.MSEC_LIMIT_PER_MONTH = AjxDateUtil.MSEC_PER_DAY * 7 * 5;
+ZmCalItem.MSEC_LIMIT_PER_YEAR  = AjxDateUtil.MSEC_PER_DAY * 366;
+
+
 // Getters
 
 /**
@@ -224,6 +245,14 @@ ZmCalItem.prototype.getFolder			= function() { };						// override if necessary
  * @return	{String}	the organizer
  */
 ZmCalItem.prototype.getOrganizer 		= function() { return this.organizer || ""; };
+
+/**
+ * Gets the organizer name.
+ *
+ * @return	{String}	the organizer name
+ */
+ZmCalItem.prototype.getOrganizerName 	= function() { return this.organizerName; };
+
 
 /**
  * Gets the sent by.
@@ -711,6 +740,33 @@ function(){
     return (startTime<=endTime);
 
 }
+/**
+ * Checks whether the duration of this item is valid with respect to the
+ * recurrence period.  For example, if the item repeats daily, its duration
+ * should not be longer than a day.
+ *
+ * This can get very complicated due to custom repeat rules.  So the
+ * limitation is just set on the repeat type.  The purpose is to prevent
+ * (as has happened) someone creating a repeating appt where they set the
+ * duration to be the span the appt is in effect over a year instead of its
+ * duration during the day.  For example, repeat daily, start = Jan 1 2014,
+ * end = July 1 2014.   See Bug 87993.
+ *
+ * @return	{Boolean}	<code>true</code> if the item possess valid duration.
+ */
+ZmCalItem.prototype.isValidDurationRecurrence = function() {
+	var valid     = true;
+	var recurType = this.getRecurType();
+	var duration  = this.getDuration();
+	switch (recurType) {
+		case ZmRecurrence.DAILY:   valid = duration <= AjxDateUtil.MSEC_PER_DAY;       break;
+		case ZmRecurrence.WEEKLY:  valid = duration <= ZmCalItem.MSEC_LIMIT_PER_WEEK;  break;
+		case ZmRecurrence.MONTHLY: valid = duration <= ZmCalItem.MSEC_LIMIT_PER_MONTH; break;
+		case ZmRecurrence.YEARLY:  valid = duration <= ZmCalItem.MSEC_LIMIT_PER_YEAR;  break;
+		default: break;
+	}
+	return valid;
+}
 
 /**
  * @private
@@ -1082,6 +1138,7 @@ function(message, viewMode) {
 	if (message.invite) {
 		this.isOrg = message.invite.isOrganizer();
 		this.organizer = message.invite.getOrganizerEmail();
+		this.organizerName = message.invite.getOrganizerName();
 		this.sentBy = message.invite.getSentBy();
 		this.name = message.invite.getName() || message.subject;
 		this.isException = message.invite.isException();
@@ -1329,9 +1386,10 @@ function(message) {
 	if (htmlContent) {
 		// create a temp iframe to create a proper DOM tree
 		var params = {parent:appCtxt.getShell(), hidden:true, html:htmlContent};
-		var dwtIframe = new DwtIframe(params);
-		if (dwtIframe) {
-			var textContent = this._getCleanHtml2Text(dwtIframe);
+		var textContent = message.getInviteDescriptionContentValue(ZmMimeTable.TEXT_PLAIN);
+		if (!textContent) { //only go through this pain if textContent is somehow not available from getInviteDescriptionContentValue (no idea if this could happen).
+			var dwtIframe = new DwtIframe(params);
+			textContent = this._getCleanHtml2Text(dwtIframe);
 			// bug: 23034 this hidden iframe under shell is adding more space
 			// which breaks calendar column view
 			var iframe = dwtIframe.getIframe();
@@ -1722,7 +1780,9 @@ function(mode, callback, msg, batchCmd, result) {
         vector,
         count,
         addr,
-        subject;
+        subject,
+        mailFromAddress,
+        isOrganizer;
 
     if (folderId == ZmOrganizer.ID_TRASH) {
 		mode = ZmCalItem.MODE_PURGE;
@@ -1763,7 +1823,7 @@ function(mode, callback, msg, batchCmd, result) {
             };
 
 			this._addInviteAndCompNum(request);
-	
+
 			// Exceptions should be treated as instances (bug 15817)
 			if (mode == ZmCalItem.MODE_DELETE_INSTANCE || this.isException) {
                 request.s = this.getOrigStartTime();
@@ -1773,52 +1833,64 @@ function(mode, callback, msg, batchCmd, result) {
 				inst.d = format(this.getOrigStartDate());
 				if (!allDay && this.timezone) {
 					inst.tz = this.timezone;
-	
+
 					clientId = AjxTimezone.getClientId(this.timezone);
 					ZmTimezone.set(request, clientId, null, true);
 				}
 			}
             m = request.m = {};
             e = m.e = [];
-			if (this.isOrganizer() && !this.inviteNeverSent) {
-				// NOTE: We only use the explicit list of addresses if sending via
-				//       a message compose.
-				if (msg) {
-					for (i = 0; i < ZmMailMsg.ADDRS.length; i++) {
-						type = ZmMailMsg.ADDRS[i];
-	
-						// if on-behalf-of, dont set the from address and
-                        // don't set the reset-from (only valid when receiving a message)
-						if ((accountName && type == AjxEmailAddress.FROM) ||
-                            (type == AjxEmailAddress.RESENT_FROM)) { continue; }
-	
-						vector = msg.getAddresses(type);
-						count = vector.size();
-						for (j = 0; j < count; j++) {
-							addr = vector.get(j);
+            isOrganizer = this.isOrganizer();
+            if (isOrganizer) {
+                if (!this.inviteNeverSent) {
+                    // NOTE: We only use the explicit list of addresses if sending via
+                    //       a message compose.
+                    if (msg) {
+                        for (i = 0; i < ZmMailMsg.ADDRS.length; i++) {
+                            type = ZmMailMsg.ADDRS[i];
+
+                            // if on-behalf-of, dont set the from address and
+                            // don't set the reset-from (only valid when receiving a message)
+                            if ((accountName && type == AjxEmailAddress.FROM) ||
+                                (type == AjxEmailAddress.RESENT_FROM)) {
+                                continue;
+                            }
+
+                            vector = msg.getAddresses(type);
+                            count = vector.size();
+                            for (j = 0; j < count; j++) {
+                                addr = vector.get(j);
+                                e.push({
+                                    a: addr.getAddress(),
+                                    t: AjxEmailAddress.toSoapType[type]
+                                });
+                            }
+                        }
+
+                        // set from address to on-behalf-of if applicable
+                        if (accountName) {
                             e.push({
-                                a : addr.getAddress(),
-                                t : AjxEmailAddress.toSoapType[type]
+                                a: accountName,
+                                t: AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]
                             });
-						}
-					}
-	
-					// set from address to on-behalf-of if applicable
-					if (accountName) {
-                        e.push({
-                            a : accountName,
-                            t : AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]
-                        });
-					}
-				}
-				else {
-					this._addAttendeesToRequest(null, m, null, accountName);
-				}
-			}
+                        }
+                    }
+                    else {
+                        this._addAttendeesToRequest(null, m, null, accountName);
+                    }
+                }
+                mailFromAddress = this.getMailFromAddress();
+                if (mailFromAddress) {
+                    e.push({
+                        a : mailFromAddress,
+                        t : AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]
+                    });
+                }
+            }
 	        subject = (msg && msg.subject) ? msg.subject : ([ZmMsg.cancelled, ": ", this.name].join(""));
             m.su = subject;
 			this._addNotesToRequest(m, true);
-	
+
 			if (batchCmd) {
 				batchCmd.addRequestParams(jsonObj, callback);
 			}
@@ -2607,6 +2679,9 @@ function(ex) {
                 status.errorMessage=ZmMsg.errorQuotaExceededTask;
             }
     }
+	else if (ex.code === ZmCsfeException.MUST_BE_ORGANIZER) {
+		status.errorMessage = ZmMsg.mustBeOrganizer;
+	}
 
     return status;
 };
@@ -2624,6 +2699,16 @@ function() {
 
 // Static methods
 
+ZmCalItem.isPriorityHigh = function(priority) {
+	return AjxUtil.arrayContains(ZmCalItem.PRIORITY_HIGH_RANGE, priority);
+};
+ZmCalItem.isPriorityLow = function(priority) {
+	return AjxUtil.arrayContains(ZmCalItem.PRIORITY_LOW_RANGE, priority);
+};
+ZmCalItem.isPriorityNormal = function(priority) {
+	return AjxUtil.arrayContains(ZmCalItem.PRIORITY_NORMAL_RANGE, priority);
+};
+
 /**
  * Gets the priority label.
  * 
@@ -2633,12 +2718,16 @@ function() {
  */
 ZmCalItem.getLabelForPriority =
 function(priority) {
-	switch (priority) {
-		case ZmCalItem.PRIORITY_LOW:	return ZmMsg.low;
-		case ZmCalItem.PRIORITY_NORMAL: return ZmMsg.normal;
-		case ZmCalItem.PRIORITY_HIGH:	return ZmMsg.high;
-		default: return "";
+	if (ZmCalItem.isPriorityLow(priority)) {
+		return ZmMsg.low;
 	}
+	if (ZmCalItem.isPriorityNormal(priority)) {
+		return ZmMsg.normal;
+	}
+	if (ZmCalItem.isPriorityHigh(priority)) {
+		return ZmMsg.high;
+	}
+	return "";
 };
 
 /**
@@ -2650,17 +2739,16 @@ function(priority) {
  */
 ZmCalItem.getImageForPriority =
 function(task, id) {
-	switch (task.priority) {
-		case ZmCalItem.PRIORITY_LOW:
+	if (ZmCalItem.isPriorityLow(task.priority)) {
 			return id
 				? AjxImg.getImageHtml("PriorityLow_list", null, ["id='", id, "'"].join(""))
 				: AjxImg.getImageHtml("PriorityLow_list");
-		case ZmCalItem.PRIORITY_HIGH:
+	} else if (ZmCalItem.isPriorityHigh(task.priority)) {
 			return id
 				? AjxImg.getImageHtml("PriorityHigh_list", null, ["id='", id, "'"].join(""))
 				: AjxImg.getImageHtml("PriorityHigh_list");
-		default: return "";
 	}
+	return "";
 };
 
 /**

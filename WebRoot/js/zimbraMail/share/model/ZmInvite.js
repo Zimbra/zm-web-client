@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -192,6 +198,29 @@ ZmInvite.prototype.hasOtherAttendees =
 function(compNum) {
 	var cn = compNum || 0;
 	return this.components[cn].at && this.components[cn].at.length > 0;
+};
+
+/**
+ * Checks if the invite has other individual (non-location & resource) attendees.
+ *
+ * @param	{int}	compNum		the component number
+ * @return	{Boolean}	<code>true</code> if the invite has more than one other individual attendee
+ */
+ZmInvite.prototype.hasOtherIndividualAttendees =
+function(compNum) {
+    var cn  = compNum || 0;
+    var att = this.components[cn].at;
+    var otherFound = false;
+
+    if (att && att.length) {
+        for (var i = 0; i < att.length; i++) {
+            if (!att[i].cutype || (att[i].cutype == ZmCalendarApp.CUTYPE_INDIVIDUAL)) {
+                otherFound = true;
+                break;
+            }
+        }
+    }
+    return otherFound;
 };
 
 /**
@@ -881,7 +910,7 @@ function() {
 	idx = this._addEntryRow(ZmMsg.when, when, html, idx, false, null, true);
 	if (this.isRecurring(compNum)) {
 		if (!this._recurBlurb) {
-			AjxDispatcher.require("CalendarCore");
+			AjxDispatcher.require(["MailCore", "CalendarCore"]);
 			var recur = new ZmRecurrence();
 			recur.parse(this.getRecurrenceRules(compNum));
 			this._recurBlurb = recur.getBlurb();
@@ -908,7 +937,7 @@ function(isHtml) {
 	var appt;
 
 	if (msg) {
-		AjxDispatcher.require("CalendarCore");
+		AjxDispatcher.require(["MailCore", "CalendarCore"]);
 		appt = new ZmAppt();
 		appt.setFromMessage(msg);
 	}
@@ -926,7 +955,7 @@ ZmInvite.prototype.getSummary =
 function(isHtml) {
 	if (this.isRecurring()) {
 		if (!this._recurBlurb) {
-			AjxDispatcher.require("CalendarCore");
+			AjxDispatcher.require(["MailCore", "CalendarCore"]);
 			var recur = new ZmRecurrence();
 			recur.setRecurrenceRules(this.getRecurrenceRules(), this.getServerStartDate());
 			this._recurBlurb = recur.getBlurb();
@@ -1090,4 +1119,16 @@ ZmInvite.prototype.hasAttendeeResponse =
 function() {
 	var att = this.getAttendees();
 	return (att.length > 0 && att[0].ptst != ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
+};
+
+/**
+ * Checks if this invite has html description.
+ *
+ * @return	{Boolean}	<code>true</code> if this invite has HTML description
+ */
+ZmInvite.prototype.isHtmlInvite =
+function() {
+	var comp = this.getComponent(0);
+	var htmlContent = comp && comp.descHtml;
+	return (htmlContent && htmlContent[0] && htmlContent[0]._content) ? true : false;
 };

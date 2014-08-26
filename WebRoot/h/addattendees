@@ -91,7 +91,7 @@
     </c:choose>
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
+<app:view mailbox="${mailbox}" title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false" date="${requestScope.dateContext}"
     onload="var e=document.getElementById('findField'); if (e) e.focus();">
 
 <c:set var="toolbar">

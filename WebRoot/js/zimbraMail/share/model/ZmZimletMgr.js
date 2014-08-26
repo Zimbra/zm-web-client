@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -30,6 +36,7 @@ ZmZimletMgr = function() {
 	this._CONTENT_ZIMLETS = [];
 	this._serviceZimlets = [];
 	this._requestNotHandledByAnyZimlet = [];
+	this.loaded = false;
 };
 
 ZmZimletMgr.prototype.constructor = ZmZimletMgr;
@@ -91,7 +98,7 @@ function() {
 ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps, target, callback, sync) {
 	var href = window.location.href.toLowerCase();
-	if(href.indexOf("zimlets=none") > 0) {
+	if(href.indexOf("zimlets=none") > 0 || appCtxt.isWebClientOffline()) {
 		return;
 	} else if(href.indexOf("zimlets=core") > 0) {
 		zimletArray = this._getCoreZimlets(zimletArray);
@@ -102,11 +109,6 @@ function(zimletArray, userProps, target, callback, sync) {
 	if(isMixedMode && !appCtxt.isOffline && !showAllZimlets && isHttp
 			&& appCtxt.get(ZmSetting.DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE) == "TRUE") {
 		zimletArray = this._getNonSensitiveZimlets(zimletArray);
-	}
-	if (!zimletArray || !zimletArray.length) {
-		this.loaded = true;
-		this._resetOverviewTree();
-		return;
 	}
 	var packageCallback = callback ? new AjxCallback(this, this._loadZimlets, [zimletArray, userProps, target, callback, sync]) : null;
 	AjxPackage.require({ name: "Zimlet", callback: packageCallback });
@@ -415,7 +417,7 @@ function(event, args) {
 	var handled = false;
 	for (var i = 0; i < this._ZIMLETS.length; ++i) {
 		var z = this._ZIMLETS[i].handlerObject;
-		if (z && (z instanceof ZmZimletBase) && z.getEnabled() && (typeof z[event] == "function")) {
+		if (z && z.isZmObjectHandler && z.getEnabled() && (typeof z[event] == "function")) {
 			var result = args ? z[event].apply(z, args) : z[event].apply(z);	// IE cannot handle empty args
 			handled = handled || result;
 		}
@@ -428,7 +430,7 @@ ZmZimletMgr.prototype.notifyZimlet =
 function(zimletName, event, args) {
 	var zimlet = this.getZimletByName(zimletName);
 	var z = zimlet && zimlet.handlerObject;
-	if (z && (z instanceof ZmZimletBase) && z.getEnabled() && (typeof z[event] == "function")) {
+	if (z && z.isZmObjectHandler && z.getEnabled() && (typeof z[event] == "function")) {
 		return (args ? z[event].apply(z, args) : z[event].apply(z));	// IE cannot handle empty args
 	}
 };

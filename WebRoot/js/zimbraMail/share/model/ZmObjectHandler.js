@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2010, 2011, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2009, 2010, 2011, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -38,6 +44,7 @@ ZmObjectHandler = function(typeName, className) {
 }
 
 ZmObjectHandler.prototype.constructor = ZmObjectHandler;
+ZmObjectHandler.prototype.isZmObjectHandler = true;
 
 /**
  * This method is called by the Zimlet framework to initialize the object.
@@ -49,6 +56,7 @@ ZmObjectHandler.prototype.init =
 function(typeName, className) {
 	this._typeName = typeName;
 	this._className = className ? className : "Object";
+	this.name = this.toString();
 };
 
 /**
@@ -68,6 +76,11 @@ function() {
 	}
 	return this._toString;
 };
+
+ZmObjectHandler.prototype.getEnabled =	function() {
+	return true;
+};
+
 
 /**
  * Gets the type name.
@@ -135,7 +148,7 @@ function(obj, context, spanId) {
  * @private
  */
 ZmObjectHandler.prototype.findObject =
-function(content, startIndex) {
+function(content, startIndex, objectMgr) {
 	if (startIndex === 0) {
 		this._lastMatch = null;
 		this._noMatch = false;
@@ -144,7 +157,7 @@ function(content, startIndex) {
 	if (this._lastMatch && this._lastMatch.index >= startIndex) {
 		return this._lastMatch;
 	}
-	this._lastMatch = this.match(content, startIndex);
+	this._lastMatch = this.match(content, startIndex, objectMgr);
 	this._noMatch = (this._lastMatch === null);
 	return this._lastMatch;
 };
@@ -251,7 +264,7 @@ function(obj, span, context) {
 };
 
 /**
- * This method is called by the Zimlet framework when the handler is selected.
+ * This method is called by the Zimlet framework when the object is selected.
  * 
  * @param		{Object}	obj			the object
  * @param		{string}	span		the span element
@@ -265,7 +278,7 @@ function(obj, span, ev, context) {
 };
 
 /**
- * This method is called by the Zimlet framework when the handler is clicked.
+ * This method is called by the Zimlet framework when the object is clicked.
  * 
  * @param		{Object}	obj			the object
  * @param		{string}	span		the span element
@@ -277,15 +290,48 @@ function(span, obj, context, ev) {
 };
 
 /**
- * This method is called when the handler is hovered-over.
+ * This method is called when the object is hovered-over.
  * 
  * @private
  */
 ZmObjectHandler.prototype.hoverOver = function(object, context, x, y) {
+
+	var tooltip = this.getToolTipText(object, context) || '',
+		content, callback;
+
+	if (typeof(tooltip) === "string") {
+		content = tooltip;
+	}
+	else if (tooltip.isAjxCallback || AjxUtil.isFunction(tooltip)) {
+		callback = tooltip;
+	}
+	else if (typeof(tooltip) === "object") {
+		content = tooltip.content;
+		callback = tooltip.callback;
+	}
+
+	if (!content && callback && tooltip.loading) {
+		content = AjxMsg.loading;
+	}
+
+	if (content) {
+		this._showTooltip(object, context, x, y, content);
+	}
+
+	if (callback) {
+		var callback1 = new AjxCallback(this, this._showTooltip, [ object, context, x, y ]);
+		AjxTimedAction.scheduleAction(new AjxTimedAction(null, function() {
+			callback.run(callback1);
+		}), 0);
+	}
+};
+
+ZmObjectHandler.prototype._showTooltip = function(object, context, x, y, content) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = shell.getToolTip();
-	tooltip.setContent(this.getToolTipText(object, context));
+	tooltip.setContent(content);
 	tooltip.popup(x, y);
+	// TODO: call below is odd; not sure if it's used much, appears to be for two-step tooltips (eg a map)
 	this.populateToolTip(object, context);
 };
 

@@ -1,15 +1,17 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software Foundation,
+ * version 2 of the License.
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="scriptless" %>
@@ -58,7 +60,7 @@
                 var el = YAHOO.util.Event.getTarget(ev);
                 if (el == null || (el.nodeName == 'INPUT' && el.type != 'checkbox') || el.nodeName == 'TEXTAREA') {
                 <c:choose>
-                <c:when test="${passspecial}">
+                <c:when test="${zm:boolean(passspecial)}">
                     if (!(ev.ctrlKey || ev.altKey || ev.metaKey)) return;
                 </c:when>
                 <c:otherwise>
@@ -109,11 +111,11 @@
             }
             YAHOO.util.Event.addListener(window, "load", init);
 
-            <c:if test="${globals}">
+            <c:if test="${zm:boolean(globals)}">
             <zm:bindKey message="global.NewMessage" id="TAB_COMPOSE"/>
             <zm:bindKey message="global.GoToMail" id="TAB_MAIL"/>
             <zm:bindKey message="global.GoToOptions" id="TAB_OPTIONS"/>
-            <c:if test="${folders}">
+            <c:if test="${zm:boolean(folders)}">
             <zm:bindKey message="overview.folders" id="MFOLDERS"/>
             <zm:bindKey message="mfolders.NewFolder" url="mfolders?actionNewFolder"/>
             <zm:bindKey message="mail.GoToFolder" alias="gotofolder"/>
@@ -121,14 +123,14 @@
             <zm:bindKey message="global.SavedSearch" alias="search"/>
             </c:if>
             </c:if>
-            <c:if test="${tags and mailbox.features.tagging}">
+            <c:if test="${zm:boolean(tags) and mailbox.features.tagging}">
             <zm:bindKey message="overview.tags" id="MTAGS"/>
             <zm:bindKey message="global.GoToTag" alias="gototag"/>
             </c:if>
             <c:if test="${mailbox.features.calendar}">
             <zm:bindKey message="calendar.GoToCalendar" id="TAB_CALENDAR"/>
             <zm:bindKey message="calendar.NewAppointment" url="calendar?action=new"/>
-            <c:if test="${calendars}">
+            <c:if test="${zm:boolean(calendars)}">
             <zm:bindKey message="overview.calendars" url="mcalendars"/>
             </c:if>
             </c:if>
@@ -138,7 +140,7 @@
             <c:if test="${mailbox.features.contacts}">
             <zm:bindKey message="contacts.NewContact" url="search?st=contact&action=newcontact"/>
             <zm:bindKey message="contacts.GoToContacts" id="TAB_ADDRESSBOOK"/>
-            <c:if test="${contacts}">
+            <c:if test="${zm:boolean(contacts)}">
             <zm:bindKey message="overview.addressbooks" id="MADDRBOOKS"/>
             </c:if>
             </c:if>

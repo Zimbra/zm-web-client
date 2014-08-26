@@ -1,15 +1,17 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software Foundation,
+ * version 2 of the License.
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" dynamic-attributes="dynattrs" %>
@@ -67,11 +69,11 @@
 
         <c:if test="${context.searchResult.size gt 0}">
         <span>
-            <select class="zo_select_button" name="${isTop ? 'anAction' : 'anActionBottom'}" onchange="submitForm(document.getElementById('zForm1'));">
+            <select class="zo_select_button" name="${zm:boolean(isTop) ? 'anAction' : 'anActionBottom'}" onchange="submitForm(document.getElementById('zForm1'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <optgroup label="<fmt:message key="delete"/>">
             <c:choose>
-                <c:when test="${context.folder.isInTrash}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
+                <c:when test="${zm:boolean(context.folder.isInTrash)}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
                 <c:otherwise><option value="actionDelete"><fmt:message key="delete"/></option></c:otherwise>
             </c:choose>
         </optgroup>
@@ -80,7 +82,7 @@
             <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
             <c:if test="${mailbox.features.spam}">
                 <c:choose>
-                    <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+                    <c:when test="${zm:boolean(context.folder.isSpam)}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
                     <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
                 </c:choose>
             </c:if>
@@ -112,7 +114,7 @@
     </div></div></div>
 </c:when>
 <c:otherwise>
-<c:if test="${isTop}"><div class="stb tbl top_conv_v_subtoolbar"><div class="tr"><div class="td">
+<c:if test="${zm:boolean(isTop)}"><div class="stb tbl top_conv_v_subtoolbar"><div class="tr"><div class="td">
     <c:if test="${isConv!=null && isConv}">
         <zm:currentResultUrl var="closeurl" value="${urlTarget}" _pv="1"
                              index="${context.currentItemIndex}"
@@ -196,7 +198,7 @@
         <c:set var="myFolder" value="${zm:getFolder(pageContext, message.folderId)}"/>
         <c:set var="inTrash" value="${myFolder.isInTrash}"/>
         <c:choose>
-            <c:when test="${inTrash}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
+            <c:when test="${zm:boolean(inTrash)}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
             <c:otherwise><option value="actionDelete"><fmt:message key="delete"/></option></c:otherwise>
         </c:choose>
         <optgroup label="<fmt:message key="markAs"/>">
@@ -232,11 +234,11 @@
     <script type="text/javascript">var actGo=document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
 </c:if>
 <c:if test="${!singleMessage && convSearchResult.size gt 0}">
-    <select class="zo_select_button" name="${isTop ? 'anAction' : 'anActionBottom'}" onchange="submitForm(document.getElementById('zForm'));">
+    <select class="zo_select_button" name="${zm:boolean(isTop) ? 'anAction' : 'anActionBottom'}" onchange="submitForm(document.getElementById('zForm'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <optgroup label="<fmt:message key="delete"/>">
             <c:choose>
-                <c:when test="${context.folder.isInTrash}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
+                <c:when test="${zm:boolean(context.folder.isInTrash)}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
                 <c:otherwise><option value="actionDelete"><fmt:message key="delete"/></option></c:otherwise>
             </c:choose>
         </optgroup>
@@ -246,7 +248,7 @@
             <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
             <c:if test="${mailbox.features.spam}">
                 <c:choose>
-                    <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+                    <c:when test="${zm:boolean(context.folder.isSpam)}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
                     <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
                 </c:choose>
             </c:if>
@@ -277,15 +279,15 @@
     <a accesskey="${requestScope.mainaction_accesskey}" href="${composeUrl}" class="zo_button"><fmt:message key="compose"/></a>
 </span>
 </div></div></div>
-<input type="hidden" name="isInTrash" value="${context.folder.isInTrash}">
-<c:if test="${isTop && !singleMessage}">
+<input type="hidden" name="isInTrash" value="${zm:boolean(context.folder.isInTrash)}">
+<c:if test="${zm:boolean(isTop) && !singleMessage}">
 <div id="fbbar" class="tb tbl" style="display:none;">
 <div class="tr"><span class="td" id="fbtd"><span id="sc"></span>
 <span class="zo_button_group delete_button">
 <c:if test="${mailbox.features.spam}">
-<input type='button' class='zo_button prev_button' name='actionJunk' value='<fmt:message key="${context.folder.isSpam ? 'actionNotSpam' : 'actionSpam'}"/>' onclick="$('zForm').anAction[0].value='actionMark${context.folder.isSpam ? 'Unspam' : 'Spam' }';submitForm($('zForm'));">
+<input type='button' class='zo_button prev_button' name='actionJunk' value='<fmt:message key="${zm:boolean(context.folder.isSpam) ? 'actionNotSpam' : 'actionSpam'}"/>' onclick="$('zForm').anAction[0].value='actionMark${zm:boolean(context.folder.isSpam) ? 'Unspam' : 'Spam' }';submitForm($('zForm'));">
 </c:if>
-<input type='submit' class='zo_button next_button' name='action${context.folder.isInTrash ? 'Hard' : ''}Delete' value='<fmt:message key="delete"/>'>
+<input type='submit' class='zo_button next_button' name='action${zm:boolean(context.folder.isInTrash) ? 'Hard' : ''}Delete' value='<fmt:message key="delete"/>'>
 </span>
 <c:if test="${context.searchResult.size gt 0}">
 <span>
@@ -293,7 +295,7 @@
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <optgroup label="<fmt:message key="delete"/>">
             <c:choose>
-                <c:when test="${context.folder.isInTrash}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
+                <c:when test="${zm:boolean(context.folder.isInTrash)}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
                 <c:otherwise><option value="actionDelete"><fmt:message key="delete"/></option></c:otherwise>
             </c:choose>
         </optgroup>
@@ -303,7 +305,7 @@
             <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
             <c:if test="${mailbox.features.spam}">
                 <c:choose>
-                    <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+                    <c:when test="${zm:boolean(context.folder.isSpam)}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
                     <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
                 </c:choose>
             </c:if>

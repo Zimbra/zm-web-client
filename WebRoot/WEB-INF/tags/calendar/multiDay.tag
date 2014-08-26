@@ -1,15 +1,17 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software Foundation,
+ * version 2 of the License.
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
@@ -323,8 +325,8 @@
             </table>
             <c:set var="date" value="${zm:addDay(date, 1)}"/>
             <br/>
-            <c:if test="${param.od}">
-                <p style="page-break-before: always">
+            <c:if test="${zm:boolean(param.od)}">
+                <p style="page-break-before: always"></p>
             </c:if>
         </c:forEach>
     </c:when>
@@ -334,17 +336,17 @@
         <c:forEach var="week" begin="1" end="${numDays/7 < 1 ? 1 : numDays/7}" varStatus="stat">
             <c:set var="startDay" value="${layout.days[beginLoop]}"/>
             <c:set var="endDay" value="${layout.days[endLoop]}"/>
-            <table class='ZhCalDayGrid' width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; height:100%;border:1px solid #A7A194;'>
+            <table class='ZhCalDayGrid' width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; border:1px solid #A7A194;'>
             <tr class='ZhCalMonthHeaderRow'>
                 <td class='ZhCalDayHeader' nowrap align="center" width="1%" style='border-left:none'>
                     <fmt:formatDate value="${date.time}" pattern="${yearTitleFormat}"/>
                 </td>
                 <c:choose>
                     <c:when test="${scheduleView}">
-                        <td class='ZhCalDayHSB ZhCalDaySEP' height="100%"><div style='width:25px'>&nbsp;</div></td>
+                        <td class='ZhCalDayHSB ZhCalDaySEP'><div style='width:25px'>&nbsp;</div></td>
                     </c:when>
                     <c:otherwise>
-                        <td class='ZhCalDayHSB' height="100%" width="1px">&nbsp;</td>
+                        <td class='ZhCalDayHSB' width="1px">&nbsp;</td>
                     </c:otherwise>
                 </c:choose>
                 <c:set var="preDay" value=""/>
@@ -391,17 +393,17 @@
                                 <c:set var="overlap" value="${layout.scheduleAlldayOverlapCount}"/>
                                 <c:set var ="oc" value="${overlap gt 0 ? ' ZhCalSchedUnion ' :''}"/>
                                 <c:set var="opacity" value="${20 + 60 * (overlap / layout.numDays)}"/>
-                                <td valign='top' class='${oc}ZhCalDayHS ZhCalDaySEP' height="100%" <c:if test="${overlap gt 0}"> style='opacity:${opacity/100};filter:alpha(opacity=${opacity})'</c:if>>
+                                <td valign='top' class='${oc}ZhCalDayHS ZhCalDaySEP' <c:if test="${overlap gt 0}"> style='opacity:${opacity/100};filter:alpha(opacity=${opacity})'</c:if>>
                                     &nbsp;
                                 </td>
                             </c:when>
                             <c:otherwise>
-                                <td class='ZhCalDayHS' height="100%" width="1px">&nbsp;</td>
+                                <td class='ZhCalDayHS' width="1px">&nbsp;</td>
                             </c:otherwise>
                         </c:choose>
                         <c:forEach var="cell" items="${row.cells}">
                         <c:if test="${scheduleView or (cell.day.day >= startDay.day and cell.day.day <= endDay.day)}">
-                            <td style='padding: 1px' class='ZhCalAllDayDS' valign="middle" height="100%" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if>>
+                            <td style='padding: 1px' class='ZhCalAllDayDS' valign="middle" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if>>
                                 <c:choose>
                                     <c:when test="${not empty cell.appt}">
                                         <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
@@ -427,12 +429,12 @@
                         <c:set var="overlap" value="${layout.scheduleAlldayOverlapCount}"/>
                         <c:set var ="oc" value="${overlap gt 0 ? ' ZhCalSchedUnion ' :''}"/>
                         <c:set var="opacity" value="${20 + 60 * (overlap / layout.numDays)}"/>
-                        <td valign='top' class='${oc}ZhCalDayADHS ZhCalDaySEP' height="100%" <c:if test="${overlap gt 0}"> style='opacity:${opacity/100};filter:alpha(opacity=${opacity})'</c:if>>
+                        <td valign='top' class='${oc}ZhCalDayADHS ZhCalDaySEP' <c:if test="${overlap gt 0}"> style='opacity:${opacity/100};filter:alpha(opacity=${opacity})'</c:if>>
                             &nbsp;
                         </td>
                     </c:when>
                     <c:otherwise>
-                        <td class='ZhCalDayADHS' height="100%" width="1px">&nbsp;</td>
+                        <td class='ZhCalDayADHS' width="1px">&nbsp;</td>
                     </c:otherwise>
                 </c:choose>
                 <c:forEach var="day" items="${layout.days}" begin="${beginLoop}" end="${endLoop}">
@@ -445,7 +447,7 @@
             </tr>
 
             <c:forEach var="row" items="${layout.rows}">
-                <tr style="height:100%">
+                <tr>
                     <c:if test="${row.rowNum % 4 eq 0}">
                         <td valign=top class='ZhCalDayHour' nowrap width="1%" rowspan="4" style='border-left:none;color:blue;'>
                             <fmt:formatDate var="dateDf" value="${row.date}" pattern="yyyyMMdd'T'HHmmss" timeZone="${timezone}"/>
@@ -462,12 +464,12 @@
                             <c:set var="overlap" value="${row.scheduleOverlapCount}"/>
                             <c:set var ="oc" value="${overlap gt 0 ? ' ZhCalSchedUnion ' :''}"/>
                             <c:set var="opacity" value="${20 + 60 * (overlap / layout.numDays)}"/>
-                            <td valign='top' class='${hs}${oc}ZhCalDayUnionSEP' height="100%" <c:if test="${overlap gt 0}"> style='opacity:${opacity/100};filter:alpha(opacity=${opacity})'</c:if>>
+                            <td valign='top' class='${hs}${oc}ZhCalDayUnionSEP' <c:if test="${overlap gt 0}"> style='opacity:${opacity/100};filter:alpha(opacity=${opacity})'</c:if>>
                                 &nbsp;
                             </td>
                         </c:when>
                         <c:otherwise>
-                            <td <c:if test="${row.rowNum % 4 ne 3}">class='ZhCalDayHS' </c:if><c:if test="${row.rowNum % 4 eq 3}">class='ZhCalDayHSB' </c:if> height="100%" width="1px">&nbsp;</td>
+                            <td <c:if test="${row.rowNum % 4 ne 3}">class='ZhCalDayHS' </c:if><c:if test="${row.rowNum % 4 eq 3}">class='ZhCalDayHSB' </c:if>  width="1px">&nbsp;</td>
                         </c:otherwise>
                     </c:choose>
                     <c:set var="prevDay" value="${0}"/>
@@ -480,7 +482,7 @@
                         </c:if>
                         <c:choose>
                             <c:when test="${not empty cell.appt and cell.isFirst}">
-                                <td <c:if test="${diffDay}">class='ZhCalDaySEP' </c:if> valign="top" height="100%" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>
+                                <td <c:if test="${diffDay}">class='ZhCalDaySEP' </c:if> valign="top" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>
                                     <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
                                     <app:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${cell.day.startTime}" end="${cell.day.endTime}" timezone="${timezone}"/>
                                 </td>
@@ -488,7 +490,7 @@
                             <c:when test="${empty cell.appt}">
                                 <c:set var="hb" value="${row.rowNum mod 4 eq 3 ? 'ZhCalDayHB ' : (row.rowNum mod 4 eq 1 ? 'ZhCalDayHHB ' : '')}"/>
                                 <c:set var="dd" value="${diffDay ? 'ZhCalDaySEP' : ''}"/>
-                                <td <c:if test="${not empty hb or not empty dd}">class='${hb}${dd}' </c:if> height="100%" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>&nbsp;</td>
+                                <td <c:if test="${not empty hb or not empty dd}">class='${hb}${dd}' </c:if> width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>&nbsp;</td>
                             </c:when>
                         </c:choose>
                         </c:if>
@@ -499,8 +501,8 @@
         <c:set var="beginLoop" value="${endLoop+1}"/>
         <c:set var="endLoop" value="${beginLoop+6}"/>
         <br/>
-        <c:if test="${param.od}">
-           <p style="page-break-before: always">
+        <c:if test="${zm:boolean(param.ow)}">
+           <p style="page-break-before: always"></p>
         </c:if>
         </c:forEach>
     </c:otherwise>

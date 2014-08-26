@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -555,24 +561,22 @@ function() {
     var opacity = this._state.value;
     var step = this._state.step;
 
-    // NOTE: IE is slow re-rendering when adjusting opacity. So we try
-    //       to do it in an IE-optimized way.
-    if (AjxEnv.isIE) {
-        if (AjxEnv.isIE5_5up) {
-            try {
-                var el = this.getHtmlElement();
-                el.style.visibility = step > 0 ? "hidden" : "visible";
-                
-                var duration = this._state.duration / 1000;
-                el.style.filter = "progid:DXImageTransform.Microsoft.Fade(duration="+duration+",overlap=1.0)";
+    // NOTE: IE8 and earlier are slow re-rendering when adjusting
+    //       opacity. So we try to do it using filters.
+    if (AjxEnv.isIE && !AjxEnv.isIE9up) {
+        try {
+            var el = this.getHtmlElement();
+            el.style.visibility = step > 0 ? "hidden" : "visible";
 
-                el.filters[0].Apply();
-                el.style.visibility = step > 0 ? "visible" : "hidden";
-                el.filters[0].Play();
-            }
-            catch (e) {
-                DBG.println("error: "+e);
-            }
+            var duration = this._state.duration / 1000;
+            el.style.filter = "progid:DXImageTransform.Microsoft.Fade(duration="+duration+",overlap=1.0)";
+
+            el.filters[0].Apply();
+            el.style.visibility = step > 0 ? "visible" : "hidden";
+            el.filters[0].Play();
+        }
+        catch (e) {
+            DBG.println("error: "+e);
         }
         setTimeout(this._funcs["next"], 0);
         return;

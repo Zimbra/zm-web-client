@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -87,6 +93,7 @@ ZmListView = function(params) {
 
 ZmListView.prototype = new DwtListView;
 ZmListView.prototype.constructor = ZmListView;
+ZmListView.prototype.isZmListView = true;
 
 ZmListView.prototype.toString =
 function() {
@@ -104,7 +111,7 @@ ZmListView.COL_WIDTH_NARROW_ICON			= 11;
 
 // TD class for fields
 ZmListView.FIELD_CLASS = {};
-ZmListView.FIELD_CLASS[ZmItem.F_TYPE]		= "Icon";
+ZmListView.FIELD_CLASS[ZmItem.F_TYPE]		= "ListViewIcon";
 ZmListView.FIELD_CLASS[ZmItem.F_FLAG]		= "Flag";
 ZmListView.FIELD_CLASS[ZmItem.F_TAG]		= "Tag";
 ZmListView.FIELD_CLASS[ZmItem.F_ATTACHMENT]	= "Attach";
@@ -114,6 +121,8 @@ ZmListView.DEFAULT_REPLENISH_THRESHOLD		= 0;
 
 ZmListView.COL_JOIN = "|";
 
+ZmListView.CHECKED_IMAGE = "CheckboxChecked";
+ZmListView.UNCHECKED_IMAGE = "CheckboxUnchecked";
 ZmListView.CHECKED_CLASS = "ImgCheckboxChecked";
 ZmListView.UNCHECKED_CLASS = "ImgCheckboxUnchecked";
 ZmListView.ITEM_CHECKED_ATT_NAME = "itemChecked";
@@ -254,67 +263,64 @@ ZmListView.prototype._changeListener =
 function(ev) {
 
 	var item = this._getItemFromEvent(ev);
-	if (!item || ev.handled || !this._handleEventType[item.type]) { return; }
-
-	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
-		DBG.println(AjxDebug.DBG2, "ZmListView: TAG");
-		this._setImage(item, ZmItem.F_TAG, item.getTagImageInfo());
+	if (!item || ev.handled || !this._handleEventType[item.type]) {
+		return;
 	}
 
-	if (ev.event == ZmEvent.E_FLAGS) { // handle "flagged" and "has attachment" flags
-		DBG.println(AjxDebug.DBG2, "ZmListView: FLAGS");
+	if (ev.event === ZmEvent.E_TAGS || ev.event === ZmEvent.E_REMOVE_ALL) {
+		this._replaceTagImage(item, ZmItem.F_TAG, this._getClasses(ZmItem.F_TAG));
+	}
+
+	if (ev.event === ZmEvent.E_FLAGS) {
 		var flags = ev.getDetail("flags");
 		for (var j = 0; j < flags.length; j++) {
 			var flag = flags[j];
 			var on = item[ZmItem.FLAG_PROP[flag]];
-			if (flag == ZmItem.FLAG_FLAGGED) {
-				this._setImage(item, ZmItem.F_FLAG, on ? "FlagRed" : "FlagDis");
-			} else if (flag == ZmItem.FLAG_ATTACH) {
-				this._setImage(item, ZmItem.F_ATTACHMENT, on ? "Attachment" : null);
-			} else if (flag == ZmItem.FLAG_PRIORITY) {
-				this._setImage(item, ZmItem.F_MSG_PRIORITY, on ? "Priority" : "PriorityDis");
+			if (flag === ZmItem.FLAG_FLAGGED) {
+				this._setImage(item, ZmItem.F_FLAG, on ? "FlagRed" : "FlagDis", this._getClasses(ZmItem.F_FLAG));
+			}
+			else if (flag === ZmItem.FLAG_ATTACH) {
+				this._setImage(item, ZmItem.F_ATTACHMENT, on ? "Attachment" : null, this._getClasses(ZmItem.F_ATTACHMENT));
+			}
+			else if (flag === ZmItem.FLAG_PRIORITY) {
+				this._setImage(item, ZmItem.F_MSG_PRIORITY, on ? "Priority" : "PriorityDis", this._getClasses(ZmItem.F_MSG_PRIORITY));
 			}
 		}
 	}
 
-	// move/delete support batch notification mode
-	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
+	// Note: move and delete support batch notification mode
+	if (ev.event === ZmEvent.E_DELETE || ev.event === ZmEvent.E_MOVE) {
 		var items = ev.batchMode ? this._getItemsFromBatchEvent(ev) : [item];
 		var needsSort = false;
 		for (var i = 0, len = items.length; i < len; i++) {
 			var item = items[i];
-            var movedHere = item.type == ZmId.ITEM_CONV ? item.folders[this._folderId] : item.folderId == this._folderId;
-			if (movedHere && ev.event == ZmEvent.E_MOVE) {
+            var movedHere = (item.type === ZmId.ITEM_CONV) ? item.folders[this._folderId] : item.folderId === this._folderId;
+			if (movedHere && ev.event === ZmEvent.E_MOVE) {
 				// We've moved the item into this folder
 				if (this._getRowIndex(item) === null) { // Not already here
 					this.addItem(item);
 					// TODO: couldn't we just find the sort index and insert it?
 					needsSort = true;
 				}
-			} else {
-				// remove the item if the user is working in this view, 
+			}
+			else {
+				// remove the item if the user is working in this view,
 				// if we know the item no longer matches the search, or if the item was hard-deleted
-				if ((ev.event == ZmEvent.E_DELETE) || (this.view == appCtxt.getCurrentViewId()) ||
-						(this._controller._currentSearch.matches(item) === false)) {
-
+				if (ev.event === ZmEvent.E_DELETE || this.view == appCtxt.getCurrentViewId() || this._controller._currentSearch.matches(item) === false) {
 					this.removeItem(item, true, ev.batchMode);
 					// if we've removed it from the view, we should remove it from the reference
 					// list as well so it doesn't get resurrected via replenishment *unless*
 					// we're dealing with a canonical list (i.e. contacts)
 					var itemList = this.getItemList();
-					if (ev.event != ZmEvent.E_MOVE || !itemList.isCanonical) {
+					if (ev.event !== ZmEvent.E_MOVE || !itemList.isCanonical) {
 						itemList.remove(item);
 					}
 				}
 			}
 		}
 		if (needsSort) {
-			var col = Dwt.byId(this._currentColId);
-			var hdr = (col && this.getItemFromElement(col)) || (this._headerHash && this._headerHash[ZmItem.F_SORTED_BY]) || null;
-			if (hdr) {
-				this._saveState({scroll:true,selection:true,focus:true});
-				this._sortColumn(hdr, this._bSortAsc, new AjxCallback(this, this._restoreState));
-			}
+			this._saveState({scroll: true, selection:true, focus: true});
+			this._redoSearch(this._restoreState.bind(this, this._state));
 		}
 		if (ev.batchMode) {
 			this._fixAlternation(0);
@@ -363,7 +369,8 @@ function(item, field) {
 		var html = [];
 		var colIdx = this._headerHash[field] && this._headerHash[field]._index;
 		this._getCellContents(html, 0, item, field, colIdx, new Date());
-		el.innerHTML = html.join("");
+		//replace the old inner html with the new updated data
+		el.innerHTML = $(html.join("")).html();
 	}
 };
 
@@ -383,20 +390,20 @@ function(ev) {
 };
 
 ZmListView.prototype._checkReplenish =
-function() {
-	var respCallback = new AjxCallback(this, this._handleResponseCheckReplenish);
+function(item, forceSelection) {
+	var respCallback = new AjxCallback(this, this._handleResponseCheckReplenish, [false, item, forceSelection]);
 	this._controller._checkReplenish(respCallback);
 };
 
 ZmListView.prototype._handleResponseCheckReplenish =
-function(skipSelection) {
+function(skipSelection, item, forceSelection) {
 	if (this.size() == 0) {
 		this._controller._handleEmptyList(this);
 	} else {
 		this._controller._resetNavToolBarButtons();
 	}
 	if (!skipSelection) {
-		this._setNextSelection();
+		this._setNextSelection(item, forceSelection);
 	}
 };
 
@@ -446,7 +453,7 @@ function(ev) {
 			updateRequired = true;
 		}
 		if (updateRequired) {
-			this._setImage(item, ZmItem.F_TAG, item.getTagImageInfo());
+			this._replaceTagImage(item, ZmItem.F_TAG, this._getClasses(ZmItem.F_TAG));
 		}
 	}
 };
@@ -483,17 +490,17 @@ function(item, field, params) {
 };
 
 ZmListView.prototype._getCellContents =
-function(htmlArr, idx, item, field, colIdx, params) {
+function(htmlArr, idx, item, field, colIdx, params, classes) {
 	if (field == ZmItem.F_SELECTION) {
-		idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, field), classes);
 	} else if (field == ZmItem.F_TYPE) {
-		idx = this._getImageHtml(htmlArr, idx, ZmItem.ICON[item.type], this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, ZmItem.ICON[item.type], this._getFieldId(item, field), classes);
 	} else if (field == ZmItem.F_FLAG) {
-		idx = this._getImageHtml(htmlArr, idx, this._getFlagIcon(item.isFlagged), this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, this._getFlagIcon(item.isFlagged), this._getFieldId(item, field), classes);
 	} else if (field == ZmItem.F_TAG) {
-		idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, field), classes);
 	} else if (field == ZmItem.F_ATTACHMENT) {
-		idx = this._getImageHtml(htmlArr, idx, item.hasAttach ? "Attachment" : null, this._getFieldId(item, field));
+		idx = this._getImageHtml(htmlArr, idx, item.hasAttach ? "Attachment" : null, this._getFieldId(item, field), classes);
 	} else if (field == ZmItem.F_DATE) {
 		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now || new Date(), item.date);
 	} else if (field == ZmItem.F_PRIORITY) {
@@ -502,32 +509,54 @@ function(htmlArr, idx, item, field, colIdx, params) {
             priorityImage = "PriorityHigh_list";
         } else if (item.isLowPriority) {
 			priorityImage = "PriorityLow_list";
-		} else {
-			priorityImage = "";
 		}
-        idx = this._getImageHtml(htmlArr, idx, priorityImage, this._getFieldId(item, field));
+		if (priorityImage) {
+        	idx = this._getImageHtml(htmlArr, idx, priorityImage, this._getFieldId(item, field), classes);
+		} else {
+			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + "></div>";
+		}
 	} else {
 		idx = DwtListView.prototype._getCellContents.apply(this, arguments);
 	}
-
 	return idx;
 };
 
 ZmListView.prototype._getImageHtml =
-function(htmlArr, idx, imageInfo, id) {
-	imageInfo = imageInfo || "Blank_16";
-	var idText = id ? ["id='", id, "'"].join("") : null;
-	htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, idText);
+function(htmlArr, idx, imageInfo, id, classes) {
+	htmlArr[idx++] = "<div";
+	if (id) {
+		htmlArr[idx++] = [" id='", id, "' "].join("");
+	}
+	htmlArr[idx++] = AjxUtil.getClassAttr(classes);
+	htmlArr[idx++] = ">";
+	htmlArr[idx++] = AjxImg.getImageHtml(imageInfo || "Blank_16");
+	htmlArr[idx++] = "</div>";
 	return idx;
 };
 
-ZmListView.prototype._setImage =
-function(item, field, imageInfo) {
-	var img = this._getElement(item, field);
-	if (img && img.parentNode) {
-		imageInfo = imageInfo || "Blank_16";
-		AjxImg.setImage(img.parentNode, imageInfo);
+ZmListView.prototype._getClasses =
+function(field, classes) {
+	if (this.isMultiColumn && this.isMultiColumn() && this._headerHash[field]) {
+		classes = classes || [];
+		classes = [this._headerHash[field]._cssClass];
 	}
+	return classes;
+};
+
+ZmListView.prototype._setImage =
+function(item, field, imageInfo, classes) {
+	var cell = this._getElement(item, field);
+	if (cell) {
+		if (classes) {
+			cell.className = AjxUtil.uniq(classes).join(" ");
+		}
+		cell.innerHTML = AjxImg.getImageHtml(imageInfo || "Blank_16");
+	}
+};
+
+ZmListView.prototype._replaceTagImage =
+function(item, field, classes) {
+	this._setImage(item, field, item.getTagImageInfo(), classes);
 };
 
 ZmListView.prototype._getFragmentSpan =
@@ -543,8 +572,14 @@ function(item) {
 };
 
 ZmListView.prototype._getFlagIcon =
-function(isFlagged, isMouseover) {
-	return (isFlagged || isMouseover) ? "FlagRed" : "Blank_16";
+function(isFlagged, isMouseover, disabled) {
+	if (!isFlagged && !isMouseover) {
+		return "Blank_16";
+	} else if (disabled) {
+		return "FlagDis";
+	} else {
+		return "FlagRed";
+	}
 };
 
 /**
@@ -580,7 +615,9 @@ function(ev, div) {
 ZmListView.prototype._getField =
 function(ev, div) {
 
-	var id = ev.target.id || div.id;
+	var target = this._getEventTarget(ev);
+
+	var id = target && target.id || div.id;
 	if (!id) {
 		return null;
 	}
@@ -612,7 +649,9 @@ function(ev, div) {
 	if (field == ZmItem.F_FLAG) {
 		var item = this.getItemFromElement(div);
 		if (!item.isFlagged) {
-			AjxImg.setImage(ev.target, this._getFlagIcon(item.isFlagged, false), true);
+			var target = this._getEventTarget(ev);
+			AjxImg.setImage(target, this._getFlagIcon(item.isFlagged, false), false, false);
+			target.className = this._getClasses(field);
 		}
 	}
 	return true;
@@ -628,10 +667,12 @@ function(ev, div) {
 		return true;
 	}
 
-	if (field == ZmItem.F_FLAG) {
+	if (field === ZmItem.F_FLAG) {
 		var item = this.getItemFromElement(div);
-		if (!item.isFlagged) {
-			AjxImg.setDisabledImage(ev.target, this._getFlagIcon(item.isFlagged, true), true);
+		if (!item.isReadOnly() && !item.isFlagged) {
+			var target = this._getEventTarget(ev);
+			AjxImg.setDisabledImage(target, this._getFlagIcon(item.isFlagged, true), false);
+			target.className = this._getClasses(field);
 		}
 	}
 	return true;
@@ -641,7 +682,8 @@ function(ev, div) {
 
 ZmListView.prototype._doubleClickAction =
 function(ev, div) {
-	var id = ev.target.id ? ev.target.id : div.id;
+	var target = this._getEventTarget(ev);
+	var id = target && target.id || div.id;
 	if (!id) { return true; }
 
 	var m = this._parseId(id);
@@ -653,7 +695,8 @@ function(clickedEl, ev) {
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) && ev.button == DwtMouseEvent.LEFT) {
 		if (!ev.shiftKey && !ev.ctrlKey) {
 			// get the field being clicked
-			var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1)	? ev.target.id : clickedEl.id;
+			var target = this._getEventTarget(ev);
+			var id = (target && target.id && target.id.indexOf("AjxImg") == -1) ? target.id : clickedEl.id;
 			var m = id ? this._parseId(id) : null;
 			if (m && (m.field == ZmItem.F_SELECTION || m.field == ZmItem.F_SELECTION_CELL)) {
 				//user clicked on a checkbox
@@ -664,20 +707,21 @@ function(clickedEl, ev) {
 					var selField = selFieldId ? document.getElementById(selFieldId) : null;
 					if (selField && sel == clickedEl) {
 						var isChecked = this._getItemData(sel, ZmListView.ITEM_CHECKED_ATT_NAME);
-						var newClass = isChecked ? ZmListView.UNCHECKED_CLASS : ZmListView.CHECKED_CLASS; //this fixes bug 50435 - if original is undefined (valid case) it's like it's unchecked
-						selField.className = newClass;
+						this._setImage(item, ZmItem.F_SELECTION, isChecked ? ZmListView.UNCHECKED_IMAGE : ZmListView.CHECKED_IMAGE);
 						this._setItemData(sel, ZmListView.ITEM_CHECKED_ATT_NAME, !isChecked);
-						if (newClass == ZmListView.CHECKED_CLASS) {
+						if (!isChecked) {
 							return; //nothing else to do. It's already selected, and was the only selected one. Nothing to remove
 						}
 					} else {
-						if (selField && selField.className == ZmListView.UNCHECKED_CLASS) {
-							DwtListView.prototype.deselectAll.call(this);
+						if (selField && !this._getItemData(sel, ZmListView.ITEM_CHECKED_ATT_NAME)) {
+							this.deselectAll();
+							this._markUnselectedViewedItem(true);
 						}
 					}
 				}
 				var bContained = this._selectedItems.contains(clickedEl);
 				this.setMultiSelection(clickedEl, bContained);
+				this._controller._setItemSelectionCountText();
 				return;	// do not call base class if "selection" field was clicked
 			}
 		} else if (ev.shiftKey) {
@@ -788,8 +832,8 @@ function(obj, bContained) {
 	var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
 	var selField = selFieldId ? document.getElementById(selFieldId) : null;
 	if (selField) {
-		selField.className = bContained ? ZmListView.UNCHECKED_CLASS : ZmListView.CHECKED_CLASS;
-		this._setItemData(obj, ZmListView.ITEM_CHECKED_ATT_NAME, !bContained);
+		this._setImage(item, ZmItem.F_SELECTION, bContained ? ZmListView.UNCHECKED_IMAGE : ZmListView.CHECKED_IMAGE);
+		this._setItemData(this._getElFromItem(item), ZmListView.ITEM_CHECKED_ATT_NAME, !bContained);
 	}
 };
 
@@ -838,11 +882,15 @@ function(allResults) {
 	if (this._selectAllEnabled) {
 		var curResult = this._controller._activeSearch;
 		if (curResult && curResult.getAttribute("more")) {
-			var list = this.getList();
-			var typeText = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[this.type]], list ? list.size() : 2);
-			var shortcut = appCtxt.getShortcutHint(null, ZmKeyMap.SELECT_ALL);
-			var args = [list ? list.size() : ZmMsg.all, typeText, shortcut, "ZmListView.selectAllResults()"];
-			var toastMsg = AjxMessageFormat.format(ZmMsg.allPageSelected, args);
+
+			var list = this.getList(),
+				type = this.type,
+				countKey = 'type' + AjxStringUtil.capitalize(ZmItem.MSG_KEY[type]),
+				typeText = AjxMessageFormat.format(ZmMsg[countKey], list ? list.size() : 2),
+				shortcut = appCtxt.getShortcutHint(null, ZmKeyMap.SELECT_ALL),
+				args = [list ? list.size() : ZmMsg.all, typeText, shortcut, "ZmListView.selectAllResults()"],
+				toastMsg = AjxMessageFormat.format(ZmMsg.allPageSelected, args);
+
 			if (allResults) {
 				this.allSelected = true;
 				toastMsg = ZmMsg.allSearchSelected;
@@ -910,13 +958,24 @@ function() {
 	this._rendered = true;
 };
 
+/**
+ * override to call _resetToolbarOperations since we change the selection.
+ * @private
+ */
+ZmListView.prototype._clearRightSel =
+function() {
+	DwtListView.prototype._clearRightSel.call(this);
+	this._controller._resetToolbarOperations();
+};
+
+
 /*
  get sort menu for views that provide a right-click sort by menu in single-column view (currently mail and briefcase)
  */
 ZmListView.prototype._getSortMenu =
 function (sortFields, defaultSortField) {
 	// create a action menu for the header list
-	var menu = new ZmPopupMenu(this);
+	var menu = new ZmPopupMenu(this, null, Dwt.getNextId("SORT_MENU_"));
 	var actionListener = new AjxListener(this, this._colHeaderActionListener);
 
 	for (var i = 0; i < sortFields.length; i++) {
@@ -930,7 +989,7 @@ function (sortFields, defaultSortField) {
 		menu.addSelectionListener(column.field, actionListener);
 	}
 	return menu;
-}
+};
 
 
 /*
@@ -998,8 +1057,9 @@ function(ev) {
 ZmListView.prototype.getToolTipContent =
 function(ev) {
 	var div = this.getTargetItemDiv(ev);
-	if (!div) { return; }
-	var id = ev.target.id || div.id;
+	if (!div) { return ""; }
+	var target = this._getEventTarget(ev);
+	var id = target && target.id || div.id;
 	if (!id) { return ""; }
 
 	// check if we're hovering over a column header
@@ -1081,7 +1141,7 @@ function(field, itemIdx, isOutboundFolder) {
  */
 ZmListView.prototype._getToolTip =
 function(params) {
-    var tooltip, field = params.field, target = params.ev.target, item = params.item;
+    var tooltip, field = params.field, item = params.item;
 	if (field == ZmItem.F_FLAG) {
 		return null; //no tooltip for the flag
     } else if (field == ZmItem.F_PRIORITY) {
@@ -1164,10 +1224,9 @@ function(date, prefix) {
 */
 ZmListView.prototype._setListEvent =
 function (ev, listEv, clickedEl) {
-
 	DwtListView.prototype._setListEvent.call(this, ev, listEv, clickedEl);
-
-	var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : clickedEl.id;
+	var target = this._getEventTarget(ev);
+	var id = (target && target.id && target.id.indexOf("AjxImg") == -1) ? target.id : clickedEl.id;
 	if (!id) return false; // don't notify listeners
 
 	var m = this._parseId(id);
@@ -1189,8 +1248,8 @@ ZmListView.prototype._allowLeftSelection =
 function(clickedEl, ev, button) {
 	// We only care about mouse events
 	if (!(ev instanceof DwtMouseEvent)) { return true; }
-
-	var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : clickedEl.id;
+	var target = this._getEventTarget(ev);
+	var id = (target && target.id && target.id.indexOf("AjxImg") == -1) ? target.id : clickedEl.id;
 	var data = this._data[clickedEl.id];
 	var type = data.type;
 	if (id && type && type == DwtListView.TYPE_LIST_ITEM) {
@@ -1205,6 +1264,21 @@ function(clickedEl, ev, button) {
 ZmListView.prototype._allowFieldSelection =
 function(id, field) {
 	return (!this._disallowSelection[field]);
+};
+
+ZmListView.prototype._redoSearch =
+function(callback) {
+	var search = this._controller._currentSearch;
+	if (!search) {
+		return;
+	}
+	var sel = this.getSelection();
+	var selItem = sel && sel[0];
+	var changes = {
+		isRedo: true,
+		selectedItem: selItem
+	};
+	appCtxt.getSearchController().redoSearch(search, false, changes, callback);
 };
 
 ZmListView.prototype._sortColumn =
@@ -1255,17 +1329,16 @@ function(columnItem, bSortAsc, callback) {
 };
 
 ZmListView.prototype._setNextSelection =
-function() {
+function(item, forceSelection) {
 	// set the next appropriate selected item
 	if (this.firstSelIndex < 0) {
 		this.firstSelIndex = 0;
 	}
-    var item;
-    if (this._list) {
-	    item = this._list.get(this.firstSelIndex) || this._list.getLast();
+	if (this._list && !item) {
+		item = this._list.get(this.firstSelIndex) || this._list.getLast();
     }
 	if (item) {
-		this.setSelection(item, false);
+		this.setSelection(item, false, forceSelection);
 	}
 };
 
@@ -1456,9 +1529,9 @@ function(params) {
 };
 
 ZmListView.prototype._restoreState =
-function() {
+function(state) {
 
-	var s = this._state;
+	var s = state || this._state;
 	if (s.selected && s.selected.length) {
 		var dontCheck = s.selected.length == 1 && !s.singleItemChecked;
 		this.setSelectedItems(s.selected, dontCheck);
@@ -1544,4 +1617,13 @@ function(group, section) {
 ZmListView.prototype.deactivate =
 function() {
 	this._controller.inactive = true;
+};
+
+ZmListView.prototype._getEventTarget =
+function(ev) {
+	var target = ev && ev.target;
+	if (target && (target.nodeName === "IMG" || (target.className && target.className.match(/\bImg/)))) {
+		return target.parentNode;
+	}
+	return target;
 };

@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -260,84 +266,101 @@ ZmDoublePaneView.prototype._sashCallback =
 function(delta) {
 
 	var readingPaneOnRight = this._controller.isReadingPaneOnRight();
+	var listView = this._mailListView;
+	var itemView = this._itemView;
+	//See bug 69593 for the reason for "true"
+	var itemViewSize = itemView.getSize(true);
+	var listViewSize = listView.getSize(true);
 
-	if (delta > 0) {
-		if (readingPaneOnRight) {
-			// moving sash right
-			var minMsgViewWidth = this._itemView.getMinWidth();
-			var currentMsgWidth = this._itemView.getSize(true).x;
-			delta = Math.max(0, Math.min(delta, currentMsgWidth - minMsgViewWidth));
-			var newListWidth = ((AjxEnv.isIE) ? this._vertSash.getLocation().x : this._mailListView.getSize(true).x) + delta;
+	var newListViewSize;
+	var newItemViewBounds;
 
-			if (delta > 0) {
-				this._mailListView.resetSize(newListWidth, Dwt.DEFAULT);
-				this._itemView.setBounds(this._itemView.getLocation().x + delta, Dwt.DEFAULT,
-										currentMsgWidth - delta, Dwt.DEFAULT);
-			} else {
-				delta = 0;
-			}
-		} else {
-			// moving sash down
-			var newMsgViewHeight = this._itemView.getSize(true).y - delta;
-			var minMsgViewHeight = this._itemView.getMinHeight();
-			if (newMsgViewHeight > minMsgViewHeight) {
-				this._mailListView.resetSize(Dwt.DEFAULT, this._mailListView.getSize(true).y + delta);
-				this._itemView.setBounds(Dwt.DEFAULT, this._itemView.getLocation().y + delta,
-										Dwt.DEFAULT, newMsgViewHeight);
-			} else {
-				delta = 0;
-			}
+	var absDelta = Math.abs(delta);
+
+	if (readingPaneOnRight) {
+		var currentListViewWidth = AjxEnv.isIE ? this._vertSash.getLocation().x : listViewSize.x;
+		var currentItemViewWidth = itemViewSize.x;
+		delta = this._getLimitedDelta(delta, currentItemViewWidth, itemView.getMinWidth(), currentListViewWidth, ZmDoublePaneView.MIN_LISTVIEW_WIDTH);
+		if (!delta) {
+			return 0;
 		}
-	} else {
-		var absDelta = Math.abs(delta);
-
-		if (readingPaneOnRight) {
-			// moving sash left
-			var currentWidth = this._vertSash.getLocation().x;
-			absDelta = Math.max(0, Math.min(absDelta, currentWidth - ZmDoublePaneView.MIN_LISTVIEW_WIDTH));
-
-			if (absDelta > 0) {
-				delta = -absDelta;
-				this._mailListView.resetSize(currentWidth - absDelta, Dwt.DEFAULT);
-				this._itemView.setBounds(this._itemView.getLocation().x - absDelta, Dwt.DEFAULT,
-										this._itemView.getSize(true).x + absDelta, Dwt.DEFAULT);
-			} else {
-				delta = 0;
-			}
-		} else {
-			// moving sash up
-			if (!this._minMLVHeight) {
-				var list = this._mailListView.getList();
-				if (list && list.size()) {
-					var item = list.get(0);
-					var div = document.getElementById(this._mailListView._getItemId(item));
-					this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT + (Dwt.getSize(div).y * 2);
-				} else {
-					this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT;
-				}
-			}
-
-			if (this.getSash().getLocation().y - absDelta > this._minMLVHeight) {
-				// moving sash up
-				this._mailListView.resetSize(Dwt.DEFAULT, this._mailListView.getSize(true).y - absDelta);
-				this._itemView.setBounds(Dwt.DEFAULT, this._itemView.getLocation().y - absDelta,
-										Dwt.DEFAULT, this._itemView.getSize(true).y + absDelta);
-			} else {
-				delta = 0;
-			}
+		newListViewSize = {width: currentListViewWidth + delta, height: Dwt.DEFAULT};
+		newItemViewBounds = {
+			left: itemView.getLocation().x + delta,
+			top: Dwt.DEFAULT,
+			width: currentItemViewWidth - delta,
+			height: Dwt.DEFAULT
+		};
+	}
+	else {
+		//reading pane on bottom
+		var currentListViewHeight = AjxEnv.isIE ? this._horizSash.getLocation().y : listViewSize.y;
+		var currentItemViewHeight = itemViewSize.y;
+		delta = this._getLimitedDelta(delta, currentItemViewHeight, itemView.getMinHeight(), currentListViewHeight, this._getMinListViewHeight(listView));
+		if (!delta) {
+			return 0;
 		}
+		newListViewSize = {width: Dwt.DEFAULT, height: currentListViewHeight + delta};
+		newItemViewBounds = {
+			left: Dwt.DEFAULT,
+			top: itemView.getLocation().y + delta,
+			width: Dwt.DEFAULT,
+			height: currentItemViewHeight - delta
+		};
 	}
 
-	if (delta) {
-		this._mailListView._resetColWidth();
-		if (readingPaneOnRight) {
-			this._vertSashX = this._vertSash.getLocation().x + delta;
-		} else {
-			this._horizSashY = this._horizSash.getLocation().y + delta;
-		}
+	listView.resetSize(newListViewSize.width, newListViewSize.height);
+	itemView.setBounds(newItemViewBounds.left, newItemViewBounds.top, newItemViewBounds.width, newItemViewBounds.height);
+
+	listView._resetColWidth();
+	if (readingPaneOnRight) {
+		this._vertSashX = this._vertSash.getLocation().x + delta;
+	}
+	else {
+		this._horizSashY = this._horizSash.getLocation().y + delta;
 	}
 
 	return delta;
+};
+
+/**
+ * returns the delta after limiting it based on minimum view dimension (which is either width/height - this code doesn't care)
+ *
+ * @param delta
+ * @param currentItemViewDimension
+ * @param minItemViewDimension
+ * @param currentListViewDimension
+ * @param minListViewDimension
+ * @returns {number}
+ * @private
+ */
+ZmDoublePaneView.prototype._getLimitedDelta =
+function(delta, currentItemViewDimension, minItemViewDimension, currentListViewDimension, minListViewDimension) {
+	if (delta > 0) {
+		// moving sash right or down
+		return Math.max(0, Math.min(delta, currentItemViewDimension - minItemViewDimension));
+	}
+	// moving sash left or up
+	var absDelta = Math.abs(delta);
+	return -Math.max(0, Math.min(absDelta, currentListViewDimension - minListViewDimension));
+};
+
+ZmDoublePaneView.prototype._getMinListViewHeight =
+function(listView) {
+	if (this._minListViewHeight) {
+		return this._minListViewHeight;
+	}
+
+	var list = listView.getList();
+	if (!list || !list.size()) {
+		return DwtListView.HEADERITEM_HEIGHT;
+	}
+	//only cache it if there's a list, to prevent a subtle bug of setting to just the header height if
+	//user first views an empty list.
+	var item = list.get(0);
+	var div = document.getElementById(listView._getItemId(item));
+	this._minListViewHeight = DwtListView.HEADERITEM_HEIGHT + Dwt.getSize(div).y * 2;
+	return this._minListViewHeight;
 };
 
 ZmDoublePaneView.prototype._selectFirstItem =

@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -75,17 +81,7 @@ function(id) {
 };
 
 ZmDocsEditController.prototype.loadDocument = function(item) {
-    var content = this._docMgr.fetchDocumentContent(item);
-    if(content) {
-    //        if(window.isTinyMCE) {
-    //            this._docsEdit.setPendingContent(content);
-    //        }else {
-	content = content.replace(/<img\s+.*dfsrc="http:\/\//gi, '<img src="http:\/\/');
-	content = content.replace(/<img\s+.*dfsrc="https:\/\//gi, '<img src="https:\/\/');
-            this._docsEdit._editor.setContent(content);
-    //        }
-        ZmDocsEditController.savedDoc = content;
-    }
+    this._docsEdit.loadDoc(item);
 };
 
 ZmDocsEditController.prototype._initModel = function(){
@@ -126,44 +122,17 @@ function(){
 	this.statusView.setStatusMsg(params);
 };
 
-window.onbeforeunload = function() {
-    return ZmDocsEditApp._controller.checkForChanges();
+ZmDocsEditController.prototype.checkForChanges = function() {
+    if (this._docsEdit.isDirty()) {
+        return ZmMsg.exitDocUnSavedChanges;
+    }
 };
 
-ZmDocsEditController.prototype.checkForChanges = function() {
-   var curDoc = null;
-   var controller = ZmDocsEditApp._controller;
-    //   if(window.isTinyMCE) {
-    //     var ed = tinyMCE.get('tiny_mce_content');
-    //     curDoc = ed.getContent();
-    //   } else {
-     curDoc = controller._docsEdit._editor.getContent();  
-    //   }
-   /*if(!ZmDocsEditApp.fileInfo.id) {
-     return ZmMsg.exitDocNotSaved;
-   }*/
-   if(  ZmDocsEditController.savedDoc == null &&
-       (curDoc == '<html><body></body></html>' ||
-       !curDoc)) {
-        return;     
-   } else if(curDoc != ZmDocsEditController.savedDoc) {
-        return ZmMsg.exitDocUnSavedChanges;
-   } 
-};
 /**
 * return boolean  - Check if document has any changes to be saved
 * */
 ZmDocsEditController.prototype._isDirty = function() {
-   var curDoc = null;
-   var controller = ZmDocsEditApp._controller;
-   curDoc = controller._docsEdit._editor.getContent();
-   if(  ZmDocsEditController.savedDoc == null &&
-       (curDoc == '<html><body></body></html>' ||
-       !curDoc)) {
-        return false;
-   } else if(curDoc != ZmDocsEditController.savedDoc) {
-        return true;
-   }
+    return this._docsEdit.isDirty();
 }
 
 ZmDocsEditController.prototype.exit = function(){

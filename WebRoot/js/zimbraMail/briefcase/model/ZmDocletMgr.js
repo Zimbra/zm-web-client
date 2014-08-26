@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2008, 2009, 2010, 2011, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -318,10 +324,6 @@ function(themePath)
     return docContent;
 };
 
-
-ZmDocletMgr.INVALID_DOC_NAME_CHARS = "[\\|]";
-ZmDocletMgr.INVALID_DOC_NAME_RE = new RegExp(ZmDocletMgr.INVALID_DOC_NAME_CHARS);
-
 ZmDocletMgr.prototype.checkInvalidDocName = function(fileName) {
 
     var message;
@@ -329,7 +331,8 @@ ZmDocletMgr.prototype.checkInvalidDocName = function(fileName) {
 
     if(fileName == ""){
         message = ZmMsg.emptyDocName;
-    }else if (!ZmOrganizer.VALID_NAME_RE.test(fileName) || ZmDocletMgr.INVALID_DOC_NAME_RE.test(fileName)) {
+    }else if (!ZmOrganizer.VALID_NAME_RE.test(fileName) || ZmAppCtxt.INVALID_NAME_CHARS_RE.test(fileName)) {
+        //Bug fix # 79986 - < > , ? | / \ * : are invalid filenames
         message = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName));
     } else if ( fileName.length > ZmOrganizer.MAX_NAME_LENGTH){
         message = AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
@@ -360,17 +363,4 @@ function(item, callback, errorCallback, accountName){
 	};
 	return this.sendRequest(params);
 
-};
-
-ZmDocletMgr.getEditURLForContentType =
-function(contentType) {
-	AjxDispatcher.require("Startup1_1");
-	var editPage = "Slides.jsp";
-	switch(contentType) {
-		case ZmMimeTable.APP_ZIMBRA_SLIDES:			editPage = "Slides.jsp"; break;
-		case ZmMimeTable.APP_ZIMBRA_SPREADSHEET:	editPage = "SpreadsheetDoc.jsp"; break;
-		case ZmMimeTable.APP_ZIMBRA_DOC:			editPage = "Docs.jsp"; break;
-		default: return null;
-	};
-	return (window.appContextPath + "/public/" + editPage);
 };

@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -94,7 +100,7 @@ ZmAutocomplete.prototype.toString =
  * @param {Boolean}					supportForget	allow user to reset ranking for a contact (defaults to true)
  */
 ZmAutocomplete.prototype.autocompleteMatch =
-		function(str, callback, aclv, options, account) {
+		function(str, callback, aclv, options, account, autocompleteType) {
 
 			str = str.toLowerCase().replace(/"/g, '');
 			this._curAcStr = str;
@@ -108,19 +114,20 @@ ZmAutocomplete.prototype.autocompleteMatch =
 			}
 			else {
 				aclv.setWaiting(true, str);
-				return this._doSearch(str, aclv, options, acType, callback, account);
+				return this._doSearch(str, aclv, options, acType, callback, account, autocompleteType);
 			}
 		};
 
 ZmAutocomplete.prototype._doSearch =
-		function(str, aclv, options, acType, callback, account) {
+		function(str, aclv, options, acType, callback, account, autocompleteType) {
 
 			var params = {query:str, isAutocompleteSearch:true};
 			if (acType != ZmAutocomplete.AC_TYPE_CONTACT) {
 				params.isGalAutocompleteSearch = true;
 				params.isAutocompleteSearch = false;
 				params.limit = params.limit * 2;
-				params.types = AjxVector.fromArray([ZmItem.CONTACT]);
+				var searchType = ((acType === ZmAutocomplete.AC_TYPE_LOCATION) || (acType === ZmAutocomplete.AC_TYPE_EQUIPMENT)) ?  ZmItem.RESOURCE : ZmItem.CONTACT;
+				params.types = AjxVector.fromArray([searchType]);
 				params.galType = params.galType || ZmSearch.GAL_RESOURCE;
 				DBG.println("ac", "AutoCompleteGalRequest: " + str);
 			} else {
@@ -135,6 +142,10 @@ ZmAutocomplete.prototype._doSearch =
 				timeout:		ZmAutocomplete.AC_TIMEOUT,
 				noBusyOverlay:	true
 			};
+			if (autocompleteType) {
+				searchParams.autocompleteType = autocompleteType;
+			}
+            searchParams.offlineCallback = this._handleOfflineDoAutocomplete.bind(this, str, search, searchParams.callback);
 			return search.execute(searchParams);
 		};
 
@@ -150,7 +161,7 @@ ZmAutocomplete.prototype._handleResponseDoAutocomplete =
 			var resultList, gotContacts = false, hasGal = false;
 			var resp = result.getResponse();
 			if (resp && resp.search && resp.search.isGalAutocompleteSearch) {
-				var cl = resp.getResults(ZmItem.CONTACT);
+				var cl = resp.getResults(resp.type);
 				resultList = (cl && cl.getArray()) || [];
 				gotContacts = hasGal = true;
 			} else {
@@ -190,6 +201,66 @@ ZmAutocomplete.prototype._handleErrorDoAutocomplete =
 
 			return true;
 		};
+
+/**
+ * @private
+ */
+ZmAutocomplete.prototype._handleOfflineDoAutocomplete =
+function(str, search, callback) {
+    if (str) {
+        var autoCompleteCallback = this._handleOfflineResponseDoAutocomplete.bind(this, search, callback);
+        ZmOfflineDB.searchContactsForAutoComplete(str, autoCompleteCallback);
+    }
+};
+
+ZmAutocomplete.prototype._handleOfflineResponseDoAutocomplete =
+function(search, callback, result) {
+    var match = [];
+    result.forEach(function(contact) {
+        var attrs = contact._attrs;
+		if (attrs) {
+			var obj = {
+				id : contact.id,
+				l : contact.l
+			};
+			if (attrs.fullName) {
+				var fullName = attrs.fullName;
+			}
+			else {
+				var fullName = [];
+				if (attrs.firstName) {
+					fullName.push(attrs.firstName);
+				}
+				if (attrs.middleName) {
+					fullName.push(attrs.middleName);
+				}
+				if (attrs.lastName) {
+					fullName.push(attrs.lastName);
+				}
+				fullName = fullName.join(" ");
+			}
+			if (attrs.email) {
+				obj.email = '"' + fullName + '" <' + attrs.email + '>';
+			}
+			else if (attrs.type === "group") {
+				obj.display = fullName;
+				obj.type = ZmAutocomplete.AC_TYPE_CONTACT;
+				obj.exp = true;
+				obj.isGroup = true;
+			}
+			match.push(obj);
+		}
+    });
+    if (callback) {
+        var zmSearchResult = new ZmSearchResult(search);
+        var response = {
+            match : match
+        };
+        zmSearchResult.set(response);
+        var zmCsfeResult = new ZmCsfeResult(zmSearchResult);
+        callback(zmCsfeResult);
+    }
+};
 
 /**
  * Sort auto-complete list by ranking scores.
@@ -431,7 +502,7 @@ ZmAutocomplete.prototype._settingChangeListener =
  */
 ZmAutocompleteMatch = function(match, options, isContact, str) {
 	// TODO: figure out how to minimize loading of calendar code
-	AjxDispatcher.require("CalendarCore");
+	AjxDispatcher.require(["MailCore", "CalendarCore"]);
 	if (!match) {
 		return;
 	}
@@ -450,7 +521,7 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 		if (this.isGroup && !this.isDL) {
 			// Local contact group; emails need to be looked up by group member ids. 
 			var contactGroup = ac.cacheGet(match.id);
-			if (contactGroup) {
+			if (contactGroup && contactGroup.isLoaded) {
 				this.setContactGroupMembers(match.id);
 			}
 			else {
@@ -821,7 +892,7 @@ ZmSearchAutocomplete.prototype._loadFolders =
 			var folders = folderTree ? folderTree.asList({includeRemote:true}) : [];
 			for (var i = 0, len = folders.length; i < len; i++) {
 				var folder = folders[i];
-				if (folder.id != ZmOrganizer.ID_ROOT && !ZmFolder.HIDE_ID[folder.id]) {
+				if (folder.id !== ZmOrganizer.ID_ROOT && !ZmFolder.HIDE_ID[folder.id] && folder.id !== ZmFolder.ID_DLS) {
 					list.push(folder);
 				}
 			}

@@ -1,15 +1,17 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software Foundation,
+ * version 2 of the License.
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
@@ -20,8 +22,8 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
+<app:loadTinyMCE />
 
-<script type="text/javascript" src="../js/ajax/3rdparty/tinymce/tiny_mce.js"></script>
 <body class="yui-skin-sam">
 <table width="100%">
 <tr>
@@ -240,7 +242,9 @@
             </c:forEach>
         </c:forEach>
 
-        var onTinyMCEEditorInit = function(ed){
+        var onTinyMCEEditorInit = function(ev){
+            var ed = ev.target;
+
             ed.dom.setStyles( ed.getBody(), {
                 "font-family" : "${mailbox.prefs.htmlEditorDefaultFontFamily}",
                 "font-size"   : "${mailbox.prefs.htmlEditorDefaultFontSize}",
@@ -255,7 +259,9 @@
             }
         };
 
-        var handleContentLoad = function(ed){
+        var handleContentLoad = function(ev){
+            var ed = ev.target;
+
             var imageArray = ed.dom.select("img[dfsrc^='doc:']"),
                     path = ["/home/", "${mailbox.accountInfo.name}", "/"].join(""),
                     image;
@@ -265,61 +271,62 @@
             }
         };
 
-        //Refer http://www.tinymce.com/i18n/index.php?ctrl=lang&act=download&pr_id=1
-        var tinyMCELocaleArray = ['sq', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'nb', 'bs', 'br', 'bg', 'my', 'ca', 'km', 'ch', 'zh', 'hr', 'cs', 'da', 'dv', 'nl', 'en', 'eo', 'et', 'fi', 'fr', 'gl', 'ka', 'de', 'el', 'gu', 'he', 'hi', 'hu', 'is', 'id', 'ia', 'it', 'ja', 'kl', 'ko', 'lv', 'lt', 'lb', 'mk', 'ms', 'ml', 'mn', 'se', 'no', 'nn', 'fa', 'pl', 'pt', 'ps', 'ro', 'ru', 'sc', 'sr', 'si', 'sk', 'sl', 'es', 'sv', 'ta', 'tt', 'te', 'th', 'tn', 'tr', 'tw', 'uk', 'ur', 'vi', 'cy', 'zu', 'zh-tw', 'cn', 'zh-cn'],
-                locale = "${mailbox.prefs.locale}" || "en";
+        var toolbarbuttons = [
+            'fontselect fontsizeselect formatselect |',
+            'bold italic underline strikethrough |',
+            'forecolor backcolor |',
+            'removeformat |',
+            'outdent indent bullist numlist blockquote |',
+            'alignleft aligncenter alignright alignjustify |',
+            'image link zemoticons charmap hr table |',
+            'undo redo |',
+            'pastetext code'
+        ];
 
-        locale = locale.toLowerCase().replace("_", "-");
-        if (tinymce.inArray(tinyMCELocaleArray, locale) === -1) {
-            locale = locale.substr(0, 2);
-            if (tinymce.inArray(tinyMCELocaleArray, locale) === -1) {
-                locale = "en";
-            }
-        }
+        var plugins = [
+            "zemoticons",
+            "table", "paste", "directionality", "textcolor", "lists", "advlist",
+            "link", "hr", "charmap", "code"
+        ];
 
         var tinyMCEInitObj = {
             mode : "none",
             height : "200px",
             width : "100%",
-            plugins : "advlist,inlinepopups,table,paste,directionality,emotions" + (tinymce.isIE ? "" : ",autolink"),
-            theme : "advanced",
-            theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,image,link,unlink,emotions",
-            theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,|,tablecontrols,|,blockquote,hr,charmap",
-            theme_advanced_buttons3 : "",
-            theme_advanced_buttons4 : "",
-            theme_advanced_toolbar_location : "top",
-            theme_advanced_toolbar_align : "left",
-            theme_advanced_resizing : true,
-            theme_advanced_fonts : fonts.join(";"),
-            theme_advanced_statusbar_location : "none",
+            plugins : plugins.join(' '),
+            theme : "modern",
+            toolbar_items_size: 'small',
+            toolbar : toolbarbuttons.join(' '),
+            font_formats : fonts.join(";"),
+            statusbar : false,
+            menubar : false,
             convert_urls : false,
             verify_html : false,
-            gecko_spellcheck : true,
+            browser_spellcheck : true,
             dialog_type : "modal",
             forced_root_block : "div",
-            table_default_cellpadding : 3,
-            table_default_border: 1,
+            table_default_attributes: { cellpadding: '3px', border: '1px' },
+            table_default_styles: { width: '90%', tableLayout: 'fixed' },
             content_css : false,
-            language : locale,
-            theme_advanced_show_current_color : true,
+            language : tinyMCE.getlanguage("${mailbox.prefs.locale}"),
+            paste_data_images: true,
             paste_retain_style_properties : "all",
             paste_remove_styles_if_webkit : false,
             submit_patch : false,
             add_form_submit_trigger: false,
             setup : function(ed) {
-                ed.onInit.add(onTinyMCEEditorInit);
-                ed.onLoadContent.add(handleContentLoad);
-                ed.onBeforeRenderUI.add(function() {
-                    tinymce.ScriptLoader.loadScripts(['../js/ajax/3rdparty/tinymce/themes/advanced/Zmeditor_template.js']);
-                });
-                ed.onSaveContent.add(function(ed, o) {
+                ed.on('init', onTinyMCEEditorInit);
+                ed.on('LoadContent', handleContentLoad);
+                ed.on('SaveContent', function(ev) {
+                    var ed = ev.target;
+
                     if (!ed.isDirty() && ed.getContent() == "<div></div>") {
-                        o.content = "";
+                        ed.content = "";
                     }
                 });
-                ed.onBeforeSetContent.add(function(ed, o) {
+                ed.on('BeforeSetContent', function(ed) {
                     // Replaces all double br elements for avoiding enter issue
-                    o.content = o.content.replace(/<br><br>/ig, '<br><div><br></div>');
+                    ed.content = ed.content.replace(/<br><br>/ig, '<br><div><br></div>');
                 });
             }
         };
@@ -331,13 +338,14 @@
         for(var i = 0 ;i < sigcount ; i++) {
             var sigType = document.getElementById("signatureType"+i).value;
             if(sigType == 'text/html') {
-                window.tinyMCE && window.tinyMCE.execCommand('mceAddControl', false, "signatureValue"+i);
+                window.tinyMCE && window.tinyMCE.execCommand('mceAddEditor', false, "signatureValue"+i);
             }
             else if(sigType == 'text/plain') {
                 myEdit[i] == null;
             }
         }
-        window.tinyMCE && window.tinyMCE.execCommand('mceAddControl', false, "newSignatureValue");
+
+        window.tinyMCE && window.tinyMCE.execCommand('mceAddEditor', false, "newSignatureValue");
     }());
 
     /* List of elements that has to be handled for send */
@@ -353,10 +361,10 @@
     function prepToSend (){
        for(var j = 0 ;j < sigcount ; j++) {
           if(myEdit[j] != null) {
-            myEdit[j].saveHTML();
+            myEdit[j].save({format:"raw"});
           }
        }
-       myEditor.saveHTML();
+       myEditor.save({format:"raw"});
        return true;
     }
 

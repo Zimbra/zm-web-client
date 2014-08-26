@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -83,7 +89,7 @@ function(actionMenu, type, id) {
             actionMenu.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);            
         } else {
             actionMenu.enableAll(true);
-            var showEditMenu = !appCtxt.isExternalAccount() && (!isLinkOrRemote || !isReadOnly || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE));
+            var showEditMenu = (!isLinkOrRemote || !isReadOnly || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE));
             actionMenu.enable(ZmOperation.DELETE_WITHOUT_SHORTCUT, showEditMenu && !isBriefcase);
             actionMenu.enable(ZmOperation.EDIT_PROPS, showEditMenu);
 
@@ -91,7 +97,7 @@ function(actionMenu, type, id) {
             menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
             menuItem.setText(ZmMsg.newFolder);
             menuItem.setImage("NewFolder");
-            menuItem.setEnabled(!appCtxt.isExternalAccount() && (!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR) || briefcase.isAdmin() || ZmShare.getRoleFromPerm(briefcase.perm) == ZmShare.ROLE_MANAGER));
+            menuItem.setEnabled((!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR) || briefcase.isAdmin() || ZmShare.getRoleFromPerm(briefcase.perm) == ZmShare.ROLE_MANAGER));
 
             if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
                 isBriefcase = (!isRoot && briefcase.parent.id == rootId) || type==ZmOrganizer.BRIEFCASE;
@@ -152,6 +158,9 @@ function() {
         ops.push(ZmOperation.NEW_BRIEFCASE);
     }
     ops.push(ZmOperation.EXPAND_ALL);
+	if (!appCtxt.isExternalAccount()) {
+		ops.push(ZmOperation.FIND_SHARES);
+	}
 	return ops;
 };
 
@@ -239,8 +248,23 @@ function(params) {
 	params.include = {};
 	params.include[ZmFolder.ID_TRASH] = true;
     params.showUnread = false;
-    return ZmFolderTreeController.prototype.show.call(this, params);
+    var treeView = ZmFolderTreeController.prototype.show.call(this, params);
+
+    treeView._controller = this;
+    // Finder to BriefcaseTreeView drag and drop
+    this._initDragAndDrop(treeView);
+
+    return treeView;
 };
+
+
+/**
+ * @private
+ */
+ZmBriefcaseTreeController.prototype._createTreeView = function(params) {
+	return new ZmBriefcaseTreeView(params);
+};
+
 
 ZmBriefcaseTreeController.prototype._handleSearchResponse =
 function(folder, result) {
@@ -249,4 +273,9 @@ function(folder, result) {
     if (folder.nId == ZmFolder.ID_TRASH) {
         this._treeView[this._app.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
     }
+};
+
+
+ZmBriefcaseTreeController.prototype._initDragAndDrop = function(treeView) {
+	this._dnd = new ZmDragAndDrop(treeView);
 };

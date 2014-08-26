@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -28,15 +34,15 @@
  * @param {constant}		type				type of controller
  * @param {string}			sessionId			the session id
  *
- * @extends		ZmMailListController
+ * @extends		ZmConvListController
  */
 ZmConvController = function(container, mailApp, type, sessionId) {
 
-	ZmMailListController.apply(this, arguments);
+	ZmConvListController.apply(this, arguments);
 	this._elementsToHide = ZmAppViewMgr.LEFT_NAV;
 };
 
-ZmConvController.prototype = new ZmMailListController;
+ZmConvController.prototype = new ZmConvListController;
 ZmConvController.prototype.constructor = ZmConvController;
 
 ZmConvController.prototype.isZmConvController = true;
@@ -61,6 +67,7 @@ ZmConvController.prototype.show =
 function(conv, parentController, callback, markRead, msg) {
 
 	this._conv = conv;
+	conv.isInUse = true;
 
 	this._relatedMsg = msg;
 	this._parentController = parentController;
@@ -71,7 +78,7 @@ function(conv, parentController, callback, markRead, msg) {
 	if (!conv._loaded) {
 		var respCallback = this._handleResponseLoadConv.bind(this, conv, callback);
 		markRead = !msg && (markRead || (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW));
-		conv.load({getUnreadOrFirstMsg:true, markRead:markRead}, respCallback);
+		conv.load({fetch:ZmSetting.CONV_FETCH_UNREAD_OR_FIRST, markRead:markRead}, respCallback);
 	} else {
 		this._handleResponseLoadConv(conv, callback, conv._createResult());
 	}
@@ -172,7 +179,7 @@ function(view) {
 			parent:		this._container,
 			id:			ZmId.getViewId(ZmId.VIEW_CONV2, null, view),
 			posStyle:	Dwt.ABSOLUTE_STYLE,
-			mode:		ZmId.VIEW_CONV2,
+			mode:		view,
 			standalone:	true, //double-clicked stand-alone view of the conv (not within the double pane)
 			controller:	this
 		};
@@ -186,16 +193,8 @@ function(view) {
 ZmConvController.prototype._getToolBarOps =
 function() {
 	var list = [ZmOperation.CLOSE, ZmOperation.SEP];
-	list = list.concat(ZmMailListController.prototype._getToolBarOps.call(this));
+	list = list.concat(ZmConvListController.prototype._getToolBarOps.call(this));
 	return list;
-};
-
-ZmConvController.prototype._initializeToolBar = 
-function(view) {
-	if (!this._toolbar[view]) {
-		ZmMailListController.prototype._initializeToolBar.call(this, view);
-	}
-	this._setupSpamButton(this._toolbar[view]);
 };
 
 // conv view has arrows to go to prev/next conv, so needs regular nav toolbar
@@ -218,6 +217,11 @@ function(ev) {
 	this._app.popView();
 };
 
+ZmConvController.prototype._postRemoveCallback =
+function() {
+	this._conv.isInUse = false;
+};
+
 ZmConvController.prototype._navBarListener =
 function(ev) {
 	var op = ev.item.getData(ZmOperation.KEY_ID);
@@ -226,10 +230,6 @@ function(ev) {
 	}
 };
 
-ZmConvController.prototype._setupConvOrderMenuItems =
-function(view, menu) {
-	ZmConvListController.prototype._setupConvOrderMenuItems.apply(this, arguments);
-};
 
 ZmConvController.prototype._setupGroupByMenuItems = function(view, menu) {};
 
@@ -244,11 +244,6 @@ function(view) {
 	// bug fix #7389 - do nothing!
 };
 
-// Handle change of msg order within conv
-ZmConvController.prototype.switchView =
-function(view, force) {
-	ZmConvListController.prototype.switchView.apply(this, arguments);
-};
 
 ZmConvController.prototype.getItemView = 
 function() {
@@ -258,7 +253,7 @@ function() {
 // if going from msg to conv view, don't have server mark stuff read (we'll just expand the one msg view)
 ZmConvController.prototype._handleMarkRead =
 function(item, check) {
-	return this._relatedMsg ? false : ZmMailListController.prototype._handleMarkRead.apply(this, arguments);
+	return this._relatedMsg ? false : ZmConvListController.prototype._handleMarkRead.apply(this, arguments);
 };
 
 // Operation listeners
@@ -352,7 +347,7 @@ function(actionCode) {
 			break;
 
 		default:
-			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
+			return ZmConvListController.prototype.handleKeyAction.call(this, actionCode);
 	}
 	return true;
 };
@@ -374,14 +369,18 @@ function(params) {
 	return ZmConvListController.prototype.getMsg.call(this, params); //we need to get the first hot message from the conv.
 };
 
+ZmConvController.prototype._getLoadedMsg =
+function(params, callback) {
+	callback.run(this.getMsg());
+};
+
 // overloaded...
 ZmConvController.prototype._search =
 function(view, offset, limit, callback) {
 	var params = {
 		sortBy: appCtxt.get(ZmSetting.SORTING_PREF, view),
 		offset: offset,
-		limit: limit,
-		getFirstMsg: this.isReadingPaneOn()
+		limit:  limit
 	};
 	this._conv.load(params, callback);
 };
@@ -425,16 +424,44 @@ function() {
 	this._backListener();
 };
 
+/**
+ * have to do this since we don't want what is from ZmDoublePaneController, and ZmConvListController extends ZmDoublePaneController... (unlike
+ * ZmMailListController - ZmDoublePaneController extends ZmMailLitController actually).
+ * @returns {Array}
+ * @private
+ */
+ZmConvController.prototype._getRightSideToolBarOps =
+function() {
+	return [ZmOperation.VIEW_MENU];
+};
+
+/**
+ * have to do this since otherwise we get the one from ZmDoublePaneController and that's not good.
+ * @private
+ */
+ZmConvController.prototype._setupReadingPaneMenuItems = function() {
+};
+
+/**
+ * this is called sometimes as a result of stuf in ZmConvListController - but this view has no next item so override to just return null
+ * @returns {null}
+ * @private
+ */
+ZmConvController.prototype._getNextItemToSelect =
+function() {
+	return null;
+};
+
 ZmConvController.prototype._doMove =
 function() {
 	this._selectNextItemInParentListView();
-	ZmMailListController.prototype._doMove.apply(this, arguments);
+	ZmConvListController.prototype._doMove.apply(this, arguments);
 };
 
 ZmConvController.prototype._doSpam =
 function() {
 	this._selectNextItemInParentListView();
-	ZmMailListController.prototype._doSpam.apply(this, arguments);
+	ZmConvListController.prototype._doSpam.apply(this, arguments);
 };
 
 ZmConvController.prototype._msgViewCurrent =

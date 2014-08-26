@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -56,14 +62,14 @@ function() {
         this._dialog.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, true);
     }
 
-	this.setSize(Dwt.DEFAULT, "200");
+	this.setSize(Dwt.DEFAULT, "100");
     if (Dwt.getVisible(this._nameInputEl)) {
         this._nameInputEl.focus();
     }
 };
 
 
-/*  doSave will be invoked for each tab view.
+/**  doSave will be invoked for each tab view.
  *
  * @param	{BatchCommand}	batchCommand	Accumulates updates from all tabs
  * @param	{Object}	    saveState		Accumulates error messages and indication of any update
@@ -88,6 +94,20 @@ function(batchCommand, saveState) {
 				return;
 			}
             batchCommand.add(new AjxCallback(organizer, organizer.rename, [name, null, this._handleRenameErrorCallback]));
+            saveState.commandCount++;
+		}
+	}
+
+    if (!organizer.isDataSource() && appCtxt.isWebClientOfflineSupported) {
+        var webOfflineSyncDays = $('#folderOfflineLblId').val() || 0;
+		if (organizer.webOfflineSyncDays != webOfflineSyncDays) {
+			var error = ZmOrganizer.checkWebOfflineSyncDays(webOfflineSyncDays);
+			if (error) {
+                saveState.errorMessage.push(error);
+                // Only error checking for now.  If additional, should not return here
+				return;
+			}
+            batchCommand.add(new AjxCallback(organizer, organizer.setOfflineSyncInterval, [webOfflineSyncDays, null, this._handleErrorCallback]));
             saveState.commandCount++;
 		}
 	}
@@ -120,6 +140,14 @@ function(batchCommand, saveState) {
         }
     }
 
+	// Saved searches
+	if (Dwt.getVisible(this._queryInputEl) && organizer.type === ZmOrganizer.SEARCH) {
+		var query = this._queryInputEl.value;
+		if (organizer.search.query !== query) {
+			batchCommand.add(new AjxCallback(organizer, organizer.setQuery, [query, null, this._handleErrorCallback]));
+			saveState.commandCount++;
+		}
+	}
 };
 
 ZmFolderPropertyView.prototype._handleFolderChange =
@@ -160,6 +188,15 @@ function(event) {
         Dwt.setVisible(this._nameOutputEl, false);
         Dwt.setVisible(this._nameInputEl,  true);
 	}
+
+	if (organizer.type === ZmOrganizer.SEARCH) {
+		this._queryInputEl.value = organizer.search.query;
+		this._props.setPropertyVisible(this._queryId, true);
+	}
+	else {
+		this._props.setPropertyVisible(this._queryId, false);
+	}
+
 	this._ownerEl.innerHTML = AjxStringUtil.htmlEncode(organizer.owner);
 	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[organizer.type]] || ZmMsg.folder;
 
@@ -189,12 +226,20 @@ function(event) {
 
 	this._props.setPropertyVisible(this._urlId, organizer.url);
 	this._props.setPropertyVisible(this._permId, showPerm);
+    $('#folderOfflineLblId').val(organizer.webOfflineSyncDays || 0)
 
 	Dwt.setVisible(this._excludeFbEl, !organizer.link && (organizer.type == ZmOrganizer.CALENDAR));
 	// TODO: False until server handling of the flag is added
 	//Dwt.setVisible(this._globalMarkReadEl, organizer.type == ZmOrganizer.FOLDER);
     Dwt.setVisible(this._globalMarkReadEl, false);
 
+	if (this._offlineId) {
+		var enabled = false;
+		if (!organizer.isMountpoint) {
+			enabled = (this._organizer.type == ZmOrganizer.FOLDER);
+		}
+		this._props.setPropertyVisible(this._offlineId, enabled);
+	}
 };
 
 
@@ -229,6 +274,11 @@ function() {
 	this._nameInputEl._dialog = this;
 	var nameElement = this._nameInputEl;
 
+	this._queryInputEl = document.createElement("INPUT");
+	this._queryInputEl.style.width = "20em";
+	this._queryInputEl._dialog = this;
+	var queryElement = this._queryInputEl;
+
 	this._ownerEl = document.createElement("DIV");
 	this._typeEl = document.createElement("DIV");
 	this._urlEl = document.createElement("DIV");
@@ -238,6 +288,9 @@ function() {
 	nameEl.appendChild(this._nameOutputEl);
 	nameEl.appendChild(nameElement);
 
+	var queryEl = document.createElement("DIV");
+	queryEl.appendChild(queryElement);
+
 	var excludeFbEl      = this._createCheckboxItem("excludeFb",        ZmMsg.excludeFromFreeBusy);
 	var globalMarkReadEl = this._createCheckboxItem("globalMarkRead",   ZmMsg.globalMarkRead);
 
@@ -246,10 +299,17 @@ function() {
 
 	this._props.addProperty(ZmMsg.nameLabel, nameEl);
 	this._props.addProperty(ZmMsg.typeLabel, this._typeEl);
+	this._queryId = this._props.addProperty(ZmMsg.queryLabel, queryEl);
 	this._ownerId = this._props.addProperty(ZmMsg.ownerLabel,  this._ownerEl);
 	this._urlId   = this._props.addProperty(ZmMsg.urlLabel,    this._urlEl);
 	this._permId  = this._props.addProperty(ZmMsg.permissions, this._permEl);
 	this._colorId = this._props.addProperty(ZmMsg.colorLabel,  this._color);
+    if (appCtxt.isWebClientOfflineSupported) {
+        this._offlineEl = document.createElement("DIV");
+		this._offlineEl.style.whiteSpace = "nowrap";
+		this._offlineEl.innerHTML = ZmMsg.offlineFolderSyncInterval;
+        this._offlineId = this._props.addProperty(ZmMsg.offlineLabel,  this._offlineEl);
+    }
 
     var container = this.getHtmlElement();
 	container.appendChild(this._props.getHtmlElement());

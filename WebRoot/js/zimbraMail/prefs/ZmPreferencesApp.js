@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -282,6 +288,7 @@ function() {
                 ZmSetting.COMPOSE_INIT_DIRECTION,
                 ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS,
 				ZmSetting.FONT_NAME,
+				ZmSetting.FONT_SIZE,
 				ZmSetting.PASSWORD,
 				ZmSetting.SEARCH_INCLUDES_SHARED,
 				ZmSetting.SEARCH_INCLUDES_SPAM,
@@ -296,7 +303,6 @@ function() {
                 ZmSetting.DEFAULT_PRINTFONTSIZE,
 				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
 				ZmSetting.SHORT_ADDRESS,
-				ZmSetting.USE_ADDR_BUBBLES,
                 ZmSetting.OFFLINE_UPDATE_NOTIFY //offline
 			]
 		},
@@ -532,8 +538,8 @@ function() {
 	});
 
 	var styles=[],names=[];
-	for (var key in DwtHtmlEditor.FONT_FAMILY) {
-		var obj = DwtHtmlEditor.FONT_FAMILY[key];
+	for (var key in ZmPref.FONT_FAMILY) {
+		var obj = ZmPref.FONT_FAMILY[key];
 		styles.push(obj.value);
 		names.push(obj.name);
 	}
@@ -549,7 +555,7 @@ function() {
 			if (AjxUtil.indexOf(styles, id) != -1) {
 				return id;
 			}
-			return DwtHtmlEditor._normalizeFontId(id);
+			return ZmPref._normalizeFontId(id);
 		}
 	});
 
@@ -689,6 +695,11 @@ function() {
 		displayContainer:	ZmPref.TYPE_FONT
 	});
 
+	ZmPref.registerPref("FONT_SIZE", {
+		displayName:		ZmMsg.selectFontSize, //this was never defined in ZmMsg in the above case (font_name) and see the typo there too. So not sure what's this for.
+		displayContainer:	ZmPref.TYPE_FONT_SIZE
+	});
+
 	var markReadTime = AjxMessageFormat.format(ZmMsg.messageReadTime, DwtId.makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
 	ZmPref.registerPref("MARK_MSG_READ", {
 		displayName:		ZmMsg.messageReadLabel,
@@ -731,12 +742,6 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 	
-	ZmPref.registerPref("USE_ADDR_BUBBLES", {
-		displayName:		ZmMsg.useAddressBubbles,
-		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		validationFunction: ZmPref.validateBubbles
-	});
-
 	if (appCtxt.isOffline) {
 		ZmPref.registerPref("OFFLINE_IS_MAILTO_HANDLER", {
 			displayName:		ZmMsg.offlineAllowMailTo,
@@ -987,7 +992,7 @@ function() {
 	var params = ZmApp.prototype._getOverviewParams.call(this);
 	params.omit = {};
 	params.omit[ZmOrganizer.ID_ZIMLET] = true;
-
+	params.actionSupported = false;
 	return params;
 };
 

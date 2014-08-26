@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -31,12 +37,13 @@
  */
 ZmPreferencesPage = function(parent, section, controller, id) {
 	if (arguments.length == 0) return;
+	id = id || ("Prefs_Pages_" + section.id);
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage", null, id);
 
 	this._section = section;
 	this._controller = controller;
 
-	this.setScrollStyle(DwtControl.SCROLL);
+	this.setScrollStyle(Dwt.SCROLL_Y);
 
 	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section.title].join(": ");
 
@@ -254,7 +261,10 @@ function() {
                 }
 			}
 			else if (type == ZmPref.TYPE_FONT) {
-				control = this._setupFonts(id, setup, value);
+				control = this._setupMenuButton(id, value, ZmPreferencesPage.fontMap);
+			}
+			else if (type == ZmPref.TYPE_FONT_SIZE) {
+				control = this._setupMenuButton(id, value, ZmPreferencesPage.fontSizeMap);
 			}
 			else if (type == ZmPref.TYPE_PASSWORD) {
 				this._addButton(elem, setup.displayName, 50, new AjxListener(this, this._changePasswordListener), "CHANGE_PASSWORD");
@@ -346,7 +356,7 @@ function(id, setup, control) {
 		type == ZmPref.TYPE_CHECKBOX ||
 		type == ZmPref.TYPE_RADIO_GROUP || type == ZmPref.TYPE_COLOR ||
 		type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_LOCALES ||
-		type == ZmPref.TYPE_FONT) {
+		type === ZmPref.TYPE_FONT || type === ZmPref.TYPE_FONT_SIZE) {
 		var object = control || this.getFormObject(id);
 		if (object) {
 			if (type == ZmPref.TYPE_COLOR) {
@@ -367,8 +377,8 @@ function(id, setup, control) {
 			else if (type == ZmPref.TYPE_LOCALES) {
 				value = object._localeId;
 			}
-			else if (type == ZmPref.TYPE_FONT) {
-				value = object._fontId;
+			else if (type === ZmPref.TYPE_FONT || type === ZmPref.TYPE_FONT_SIZE) {
+				value = object._itemId;
 			}
 			else if (type == ZmPref.TYPE_COMBOBOX) {
 				value = object.getValue() || object.getText();
@@ -460,7 +470,11 @@ function(id, value, setup, control) {
 	} else if (type == ZmPref.TYPE_FONT) {
 		var object = this._dwtObjects[ZmSetting.FONT_NAME];
 		if (!object) { return value; }
-		this._showFont(value, object);
+		this._showItem(value, ZmPreferencesPage.fontMap, object);
+	} else if (type == ZmPref.TYPE_FONT_SIZE) {
+		var object = this._dwtObjects[ZmSetting.FONT_SIZE];
+		if (!object) { return value; }
+		this._showItem(value, ZmPreferencesPage.fontSizeMap, object);
 	} else {
 		var prefId = [this._htmlElId, id].join("_");
 		var element = control || document.getElementById(prefId);
@@ -602,7 +616,7 @@ ZmPreferencesPage.prototype._setupSelect =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	var params = {parent:this};
+	var params = {parent: this, id: "Prefs_Select_" + id};
 	for (var p in setup.displayParams) {
 		params[p] = setup.displayParams[p];
 	}
@@ -631,7 +645,9 @@ ZmPreferencesPage.prototype._setupComboBox =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	var cboxObj = new DwtComboBox({parent:this});
+	var params = {parent: this, id: "Prefs_ComboBox_" + id};
+
+	var cboxObj = new DwtComboBox(params);
 	this.setFormObject(id, cboxObj);
 
 	var options = setup.options || setup.displayOptions || setup.choices || [];
@@ -652,7 +668,8 @@ ZmPreferencesPage.prototype._setupRadioGroup =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	var container = new DwtComposite(this);
+	var params = {parent: this, id: "Prefs_RadioGroup_" + id};
+	var container = new DwtComposite(params);
 
 	// build horizontally-oriented radio group, if needed
 	var orient = setup.orientation || ZmPref.ORIENT_VERTICAL;
@@ -732,7 +749,8 @@ function(radioIds) {
 
 ZmPreferencesPage.prototype._setupCheckbox =
 function(id, setup, value) {
-	var checkbox = new DwtCheckbox({parent:this, checked:value});
+	var params = {parent: this, checked: value, id: "Prefs_Checkbox_" + id};
+	var checkbox = new DwtCheckbox(params);
 	this.setFormObject(id, checkbox);
 	var text = setup.displayFunc ? setup.displayFunc() : setup.displayName;
 	var cboxLabel = ZmPreferencesPage.__formatLabel(text, value);
@@ -756,7 +774,8 @@ function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 	var params = {
 		parent: this, type: setup.type ? setup.type : DwtInputField.STRING, initialValue: value, size: setup.cols || 40,
-		rows: setup.rows, wrap: setup.wrap, maxLen:setup.maxLen, hint:setup.hint
+		rows: setup.rows, wrap: setup.wrap, maxLen:setup.maxLen, hint:setup.hint,
+		id: "Prefs_Input_" + id
 	};
 	var input = new DwtInputField(params);
 	this.setFormObject(id, input);
@@ -822,7 +841,9 @@ function(tabGroup) {
 
 ZmPreferencesPage.prototype._setupColor =
 function(id, setup, value) {
-	var picker = new DwtButtonColorPicker({parent:this});
+
+	var params = {parent: this, id: "Prefs_ColorPicker_" + id};
+	var picker = new DwtButtonColorPicker(params);
 	picker.setImage("FontColor");
 	picker.showColorDisplay(true);
 	picker.setToolTipContent(ZmMsg.fontColor);
@@ -863,7 +884,8 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._setupLocales =
 function(id, setup, value) {
-	var button = new DwtButton({parent:this});
+	var params = {parent: this, id: "Prefs_Locale_" + id};
+	var button = new DwtButton(params);
 	button.setSize(60, Dwt.DEFAULT);
 	button.setMenu(new AjxListener(this, this._createLocalesMenu, [setup]));
 	this._showLocale(value, button);
@@ -883,12 +905,12 @@ function(id, setup, value) {
     return label;
 };
 
-ZmPreferencesPage.prototype._setupFonts =
-function(id, setup, value) {
+ZmPreferencesPage.prototype._setupMenuButton =
+function(id, value, itemMap) {
 	var button = new DwtButton({parent:this});
 	button.setSize(60, Dwt.DEFAULT);
-	button.setMenu(new AjxListener(this, this._createFontsMenu, [setup]));
-	this._showFont(value, button);
+	button.setMenu(new AjxListener(this, this._createMenu, [button, itemMap]));
+	this._showItem(value, itemMap, button);
 
 	this._dwtObjects[id] = button;
 
@@ -903,17 +925,16 @@ function(localeId, button) {
 	button._localeId = localeId;
 };
 
-ZmPreferencesPage.prototype._createFontsMenu =
-function(setup) {
+ZmPreferencesPage.prototype._createMenu =
+function(button, itemMap) {
 
-	var button = this._dwtObjects[ZmSetting.FONT_NAME];
 	var menu = new DwtMenu({parent:button});
 
-	var listener = new AjxListener(this, this._fontSelectionListener);
+	var listener = this._itemSelectionListener.bind(this, button, itemMap);
 
-	for (var id in ZmFont.fontMap) {
-		var font = ZmFont.fontMap[id];
-		this._createFontItem(menu, font, listener);
+	for (var id in itemMap) {
+		var item = itemMap[id];
+		this._createMenuItem(menu, item.id, item.name, listener);
 	}
 	return menu;
 };
@@ -945,11 +966,11 @@ function(setup) {
 	return result;
 };
 
-ZmPreferencesPage.prototype._createFontItem =
-function(parent, font, listener) {
+ZmPreferencesPage.prototype._createMenuItem =
+function(parent, id, text, listener) {
 	var item = new DwtMenuItem({parent:parent});
-	item.setText(font.name);
-	item._fontId = font.id;
+	item.setText(text);
+	item._itemId = id;
 	item.addSelectionListener(listener);
 	return item;
 };
@@ -966,19 +987,18 @@ function(parent, locale, listener) {
 	return result;
 };
 
-ZmPreferencesPage.prototype._showFont =
-function(fontId, button) {
-	var font = ZmFont.fontMap[fontId];
-	button.setImage(font ? font.image : null);
-	button.setText(font ? font.name : "");
-	button._fontId = fontId;
+ZmPreferencesPage.prototype._showItem =
+function(itemId, itemMap, button) {
+	var item = itemMap[itemId];
+	button.setImage(item && item.image || null);
+	button.setText(item && item.name || "");
+	button._itemId = itemId;
 };
 
-ZmPreferencesPage.prototype._fontSelectionListener =
-function(ev) {
+ZmPreferencesPage.prototype._itemSelectionListener =
+function(button, itemMap, ev) {
 	var item = ev.dwtObj;
-	var button = this._dwtObjects[ZmSetting.FONT_NAME];
-	this._showFont(item._fontId, button);
+	this._showItem(item._itemId, itemMap, button);
 };
 
 ZmPreferencesPage.prototype._localeSelectionListener =
@@ -1037,7 +1057,7 @@ function(format, formatSelectObj, ev) {
 					  appName:			ZmApp.CONTACTS,
 					  description:		ZmMsg.chooseAddrBookToExport});
 	} else {
-		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 		dialog.popup({treeIds:			[ZmOrganizer.CALENDAR],
 					  overviewId:		overviewId,
 					  omit:				omit,
@@ -1069,7 +1089,7 @@ function(ev) {
 			dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook, overviewId: overviewId,
 						  description:ZmMsg.chooseAddrBookToImport, skipReadOnly:true, hideNewButton:noNew, omit:omit});
 		} else {
-			AjxDispatcher.require(["CalendarCore", "Calendar"]);
+			AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 			dialog.popup({treeIds:[ZmOrganizer.CALENDAR], title:ZmMsg.chooseCalendar, overviewId: overviewId, description:ZmMsg.chooseCalendarToImport, skipReadOnly:true});
 		}
 	}
@@ -1264,35 +1284,21 @@ function(prefLabel, prefValue) {
 	return prefLabel.match(/\{/) ? AjxMessageFormat.format(prefLabel, prefValue) : prefLabel;
 };
 
-/**
- * @class
- * This class represents a Font (family).
- *
- * @param {String} id the id
- * @param {String} name the name
- * @param {String} image the image
- *
- */
-ZmFont = function(id, name, image) {
-	this.id = id;
-	this.name = name;
-	this.image = image;
+ZmPreferencesPage.fontMap = {};
+
+ZmPreferencesPage._createMenuItem =
+function(id, name, itemMap) {
+	return itemMap[id] = {id: id, name: name};
 };
 
-ZmFont.fontMap = {};
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SYSTEM, ZmMsg.fontSystem, ZmPreferencesPage.fontMap);
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_MODERN, ZmMsg.fontModern, ZmPreferencesPage.fontMap);
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_CLASSIC, ZmMsg.fontClassic, ZmPreferencesPage.fontMap);
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_WIDE, ZmMsg.fontWide, ZmPreferencesPage.fontMap);
 
-/**
- * Creates the font.
- *
- * @param {String} id the locale id (for example, <code>en_US</code>)
- * @param {String} name the locale name
- */
-ZmFont.create =
-function(id, name) {
-	return ZmFont.fontMap[id] = new ZmFont(id, name);
-};
+ZmPreferencesPage.fontSizeMap = {};
 
-ZmFont.create(ZmSetting.FONT_SYSTEM, ZmMsg.fontSystem);
-ZmFont.create(ZmSetting.FONT_MODERN, ZmMsg.fontModern);
-ZmFont.create(ZmSetting.FONT_CLASSIC, ZmMsg.fontClassic);
-ZmFont.create(ZmSetting.FONT_WIDE, ZmMsg.fontWide);
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_SMALL, ZmMsg.fontSizeSmall, ZmPreferencesPage.fontSizeMap);
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_NORMAL, ZmMsg.fontSizeNormal, ZmPreferencesPage.fontSizeMap);
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_LARGE, ZmMsg.fontSizeLarge, ZmPreferencesPage.fontSizeMap);
+ZmPreferencesPage._createMenuItem(ZmSetting.FONT_SIZE_LARGER, ZmMsg.fontSizeExtraLarge, ZmPreferencesPage.fontSizeMap);

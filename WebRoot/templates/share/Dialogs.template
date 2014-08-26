@@ -1,10 +1,10 @@
 <template id="share.Dialogs#TableProperties">
-	<table class="ZmHEDialog">
+	<table role="presentation" class="ZmHEDialog">
 		<tr>
 			<td>
 				<fieldset class="ZmFieldset">
 					<legend class="ZmLegend"><$= ZmMsg.description $></legend>
-					<table width="100%">
+					<table role="presentation" width="100%">
 						<tr>
 							<td class="Label" style="width:auto"><$= ZmMsg.caption $></td>
 							<td width="100%" id="${id}_Caption"></td>
@@ -18,11 +18,11 @@
 
 				<fieldset class="ZmFieldset">
 					<legend class="ZmLegend"><$= ZmMsg.layout $></legend>
-					<table>
+					<table role="presentation">
 						<tr>
 							<td class="Label"><$= ZmMsg.tableWidth $></td>
 							<td colspan="4">
-								<table>
+								<table role="presentation">
 									<tr>
 										<td style="padding-right:2px">
 											<input id="${id}_WidthAuto" checked="checked" name="${id}_WidthAuto" type="radio" />
@@ -42,14 +42,14 @@
 							</td>
 						</tr>
 					</table>
-					<table id="${id}_AdvancedMode1" style="margin-top:4px; display:none">
+					<table role="presentation" id="${id}_AdvancedMode1" style="margin-top:4px; display:none">
 						<tr>
 							<td class="Label"><$= ZmMsg.tableAlignment $></td>
 							<td class="col2" id="${id}_Align"></td>
 							<td class="VSep-L">&nbsp;</td>
 							<td class="VSep-R">&nbsp;</td>
 							<td>
-								<table class="ZPropertySheet" cellspacing="6">
+								<table role="presentation" class="ZPropertySheet" cellspacing="6">
 								<tr>
 									<td><input type="checkbox" id="${id}_FixedLayout" /></td>
 									<td><label for="${id}_FixedLayout"><$= ZmMsg.fixedCellWidth $></label></td>
@@ -62,7 +62,7 @@
 
 				<fieldset class="ZmFieldset">
 					<legend class="ZmLegend"><$= ZmMsg.textStyle $></legend>
-					<table>
+					<table role="presentation">
 						<tr>
 							<td class="Label"><$= ZmMsg.textAlign $></td>
 							<td class="col2" id="${id}_TextAlign"></td>
@@ -88,7 +88,7 @@
 
 				<fieldset class="ZmFieldset">
 					<legend class="ZmLegend"><$= ZmMsg.borderStyle $></legend>
-					<table>
+					<table role="presentation">
 						<tr>
 							<td class="Label"><$= ZmMsg.borderWidth $></td>
 							<td class="col2" id="${id}_BorderWidth"></td>
@@ -98,7 +98,7 @@
 
 							<td class="Label"><$= ZmMsg.borderColorLabel $></td>
 							<td>
-								<table>
+								<table role="presentation">
 									<tr>
 										<td id="${id}_BorderColor"></td>
 									</tr>
@@ -123,7 +123,7 @@
 							<td class="VSep-R">&nbsp;</td>
 
 							<td colspan="2" style="padding:2px 0">
-								<table align="center" class="ZPropertySheet" cellspacing="6">
+								<table role="presentation" align="center" class="ZPropertySheet" cellspacing="6">
 									<tr>
 										<td><input type="checkbox" id="${id}_BorderCollapse" /></td>
 										<td><label for="${id}_BorderCollapse"><$= ZmMsg.collapsedBorders $></label></td>
@@ -139,19 +139,19 @@
 </template>
 
 <template id="share.Dialogs#CellProperties">
-	<table class="ZmHEDialog">
+	<table role="presentation" class="ZmHEDialog">
 		<tr>
 			<td>
 				<fieldset class="ZmFieldset">
 					<legend class="ZmLegend"><$= ZmMsg.borderStyle $></legend>
-					<table width="100%">
+					<table role="presentation" width="100%">
 						<tr>
 							<td style="width:19em">
 								<!-- If you're wondering why this has to be so complex, check out this bug:
 								https://bugzilla.mozilla.org/show_bug.cgi?id=258255 -->
 								<div style="padding-left:1em; padding-top:1em"><$= ZmMsg.clickToDrawABorder $></div>
 								<div style="margin-top:10px;">
-									<table align="center">
+									<table role="presentation" align="center">
 										<tr>
 											<td><$= ZmMsg.styleLabel $></td>
 											<td><$= ZmMsg.colorLabel $></td>
@@ -161,19 +161,19 @@
 											<td id="${id}_BorderStyle"></td>
 											<td>
 												<!-- embedded in a table so the widget doesn't enlarge -->
-												<table><tr><td id="${id}_BorderColor"></td></tr></table>
+												<table role="presentation"><tr><td id="${id}_BorderColor"></td></tr></table>
 											</td>
 											<td id="${id}_BorderWidth"></td>
 										</tr>
 									</table>
 								</div>
-								<table id="${id}_PreviewGridHolder" style="width:100px; height:100px;" align="center">
+								<table role="presentation" id="${id}_PreviewGridHolder" style="width:100px; height:100px;" align="center">
 									<tr>
 										<td>
-											<table align="center">
+											<table role="presentation" align="center">
 												<tr>
 													<td>
-														<table id="${id}_PreviewGrid" style="background-color:white; border:1px dashed #ccc;">
+														<table role="presentation" id="${id}_PreviewGrid" style="background-color:white; border:1px dashed #ccc;">
 															<tr>
 																<td style="border:1px dashed #ccc;"><div style="width:30px; height:30px;"></div></td>
 																<td style="border:1px dashed #ccc;"><div style="width:30px; height:30px;"></div></td>
@@ -194,7 +194,7 @@
 							<td class="VSep-R">&nbsp;</td>
 							<td valign="top">
 								<div style="padding-left:1em; padding-top:1em; padding-bottom:1em"><$= ZmMsg.orPickAStyleBelow $></div>
-								<table align="center" id="${id}_QuickBorders">
+								<table role="presentation" align="center" id="${id}_QuickBorders">
 									<tr>
 										<td></td>
 										<td></td>
@@ -210,10 +210,10 @@
 
 				<fieldset class="ZmFieldset">
 					<legend class="ZmLegend"><$= ZmMsg.layout $></legend>
-					<table>
+					<table role="presentation">
 						<tr>
 							<td class="Label">
-								<table align="right">
+								<table role="presentation" align="right">
 									<tr>
 										<td style="padding-right:3px"><input id="${id}_EnableWidth" type="checkbox" /></td>
 										<td><label for="${id}_EnableWidth"><$= ZmMsg.widthLabel $></label></td>
@@ -224,7 +224,7 @@
 							<td class="VSep-L">&nbsp;</td>
 							<td class="VSep-R">&nbsp;</td>
 							<td class="Label">
-								<table align="right">
+								<table role="presentation" align="right">
 									<tr>
 										<td style="padding-right:3px"><input id="${id}_EnableHorizPadding" type="checkbox" /></td>
 										<td><label for="${id}_EnableHorizPadding"><$= ZmMsg.paddingHorizontal $></label></td>
@@ -235,7 +235,7 @@
 						</tr>
 						<tr>
 							<td class="Label">
-								<table align="right">
+								<table role="presentation" align="right">
 									<tr>
 										<td style="padding-right:3px"><input id="${id}_EnableHeight" type="checkbox" /></td>
 										<td><label for="${id}_EnableHeight"><$= ZmMsg.heightLabel $></label></td>
@@ -246,7 +246,7 @@
 							<td class="VSep-L">&nbsp;</td>
 							<td class="VSep-R">&nbsp;</td>
 							<td class="Label">
-								<table align="right">
+								<table role="presentation" align="right">
 									<tr>
 										<td style="padding-right:3px"><input id="${id}_EnableVertPadding" type="checkbox" /></td>
 										<td><label for="${id}_EnableVertPadding"><$= ZmMsg.paddingVertical $></label></td>
@@ -260,10 +260,10 @@
 
 				<fieldset class="ZmFieldset">
 					<legend class="ZmLegend"><$= ZmMsg.textStyle $></legend>
-					<table>
+					<table role="presentation">
 						<tr>
 							<td class="Label">
-								<table align="right">
+								<table role="presentation" align="right">
 									<tr>
 										<td style="padding-right:3px"><input id="${id}_EnableTextAlign" type="checkbox" /></td>
 										<td><label for="${id}_EnableTextAlign"><$= ZmMsg.textAlign $></label></td>
@@ -274,7 +274,7 @@
 							<td class="VSep-L">&nbsp;</td>
 							<td class="VSep-R">&nbsp;</td>
 							<td class="Label">
-								<table align="right">
+								<table role="presentation" align="right">
 									<tr>
 										<td style="padding-right:3px"><input id="${id}_EnableForegroundColor" type="checkbox" /></td>
 										<td><label for="${id}_EnableForegroundColor"><$= ZmMsg.fontColorLabel $></label></td>
@@ -285,7 +285,7 @@
 						</tr>
 						<tr>
 							<td class="Label">
-								<table align="right">
+								<table role="presentation" align="right">
 									<tr>
 										<td style="padding-right:3px"><input id="${id}_EnableTextVAlign" type="checkbox" /></td>
 										<td><label for="${id}_EnableTextVAlign"><$= ZmMsg.verticalAlign $></label></td>
@@ -296,7 +296,7 @@
 							<td class="VSep-L">&nbsp;</td>
 							<td class="VSep-R">&nbsp;</td>
 							<td class="Label">
-								<table align="right">
+								<table role="presentation" align="right">
 									<tr>
 										<td style="padding-right:3px"><input id="${id}_EnableBackgroundColor" type="checkbox" /></td>
 										<td><label for="${id}_EnableBackgroundColor"><$= ZmMsg.fontBackgroundLabel $></label></td>
@@ -313,7 +313,7 @@
 </template>
 
 <template id="share.Dialogs#EditorInsertLink">
-	<table class="ZmHEDialog">
+	<table role="presentation" class="ZmHEDialog">
 		<tr>
 			<td>
 				<fieldset class="ZmFieldset">
@@ -324,7 +324,7 @@
 				<fieldset class="ZmFieldset">
 					<legend class="ZmLegend"><$= ZmMsg.linkTarget $></legend>
 					<$= ZmMsg.linkTargetDesc $><br />
-					<table>
+					<table role="presentation">
 						<tr>
 							<td id="${id}_linkTargetCont" style="padding-right:5px"></td>
 							<td id="${id}_testBtnCont"></td>
@@ -337,7 +337,7 @@
 </template>
 
 <template id="share.Dialogs#NewSearch">
-	<table <$= AjxEnv.isWebKitBased ? "width='320'>" : ">" $>
+	<table role="presentation" <$= AjxEnv.isWebKitBased ? "width='320'>" : ">" $>
 		<tr>
 			<td class='Label' colspan=2 style='padding:0px 0px 5px 0px;'><$= ZmMsg.searchName $> </td>
 		</tr>
@@ -359,7 +359,7 @@
 </template>
 
 <template id="share.Dialogs#ZmMountFolderDialog">
-	<table border=0 width=375>
+	<table role="presentation" border=0 width=375>
 		<tr>
 			<td colspan=2><$= ZmMsg.mountInstructions1 $></td>
 		</tr>
@@ -387,7 +387,7 @@
 </template>
 
 <template id="share.Dialogs#ZmPromptDialog">
-	<table class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td class='Label' id='${id}_label'/>
 		</tr>
@@ -399,8 +399,8 @@
 	</table>
 </template>
 
-<template id="share.Dialogs#ZmPromptDialog">
-	<table class='ZPropertySheet' cellspacing='6'>
+<template id="share.Dialogs#ZmNewTagDialog">
+	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td class='Label'><$= ZmMsg.tagName $>:</td>
 			<$ if (appCtxt.multiAccounts) { $>
@@ -419,7 +419,7 @@
 </template>
 
 <template id="share.Dialogs#ZmContactGroupDialog">
-	<table class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td class='Label'><$= ZmMsg.groupNameLabel $>:</td>
 		</tr>
@@ -432,7 +432,7 @@
 </template>
 
 <template id="share.Dialogs#ZmTimezonePicker">
-	<table class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 	    <tr>
 			<td colspan='2' class='Label'><$= ZmMsg.selectTimezoneInfo $></td>
 		</tr>
@@ -450,16 +450,16 @@
 	<div style='overflow:auto'>
 		<form accept-charset='utf-8' method='POST' action='<$= data.uri $>' id='${id}_uploadForm' enctype='multipart/form-data'>
 			<input type='hidden' name='_charset_' />
-			<table id='${id}_attachmentTable' class='iframeTable'></table>
+			<table role="presentation" id='${id}_attachmentTable' class='iframeTable'></table>
 		</form>
 	</div>
 	<div>
-		<table id='${id}_attachmentButtonTable'></table>
+		<table role="presentation" id='${id}_attachmentButtonTable'></table>
 	</div>
 </template>
 
 <template id="share.Dialogs#ZmAttachDialog-MyComputerTab-AddAttachment">
-	<table class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td>
 				<div class='attachText'><$= ZmMsg.attach $>:</div>
@@ -478,20 +478,21 @@
 <!-- ------------------------------ -->
 <template id="share.Dialogs#ZmNewOrgDialogRemote">
 	<tr>
-		<td colspan=2>
-			<table class='ZPropertySheet' cellspacing='6'>
-				<tr valign='center'>
-					<td class='Label'>
-						<input type='checkbox' id='${id}_remote' />
-					</td>
+		<td class='Label'><$= ZmMsg.feedLabel $></td>
+		<td>
+			<table role="presentation">
+				<tr>
 					<td>
+						<input type='checkbox' id='${id}_remote' style='width:initial;' />
+					</td>
+					<td class='Label'>
 						<label for='${id}_remote'> ${remoteLabel} </label>
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
-	<tr style='display:none;' id='${id}_remoteURLrow' valign='center'>
+	<tr style='display:none;' id='${id}_remoteURLrow'>
 		<td class='Label'>
 			<$= ZmMsg.urlLabel $>
 		</td>
@@ -517,7 +518,8 @@
 
 <template id="share.Dialogs#ZmNewOrgDialogFolder">
 	<tr>
-		<td class='Label' colspan=2>${label}</td>
+		<td class='Label' id='${id}_parentLabel'></td>
+		<td id='${id}_parentValue'></td>
 	</tr>
 	<tr>
 		<td colspan=2 id='${id}_folderTree'></td>
@@ -525,27 +527,14 @@
 </template>
 
 
-<template id="share.Dialogs#ZmSelectAddrDialog">
-	<tr>
-		<td colspan=2>&nbsp;</td>
-	</tr>
-	<tr>
-		<td class="Label" style="padding-right:5px">Addresses: </td>
-		<td id='${id}_addrListTd'></td>
-	</tr>
-	<tr>
-	    <td colspan='2'><input id='${id}_cboxFind' type='checkbox' name='cbFind' checked></td>
-	</tr>
-</template>
-
 <!-- calendar dialog template -->
 <template id="share.Dialogs#ZmNewCalDialogFreeBusy">
 	<tr>
 		<td colspan=2>
-			<table class='ZPropertySheet' cellspacing='6'>
+			<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 				<tr valign='center'>
-					<td class='Label'><input type='checkbox' id='${id}_excludeFbCheckbox' /></td>
-					<td><label for='${id}_excludeFbCheckbox'> <$= ZmMsg.excludeFromFreeBusy $> </label></td>
+					<td style='width:2em;'><input type='checkbox' id='${id}_excludeFbCheckbox' /></td>
+					<td class='Label'><label for='${id}_excludeFbCheckbox'> <$= ZmMsg.excludeFromFreeBusy $> </label></td>
 				</tr>
 			</table>
 		</td>
@@ -555,7 +544,7 @@
 
 <!-- rename folder/tag dialog template -->
 <template id="share.Dialogs#ZmRenameDialog">
-	<table class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td class='ZmFieldLabel'>${newLabel}:</td>
 		</tr>
@@ -567,7 +556,7 @@
 
 <!-- change password dialog template -->
 <template id="share.Dialogs#ZmPasswordUpdateDialog">
-    <table class='ZPropertySheet' cellspacing='6'>
+    <table role="presentation" class='ZPropertySheet' cellspacing='6'>
         <tr>
             <td colspan="2" id="${id}_desc">
 
@@ -588,11 +577,11 @@
 <!-- time selection dialog template -->
 <template id='share.Dialogs#ZmTimeDialog'>
 	<div id='${id}_description' style='padding:3px 3px 10px;'>${description}</div>
-	<table class='ZPropertySheet' cellspacing='6' width='330'>
+	<table role="presentation" class='ZPropertySheet' cellspacing='6' width='330'>
 		<tr>
 			<td class='ZmFieldLabelRight'>${label}:</td>
 			<td>
-				<table>
+				<table role="presentation">
 					<tr>
 						<td><$=AjxTemplate.expand("#DateField",{id:data.id+"_date"})$></td>
 						<td id='${id}_miniCal' class="miniCalendarButton" style='padding-right:1em;'></td>
@@ -617,10 +606,10 @@
 		<div id="${id}_label" style="margin-bottom:0.5em;"><$=ZmMsg.uploadChoose$></div>
 		<div style="margin-bottom:0.5em;margin-left:1em;">
 			<form accept-charset='utf-8' method='POST' action='<$= data.uri $>' id='${id}_form' enctype='multipart/form-data'>
-				<table id='${id}_table' class='ZPropertySheet' cellspacing='6'></table>
+				<table role="presentation" id='${id}_table' class='ZPropertySheet' cellspacing='6'></table>
 			</form>
 		</div>
-		<table class='ZPropertySheet' cellspacing='6'>
+		<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 			<tr id="${id}_actionRow">
 				<td><$= ZmMsg.uploadAction $></td>
 				<td id="${id}_conflict"></td>
@@ -632,13 +621,13 @@
 				</td>
 			</tr>
 			<tr><td colspan="2" id="${id}_info"></td></tr>
-			<tr><td colspan="2" id="${id}_msg"></td></tr>
+			<tr><td colspan="2" id="${id}_msg" style="width:450px;"></td></tr>
 		</table>
 	</div>
 </template>
 
 <template id="share.Dialogs#ZmFolderRetentionView">
-     <table style='margin:10px;'>
+     <table role="presentation" style='margin:10px;'>
         <tr>
             <td><input id="${id}_keepCheckbox" type='checkbox'></td>
             <td class='ZmFolderRetentionLabel' colspan=2>

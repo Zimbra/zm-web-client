@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -30,6 +36,7 @@
  * @param   {String}	params.query					the query string
  * @param	{String}	params.queryHint				the query string that gets appended to the query but not something the user needs to know about
  * @param	{AjxVector}	params.types					the item types to search for
+ * @param	{Boolean}	params.forceTypes				use the types we pass, do not override (in case of mail) to the current user's view pref (MSG vs. CONV).
  * @param	{constant}	params.sortBy					the sort order
  * @param	{int}		params.offset					the starting point within result set
  * @param	{int}		params.limit					the number of results to return
@@ -37,6 +44,7 @@
  * @param	{constant}	params.contactSource			where to search for contacts (GAL or personal)
  * @param	{Boolean}	params.isGalAutocompleteSearch	if <code>true</code>, autocomplete against GAL
  * @param	{constant}	params.galType					the type of GAL autocomplete (account or resource)
+ * @param	{constant}	params.autocompleteType			the type of autocomplete (account or resource or all)
  * @param	{int}		params.lastId					the ID of last item displayed (for pagination)
  * @param	{String}	params.lastSortVal				the value of sort field for above item
  * @param	{Boolean}	params.fetch					if <code>true</code>, fetch first hit message
@@ -257,6 +265,10 @@ function(params) {
 						var folder = this.folderId && appCtxt.getById(this.folderId);
 						method.setAttribute("recip", (folder && folder.isOutbound()) ? "1" : "0");
 					}
+					if (this.types.contains(ZmItem.CONV)) {
+						// get ID/folder for every msg in each conv result
+						method.setAttribute("fullConversation", 1);
+					}
 					// if we're prefetching the first hit message, also mark it as read
 					if (this.fetch) {
 
@@ -355,6 +367,9 @@ function(params) {
 				request.limit = this.limit;
 			}
 			request.name = {_content:this.query};
+			if (params.autocompleteType) {
+				request.t = params.autocompleteType;
+			}
 		} else if (this.isGalAutocompleteSearch) {
 			jsonObj = {AutoCompleteGalRequest:{_jsns:"urn:zimbraAccount"}};
 			request = jsonObj.AutoCompleteGalRequest;
@@ -404,7 +419,12 @@ function(params) {
 					if (this.types.contains(ZmItem.MSG) || this.types.contains(ZmItem.CONV)) {
 						// special handling for showing participants ("To" instead of "From")
 						var folder = this.folderId && appCtxt.getById(this.folderId);
-						request.recip = (folder && folder.isOutbound()) ? "1" : "0";
+						request.recip = (folder && folder.isOutbound()) ? "2" : "0";
+					}
+
+					if (this.types.contains(ZmItem.CONV)) {
+						// get ID/folder for every msg in each conv result
+						request.fullConversation = 1;
 					}
 
 					// if we're prefetching the first hit message, also mark it as read
@@ -454,10 +474,13 @@ function(params) {
 			asyncMode:true,
 			callback:respCallback,
 			errorCallback:params.errorCallback,
+            offlineCallback:params.offlineCallback,
 			timeout:params.timeout,
+            offlineCache:params.offlineCache,
 			noBusyOverlay:params.noBusyOverlay,
 			response:this.response,
-			accountName:this.accountName
+			accountName:this.accountName,
+            offlineRequest:params.offlineRequest
 		};
 		return appCtxt.getAppController().sendRequest(searchParams);
 	}
@@ -545,7 +568,7 @@ function(callback, result) {
  * @param {Hash}		params				a hash of parameters:
  * @param {String}		params.cid			the conv ID
  * @param {AjxCallback}	params.callback		the callback to run with result
- * @param {String}		params.fetchId		the ID of msg to load
+ * @param {String}		params.fetch		which msg bodies to load (see soap.txt)
  * @param {Boolean}		params.markRead		if <code>true</code>, mark msg read
  * @param {Boolean}		params.noTruncate	if <code>true</code>, do not limit size of msg
  * @param {boolean}		params.needExp		if not <code>false</code>, have server check if addresses are DLs
@@ -558,8 +581,8 @@ function(params) {
 	var request = jsonObj.SearchConvRequest;
 	this._getStandardMethodJson(request);
 	request.cid = params.cid;
-	if (params.fetchId) {
-		request.fetch = params.fetchId;	// fetch content of this msg
+	if (params.fetch) {
+		request.fetch = params.fetch;
 		if (params.markRead) {
 			request.read = 1;			// mark that msg read
 		}
@@ -657,7 +680,7 @@ function(soapDoc) {
 		method.setAttribute("sortBy", this.sortBy);
 	}
 
-	if (ZmSearch._mailEnabled) {
+	if (this.types.contains(ZmItem.MSG) || this.types.contains(ZmItem.CONV)) {
 		ZmMailMsg.addRequestHeaders(soapDoc);
 	}
 
@@ -681,11 +704,8 @@ function(soapDoc) {
 	// always set limit
 	method.setAttribute("limit", this._getLimit());
 
-	// and of course, always set the query and append the query hint if applicable
-	// only use query hint if this is not a "simple" search
-	var query = (this.queryHint)
-		? ([this.query, " (", this.queryHint, ")"].join(""))
-		: this.query;
+	var query = this._getQuery();
+
 	soapDoc.set("query", query);
 
 	// set search field if provided
@@ -706,7 +726,7 @@ function(req) {
 		req.sortBy = this.sortBy;
 	}
 
-	if (ZmSearch._mailEnabled) {
+	if (this.types.contains(ZmItem.MSG) || this.types.contains(ZmItem.CONV)) {
 		ZmMailMsg.addRequestHeaders(req);
 	}
 
@@ -736,16 +756,26 @@ function(req) {
 		req.resultMode = "IDS";
 	}
 
-	// and of course, always set the query and append the query hint if
-	// applicable only use query hint if this is not a "simple" search
-	req.query = (this.queryHint)
-		? ([this.query, " (", this.queryHint, ")"].join(""))
-		: this.query;
+	req.query = this._getQuery();
 
 	// set search field if provided
 	if (this.field) {
 		req.field = this.field;
 	}
+};
+
+/**
+ * @private
+ */
+ZmSearch.prototype._getQuery =
+function() {
+	// and of course, always set the query and append the query hint if applicable
+	// only use query hint if this is not a "simple" search
+	if (this.queryHint) {
+		var query = this.query ? ["(", this.query, ") "].join("") : "";
+		return [query, "(", this.queryHint, ")"].join("");
+	}
+	return this.query;
 };
 
 /**
@@ -781,14 +811,25 @@ function() {
  */
 ZmSearch.prototype.matches =
 function(item) {
-	var matchFunc = this.parsedQuery && this.parsedQuery.getMatchFunction();
-	return matchFunc ? matchFunc(item) : null;
-};
 
-ZmSearch.prototype.isMatchable =
-function(item) {
-	var matchFunc = this.parsedQuery && this.parsedQuery.getMatchFunction();
-	return (matchFunc != null);
+	if (!this.parsedQuery) {
+		return null;
+	}
+
+	// if search is constrained to a folder, we can return false if item is not in that folder
+	if (this.folderId && !this.parsedQuery.hasOrTerm) {
+		if (item.type === ZmItem.CONV) {
+			if (item.folders && !item.folders[this.folderId]) {
+				return false;
+			}
+		}
+		else if (item.folderId && item.folderId !== this.folderId) {
+			return false;
+		}
+	}
+
+	var matchFunc = this.parsedQuery.getMatchFunction();
+	return matchFunc ? matchFunc(item) : null;
 };
 
 /**
@@ -917,6 +958,7 @@ function() {
  * TODO: handle "field[lastName]" and "#lastName"
  */
 ZmParsedQuery = function(query) {
+	this.hasOrTerm = false;
 	this._tokens = this._parse(AjxStringUtil.trim(query, true));
 };
 
@@ -1260,9 +1302,6 @@ function() {
  * true if the item matches the search.
  * 
  * @return {Function}	the match function
- * 
- * TODO: refactor so that items generate their code
- * TODO: handle more ops
  */
 ZmParsedQuery.prototype.getMatchFunction =
 function() {
@@ -1278,36 +1317,41 @@ function() {
 	var func = ["return Boolean("];
 	for (var i = 0, len = this._tokens.length; i < len; i++) {
 		var t = this._tokens[i];
-		if (t.type == ZmParsedQuery.TERM) {
-			if (t.op == "in" || t.op == "inid") {
-				folderId = (t.op == "in") ? this._getFolderId(t.arg) : t.arg;
+		if (t.type === ZmParsedQuery.TERM) {
+			if (t.op === "in" || t.op === "inid") {
+				folderId = (t.op === "in") ? this._getFolderId(t.arg) : t.arg;
 				if (folderId) {
-					func.push("((item.type == ZmItem.CONV) ? item.folders && item.folders['" + folderId +"'] : item.folderId == '" + folderId + "')");
+					func.push("((item.type === ZmItem.CONV) ? item.folders && item.folders['" + folderId +"'] : item.folderId === '" + folderId + "')");
 				}
-			} else if (t.op == "tag") {
+			}
+			else if (t.op === "tag") {
 				tagId = this._getTagId(t.arg, true);
 				if (tagId) {
-					func.push("item.hasTag('" + tagId + "')");
+					func.push("item.hasTag('" + t.arg + "')");
 				}
-			} else if (t.op == "is") {
+			}
+			else if (t.op === "is") {
 				var test = ZmParsedQuery.FLAG[t.arg];
 				if (test) {
 					func.push(test);
 				}
+			}
+			else if (t.op === 'has' && t.arg === 'attachment') {
+				func.push("item.hasAttach");
 			}
 			else {
 				// search had a term we don't know how to match
 				return null;
 			}
 			var next = this._tokens[i + 1];
-			if (next && (next.type == ZmParsedQuery.TERM || next == ZmParsedQuery.COND[ZmParsedQuery.COND_NOT] || next == ZmParsedQuery.GROUP_CLOSE)) {
+			if (next && (next.type == ZmParsedQuery.TERM || next == ZmParsedQuery.COND_OP[ZmParsedQuery.COND_NOT] || next == ZmParsedQuery.GROUP_CLOSE)) {
 				func.push(ZmParsedQuery.COND_OP[ZmParsedQuery.COND_AND]);
 			}
 		}
-		else if (t.type == ZmParsedQuery.COND) {
+		else if (t.type === ZmParsedQuery.COND) {
 			func.push(ZmParsedQuery.COND_OP[t.op]);
 		}
-		else if (t.type == ZmParsedQuery.GROUP) {
+		else if (t.type === ZmParsedQuery.GROUP) {
 			func.push(t.op);
 		}
 	}

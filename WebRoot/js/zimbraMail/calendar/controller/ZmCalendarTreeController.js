@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -152,7 +158,7 @@ function(overviewId, listener) {
 
 ZmCalendarTreeController.prototype.resetOperations = 
 function(actionMenu, type, id) {
-	if (actionMenu) {
+	if (actionMenu && !appCtxt.isWebClientOffline()) {
 		var calendar = appCtxt.getById(id);
 		var nId;
 		if (calendar) {
@@ -203,8 +209,9 @@ function(actionMenu, type, id) {
             fbLinkMenuItem.setMenu(this._fbLinkSubMenu);
         }
 
+        actionMenu.enable(ZmOperation.NEW_CALENDAR, !isTrash && !appCtxt.isExternalAccount() && !appCtxt.isWebClientOffline());
 
-	}
+    }
 };
 
 ZmCalendarTreeController.prototype._getFreeBusySubMenu =
@@ -284,6 +291,8 @@ function() {
                 ZmOperation.CLEAR_ALL);
     }
 
+	ops.push(ZmOperation.FIND_SHARES);
+
 	return ops;
 };
 
@@ -292,6 +301,7 @@ ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
     if(appCtxt.getCurrentApp().containsWritableFolder()) {
         return [
+            ZmOperation.NEW_CALENDAR,
             ZmOperation.SHARE_CALENDAR,
             ZmOperation.DELETE_WITHOUT_SHORTCUT,
             ZmOperation.MOVE,
@@ -318,15 +328,19 @@ function(ev) {
         return null;
     }
 	var menu = ZmTreeController.prototype._getActionMenu.apply(this, arguments);
-    var isTrash = organizer.nId == ZmOrganizer.ID_TRASH;
-    //bug 67531: "Move" Option should be disabled for the default calendar
-    var isCalendar = organizer.nId == ZmOrganizer.ID_CALENDAR;
-    menu.enableAll(!isTrash);
-    menu.enable(ZmOperation.MOVE, !isCalendar && !isTrash);
-    menu.enable(ZmOperation.EMPTY_FOLDER, isTrash);
-    var menuItem = menu.getMenuItem(ZmOperation.EMPTY_FOLDER);
-    if (menuItem) {
-        menuItem.setText(isTrash ? ZmMsg.emptyTrash : ZmMsg.emptyFolder);
+    if (appCtxt.isWebClientOffline())  {
+        menu.enableAll(false);
+    } else {
+        var isTrash = organizer.nId == ZmOrganizer.ID_TRASH;
+        //bug 67531: "Move" Option should be disabled for the default calendar
+        var isCalendar = organizer.nId == ZmOrganizer.ID_CALENDAR;
+        menu.enableAll(!isTrash);
+        menu.enable(ZmOperation.MOVE, !isCalendar && !isTrash);
+        menu.enable(ZmOperation.EMPTY_FOLDER, isTrash);
+        var menuItem = menu.getMenuItem(ZmOperation.EMPTY_FOLDER);
+        if (menuItem) {
+            menuItem.setText(isTrash ? ZmMsg.emptyTrash : ZmMsg.emptyFolder);
+        }
     }
     return menu;
 };
@@ -340,7 +354,9 @@ function(organizer) {
             return;
         }
 
-        if (organizer.id == ZmOrganizer.ID_TRASH) return;
+        if (organizer.nId == ZmOrganizer.ID_TRASH) {
+			return;
+		}
 
 		var appId = ZmOrganizer.APP[organizer.type];
 		var app = appId && appCtxt.getApp(appId);
@@ -416,12 +432,9 @@ function(ev) {
             dlg.setMessage(ZmMsg.orgChange, DwtMessageDialog.WARNING_STYLE);
             dlg.popup();
 		} else {
-            if(data instanceof ZmCalendar){
-                // Root node's type is folder, but it's labelled 'Calendars'.  Pass the proper
-                // name down to the status message.
-                var folderName = (dropFolder.nId == ZmFolder.ID_ROOT) ? ZmMsg.calendars : null;
-                this._doMove(data, dropFolder, folderName);
-            } else{
+            if (data instanceof ZmCalendar) {
+                this._doMove(data, dropFolder);
+            } else {
                 ctlr._doMove(appts, dropFolder, null, isShiftKey);
             }
 		}
@@ -455,13 +468,26 @@ function() {
     return appCtxt.getNewCalendarDialog();
 };
 
+ZmCalendarTreeController.prototype._newCallback =
+function(params) {
+    // For a calendar, set the parent folder (params.l) if specified
+    var folder = this._pendingActionData instanceof ZmOrganizer ? this._pendingActionData :
+        (this._pendingActionData && this._pendingActionData.organizer);
+    if (folder) {
+        params.l = folder.id;
+    }
+    ZmTreeController.prototype._newCallback.call(this, params);
+};
+
+
+
 /*
 * Returns an "External Calendar" dialog.
 */
 ZmCalendarTreeController.prototype.getExternalCalendarDialog =
 function() {
     if(!this._externalCalendarDialog) {
-        AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+        AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 	    this._externalCalendarDialog = new ZmExternalCalendarDialog({parent: this._shell, controller: this});
     }
     return this._externalCalendarDialog;
@@ -507,7 +533,7 @@ function(ev, treeView, overviewId) {
 ZmCalendarTreeController.prototype._treeViewListener =
 function(ev) {
 	// handle item(s) clicked
-	if (ev.detail == DwtTree.ITEM_CHECKED) { 
+	if (ev.detail == DwtTree.ITEM_CHECKED) {
 		var overviewId = ev.item.getData(ZmTreeView.KEY_ID);
 		var calendar = ev.item.getData(Dwt.KEY_OBJECT);
 

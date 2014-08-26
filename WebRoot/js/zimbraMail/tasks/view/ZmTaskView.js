@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -29,7 +35,8 @@
 */
 ZmTaskView = function(parent, posStyle, controller) {
 
-	ZmCalItemView.call(this, parent, posStyle, controller);
+	var id = ZmId.getViewId(ZmId.VIEW_TASK, null, parent._htmlElId);
+	ZmCalItemView.call(this, parent, posStyle, controller, id);
 };
 
 ZmTaskView.prototype = new ZmCalItemView;
@@ -66,7 +73,7 @@ function(calItem) {
 	var status = calItem.status ? ZmCalItem.getLabelForStatus(calItem.status) : null;
 	var pComplete = calItem.pComplete;
 	var recurStr = calItem.isRecurring() ? calItem.getRecurBlurb() : null;
-	var attachStr = ZmCalItemView._getAttachString(calItem);
+	var attachStr = this._getAttachString(calItem);
     var alarm = calItem.alarm;
     var remindDate = calItem.remindDate ? AjxDateFormat.getDateInstance().format(calItem.remindDate) : null;
     var remindTime = calItem.remindDate ? AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT).format(calItem.remindDate) : "";
@@ -153,24 +160,6 @@ function(ev){
     }
 };
 
-ZmTaskView.prototype._tagChangeListener =
-function(ev){
-    if(ev.event == ZmEvent.E_TAGS || ev.type == ZmEvent.S_TAG) {
-        this._setTags(this._calItem);
-    }
-};
-
-
-ZmTaskView.prototype._getTagHtml =
-function(tag, html, i) {
-    var tagClick = ['ZmMailMsgView._tagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.name), '");'].join("");
-    var removeClick = ['ZmTaskView._removeTagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.name), '");'].join("");
-    return this._getTagHtmlElements(tag, html, i, tagClick, removeClick);
-};
-
-ZmTaskView._removeTagClick =
-function(myId, tagName) {
-        var tag = ZmMailMsgView._getTagClicked(tagName);
-        var dwtObj = DwtControl.fromElementId(myId);
-        ZmListController.prototype._doTag.call(dwtObj._controller, dwtObj._calItem, tag, false);
+ZmTaskView.prototype._getItemCountType = function() {
+	return ZmId.ITEM_TASK;
 };

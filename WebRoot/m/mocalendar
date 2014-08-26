@@ -61,7 +61,7 @@
 <fmt:formatDate var="datef" timeZone="${tz}" value="${cDay.time}" pattern="yyyyMMdd"/>
 <mo:handleError>
 <c:choose>
-    <c:when test="${needViewAppt}">
+    <c:when test="${zm:boolean(needViewAppt)}">
         <mo:apptView urlTarget="${context_url}" date="${dateContext}" timezone='${tz}'/>
     </c:when>
     <c:when test="${view eq 'day'}">

@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -45,17 +51,32 @@ function() {
 };
 
 ZmInviteMsgView.prototype.reset =
-function() {
+function(cleanupHTML) {
 	if (this._inviteToolbar) {
-		this._inviteToolbar.setDisplay(Dwt.DISPLAY_NONE);
+		if (cleanupHTML) {
+			this._inviteToolbar.dispose();
+			this._inviteToolbar = null;
+		} else {
+			this._inviteToolbar.setDisplay(Dwt.DISPLAY_NONE);
+		}
 	}
 
 	if (this._counterToolbar) {
-		this._counterToolbar.setDisplay(Dwt.DISPLAY_NONE);
+		if (cleanupHTML) {
+			this._counterToolbar.dispose();
+			this._counterToolbar = null;
+		} else {
+			this._counterToolbar.setDisplay(Dwt.DISPLAY_NONE);
+		}
 	}
 
 	if (this._dayView) {
-		this._dayView.setDisplay(Dwt.DISPLAY_NONE);
+		if (cleanupHTML) {
+			this._dayView.dispose();
+			this._dayView = null;
+		} else {
+			this._dayView.setDisplay(Dwt.DISPLAY_NONE);
+		}
 		Dwt.delClass(this.parent.getHtmlElement(), "RightBorderSeparator");
 	}
 
@@ -72,8 +93,11 @@ function() {
 
 ZmInviteMsgView.prototype.set =
 function(msg) {
+
 	this._msg = msg;
 	var invite = this._invite = msg.invite;
+
+	this.parent._lazyCreateObjectManager();
 
     // Can operate the toolbar if user is the invite recipient, or invite is in a
     // non-trash shared folder with admin/workflow access permissions
@@ -85,9 +109,7 @@ function(msg) {
         var enabled  = (admin || workflow) &&
                        (ZmOrganizer.normalizeId(msg.folderId) != ZmFolder.ID_TRASH);
     }
-	if (invite && invite.hasAcceptableComponents() &&
-		msg.folderId != ZmFolder.ID_SENT)
-	{
+	if (invite && invite.hasAcceptableComponents() && msg.folderId != ZmFolder.ID_SENT)	{
 		if (msg.isInviteCanceled()) {
 			//appointment was canceled (not necessarily on this instance, but by now it is canceled. Do not show the toolbar.
 			return;
@@ -118,9 +140,13 @@ function(msg) {
 
 			// logic for showing calendar/folder chooser
 			var cc = AjxDispatcher.run("GetCalController");
+			//note that for a msg from a mountpoint, msgAcct returns the main account, so it's not really msgAcct.
 			var msgAcct = msg.getAccount();
 			var calendars = ac.get(ZmSetting.CALENDAR_ENABLED, null, msgAcct) && (!msg.cif)
 				? cc.getCalendars({includeLinks:true, account:msgAcct, onlyWritable:true}) : [];
+
+			var msgFolder = ac.getById(msg.getFolderId());
+			var msgAcctId = msgFolder && msgFolder.isMountpoint ? ZmOrganizer.parseId(msgFolder.id).acctId : msgAcct.id;
 
 			if (appCtxt.multiAccounts) {
 				var accounts = ac.accountList.visibleAccounts;
@@ -143,13 +169,22 @@ function(msg) {
 				this._inviteMoveSelect.clearOptions();
 				for (var i = 0; i < calendars.length; i++) {
 					var calendar = calendars[i];
-					var calAcct = calendar.getAccount();
-					var icon = appCtxt.multiAccounts ? calAcct.getIcon() : (calendar.getIcon() + ",color=" + calendar.color);
-					var name = appCtxt.multiAccounts
+					var calAcct = null;
+					var calAcctId;
+					if (calendar.isMountpoint) {
+						//we can't get account object for mountpoint, just get the ID.
+						calAcctId = ZmOrganizer.parseId(calendar.id).acctId;
+					}
+					else {
+						calAcct = calendar.getAccount();
+						calAcctId = calAcct.id;
+					}
+					var icon = (appCtxt.multiAccounts && calAcct) ? calAcct.getIcon() : (calendar.getIcon() + ",color=" + calendar.color);
+					var name = (appCtxt.multiAccounts && calAcct)
 						? ([calendar.name, " (", calAcct.getDisplayName(), ")"].join(""))
 						: calendar.name;
-					var isSelected = (calAcct && msgAcct)
-						? (calAcct == msgAcct && calendar.nId == ZmOrganizer.ID_CALENDAR)
+					var isSelected = (calAcctId && msgAcctId)
+						? (calAcctId == msgAcctId && calendar.nId == ZmOrganizer.ID_CALENDAR)
 						: calendar.nId == ZmOrganizer.ID_CALENDAR;
                     //bug: 57538 - this invite is intended for owner of shared calendar which should be selected
                     if(msg.cif && calendar.owner == msg.cif && calendar.rid == ZmOrganizer.ID_CALENDAR) isSelected = true;
@@ -209,17 +244,16 @@ function(callback, dayViewCallback, result) {
 		var html = [];
 		var idx = 0;
 		var attendees = appt.inv[0].comp[0].at || [];
-        AjxDispatcher.require(["CalendarCore"]);
+        AjxDispatcher.require(["MailCore", "CalendarCore"]);
 
         var options = {};
-	    options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 	    options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 
 		for (var i = 0; i < attendees.length; i++) {
 			var at = attendees[i];
 			var subs = {
 				icon: ZmCalItem.getParticipationStatusIcon(at.ptst),
-				attendee: (om ? om.findObjects((new AjxEmailAddress(at.a)), true, ZmObjectManager.EMAIL, false, options) : at.a)
+				attendee: this.parent._getBubbleHtml(new AjxEmailAddress(at.a), options)
 			};
 			html[idx++] = AjxTemplate.expand("mail.Message#InviteHeaderPtst", subs);
 		}
@@ -249,7 +283,7 @@ function(dayViewCallback) {
             return;
         }
 
-		AjxDispatcher.require(["CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 		var cc = AjxDispatcher.run("GetCalController");
 
 		if (!this._dayView) {
@@ -408,24 +442,27 @@ function(reset) {
  */
 ZmInviteMsgView.prototype.enableToolbarButtons =
 function(ptst) {
-	var disableButtonId;
+	var disableButtonIds = {};
 	switch (ptst) {
 		case ZmCalBaseItem.PSTATUS_ACCEPT:
-			disableButtonId = ZmOperation.REPLY_ACCEPT;
+			disableButtonIds[ZmOperation.REPLY_ACCEPT] = true;
 			break;
 		case ZmCalBaseItem.PSTATUS_DECLINED:
-			disableButtonId = ZmOperation.REPLY_DECLINE;
+			disableButtonIds[ZmOperation.REPLY_DECLINE] = true;
 			break;
 		case ZmCalBaseItem.PSTATUS_TENTATIVE:
-			disableButtonId = ZmOperation.REPLY_TENTATIVE;
+			disableButtonIds[ZmOperation.REPLY_TENTATIVE] = true;
 			break;
+	}
+	if (appCtxt.isWebClientOffline()) {
+		 disableButtonIds[ ZmOperation.PROPOSE_NEW_TIME] = true;
 	}
 	var inviteToolbar = this.getInviteToolbar();
 
 	var buttonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE, ZmOperation.PROPOSE_NEW_TIME];
 	for (var i = 0; i < buttonIds.length; i++) {
 		var buttonId = buttonIds[i];
-		inviteToolbar.getButton(buttonId).setEnabled(appCtxt.isExternalAccount() ? false : buttonId != disableButtonId);
+		inviteToolbar.getButton(buttonId).setEnabled(appCtxt.isExternalAccount() ? false : !disableButtonIds[buttonId]);
 	}
 };
 
@@ -459,7 +496,8 @@ ZmInviteMsgView.PTST_MSG[ZmCalBaseItem.PSTATUS_TENTATIVE] = {msg: AjxMessageForm
 
 ZmInviteMsgView.prototype.addSubs =
 function(subs, sentBy, sentByAddr, obo) {
-    AjxDispatcher.require(["CalendarCore", "Calendar"]);
+
+    AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	subs.invite = this._invite;
 
 	if (!this._msg.isInviteCanceled() && !subs.invite.isOrganizer() && subs.invite.hasInviteReplyMethod()) {
@@ -477,7 +515,7 @@ function(subs, sentBy, sentByAddr, obo) {
 	subs.ptstMsgIconId = this._ptstMsgIconId = (this.parent._htmlElId + "_ptstMsgIcon");
 
 	var isOrganizer = this._invite && this._invite.isOrganizer();
-	
+    var isInviteCancelled = this._invite.components && this._invite.components[0].method === ZmId.OP_CANCEL;
 	// counter proposal
 	if (this._invite.hasCounterMethod() &&
 		this._msg.folderId != ZmFolder.ID_SENT)
@@ -485,6 +523,13 @@ function(subs, sentBy, sentByAddr, obo) {
         var from = this._msg.getAddress(AjxEmailAddress.FROM) && this._msg.getAddress(AjxEmailAddress.FROM).getAddress();
         subs.counterInvMsg =  (!sentByAddr || sentByAddr == from) ?
             AjxMessageFormat.format(ZmMsg.counterInviteMsg, [from]):AjxMessageFormat.format(ZmMsg.counterInviteMsgOnBehalfOf, [sentByAddr, from]);
+	}
+	// Fix for bug: 88052 and 77237. Display cancellation banner to organizer or attendee
+	else if (isInviteCancelled) {
+		var organizer = this._invite.getOrganizerName() || this._invite.getOrganizerEmail();
+		subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgCancelled, organizer.split());
+		subs.ptstIcon = ZmCalItem.getParticipationStatusIcon(ZmCalBaseItem.PSTATUS_DECLINED);
+		subs.ptstClassName = "InviteStatusDecline";
 	}
 	// if this an action'ed invite, show the status banner
 	else if (isOrganizer && this._invite.hasAttendeeResponse()) {
@@ -500,15 +545,15 @@ function(subs, sentBy, sentByAddr, obo) {
 			subs.ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
 			switch (ptst) {
 				case ZmCalBaseItem.PSTATUS_ACCEPT:
-					ptstStr = (!sentBy) ? ZmMsg.inviteMsgAccepted: ZmMsg.inviteMsgOnBehalfOfAccepted;
+					ptstStr = (!sentBy) ? ZmMsg.inviteMsgAccepted : ZmMsg.inviteMsgOnBehalfOfAccepted;
 					subs.ptstClassName = "InviteStatusAccept";
 					break;
 				case ZmCalBaseItem.PSTATUS_DECLINED:
-					ptstStr = (!sentBy) ? ZmMsg.inviteMsgDeclined: ZmMsg.inviteMsgOnBehalfOfDeclined;
+					ptstStr = (!sentBy) ? ZmMsg.inviteMsgDeclined : ZmMsg.inviteMsgOnBehalfOfDeclined;
 					subs.ptstClassName = "InviteStatusDecline";
 					break;
 				case ZmCalBaseItem.PSTATUS_TENTATIVE:
-					ptstStr = (!sentBy) ?ZmMsg.inviteMsgTentative:ZmMsg.inviteMsgOnBehalfOfTentative;
+					ptstStr = (!sentBy) ? ZmMsg.inviteMsgTentative:ZmMsg.inviteMsgOnBehalfOfTentative;
 					subs.ptstClassName = "InviteStatusTentative";
 					break;
 			}
@@ -524,22 +569,21 @@ function(subs, sentBy, sentByAddr, obo) {
     }
 
     var options = {};
-	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 
 	var om = this.parent._objectManager;
 	// organizer
 	var org = new AjxEmailAddress(this._invite.getOrganizerEmail(), null, this._invite.getOrganizerName());
-	subs.invOrganizer = om ? om.findObjects(org, true, ZmObjectManager.EMAIL, false, options) : org.toString();
+	subs.invOrganizer = this.parent._getBubbleHtml(org, options);
 
-    if(obo) {
-        subs.obo = om ? om.findObjects(obo, true, ZmObjectManager.EMAIL) : obo.toString();
+    if (obo) {
+	    subs.obo = this.parent._getBubbleHtml(obo, options);
     }
 
 	// sent-by
 	var sentBy = this._invite.getSentBy();
 	if (sentBy) {
-		subs.invSentBy = om ? om.findObjects(sentBy, true, ZmObjectManager.EMAIL, false, options) : sentBy.toString();
+		subs.invSentBy = this.parent._getBubbleHtml(sentBy, options);
 	}
 
     if(this._msg.cif) {
@@ -578,7 +622,7 @@ function(subs, sentBy, sentByAddr, obo) {
 
 	// duration text
 	var durText = this._invite.getDurationText(null, null, null, true, sd, ed);
-	subs.invDate = om ? om.findObjects(durText, true, ZmObjectManager.DATE) : durText;
+	subs.invDate = durText;
 
 	// recurrence
 	if (this._invite.isRecurring()) {
@@ -739,8 +783,10 @@ function(ev) {
 
 ZmInviteMsgView.prototype._dayResultsCallback =
 function(dayViewCallback, invitedHour, list, skipMiniCalUpdate, query) {
-    this._dayView.set(list, true);
-    this._dayView._scrollToTime(invitedHour);
+	if (this._dayView) {
+	    this._dayView.set(list, true);
+	    this._dayView._scrollToTime(invitedHour);
+	}
     if (dayViewCallback) {
         dayViewCallback.run();
     }
@@ -772,5 +818,12 @@ function() {
     var inviteDate = this._getInviteDate();
     if ((inviteDate != null) && this._dayView) {
         this._dayView._scrollToTime(inviteDate.getHours());
+    }
+}
+
+ZmInviteMsgView.prototype.repositionCounterToolbar =
+function(hdrTableId) {
+    if (this._invite && this._invite.hasCounterMethod() && hdrTableId && this._counterToolbar) {
+        this._counterToolbar.reparentHtmlElement(hdrTableId + '_counterToolbar', 0);
     }
 }

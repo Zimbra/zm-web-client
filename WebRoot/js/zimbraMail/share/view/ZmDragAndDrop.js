@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -49,7 +55,7 @@ ZmDragAndDrop.isSupported = function() {
     };
 
     if (isSupported) {
-        ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT = appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT);
+        ZmDragAndDrop.MESSAGE_SIZE_LIMIT = appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT);
         ZmDragAndDrop.ATTACHMENT_URL = appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw";
     }
 
@@ -61,8 +67,8 @@ ZmDragAndDrop.isSupported = function() {
  */
 ZmDragAndDrop.isAttachmentSizeExceeded = function(files, showDialog) {
     var j,
-        size,
         filesLength,
+		size,
         file;
 
     if (!files) {
@@ -72,13 +78,15 @@ ZmDragAndDrop.isAttachmentSizeExceeded = function(files, showDialog) {
     for (j = 0 , size = 0, filesLength = files.length; j < filesLength; j++) {
         file = files[j];
         if (file) {
+			//Check the total size of the files we upload this time (we don't know the previously uploaded files total size so we do the best we can).
+			//NOTE - we compare to the MTA message size limit since there's no limit on specific attachments.
             size += file.size || file.fileSize; /*Safari*/
             //Showing Error dialog if the attachment size is exceeded
-            if ((-1 /* means unlimited */ != ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT) &&
-                (size > ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT)) {
+            if ((-1 /* means unlimited */ != ZmDragAndDrop.MESSAGE_SIZE_LIMIT) &&
+                (size > ZmDragAndDrop.MESSAGE_SIZE_LIMIT)) {
                 if (showDialog) {
                     var msgDlg = appCtxt.getMsgDialog();
-                    var errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(ZmDragAndDrop.ATTACHMENT_SIZE_LIMIT));
+                    var errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(ZmDragAndDrop.MESSAGE_SIZE_LIMIT));
                     msgDlg.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
                     msgDlg.popup();
                 }
@@ -91,7 +99,7 @@ ZmDragAndDrop.isAttachmentSizeExceeded = function(files, showDialog) {
 
 ZmDragAndDrop.prototype._initialize = function () {
 	if (!ZmDragAndDrop.isSupported() && this._element && this._element.id) {
-		var tooltip = document.getElementById(this._element.id + '_zdnd_tooltip');
+		var tooltip = document.getElementById(this._element.id + ZmId.CMP_DND_TOOLTIP);
 		if (tooltip) {
 			tooltip.style.display = "none";
 			tooltip.innerHTML = "";
@@ -101,7 +109,7 @@ ZmDragAndDrop.prototype._initialize = function () {
         return;
     }
     this._addHandlers(this._element);
-    this._dndTooltipEl = document.getElementById(this._element.id + '_zdnd_tooltip');
+    this._dndTooltipEl = document.getElementById(this._element.id + ZmId.CMP_DND_TOOLTIP);
     this._setToolTip();
 };
 
@@ -134,7 +142,7 @@ ZmDragAndDrop.prototype._onDrop = function(ev, isEditorDND) {
         j,
         filesLength;
 
-    if (!ev || this._view._disableAttachments === true ) {
+    if (!ev || (this._view && this._view._disableAttachments === true) ) {
         return;
     }
 
@@ -152,119 +160,33 @@ ZmDragAndDrop.prototype._onDrop = function(ev, isEditorDND) {
         ZmDragAndDrop._stopEvent(ev);
     }
 
-    if (ZmDragAndDrop.isAttachmentSizeExceeded(files, true)) {
-        return;
-    }
-
-    this._uploadedAttachment = [];
-    this._dndFilesLength = filesLength = files.length;
-
-    for (j = 0; j < filesLength; j++) {
-        file = files[j];
-        if (file) {
-            if (j === 0) {
-                this._dndTooltipEl.innerHTML = "<img src='/img/animated/ImgSpinner.gif' width='16' height='16' border='0' style='float:left;'/>&nbsp;<div style='display:inline;'>" + ZmMsg.attachingFiles + "</div>";
-                this._dndTooltipEl.style.display = "block";
-            }
-            this._view._initProgressSpan(file.name || file.fileName);
-            this._uploadFiles(file, isEditorDND);
-        }
-        else {
-            this._dndFilesLength--;
-        }
-    }
-};
-
-ZmDragAndDrop.prototype._uploadFiles = function(file, isEditorDND) {
-    var req = new XMLHttpRequest();
-    var fileName = file.name || file.fileName;
-    req.open("POST", ZmDragAndDrop.ATTACHMENT_URL, true);
-    req.setRequestHeader("Cache-Control", "no-cache");
-    req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-    req.setRequestHeader("Content-Type",  (file.type || "application/octet-stream") + ";");
-    req.setRequestHeader("Content-Disposition", 'attachment; filename="'+ AjxUtil.convertToEntities(fileName) + '"');
-    var upload = req.upload;
-    if (upload && upload.addEventListener) {
-        upload.addEventListener("progress", this._view._uploadFileProgress.bind(this._view), false);
-    }
-    req.onreadystatechange = this._handleResponse.bind(this, req, isEditorDND);
-    req.send(file);
-};
-
-ZmDragAndDrop.prototype._handleResponse = function(req, isEditorDND) {
-    if(req.readyState === 4 && req.status === 200) {
-        this._dndFilesLength--;
-        var resp = eval("["+req.responseText+"]");
-        if (resp && resp[0] === 200 && resp.length === 3) {
-            if (isEditorDND) {
-                this._handleEditorDND(resp[2]);
-            }
-            else {
-                this._handleNormalDND(resp[2]);
-            }
-        }
-        else {
-            this._handleErrorResponse(resp[0] || resp);
-        }
-        //Clean up the properties
-        if (this._dndFilesLength === 0) {
-            delete this._dndFilesLength;
-            delete this._uploadedAttachment;
-            this._setToolTip();
-        }
-    }
-};
-
-ZmDragAndDrop.prototype._handleNormalDND = function(resp) {
-    if (resp[0].aid) {
-        this._uploadedAttachment.push(resp[0].aid);
-    }
-    if (this._dndFilesLength === 0 && this._uploadedAttachment.length > 0) {
-        this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, this._uploadedAttachment.join(","));
-    }
-};
-
-ZmDragAndDrop.prototype._handleEditorDND = function(resp) {
-    this._uploadedAttachment.push(resp[0]);
-    if (this._dndFilesLength === 0 && this._uploadedAttachment.length > 0) {
-        this._uploadedAttachment.clipboardPaste = true;
-        this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, this._uploadedAttachment);
-    }
-};
-
-ZmDragAndDrop.prototype._handleErrorResponse = function(respCode) {
-    var warngDlg = appCtxt.getMsgDialog();
-    if (respCode === 413) {
-        warngDlg.setMessage(ZmMsg.errorAttachmentTooBig, DwtMessageDialog.CRITICAL_STYLE);
-    } else {
-        warngDlg.setMessage(AjxMessageFormat.format(ZmMsg.errorAttachment, (respCode || AjxPost.SC_NO_CONTENT)), DwtMessageDialog.CRITICAL_STYLE);
-    }
-    warngDlg.popup();
+	//just re-use code from the my computer option as it should be exactly the same case from now on.
+	this._view._submitMyComputerAttachments(files, null, isEditorDND, ev);
 };
 
 ZmDragAndDrop._stopEvent = function(ev) {
-    if (ZmDragAndDrop.containFiles(ev)) {
-        if (ev.preventDefault) {
-            ev.preventDefault();
-        }
-        if (ev.stopPropagation) {
-            ev.stopPropagation();
-        }
-    }
+	if (!ZmDragAndDrop.containFiles(ev)) {
+		return;
+	}
+	if (ev.preventDefault) {
+		ev.preventDefault();
+	}
+	if (ev.stopPropagation) {
+		ev.stopPropagation();
+	}
 };
 
 ZmDragAndDrop.containFiles =
 function(ev, type) {
-    if (ev && ev.dataTransfer) {
-        var typesArray = ev.dataTransfer.types;
-        if (typesArray) {
-            type = type || "Files";
-            for (var i = 0, length = typesArray.length; i < length; i++) {
-                if (typesArray[i] === type) {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
+	var typesArray = ev && ev.dataTransfer && ev.dataTransfer.types;
+    if (!typesArray) {
+		return false;
+	}
+	type = type || "Files";
+	for (var i = 0; i < typesArray.length; i++) {
+		if (typesArray[i] === type) {
+			return true;
+		}
+	}
+	return false;
 };

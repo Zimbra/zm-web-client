@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -60,6 +66,7 @@ ZmEvent.S_CONTACT				= ZmId.ITEM_CONTACT;
 ZmEvent.S_GROUP					= ZmId.ITEM_GROUP;
 ZmItem.CONTACT					= ZmEvent.S_CONTACT;
 ZmItem.GROUP					= ZmEvent.S_GROUP;
+ZmItem.GAL						= ZmId.ITEM_GAL_CONTACT;
 /**
  * Defines the "address book" organizer.
  */
@@ -237,7 +244,6 @@ function() {
 	ZmItem.registerItem(ZmItem.CONTACT,
 						{app:			ZmApp.CONTACTS,
 						 nameKey:		"contact",
-						 countKey:  	"typeContact",
 						 icon:			"Contact",
 						 soapCmd:		"ContactAction",
 						 itemClass:		"ZmContact",
@@ -254,10 +260,11 @@ function() {
 
 	ZmItem.registerItem(ZmItem.GROUP,
 						{nameKey:	"group",
-						 countKey:	"typeContactGroup",
 						 icon:		"Group",
 						 soapCmd:	"ContactAction"
 						});
+
+	ZmItem.registerItem(ZmItem.GAL, {app: ZmApp.CONTACTS});
 };
 
 /**
@@ -277,7 +284,7 @@ function() {
 							 orgClass:			"ZmAddrBook",
 							 orgPackage:		"ContactsCore",
 							 treeController:	"ZmAddrBookTreeController",
-							 labelKey:			"addressBooks",
+							 labelKey:			"contactLists",
 							 itemsKey:			"contacts",
 							 hasColor:			true,
 							 defaultColor:		ZmOrganizer.C_NONE,
@@ -285,7 +292,7 @@ function() {
 							 treeType:			ZmOrganizer.FOLDER,
 							 dropTargets:		[ZmOrganizer.ADDRBOOK],
 							 views:				["contact"],
-							 folderKey:			"addressBook",
+							 folderKey:			"contactsFolder",
 							 mountKey:			"mountAddrBook",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmAddrBook.sortCompare",
@@ -313,7 +320,8 @@ function() {
 								 tooltipKey:	"searchGALContacts",
 								 icon:			"GAL",
 								 setting:		ZmSetting.GAL_ENABLED,
-								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_GAL)
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_GAL),
+								 disableOffline:true
 								});
 };
 
@@ -388,6 +396,8 @@ function(creates, force) {
 				} else if (name == "link") {
 					this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
 				} else if (name == "cn") {
+					//note- this is updating the view list. The canonical is upadated
+					// in ZmContact.prototype._handleResponseCreate. See bug 81055
 					var clc = AjxDispatcher.run("GetContactListController");
 					if (clc._folderId == ZmFolder.ID_DLS) {
 						//the simplest solution I could think of to the messy problem that the clcList in this case is GAL and thus
@@ -433,19 +443,21 @@ function(notify) {
  */
 ZmContactsApp.prototype.handleOp =
 function(op) {
-	switch (op) {
-		case ZmOperation.NEW_CONTACT:
-		case ZmOperation.NEW_DISTRIBUTION_LIST:
-		case ZmOperation.NEW_GROUP: {
-			var type = (op == ZmOperation.NEW_CONTACT) ? null : ZmItem.GROUP;
-			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [type, op == ZmOperation.NEW_DISTRIBUTION_LIST]);
-			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
-			break;
-		}
-		case ZmOperation.NEW_ADDRBOOK: {
-			var loadCallback = new AjxCallback(this, this._handleLoadNewAddrBook);
-			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
-			break;
+	if (!appCtxt.isWebClientOffline()) {
+		switch (op) {
+			case ZmOperation.NEW_CONTACT:
+			case ZmOperation.NEW_DISTRIBUTION_LIST:
+			case ZmOperation.NEW_GROUP: {
+				var type = (op == ZmOperation.NEW_CONTACT) ? null : ZmItem.GROUP;
+				var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [type, op == ZmOperation.NEW_DISTRIBUTION_LIST]);
+				AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
+				break;
+			}
+			case ZmOperation.NEW_ADDRBOOK: {
+				var loadCallback = new AjxCallback(this, this._handleLoadNewAddrBook);
+				AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
+				break;
+			}
 		}
 	}
 };
@@ -1042,7 +1054,7 @@ function(callback) {
 	var acctId = appCtxt.getActiveAccount().id;
 	this.contactsLoaded[acctId] = true;
 
-	if (callback && callback.isAjxCallback) {
+	if (callback) {
 		callback.run(this._contactList[acctId]);
 	}
 };
@@ -1136,5 +1148,23 @@ function(contact, doDelete) {
 	}
 	else {
 		delete hash[id];
+	}
+};
+
+/**
+ * Online to Offline or Offline to Online; Called from ZmApp.activate and from ZmOffline.enableApps, disableApps
+ */
+ZmContactsApp.prototype.resetWebClientOfflineOperations =
+function() {
+	ZmApp.prototype.resetWebClientOfflineOperations.apply(this);
+	var contactListController = this.getContactListController();
+    var currentToolbar = contactListController && contactListController.getCurrentToolbar();
+    if (contactListController && currentToolbar) {
+	    contactListController._resetOperations(currentToolbar);
+    }
+	var overview = this.getOverview();
+	var distributionList = overview && overview.getTreeItemById(ZmFolder.ID_DLS);// Distribution Lists folder Id
+	if (distributionList) {
+		distributionList.setVisible(!appCtxt.isWebClientOffline());
 	}
 };

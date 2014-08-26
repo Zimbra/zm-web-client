@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -203,6 +209,18 @@ ZmSetting.RP_RIGHT				= "right";
 ZmSetting.SIG_INTERNET			= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK			= "outlook";
 
+// values for the 'fetch' param of SearchConvRequest
+ZmSetting.CONV_FETCH_NONE                       = "0";
+ZmSetting.CONV_FETCH_FIRST_MATCHING             = "1";
+ZmSetting.CONV_FETCH_FIRST                      = "!";
+ZmSetting.CONV_FETCH_UNREAD                     = "u";
+ZmSetting.CONV_FETCH_UNREAD_OR_FIRST_MATCHING   = "u1";
+ZmSetting.CONV_FETCH_UNREAD_OR_FIRST            = "u!";
+ZmSetting.CONV_FETCH_UNREAD_OR_BOTH_FIRST       = "u1!";
+ZmSetting.CONV_FETCH_MATCHES                    = "hits";
+ZmSetting.CONV_FETCH_MATCHES_OR_FIRST           = "hits!";
+ZmSetting.CONV_FETCH_ALL                        = "all";
+
 // License status (network only)
 ZmSetting.LICENSE_GOOD			= "OK";
 ZmSetting.LICENSE_NOT_INSTALLED = "NOT_INSTALLED";
@@ -226,6 +244,7 @@ ZmSetting.LOCALE_NAME			= "LOCALE_NAME";
 ZmSetting.COMPOSE_INIT_DIRECTION= "COMPOSE_INIT_DIRECTION";
 ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS = "SHOW_COMPOSE_DIRECTION_BUTTONS";
 ZmSetting.FONT_NAME				= "FONT_NAME";
+ZmSetting.FONT_SIZE				= "FONT_SIZE";
 ZmSetting.SKIN_NAME				= "SKIN_NAME";
 
 ZmSetting.BRIEFCASE_ENABLED		= "BRIEFCASE_ENABLED";
@@ -236,6 +255,7 @@ ZmSetting.MAIL_ENABLED			= "MAIL_ENABLED";
 ZmSetting.OPTIONS_ENABLED		= "OPTIONS_ENABLED";
 ZmSetting.PORTAL_ENABLED		= "PORTAL_ENABLED";
 ZmSetting.SEARCH_ENABLED		= "SEARCH_ENABLED";
+ZmSetting.SOCIAL_ENABLED		= "SOCIAL_ENABLED";
 ZmSetting.TASKS_ENABLED			= "TASKS_ENABLED";
 ZmSetting.VOICE_ENABLED			= "VOICE_ENABLED";
 ZmSetting.TAGGING_ENABLED		= "TAGGING_ENABLED";
@@ -243,15 +263,21 @@ ZmSetting.TAGGING_ENABLED		= "TAGGING_ENABLED";
 ZmSetting.CALENDAR_UPSELL_ENABLED	= "CALENDAR_UPSELL_ENABLED";
 ZmSetting.CONTACTS_UPSELL_ENABLED	= "CONTACTS_UPSELL_ENABLED";
 ZmSetting.MAIL_UPSELL_ENABLED		= "MAIL_UPSELL_ENABLED";
+ZmSetting.SOCIAL_EXTERNAL_URL	    = "SOCIAL_EXTERNAL_URL";
 ZmSetting.VOICE_UPSELL_ENABLED		= "VOICE_UPSELL_ENABLED";
-
-ZmSetting.MAIL_SEND_LATER_ENABLED	= "MAIL_SEND_LATER_ENABLED";
 
 //user selected font
 ZmSetting.FONT_CLASSIC	= "classic";
 ZmSetting.FONT_MODERN	= "modern";
 ZmSetting.FONT_WIDE		= "wide";
 ZmSetting.FONT_SYSTEM	= "system";
+
+//user selected font size
+ZmSetting.FONT_SIZE_SMALL = "small";
+ZmSetting.FONT_SIZE_NORMAL = "normal";
+ZmSetting.FONT_SIZE_LARGE = "large";
+ZmSetting.FONT_SIZE_LARGER = "larger";
+
 
 // name for dynamic CSS class created from user font prefs
 ZmSetting.USER_FONT_CLASS = "userFontPrefs";
@@ -275,13 +301,8 @@ ZmSetting.IS_IMPLICIT = {};
 ZmSetting.CHANGED_IMPLICIT = {};
 
 // Send As and Send On Behalf Of settings
-ZmSetting.GRANT_RIGHTS_REQUEST = "GrantRightsRequest";
-ZmSetting.REVOKE_RIGHTS_REQUEST = "RevokeRightsRequest";
 ZmSetting.SEND_AS = "sendAs";
 ZmSetting.SEND_ON_BEHALF_OF = "sendOnBehalfOf";
-ZmSetting.ZM_GRANT_RIGHTS_DIALOG = "ZmGrantRightsDialog"
-
-
 
 /**
  * Returns a string representation of the object.

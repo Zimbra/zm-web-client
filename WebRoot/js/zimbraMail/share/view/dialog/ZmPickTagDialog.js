@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -63,6 +69,10 @@ function() {
 ZmPickTagDialog.prototype.popup = 
 function(params) {
 
+	if (appCtxt.isChildWindow) {
+		return; //disable for now.
+	}
+
 	params = params || {};
 	this._account = params.account;
 
@@ -99,6 +109,8 @@ function(params) {
 	if (tags.length == 1) {
 		this._tagTreeView.setSelected(tags[0], true, true);
 	}
+	this.setButtonEnabled(DwtDialog.OK_BUTTON, this._tagTreeView.getSelected());
+
 	ZmDialog.prototype.popup.apply(this, arguments);
 };
 
@@ -158,7 +170,11 @@ function(ev) {
 
 ZmPickTagDialog.prototype._okButtonListener = 
 function(ev) {
-	DwtDialog.prototype._buttonListener.call(this, ev, [this._tagTreeView.getSelected()]);
+	var selectedTag = this._tagTreeView.getSelected();
+	if (!selectedTag) {
+		return;
+	}
+	DwtDialog.prototype._buttonListener.call(this, ev, [selectedTag]);
 };
 
 ZmPickTagDialog.prototype._handleKeyUp =
@@ -190,6 +206,11 @@ function(ev) {
 	if (firstMatch) {
 		this._tagTreeView.setSelected(appCtxt.getById(firstMatch), true, true);
 	}
+	else {
+		this._tagTreeView.deselectAll();
+	}
+	this.setButtonEnabled(DwtDialog.OK_BUTTON, firstMatch);
+
 	this._lastVal = value;
 };
 
@@ -209,10 +230,23 @@ function() {
 ZmPickTagDialog.prototype._treeViewSelectionListener =
 function(ev) {
 
-	if (ev.detail != DwtTree.ITEM_SELECTED && ev.detail != DwtTree.ITEM_DBL_CLICKED)	{ return; }
+	if (ev.detail === DwtTree.ITEM_DESELECTED) {
+		this._inputField.setValue("");
+		this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+		return;
+	}
+
+	if (ev.detail !== DwtTree.ITEM_SELECTED && ev.detail !== DwtTree.ITEM_DBL_CLICKED){
+		return;
+	}
+
+	if (!ev.item.isSelectionEnabled()) {
+		return;
+	}
 
 	var tag = ev.item.getData(Dwt.KEY_OBJECT);
 	if (tag) {
+		this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 		var value = tag.getName(false, null, true, true);
 		this._lastVal = value.toLowerCase();
 		this._inputField.setValue(value);

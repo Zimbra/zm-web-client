@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -89,7 +95,6 @@ function() {
 	ZmItem.registerItem(ZmItem.TASK,
 						{app:			ZmApp.TASKS,
 						 nameKey:		"task",
-						 countKey:  	"typeTask",
 						 icon:			"TasksApp",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmTask",
@@ -109,14 +114,14 @@ ZmTasksApp.prototype._registerOrganizers =
 function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.TASKS,
 							{app:				ZmApp.TASKS,
-							 nameKey:			"taskFolder",
+							 nameKey:			"tasksFolder",
 							 defaultFolder:		ZmFolder.ID_TASKS,
 							 soapCmd:			"FolderAction",
 							 firstUserId:		256,
 							 orgClass:			"ZmTaskFolder",
 							 orgPackage:		"TasksCore",
 							 treeController:	"ZmTaskTreeController",
-							 labelKey:			"tasks",
+							 labelKey:			"taskLists",
 							 itemsKey:			"tasks",
                              folderKey:			"tasksFolder",   
                              hasColor:			true,
@@ -139,7 +144,8 @@ function() {
 								 icon:			"TasksApp",
 								 shareIcon:		"SharedTaskList",
 								 setting:		ZmSetting.TASKS_ENABLED,
-								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_TASK)
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_TASK),
+								 disableOffline:true
 								});
 };
 
@@ -180,7 +186,12 @@ function() {
 ZmTasksApp.prototype.postNotify =
 function(notify) {
 	if (this._checkReplenishListView) {
-		this._checkReplenishListView._checkReplenish();
+		var tasks = notify.modified && notify.modified.task;
+		var item;
+		if (tasks) {
+			item = tasks[0].items[0];
+		}
+		this._checkReplenishListView._checkReplenish(item, true);
 		this._checkReplenishListView = null;
 	}
 };
@@ -245,8 +256,14 @@ function(creates, force) {
 			} else if (name == "task") {
 				// bug fix #29833 - always attempt to process new tasks
 				var taskList = AjxDispatcher.run("GetTaskListController").getList();
-				if (taskList) {
-					taskList.notifyCreate(create);
+				if (taskList &&
+				!AjxUtil.isEmpty(create.inv) &&
+				!AjxUtil.isEmpty(create.inv[0].comp)) {
+					var filter = taskList.controller.getAllowableTaskStatus();
+					var taskStatus = create.inv[0].comp[0].status;
+					if (!filter || filter.indexOf(taskStatus) !== -1) {
+						taskList.notifyCreate(create);
+					}
 				}
 			}
 		}

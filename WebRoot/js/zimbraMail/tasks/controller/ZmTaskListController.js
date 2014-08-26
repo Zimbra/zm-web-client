@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -434,6 +440,29 @@ function() {
 	return toolbarOps;
 };
 
+ZmTaskListController.prototype._getButtonOverrides =
+function(buttons) {
+
+	if (!(buttons && buttons.length)) { return; }
+
+	var overrides = {};
+	var idParams = {
+		skinComponent:  ZmId.SKIN_APP_TOP_TOOLBAR,
+		componentType:  ZmId.WIDGET_BUTTON,
+		app:            ZmId.APP_TASKS,
+		containingView: ZmId.VIEW_TASKLIST
+	};
+	for (var i = 0; i < buttons.length; i++) {
+		var buttonId = buttons[i];
+		overrides[buttonId] = {};
+		idParams.componentName = buttonId;
+		var item = (buttonId === ZmOperation.SEP) ? "Separator" : buttonId + " button";
+		var description = item + " on top toolbar for task list view";
+		overrides[buttonId].domId = ZmId.create(idParams, description);
+	}
+	return overrides;
+};
+
 ZmTaskListController.prototype._getRightSideToolBarOps =
 function(noViewMenu) {
 	return [ZmOperation.VIEW_MENU];
@@ -614,10 +643,11 @@ function(parent, num) {
 		var isShare = folder && folder.link;
         var isTrash = folder && folder.id == ZmOrganizer.ID_TRASH;
 		var canEdit = !(folder && (folder.isReadOnly() || folder.isFeed()));
+		var task = this._listView[this._currentViewId].getSelection()[0];
 
 		parent.enable([ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.DELETE], canEdit && num > 0);
 		parent.enable(ZmOperation.EDIT, !isTrash && canEdit && num == 1);
-		parent.enable(ZmOperation.MARK_AS_COMPLETED, !isTrash && canEdit && num > 0);
+		parent.enable(ZmOperation.MARK_AS_COMPLETED, !isTrash && canEdit && num > 0 && task && !task.isComplete());
 		parent.enable(ZmOperation.TAG_MENU, (canEdit && num > 0));
 	} else {
       	var task = this._listView[this._currentViewId].getSelection()[0];
@@ -731,7 +761,11 @@ function(tasks) {
 };
 
 ZmTaskListController.prototype._handleDeleteResponse = function(tasks, resp) {
-    var summary = ZmList.getActionSummary(ZmMsg.actionDelete, tasks.length, ZmItem.TASK);
+    var summary = ZmList.getActionSummary({
+	    actionTextKey:  'actionDelete',
+	    numItems:       tasks.length,
+	    type:           ZmItem.TASK
+    });
     appCtxt.setStatusMsg(summary);
 };
 
@@ -772,8 +806,9 @@ function(task) {
 
 ZmTaskListController.prototype._markAsCompletedResponse = 
 function(task,ftask) {
-	if (task && task._orig)
+	if (task && task._orig) {
 		task._orig.message = null;
+	}
 	//Cache the item for further processing
 	task.cache();
 	this._taskListView.updateListViewEl(task);
@@ -796,7 +831,11 @@ function(tasks) {
 	}
 	var actionLogItem = (actionController && actionController.actionPerformed({op: "trash", ids: idList, attrs: {l: ZmOrganizer.ID_TRASH}})) || null;
 	batchCmd.run();
-	var summary = ZmList.getActionSummary(ZmMsg.actionTrash, tasks.length, ZmItem.TASK);
+
+    // Mark the action as complete, so that the undo in the toast message will work
+    actionLogItem.setComplete();
+
+    var summary = ZmList.getActionSummary({type:ZmItem.TASK, actionTextKey:"actionTrash", numItems:tasks.length});
 	
 	var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 	if (undoLink && actionController) {
@@ -989,7 +1028,11 @@ function(ev) {
 			this._doCheckCompleted(items[i],fItem);
 		}	
 	}
-    var summary = ZmList.getActionSummary(ZmMsg.actionCompleted, items.length, ZmItem.TASK);
+    var summary = ZmList.getActionSummary({
+        actionTextKey:  'actionCompleted',
+        numItems:       items.length,
+        type:           ZmItem.TASK
+    });
     appCtxt.setStatusMsg(summary);
 };
 
@@ -1059,7 +1102,7 @@ ZmTaskListController.prototype._showTaskSource =
 function(task) {
     var apptFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI)
                         + "&id=" + AjxStringUtil.urlComponentEncode(task.id || task.invId)
-                        +"&mime=text/plain&noAttach=1";
+                        +"&mime=text/plain&noAttach=1&icalAttach=none";
     // create a new window w/ generated msg based on msg id
     window.open(apptFetchUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 };

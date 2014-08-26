@@ -185,7 +185,7 @@
     <c:when test="${param.action eq 'compose' and noComposeView eq false}">
         <%--do nothing--%>
     </c:when>
-    <c:when test="${needViewAppt}">
+    <c:when test="${zm:boolean(needViewAppt)}">
         <app:apptView/>
     </c:when>
     <c:when test="${view eq 'day'}">

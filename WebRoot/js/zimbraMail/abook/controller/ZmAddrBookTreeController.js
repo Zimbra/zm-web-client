@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -153,6 +159,28 @@ function(parent, type, id) {
 	this._resetButtonPerSetting(parent, ZmOperation.SHARE_ADDRBOOK, appCtxt.get(ZmSetting.SHARING_ENABLED));
 };
 
+/**
+ * override to take care of not allowing dropping DLs do folders
+ * @param ev
+ * @private
+ */
+ZmAddrBookTreeController.prototype._dropListener =
+function(ev) {
+	var items = AjxUtil.toArray(ev.srcData.data);
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		if (!item.isZmContact) {
+			continue;
+		}
+		if (item.isDistributionList()) {
+			ev.doIt = false;
+			return;
+		}
+	}
+	// perform default action
+	ZmFolderTreeController.prototype._dropListener.apply(this, arguments);
+};
+
 
 // Protected methods
 
@@ -181,7 +209,7 @@ ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = null;
 	if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
-		ops = [ZmOperation.NEW_ADDRBOOK];
+		ops = [ZmOperation.NEW_ADDRBOOK, ZmOperation.FIND_SHARES];
 	}
 	return ops;
 };
@@ -308,7 +336,7 @@ function(folder, result) {
 	// bug fix #19307 - Trash is special when in Contacts app since it
 	// is a FOLDER type in ADDRBOOK tree. So reset selection if clicked
 	if (folder.nId == ZmFolder.ID_TRASH) {
-		this._treeView[this._app.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
+		this._treeView[this._app.getOverviewId()].setSelected(folder, true);
 	}
 };
 

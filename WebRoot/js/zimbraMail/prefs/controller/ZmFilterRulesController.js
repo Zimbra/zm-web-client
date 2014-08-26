@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -43,6 +49,9 @@ ZmFilterRulesController = function(container, prefsApp, prefsView, parent, outgo
 	this._buttonListeners[ZmOperation.REMOVE_FILTER_RULE] = new AjxListener(this, this._removeListener);
 	this._buttonListeners[ZmOperation.RUN_FILTER_RULE] = new AjxListener(this, this._runListener);
 	this._progressController = new ZmProgressController(container, prefsApp);
+
+	// reset community name since it gets its value from a setting
+	ZmFilterRule.C_LABEL[ZmFilterRule.C_COMMUNITY] = ZmMsg.communityName;
 };
 
 ZmFilterRulesController.prototype = new ZmController();
@@ -411,6 +420,21 @@ function(dialog, folderList) {
 	var filterSel = listView && listView.getSelection();
 	if (!(filterSel && filterSel.length)) {
 		return;
+	}
+
+	// Bug 78392: We need the selection sorted
+	if (filterSel.length > 1) {
+		var list = this._listView.getList().getArray();
+		var selectedIds = {}, sortedSelection = [];
+		for (var i=0; i<filterSel.length; i++) {
+			selectedIds[filterSel[i].id] = true;
+		}
+		for (var i=0; i<list.length; i++) {
+			if (selectedIds[list[i].id]) {
+				sortedSelection.push(list[i]);
+			}
+		}
+		filterSel = sortedSelection;
 	}
 
 	var work = new ZmFilterWork(filterSel, this._outgoing);

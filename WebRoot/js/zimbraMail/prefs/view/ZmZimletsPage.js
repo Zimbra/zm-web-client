@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -17,7 +23,7 @@
  * Creates a Zimlets preference page.
  * @constructor
  * @class ZmZimletsPage
- * This class represents a page that allows the user to enable/disable availbale
+ * This class represents a page that allows the user to enable/disable available
  * zimlets. User can see all the simlets those are enabled by admin for his account.
  * Out of these available zimlets user can choose some or all for his account.
  *
@@ -65,8 +71,7 @@ function () {
 
 ZmZimletsPage.prototype.reset =
 function(){
-	var zimlets = this.getZimlets();
-	var arr = zimlets._vector.getArray();
+	var arr = this.getZimletsArray();
 	for (var i = 0; i < arr.length; i++) {
 		arr[i].restoreStatus();
 	}
@@ -75,8 +80,10 @@ function(){
 
 ZmZimletsPage.prototype.showMe =
 function(deferred){
-	ZmPreferencesPage.prototype.showMe.call(this);	
-	if (!appCtxt.getZimletMgr().getZimlets().length) {
+	ZmPreferencesPage.prototype.showMe.call(this);
+	var zimlets = this.getZimlets();
+	if (zimlets.size() === 0) {
+		this._zimlets = null; //otherwise it would stay cached and would not update when this method is calledback.
 		if (!deferred) {
 			appCtxt.getAppController().addListener(ZmAppEvent.POST_STARTUP, new AjxListener(this, this.showMe, [true]));
 		}
@@ -84,7 +91,7 @@ function(deferred){
 	}
 	if (this._listView) {
 		var s = this._listView.getSelection();
-		this._listView.set(this.getZimlets()._vector.clone());
+		this._listView.set(zimlets.clone());
 		if (s && s[0]) {
 			this._listView.setSelection(s[0]);
 		}
@@ -268,11 +275,7 @@ function(dialog, aid, result) {
 			this._uploadButton.setEnabled(true);
 
 			var settings = appCtxt.getSettings(appCtxt.accountList.mainAccount);
-			var dialog = appCtxt.getYesNoMsgDialog();
-			dialog.reset();
-			dialog.registerCallback(DwtDialog.YES_BUTTON, settings._refreshBrowserCallback, settings, [dialog]);
-			dialog.setMessage(ZmMsg.zimletDeploySuccess, DwtMessageDialog.INFO_STYLE);
-			dialog.popup();
+			settings._showConfirmDialog(ZmMsg.zimletDeploySuccess, settings._refreshBrowserCallback.bind(settings), DwtMessageDialog.INFO_STYLE);
 		}
 	}
 };
@@ -327,27 +330,23 @@ function(zimletName, result) {
 	}
 
 	// remove the uninstalled zimlet from the listview
-    var zimlets = this.getZimlets();
-	var zimlet = zimlets.getPrefZimletByName(zimletName);
+    var zimletsCtxt = this.getZimletsCtxt();
+	var zimlet = zimletsCtxt.getPrefZimletByName(zimletName);
 	if (zimlet) {
-		zimlets.removePrefZimlet(zimlet);
-		this._listView.set(zimlets._vector.clone());
+		zimletsCtxt.removePrefZimlet(zimlet);
+		this._listView.set(zimletsCtxt.getZimlets().clone());
 	}
 
-	// prompt user to resart client
+	// prompt user to restart client
 	var settings = appCtxt.getSettings(appCtxt.accountList.mainAccount);
-	var dialog = appCtxt.getYesNoMsgDialog();
-	dialog.reset();
-	dialog.registerCallback(DwtDialog.YES_BUTTON, settings._refreshBrowserCallback, settings, [dialog]);
-	dialog.setMessage(ZmMsg.zimletUndeploySuccess, DwtMessageDialog.INFO_STYLE);
-	dialog.popup();
+	settings._showConfirmDialog(ZmMsg.zimletUndeploySuccess, settings._refreshBrowserCallback.bind(settings), DwtMessageDialog.INFO_STYLE);
 };
 
 ZmZimletsPage.prototype.addCommand  =
 function(batchCommand) {
 	var soapDoc = AjxSoapDoc.create("ModifyZimletPrefsRequest", "urn:zimbraAccount");
 	// LDAP supports multi-valued attrs, so don't serialize list
-	var zimlets = this.getZimlets()._vector.getArray();
+	var zimlets = this.getZimletsArray();
 	var settingsObj = appCtxt.getSettings();
 	var setting = settingsObj.getSetting(ZmSetting.CHECKED_ZIMLETS);
 	var checked = [];
@@ -366,7 +365,7 @@ function(batchCommand) {
 ZmZimletsPage.prototype._reloadZimlets =
 function() {
 	// reset all zimlets origStatus
-	var zimlets = this.getZimlets()._vector.getArray();
+	var zimlets = this.getZimletsArray();
 	for (var i = 0; i < zimlets.length; i++) {
 		zimlets[i].resetStatus();
 	}
@@ -382,24 +381,20 @@ function() {
 
 	this._reloadZimlets();
 
-	var cd = appCtxt.getYesNoMsgDialog();
-	cd.reset();
-	cd.registerCallback(DwtDialog.YES_BUTTON, appCtxt.getSettings()._refreshBrowserCallback, appCtxt.getSettings(), [cd]);
-	cd.setMessage(ZmMsg.zimletChangeRestart, DwtMessageDialog.WARNING_STYLE);
-	cd.popup();
+	var settings = appCtxt.getSettings();
+	settings._showConfirmDialog(ZmMsg.zimletChangeRestart, settings._refreshBrowserCallback.bind(settings));
 };
 
 ZmZimletsPage.prototype._isChecked =
 function(name) {
-	var z = this.getZimlets().getPrefZimletByName(name);
+	var z = this.getZimletsCtxt().getPrefZimletByName(name);
 	return (z && z.active);
 };
 
 ZmZimletsPage.prototype.isDirty =
 function() {
-	var allZimlets = this.getZimlets();
 	var dirty = false;
-	var arr = allZimlets._vector.getArray();
+	var arr = this.getZimletsArray();
 	var dirtyZimlets = [];
 
 	var printZimlet = function(zimlet) {
@@ -429,13 +424,24 @@ function() {
  * 
  * @private
  */
-ZmZimletsPage.prototype.getZimlets =
+ZmZimletsPage.prototype.getZimletsCtxt =
 function() {
 	if (!this._zimlets) {
 		this._zimlets = ZmZimletsPage._getZimlets();
 	}
 	return this._zimlets;
 };
+
+ZmZimletsPage.prototype.getZimlets =
+function() {
+	return this.getZimletsCtxt().getZimlets();
+};
+
+ZmZimletsPage.prototype.getZimletsArray =
+function() {
+	return this.getZimlets().getArray();
+};
+
 
 ZmZimletsPage._getZimlets =
 function() {
@@ -458,22 +464,6 @@ function() {
 	}
 	zimlets.sortByName();
 	return zimlets;
-};
-
-ZmZimletsPage.prototype.validate  =
-function() {
-	var emailZimlet = document.getElementById("com_zimbra_email_zimletCheckbox");
-	if (emailZimlet && !emailZimlet.checked) {
-		if (appCtxt.get(ZmSetting.USE_ADDR_BUBBLES)) {
-			return false;
-		}
-	}
-	return true;
-};
-
-ZmZimletsPage.prototype.getErrorMessage = 
-function() {
-	return AjxMessageFormat.format(ZmMsg.invalidBubblePrefs, ZmMsg.emailZimletLabel);	
 };
 
 /**
@@ -526,7 +516,7 @@ function(list) {
 
 ZmPrefZimletListView.prototype._handleZimletsLoaded = function(evt) {
     this._zimletsLoaded = true;
-    var array = this.parent.getZimlets()._vector.getArray();
+    var array = this.parent.getZimletsArray();
     for (var i = 0; i < array.length; i++) {
         var item = array[i];
         var label = item.label || item.name.replace(/^.*_/,"");
@@ -635,7 +625,7 @@ function(ev) {
 	var flvId = target.getAttribute("_flvId");
 	var flv = AjxCore.objectWithId(flvId);
 	var name = target.getAttribute("_name");
-	var z = flv.parent.getZimlets().getPrefZimletByName(name);
+	var z = flv.parent.getZimletsCtxt().getPrefZimletByName(name);
 	if (z) {
 		z.active = !z.active;
 	}
@@ -677,6 +667,11 @@ ZmPrefZimlets.prototype.constructor = ZmPrefZimlets;
 ZmPrefZimlets.prototype.toString =
 function() {
 	return "ZmPrefZimlets";
+};
+
+ZmPrefZimlets.prototype.getZimlets =
+function() {
+	return this._vector;
 };
 
 ZmPrefZimlets.prototype.addPrefZimlet =

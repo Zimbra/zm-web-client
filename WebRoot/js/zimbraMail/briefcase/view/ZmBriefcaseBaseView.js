@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -54,7 +60,7 @@ function() {
 ZmBriefcaseBaseView.prototype._sortIndex =
 function(list, item){
     if(!list){
-        return 0;
+        return null;
     }
     var a = list.getArray(), index = a.length;
 	for(var i = 0; i < a.length; i++) {
@@ -65,7 +71,7 @@ function(list, item){
 		}
 
 	}
-	return index;
+	return { listIndex: index, displayIndex: index};
 };
 
 ZmBriefcaseBaseView.prototype._changeListener =
@@ -76,31 +82,42 @@ function(ev) {
 	var items = ev.getDetail("items");
 
 	if (ev.event == ZmEvent.E_CREATE) {
+		var indices;
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
-			this.addItem(item, this._sortIndex(this._list, item));
-            this.scrollToItem(item);
-            if(this.getSelection().length > 0){
-                this.selectItem(item, true);
-            }else{
-                this.setSelection(item);
-            }
+			if (this._list) {
+				indices = this._sortIndex(this._list, item);
+				if (indices) {
+					this.addItem(item, indices.displayIndex, false, indices.listIndex);
+					this.scrollToItem(item);
+					if(this.getSelection().length == 0) {
+						// Only select if nothing else is selected
+						this.setSelection(item);
+					}
+				}
+			} else {
+				// Create the list and add the item
+				this.addItem(item, 0, false, 0);
+				this.setSelection(item);
+			}
 		}
 	}
 
-    if(ev.event == ZmEvent.E_MODIFY){
-        for (var i = 0; i < items.length; i++) {
-			var item = items[i];
+    if (ev.event == ZmEvent.E_MODIFY) {
+		var updateList = false;
+		var item;
+		var nameUpdated;
+		for (var i = 0; i < items.length; i++) {
+			item = items[i];
 			if (this._list && this._list.contains(item)) {
-                this._redrawItem(item);
-                if (this._expanded && this._expanded[item.id]){
-                    //if already expanded, update revisions row
-                    this.parent._expand(item);
-
-                }
-
-            }
+				nameUpdated = ev.getDetail(ZmBriefcaseBaseItem.NAME_UPDATED);
+				if (nameUpdated) {
+					this._handleRename(item);
+				} else {
+					this._handleModified(item);
+				}
+			}
 		}
     }
 
@@ -115,6 +132,18 @@ function(ev) {
         }
     }
 
+};
+
+ZmBriefcaseBaseView.prototype._handleRename = function(item) {
+	this._handleModified(item);
+};
+
+ZmBriefcaseBaseView.prototype._handleModified = function(item) {
+	this._redrawItem(item);
+	if (this._expanded && this._expanded[item.id]) {
+		//if already expanded, update revisions row
+		this.parent._expand(item);
+	}
 };
 
 
@@ -155,7 +184,7 @@ ZmBriefcaseBaseView.prototype.uploadFiles =
 function() {
     var attachDialog = appCtxt.getUploadDialog();
     var files = this.processUploadFiles();
-    attachDialog.uploadFiles(files, document.getElementById("zdnd_form"), {id:this._controller._folderId});
+    attachDialog.uploadFiles(null, files, document.getElementById("zdnd_form"), {id:this._controller._folderId});
 };
 
 /**
@@ -279,10 +308,18 @@ function(){
         this._renameField.setDisplay(Dwt.DISPLAY_NONE);
         this._renameField.setLocation("-10000px", "-10000px");
         this._renameField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
-        this.addSelectionListener(new AjxListener(this, this.cleanup));
     }
     return this._renameField;
 };
+
+ZmBriefcaseBaseView.prototype._mouseDownAction = function(mouseEv, div) {
+	if (this._renameField && this._renameField.getVisibility() && this._fileItem) {
+		this._doRename(this._fileItem);
+		this.resetRenameFile();
+	}
+	ZmListView.prototype._mouseDownAction(mouseEv, div);
+};
+
 
 ZmBriefcaseBaseView.prototype._handleKeyUp =
 function(ev) {
@@ -290,19 +327,7 @@ function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
     var item = this._fileItem;
     if(key == DwtKeyEvent.KEY_ENTER){
-        var fileName = this._renameField.getValue();
-        if(fileName != '' && fileName != item.name){
-            if(this._checkDuplicate(fileName)){
-                this._redrawItem(item);
-                var warning = appCtxt.getMsgDialog();
-                warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, fileName), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
-                warning.popup();
-            }else{
-                item.rename(fileName, new AjxCallback(this, this.resetRenameFile));
-            }
-        }else{
-            this.redrawItem(item);
-        }
+        this._doRename(item);
         allowDefault = false;
     }else if( key == DwtKeyEvent.KEY_ESCAPE){
         this._redrawItem(item);
@@ -310,6 +335,27 @@ function(ev) {
     }
 	DwtUiEvent.setBehaviour(ev, true, allowDefault);
 };
+
+ZmBriefcaseBaseView.prototype._doRename = function(item) {
+	var fileName = this._renameField.getValue();
+	if (fileName != '' && (fileName != item.name)) {
+		var warning = appCtxt.getMsgDialog();
+		if (this._checkDuplicate(fileName)) {
+			this._redrawItem(item);
+			warning.setMessage(AjxMessageFormat.format(ZmMsg.itemWithFileNameExits, fileName), DwtMessageDialog.CRITICAL_STYLE, ZmMsg.briefcase);
+			warning.popup();
+		} else if(ZmAppCtxt.INVALID_NAME_CHARS_RE.test(fileName)) {
+			//Bug fix # 79986 show warning popup in case of invalid filename
+			warning.setMessage(AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(fileName)), DwtMessageDialog.WARNING_STYLE, ZmMsg.briefcase);
+			warning.popup();
+		} else {
+			item.rename(fileName, new AjxCallback(this, this.resetRenameFile));
+		}
+	} else {
+		this.redrawItem(item);
+	}
+}
+
 
 ZmBriefcaseBaseView.prototype.resetRenameFile =
 function(){
@@ -339,9 +385,9 @@ function(name){
     return false;   
 };
 
-ZmBriefcaseBaseView.prototype.cleanup =
-function(){
-    if(this._renameField)
+ZmBriefcaseBaseView.prototype.cleanup = function() {
+    if (this._renameField) {
         this.resetRenameFile();
+	}
 };
 

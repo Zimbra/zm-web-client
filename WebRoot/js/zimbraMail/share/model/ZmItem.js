@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -58,6 +64,10 @@ ZmItem = function(type, id, list, noCache) {
 	var curItem = appCtxt.getById(id);
 	if (curItem) {
 		this._list = AjxUtil.hashCopy(curItem._list);
+        if (!list) {
+            // No list specified, preserve the previous list
+            this.list = curItem.list;
+        }
 	}
 	if (list) {
 		this._list[list.id] = true;
@@ -77,7 +87,6 @@ ZmItem.prototype.toString = function() { return "ZmItem"; };
 
 ZmItem.APP 				= {};	// App responsible for item
 ZmItem.MSG_KEY 			= {};	// Type names
-ZmItem.COUNT_KEY    	= {};	// msg key that handles plural
 ZmItem.ICON 			= {};	// Representative icons
 ZmItem.RESULTS_LIST 	= {};	// Function for creating search results list
 
@@ -145,6 +154,7 @@ ZmItem.FLAG_LOW_PRIORITY		= "?";
 ZmItem.FLAG_HIGH_PRIORITY		= "!";
 ZmItem.FLAG_PRIORITY            = "+"; //msg prioritization
 ZmItem.FLAG_NOTE                = "t"; //specially for notes
+ZmItem.FLAG_OFFLINE_CREATED     = "o";
 
 ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_FLAGGED,
@@ -160,7 +170,8 @@ ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_HIGH_PRIORITY,
 	ZmItem.FLAG_LOW_PRIORITY,
 	ZmItem.FLAG_PRIORITY,
-    ZmItem.FLAG_NOTE
+    ZmItem.FLAG_NOTE,
+    ZmItem.FLAG_OFFLINE_CREATED
 ];
 
 // Map flag to item property
@@ -179,6 +190,7 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]		= "isLowPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]		= "isHighPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_PRIORITY]          = "isPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_NOTE]              = "isNote";
+ZmItem.FLAG_PROP[ZmItem.FLAG_OFFLINE_CREATED]   = "isOfflineCreated";
 
 // DnD actions this item is allowed
 
@@ -215,7 +227,6 @@ ZmItem.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
  * @param	{Hash}	params			a hash of parameters
  * @param {constant}	params.app			the app that handles this item type
  * @param {String}		params.nameKey		the message key for item name
- * @param {String}		params.countKey 	the message key for plural of item name
  * @param {String}		params.icon			the name of item icon class
  * @param {String}		params.soapCmd		the SOAP command for acting on this item
  * @param {String}		params.itemClass	the name of class that represents this item
@@ -228,7 +239,6 @@ ZmItem.registerItem =
 function(item, params) {
 	if (params.app)				{ ZmItem.APP[item]					= params.app; }
 	if (params.nameKey)			{ ZmItem.MSG_KEY[item]				= params.nameKey; }
-	if (params.countKey)	    { ZmItem.COUNT_KEY[item]		    = params.countKey; }
 	if (params.icon)			{ ZmItem.ICON[item]					= params.icon; }
 	if (params.soapCmd)			{ ZmItem.SOAP_CMD[item]				= params.soapCmd; }
 	if (params.itemClass)		{ ZmList.ITEM_CLASS[item]			= params.itemClass; }
@@ -359,6 +369,17 @@ function(tagName) {
 };
 
 /**
+ * is it possible to add a tag to this item?
+ * @param tagName
+ * @returns {boolean}
+ */
+ZmItem.prototype.canAddTag =
+function(tagName) {
+	return !this.hasTag(tagName);
+};
+
+
+/**
 * Gets the folder id that contains this item, if available.
 * 
 * @return	{String}	the folder id or <code>null</code> for none
@@ -434,7 +455,10 @@ function(tagIds) {
 
 ZmItem.prototype.getVisibleTags =
 function() {
-	return this.tags;
+    if(!appCtxt.get(ZmSetting.TAGGING_ENABLED)){
+        return [];
+    }
+    return this.tags;
 	//todo - do we need anything from this?
 //    var searchAll = appCtxt.getSearchController().searchAllAccounts;
 //    if (!searchAll && this.isShared()) {
@@ -503,12 +527,10 @@ function() {
 ZmItem.prototype.isShared =
 function() {
 	if (this._isShared == null) {
-		if (this.id == -1) {
+		if (this.id === -1) {
 			this._isShared = false;
 		} else {
-			var acct = appCtxt.getActiveAccount();
-			var id = String(this.id);
-			this._isShared = ((id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0));
+			this._isShared = appCtxt.isRemoteId(this.id);
 		}
 	}
 	return this._isShared;
@@ -806,18 +828,40 @@ function(str) {
  */
 ZmItem.prototype._notify =
 function(event, details) {
-	this._evt.item = this;
-	ZmModel.prototype._notify.call(this, event, details);
-	if (this.list) {
-		if (details) {
-			details.items = [this];
-		} else {
-			details = {items: [this]};
+	this._doNotify(event, details);
+};
+
+ZmItem.prototype._setupNotify =
+function() {
+    this._doNotify();
+}
+
+ZmItem.prototype._doNotify =
+function(event, details) {
+	if (this._evt) {
+		this._evt.item = this;
+		if (event != null) {
+			ZmModel.prototype._notify.call(this, event, details);
 		}
-		this.list._evt.item = this;
-		this.list._evt.items = [this];
-		this.list._notify(event, details);
+	} else {
+		var idText = "";
+		if (this.type && this.id) {
+			idText = ": item = " + this.type + "(" + this.id + ")";
+		}
+		DBG.println(AjxDebug.DBG1, "ZmItem._doNotify, missing _evt" + idText);
 	}
+    if (this.list) {
+        this.list._evt.item = this;
+        this.list._evt.items = [this];
+        if (event != null) {
+            if (details) {
+                details.items = [this];
+            } else {
+                details = {items: [this]};
+            }
+            this.list._notify(event, details);
+        }
+    }
 };
 
 /**

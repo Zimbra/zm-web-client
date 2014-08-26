@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -46,6 +52,7 @@
  * @param	{Boolean}	params.isCheckedByDefault	the default state for "checked" display style
  * @param	{Boolean}	params.noTooltips			if <code>true</code>, do not show toolt ips for tree items
  * @param	{Boolean}	params.skipImplicit			if <code>true</code>, do not save implicit prefs of expanded/collapsed node status for this overview (see ZmDialog.prototype._setOverview)
+ * @param	{Boolean}	params.dynamicWidth			if <code>true</code>, the width is dynamic, i.e. the width is auto instead of fixed. Used for ZmDolderChooser so far.
  * @param {ZmOverviewController}	controller			the overview controller
  * 
  * @extends	DwtComposite
@@ -58,13 +65,14 @@ ZmOverview = function(params, controller) {
 
 	this._controller = controller;
 
-	this.setScrollStyle(params.scroll || Dwt.SCROLL);
+	this.setScrollStyle(params.scroll || Dwt.SCROLL_Y);
 
 	this.overviewId			= params.overviewId;
 	this.containerId		= params.containerId;
 	this.account			= params.account;
 	this.selectionSupported	= params.selectionSupported;
 	this.actionSupported	= params.actionSupported;
+	this.dynamicWidth		= params.dynamicWidth;
 	this.dndSupported		= params.dndSupported;
 	this.headerClass		= params.headerClass;
 	this.showUnread			= params.showUnread;
@@ -74,6 +82,7 @@ ZmOverview = function(params, controller) {
 	this.noTooltips			= params.noTooltips;
 	this.isAppOverview		= params.isAppOverview;
 	this.skipImplicit 		= params.skipImplicit;
+	this.appName            = params.appName;
 
 	this._treeIds			= [];
 	this._treeHash			= {};
@@ -308,6 +317,13 @@ function() {
 	}
 };
 
+ZmOverview.prototype.clearSelection =
+function() {
+	if (this._selectedTreeItem) {
+		this._selectedTreeItem._tree.deselectAll();
+	}
+};
+
 /**
  * @private
  */
@@ -330,9 +346,10 @@ function() {
 		}
 	}
 
-	if (item) {
-		item.focus();
-	}
+    if (item) {
+        item.focus();
+        item._tree.setSelection(item, false, true);
+    }
 };
 
 /**

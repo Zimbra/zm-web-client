@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 /**
@@ -40,7 +46,7 @@ ZmApptQuickAddDialog = function(parent) {
 	DBG.timePt("ZmQuickAddDialog constructor", true);
 
 	AjxDispatcher.run("GetResources");
-    AjxDispatcher.require("CalendarCore");
+    AjxDispatcher.require(["MailCore", "CalendarCore"]);
 
     var app = appCtxt.getApp(ZmApp.CALENDAR);
     this._fbCache = new ZmFreeBusyCache(app);
@@ -174,7 +180,7 @@ function() {
 	var errorMsg = null;
 
 	if (subj && subj.length) {
-		if (!ZmTimeInput.validStartEnd( this._startDateField, this._endDateField, this._startTimeSelect, this._endTimeSelect)) {
+		if (!DwtTimeInput.validStartEnd( this._startDateField, this._endDateField, this._startTimeSelect, this._endTimeSelect)) {
 			errorMsg = ZmMsg.errorInvalidDates;
 		}
 	} else {
@@ -210,7 +216,7 @@ function(loc) {
 		if (this._folderSelect.size() > 1) {
 			members.push(this._folderSelect);
 		}
-		// XXX: ZmTimeInput doesn't handle focus yet
+		// XXX: DwtTimeInput doesn't handle focus yet
 		members = members.concat([this._startDateField, this._startDateButton, this._startTimeSelect.getInputField(),
 								  this._endDateField, this._endDateButton,  this._endTimeSelect.getInputField(),
 								  this._repeatSelect]);
@@ -257,7 +263,7 @@ function() {
 											validationStyle:DwtInputField.CONTINUAL_VALIDATION,
 											parentElement:(this._htmlElId + "_subject")});
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
+	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
 
 
     this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
@@ -265,13 +271,13 @@ function() {
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION,
 											parentElement:(this._htmlElId + "_location")});
-	Dwt.setSize(this._locationField.getInputElement(), "100%", "22px");
+	Dwt.setSize(this._locationField.getInputElement(), "100%", "2rem");
 
     // create DwtSelects
 	this._showAsSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_showAs")});
 	for (var i = 0; i < ZmApptViewHelper.SHOWAS_OPTIONS.length; i++) {
 		var option = ZmApptViewHelper.SHOWAS_OPTIONS[i];
-		this._showAsSelect.addOption(option.label, option.selected, option.value, "showAs" + option.value);
+		this._showAsSelect.addOption(option.label, option.selected, option.value, "ShowAs" + option.value);
 	}
 
 	this._privacySelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_privacy")});
@@ -295,11 +301,11 @@ function() {
 	// create selects for Time section
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 	
-	this._startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START);
+	this._startTimeSelect = new DwtTimeInput(this, DwtTimeInput.START);
 	this._startTimeSelect.addChangeListener(timeSelectListener);
 	this._startTimeSelect.reparentHtmlElement(this._htmlElId + "_startTime");
 
-	this._endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END);
+	this._endTimeSelect = new DwtTimeInput(this, DwtTimeInput.END);
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 	this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_endTime");
 
@@ -626,7 +632,7 @@ function(ev) {
 
 ZmApptQuickAddDialog.prototype._timeChangeListener =
 function(ev, id) {
-	ZmTimeInput.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField, this._dateInfo, id);
+	DwtTimeInput.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField, this._dateInfo, id);
     if (!this._appt.isAllDayEvent()) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
     }

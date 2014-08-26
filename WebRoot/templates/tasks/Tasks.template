@@ -1,5 +1,5 @@
 <template id="tasks.Task#TaskDetailsDialog">
-	<table class="ZPropertySheet" cellspacing="6">
+	<table role="presentation" class="ZPropertySheet" cellspacing="6">
 		<tr valign='center'>
 			<td class='LabelColName'><$= ZmMsg.icsLabel $></td>
 			<td class='LabelColValue'><a href="<$= data.icsUrl $>" target="_blank"><$= data.icsUrl $></a></td>
@@ -10,7 +10,7 @@
 <template id='tasks.Tasks#ReadOnlyView'>
 	<div class='MsgHeaderTable'>
 	<div class='SubjectCol LabelColValue' style="margin-left:5px;" id='zv__TKV__<$=Dwt.getNextId()$>__su'><$= data.subject $></div>
-	<table id='${id}_hdrTable' class="ZPropertySheet" cellspacing="6" style="margin-left:5px;">
+	<table role="presentation" id='${id}_hdrTable' class="ZPropertySheet" cellspacing="6" style="margin-left:5px;">
 
 		<$ if (data.location) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.location, val:data.location, id:'__lo'}) $><$ } $>
 		<$ if (data.startDate) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.startDate, val:data.startDate, id:'__sd'}) $><$ } $>
@@ -24,7 +24,7 @@
 		<$ if (data.isException) { $>
 		<tr valign='center'>
 			<td colspan=100>
-				<table>
+				<table role="presentation">
 					<tr>
 						<td><$= AjxImg.getImageHtml("ApptException") $></td>
 						<td><b><$= ZmMsg.apptExceptionNote$></b></td>
@@ -33,7 +33,7 @@
 			</td>
 		</tr>
 		<$ } $>
-		<$ if (data.attachStr) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
+		<$ if (data.attachStr) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr, id:'__at'}) $><$ } $>
 	</table>
     <div id='${_infoBarId}'></div>
 	</div>

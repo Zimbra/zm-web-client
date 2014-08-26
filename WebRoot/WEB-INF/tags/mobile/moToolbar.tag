@@ -1,15 +1,17 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software Foundation,
+ * version 2 of the License.
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" dynamic-attributes="dynattrs" %>
@@ -74,7 +76,7 @@
             <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
             <c:if test="${mailbox.features.spam}">
             <c:choose>
-            <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+            <c:when test="${zm:boolean(context.folder.isSpam)}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
             <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
             </c:choose>
             </c:if>
@@ -144,7 +146,7 @@
 <div class="tr"><span class="td" id="fbtd"><span id="sc"></span>
 <c:if test="${not context.isContactSearch}">
 <span class="zo_button_group delete_button">
-<input type='button' class='zo_button prev_button' name='actionJunk' value='<fmt:message key="${context.folder.isSpam ? 'actionNotSpam' : 'actionSpam'}"/>' onclick="$('zForm').anAction[0].value='actionMark${context.folder.isSpam ? 'Unspam' : 'Spam' }';submitForm($('zForm'));">
+<input type='button' class='zo_button prev_button' name='actionJunk' value='<fmt:message key="${zm:boolean(context.folder.isSpam) ? 'actionNotSpam' : 'actionSpam'}"/>' onclick="$('zForm').anAction[0].value='actionMark${zm:boolean(context.folder.isSpam) ? 'Unspam' : 'Spam' }';submitForm($('zForm'));">
 <input type='submit' class='zo_button next_button' name='action${context.folder.isInTrash ? 'Hard' : ''}Delete' value='<fmt:message key="delete"/>'>
 </span>
 </c:if>
@@ -168,7 +170,7 @@
             <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
             <c:if test="${mailbox.features.spam}">
             <c:choose>
-            <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+            <c:when test="${zm:boolean(context.folder.isSpam)}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
             <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
             </c:choose>
             </c:if>

@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -41,6 +47,9 @@ ZmNewWindow = function() {
 
 	//update body class to reflect user selected font
 	document.body.className = "user_font_" + appCtxt.get(ZmSetting.FONT_NAME);
+	//update root html elment class to reflect user selected font size
+	Dwt.addClass(document.documentElement, "user_font_size_" + appCtxt.get(ZmSetting.FONT_SIZE));
+
 
 	this._settings = appCtxt.getSettings();
 	this._settings.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError); //must set this for child window since AjxException is fresh for this window. Also must pass AjxException and the handler since we want it to update the one from this child window, and not the parent window
@@ -158,8 +167,8 @@ function(ev) {
  */
 ZmNewWindow.prototype.startup =
 function() {
-
 	// get params from parent window b/c of Safari bug #7162
+	// and in case of a refresh, our old window parameters are still stored there
 	if (window.parentController) {
 		var childWinObj = window.parentController.getChildWindow(window);
 		if (childWinObj) {
@@ -205,7 +214,9 @@ function() {
 
 	// inherit parent's identity collection
 	var parentPrefsApp = parentAppCtxt.getApp(ZmApp.MAIL);
-	appCtxt.getApp(ZmApp.MAIL)._identityCollection = parentPrefsApp.getIdentityCollection();
+    if (parentPrefsApp) {
+        appCtxt.getApp(ZmApp.MAIL)._identityCollection = parentPrefsApp.getIdentityCollection();
+    }
 
 	// Find target first.
 	var target;
@@ -267,7 +278,7 @@ function() {
 		if (cmd == "compose") {
 			cc._setView(params);
 		} else {
-			AjxDispatcher.require(["CalendarCore"]);
+			AjxDispatcher.require(["MailCore", "ContactsCore", "CalendarCore"]);
 			var op = params.action || ZmOperation.NEW_MESSAGE;
 			if (params.msg && params.msg._mode) {
 				switch (params.msg._mode) {
@@ -301,6 +312,7 @@ function() {
 		//the user might of course click "reply to all" later in the window so I deep copy here in any case.
 		var msg = this._deepCopyMsg(params.msg);
 		msg.isRfc822 = params.isRfc822; //simpler
+		params.msg.addChangeListener(msg.detachedChangeListener.bind(msg));
 
 		var msgController = AjxDispatcher.run("GetMsgController");
 		appCtxt.msgCtlrSessionId = msgController.getSessionId();
@@ -309,6 +321,14 @@ function() {
 		startupFocusItem = msgController.getCurrentView();
 
 		target = "view-window";
+	} else if (cmd == 'documentEdit') {
+		AjxDispatcher.require(["Docs"]);
+ 		ZmDocsEditApp.setFile(params.id, params.name, params.folderId);
+		ZmDocsEditApp.restUrl = params.restUrl;
+		new ZmDocsEditApp();
+		if (params.name) {
+			Dwt.setTitle(params.name);
+		}
 	} else if (cmd == "shortcuts") {
 		var panel = appCtxt.getShortcutsPanel();
 		panel.popup(params.cols);
@@ -316,9 +336,8 @@ function() {
 	
 	this._appViewMgr.loadingView.setVisible(false);
 
-	var kbMgr = appCtxt.getKeyboardMgr();
-	kbMgr.setTabGroup(rootTg);
-	kbMgr.grabFocus(startupFocusItem);
+	this._kbMgr.setTabGroup(rootTg);
+	this._kbMgr.grabFocus(startupFocusItem);
 };
 
 /**
@@ -485,7 +504,7 @@ ZmNewWindow.prototype.setActiveApp = function() {};
  */
 ZmNewWindow.prototype.getKeyMapMgr =
 function() {
-	return this._kbMgr;
+	return this._kbMgr.__keyMapMgr;
 };
 
 /**
@@ -649,6 +668,18 @@ function(msg) {
 		newMsg.share = msg.share;
 	}
 
+	newMsg.subscribeReq = msg.subscribeReq;
+
+	// TODO: When/if you get rid of this function, also remove the cloneOf uses in:
+	//		ZmBaseController.prototype._tagListener
+	//		ZmBaseController.prototype._setTagMenu
+	//		ZmMailMsgView.prototype._setTags
+	//		ZmMailMsgView.prototype._handleResponseSet
+	//		ZmMailListController.prototype._handleResponseFilterListener
+	//		ZmMailListController.prototype._handleResponseNewApptListener
+	//		ZmMailListController.prototype._handleResponseNewTaskListener
+	newMsg.cloneOf = msg;
+
 	return newMsg;
 };
 
@@ -660,13 +691,20 @@ function(msg) {
  */
 ZmNewWindow._confirmExitMethod =
 function(ev) {
-	if (appCtxt.get(ZmSetting.WARN_ON_EXIT) && window.parentController &&
-		(window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach"))
-	{
+	if (!appCtxt.get(ZmSetting.WARN_ON_EXIT) || !window.parentController)
+		return;
+
+	var cmd = window.newWindowCommand;
+
+	if (cmd == "compose" || cmd == "composeDetach")	{
 		var cc = AjxDispatcher.run("GetComposeController", appCtxt.composeCtlrSessionId);
 		// only show native confirmation dialog if compose view is dirty
 		if (cc && cc._composeView && cc._composeView.isDirty()) {
 			return ZmMsg.newWinComposeExit;
 		}
+	} else if (cmd == 'documentEdit') {
+		var ctrl = ZmDocsEditApp._controller;
+		var msg = ctrl.checkForChanges();
+		return msg || ctrl.exit();
 	}
 };

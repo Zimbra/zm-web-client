@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -107,11 +113,13 @@ function(parent, type, id) {
             isShareVisible = !folder.getAccount().isMain && folder.getAccount().isZimbraAccount;
         }
 		parent.enableAll(true);
+		var isSubFolderOfReadOnly = folder.parent && folder.parent.isReadOnly();
+		parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.MOVE, ZmOperation.EDIT_PROPS], !isSubFolderOfReadOnly);
 		parent.enable(ZmOperation.SYNC, folder.isFeed()/* || folder.hasFeeds()*/);
 		parent.enable(ZmOperation.SYNC_ALL, folder.isFeed() || folder.hasFeeds());
 		parent.enable(ZmOperation.SHARE_FOLDER, isShareVisible);
 		parent.enable(ZmOperation.EMPTY_FOLDER, ((hasContent || folder.link) && isEmptyFolderAllowed && !appCtxt.isExternalAccount()));	// numTotal is not set for shared folders
-		parent.enable(ZmOperation.RENAME_FOLDER, !(folder.isDataSource() || appCtxt.isExternalAccount()));		// dont allow datasource'd folder to be renamed via overview
+		parent.enable(ZmOperation.RENAME_FOLDER, !(isSubFolderOfReadOnly || folder.isDataSource() || appCtxt.isExternalAccount()));		// dont allow datasource'd folder to be renamed via overview
 		parent.enable(ZmOperation.NEW_FOLDER, !(folder.disallowSubFolder || appCtxt.isExternalAccount()));
 
 		if (folder.isRemote() && folder.isReadOnly()) {
@@ -261,7 +269,8 @@ function() {
 		ZmOperation.SEP,
 		ZmOperation.PRIORITY_FILTER,
 		ZmOperation.EXPAND_ALL,
-		ZmOperation.SYNC
+		ZmOperation.SYNC,
+		ZmOperation.FIND_SHARES
 	];
 };
 
@@ -506,7 +515,7 @@ ZmFolderTreeController.prototype._deleteListener =
 function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 
-	// bug fix #35405 - accounts with disallowSubFolder flag set cannot be moved to Trash
+	// bug fix #35405 - accounts with disallowSubFolder flag set (eg Yahoo) do not support moving folder to Trash
 	var trashFolder = appCtxt.isOffline ? this.getDataTree().getById(ZmFolder.ID_TRASH) : null;
 	if (trashFolder && trashFolder.disallowSubFolder && organizer.numTotal > 0) {
 		var d = appCtxt.getMsgDialog();
@@ -515,6 +524,7 @@ function(ev) {
 		return;
 	}
 
+	// TODO: not sure what SPAM is doing in here - can you delete it?
 	if (organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash() || (trashFolder && trashFolder.disallowSubFolder)) {
 		this._pendingActionData = organizer;
 		var ds = this._deleteShield = appCtxt.getOkCancelMsgDialog();
@@ -522,19 +532,24 @@ function(ev) {
 		ds.registerCallback(DwtDialog.OK_BUTTON, this._deleteShieldYesCallback, this, organizer);
 		ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._deleteShield);
 		var confirm;
-		if (organizer.type == ZmOrganizer.SEARCH) {
+		if (organizer.type === ZmOrganizer.SEARCH) {
 			confirm = ZmMsg.confirmDeleteSavedSearch;
-		} else if (organizer.disallowSubFolder || organizer.isMountpoint) {
-			confirm = ZmMsg.confirmDeleteFolder;
-		} else if (organizer.nId == ZmFolder.ID_TRASH) {
+		}
+		else if (organizer.nId == ZmFolder.ID_TRASH) {
 			confirm = ZmMsg.confirmEmptyTrashFolder;
-		} else {
+		}
+		else if (organizer.nId == ZmFolder.ID_SPAM) {
 			confirm = ZmMsg.confirmEmptyFolder;
+		}
+		else {
+			// TODO: should probably split out msgs by folder type
+			confirm = ZmMsg.confirmDeleteFolder;
 		}
 		var msg = AjxMessageFormat.format(confirm, organizer.getName());
 		ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		ds.popup();
-	} else {
+	}
+	else {
 		this._doMove(organizer, appCtxt.getById(ZmFolder.ID_TRASH));
 	}
 };

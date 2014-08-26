@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -84,7 +90,7 @@ function(list, sortField, folderId) {
 	this._rendered = true;
 
 	// check in case there are more items but no scrollbar
-	if (this._isPageless) {
+	if (this._isPageless && (!list.isGal || list.isGalPagingSupported)) {
 		this._checkItemCount();
 	}
 };
@@ -116,21 +122,6 @@ function() {
 ZmContactsBaseView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
-};
-
-/**
- * overriding in order to prevent distribution lists from being draggable.
- */
-ZmContactsBaseView.prototype._getDragProxy =
-function(dragOp) {
-	var dndSelection = this.getDnDSelection();
-	dndSelection = AjxUtil.toArray(dndSelection); // it might be array or just a scalar ZmContact. So this will always get array.
-	for (var i = 0; i < dndSelection.length; i++) { //if any is a DL - don't allow the drag. There could be a mix in search results.
-		if (dndSelection[i].isDistributionList()) { //don't allow dragging a DL
-			return null;
-		}
-	}
-	return ZmListView.prototype._getDragProxy.call(this, dragOp);
 };
 
 /**
@@ -210,10 +201,29 @@ function(itemArray) {
  */
 ZmContactsBaseView.prototype._modifyContact =
 function(ev) {
+	var list = this.getList();
+	//the item was updated - the list might be "old" (not pointing to the latest items,
+	// since we refreshed the items in the appCtxt cache by a different view. see bug 84226)
+	//therefor let's make sure the modified contact replaces the old one in the list.
+	var contact = ev.item;
+	if (contact) {
+		var arr = list.getArray();
+		for (var i = 0; i < arr.length; i++) {
+			if (arr[i].id === contact.id) {
+				if (arr[i] === contact) {
+					//nothing changed, still points to same object
+					break;
+				}
+				arr[i] = contact;
+				//update the viewed contact
+				this.parent.setContact(contact);
+				break;
+			}
+		}
+	}
 	// if fileAs changed, resort the internal list
 	// XXX: this is somewhat inefficient. We should just remove this contact and reinsert
 	if (ev.getDetail("fileAsChanged")) {
-		var list = this.getList();
 		if (list) {
 			list.sort(ZmContact.compareByFileAs);
 		}
@@ -468,7 +478,10 @@ function() {
 		endSortVals:	ZmContactAlphabetBar._parseSortVal(ZmMsg.alphabetEndSortValue)
 	};
 
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
+	var element = this.getHtmlElement();
+	element.innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
+	Dwt.setHandler(element, DwtEvent.ONMOUSEOUT, ZmContactAlphabetBar._onMouseOut);
+	Dwt.setHandler(element, DwtEvent.ONMOUSEOVER, ZmContactAlphabetBar._onMouseOver);
 };
 
 ZmContactAlphabetBar._parseSortVal =
@@ -491,7 +504,11 @@ function(sortVal) {
  * @private
  */
 ZmContactAlphabetBar._onMouseOver =
-function(cell) {
+function(event) {
+	var cell = DwtUiEvent.getTarget(event);
+	if (cell.nodeName.toLowerCase() !== "td") {
+		return;
+	}
 	// get reference to alphabet bar - ugh
 	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
@@ -503,7 +520,11 @@ function(cell) {
  * @private
  */
 ZmContactAlphabetBar._onMouseOut =
-function(cell) {
+function(event) {
+	var cell = DwtUiEvent.getTarget(event);
+	if (cell.nodeName.toLowerCase() !== "td") {
+		return;
+	}
 	// get reference to alphabet bar - ugh
 	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {

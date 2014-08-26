@@ -230,12 +230,12 @@
     </app:status>
 </c:if>
 <c:choose>
-<c:when test="${param.actionMessageMovedTrash}" >
+<c:when test="${zm:boolean(param.actionMessageMovedTrash)}" >
     <app:status>
         <fmt:message key="actionMessageDeleted"/>
     </app:status>
 </c:when>
-<c:when test="${param.actionMessageMoved}" >
+<c:when test="${zm:boolean(param.actionMessageMoved)}" >
     <app:status>
         <fmt:message  key="actionSingleMessageMoved">
             <fmt:param value="${param.movedFolderName}"/>
@@ -288,49 +288,49 @@
     <c:when test="${context.isConversationSearch and mailbox.prefs.readingPaneLocation eq 'off'}">
         <app:convListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and action eq 'view'}">
+    <c:when test="${zm:boolean(context.isMessageSearch) and action eq 'view'}">
         <app:messageView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'right' and action eq 'paneView'}">
+    <c:when test="${zm:boolean(context.isMessageSearch) and mailbox.prefs.readingPaneLocation eq 'right' and action eq 'paneView'}">
         <app:messageColumnView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'bottom' and action eq 'rowView'}">
+    <c:when test="${zm:boolean(context.isMessageSearch) and mailbox.prefs.readingPaneLocation eq 'bottom' and action eq 'rowView'}">
         <app:messageRowView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'off' and action eq 'view'}">
+    <c:when test="${zm:boolean(context.isMessageSearch) and mailbox.prefs.readingPaneLocation eq 'off' and action eq 'view'}">
         <app:messageView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'right'}">
+    <c:when test="${zm:boolean(context.isMessageSearch) and mailbox.prefs.readingPaneLocation eq 'right'}">
         <app:messageColumnView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and mailbox.prefs.readingPaneLocation eq 'bottom'}">
+    <c:when test="${zm:boolean(context.isMessageSearch) and mailbox.prefs.readingPaneLocation eq 'bottom'}">
         <app:messageRowView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch}">
+    <c:when test="${zm:boolean(context.isMessageSearch)}">
         <app:messageListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isContactSearch and action eq 'view'}">
+    <c:when test="${zm:boolean(context.isContactSearch) and action eq 'view'}">
         <app:contactView context="${context}"/>
     </c:when>
-    <c:when test="${context.isContactSearch or context.isGALSearch}">
+    <c:when test="${zm:boolean(context.isContactSearch) or context.isGALSearch}">
         <app:contactListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isTaskSearch}">
+    <c:when test="${zm:boolean(context.isTaskSearch)}">
         <app:taskListView context="${context}"/>
     </c:when>
-	<c:when test="${context.isVoiceMailSearch and action eq 'listen'}">
+	<c:when test="${zm:boolean(context.isVoiceMailSearch) and action eq 'listen'}">
 		<app:voiceMailView context="${context}"/>
 	</c:when>
-    <c:when test="${context.isVoiceMailSearch}">
+    <c:when test="${zm:boolean(context.isVoiceMailSearch)}">
         <app:voiceMailListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isCallSearch}">
+    <c:when test="${zm:boolean(context.isCallSearch)}">
         <app:callListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isBriefcaseSearch and (param.view eq 'dv' or empty param.view)}">
+    <c:when test="${zm:boolean(context.isBriefcaseSearch) and (param.view eq 'dv' or empty param.view)}">
         <app:briefcaseListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isBriefcaseSearch and param.view eq 'ev'}">
+    <c:when test="${zm:boolean(context.isBriefcaseSearch) and param.view eq 'ev'}">
         <app:briefcaseExplorerView context="${context}"/>
     </c:when>
     <%--bug:56196

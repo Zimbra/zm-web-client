@@ -284,7 +284,7 @@
 <c:if test="${not empty param.contactId}">
     <input type="hidden" name="contactId" value="${fn:escapeXml(param.contactId)}" />
 </c:if>
-<c:if test="${message.isDraft}"><input type="hidden" name="draftid" value="${message.id}"/></c:if>
+<c:if test="${zm:boolean(message.isDraft)}"><input type="hidden" name="draftid" value="${message.id}"/></c:if>
 </form>
 <c:if test="${not empty requestScope.compAction and ua.isiPad eq true}">
 <script type="text/javascript"><c:set var="js">

@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -46,6 +52,9 @@ ZmAddrBook = function(params) {
 
 ZmAddrBook.prototype = new ZmFolder;
 ZmAddrBook.prototype.constructor = ZmAddrBook;
+
+ZmAddrBook.prototype.isZmAddrBook = true;
+ZmAddrBook.prototype.toString = function() { return "ZmAddrBook"; };
 
 
 // Consts
@@ -85,17 +94,7 @@ function(addrBookA, addrBookB) {
 
 // Public methods
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmAddrBook.prototype.toString = 
-function() {
-	return "ZmAddrBook";
-};
-
-ZmAddrBook.prototype.getIcon = 
+ZmAddrBook.prototype.getIcon =
 function() {
 	if (this.nId == ZmFolder.ID_ROOT)			{ return null; }
 	if (this.nId == ZmFolder.ID_TRASH)			{ return "Trash"; }
@@ -118,58 +117,30 @@ function() {
 /**
  * @private
  */
-ZmAddrBook.prototype.mayContain =
-function(what) {
-	if (!what) return true;
+ZmAddrBook.prototype.mayContain = function(what) {
 
+	if (!what) {
+		return true;
+	}
+
+	// Distribution Lists is a system-generated folder
 	if (this.id == ZmOrganizer.ID_DLS) {
 		return false;
 	}
 
-	if (what instanceof ZmAddrBook) {
-		if (this.link) {
-			return false; //can't move a folder to a shared folder, regardless of read-only status 
-		}
-		if (!appCtxt.multiAccounts) {
-			return true;
-		}
-		return this.mayContainFolderFromAccount(what.getAccount()); // cannot move folders across accounts, unless the target is local
+	if (what.isZmAddrBook) {
+		return ZmFolder.prototype.mayContain.apply(this, arguments);
 	}
 
-	if (this.nId == ZmOrganizer.ID_ROOT) {
-		// cannot drag anything onto root folder
-		return false;
-	}
-	if (this.link) {
-		// cannot drop anything onto a read-only addrbook
-		if (this.isReadOnly()) {
+	// An item or an array of items is being moved
+	var items = AjxUtil.toArray(what);
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		if (item.type !== ZmItem.CONTACT && item.type !== ZmItem.GROUP) {
+			// only contacts are valid for addr books.
 			return false;
 		}
 	}
 
-	// An item or an array of items is being moved
-	var items = (what instanceof Array) ? what : [what];
-	var item = items[0];
-
-	if (item.type != ZmItem.CONTACT && item.type != ZmItem.GROUP) {
-		// only contacts are valid for addr books.
-		return false;
-	}
-
-	// can't move items to folder they're already in; we're okay if
-	// we have one item from another folder
-	if (item.folderId) {
-		var invalid = true;
-		for (var i = 0; i < items.length; i++) {
-			var tree = appCtxt.getById(items[i].folderId);
-			if (tree != this) {
-				invalid = false;
-				break;
-			}
-		}
-
-		return !invalid;
-	}
-
-	return true;
+	return ZmFolder.prototype.mayContain.apply(this, arguments);
 };

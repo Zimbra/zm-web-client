@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -164,11 +170,11 @@ function() {
 	return this._apptEditView.getComposeMode();
 };
 
-// Sets the mode ZmHtmlEditor should be in.
+// Sets the mode the editor should be in.
 ZmApptComposeView.prototype.setComposeMode = 
 function(composeMode) {
-	if (composeMode == DwtHtmlEditor.TEXT || 
-		(composeMode == DwtHtmlEditor.HTML && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)))
+	if (composeMode == Dwt.TEXT ||
+		(composeMode == Dwt.HTML && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)))
 	{
 		this._apptEditView.setComposeMode(composeMode);
 	}
@@ -411,6 +417,13 @@ function(msg, style, cb, cbObj, cbArgs) {
         msgDlg.setTitle(ZmMsg.timezoneConflictTitle);
         msgDlg.popup();
 }
+ZmApptComposeView.prototype.showInvalidDurationRecurrenceMsg =
+	function() {
+		var msgDlg = appCtxt.getMsgDialog(true);
+		msgDlg.setMessage(ZmMsg.durationRecurrenceError, DwtMessageDialog.WARNING_STYLE);
+		msgDlg.setTitle(ZmMsg.durationRecurrenceErrorTitle);
+		msgDlg.popup();
+	}
 
 // Private / Protected methods
 
@@ -419,6 +432,10 @@ function() {
     this._apptEditView = new ZmApptEditView(this, this._attendees, this._controller, this._dateInfo);
 	this._apptEditView.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 	this.addControlListener(new AjxListener(this, this._controlListener));
+
+	// make the appointment edit view take up the full size of this view
+	var bounds = this.getInsetBounds();
+	this._apptEditView.setSize(bounds.width, bounds.height);
 };
 
 ZmApptComposeView.prototype.getApptEditView =
@@ -447,12 +464,11 @@ function() {
 
 ZmApptComposeView.prototype._controlListener =
 function(ev) {
-	var newWidth = (ev.oldWidth == ev.newWidth) ? null : ev.newWidth;
-	var newHeight = (ev.oldHeight == ev.newHeight) ? null : ev.newHeight;
-
-	if (!(newWidth || newHeight)) return;
-
-	this._apptEditView.resize(newWidth, newHeight);
+	if (ev && ev.type === DwtControlEvent.RESIZE) {
+	    // make the appointment edit view take up the full size of this view
+	    var bounds = this.getInsetBounds();
+	    this._apptEditView.setSize(bounds.width, bounds.height);
+	}
 };
 
 ZmApptComposeView.prototype.deactivate =

@@ -1,0 +1,227 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2014 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2014 Zimbra, Inc. All Rights Reserved. 
+ * ***** END LICENSE BLOCK *****
+ */
+
+/* This is styling for the publicly shared briefcase folders */
+
+/* General Elements */
+
+HTML, BODY, TD {
+	@FontFamily-default@
+}
+
+HTML {
+	font-size: 11px;
+}
+
+BODY {
+	background: none transparent;
+	color: @TxtC@;
+	margin: 0px;
+	padding: 0px;
+}
+
+A:link, A:visited,
+.FakeAnchor, .Object {
+	@Anchor@
+}
+
+A:hover,
+.Object-hover {
+	@Anchor-hover@
+}
+
+A:active,
+.Object-active {
+	@Anchor-active@
+}
+
+.layoutTable {
+	border-collapse: collapse;
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+}
+.layoutTable>TBODY>TR>TD {
+	border-width: 0px;
+	margin: 0px;
+	padding: 0px;
+}
+
+/*.smallGrayLinks A,
+.smallGrayLinks SPAN.Object {
+	color:#999;
+}
+
+.smallGrayLinks A:hover,
+.smallGrayLinks SPAN.Object-hover {
+	color:#666;
+}*/
+
+.modified,
+.author,
+.version {
+	color: #666;
+	font-size: 1.1rem;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.pageLink {
+	@Anchor@
+	font-size: 1.2rem;
+}
+
+.pageIcon {
+	cursor: pointer;
+	width: 16;
+}
+
+.ImgPage, .ImgNotebook, .ImgSection {
+	height:16px;
+	width:16px;
+}
+
+
+/* Structured Elements */
+
+.headerContainer {
+}
+
+.sidebarContainer {
+	background-color: #EEE;
+}
+
+.titlebarContainer {
+}
+
+/*.titlebarContainer .breadcrumbHeader {
+	padding-top: 0.2rem;
+	height: 1rem;
+}
+
+.titlebarContainer .breadcrumbHeader .breadcrumbs {
+}
+
+.titlebarContainer .breadcrumbHeader .breadcrumbs .breadcrumb_table {
+	border-collapse: collapse;
+	border-width: 0px;
+	margin: 0px;
+	padding: 0px;
+}
+
+.titlebarContainer .breadcrumbHeader .breadcrumbs .breadCrumbSeparator {
+	color: #999999;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.titlebarContainer .breadcrumbHeader .tags {
+	color: #999999;
+	text-align: right;
+	white-space: nowrap;
+}*/
+
+.titlebarContainer .titleHeader {
+	background-color: #EEE;
+	border-bottom: 1px solid #CCC;
+	height: 1rem;
+	padding: 0.5rem 0.5rem 0.7rem;
+}
+
+.titlebarContainer .titleHeader .pageIcon {}
+
+.titlebarContainer .titleHeader .pageName {
+	color: black;
+	font-size: 2rem;
+	line-height: 3rem;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.titlebarContainer .titleHeader .owner {}
+
+.contentContainer {
+	height: 100%;
+	padding: 5px 5px 20px;
+	width: 100%;
+}
+
+.contentContainer .toc {
+	margin: 10px;
+}
+
+.contentContainer .toc .tocTable {
+	padding: 5px;
+	width: 100%;
+}
+
+.contentContainer .toc .tocTable .horzBorder {
+	padding: 0.5rem;
+	width: 100%;
+}
+
+.contentContainer .toc .tocTable .tocHeader {
+	color: #333;
+	font-size: 1.4rem;
+}
+
+.contentContainer .toc .tocTable .tocLineSeparator {
+	border-bottom: 1px dotted #CCC;
+	height: 0px;
+}
+
+.contentContainer .toc .tocTable .linespace {}
+
+.contentContainer .toc .tocTable .tocListTable {
+	border-collapse: collapse;
+	border-width: 0px;
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+}
+
+.contentContainer .toc .tocTable .tocListTable>TBODY>TR>TD {
+	padding: .75rem;
+}
+
+.contentContainer .toc .tocTable .tocListTable .headerUnderLine TD {
+	border-bottom: 1px solid #CCC;
+}
+
+.contentContainer .toc .tocTable .tocListTable .headerUnderLine .header {
+	color: #595959;
+	font-size: 1rem;
+	font-weight: bold;
+}
+
+.contentContainer .toc .tocTable .tocListTable .dotLine {}
+
+.contentContainer .toc .tocTable .tocListTable .dotLine TD {
+	border-bottom: 1px dotted #EEE;
+}
+
+.contentContainer .toc .tocTable .tocListTable .dotLine .author {}
+
+.footerContainer {
+	border-top: 1px solid #CCC;
+	border-bottom: 1px solid #CCC;
+	height: 1.5rem;
+}

@@ -1,15 +1,21 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Zimbra Software, LLC.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
  * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.4 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
  * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
 /*
@@ -70,7 +76,6 @@ AjxPackage.require("ajax.dwt.events.DwtMouseEvent");
 AjxPackage.require("ajax.dwt.events.DwtMouseEventCapture");
 AjxPackage.require("ajax.dwt.events.DwtListViewActionEvent");
 AjxPackage.require("ajax.dwt.events.DwtSelectionEvent");
-AjxPackage.require("ajax.dwt.events.DwtHtmlEditorStateEvent");
 AjxPackage.require("ajax.dwt.events.DwtTreeEvent");
 AjxPackage.require("ajax.dwt.events.DwtHoverEvent");
 AjxPackage.require("ajax.dwt.events.DwtOutsideMouseEventMgr");
@@ -111,6 +116,10 @@ AjxPackage.require("ajax.dwt.widgets.DwtText");
 AjxPackage.require("ajax.dwt.widgets.DwtIframe");
 AjxPackage.require("ajax.dwt.widgets.DwtForm");
 AjxPackage.require("ajax.dwt.widgets.DwtMessageDialog");
+AjxPackage.require("ajax.dwt.widgets.DwtChooser");
+AjxPackage.require("ajax.dwt.widgets.DwtTimeSelect");
+
+AjxPackage.require("ajax.3rdparty.jquery.jquery");
 
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
@@ -125,5 +134,8 @@ AjxPackage.require("zimbraMail.share.model.ZmSetting");
 AjxPackage.require("zimbraMail.core.ZmAppCtxt");
 AjxPackage.require("zimbraMail.core.ZmOperation");
 AjxPackage.require("zimbraMail.core.ZmMimeTable");
+AjxPackage.require("zimbraMail.offline.ZmOffline");
+AjxPackage.require("zimbraMail.offline.model.ZmOfflineDB");
 
+AjxPackage.require("zimbraMail.share.view.ZmTagsHelper");
 
