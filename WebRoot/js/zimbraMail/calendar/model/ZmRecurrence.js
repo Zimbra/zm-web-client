@@ -483,8 +483,8 @@ function(startTime) {
 	
 	if (this.repeatType == ZmRecurrence.NONE) return;
 
-	if (this.repeatCustom != "0")
-		return;
+	//if (this.repeatCustom != "0")
+		//return;
 
  	if (this.repeatType == ZmRecurrence.WEEKLY) {
 		this.repeatWeeklyDays = [ZmCalItem.SERVER_WEEK_DAYS[this._startDate.getDay()]];
