@@ -106,8 +106,24 @@
                     <c:set var="attach" value="${zm:getAttachmentExists(condition)}"/>
                     <fmt:message key="FILT_COND_ATTACHMENT_${attach.exists ? 'EXISTS' : 'NOT_EXISTS'}"/>
                 </c:when>
+                <c:when test="${zm:isAddressCondition(condition)}">
+                    <c:set var="addr" value="${zm:getAddress(condition)}"/>
+                    <c:choose>
+                        <c:when test="${addr.headerName eq 'to' or addr.headerName eq 'cc' or addr.headerName eq 'to,cc' or addr.headerName eq 'from'}">
+                            <fmt:message key="FILT_COND_HEADER_${addr.headerOp}">
+                                <fmt:param><fmt:message key="FILT_COND_HEADER_${addr.headerName}"/></fmt:param>
+                                <fmt:param>${fn:escapeXml(addr.headerValue)}</fmt:param>
+                            </fmt:message>
+                        </c:when>
+                        <c:otherwise>
+                            <fmt:message key="FILT_COND_GENERIC_HEADER_${addr.headerOp}">
+                                <fmt:param>${fn:escapeXml(addr.headerName)}</fmt:param>
+                                <fmt:param>${fn:escapeXml(addr.headerValue)}</fmt:param>
+                            </fmt:message>
+                        </c:otherwise>
+                    </c:choose>
+                </c:when>
             </c:choose>
-
         </td>
     </tr>
     </c:forEach>
