@@ -275,10 +275,10 @@ action_stop                         stop checkbox (true)
     </td>
 </c:when>
 <c:when test="${zm:isAddressCondition(condition)}">
-    <c:set var="ab" value="${zm:getAddress(condition)}"/>
+    <c:set var="addr" value="${zm:getAddress(condition)}"/>
     <td>
         <input type="hidden" name="${condi}" value="address"/>
-        <c:set var="selected" value="${ab.headerName}"/>
+        <c:set var="selected" value="${addr.headerName}"/>
         <select name="${condi}_header" style='width:100%'>
             <option <c:if test="${selected eq 'from'}">selected</c:if> value="from">
                     <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="from"/></fmt:param></fmt:message>
@@ -294,16 +294,16 @@ action_stop                         stop checkbox (true)
     </td>
     <td colspan='3'>
         <select name="${condi}_op">
-            <option  value="IS"><fmt:message key="EFILT_COND_HEADER_IS"/>
-            <option  value="NOT_Is"><fmt:message key="EFILT_COND_HEADER_NOT_IS"/>
-            <option  value="CONTAINS"><fmt:message key="EFILT_COND_HEADER_CONTAINS"/>
-            <option  value="NOT_CONTAINS"><fmt:message key="EFILT_COND_HEADER_NOT_CONTAINS"/>
-            <option  value="MATCHES"><fmt:message key="EFILT_COND_HEADER_MATCHES"/>
-            <option  value="NOT_MATCHES"><fmt:message key="EFILT_COND_HEADER_NOT_MATCHES"/>
+            <option <c:if test="${addr.headerOp eq 'IS'}">selected</c:if> value="IS"><fmt:message key="EFILT_COND_HEADER_IS"/>
+            <option <c:if test="${addr.headerOp eq 'NOT_IS'}">selected</c:if> value="NOT_IS"><fmt:message key="EFILT_COND_HEADER_NOT_IS"/>
+            <option <c:if test="${addr.headerOp eq 'CONTAINS'}">selected</c:if> value="CONTAINS"><fmt:message key="EFILT_COND_HEADER_CONTAINS"/>
+            <option <c:if test="${addr.headerOp eq 'NOT_CONTAINS'}">selected</c:if> value="NOT_CONTAINS"><fmt:message key="EFILT_COND_HEADER_NOT_CONTAINS"/>
+            <option <c:if test="${addr.headerOp eq 'MATCHES'}">selected</c:if> value="MATCHES"><fmt:message key="EFILT_COND_HEADER_MATCHES"/>
+            <option <c:if test="${addr.headerOp eq 'NOT_MATCHES'}">selected</c:if> value="NOT_MATCHES"><fmt:message key="EFILT_COND_HEADER_NOT_MATCHES"/>
         </select>
     </td>
     <td colspan=2>
-        <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(ab.headerValue)}">
+        <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(addr.headerValue)}">
         <input type="hidden" name="${condi}" value="header"/>
     </td>
 </c:when>
