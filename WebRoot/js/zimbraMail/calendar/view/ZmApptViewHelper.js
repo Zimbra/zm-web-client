@@ -386,6 +386,10 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 
 	}
 	if (type == ZmCalBaseItem.EQUIPMENT && !ZmApptViewHelper._equipment) {
+		if (!appCtxt.get(ZmSetting.GAL_ENABLED)) {
+			//if GAL is disabled then user does not have permission to load equipment.
+			return null;
+		}
 		var equipment = ZmApptViewHelper._equipment = appCtxt.getApp(ZmApp.CALENDAR).getEquipment();
         if(!equipment.isLoaded) {
             equipment.load();
