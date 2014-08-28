@@ -2860,6 +2860,8 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		}
 		var apptStartDate = appt.startDate;
 		var apptEndDate   = appt.endDate;
+	    var apptDuration = appt.getDuration();
+
 		appt.setViewMode(viewMode);
 		if (startDateOffset) {
 			var sd = (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) ? appt.getUniqueStartDate() : new Date(appt.getStartTime());
@@ -2867,9 +2869,28 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 			appt.resetRepeatWeeklyDays();
 		}
 		if (endDateOffset) {
-			var ed = (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) ? appt.getUniqueEndDate() : new Date(appt.getEndTime());
-			appt.setEndDate(new Date(ed.getTime() + endDateOffset));
+			var endDateTime;
+
+			if (viewMode === ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
+				// For some reason the recurring all day events have their end date set to the next day while the normal all day events don't.
+				// For e.g. an event with startDate 9th June and endDate 10th June when dragged to the next day has varying results:
+				// -> Regular all day event has end Date as 9th June which with endDateOffset results in 10th June as new endDate
+				// -> Recurring all day event has end Date as 10th June which with endDateOffset results in 11th June as new endDate
+				// To tackle this the new End date is now calculated from the new start date and appt duration and equivalent of 1 day is subtracted from it.
+				// TODO: Need a better solution for this -> investigate why the end date difference is present in the first place.
+				if (appt.allDayEvent) {
+					endDateTime = appt.getStartTime() + apptDuration - AjxDateUtil.MSEC_PER_DAY;
+				}
+				else {
+					endDateTime = appt.getUniqueEndDate().getTime() + endDateOffset;
+				}
+			}
+			else {
+				endDateTime = appt.getEndTime()  + endDateOffset;
+			}
+			appt.setEndDate(new Date(endDateTime));
 		}
+
 		if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
 			//bug: 32231 - use proper timezone while creating exceptions
 			appt.setOrigTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
