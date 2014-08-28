@@ -2462,6 +2462,9 @@ function(ev) {
         this._locationConflictAppt.setRecurType(newSelectVal);
         this.locationConflictChecker();
     }
+    if (newSelectVal === "WEE") {
+        this._calItem._recurrence.repeatCustom =1;
+    }
 };
 
 /**
