@@ -628,6 +628,9 @@ function(ev) {
 ZmApptQuickAddDialog.prototype._repeatChangeListener = 
 function(ev) {
 	this._repeatDescField.innerHTML = ev._args.newValue != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.recurEndNone) : "";
+    if (this._repeatSelect._selectedValue === "WEE") {
+        this._appt._recurrence.repeatCustom = 1;
+    }
 };
 
 ZmApptQuickAddDialog.prototype._timeChangeListener =
