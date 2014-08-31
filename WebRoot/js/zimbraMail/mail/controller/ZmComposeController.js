@@ -1151,7 +1151,50 @@ ZmComposeController.prototype._getIdentity =
 function(msg) {
 	var account = (appCtxt.multiAccounts && appCtxt.getActiveAccount().isMain)
 		? appCtxt.accountList.defaultAccount : null;
-	return (msg && msg.identity) ? msg.identity : appCtxt.getIdentityCollection(account).selectIdentity(msg);
+	var identityCollection = appCtxt.getIdentityCollection(account);
+	if (!msg) {
+		var curSearch = appCtxt.getApp(ZmApp.MAIL).currentSearch;
+		var folderId = curSearch && curSearch.folderId;
+		if (folderId) {
+			return identityCollection.selectIdentityFromFolder(folderId);
+		}
+	}
+	msg = this._getInboundMsg(msg);
+	return (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
+};
+
+/**
+ * find the first message after msg (or msg itself) in the conv, that's inbound (not outbound). This is since inbound ones are
+ * relevant to the rules to select identify (such as folder rules, outbound could be in "sent" for example, or "to" address rules)
+ * @param msg
+ * @returns {ZmMailMsg}
+ */
+ZmComposeController.prototype._getInboundMsg =
+function(msg) {
+	var folder = appCtxt.getById(msg.folderId);
+	if (!folder.isOutbound()) {
+		return msg;
+	}
+	var conv = appCtxt.getById(msg.cid);
+	if (!conv || !conv.msgs) {
+		return msg;
+	}
+	//first find the message in the conv.
+	var msgs = conv.msgs.getArray();
+	for (var i = 0; i < msgs.length; i++) {
+		if (msgs[i].id === msg.id) {
+			break;
+		}
+	}
+	//now find the first msg after it that's not outbound
+	for (i = i + 1; i < msgs.length; i++) {
+		var nextMsg = msgs[i];
+		folder = appCtxt.getById(nextMsg.folderId);
+		if (!folder.isOutbound()) {
+			return nextMsg;
+		}
+	}
+	return msg;
 };
 
 ZmComposeController.prototype._initializeToolBar =

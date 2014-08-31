@@ -140,6 +140,20 @@ function(identity) {
 		this._size--;
 	}
 };
+/**
+ * try to find the persona to use from the rules defined in the accounts settings. Recurse to parent so to apply rules to sub-folders too.
+ * @param folderId
+ * @returns {*}
+ */
+ZmIdentityCollection.prototype.selectIdentityFromFolder =
+function(folderId) {
+	if (!folderId) {
+		return this.defaultIdentity;
+	}
+	var folder = appCtxt.getById(folderId);
+	var parent = folder.parent;
+	return this._folderToIdentity[folderId] || this.selectIdentityFromFolder(parent && parent.id);
+};
 
 ZmIdentityCollection.prototype.selectIdentity =
 function(mailMsg, type) {
@@ -160,17 +174,14 @@ function(mailMsg, type) {
 	identity = this._selectIdentityFromAddresses(mailMsg, AjxEmailAddress.CC);
 	if (identity) { return identity; }
 
-	// Check if a identity's folder is the same as where the message lives.
-	identity = this._folderToIdentity[mailMsg.folderId];
-	if (identity) { return identity; }
-
     //Check if a identity's address was in the attendees list
     if(mailMsg.isInvite()) {
         identity = this._selectIdentityFromAttendees(mailMsg);
         if (identity) { return identity; }
     }
 
-	return this.defaultIdentity;
+	// Check if a identity's folder is the same as where the message lives.
+	return this.selectIdentityFromFolder(mailMsg.folderId);
 };
 
 ZmIdentityCollection.prototype.initialize =

@@ -4219,10 +4219,8 @@ function(bEnableInputs) {
 
 ZmHiddenComposeView.prototype.getIdentity =
 function() {
-	var ac = window.parentAppCtxt || window.appCtxt;
-	var collection = ac.getIdentityCollection();
-	var val = ac.getActiveAccount().id;
-	return collection.getById(val);
+	//get the same identity we would have gotten as the selected one in full compose view persona select.
+	return this._controller._getIdentity(this._msg);
 };
 
 ZmHiddenComposeView.prototype.__initCtrl = function() {};
