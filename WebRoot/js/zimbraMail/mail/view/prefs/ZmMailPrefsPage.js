@@ -613,16 +613,20 @@ function() {
 ZmMailPrefsPage.prototype._postSave =
 function(changed) {
     var form = this.getFormObject(ZmSetting.POLLING_INTERVAL);
-    if (form && form.getSelectedOption() && form.getSelectedOption().getDisplayValue() == ZmMsg.pollInstant && appCtxt.get(ZmSetting.INSTANT_NOTIFY)
-            && !appCtxt.getAppController().getInstantNotify()){
-        //turn on instant notify if not already on
-        appCtxt.getAppController().setInstantNotify(true);
-    } else {
-        //turn instant notify off if it's on
-        if (appCtxt.getAppController().getInstantNotify()) {
-            appCtxt.getAppController().setInstantNotify(false);
+	var polling = form && form.getSelectedOption() && form.getSelectedOption().getDisplayValue();
+	if (polling) {
+		// A polling value is specified - apply it
+		if (polling == ZmMsg.pollInstant) {
+			// Instant notify is selected
+			if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) && !appCtxt.getAppController().getInstantNotify()) {
+				// Instant notify is not operating - Turn it on
+				appCtxt.getAppController().setInstantNotify(true);
+			}
+		}  else if (appCtxt.getAppController().getInstantNotify()) {
+			// Instant notify is not selected, but is currently operating - Turn it off
+			appCtxt.getAppController().setInstantNotify(false);
 		}
-    }
+	}
 
 	var vacationChangePrefs = [
 		ZmSetting.VACATION_MSG_ENABLED,
