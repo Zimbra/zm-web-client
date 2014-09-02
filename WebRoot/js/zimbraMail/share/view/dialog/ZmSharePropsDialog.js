@@ -49,6 +49,7 @@ ZmSharePropsDialog = function(shell, className) {
 
 	this._granteeInput = this._grantee.getInputElement();
 	this._granteeInputId = this._grantee._htmlElId;
+	Dwt.associateElementWithObject(this._granteeInput, this);
 
 	// create auto-completer
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
