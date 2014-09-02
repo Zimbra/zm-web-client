@@ -485,7 +485,7 @@ function(inputEl, sizeEl){
     var sizeStr = [], className, totalSize =0;
     for(var i=0; i<files.length;i++){
         var file = files[i];
-        var size = file.size || file.fileSize /*Safari*/;
+        var size = file.size || file.fileSize /*Safari*/ || 0;
 	    var aCtxt = ZmAppCtxt.handleWindowOpener();
         if(size > aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT))
             className = "RedC";

@@ -256,7 +256,7 @@ ZmUploadManager.prototype.getErrors =
 function(file, maxSize, errors, extensions){
 	var error = { errorCodes:[], filename: AjxStringUtil.htmlEncode(file.name) };
     var valid = true;
-    var size = file.size || file.fileSize; // Safari
+    var size = file.size || file.fileSize || 0;  // fileSize: Safari
     if (size && (size > maxSize)) {
 		valid = false;
 		error.errorCodes.push( ZmUploadManager.ERROR_INVALID_SIZE );

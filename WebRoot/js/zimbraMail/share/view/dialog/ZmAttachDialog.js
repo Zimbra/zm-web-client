@@ -498,7 +498,7 @@ function(inputEl, sizeEl){
     var sizeStr = [], className, totalSize =0;
     for(var i=0; i<files.length;i++){
         var file = files[i];
-        var size = file.size || file.fileSize /*Safari*/;
+        var size = file.size || file.fileSize /*Safari*/ || 0;
         if ((-1 /* means unlimited */ != appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT)) &&
             (size > appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT))) {
             className = "RedC";

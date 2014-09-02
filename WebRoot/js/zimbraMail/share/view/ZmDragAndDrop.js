@@ -80,7 +80,7 @@ ZmDragAndDrop.isAttachmentSizeExceeded = function(files, showDialog) {
         if (file) {
 			//Check the total size of the files we upload this time (we don't know the previously uploaded files total size so we do the best we can).
 			//NOTE - we compare to the MTA message size limit since there's no limit on specific attachments.
-            size += file.size || file.fileSize; /*Safari*/
+            size += file.size || file.fileSize /*Safari*/ || 0;
             //Showing Error dialog if the attachment size is exceeded
             if ((-1 /* means unlimited */ != ZmDragAndDrop.MESSAGE_SIZE_LIMIT) &&
                 (size > ZmDragAndDrop.MESSAGE_SIZE_LIMIT)) {
