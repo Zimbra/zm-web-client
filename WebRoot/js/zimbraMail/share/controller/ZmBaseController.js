@@ -76,6 +76,7 @@ ZmBaseController = function(container, app, type, sessionId, searchResultsContro
 	this._listeners[ZmOperation.NEW_MESSAGE]	= this._composeListener.bind(this);
 	this._listeners[ZmOperation.CONTACT]		= this._contactListener.bind(this);
 	this._listeners[ZmOperation.VIEW]			= this._viewMenuItemListener.bind(this);
+	this._listeners[ZmOperation.GO_TO_URL]		= this._goToUrlListener.bind(this);
 
 	// TODO: do this better - avoid referencing specific apps
 	if (window.ZmImApp) {
@@ -1306,6 +1307,8 @@ ZmBaseController.prototype._getBubbleActionMenuOps = function() {
 	ops.push(ZmOperation.SEARCH_MENU);
 	ops.push(ZmOperation.NEW_MESSAGE);
 	ops.push(ZmOperation.CONTACT);
+	ops.push(ZmOperation.GO_TO_URL);
+
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED) && this._filterListener) {
 		ops.push(ZmOperation.ADD_FILTER_RULE_ADDRESS);
 	}
@@ -1583,4 +1586,21 @@ ZmBaseController.prototype._getSearchFolder = function() {
 ZmBaseController.prototype._getSearchFolderId = function(allowComplex) {
 	var s = this._activeSearch && this._activeSearch.search;
 	return s && (allowComplex || s.isSimple()) && s.folderId;
+};
+
+ZmBaseController.prototype._goToUrlListener = function(ev) {
+	var addr = this._getAddress(this._actionEv.address);
+	var parts = addr.split("@");
+	if (!parts.length) {
+		return;
+	}
+	var domain = parts[1];
+	var pieces = domain.split(".");
+	var url = "http://" + (pieces.length <= 2 ? "www." + domain : domain);
+	window.open(url, "_blank");
+
+};
+
+ZmBaseController.prototype._getAddress = function(obj) {
+	return obj.isAjxEmailAddress ? obj.address : obj;
 };
