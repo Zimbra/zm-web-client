@@ -1446,7 +1446,8 @@ function(dlg, msgId, partId) {
 		overviewId:		dlg.getOverviewId(this._app._name),
 		title:			ZmMsg.addToBriefcaseTitle,
 		description:	ZmMsg.targetFolder,
-		appName:		ZmApp.BRIEFCASE
+		appName:		ZmApp.BRIEFCASE,
+		noRootSelect:	true
 	};
     params.omit = {};
     params.omit[ZmFolder.ID_DRAFTS] = true;
