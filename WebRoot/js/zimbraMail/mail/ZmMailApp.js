@@ -237,6 +237,7 @@ function(settings) {
 	settings.registerSetting("REPLY_USE_PREFIX",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("SAVE_DRAFT_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("SAVE_TO_SENT",					{name:"zimbraPrefSaveToSent", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
+	settings.registerSetting("USE_SEND_MSG_SHORTCUT",			{name:"zimbraPrefUseSendMsgShortcut", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
 	settings.registerSetting("SELECT_AFTER_DELETE",				{name:"zimbraPrefMailSelectAfterDelete", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DELETE_SELECT_NEXT, isGlobal:true});
 	settings.registerSetting("SENT_FOLDER_NAME",				{name:"zimbraPrefSentMailFolder", type:ZmSetting.T_PREF, defaultValue:"sent"});
 	settings.registerSetting("SHOW_BCC",			            {type:ZmSetting.T_PREF, defaultValue:false});
@@ -343,6 +344,7 @@ function() {
 				ZmSetting.REPLY_INCLUDE_HEADERS,
 				ZmSetting.REPLY_PREFIX,
 				ZmSetting.SAVE_TO_SENT,
+				ZmSetting.USE_SEND_MSG_SHORTCUT,
                 ZmSetting.COMPOSE_SAME_FORMAT,
                 ZmSetting.MAIL_MANDATORY_SPELLCHECK
 			],
@@ -370,6 +372,11 @@ function() {
 
     ZmPref.registerPref("AUTO_READ_RECEIPT_ENABLED", {
 		displayName:		ZmMsg.autoReadReceiptRequest,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("USE_SEND_MSG_SHORTCUT", {
+		displayName:		AjxMessageFormat.format(ZmMsg.useSendMsgShortcut,[ZmKeys["compose.Send.display"]]),
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 

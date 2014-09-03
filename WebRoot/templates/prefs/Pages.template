@@ -490,6 +490,15 @@ and the container element is replaced with that control.
 					</tr>
 				<$ } $>
 
+				<$ if (data.isEnabled(ZmSetting.USE_SEND_MSG_SHORTCUT)) { $>
+					<tr>
+						<td>&nbsp;</td>
+						<td class='ZOptionsField'>
+							<div id='${id}_USE_SEND_MSG_SHORTCUT' tabindex='68' />
+						</td>
+					</tr>
+				<$ } $>
+
 				<$ if (data.isEnabled(ZmSetting.MAIL_ENABLED) || data.isEnabled(ZmSetting.ADMIN_DELEGATED)) { $>
 					<$ if (isHtmlCompose || isNewWindow ) { $>
 						<tr><td colspan=2><hr></td></tr>
