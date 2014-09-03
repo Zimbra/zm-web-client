@@ -62,7 +62,7 @@
 <!DOCTYPE html>
 <zm:getUserAgent var="ua" session="false"/>
 <!--
-    For supporting web client offline mode in Firefox, Cache-control header has to be set for this page for offline usage. “overrideCacheControl” attribute is set in the session in offline.jsp
+    For supporting web client offline mode in Firefox, Cache-control header has to be set for this page for offline usage. overrideCacheControl attribute is set in the session in offline.jsp
 -->
 <c:if test="${ua.isFirefox && sessionScope.overrideCacheControl}">
 	<%
