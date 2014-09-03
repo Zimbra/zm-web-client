@@ -906,7 +906,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.SEND: // Send message
-			if (this._uploadingProgress) {
+			if (!appCtxt.get(ZmSetting.USE_SEND_MSG_SHORTCUT) || this._uploadingProgress) {
 				break;
 			}
 			this._send();
