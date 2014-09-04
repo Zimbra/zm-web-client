@@ -313,7 +313,8 @@ function() {
 			priority: 10,
 			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
 			prefs: [
-				ZmSetting.ACCOUNTS
+				ZmSetting.ACCOUNTS,
+				ZmSetting.SAVE_TO_SENT_DELEGATED_TARGET
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
@@ -889,6 +890,18 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		precondition:		ZmSetting.MAIL_ENABLED,
 		changeFunction:		AjxCallback.simpleClosure(ZmPref.onChangeConfirm, null, ZmMsg.saveToSentWarning, ZmPref.getSendToFiltersActive, true, new AjxCallback(null, ZmPref.setFormValue, ["SAVE_TO_SENT", true]))
+	});
+
+	ZmPref.registerPref("SAVE_TO_SENT_DELEGATED_TARGET", {
+		displayName:		ZmMsg.saveToSentDelegatedTarget,
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:		ZmPref.ORIENT_VERTICAL,
+		displayOptions:		[ZmMsg.saveToSentDelegatedOwner,
+							ZmMsg.saveToSentDelegatedSender,
+							ZmMsg.saveToSentDelegatedBoth,
+							ZmMsg.saveToSentDelegatedNone],
+		options:			["owner", "sender", "both", "none"],
+		precondition:		ZmSetting.MAIL_ENABLED
 	});
 
 	ZmPref.registerPref("SEARCH_INCLUDES_SHARED", {

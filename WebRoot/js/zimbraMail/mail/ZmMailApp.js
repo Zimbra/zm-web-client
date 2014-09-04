@@ -238,6 +238,7 @@ function(settings) {
 	settings.registerSetting("SAVE_DRAFT_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("SAVE_TO_SENT",					{name:"zimbraPrefSaveToSent", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
 	settings.registerSetting("USE_SEND_MSG_SHORTCUT",			{name:"zimbraPrefUseSendMsgShortcut", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
+	settings.registerSetting("SAVE_TO_SENT_DELEGATED_TARGET",	{name: "zimbraPrefDelegatedSendSaveTarget", type: ZmSetting.T_PREF, defaultValue: "owner", isGlobal: true});
 	settings.registerSetting("SELECT_AFTER_DELETE",				{name:"zimbraPrefMailSelectAfterDelete", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DELETE_SELECT_NEXT, isGlobal:true});
 	settings.registerSetting("SENT_FOLDER_NAME",				{name:"zimbraPrefSentMailFolder", type:ZmSetting.T_PREF, defaultValue:"sent"});
 	settings.registerSetting("SHOW_BCC",			            {type:ZmSetting.T_PREF, defaultValue:false});
