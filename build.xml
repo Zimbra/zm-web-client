@@ -4,7 +4,7 @@
 
     <property file='${this.zwc.basedir}/build-custom.properties'/>
 
-    <property name="javac.target" value="1.7"/>
+    <property name="javac.target" value="1.8"/>
 
     <property environment="env"/>
 
@@ -307,6 +307,7 @@
             <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
             <lib dir='${common.lib.dir}' includes='gmbal-api-only-*.jar'/>
             <lib dir='${common.lib.dir}' includes='jaxb-api-*.jar'/>
+            <lib dir='${common.lib.dir}' includes='jaxb-core-*.jar'/>
             <lib dir='${common.lib.dir}' includes='jaxb-impl-*.jar'/>
             <lib dir='${common.lib.dir}' includes='jaxws-api-*.jar'/>
             <lib dir='${common.lib.dir}' includes='jaxws-rt-*.jar'/>
@@ -1625,6 +1626,7 @@ if (ext == null) ext = "";
                 <echo message="Generating ${tinymce.emoticon.file}" />
 
                 <script language="javascript">
+                    load("nashorn:mozilla_compat.js");
                     importClass(org.apache.tools.ant.util.Base64Converter);
                     importClass(java.nio.charset.StandardCharsets);
                     importClass(java.nio.file.Files);
