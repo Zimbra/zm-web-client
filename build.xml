@@ -1560,13 +1560,30 @@ if (ext == null) ext = "";
         <copy todir='${tinymce.dir}' verbose='${sync.verbose}'>
             <fileset dir='${tinymce.js.dir}' excludes="**/*.less"/>
             <fileset dir='${tinymce.custom.dir}' />
-            <scriptmapper language="javascript">
-                // replace dots with underscores in JS file names, retaining the suffix
-                if (/\.js$/.test(source)) {
-                  source = source.substr(0, source.length - 3).replace(/\./g, '_') + '.js';
-                }
-                self.addMappedName(source);
-            </scriptmapper>
+
+            <!-- TinyMCE uses "." to separate various transformed
+                 script types. This causes problems with our
+                 AjxPackage loader, which uses the period as a
+                 replacement for the directory separator. To work
+                 around this, we rename e.g. "plugin.min.js" to
+                 "plugin_min.js" and "jquery.tinymce.min.js" to
+                 "jquery_tinymce_min.js" -->
+            <chainedmapper>
+                <!-- replace the first period - and fall back to an
+                     identitymapper so we retain all files -->
+                <firstmatchmapper>
+                    <regexpmapper from="^([^.]+)\.(.+\..+\.js)$$"
+                                  to="\1_\2" />
+                    <identitymapper/>
+                </firstmatchmapper>
+                <!-- replace the second period - and likewise, fall
+                     back to an identitymapper -->
+                <firstmatchmapper>
+                    <regexpmapper from="^([^.]+)\.(.+\.js)$$"
+                                  to="\1_\2" />
+                    <identitymapper/>
+                </firstmatchmapper>
+            </chainedmapper>
         </copy>
 
         <!-- generate an authoritative and correct list of locales -->
