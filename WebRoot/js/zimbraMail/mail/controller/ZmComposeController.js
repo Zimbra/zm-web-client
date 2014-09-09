@@ -1158,8 +1158,9 @@ function(msg) {
 		if (folderId) {
 			return identityCollection.selectIdentityFromFolder(folderId);
 		}
+	} else {
+		msg = this._getInboundMsg(msg);
 	}
-	msg = this._getInboundMsg(msg);
 	return (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
 };
 
