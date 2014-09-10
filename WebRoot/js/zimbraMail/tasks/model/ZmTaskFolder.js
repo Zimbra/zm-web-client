@@ -141,7 +141,7 @@ function(what) {
 ZmTaskFolder.prototype.notifyCreate =
 function(obj) {
 	var t = ZmFolderTree.createFromJs(this, obj, this.tree);
-	var i = ZmOrganizer.getSortIndex(t, ZmTaskFolder.sortCompare);
+	var i = ZmOrganizer.getSortIndex(t, ZmFolder.sortCompareNonMail);
 	this.children.add(t, i);
 	t._notify(ZmEvent.E_CREATE);
 };
@@ -175,29 +175,3 @@ function(name) {
 	return ZmFolder.checkName(name);
 };
 
-/**
- * Comparison function for folders. Intended for use on a list of user folders
- * through a call to <code>Array.sort()</code>.
- * 
- * @param	{ZmTaskFolder}	calA		item A
- * @param	{ZmTaskFolder}	calB		item B
- * 
- * @return	{int}	0 if the folders match
- */
-ZmTaskFolder.sortCompare =
-function(calA, calB) {
-	var check = ZmOrganizer.checkSortArgs(calA, calB);
-	if (check != null) return check;
-
-	// links appear after personal calendars
-	if (calA.link != calB.link) {
-		return calA.link ? 1 : -1;
-	}
-
-	// sort by calendar name
-	var calAName = calA.name.toLowerCase();
-	var calBName = calB.name.toLowerCase();
-	if (calAName < calBName) return -1;
-	if (calAName > calBName) return 1;
-	return 0;
-};

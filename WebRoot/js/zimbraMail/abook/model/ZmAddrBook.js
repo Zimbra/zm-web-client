@@ -61,37 +61,6 @@ ZmAddrBook.prototype.toString = function() { return "ZmAddrBook"; };
 
 ZmAddrBook.ID_ADDRESSBOOK = ZmOrganizer.ID_ADDRBOOK; 							// XXX: may not be necessary
 
-// Static methods
-
-/**
- * Sorts the address books.
- * 
- * @param	{ZmAddrBook}	addrBookA		the address book
- * @param	{ZmAddrBook}	addrBookB		the address book
- * @return	{int}	0 if the address books are the same; 1 if "a" is before "b"; -1 if "b" is before "a"
- */
-ZmAddrBook.sortCompare = 
-function(addrBookA, addrBookB) {
-	var check = ZmOrganizer.checkSortArgs(addrBookA, addrBookB);
-	if (check != null) return check;
-
-	// links appear after personal address books
-	if (addrBookA.link != addrBookB.link) {
-		return addrBookA.link ? 1 : -1;
-	}
-
-	// trash folder should always go last w/in personal addrbooks
-	if (addrBookA.nId == ZmFolder.ID_TRASH) { return 1; }
-	if (addrBookB.nId == ZmFolder.ID_TRASH) { return -1; }
-
-	// sort by calendar name
-	var addrBookAName = addrBookA.name.toLowerCase();
-	var addrBookBName = addrBookB.name.toLowerCase();
-	if (addrBookAName < addrBookBName) { return -1; }
-	if (addrBookAName > addrBookBName) { return 1; }
-	return 0;
-};
-
 // Public methods
 
 ZmAddrBook.prototype.getIcon =

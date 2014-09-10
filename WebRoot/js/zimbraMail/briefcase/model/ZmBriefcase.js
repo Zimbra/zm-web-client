@@ -121,31 +121,6 @@ function(name) {
 };
 
 /**
- * Comparison function for briefcases.
- *
- * @param {ZmBriefcase}	nbA		an item
- * @param {ZmBriefcase}	nbB		an item
- * @return	{int} 0 if the items match
- */
-ZmBriefcase.sortCompare = 
-function(nbA, nbB) {
-	var check = ZmOrganizer.checkSortArgs(nbA, nbB);
-	if (check != null) return check;
-
-	// links appear after personal calendars
-	if (nbA.link != nbB.link) {
-		return nbA.link ? 1 : -1;
-	}
-	
-	// sort by calendar name
-	var nbAName = nbA.name.toLowerCase();
-	var nbBName = nbB.name.toLowerCase();
-	if (nbAName < nbBName) return -1;
-	if (nbAName > nbBName) return 1;
-	return 0;
-};
-
-/**
  * Returns true if the given object(s) may be placed in this folder.
  *
  * If the object is a folder, check that:

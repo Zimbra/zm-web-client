@@ -252,7 +252,7 @@ function() {
 	}
 
 	this._calendars = this._controller.getCheckedCalendars();
-	this._calendars.sort(ZmCalendar.sortCompare);
+	this._calendars.sort(ZmFolder.sortCompareNonMail);
 	this._folderIdToColIndex = {};
 	this._columns = [];
 	this._numCalendars = this._calendars.length;

@@ -129,7 +129,7 @@ function() {
 							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["task"],
 							 createFunc:		"ZmOrganizer.create",
-							 compareFunc:		"ZmTaskFolder.sortCompare",
+							 compareFunc:		"ZmFolder.sortCompareNonMail",
 							 deferrable:		true,
 							 newOp:				ZmOperation.NEW_TASK_FOLDER,
 							 displayOrder:		100
