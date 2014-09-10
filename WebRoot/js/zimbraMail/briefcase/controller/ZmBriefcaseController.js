@@ -1341,9 +1341,9 @@ function(item, listView) {
 	if (item.size) {
 		prop.push({name:ZmMsg.briefcasePropSize, value:AjxUtil.formatSize(item.size)});
 	}
-	if (item.modifyDate) {
+	if (item.contentChangeDate) {
 		var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
-		var dateStr = dateFormatter.format(item.modifyDate);
+		var dateStr = dateFormatter.format(item.contentChangeDate);
 		prop.push({name:ZmMsg.briefcasePropModified, value:dateStr});
 	}
 

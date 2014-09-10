@@ -418,7 +418,7 @@ function(item, revisions){
         var rev = revisions[i];
         var rItem = new ZmRevisionItem(this._getRevisionId(rev), item);
         rItem.set(rev);
-        revisionItems.push(rItem);        
+        revisionItems.push(rItem);
     }
     return AjxVector.fromArray(revisionItems);
 };
@@ -786,10 +786,11 @@ function(item){
     var icon = "Img" + ( mimeInfo ? mimeInfo.imageLarge : "UnknownDoc_48");
     this._headerImage.className = icon;
 
-    //Modified & Created
+    //Modified & Created.  For Modified, use contentChangeDate, which is content modification (modifiedDate is
+	// content and metaData changes).
     var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
-    if (this._headerModified && item.modifyDate) {
-        this._headerModified.innerHTML = dateFormatter.format(item.modifyDate);
+    if (this._headerModified && item.contentChangeDate) {
+        this._headerModified.innerHTML = dateFormatter.format(item.contentChangeDate);
 	}
     if(this._headerModifier)
         this._headerModifier.innerHTML = item.modifier;

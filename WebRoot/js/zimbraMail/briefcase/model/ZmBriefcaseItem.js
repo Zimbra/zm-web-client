@@ -364,11 +364,14 @@ function(node) {
 	if (node.l)		{ this.folderId = node.l; }
 	if (node.name)	{ this.name = node.name; }
 	if (node.cr)	{ this.creator = node.cr; }
-	if (node.d)		{ this.createDate = new Date(Number(node.d)); }
+
+	if (node.cd)	{ this.createDate = new Date(Number(node.cd)); }
 	if (node.md)	{ //node.md is seconds since epoch
         var mdMilliSecs = Number(node.md)*1000;
         this.modifyDate = new Date(mdMilliSecs);
     }
+	if (node.d)     { this.contentChangeDate = new Date(Number(node.d)); }
+
 	if (node.leb)	{ this.modifier = node.leb; }
 	if (node.s || node.s == 0) //size can be 0
                     { this.size = Number(node.s); }
@@ -531,19 +534,20 @@ function(data) {
 
 	this.id = data.id;
 	if (data.rest) this.restUrl = data.rest;
-	if (data.l) this.folderId = data.l;
+	if (data.l)    this.folderId = data.l;
 	if (data.name) this.name = data.name;
-	if (data.cr) this.creator = data.cr;
-	if (data.d) this.createDate = new Date(Number(data.d));
+	if (data.cr)   this.creator = data.cr;
+	if (data.cd)   this.createDate = new Date(Number(data.cd));
 	if (data.md)	{ //node.md is seconds since epoch
 		var mdMilliSecs = Number(data.md)*1000;
 		this.modifyDate = new Date(mdMilliSecs);
 	}
-	if (data.leb) this.modifier = data.leb;
-	if (data.s) this.size = Number(data.s);
-	if (data.ver) this.version = Number(data.ver);
-	if (data.ct) this.contentType = data.ct.split(";")[0];
-    if (data.tn) { this._parseTagNames(data.tn); }
+	if (data.d)    this.contentChangeDate = new Date(Number(data.d));
+	if (data.leb)  this.modifier = data.leb;
+	if (data.s)    this.size = Number(data.s);
+	if (data.ver)  this.version = Number(data.ver);
+	if (data.ct)   this.contentType = data.ct.split(";")[0];
+    if (data.tn)   this._parseTagNames(data.tn);
     if (data.loid)    {
         this.locked = true;
         this.lockId = data.loid;
@@ -653,6 +657,7 @@ function(data){
 		var mdMilliSecs = Number(data.md)*1000;
 		this.modifyDate = new Date(mdMilliSecs);
 	}
+	if (data.d)     this.contentChangeDate = new Date(Number(data.d));
 	if (data.desc)  this.notes = AjxStringUtil.htmlEncode(data.desc);
 
     this.subject = this.getNotes();
