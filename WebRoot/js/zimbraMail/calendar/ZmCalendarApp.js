@@ -513,7 +513,7 @@ function() {
 							 folderKey:			"calendar",
 							 mountKey:			"mountCalendar",
 							 createFunc:		"ZmCalendar.create",
-							 compareFunc:		"ZmCalendar.sortCompare",
+							 compareFunc:		"ZmFolder.sortCompareNonMail",
 							 newOp:				ZmOperation.NEW_CALENDAR,
 							 displayOrder:		100,
 							 deferrable:		true,

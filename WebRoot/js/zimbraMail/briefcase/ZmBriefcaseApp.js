@@ -151,7 +151,7 @@ function() {
 							 folderKey      : "briefcase",                                                      
 							 mountKey       : "mountFolder",
 							 createFunc     : "ZmOrganizer.create",
-							 compareFunc    : "ZmBriefcase.sortCompare",
+							 compareFunc    : "ZmFolder.sortCompareNonMail",
 							 deferrable     : true,
 							 newOp			: ZmOperation.NEW_BRIEFCASE,
 							 displayOrder	: 100,

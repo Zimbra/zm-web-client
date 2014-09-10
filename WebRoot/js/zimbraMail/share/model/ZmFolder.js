@@ -196,10 +196,11 @@ ZmFolder.QUERY_ID = {};
  *
  * @param {ZmFolder}	folderA		a folder
  * @param {ZmFolder}	folderB		a folder
+ * @param {Boolean}		nonMail		this is sorting non mail tree.
  * @return	{int} 0 if the folders match
  */
 ZmFolder.sortCompare =
-function(folderA, folderB) {
+function(folderA, folderB, nonMail) {
 	var check = ZmOrganizer.checkSortArgs(folderA, folderB);
 	if (check != null) { return check; }
 
@@ -221,11 +222,31 @@ function(folderA, folderB) {
 	if (ZmFolder.SORT_ORDER[folderA.nId] && ZmFolder.SORT_ORDER[folderB.nId]) {
 		return (ZmFolder.SORT_ORDER[folderA.nId] - ZmFolder.SORT_ORDER[folderB.nId]);
 	}
-	if (!ZmFolder.SORT_ORDER[folderA.nId] && ZmFolder.SORT_ORDER[folderB.nId]) { return 1; }
-	if (ZmFolder.SORT_ORDER[folderA.nId] && !ZmFolder.SORT_ORDER[folderB.nId]) { return -1; }
+
+	// links (shared folders or mailboxes) appear after personal folders
+	if (folderA.link !== folderB.link) {
+		return folderA.link ? 1 : -1;
+	}
+
+	if (nonMail) {
+		// trash folder should always go last w/in personal folders, for NON MAIL folders. (In mail it's at the end of the system folders as ordered by ZmFolder.SORT_ORDER)
+		if (folderA.nId == ZmFolder.ID_TRASH) { return 1; }
+		if (folderB.nId == ZmFolder.ID_TRASH) { return -1; }
+	}
+	else {
+		if (!ZmFolder.SORT_ORDER[folderA.nId] && ZmFolder.SORT_ORDER[folderB.nId]) { return 1; }
+		if (ZmFolder.SORT_ORDER[folderA.nId] && !ZmFolder.SORT_ORDER[folderB.nId]) { return -1; }
+	}
+
 	if (folderA.name.toLowerCase() > folderB.name.toLowerCase()) { return 1; }
 	if (folderA.name.toLowerCase() < folderB.name.toLowerCase()) { return -1; }
 	return 0;
+};
+
+
+ZmFolder.sortCompareNonMail =
+function(folderA, folderB) {
+	return ZmFolder.sortCompare(folderA, folderB, true);
 };
 
 /**

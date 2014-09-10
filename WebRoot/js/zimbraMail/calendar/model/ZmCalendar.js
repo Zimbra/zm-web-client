@@ -203,7 +203,7 @@ function(what) {
 ZmCalendar.prototype.notifyCreate =
 function(obj) {
 	var calendar = ZmFolderTree.createFromJs(this, obj, this.tree);
-	var index = ZmOrganizer.getSortIndex(calendar, ZmCalendar.sortCompare);
+	var index = ZmOrganizer.getSortIndex(calendar, ZmFolder.sortCompareNonMail);
 	this.children.add(calendar, index);
 	calendar._notify(ZmEvent.E_CREATE);
 };
@@ -263,24 +263,6 @@ ZmCalendar.prototype._delete = function(){
 ZmCalendar.checkName =
 function(name) {
 	return ZmOrganizer.checkName(name);
-};
-
-ZmCalendar.sortCompare = 
-function(calA, calB) {
-	var check = ZmOrganizer.checkSortArgs(calA, calB);
-	if (check != null) { return check; }
-
-	// links appear after personal calendars
-	if (calA.link != calB.link) {
-		return calA.link ? 1 : -1;
-	}
-
-	// sort by calendar name
-	var calAName = calA.name.toLowerCase();
-	var calBName = calB.name.toLowerCase();
-	if (calAName < calBName) return -1;
-	if (calAName > calBName) return 1;
-	return 0;
 };
 
 ZmCalendar.prototype.supportsPrivatePermission =
