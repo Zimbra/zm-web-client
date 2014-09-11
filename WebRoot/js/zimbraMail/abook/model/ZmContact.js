@@ -2613,7 +2613,7 @@ function(node) {
 			hideInGal: this.attr.zimbraHideInGal == "TRUE"
 		};
 
-		this.canExpand = node.exp;
+		this.canExpand = node.exp !== false; //default to true, since most cases this is implicitly true if not returned. See bug 94867
 		var emails = this.getEmails();
 		var ac = window.parentAppCtxt || window.appCtxt;
 		for (var i = 0; i < emails.length; i++) {
