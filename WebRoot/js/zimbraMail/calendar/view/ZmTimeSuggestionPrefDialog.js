@@ -117,8 +117,19 @@ function(event) {
 ZmTimeSuggestionPrefDialog.prototype.popup =
 function(account) {
     this._account = account;
-    DwtDialog.prototype.popup.call(this);
+	DwtDialog.prototype.popup.call(this);
     this.getSearchPreference();
+
+	var el = document.getElementById(this._htmlElId);
+	var loc = Dwt.getLocation(el);
+	if (loc.x < 0) {
+		// For Bug 94520.  Japanese text is not getting formatted properly (it stays one very long string), until the
+		// dialog was dragged.  Dragging runs the next line in its code (which places the left of the dialog on screen)
+		// and it triggers the reformatting.
+		// Don't try setting the location via the loc var to DwtDialog.popup - the DwtBaseDialog positioning 'corrects'
+		// it and resets it to an offscreen value.
+		el.style.left = "0px";
+	}
 };
 
 ZmTimeSuggestionPrefDialog.prototype.popdown =
