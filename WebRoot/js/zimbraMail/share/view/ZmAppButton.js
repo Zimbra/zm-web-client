@@ -81,6 +81,7 @@ ZmAppButton = function(params) {
 
 ZmAppButton.prototype = new DwtButton;
 ZmAppButton.prototype.constructor = ZmAppButton;
+ZmAppButton.prototype.role = "tab";
 
 /**
  * Returns a string representation of the object.

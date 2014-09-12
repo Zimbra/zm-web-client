@@ -231,7 +231,7 @@ function(setFocus) {
 
 ZmCalItemComposeController.prototype._setFocus =
 function(focusItem, noFocus) {
-	DBG.println("kbnav", "timed action restoring focus to " + focusItem + "; noFocus = " + noFocus);
+	DBG.println(AjxDebug.KEYBOARD, "timed action restoring focus to " + focusItem + "; noFocus = " + noFocus);
 	this._restoreFocus(focusItem, noFocus);
 };
 

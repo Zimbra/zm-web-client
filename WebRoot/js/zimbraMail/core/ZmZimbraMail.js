@@ -1827,7 +1827,10 @@ function() {
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		rootTg.addMember(appCtxt.getSearchController().getTabGroup());
 	}
-	this._components[ZmAppViewMgr.C_APP_CHOOSER].noFocus = true;
+
+	rootTg.addMember(appCtxt.getAppChooser().getTabGroupMember());
+	rootTg.addMember(appCtxt.refreshButton);
+	rootTg.addMember(appCtxt.getAppController().getNewButton());
 
 	var curApp = appCtxt.getCurrentApp();
 	var ovId = curApp && curApp.getOverviewId();
