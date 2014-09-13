@@ -146,7 +146,6 @@ ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.PREV_UNREAD]	= DwtKeyMap.SELECT_
 
 ZmMailListController.viewToTab = {};
 
-ZmMailListController.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
 
 // Public methods
 
@@ -269,7 +268,7 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.FORWARD:
 			if (!isDrafts && !isExternalAccount) {
-				this._doAction({action:ZmOperation.FORWARD, foldersToOmit:this.getFoldersToOmit()});
+				this._doAction({action:ZmOperation.FORWARD, foldersToOmit:ZmMailApp.getFoldersToOmit()});
 			}
 			break;
 
@@ -303,7 +302,7 @@ function(actionCode, ev) {
 		case ZmKeyMap.REPLY:
 		case ZmKeyMap.REPLY_ALL:
 			if (!isDrafts && !isExternalAccount && (num == 1) && !isSyncFailures && !isFeed) {
-				this._doAction({action:ZmMailListController.ACTION_CODE_TO_OP[actionCode], foldersToOmit:this.getFoldersToOmit()});
+				this._doAction({action:ZmMailListController.ACTION_CODE_TO_OP[actionCode], foldersToOmit:ZmMailApp.getFoldersToOmit()});
 			}
 			break;
 
@@ -434,26 +433,6 @@ function(listView, item) {
 ZmMailListController.prototype.mapSupported =
 function(map) {
 	return (map == "list");
-};
-
-// returns lookup hash of folders (starting with Trash/Junk) whose messages aren't included when
-// viewing or replying a conv; if we're in one of those, we still show its messages
-ZmMailListController.prototype.getFoldersToOmit =
-function(folders) {
-
-	var a = folders || ZmMailListController.FOLDERS_TO_OMIT,
-		omit = [],
-		curSearch = this._currentSearch,
-		curFolderId = curSearch && curSearch.folderId;
-
-	var isUserInitiatedSearch = curSearch && curSearch.userInitiated;
-
-	for (var i = 0; i < a.length; i++) {
-		if (!isUserInitiatedSearch && a[i] != curFolderId) {
-			omit.push(a[i]);
-		}
-	}
-	return AjxUtil.arrayAsHash(omit);
 };
 
 /**
@@ -1051,18 +1030,18 @@ function(ev) {
 		action = ZmOperation.REPLY;
 	}
 
-	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit()});
+	this._doAction({ev:ev, action:action, foldersToOmit:ZmMailApp.getFoldersToOmit()});
 };
 
 ZmMailListController.prototype._forwardListener =
 function(ev) {
 	var action = ev.item.getData(ZmOperation.KEY_ID);
-	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit()});
+	this._doAction({ev:ev, action:action, foldersToOmit:ZmMailApp.getFoldersToOmit()});
 };
 
 ZmMailListController.prototype._forwardConvListener = function(ev) {
 	var action = ev.item.getData(ZmOperation.KEY_ID);
-	this._doAction({ev:ev, action:ZmOperation.FORWARD_CONV, foldersToOmit:this.getFoldersToOmit()});
+	this._doAction({ev:ev, action:ZmOperation.FORWARD_CONV, foldersToOmit:ZmMailApp.getFoldersToOmit()});
 };
 
 // This method may be called with a null ev parameter

@@ -2406,3 +2406,26 @@ function() {
 	this._registerOperations();
 	this._registerPrefs();
 };
+
+// Folders to ignore when displaying a conv's messages
+ZmMailApp.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
+
+// returns lookup hash of folders (starting with Trash/Junk) whose messages aren't included when
+// viewing or replying a conv; if we're in one of those, we still show its messages
+ZmMailApp.getFoldersToOmit = function(search) {
+
+	var folders = ZmMailApp.FOLDERS_TO_OMIT,
+		omit = [],
+		search = search || appCtxt.getCurrentSearch(),
+		curFolderId = search && search.folderId;
+
+	var isUserInitiatedSearch = search && search.userInitiated;
+
+	for (var i = 0; i < folders.length; i++) {
+		if (!isUserInitiatedSearch && folders[i] != curFolderId) {
+			omit.push(folders[i]);
+		}
+	}
+	return AjxUtil.arrayAsHash(omit);
+};
+

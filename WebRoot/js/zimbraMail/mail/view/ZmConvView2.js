@@ -182,7 +182,7 @@ function(conv, container) {
 
 	this._msgViews = {};
 	this._msgViewList = [];
-	var msgs = conv.getMsgList(0, false, this._controller.getFoldersToOmit());
+	var msgs = conv.getMsgList(0, false, ZmMailApp.getFoldersToOmit());
 	
 	// base the ordering off a list of msg IDs
 	var idList = [], idHash = {};

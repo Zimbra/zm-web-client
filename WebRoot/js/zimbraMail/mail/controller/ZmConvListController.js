@@ -435,7 +435,7 @@ ZmConvListController.prototype._resetForwardConv = function(parent, num) {
 
 ZmConvListController.prototype._forwardListener = function(ev) {
 	var action = ev.item.getData(ZmOperation.KEY_ID);
-	this._doAction({ev:ev, action:action, foldersToOmit:this.getFoldersToOmit(ZmMailListController.REPLY_FOLDERS_TO_OMIT)});
+	this._doAction({ev:ev, action:action, foldersToOmit:ZmMailApp.getFoldersToOmit()});
 };
 
 /**
