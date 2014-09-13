@@ -646,7 +646,7 @@ function(conv, fieldId) {
 ZmConvListView.prototype._getDisplayedMsgCount =
 function(conv) {
 
-	var omit = this._controller.getFoldersToOmit(),
+	var omit = ZmMailApp.getFoldersToOmit(),
 		num = 0, id;
 
 	for (id in conv.msgFolder) {
@@ -727,7 +727,7 @@ function(conv, msg, force) {
 			index--;	// for ascending, we want to expand upward (add above expandable msg row)
 		}
 		var offset = this._msgOffset[item.id] || 0;
-		var a = conv.getMsgList(offset, ascending, this._controller.getFoldersToOmit());
+		var a = conv.getMsgList(offset, ascending, ZmMailApp.getFoldersToOmit());
 		for (var i = 0; i < a.length; i++) {
 			var msg = a[i];
 			var div = this._createItemHtml(msg);
