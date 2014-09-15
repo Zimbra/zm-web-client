@@ -167,6 +167,12 @@ function(conv) {
 	Dwt.setLoadedTime("ZmConv");
 };
 
+// Only invoked by doing a saveDraft, from editing a reply in an individual Conversation display
+ZmConvView2.prototype.redrawItem = function(item) {
+	this._renderConv(this._item);
+}
+ZmConvView2.prototype.setSelection = function(item, skipNotify, forceSelection) { }
+
 /**
  * Renders this conversation's messages. Each message may be expanded (shows header, body, and footer)
  * or collapsed (shows just the header).
