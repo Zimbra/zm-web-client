@@ -556,7 +556,7 @@ INPUT[type="text"].search_input-expanded {
 }
 
 .Unread .ZmConvListNumMsgs {
-	background-color:@darken(AppC,40)@;
+	background-color:@UnreadColor@;
 }
 
 .ZmConvExpanded,
