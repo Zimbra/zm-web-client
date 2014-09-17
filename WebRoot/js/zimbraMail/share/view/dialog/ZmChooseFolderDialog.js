@@ -544,6 +544,11 @@ function(ev) {
 	{
 		return;
 	}
+	var treeItem = ev.item;
+	if (treeItem && !treeItem.isSelectionEnabled()) {
+		// Selection should have been blocked, but only allow a double click if the item can be selected
+		return;
+	}
 
 	if (this._getOverview() instanceof ZmAccountOverviewContainer) {
 		if (ev.detail == DwtTree.ITEM_DBL_CLICKED &&
