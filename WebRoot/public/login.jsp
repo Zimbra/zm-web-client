@@ -77,7 +77,8 @@
                     <zm:logout/>
                     <c:redirect url="${logoutRedirectUrl}"/>
                 </c:when>
-                <c:when test="${touchSupported and touchLoginPageExists and (empty param.client or param.client eq 'touch')}">
+                <c:when test="${touchSupported and touchLoginPageExists and (empty param.client or param.client eq 'touch') and
+                    (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
                     <%--Redirect to loginTouch only if the device supports touch client, the touch login page exists
                     and the user has not specified the client param as "mobile" or anything else.--%>
                     <jsp:forward page="/public/loginTouch.jsp"/>
@@ -125,8 +126,7 @@
 	</c:choose>
 </c:catch>
 
-<c:choose>
-    <c:when test="${not empty authResult}">
+<c:if test="${not empty authResult}">
         <c:set var="refer" value="${authResult.refer}"/>
         <c:set var="serverName" value="${pageContext.request.serverName}"/>
         <c:choose>
@@ -248,14 +248,7 @@
                 </c:choose>
             </c:otherwise>
         </c:choose>
-    </c:when>
-    <c:when test="${empty param.client or param.client eq 'touch'}">
-        <c:if test="${touchSupported and touchLoginPageExists}">
-            <jsp:forward page="/public/loginTouch.jsp"/>
-        </c:if>
-    </c:when>
-</c:choose>
-
+    </c:if>
 
 <c:if test="${loginException != null}">
 	<zm:getException var="error" exception="${loginException}"/>
@@ -307,6 +300,10 @@ if (application.getInitParameter("offlineMode") != null) {
 			</c:forEach>
 		</c:forEach>
 	</c:redirect>
+</c:if>
+
+<c:if test="${(empty param.client or param.client eq 'touch') and touchSupported and touchLoginPageExists}">
+    <jsp:forward page="/public/loginTouch.jsp"/>
 </c:if>
 
 <c:url var="formActionUrl" value="/">
