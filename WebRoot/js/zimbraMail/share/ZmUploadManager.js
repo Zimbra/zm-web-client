@@ -66,6 +66,8 @@ ZmUploadManager.ERROR_INVALID_FILENAME  = "invalidFilename";
  *      allResponses:               Placeholder, initialized here and passed to the chained calls, accumulating responses
  *      start:                      current index into files
  *      curView:                    target view for the drag and drop
+ *      url							url to use (optional, currently only from ZmImportExportController)
+ *      stateChangeCallback			callback to use from _handleUploadResponse which is the onreadystatechange listener, instead of the normal code here. (optiona, see ZmImportExportController)
  *      preAllCallback:             Run prior to All uploads
  *      initOneUploadCallback:      Run prior to a single upload
  *      progressCallback:           Run by the upload code to provide upload progress
@@ -79,6 +81,7 @@ function(params) {
     if (!params.files) {
         return;
     }
+	params.start = params.start || 0;
 
     try {
         this.upLoadC = this.upLoadC + 1;
@@ -105,12 +108,15 @@ function(params) {
 
         // Initiate the first upload
         var req = new XMLHttpRequest(); // we do not call this function in IE
-		var uri = params.attachment ? (appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI) + "?fmt=extended,raw") : appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+		var uri = params.url || (params.attachment ? (appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI) + "?fmt=extended,raw") : appCtxt.get(ZmSetting.CSFE_UPLOAD_URI));
         req.open("POST", uri, true);
         req.setRequestHeader("Cache-Control", "no-cache");
         req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         req.setRequestHeader("Content-Type",  (file.type || "application/octet-stream") + ";");
         req.setRequestHeader("Content-Disposition", 'attachment; filename="'+ AjxUtil.convertToEntities(fileName) + '"');
+		if (window.csrfToken) {
+			req.setRequestHeader("X-Zimbra-Csrf-Token", csrfToken);
+		}
 
         if (params.initOneUploadCallback) {
             params.initOneUploadCallback.run();
@@ -163,6 +169,9 @@ ZmUploadManager.prototype._getTotalUploadSize = function(params) {
 
 ZmUploadManager.prototype._handleUploadResponse =
 function(req, fileName, params){
+	if (params.stateChangeCallback) {
+		return params.stateChangeCallback(req);
+	}
     var curView      = params.curView;
     var files        = params.files;
     var start        = params.start;

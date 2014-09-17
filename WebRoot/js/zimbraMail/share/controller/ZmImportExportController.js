@@ -331,37 +331,41 @@ function(params) {
 
 	// initialize form
 	var form = params.form;
-	form.action = url;
-	form.method = "POST";
-	form.enctype = "multipart/form-data";
+	var fileInput = form.elements[0];
+	var files = fileInput.files;
 
-	this._setCsrfTokenInput(form);
+	var uploadParams = {
+		url: url,
+		files: files,
+		stateChangeCallback: this._handleImportStateChange.bind(this, params)
+	};
+	var uploadManager = appCtxt.getZmUploadManager();
+	uploadManager.upload(uploadParams);
 
 	// destination iframe
 	var onload = null;
-	var onerror = AjxCallback.simpleClosure(this._importError, this, params.errorCallback);
+	var onerror = this._importError.bind(this, params.errorCallback);
 	params.iframe = ZmImportExportController.__createIframe(form, onload, onerror);
-
-	// import
-	form.submit();
 	return true;
 };
 
 /**
- * lazily generate the hidden csrf token input field for the form.
+ * this is a hack to submit the response to the iframe, as if we submitted the form (which we can't since we need to add
+ * the csrfToken to the header, which can't be done with form.submit() - see bug 95064
+ * @param params
+ * @param req
+ * @private
  */
-ZmImportExportController.prototype._setCsrfTokenInput =
-function(form) {
-	var csrfTokenInput = document.getElementById(ZmImportExportController.CSRF_TOKEN_HIDDEN_INPUT_ID);
-	if (csrfTokenInput) {
+ZmImportExportController.prototype._handleImportStateChange =
+function(params, req) {
+	if (req.readyState !== 4) {
 		return;
 	}
-	csrfTokenInput = document.createElement("input");
-	csrfTokenInput.type = "hidden";
-	csrfTokenInput.name = "zimbraCsrfToken";
-	csrfTokenInput.id = ZmImportExportController.CSRF_TOKEN_HIDDEN_INPUT_ID;
-	form.appendChild(csrfTokenInput);
-	csrfTokenInput.value = window.csrfToken;
+
+	//this will result in a call to _handleImportResponse, since the responseText includes a call to this via the funcName closure above in _doImport.
+	var iframeDoc = params.iframe.contentDocument || params.iframe.contentWindow.document;
+	iframeDoc.write(req.responseText);
+	iframeDoc.close();
 };
 
 /**
