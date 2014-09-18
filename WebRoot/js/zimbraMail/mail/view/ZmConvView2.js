@@ -1819,7 +1819,7 @@ function(expanded) {
 		if (this._isCalendarInvite) {
 			dayViewCallback = this._handleShowCalendarLink.bind(this, ZmOperation.SHOW_ORIG, showCalInConv);
 		}
-		var respCallback = this._handleReponseSetExpansion.bind(this, this._msg, dayViewCallback);
+		var respCallback = this._handleResponseSetExpansion.bind(this, this._msg, dayViewCallback);
 		this._renderMessage(this._msg, null, respCallback);
 	}
 	else {
@@ -1839,6 +1839,7 @@ function(expanded) {
 			this._setTags(this._msg);
 			this._resetLinks();
 			this._controller._handleMarkRead(this._msg);
+			appCtxt.notifyZimlets("onMsgExpansion", [this._msg, this]);
 		}
 		else {
 			var replyView = this._convView._replyView;
@@ -1864,7 +1865,7 @@ function(expanded) {
 	this._resetIframeHeightOnTimer();
 };
 
-ZmMailMsgCapsuleView.prototype._handleReponseSetExpansion =
+ZmMailMsgCapsuleView.prototype._handleResponseSetExpansion =
 function(msg, callback) {
 	this._handleResponseSet(msg, null, callback);
 	this._convView._header._setExpandIcon();
