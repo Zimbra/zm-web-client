@@ -68,6 +68,8 @@ ZmComposeView = function(parent, controller, composeMode) {
 
 	this._recipients = new ZmRecipients(recipParams);
 
+	this._firstTimeFixImages = true;
+
 	this._initialize(composeMode);
 
 	// make sure no unnecessary scrollbars show up
@@ -1105,8 +1107,11 @@ function(msg, account) {
 	// The first time the editor is initialized, idoc.getElementsByTagName("img") is empty.
 	// Use a callback to fix images after editor is initialized.
 	var idoc = this._htmlEditor._getIframeDoc();
-	if (!this._firstTimeFixImages) {
-		this._htmlEditor.addOnContentInitializedListener(this._fixMultipartRelatedImages.bind(this, msg, idoc, account));
+	if (this._firstTimeFixImages) {
+		var callback = this._fixMultipartRelatedImages.bind(this, msg, idoc, account);
+		this._htmlEditor.addOnContentInitializedListener(callback);
+		//set timeout in case ZmHtmlEditor.prototype.onLoadContent is never called in which case the listener above won't be called.
+		window.setTimeout(callback, 3000);
 	} else {
 		this._fixMultipartRelatedImages(msg, idoc, account);
 	}
@@ -1121,13 +1126,13 @@ function(msg, account) {
 ZmComposeView.prototype._fixMultipartRelatedImages =
 function(msg, idoc, account) {
 
-	if (!this._firstTimeFixImages) {
+	if (this._firstTimeFixImages) {
 		this._htmlEditor.clearOnContentInitializedListeners();
 		var self = this; // Fix possible hiccups during compose in new window
 		setTimeout(function() {
 				self._fixMultipartRelatedImages(msg, self._htmlEditor._getIframeDoc(), account);
 		}, 10);
-		this._firstTimeFixImages = true;
+		this._firstTimeFixImages = false;
 		return;
 	}
 
@@ -2068,7 +2073,10 @@ function(action, msg, extraBodyText, noEditorUpdate, keepAttachments) {
 	var isHtmlEditorInitd = this._htmlEditor && this._htmlEditor.isHtmlModeInited();
 	if (this._htmlEditor && !noEditorUpdate && !isHtmlEditorInitd) {
 		this._fixMultipartRelatedImages_onTimer(msg);
-		this._htmlEditor.addOnContentInitializedListener(this._saveComponentContent.bind(this));
+		this._htmlEditor.addOnContentInitializedListener(this._saveComponentContent.bind(this, true));
+		//set timeout in case ZmHtmlEditor.prototype.onLoadContent is never called in which case the listener above won't be called.
+		//but don't pass "force" so if the above was called first, don't do anything.
+		window.setTimeout(this._saveComponentContent.bind(this), 3000);
 	}
 
 	var bodyInfo = {};
@@ -2088,7 +2096,7 @@ function(action, msg, extraBodyText, noEditorUpdate, keepAttachments) {
 		
 	if (isHtmlEditorInitd && !noEditorUpdate) {
 		this._fixMultipartRelatedImages_onTimer(msg);
-		this._saveComponentContent();
+		this._saveComponentContent(true);
 	}
 
 	var ac = window.parentAppCtxt || window.appCtxt;
@@ -2527,7 +2535,10 @@ function(comp) {
 };
 
 ZmComposeView.prototype._saveComponentContent =
-function() {
+function(force) {
+	if (this._compContent && !force) {
+		return;
+	}
 	this._compContent = {};
 	for (var i = 0; i < this._compList.length; i++) {
 		var comp = this._compList[i];
