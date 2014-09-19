@@ -22,7 +22,7 @@
     <property name="webxml.zimbraMailSSLPort" value="7443" />
     <property name="webxml.zimbraMailTrustedIP" value="" />
 	<property name="webxml.zimbraHttpDosFilterMaxRequestsPerSec" value="30" />
-	<property name="webxml.zimbraHttpContextPathBasedThreadPoolBalancingFilterRules" value="/service:min=1;max=10%, /soap:min=1;max=40%, /zimbra:min=1;max=40%, /zimbraAdmin:min=1" />
+	<property name="webxml.zimbraHttpContextPathBasedThreadPoolBalancingFilterRules" value="/service:max=10%, /soap:max=40%, /zimbra:max=40%" />
 
     <!-- NOTE: These dirs need to stay ABSOLUTE paths! -->
 	<property name='common.dir' value='${this.zwc.basedir}/../ZimbraCommon'/>
