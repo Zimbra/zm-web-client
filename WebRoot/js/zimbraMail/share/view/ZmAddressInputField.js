@@ -1691,7 +1691,6 @@ ZmAddressBubble.expandBubble = function(bubbleId, email) {
 				loc.y += bubbleObj.getSize().y + 2;
 				parent._aclv.expandDL({
 					email:      email,
-					textId:     bubbleObj._htmlElId,
 					loc:        loc,
 					element:    parent._input
 				});
