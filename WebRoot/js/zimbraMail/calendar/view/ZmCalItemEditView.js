@@ -958,7 +958,9 @@ function() {
 		rowWidth -= Dwt.getOuterSize(c).x || 0;
 	});
 
-	if (rowWidth > 0 && rowHeight > 0) {
+	if (rowWidth > 0) {
+		// ensure a sensible minimum height
+		rowHeight = Math.max(rowHeight, DwtCssStyle.asPixelCount('20rem'));
 		this._notesHtmlEditor.setSize(rowWidth, rowHeight);
 	}
 

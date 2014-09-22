@@ -1533,7 +1533,7 @@ function(forceShow) {
     //todo: scheduler auto complete
     Dwt.setVisible(this._schedulerContainer, true);
     scheduleView.setVisible(true);
-    scheduleView.resetPagelessMode(false);
+    scheduleView.resetPagelessMode(true);
     scheduleView.showMe();
 
     this.resize();
@@ -1546,6 +1546,7 @@ function() {
         this._scheduleView = new ZmFreeBusySchedulerView(this, this._attendees, this._controller,
             this._dateInfo, appt, this.showConflicts.bind(this));
         this._scheduleView.reparentHtmlElement(this._schedulerContainer);
+        this._scheduleView.setScrollStyle(Dwt.SCROLL_Y);
 
         var closeCallback = this._onSuggestionClose.bind(this);
         this._scheduleAssistant = new ZmScheduleAssistantView(this, this._controller, this, closeCallback);
