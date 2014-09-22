@@ -35,7 +35,11 @@
  */
 ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo, appt, fbParentCallback) {
 
-	DwtComposite.call(this, {parent: parent, posStyle: DwtControl.RELATIVE_STYLE});
+	DwtComposite.call(this, {
+		parent: parent,
+		posStyle: DwtControl.RELATIVE_STYLE,
+		className: 'ZmFreeBusySchedulerView'
+	});
 
 	this._attendees  = attendees;
 	this._controller = controller;
