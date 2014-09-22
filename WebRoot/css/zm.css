@@ -3056,6 +3056,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	height:22px;
 }
 
+.ZmApptEditView .ZmFreeBusySchedulerView {
+	max-height: 180px;
+	max-height: 15rem;
+}
+
 /* Make disabled inputs still readable in scheduler view */
 /* included 2 classes and a tag to make it more specific */
 .DwtInputField-disabled INPUT[type='text'].ZmSchedulerInput {
