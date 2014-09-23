@@ -59,7 +59,6 @@ ZmAppCtxt = function() {
 	this._isExpandableDL	= {};	// distribution lists
 
 	this._checkAuthTokenWarning();
-	this._setIE11ZoomDetection();
 };
 
 ZmAppCtxt.ONE_MINUTE  = 60 * 1000;
@@ -82,31 +81,6 @@ ZmAppCtxt.prototype.toString =
 function() {
 	return "ZmAppCtxt";
 };
-
-
-ZmAppCtxt.prototype._getZoomDetectionValue =
-function() {
-	return window.screen.deviceXDPI;
-};
-
-ZmAppCtxt.prototype._setIE11ZoomDetection =
-function() {
-	if (!AjxEnv.isIE11Quirks) {
-		return;
-	}
-	this._zoomDetectionValue = this._getZoomDetectionValue();
-	window.setInterval(this._checkIEZoomValue.bind(this), 2000);
-};
-
-ZmAppCtxt.prototype._checkIEZoomValue =
-function () {
-	if (this._getZoomDetectionValue() === this._zoomDetectionValue) {
-		return;
-	}
-	this._zoomDetectionValue = this._getZoomDetectionValue();
-	DwtShell._resizeHdlr();
-};
-
 
 ZmAppCtxt.prototype._checkAuthTokenWarning =
 function() {
