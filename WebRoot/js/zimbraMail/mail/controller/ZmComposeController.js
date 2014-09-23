@@ -1119,6 +1119,7 @@ function(params) {
 		}
 		cv.reEnableDesignMode();
 
+		this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
 		if (this._msgIds) {
 			this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);
 		}
@@ -1128,8 +1129,6 @@ function(params) {
 				this.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL, null, null, msg.setAutoSendTime.bind(msg));
 				this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, ZmMsg.messageAutoSaveAborted);
 			}
-		} else {
-			this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
 		}
 	}
 
