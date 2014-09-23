@@ -469,8 +469,21 @@ function(view) {
 		appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar[view], this, view], {waitUntilLoaded:true});
 	} else {
 //		this._setupViewMenu(view, false);
+		this._setupDeleteButton(this._toolbar[view]);
 	}
 };
+
+// If we're in the Trash folder, change the "Delete" button tooltip
+ZmContactListController.prototype._setupDeleteButton = function(parent) {
+	var folder = this._getSearchFolder();
+	var inTrashFolder = (folder && folder.nId == ZmFolder.ID_TRASH);
+	var tooltip = inTrashFolder ? ZmMsg.deletePermanentTooltip : ZmMsg.deleteTooltip;
+	var deleteButton = parent.getButton(ZmOperation.DELETE);
+	if(deleteButton){
+		deleteButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE, this.getKeyMapName(), tooltip));
+	}
+};
+
 
 /**
  * @private
