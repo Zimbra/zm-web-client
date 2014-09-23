@@ -1332,7 +1332,9 @@ function() {
 // Look in the computed style object for height, padding, and margins.
 ZmMailMsgCapsuleView.prototype._getHeightFromComputedStyle =
 function(el) {
-
+	// Set the container overflow.  This is insures the proper height calculation.  See W3C Visual
+	// Formatting model details, section 10.6.6 and 10.6.7
+	el.style.overflow = "hidden";
 	var styleObj = DwtCssStyle.getComputedStyleObject(el),
 		height = 0;
 
@@ -1343,6 +1345,7 @@ function(el) {
 			height += isNaN(h) ? 0 : h;
 		}
 	}
+	el.style.overflow = "";
 	return height;
 };
 
