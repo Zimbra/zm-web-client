@@ -1166,13 +1166,16 @@ function(msg) {
 /**
  * find the first message after msg (or msg itself) in the conv, that's inbound (not outbound). This is since inbound ones are
  * relevant to the rules to select identify (such as folder rules, outbound could be in "sent" for example, or "to" address rules)
+ *
+ * Also, just return the message if it does not have an associated folder - this occurs when a blank message is created in
+ * Briefcase, for the 'Send as Attachment' command.
  * @param msg
  * @returns {ZmMailMsg}
  */
 ZmComposeController.prototype._getInboundMsg =
 function(msg) {
 	var folder = appCtxt.getById(msg.folderId);
-	if (!folder.isOutbound()) {
+	if (!folder || !folder.isOutbound()) {
 		return msg;
 	}
 	var conv = appCtxt.getById(msg.cid);
