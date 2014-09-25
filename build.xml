@@ -4,7 +4,7 @@
 
     <property file='${this.zwc.basedir}/build-custom.properties'/>
 
-    <property name="javac.target" value="1.8"/>
+    <property name="javac.target" value="1.7"/>
 
     <property environment="env"/>
 
@@ -307,7 +307,6 @@
             <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
             <lib dir='${common.lib.dir}' includes='gmbal-api-only-*.jar'/>
             <lib dir='${common.lib.dir}' includes='jaxb-api-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='jaxb-core-*.jar'/>
             <lib dir='${common.lib.dir}' includes='jaxb-impl-*.jar'/>
             <lib dir='${common.lib.dir}' includes='jaxws-api-*.jar'/>
             <lib dir='${common.lib.dir}' includes='jaxws-rt-*.jar'/>
@@ -1560,30 +1559,13 @@ if (ext == null) ext = "";
         <copy todir='${tinymce.dir}' verbose='${sync.verbose}'>
             <fileset dir='${tinymce.js.dir}' excludes="**/*.less"/>
             <fileset dir='${tinymce.custom.dir}' />
-
-            <!-- TinyMCE uses "." to separate various transformed
-                 script types. This causes problems with our
-                 AjxPackage loader, which uses the period as a
-                 replacement for the directory separator. To work
-                 around this, we rename e.g. "plugin.min.js" to
-                 "plugin_min.js" and "jquery.tinymce.min.js" to
-                 "jquery_tinymce_min.js" -->
-            <chainedmapper>
-                <!-- replace the first period - and fall back to an
-                     identitymapper so we retain all files -->
-                <firstmatchmapper>
-                    <regexpmapper from="^([^.]+)\.(.+\..+\.js)$$"
-                                  to="\1_\2" />
-                    <identitymapper/>
-                </firstmatchmapper>
-                <!-- replace the second period - and likewise, fall
-                     back to an identitymapper -->
-                <firstmatchmapper>
-                    <regexpmapper from="^([^.]+)\.(.+\.js)$$"
-                                  to="\1_\2" />
-                    <identitymapper/>
-                </firstmatchmapper>
-            </chainedmapper>
+            <scriptmapper language="javascript">
+                // replace dots with underscores in JS file names, retaining the suffix
+                if (/\.js$/.test(source)) {
+                  source = source.substr(0, source.length - 3).replace(/\./g, '_') + '.js';
+                }
+                self.addMappedName(source);
+            </scriptmapper>
         </copy>
 
         <!-- generate an authoritative and correct list of locales -->
@@ -1643,7 +1625,6 @@ if (ext == null) ext = "";
                 <echo message="Generating ${tinymce.emoticon.file}" />
 
                 <script language="javascript">
-                    load("nashorn:mozilla_compat.js");
                     importClass(org.apache.tools.ant.util.Base64Converter);
                     importClass(java.nio.charset.StandardCharsets);
                     importClass(java.nio.file.Files);
