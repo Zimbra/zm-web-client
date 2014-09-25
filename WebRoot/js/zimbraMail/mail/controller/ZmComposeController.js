@@ -365,8 +365,6 @@ function(view, force) {
 	this._dontSavePreHide = false;
 
 	if (this._autoSaveTimer) {
-		this._autoSaveTimer.kill();
-
 		//the following is a bit suspicous to me. I assume maybe this method might be called with force == true
 		//in a way that is not after the popShield was activated? That would be the only explanation to have this.
 		//I wonder if that's the case that leaves orphan drafts
@@ -375,6 +373,9 @@ function(view, force) {
 			//this is a refactoring/fix of code initially from bug 72106 (since it's confusing I mention this bug to keep this knowledge)
 			this._autoSaveCallback(true);
 		}
+		//Important - killing the timer AFTER saving the draft, otherwise the code in ZmComposeController.prototype._sendMsg sees the timer is killed and exits without saving.
+		this._autoSaveTimer.kill();
+
 	}
 	return force ? true : this.popShield();
 };
