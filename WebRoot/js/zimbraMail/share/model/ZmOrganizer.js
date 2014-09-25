@@ -1933,6 +1933,10 @@ function() {
 	return this._isRemote;
 };
 
+ZmOrganizer.prototype.isRemoteRoot = function() {
+	return this.isRemote() && (this.rid == ZmOrganizer.ID_ROOT);
+}
+
 /**
  * Checks if the organizer is a system tag or folder.
  *

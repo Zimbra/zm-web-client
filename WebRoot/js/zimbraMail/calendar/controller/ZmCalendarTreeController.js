@@ -51,6 +51,16 @@ ZmCalendarTreeController.prototype.constructor = ZmCalendarTreeController;
 ZmCalendarTreeController.prototype.isZmCalendarTreeController = true;
 ZmCalendarTreeController.prototype.toString = function() { return "ZmCalendarTreeController"; };
 
+ZmCalendarTreeController.prototype._initializeActionMenus = function() {
+	ZmTreeController.prototype._initializeActionMenus.call(this);
+
+	var ops = this._getRemoteActionMenuOps();
+	if (!this._remoteActionMenu && ops) {
+		var args = [this._shell, ops];
+		this._remoteActionMenu = new AjxCallback(this, this._createActionMenu, args);
+	}
+
+}
 
 ZmCalendarTreeController.prototype._treeListener =
 function(ev) {
@@ -296,6 +306,12 @@ function() {
 	return ops;
 };
 
+
+// Returns a list of desired remote shared mailbox action menu operations
+ZmCalendarTreeController.prototype._getRemoteActionMenuOps = function() {
+	return [ZmOperation.NEW_CALENDAR];
+};
+
 // Returns a list of desired action menu operations
 ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
@@ -318,6 +334,24 @@ function() {
             ZmOperation.DETACH_WIN
         ];
     }
+};
+
+ZmCalendarTreeController.prototype.getItemActionMenu = function(ev, item) {
+	var actionMenu = null;
+	if (item.isRemoteRoot()) {
+		actionMenu = this._getRemoteActionMenu();
+	} else {
+		actionMenu = ZmTreeController.prototype.getItemActionMenu.apply(this, arguments);
+	}
+	return actionMenu;
+}
+
+ZmCalendarTreeController.prototype._getRemoteActionMenu = function() {
+	if (this._remoteActionMenu instanceof AjxCallback) {
+		var callback = this._remoteActionMenu;
+		this._remoteActionMenu = callback.run();
+	}
+	return this._remoteActionMenu;
 };
 
 ZmCalendarTreeController.prototype._getActionMenu =
@@ -348,7 +382,7 @@ function(ev) {
 // Method that is run when a tree item is left-clicked
 ZmCalendarTreeController.prototype._itemClicked =
 function(organizer) {
-	if (organizer.type != ZmOrganizer.CALENDAR) {
+	if ((organizer.type != ZmOrganizer.CALENDAR) && !organizer.isRemoteRoot()) {
         if (organizer._showFoldersCallback) {
             organizer._showFoldersCallback.run();
             return;

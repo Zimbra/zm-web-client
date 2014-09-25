@@ -869,9 +869,7 @@ function(ev) {
 	if ((ev.detail == DwtTree.ITEM_ACTIONED) || (isContextCmd)) {
 		// right click
 		if (overview.actionSupported) {
-			var actionMenu = (item.nId == ZmOrganizer.ID_ROOT || item.isDataSource(ZmAccount.TYPE_IMAP))
-				? this._getHeaderActionMenu(ev)
-				: this._getActionMenu(ev, item);
+			var actionMenu = this.getItemActionMenu(ev, item);
 			if (actionMenu) {
 				this.resetOperations(actionMenu, type, id);
 				actionMenu.popup(0, ev.docX, ev.docY);
@@ -887,6 +885,13 @@ function(ev) {
 		this._itemDblClicked(item);
 	}
 };
+
+ZmTreeController.prototype.getItemActionMenu = function(ev, item) {
+	var actionMenu = (item.nId == ZmOrganizer.ID_ROOT || item.isDataSource(ZmAccount.TYPE_IMAP))
+		? this._getHeaderActionMenu(ev)
+		: this._getActionMenu(ev, item);
+	return actionMenu;
+}
 
 /**
  * @private
@@ -1084,7 +1089,7 @@ function(ev, treeView, overviewId) {
 			var idx = parentNode ? ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type])) : null;
 			if (parentNode && (ev.event == ZmEvent.E_CREATE)) {
 				// parent's tree controller should handle creates - root is shared by all folder types
-				var type = (organizer.parent.nId == ZmOrganizer.ID_ROOT) ? ev.type : organizer.parent.type;
+				var type = ((organizer.parent.nId == ZmOrganizer.ID_ROOT) || organizer.parent.isRemoteRoot()) ? ev.type : organizer.parent.type;
 				if (type !== this.type || !treeView._isAllowed(organizer.parent, organizer)) {
 					continue;
 				}
