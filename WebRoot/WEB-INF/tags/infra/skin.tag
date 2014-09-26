@@ -27,7 +27,7 @@
 </c:catch>
 
 <%-- set default values, respect the defaultSkin param if sent --%>
-<c:set var="skin" value="${param.skin ? param.skin : defaultSkin}" />
+<c:set var="skin" value="${(not empty param.skin) ? param.skin : defaultSkin}" />
 <c:set var="availableSkins" value="" />
 <c:set var="defaultSkin" value="${initParam.zimbraDefaultSkin}" />
 <%-- use current session skin value --%>
