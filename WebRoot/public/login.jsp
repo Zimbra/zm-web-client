@@ -1,6 +1,7 @@
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
+<%@ page import="com.zimbra.cs.taglib.ZJspSession"%>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -54,6 +55,9 @@
         }
         application.setAttribute("touchLoginPageExists", touchLoginPageExists);
     }
+    //Fetch the IP address of the client
+    String remoteAddr = ZJspSession.getRemoteAddr(pageContext);
+    pageContext.setAttribute("remoteAddr", remoteAddr);
 %>
 <c:set var="touchLoginPageExists" value="<%=touchLoginPageExists%>"/>
 
@@ -72,8 +76,9 @@
 			<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 			<c:set var="logoutRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLogoutURL}" />
 			<c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLogoutURLAllowedUA)}"/>
+            <c:set var="isAllowedIP" value="${zm:isAllowedIP(remoteAddr, domainInfo.webClientLogoutURLAllowedIP)}"/>
             <c:choose>
-                <c:when test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
+                <c:when test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (isAllowedIP eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
                     <zm:logout/>
                     <c:redirect url="${logoutRedirectUrl}"/>
                 </c:when>
@@ -288,9 +293,10 @@ if (application.getInitParameter("offlineMode") != null) {
 <c:if test="${((empty pageContext.request.queryString) or (fn:indexOf(pageContext.request.queryString,'customerDomain') == -1)) and (empty param.virtualacctdomain) and (empty virtualacctdomain) }">
 	<c:set var="domainLoginRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLoginURL}" />
 	<c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLoginURLAllowedUA)}"/>
+    <c:set var="isAllowedIP" value="${zm:isAllowedIP(remoteAddr, domainInfo.webClientLoginURLAllowedIP)}"/>
 </c:if>
 
-<c:if test="${not empty domainLoginRedirectUrl and empty param.sso and empty param.ignoreLoginURL and (isAllowedUA eq true)}" >
+<c:if test="${not empty domainLoginRedirectUrl and empty param.sso and empty param.ignoreLoginURL and (isAllowedUA eq true) and (isAllowedIP eq true)}" >
 	<c:redirect url="${domainLoginRedirectUrl}">
 		<c:forEach var="p" items="${paramValues}">
 			<c:forEach var='value' items='${p.value}'>
@@ -380,7 +386,7 @@ if (application.getInitParameter("offlineMode") != null) {
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	<link rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml,skin.css'>
-		<c:param name="skin"	value="${skin}" />
+		<c:param name="skin"    value="${skin}" />
 		<c:param name="v"		value="${version}" />
 		<c:if test="${not empty param.debug}">
 			<c:param name="debug" value="${param.debug}" />
