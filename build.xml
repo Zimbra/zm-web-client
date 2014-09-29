@@ -1,4 +1,7 @@
 <project name="ZimbraWebClient" default="war">
+	
+    <import file="../ant-global.xml"/>
+
     <!-- Properties -->
     <dirname property="this.zwc.basedir" file="${ant.file.ZimbraWebClient}" />
 
@@ -25,8 +28,9 @@
 	<property name="webxml.zimbraHttpContextPathBasedThreadPoolBalancingFilterRules" value="/service:max=10%, /soap:max=40%, /zimbra:max=40%" />
 
     <!-- NOTE: These dirs need to stay ABSOLUTE paths! -->
+	<!--
 	<property name='common.dir' value='${this.zwc.basedir}/../ZimbraCommon'/>
-    <property name='common.lib.dir' value='${common.dir}/jars'/>
+    <property name='common.jars.dir' value='${common.dir}/jars'/>
     <property name='common.build.dir' value='${common.dir}/build'/>
     <property name='common.build.classes.dir' value='${common.build.dir}/classes'/>
 
@@ -46,7 +50,7 @@
     <property name='server.build.dir' value='${server.dir}/build'/>
 	<property name='server.build.classes.dir' value='${server.build.dir}/classes'/>
     <property name='server.dist.dir' value='${server.build.dir}/dist'/>
-
+-->
 	<property name='network.dir' value='${this.zwc.basedir}/../ZimbraNetwork' />
 	<property name='network.zwc.dir' value='${network.dir}/ZimbraWebClient' />
 	<property name='network.zwc.help.dir' value='${network.zwc.dir}/WebRoot/help' />
@@ -121,14 +125,6 @@
     <property name="jquery.version" value="1.8.1"/>
     <property name="jquery.dir" value="${js.dir}/ajax/3rdparty/jquery"/>
 
-    <!-- Tasks -->
-
-    <taskdef resource="net/sf/antcontrib/antlib.xml">
-        <classpath>
-            <fileset dir='${lib.dir}' includes='**/ant-contrib-*.jar'/>
-        </classpath>
-    </taskdef>
-	
 	<!-- customize admin skin -->
 	<if>
 		<isset property='adminSkin'/>
@@ -145,11 +141,11 @@
         <pathelement location="${build.classes.dir}"/>
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
         <fileset dir="${overlay.lib.dir}" includes="**/*.jar" erroronmissingdir="false" />
-        <fileset dir="${common.lib.dir}" includes="**/*.jar"/>
-        <pathelement location="${common.build.classes.dir}"/>
-        <pathelement location="${client.build.classes.dir}"/>
-	<pathelement location="${server.build.classes.dir}"/>
-	<pathelement location="${taglib.build.classes.dir}"/>
+        <fileset dir="${common.jars.dir}" includes="**/*.jar"/>
+        <pathelement location="${common.classes.dir}"/>
+        <pathelement location="${client.classes.dir}"/>
+	    <pathelement location="${server.classes.dir}"/>
+	    <pathelement location="${taglib.classes.dir}"/>
     </path>
 
     <!-- pseudo-fileset so that targets that rely on it don't fail -->
@@ -300,21 +296,21 @@
             <classes refid="overlay.messages.fileset" />
             <classes refid="messages.fileset" />
 
-            <lib dir='${lib.dir}' includes='gifencoder.jar'/>
-            <lib dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
+            <lib dir='${lib.dir}' includes='gifencoder*.jar'/>
+            <lib file="${soap.jarfile}"/>
             <lib file="${client.jarfile}"/>
-            <lib dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
-            <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
-            <lib dir='${common.lib.dir}' includes='gmbal-api-only-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='jaxb-api-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='jaxb-core-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='jaxb-impl-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='jaxws-api-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='jaxws-rt-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='jsr181-api-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='policy-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='stax-ex-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='streambuffer-*.jar'/>
+            <lib file="${taglib.jarfile}"/>
+            <lib file="${server.jarfile}"/>
+            <lib dir='${common.jars.dir}' includes='gmbal-api-only-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='jaxb-api-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='jaxb-core-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='jaxb-impl-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='jaxws-api-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='jaxws-rt-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='jsr181-api-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='policy-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='stax-ex-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='streambuffer-*.jar'/>
 
             <!-- files from build tree -->
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
@@ -357,20 +353,20 @@
         </copy>
 
         <copy todir="${webapp.dir}/WEB-INF/lib" verbose="${sync.verbose}">
-            <fileset dir='${lib.dir}' includes='gifencoder.jar'/>
-            <fileset dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
+            <fileset dir='${lib.dir}' includes='gifencoder*.jar'/>
+            <fileset file="${soap.jarfile}"/>
             <fileset file="${client.jarfile}" />
-            <fileset dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
-            <fileset dir='${server.build.dir}' includes='zimbrastore.jar'/>
-            <fileset dir='${common.lib.dir}' includes='gmbal-api-only-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='jaxb-api-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='jaxb-impl-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='jaxws-api-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='jaxws-rt-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='jsr181-api-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='policy-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='stax-ex-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='streambuffer-*.jar'/>
+            <fileset file="${taglib.jarfile}"/>
+            <fileset file="${server.jarfile}"/>
+            <fileset dir='${common.jars.dir}' includes='gmbal-api-only-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='jaxb-api-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='jaxb-impl-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='jaxws-api-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='jaxws-rt-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='jsr181-api-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='policy-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='stax-ex-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='streambuffer-*.jar'/>
         </copy>
 
         <taskdef name="jscopy"
@@ -432,7 +428,7 @@
 
 
         <condition property='external.done' value='true'>
-            <available file="${taglib.build.dir}/zimbrataglib.jar"/>
+            <available file="${taglib.jarfile}"/>
         </condition>
 
         <!-- deployment properties -->
@@ -1178,7 +1174,7 @@ if (ext == null) ext = "";
                         <echo>Minimizing to @{var}${jsmin.ext}</echo>
 	                    <try>
 	                        <block>
-		                        <java jar="${common.lib.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true"
+		                        <java jar="${common.jars.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true"
 		                              output="${build.dir}/yui-compress.out" error="@{var}${compresserror.ext}">
 		                            <arg value="--line-break"/>
 		                            <arg value="0"/>
@@ -1226,7 +1222,7 @@ if (ext == null) ext = "";
 		<for list="${files}" param="filename">
 			<sequential>
 				<echo>Testing file: @{filename}</echo>
-				<java jar="${common.lib.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true">
+				<java jar="${common.jars.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true">
 				    <arg value="--line-break"/>
 				    <arg value="0"/>
 				    <arg value="--type"/>
@@ -1491,11 +1487,11 @@ if (ext == null) ext = "";
         <pathelement  path="${build.classes.dir}" />
         <pathelement path="${server.dist.dir}/jetty/resources" />
         <fileset dir="${lib.dir}/jsp-2.3" includes="*.jar"/>
-        <fileset dir="${taglib.build.dir}" includes="zimbrataglib.jar"/>
-        <fileset dir="${client.build.dir}" includes="zimbraclient.jar"/>
-        <fileset dir="${server.dist.dir}/jetty/common/lib" includes="zimbracommon.jar"/>
-        <fileset dir="${server.build.dir}" includes="zimbrastore.jar"/>
-        <fileset dir="${common.lib.dir}" includes="servlet-api-3.1.jar,javamail-1.4.5.jar,json.jar,yuicompressor-2.4.2-zimbra.jar,guava-13.0.1.jar,commons-httpclient-3.1.jar,commons-codec-1.7.jar"/>
+        <fileset file="${taglib.jarfile}"/>
+        <fileset file="${client.jarfile}"/>
+        <fileset file="${common.jarfile}"/>
+        <fileset file="${server.jarfile}"/>
+        <fileset dir="${common.jars.dir}" includes="javax.servlet-api-3.1.0.jar,mail-1.4.5.jar,json-20090211.jar,yuicompressor-2.4.2-zimbra.jar,guava-13.0.1.jar,commons-httpclient-3.1.jar,commons-codec-1.7.jar"/>
     </path>
 
     <target name="jspc">
