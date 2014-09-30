@@ -1698,9 +1698,13 @@ function(item) {
 ZmDlPropertiesTabView = function(parent, className) {
     if (arguments.length == 0) return;
 
-    DwtTabViewPage.call(this, parent, className, Dwt.RELATIVE_STYLE);
+    DwtTabViewPage.call(this, parent, className, Dwt.ABSOLUTE_STYLE);
 
 	this.setScrollStyle(Dwt.SCROLL);
+
+	var htmlEl = this.getHtmlElement();
+	htmlEl.style.top = this.parent._tabView.getY() + this.parent._tabView._tabBar.getH() + "px";
+	htmlEl.style.bottom = 0;
 
 };
 
