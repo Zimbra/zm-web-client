@@ -722,7 +722,7 @@ function(convNode) {
 	this.numMsgs = convNode.n;
 	this.numUnread = convNode.u;
 	this.date = convNode.d;
-	this._parseFlags(convNode.m);   // parse flags based on msgs
+	this._parseFlagsOfMsgs(convNode.m);   // parse flags based on msgs
 	this._parseTagNames(convNode.tn);
 	if (convNode.e) {
 		for (var i = 0; i < convNode.e.length; i++) {
@@ -925,7 +925,7 @@ function() {
  *
  * @private
  */
-ZmConv.prototype._parseFlags = function(msgs) {
+ZmConv.prototype._parseFlagsOfMsgs = function(msgs) {
 
 	// use search from list since it's not yet set in controller
 	var ignore = ZmMailApp.getFoldersToOmit(this.list && this.list.search),
