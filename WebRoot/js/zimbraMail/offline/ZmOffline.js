@@ -736,13 +736,21 @@ function(syncResponse) {
 	var contactIdsArray = [];
 	if (msgs) {
 		var offlineFolderIds = Object.keys(ZmOffline.folders);
+		var nonOfflineMsgIds = [];
 		msgs.forEach(function(msg) {
 			//Get messages only if it belongs to offline folder
 			if (msg.l && offlineFolderIds.indexOf(msg.l) !== -1) {
 				var params = {m:{id:msg.id, html:1, needExp:1}, _jsns:"urn:zimbraMail"};
 				msgParamsArray.push(params);
+			} else {
+				nonOfflineMsgIds.push(msg.id);
 			}
 		});
+		if (nonOfflineMsgIds.length > 0) {
+			// Fix for Bug 95758.  Try and delete the messages from the mail store, in case some were stored offline.
+			// This happens when a message is moved from a folder that stores offline messages to one that does not.
+			ZmOfflineDB.deleteItem(nonOfflineMsgIds, ZmApp.MAIL);
+		}
 	}
 	if (contacts) {
 		contacts.forEach(function(contact) {
