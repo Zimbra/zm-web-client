@@ -31,7 +31,7 @@
             <table cellspacing="0" cellpadding="0" class='Tb'>
                 <tr>
                     <td nowrap>
-                        <app:calendarUrl var="closeurl" />
+                        <app:calendarUrl action="close" var="closeurl"/>
                         <a id="OPCLOSE" href="${fn:escapeXml(closeurl)}" <c:if test="${keys}"></c:if>> <app:img src="common/ImgClose.png" alt="close"/> <span>&nbsp;<fmt:message key="close"/></span></a>
                     </td>
                     <c:if test="${not isReadOnly}">
