@@ -106,6 +106,8 @@ function() {
 		this._onZWCOffline();
 	}
 	else {
+		// Always replay offline request on post startup event so that the offline related changes are applied.
+		this._replayOfflineRequest();
 		this._initStaticResources();
 	}
 	ZmOffline.updateFolderCount();
