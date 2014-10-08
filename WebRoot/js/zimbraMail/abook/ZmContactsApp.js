@@ -338,7 +338,7 @@ function() {
 	}
 
 	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_ADDRBOOK] = "addressBook";
+	newOrgOps[ZmOperation.NEW_ADDRBOOK] = "contactsFolder";
 
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_CONTACT] = ZmOperation.NEW_CONTACT;
