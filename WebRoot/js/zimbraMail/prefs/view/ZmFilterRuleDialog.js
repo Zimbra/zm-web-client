@@ -1162,7 +1162,7 @@ ZmFilterRuleDialog.prototype._browseListener =
 function(ev) {
 	var type = ev.item.getData(ZmFilterRuleDialog.BROWSE_TYPE);
 	var isFolder = (type == ZmFilterRule.TYPE_FOLDER_PICKER);
-	var dialog = isFolder ? appCtxt.getChooseFolderDialog()	: appCtxt.getPickTagDialog();
+	var dialog = isFolder ? appCtxt.getChooseFolderDialog(ZmApp.MAIL) : appCtxt.getPickTagDialog();
 	var overviewId = isFolder ? dialog.getOverviewId(ZmApp.MAIL) : null;
 	if (appCtxt.multiAccounts) {
 		overviewId = [overviewId, "-", appCtxt.getActiveAccount().name, this.toString()].join("");

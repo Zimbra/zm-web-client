@@ -731,16 +731,16 @@ function() {
  * @return	{ZmChooseFolderDialog}		the choose folder dialog
  */
 ZmAppCtxt.prototype.getChooseFolderDialog =
-function() {
-	var currentApp = this.getCurrentApp();
+function(appName) {
+	var app = appName ? this.getApp(appName) : this.getCurrentApp();
 	// this.getCurrentAppName() returns "Search" for search apps. Let's re-use dialogs from regular apps.
-	var currentAppName = currentApp.isZmSearchApp ? this.searchAppName : this.getCurrentAppName();
+	appName = app.isZmSearchApp ? this.searchAppName : app.getName();
 	this._chooseFolderDialogs = this._chooseFolderDialogs || {};
-	if (!this._chooseFolderDialogs[currentAppName]) {
+	if (!this._chooseFolderDialogs[appName]) {
 		AjxDispatcher.require("Extras");
-		this._chooseFolderDialogs[currentAppName] = new ZmChooseFolderDialog(this._shell);
+		this._chooseFolderDialogs[appName] = new ZmChooseFolderDialog(this._shell);
 	}
-	this._chooseFolderDialog = this._chooseFolderDialogs[currentAppName];
+	this._chooseFolderDialog = this._chooseFolderDialogs[appName];
 	return this._chooseFolderDialog;
 };
 
