@@ -128,18 +128,6 @@ function(view) {
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);
 };
 
-ZmTradController.prototype._listSelectionListener =
-function(ev) {
-	var item = ev.item;
-	if (!item) { return; }
-	var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
-	if (!handled && ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
-		var ctlr = AjxDispatcher.run("GetMsgController", item.nId);
-		ctlr.show(item, this, respCallback, true);
-	}
-};
-
 ZmTradController.prototype._keepReading = 
 function(check, ev) {
 	

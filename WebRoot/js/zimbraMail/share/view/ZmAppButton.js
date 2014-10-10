@@ -145,13 +145,3 @@ function(actionCode, ev) {
 	}
 	return true;
 };
-
-/**
- * App toolbar buttons user ZHover instead of ZFocused
- * 
- * @private
- */
-ZmAppButton.prototype._focus =
-function() {
-    this.setDisplayState(DwtControl.HOVER);
-};

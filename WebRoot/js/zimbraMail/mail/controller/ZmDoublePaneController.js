@@ -567,7 +567,14 @@ function(ev) {
 			this._detachListener(null, respCallback);
 			return true;
 		} else {
-			return false;
+			var respCallback =
+				this._handleResponseListSelectionListener.bind(this, item);
+			var ctlr =
+				AjxDispatcher.run(item.type === ZmItem.CONV ?
+				                  "GetConvController" : "GetMsgController",
+				                  item.nId);
+			ctlr.show(item, this, respCallback, true);
+			return true;
 		}
 	} else if (!handled) {
 		if (this.isReadingPaneOn()) {
@@ -592,6 +599,7 @@ function(ev) {
 			}
 		}
 	}
+
 	return handled;
 };
 
