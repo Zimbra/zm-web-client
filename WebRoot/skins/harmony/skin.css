@@ -86,21 +86,17 @@
 
 /* Left nav tree styling */
 
-.overviewHeader,
-.overviewHeader-actioned,
-.overviewHeader-selected {
+.overviewHeader {
 	background-color:transparent;
 	padding-top:0px;
 	padding-bottom:0px;
 }
 
-.overviewHeader>TABLE,
-.overviewHeader-actioned>TABLE {
+.overviewHeader>TABLE {
 	border-width:0px;
 }
 
-.overviewHeader TD,
-.overviewHeader-actioned TD {
+.overviewHeader TD {
 	background-color:transparent;
 	font-size:1.3rem;
 	font-weight:normal;

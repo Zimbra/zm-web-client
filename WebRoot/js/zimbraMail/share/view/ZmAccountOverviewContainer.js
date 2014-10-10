@@ -146,10 +146,6 @@ function(params) {
             }
         }
 
-		if (this._appName == ZmApp.CALENDAR) {
-			params.selectable = false;
-		}
-
 		this._addAccount(params, acct, showBackgroundColor, null, "account" + i);
 
 		header = this.getHeaderItem(acct);
@@ -208,8 +204,7 @@ function(params) {
 		params1 = {
 			parent: allTi,
 			text: ZmMsg.globalSearches,
-			imageInfo: "SearchFolder",
-			selectable: false
+			imageInfo: "SearchFolder"
 		};
 		var searchTi = this._searchTreeHeader = new DwtTreeItem(params1);
 		searchTi.addClassName("DwtTreeItemChildDiv");
@@ -241,7 +236,6 @@ function(params) {
 	if (appCtxt.isOffline) {
 		var params2 = AjxUtil.hashCopy(params);
 		params2.omit = {};
-		params2.selectable = false;
 
 		if (this._appName != ZmApp.PREFERENCES) {
 			this._addAccount(params2, mainAcct, showBackgroundColor, "ZmOverviewLocalHeader", "LocalFolders");
@@ -255,8 +249,7 @@ function(params) {
 			var params3 = {
 				parent: this,
 				text: mainAcct.getDisplayName(),
-				imageInfo: mainAcct.getIcon(),
-				selectable: false
+				imageInfo: mainAcct.getIcon()
 			};
 			var localPrefTi = new DwtTreeItem(params3);
 			localPrefTi._initialize(null, true);

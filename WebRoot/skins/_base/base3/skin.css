@@ -579,17 +579,10 @@ SELECT						{	@FieldBorder@	}
 /*.DwtListView-ColHeader			{ height:1.8rem; height:19px;					}*/
 .DwtListView-Column					{ background-color:@lighten(AppC,33)@; 		}
 .DwtListView-Column TD				{ color:@darken(AppC,55)@; 					}
-.overviewHeader,
-.overviewHeader-actioned			{ background-color:@darken(AppC,20)@; border:0px; padding:1px 0px; 	}
-.overviewHeader>TABLE,
-.overviewHeader-actioned>TABLE 		{ border:1px solid white; 	}
-/* IE doesn't support backgrounds on TABLE so put bkgd on TD */
-.overviewHeader TD,
-.overviewHeader-actioned TD 		{ background-color:@lighten(AppC,33)@;	}
-.overviewHeader .ZButton,
-.overviewHeader-actioned .ZButton	{ height:auto;	}
-.FirstOverviewHeader.overviewHeader,
-.FirstOverviewHeader.overviewHeader-actioned { padding-top:0px;	}
+.overviewHeader			{ background-color:@darken(AppC,20)@; border:0px; padding:1px 0px; 	}
+.overviewHeader>TABLE 		{ border:1px solid white; 	}
+.overviewHeader .ZButton	{ height:auto;	}
+.FirstOverviewHeader.overviewHeader { padding-top:0px;	}
 .RowDouble							{ height:auto; padding-top:0px; 		}
 .RowDouble>TABLE,
 .RowDouble .ZmRowDoubleHeader		{ border:1px solid white; 			}

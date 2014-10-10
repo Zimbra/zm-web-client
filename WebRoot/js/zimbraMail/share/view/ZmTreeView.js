@@ -173,8 +173,7 @@ function(params) {
 		id:					ZmId.getTreeItemId(this.overviewId, null, this.type),
 		optButton:			params.optButton,
 		dndScrollCallback:	this._overview && this._overview._dndScrollCallback,
-		dndScrollId:		this._overview && this._overview._scrollableContainerId,
-		selectable:			(appCtxt.multiAccounts && this.type != ZmOrganizer.SEARCH && this.type != ZmOrganizer.TAG)
+		dndScrollId:		this._overview && this._overview._scrollableContainerId
 	});
 	ti._isHeader = true;
 	var name = ZmMsg[ZmOrganizer.LABEL[this.type]];
@@ -479,7 +478,12 @@ function(parentNode, organizer, index, noTooltips, omit) {
 	if (ds && ds.type == ZmAccount.TYPE_IMAP) {
 		var cname = appCtxt.isFamilyMbox ? null : this._headerClass;
 		var icon =  "Folder";
-		ti = new DwtHeaderTreeItem({parent:this, text:organizer.getName(), className:cname, imageInfo:icon, selectable: false});
+		ti = new DwtHeaderTreeItem({
+			parent:this,
+			text:organizer.getName(),
+			className:cname,
+			imageInfo:icon
+		});
 	} else {
 		// create parent chain
 		if (!parentNode) {
@@ -658,6 +662,28 @@ ZmTreeView.prototype._getNextTreeItem =
 function(next) {
 	var nextItem = DwtTree.prototype._getNextTreeItem.apply(this, arguments);
 	return nextItem || (this._overview && this._overview._getNextTreeItem(next, this));
+};
+
+ZmTreeView.prototype._getFirstTreeItem =
+function() {
+	if (!this._overview) {
+		return DwtTree.prototype._getFirstTreeItem.call(tree);
+	}
+
+	var treeids = this._overview.getTreeViews();
+	var tree = this._overview.getTreeView(treeids[0]);
+	return tree && DwtTree.prototype._getFirstTreeItem.call(tree);
+};
+
+ZmTreeView.prototype._getLastTreeItem =
+function() {
+	if (!this._overview) {
+		return DwtTree.prototype._getLastTreeItem.call(tree);
+	}
+
+	var treeids = this._overview.getTreeViews();
+	var tree = this._overview.getTreeView(treeids[treeids.length - 1]);
+	return tree && DwtTree.prototype._getLastTreeItem.call(tree);
 };
 
 ZmTreeView.prototype._hideHeaderTreeItem =

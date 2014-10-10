@@ -147,9 +147,7 @@ function(actionCode, ev) {
 			if (mlv.getSelectionCount() != 1) { return false; }
 			var item = mlv.getItemFromElement(mlv._kbAnchor);
 			if (!item) { return false; }
-			if (item.type == ZmItem.CONV && !mlv._isExpandable(item)) {
-				return DwtListView.prototype.handleKeyAction.call(mlv, DwtKeyMap.DBLCLICK);
-			} else {
+			if (mlv._isExpandable(item)) {
 				mlv._expandItem(item);
 			}
 			break;
@@ -194,10 +192,6 @@ function(actionCode, ev) {
 		case ZmKeyMap.KEEP_READING:
 			return this._keepReading(false, ev);
 			break;
-
-		// need to invoke DwtListView method directly since our list view no-ops DBLCLICK
-		case DwtKeyMap.DBLCLICK:
-			return DwtListView.prototype.handleKeyAction.apply(mlv, arguments);
 
 		// these are for quick reply
 		case ZmKeyMap.SEND:
@@ -509,25 +503,9 @@ function(ev) {
 	if (ev.field == ZmItem.F_EXPAND && this._mailListView._isExpandable(item)) {
 		this._toggle(item);
 		return true;
-	} else {
-		var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
-		if (!handled) {
-			if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-				if (item.type == ZmItem.CONV && item.numMsgs == 1) {
-					if (!item._loaded) {
-						//unloaded Conv makes problems.
-						item.load(null, this._handleConvLoaded.bind(this, item));
-						return true;
-					}
-					this._handleConvLoaded(item);
-					return true;
-				}
-				this._showItem(item);
-				return true;
-			}
-		}
 	}
-	return false;
+
+	return ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
 };
 
 ZmConvListController.prototype._handleConvLoaded =

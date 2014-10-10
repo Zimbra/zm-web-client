@@ -70,7 +70,6 @@ function(params) {
 		var headerParams = {
 			parent: this,
 			text: headerLabel,
-			selectable: false,
 			className: "overviewHeader",
 			imageInfo: "VoiceMailApp"
 		};

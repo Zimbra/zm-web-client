@@ -106,10 +106,13 @@ ZmOverview = function(params, controller) {
 		var params = {container:container, threshold:15, amount:5, interval:10, id:this._scrollableContainerId};
 		this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [params]);
 	}
+
+	element.setAttribute('aria-label', ZmMsg.overviewLabel);
 };
 
 ZmOverview.prototype = new DwtComposite;
 ZmOverview.prototype.constructor = ZmOverview;
+ZmOverview.prototype.role = "navigation";
 
 /**
  * Returns a string representation of the object.
@@ -239,6 +242,13 @@ function(typeOnly) {
 		}
 	}
 	return null;
+};
+
+ZmOverview.prototype.getTabGroupMember =
+function() {
+	var tabGroup = new DwtTabGroup();
+	tabGroup.addMember(this.getSelected());
+	return tabGroup;
 };
 
 ZmOverview.prototype.deselectAllTreeViews =

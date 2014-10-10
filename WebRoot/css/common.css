@@ -630,7 +630,7 @@ LI.RowDouble, LI.Row {list-style: none;}
 .pickerOverview 			{	@TreeContainer@ @FullHeight@ 	}
 
 /* ??? MARGINS */
-.overviewHeader,.overviewHeader-actioned {
+.overviewHeader {
 	@InactiveCursor@
 	@TreeHeaderContainer@
 	@TreeHeaderText@
@@ -645,20 +645,29 @@ LI.RowDouble, LI.Row {list-style: none;}
 }
 
 .overviewHeader-selected {
-	@TreeHeaderText@
     @SelectedBg-blurred@
-	padding-top:1px;
-	padding-bottom:1px;
 }
 
 .overviewHeader-selected-focused {
-	@TreeHeaderText@
     @SelectedBg@
 }
 
-.overviewHeader .imageCell,.overviewHeader-actioned .imageCell {
+.overviewHeader .imageCell {
 	@ImagePadding@
 	white-space:nowrap;	/* ??? */
+}
+
+/* IE doesn't support backgrounds on TABLE so put bkgd on TD */
+.overviewHeader TD 		{
+	@TreeHeaderBg@
+}
+
+.overviewHeader-selected TD {
+	@TreeHeaderSelectedBg@
+}
+
+.overviewHeader-selected-focused TD {
+	@TreeHeaderFocusedBg@
 }
 
 .inlineIcon {

@@ -202,21 +202,6 @@ function(list, sortField) {
 	ZmMailListView.prototype.set.apply(this, arguments);
 };
 
-ZmConvListView.prototype.handleKeyAction =
-function(actionCode, ev) {
-
-	switch (actionCode) {
-		// Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
-		// it here so that it gets handled as an app shortcut (app shortcuts happen
-		// after widget shortcuts).
-		case DwtKeyMap.DBLCLICK:
-			return false;
-		
-		default:
-			return ZmMailListView.prototype.handleKeyAction.apply(this, arguments);
-	}
-};
-
 /**
  * check whether all conversations are checked
  * overrides ZmListView.prototype._isAllChecked since the list here contains both conversations and messages, and we care only about messages
