@@ -2648,8 +2648,9 @@ function(op, quotedText, check) {
 				quotedText = this._removeHtmlPrefix(quotedText);
 			}
 			else {
-				quotedText = quotedText.replace(/^> /, "");
-				quotedText = quotedText.replace(/\n> /g, "\n");
+				// remove leading > or | (prefix) with optional space after it (for text there's a space, for additional level prefix there isn't)
+				quotedText = quotedText.replace(/^[>|] ?/, "");
+				quotedText = quotedText.replace(/\n[>|] ?/g, "\n");
 			}
 		}
 	}
