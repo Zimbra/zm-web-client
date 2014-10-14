@@ -23,7 +23,7 @@ ZmShareProxy = function(params) {
     params.type = ZmOrganizer.SHARE;
     ZmOrganizer.call(this, params);
 };
-ZmShareProxy.prototype = new ZmOrganizer;
+ZmShareProxy.prototype = new ZmFolder;
 ZmShareProxy.prototype.constructor = ZmShareProxy;
 
 ZmShareProxy.prototype.toString = function() {

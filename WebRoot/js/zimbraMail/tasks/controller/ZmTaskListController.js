@@ -396,6 +396,10 @@ function(name, callback, errCallback) {
 	var task = new ZmTask(this._list, null, folderId);
 
 	if (folder && folder.link) {
+		// A share may not be direct - it may be via the root for a full mailbox share
+		while (folder && !folder.owner) {
+			folder = folder.parent;
+		}
 		task.setOrganizer(folder.owner);
 		task._orig = new ZmTask(this._list);
 	}
