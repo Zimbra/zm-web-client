@@ -31,8 +31,8 @@
     <td nowrap colspan="2" class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if><c:if test="${folder.id eq requestScope.context.selectedId}"> Selected</c:if>'
         style='padding-left: ${folder.depth*8}px'>
         <c:choose>
-            <c:when test="${folder.isCheckedInUI}"><app:calendarUrl var="url" uncheck="${folder.id}"/></c:when>
-            <c:otherwise><app:calendarUrl var="url" check="${folder.id}"/></c:otherwise>
+            <c:when test="${folder.isCheckedInUI}"><app:calendarUrl var="url" uncheck="${folder.id}" action="uncheck"/></c:when>
+            <c:otherwise><app:calendarUrl var="url" check="${folder.id}" action="check"/></c:otherwise>
         </c:choose>
         <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="startup/ImgNodeExpanded.gif"/></c:if></span>--%>
         <a href='${fn:escapeXml(url)}'>
