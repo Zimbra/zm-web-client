@@ -378,14 +378,18 @@ function(ev) {
 ZmContactSplitView.prototype._sizeChildren =
 function(width, height) {
 
-	var fudge = AjxEnv.isIE ? 39 : 41;
+	// Using toWindow instead of getY because getY calls Dwt.getLocation
+	// which returns NaN if "top" is not set or is "auto"
+	var listPartOffset = Dwt.toWindow(this._listPart.getHtmlElement(), 0, 0);
+	var fudge = listPartOffset.y - this.getY();
+
 	this._listPart.setSize(Dwt.DEFAULT, height - fudge);
 
-	fudge = AjxEnv.isIE ? 45 : 43;
 	var view = (this._contact && this._contact.isGroup())
 		? this._contactGroupView : this._contactView;
 
 	if (view) {
+		fudge = view.getY() - this.getY();
 		view.setSize(Dwt.DEFAULT, height - fudge);
 	}
 };
