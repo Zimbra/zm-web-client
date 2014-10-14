@@ -508,11 +508,18 @@ if (application.getInitParameter("offlineMode") != null) {
 										</select>
 									</c:otherwise>
 								</c:choose>
-<script TYPE="text/javascript">
-	document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
-</script>
-									<div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientWhatsThisMessage"/></div>
-									<div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
+                                <script TYPE="text/javascript">
+                                    document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
+                                </script>
+                                <c:choose>
+                                    <c:when test="${touchLoginPageExists}">
+                                        <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientWhatsThisMessage"/></div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientWhatsThisMessageWithoutTablet"/></div>
+                                    </c:otherwise>
+                                </c:choose>
+								<div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
 								</div>
 							</td>
 						</tr>
