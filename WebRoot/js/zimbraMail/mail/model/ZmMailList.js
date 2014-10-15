@@ -817,7 +817,7 @@ function(item) {
 	for (var i = 0; i < msgs.size(); i++) {
 		var msg = msgs.get(i);
 		var msgFolder = appCtxt.getById(msg.folderId);
-		var msgFolderId = msgFolder && msgFolder.getLocalId();
+		var msgFolderId = msgFolder && msgFolder.nId;
 
 		if (!ZmMailList._SPECIAL_FOLDERS_HASH[msgFolderId]) {
 			return false;
@@ -845,7 +845,7 @@ function(items, nFromFolderId) {
 	var fromFolderId = nFromFolderId || (this.search && this.search.folderId);
 	var	fromFolder = fromFolderId && appCtxt.getById(fromFolderId);
 
-	fromFolderId = fromFolder && fromFolder.getLocalId();
+	fromFolderId = fromFolder && fromFolder.nId;
 	var tcon = [];
 	for (i = 0; i < ZmMailList._SPECIAL_FOLDERS.length; i++) {
 		var specialFolderId = ZmMailList._SPECIAL_FOLDERS[i];
