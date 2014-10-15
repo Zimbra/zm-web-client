@@ -279,7 +279,7 @@ TD.DwtListView-ColumnActive  {
 .ZmContactInfoView {
 	background-color:white;
 	border-width:0px;
-	padding:1em 1em 0;
+	padding:1em;
 }
 
 .ZmContactInfoView .contactHeaderTable {
