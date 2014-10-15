@@ -802,13 +802,6 @@ function() {
 	return this._remoteId;
 };
 
-/**
- * returns the local part of the ID. In case of local folder it's the same as ID, but for remote, it's the "rid").
- */
-ZmOrganizer.prototype.getLocalId =
-function() {
-	return this.isRemote() ? this.rid : this.id;
-};
 
 /**
  * Gets the REST URL.
