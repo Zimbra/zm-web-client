@@ -107,7 +107,7 @@ function(parent, type, id) {
 
 	// user folder or Folders header
 	var nId = ZmOrganizer.normalizeId(id, this.type);
-	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) /*&& !folder.isSyncIssuesFolder()*/)) {
+	if (nId == ZmOrganizer.ID_ROOT || (!folder.isSystem() && !folder.isSystemEquivalent()) /*&& !folder.isSyncIssuesFolder()*/) {
 		var isShareVisible = (!folder.link || folder.isAdmin());
         if (appCtxt.isOffline) {
             isShareVisible = !folder.getAccount().isMain && folder.getAccount().isZimbraAccount;
@@ -131,6 +131,9 @@ function(parent, type, id) {
 	}
 	// system folder
 	else {
+		if (folder.isSystemEquivalent()) {
+			nId = folder.getSystemEquivalentFolderId();
+		}
 		parent.enableAll(false);
 		// can't create folders under Drafts or Junk
 		if (!folder.disallowSubFolder &&

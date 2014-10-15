@@ -561,12 +561,25 @@ function() {
 
 	// make a "best-effort" to map imap folders to a well-known icon
 	// (parent will be the root imap folder)
-	if (this.parent && this.parent.isDataSource(ZmAccount.TYPE_IMAP)) {
-		var mappedId = ZmFolder.getIdForName(this.name);
-		if (mappedId) { return ZmFolder.ICON[mappedId] || "Folder"; }
+	var mappedId = this.getSystemEquivalentFolderId();
+	if (mappedId) {
+		return ZmFolder.ICON[mappedId] || "Folder";
 	}
 
 	return "Folder";
+};
+
+ZmFolder.prototype.getSystemEquivalentFolderId =
+function() {
+	if (this.parent && this.parent.isDataSource(ZmAccount.TYPE_IMAP)) {
+		return ZmFolder.getIdForName(this.name);
+	}
+	return null;
+};
+
+ZmFolder.prototype.isSystemEquivalent =
+function() {
+	return this.getSystemEquivalentFolderId() != null;
 };
 
 ZmFolder.prototype.mayContainFolderFromAccount =

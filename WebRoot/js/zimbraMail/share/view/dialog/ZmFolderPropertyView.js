@@ -172,7 +172,8 @@ function(event) {
 			}
         }
         this._color.setValue(colorCode);
-        this._color.setEnabled(organizer.id != ZmFolder.ID_DRAFTS);
+		var folderId = organizer.getSystemEquivalentFolderId() || organizer.id;
+		this._color.setEnabled(folderId != ZmFolder.ID_DRAFTS);
 		var isVisible = (organizer.type != ZmOrganizer.FOLDER ||
 						 (organizer.type == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)));
 		this._props.setPropertyVisible(this._colorId, isVisible);
