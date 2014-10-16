@@ -41,6 +41,7 @@
 
     <c:set var="apptFolder" value="${zm:getFolder(pageContext, msg.folderId)}"/>
     <c:set var="readOnly" value="${apptFolder.isMountPoint or apptFolder.isFeed}"/>
+    <c:set var="isWritable" value="${not apptFolder.isMountPoint or apptFolder.isAppointmentMoveTarget}"/>
     <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
     <zm:currentResultUrl var="currentUrl" value="${context_url}" context="${context}"/>
 
@@ -55,7 +56,7 @@
         <mo:ipadToolbar mailbox="${mailbox}" app="${'cal'}" context="${context}" keys="false" invId="${invite.component.isOrganizer ? id : ''}"  urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${true}"/>
     </c:when>
     <c:otherwise>
-        <mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}"  urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${true}"/>
+        <mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}"  urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${true}" isWritable="${isWritable}"/>
     </c:otherwise>    
     </c:choose>
     <div class="Stripes ${ua.isiPad eq true ? 'composeFields' : ''}">
