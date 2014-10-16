@@ -101,7 +101,7 @@ function(parent, type, id) {
     // disable empty folder option for inbox, sent and drafts: bug 66656
     var isEmptyFolderAllowed = true;
     var y = folder.rid;
-    if(y == ZmFolder.ID_INBOX || y == ZmFolder.ID_SENT || y == ZmFolder.ID_DRAFTS){
+    if (y == ZmFolder.ID_ROOT || y == ZmFolder.ID_INBOX || y == ZmFolder.ID_SENT || y == ZmFolder.ID_DRAFTS) {
         isEmptyFolderAllowed = false;
     }
 
@@ -175,7 +175,7 @@ function(parent, type, id) {
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
 	if (nId != ZmOrganizer.ID_ROOT && !folder.isReadOnly()) {
 		// always enable for shared folders since we dont get this info from server
-		parent.enable(ZmOperation.MARK_ALL_READ, (folder.numUnread > 0 || folder.link));
+		parent.enable(ZmOperation.MARK_ALL_READ, !folder.isRemoteRoot() && (folder.numUnread > 0 || folder.link));
 	}
 
 	var op = parent.getOp(ZmOperation.EMPTY_FOLDER);
