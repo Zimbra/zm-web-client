@@ -223,7 +223,7 @@
                                 <td width=25><input value="date_range" type='radio' id='${id}_dateRangeRadio' name='${id}_selDateRange'></td>
                                 <td width=80><label for='${id}_dateRangeRadio'><$= ZmMsg.calPrintDateRange $></label></td>
                                 <td id='${id}_dateRangeFromContainer'></td>
-                                <td>&nbsp; <$= ZmMsg.to $> &nbsp;</td>
+                                <td>&nbsp; <$= ZmMsg.calPrintTo $> &nbsp;</td>
                                 <td id='${id}_dateRangeToContainer'></td>
                             </tr>
                         </table>
@@ -236,7 +236,7 @@
                             <tr id='${id}_hoursContainer' style='display:block;'>
                                 <td align=right width=111><$= ZmMsg.calPrintHours $></td>
                                 <td id='${id}_fromHoursContainer'></td>
-                                <td>&nbsp; <$= ZmMsg.to $> &nbsp;</td>
+                                <td>&nbsp; <$= ZmMsg.calPrintTo $> &nbsp;</td>
                                 <td id='${id}_toHoursContainer'></td>
                                 <td></td>
                             </tr>
