@@ -51,7 +51,7 @@
      </span>
 </div><c:set var="count" value="${0}"/>
     <zm:forEachFolder var="calendar" skiproot="${false}" skipsystem="${false}"  skiptopsearch="${true}">
-        <c:if test="${count lt sessionScope.F_LIMIT and calendar.isAppointmentView && calendar.isAppointmentMoveTarget}">
+        <c:if test="${count lt sessionScope.F_LIMIT and calendar.isAppointmentView}">
             <c:if test="${sessionScope.calendar.id eq calendar.id}"><b></c:if>
             <mo:overviewFolder base="${context_url}" folder="${calendar}" types="cal"/>
             <c:if test="${sessionScope.calendar.id eq calendar.id}"></b></c:if>

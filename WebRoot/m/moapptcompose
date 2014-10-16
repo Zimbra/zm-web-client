@@ -293,12 +293,25 @@
         <span class="td label"><c:if test="${param.st eq 'newtask'}"><fmt:message key="taskList"/></c:if><c:if test="${param.st ne 'newtask'}"><fmt:message key="calendarLabel"/></c:if></span>
          <span class="td value" style="padding:0px; text-align:left;"><select name='apptFolderId' id="apptFolderId"><c:set var="count" value="${0}"/>
              <zm:forEachFolder var="folder">
+                 <c:set var="folderName" value="${zm:getFolderName(pageContext, folder.id)}"/>
                  <c:if test="${count lt sessionScope.F_LIMIT and param.st ne 'newtask' and folder.isAppointmentView and folder.isAppointmentMoveTarget }">
-                     <option value="${folder.id}" <c:if test="${(param.invId ne '' && compose.apptFolderId eq folder.id) || (not empty sessionScope.calendar && sessionScope.calendar.id eq folder.id)}">selected='selected'</c:if>>
-                     ${zm:getFolderName(pageContext, folder.id)}</option>
-                 <c:set var="count" value="${count+1}"/></c:if><c:if test="${count lt sessionScope.F_LIMIT and param.st eq 'newtask' and folder.isTaskView and folder.isTaskMoveTarget }">
-                     <option value="${folder.id}" <c:if test="${compose.apptFolderId eq folder.id }">selected='selected'</c:if>>${zm:getFolderName(pageContext, folder.id)}</option>
-                 <c:set var="count" value="${count+1}"/></c:if>
+                     <c:choose>
+                        <c:when test="${not empty param.invId && (compose.apptFolderId eq folder.canonicalId)}">
+                            <option value="${folder.id}" selected='selected'>${folderName}</option>
+                        </c:when>
+                        <c:when test="${empty param.invId && not empty sessionScope.calendar && (sessionScope.calendar.id eq folder.canonicalId)}">
+                            <option value="${folder.id}" selected='selected'>${folderName}</option>
+                        </c:when>
+                        <c:otherwise>
+                            <option value="${folder.id}">${folderName}</option>
+                        </c:otherwise>
+                     </c:choose>
+                     <c:set var="count" value="${count+1}"/>
+                 </c:if>
+                 <c:if test="${count lt sessionScope.F_LIMIT and param.st eq 'newtask' and folder.isTaskView and folder.isTaskMoveTarget }">
+                     <option value="${folder.id}" <c:if test="${compose.apptFolderId eq folder.canonicalId}">selected='selected'</c:if>>${folderName}</option>
+                     <c:set var="count" value="${count+1}"/>
+                 </c:if>
              </zm:forEachFolder>
          </select></span>
     </div>
