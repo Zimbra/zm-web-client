@@ -474,7 +474,7 @@
 
                 </c:when>
                 <c:when test="${zm:boolean(groupMode)}">
-                    <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(contact.galFullAddress)};${fn:escapeXml(contact.id)};G">
+                    <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(contact.galFullAddress)};${contact.refId != null ? fn:escapeXml(contact.refId) : fn:escapeXml(contact.id)};G">
                     </td>
                 </c:when>
                 <c:otherwise>
