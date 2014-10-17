@@ -363,6 +363,9 @@ ZmShareSearchDialog.prototype._appendShareNodes = function(owners) {
             shares.sort(ZmShareSearchDialog.__byFolderPath);
             for (var i = 0; i < shares.length; i++) {
                 var share = shares[i];
+				if (ZmFolder.HIDE_ID[share.folderId]) {
+					continue;
+				}
                 var shareId = [share.ownerId,share.folderId].join(":");
                 if (this._getNode(shareId) != null) continue;
 
