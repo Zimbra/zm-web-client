@@ -115,7 +115,7 @@ function(name) {
 	if (tag) {
 		return tag;
 	}
-	tag = new ZmTag({notLocal: true, id: name, name: name});
+	tag = new ZmTag({notLocal: true, id: "notLocal_" + name, name: name});
 	cache[name] = tag;
 	return tag;
 };
