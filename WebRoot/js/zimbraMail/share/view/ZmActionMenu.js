@@ -90,7 +90,7 @@ ZmActionMenu.prototype.toString = function() { return "ZmActionMenu"; };
  */
 ZmActionMenu.prototype.createOp =
 function(id, params, elementId) {
-	params.id = params.id || (this._context ? ZmId.getMenuItemId(this._context, id, this._menuType) : null);
+	params.id = this._context ? ZmId.getMenuItemId(this._context, id, this._menuType) : null;
 	var mi = this.createMenuItem(id, params, elementId);
 	mi.setData(ZmOperation.KEY_ID, id);
 

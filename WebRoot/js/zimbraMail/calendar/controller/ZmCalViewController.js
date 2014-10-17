@@ -3342,39 +3342,33 @@ function () {
  */
 ZmCalViewController.prototype._initializeActionMenu =
 function() {
-	var menuItems = this._getActionMenuOps();
-	if (menuItems && menuItems.length > 0) {
-		this._actionMenu = this._createActionMenu(menuItems);
-
-		var menuItems = this._getRecurringActionMenuOps();
-		if (menuItems && menuItems.length > 0) {
-			var params = {parent:this._shell, menuItems:menuItems};
-			this._recurringActionMenu = new ZmActionMenu(params);
-			menuItems = this._recurringActionMenu.opList;
-			for (var i = 0; i < menuItems.length; i++) {
-				var item = this._recurringActionMenu.getMenuItem(menuItems[i]);
-				var recurMenuItems = this._getActionMenuOps(menuItems[i]);
-				var recurActionMenu = this._createActionMenu(recurMenuItems, item);
-				if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-					this._setupTagMenu(recurActionMenu);
-				}
-				item.setMenu(recurActionMenu);
-				// NOTE: Target object for listener is menu item
-				var menuItemListener = new AjxListener(item, this._recurringMenuPopup);
-				item.addListener(AjxEnv.isIE ? DwtEvent.ONMOUSEENTER : DwtEvent.ONMOUSEOVER, menuItemListener);
-			}
-			this._recurringActionMenu.addPopdownListener(this._menuPopdownListener);
-		}
-
-		if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-			this._setupTagMenu(this._actionMenu);
-		}
+	this._actionMenu = this._createActionMenu(this._getActionMenuOps());
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		this._setupTagMenu(this._actionMenu);
 	}
+
+	var recurrenceModeOps = this._getRecurrenceModeOps();
+	var params = {parent: this._shell, menuItems: recurrenceModeOps};
+	this._recurrenceModeActionMenu = new ZmActionMenu(params);
+	for (var i = 0; i < recurrenceModeOps.length; i++) {
+		var recurrenceMode = recurrenceModeOps[i];
+		var modeItem = this._recurrenceModeActionMenu.getMenuItem(recurrenceMode);
+		var menuOpsForMode = this._getActionMenuOps(recurrenceMode);
+		var actionMenuForMode = this._createActionMenu(menuOpsForMode, modeItem, recurrenceMode);
+		if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+			this._setupTagMenu(actionMenuForMode);
+		}
+		modeItem.setMenu(actionMenuForMode);
+		// NOTE: Target object for listener is menu item
+		var menuItemListener = this._recurrenceModeMenuPopup.bind(modeItem);
+		modeItem.addListener(AjxEnv.isIE ? DwtEvent.ONMOUSEENTER : DwtEvent.ONMOUSEOVER, menuItemListener);
+	}
+	this._recurrenceModeActionMenu.addPopdownListener(this._menuPopdownListener);
 };
 
 ZmCalViewController.prototype._createActionMenu =
-function(menuItems, parentMenuItem) {
-	var params = {parent:parentMenuItem ? parentMenuItem : this._shell, menuItems:menuItems, context:this._getMenuContext()};
+function(menuItems, parentMenuItem, context) {
+	var params = {parent: parentMenuItem || this._shell, menuItems: menuItems, context: this._getMenuContext() + (context ? "_" + context : "")};
 	var actionMenu = new ZmActionMenu(params);
 	menuItems = actionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
@@ -3401,7 +3395,7 @@ function(menuItems, parentMenuItem) {
  * 
  * @private
  */
-ZmCalViewController.prototype._recurringMenuPopup =
+ZmCalViewController.prototype._recurrenceModeMenuPopup =
 function(ev) {
 	if (!this.getEnabled()) { return; }
 
@@ -3457,7 +3451,7 @@ function(recurrenceMode) {
 	return retVal;
 };
 
-ZmCalViewController.prototype._getRecurringActionMenuOps =
+ZmCalViewController.prototype._getRecurrenceModeOps =
 function() {
 	return [ZmOperation.VIEW_APPT_INSTANCE, ZmOperation.VIEW_APPT_SERIES];
 };
@@ -3590,8 +3584,8 @@ function(appt, actionMenu) {
 	}
 
 	// recurring action menu options
-	if (this._recurringActionMenu && !isTrash) {
-		this._recurringActionMenu.enable(ZmOperation.VIEW_APPT_SERIES, !appt.exception);
+	if (this._recurrenceModeActionMenu && !isTrash) {
+		this._recurrenceModeActionMenu.enable(ZmOperation.VIEW_APPT_SERIES, !appt.exception);
 	}
 };
 
@@ -3612,7 +3606,7 @@ function(ev) {
 	}
     var calendar = appt && appt.getFolder();
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
-	var menu = (appt.isRecurring() && !appt.isException && !isTrash) ? this._recurringActionMenu : actionMenu;
+	var menu = (appt.isRecurring() && !appt.isException && !isTrash) ? this._recurrenceModeActionMenu : actionMenu;
 	this._enableActionMenuReplyOptions(appt, menu);
 	var op = (menu == actionMenu) && appt.exception ? ZmOperation.VIEW_APPT_INSTANCE : null;
 	actionMenu.__appt = appt;
