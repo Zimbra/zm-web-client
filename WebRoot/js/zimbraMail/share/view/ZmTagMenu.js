@@ -254,7 +254,7 @@ function(menu, newTagName, tagList, add, index, tagHash, tagHtmlId) {
 	mi.setData(ZmTagMenu.KEY_TAG_ADDED, add);
 	mi.setData(Dwt.KEY_OBJECT, newTag);
 	mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
-	mi.setShortcut(appCtxt.getShortcutHint(null, ZmKeyMap.TAG));
+//	mi.setShortcut(appCtxt.getShortcutHint(null, ZmKeyMap.TAG));
 	tagHash[newTag.id] = mi;
 };
 
