@@ -892,10 +892,57 @@ function() {
 
 ZmCalItemEditView.prototype._submitAttachments =
 function() {
-	var callback = new AjxCallback(this, this._attsDoneCallback);
-	var um = appCtxt.getUploadManager();
-	window._uploadManager = um;
-	um.execute(callback, document.getElementById(this._uploadFormId));
+	var fileInputs = document.getElementsByName(ZmCalItemEditView.UPLOAD_FIELD_NAME);
+	var files = [];
+	var fileInput;
+	for (var i = 0; i < fileInputs.length; i++) {
+		fileInput = fileInputs[i].files;
+		if (fileInput) {
+			for (var j = 0; j < fileInput.length; j++) {
+				files.push(fileInput[j]);
+			}
+		}
+	}
+	var uploadParams = {
+		files: files,
+		completeAllCallback: this._attsDoneCallback.bind(this)
+	};
+	var uploadManager = appCtxt.getZmUploadManager();
+	uploadManager.upload(uploadParams);
+};
+
+ZmCalItemEditView.prototype._attsDoneCallback = function(attId, params, status) {
+	DBG.println(AjxDebug.DBG1, "Attachments: status = " + status + ", attId = " + attId);
+	if (status == AjxPost.SC_OK) {
+		//Checking for Zero sized/wrong path attachments
+		var zeroSizedAttachments = false;
+		if (typeof attId != "string") {
+			var attachmentIds = [];
+			for (var i = 0; i < attId.length; i++) {
+				var att = attId[i];
+				if (att.s == 0) {
+					zeroSizedAttachments = true;
+					continue;
+				}
+				attachmentIds.push(att.aid);
+			}
+			attId = attachmentIds.length > 0 ? attachmentIds.join(",") : null;
+		}
+		if (zeroSizedAttachments){
+			appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
+		}
+		this._controller.saveCalItem(attId);
+
+	} else if (status == AjxPost.SC_UNAUTHORIZED) {
+		// It looks like the re-login code was copied from mail's ZmComposeView, and it never worked here.
+		// Just let it present the login screen.
+		var ex = new AjxException("Authorization Error during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
+		this._controller._handleException(ex);
+	} else {
+		// bug fix #2131 - handle errors during attachment upload.
+		this._controller.popupUploadErrorDialog(ZmItem.APPT, status, ZmMsg.errorTryAgain);
+		this._controller.enableToolbar(true);
+	}
 };
 
 ZmCalItemEditView.prototype._showRecurDialog =
@@ -1222,42 +1269,6 @@ function(ev) {
 
 
 // Callbacks
-
-ZmCalItemEditView.prototype._attsDoneCallback =
-function(status, attId) {
-	DBG.println(AjxDebug.DBG1, "Attachments: status = " + status + ", attId = " + attId);
-	if (status == AjxPost.SC_OK) {
-		//Checking for Zero sized/wrong path attachments
-		var zeroSizedAttachments = false;
-		if (typeof attId != "string") {
-			var attachmentIds = [];
-			for (var i = 0; i < attId.length; i++) {
-				var att = attId[i];
-				if (att.s == 0) {
-					zeroSizedAttachments = true;
-					continue;
-				}
-				attachmentIds.push(att.aid);
-			}
-			attId = attachmentIds.length > 0 ? attachmentIds.join(",") : null;
-		}
-		if (zeroSizedAttachments){
-			appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
-		}
-		this._controller.saveCalItem(attId);
-		
-	} else if (status == AjxPost.SC_UNAUTHORIZED) {
-		// auth failed during att upload - let user relogin, continue with compose action
-		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
-		var callback = new AjxCallback(this._controller, isDraft ? this._controller.saveDraft : this._controller._send);
-		this._controller._handleException(ex, {continueCallback:callback});
-	} else {
-		// bug fix #2131 - handle errors during attachment upload.
-		this._controller.popupUploadErrorDialog(ZmItem.APPT, status,
-		                                        ZmMsg.errorTryAgain);
-		this._controller.enableToolbar(true);
-	}
-};
 
 ZmCalItemEditView.prototype._getDefaultFocusItem =
 function() {

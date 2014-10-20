@@ -179,7 +179,8 @@ function(req, fileName, params){
     if (req.readyState === 4) {
 		var response = null;
 		var aid      = null;
-		if (req.status === 200) {
+		var status   = req.status;
+		if (status === 200) {
 			if (params.attachment) {
 				// Sent via CSFE_ATTACHMENT_UPLOAD_URI
 				var resp = eval("["+req.responseText+"]");
@@ -204,6 +205,7 @@ function(req, fileName, params){
 					// Convert to an array of params.  Third one is the upload id
 					var serverParams = paramText.split(',');
 					var serverParamArray =  eval( "["+ serverParams +"]" );
+					status = serverParamArray[0];
 					aid = serverParamArray && serverParamArray.length && serverParamArray[2];
 					response = { aid: aid };
 				}
@@ -226,14 +228,14 @@ function(req, fileName, params){
             }
             else {
                 // Uploads are all done
-                this._completeAll(params, allResponses);
+                this._completeAll(params, allResponses, status);
             }
         }
         else {
             DBG.println("Error while uploading file: "  + fileName + " response is null.");
 
             // Uploads are all done
-            this._completeAll(params, allResponses);
+            this._completeAll(params, allResponses, status);
 
             var msgDlg = appCtxt.getMsgDialog();
             this.upLoadC = this.upLoadC - 1;
@@ -246,10 +248,10 @@ function(req, fileName, params){
 };
 
 ZmUploadManager.prototype._completeAll =
-function(params, allResponses) {
+function(params, allResponses, status) {
     if (params.completeAllCallback) {
         // Run a custom callback (like for mail ComposeView, which is doing attachment handling)
-        params.completeAllCallback.run(allResponses, params, 200)
+        params.completeAllCallback.run(allResponses, params, status)
     }
 }
 
