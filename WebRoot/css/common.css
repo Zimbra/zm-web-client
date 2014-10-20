@@ -498,10 +498,6 @@ TD.vSpace {
 	margin-left:54px;
 }
 
-.ZmConvExpanded .ZmMsgListColFrom SPAN {
-	margin-left:2em;
-}
-
 .ZmConvExpanded .ZmMsgListColSubject {  /* matches fragment styling */
 	color:black;
 	opacity:0.4;
