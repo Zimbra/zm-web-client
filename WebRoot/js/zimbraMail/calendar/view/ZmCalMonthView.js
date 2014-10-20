@@ -20,7 +20,11 @@
  */
 
 ZmCalMonthView = function(parent, posStyle, controller, dropTgt) {
-	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, ZmId.VIEW_CAL_MONTH, false);	
+	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, ZmId.VIEW_CAL_MONTH, false);
+	var element = this.getHtmlElement();
+	// clear the onClick event handler.  Otherwise accessibility code will
+	// generate spurious mouse up/down events
+	this._setEventHdlrs([DwtEvent.ONCLICK], true, element);
 
 	this.setScrollStyle(DwtControl.CLIP);
 	this._needFirstLayout = true;
