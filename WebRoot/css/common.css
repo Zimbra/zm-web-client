@@ -482,8 +482,8 @@ TD.vSpace {
 }
 
 .ZmMsgListBottomRowIcon {
-	margin-left: 23px;
-	margin-right: 5px;
+	margin-left:23px;
+	margin-right:5px;
 }
 
 .ZmConvExpanded .ZmMsgListBottomRowIcon {
@@ -495,7 +495,12 @@ TD.vSpace {
 }
 
 .ZmConvExpanded .ZmMsgListSelection .ZmMsgListBottomRowIcon {
-	margin-left: 54px;
+	margin-left:54px;
+}
+
+.ZmConvExpanded .ZmMsgListColSubject {  /* matches fragment styling */
+	color:black;
+	opacity:0.4;
 }
 
 #IFDEF MSIE
