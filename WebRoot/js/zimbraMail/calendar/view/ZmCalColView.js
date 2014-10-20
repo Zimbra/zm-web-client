@@ -55,6 +55,10 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
 	this._isRight = isRight;
 
 	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, view, readonly);
+	var element = this.getHtmlElement();
+	// clear the onClick event handler.  Otherwise accessibility code will
+	// generate spurious mouse up/down events
+	this._setEventHdlrs([DwtEvent.ONCLICK], true, element);
 
 	this.setDropTarget(dropTgt);
 	this.setScrollStyle(DwtControl.CLIP);
