@@ -2696,6 +2696,12 @@ function(type, attendees) {
 
     this.updateToolbarOps();
     this.resize();
+
+	//After everything gets rendered, run the resize method again to make the height calculations for individual components using the correct height value
+	var self = this;
+	setTimeout(function(){
+		self.resize();
+	}, 0);
 };
 
 ZmApptEditView.prototype.updateScheduleAssistant =
