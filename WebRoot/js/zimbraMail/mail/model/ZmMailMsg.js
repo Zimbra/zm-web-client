@@ -1425,20 +1425,6 @@ function() {
 };
 
 ZmMailMsg.prototype.moveApptItem =
-function(itemId, nfolderId) {
-	var nfolder = appCtxt.getById(nfolderId);
-	if (nfolder && nfolder.isRemote()) {
-		var dialog = appCtxt.getConfirmationDialog();
-		var message = AjxMessageFormat.format(ZmMsg.confirmMoveApptToShared, [nfolder.getName()]);
-		var callback = new AjxCallback(this, this._moveApptItem, [itemId, nfolderId]);
-		dialog.popup(message, callback);
-	}
-	else {
-		this._moveApptItem(itemId, nfolderId);
-	}
-};
-
-ZmMailMsg.prototype._moveApptItem =
 function(itemId, nfolder) {
 	var callback = new AjxCallback(this, this._handleMoveApptResponse, [nfolder]);
 	var errorCallback = new AjxCallback(this, this._handleMoveApptError, [nfolder]);
