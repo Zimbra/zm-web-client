@@ -220,6 +220,11 @@ function(callback, dayViewCallback) {
 	if (apptId !== '0' && apptId) {
 		var jsonObj = {GetAppointmentRequest:{_jsns:"urn:zimbraMail"}};
 		var request = jsonObj.GetAppointmentRequest;
+		var msgId = this._invite.msgId;
+		var inx = msgId.indexOf(":");
+		if (inx !== -1) {
+			apptId = [msgId.substr(0, inx), apptId].join(":");
+		}
 		request.id = apptId;
 
 		appCtxt.getAppController().sendRequest({
