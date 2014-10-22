@@ -488,16 +488,8 @@ function(obj, batchMode) {
 		fields[ZmItem.F_ID] = true;
 		conv._notify(ZmEvent.E_MODIFY, {fields : fields});
 	}
-	var updateSizeField = false;
-	if (AjxUtil.isNumber(obj.n)) {
+	if (obj.n != null) {
 		this.numMsgs = obj.n;
-		updateSizeField = true;
-	}
-	if (AjxUtil.isNumber(obj.u)) {
-		this.numUnread = obj.u;
-		updateSizeField = true;
-	}
-	if (updateSizeField) {
 		fields[ZmItem.F_SIZE] = true;
 		this._notify(ZmEvent.E_MODIFY, {fields : fields});
 	}
@@ -720,7 +712,6 @@ ZmConv.prototype._loadFromDom =
 function(convNode) {
 
 	this.numMsgs = convNode.n;
-	this.numUnread = convNode.u;
 	this.date = convNode.d;
 	this._parseFlagsOfMsgs(convNode.m);   // parse flags based on msgs
 	this._parseTagNames(convNode.tn);
