@@ -371,7 +371,7 @@ ZmShareSearchDialog.prototype._appendShareNodes = function(owners) {
 
                  // NOTE: strip the leading slash from folder path
 				var folderPath = share.folderPath;
-                var shareFullPathName = folderPath.substr(1);
+                var shareFullPathName = share.folderId == ZmOrganizer.ID_ROOT ? ZmMsg.allApplications : folderPath.substr(1);
                 var shareNode = this._createOrganizer(parentNode, shareId, shareFullPathName);
                 shareNode.shareInfo = share;
 
