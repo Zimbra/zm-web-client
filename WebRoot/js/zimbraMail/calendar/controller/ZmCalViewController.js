@@ -4406,7 +4406,18 @@ function(msg) {
 	newAppt.setProposeTimeMode(true);
 	newAppt.setFromMailMessageInvite(msg);
     if (apptId) {
-        newAppt.invId = apptId + "-" + msg.id;
+		var msgId = msg.id;
+		var inx = msg.id.indexOf(":");
+		var accountId = null;
+		if (inx !== -1) {
+			accountId = msgId.substr(0, inx);
+			msgId = msgId.substr(inx + 1);
+		}
+		var invId = [apptId, msgId].join("-");
+		if (accountId) {
+			invId = [accountId, invId].join(":");
+		}
+		newAppt.invId = invId;
         newAppt.getDetails(mode, new AjxCallback(this, this.proposeNewTimeContinue, [newAppt, mode]));
     }
     else {
