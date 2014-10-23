@@ -2407,7 +2407,7 @@ ZmAccountsListView = function(parent, className, posStyle, noMaximize) {
 	className += " ZOptionsItemsListView";
 	DwtListView.call(this, {parent:parent, className:className, posStyle:posStyle,
 							headerList:this._getHeaderList(), noMaximize:noMaximize});
-	this.multiSelectEnabled = false;
+	this.setMultiSelect(false);
 	this._view = ZmId.VIEW_ACCOUNT;
 };
 ZmAccountsListView.prototype = new DwtListView;
@@ -2512,7 +2512,7 @@ ZmAccountDelegatesListView = function(parent, className, posStyle, noMaximize) {
 	className += " ZOptionsItemsListView";
 	DwtListView.call(this, {parent:parent, className:className, posStyle:posStyle,
 							headerList:this._getHeaderList(), noMaximize:noMaximize});
-	this.multiSelectEnabled = false;
+	this.setMultiSelect(false);
 };
 ZmAccountDelegatesListView.prototype = new DwtListView;
 ZmAccountDelegatesListView.prototype.constructor = ZmAccountDelegatesListView;
