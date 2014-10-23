@@ -321,7 +321,7 @@ ZmPrefAcctListView = function(parent, controller) {
     });
 
     this._controller = controller;
-    this.multiSelectEnabled = false; // single selection only
+    this.setMultiSelect(false); // single selection only
     this._internalId = AjxCore.assignId(this);
 };
 
@@ -564,7 +564,7 @@ ZmPrefBackupListView  = function(parent, controller) {
     });
 
     this._controller = controller;
-    this.multiSelectEnabled = false; // single selection only
+    this.setMultiSelect(false); // single selection only
     this._internalId = AjxCore.assignId(this);
 };
 
