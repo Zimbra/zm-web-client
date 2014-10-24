@@ -574,9 +574,12 @@ function(downloadCalendar, callback, result) {
 			if (folderInfo.m) {
 				var msgIds = folderInfo.m[0].ids;
 				if (msgIds) {
+					// Check for a shared-mailbox folder.  If so, the msgIds must be specified as mountpoint:msgId
+					var idParts = folderInfo.id.split(":");
+					var prefix = (idParts.length > 1) ? idParts[0] + ":" : "";
 					msgIds.split(",").forEach(function(id) {
 						var params = {
-							m : {id:id, html:1, needExp:1},
+							m : {id: prefix + id, html:1, needExp:1},
 							_jsns : "urn:zimbraMail"
 						};
 						msgParamsArray.push(params);
