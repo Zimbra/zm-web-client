@@ -345,42 +345,6 @@ function(ev) {
 	}
 };
 
-ZmMailMsgListView.prototype._getHeaderList =
-function() {
-
-	var headers;
-	if (this.isMultiColumn()) {
-		headers = [];
-		headers.push(ZmItem.F_SELECTION);
-		if (appCtxt.get("FLAGGING_ENABLED")) {
-			headers.push(ZmItem.F_FLAG);
-		}
-		headers.push(
-			ZmItem.F_PRIORITY,
-			ZmItem.F_TAG,
-			ZmItem.F_READ,
-			ZmItem.F_STATUS,
-			ZmItem.F_FROM,
-			ZmItem.F_ATTACHMENT,
-			ZmItem.F_SUBJECT,
-			ZmItem.F_FOLDER,
-			ZmItem.F_SIZE
-		);
-		if (appCtxt.accountList.size() > 2) {
-			headers.push(ZmItem.F_ACCOUNT);
-		}
-		headers.push(ZmItem.F_DATE);
-	}
-	else {
-		headers = [
-			ZmItem.F_SELECTION,
-			ZmItem.F_SORTED_BY
-		];
-	}
-
-	return this._getHeaders(ZmId.VIEW_TRAD, headers);
-};
-
 ZmMailMsgListView.prototype._initHeaders =
 function() {
 

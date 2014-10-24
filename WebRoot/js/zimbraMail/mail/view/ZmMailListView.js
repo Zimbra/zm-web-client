@@ -351,6 +351,72 @@ function() {
 
 // Private / protected methods
 
+ZmMailListView.prototype._getLabelForField =
+function(item, field) {
+	switch (field) {
+	case ZmItem.F_READ:
+		// usually included in the status tooltip
+		break;
+
+	case ZmItem.F_FLAG:
+		return item.isFlagged ? ZmMsg.flagged : '';
+
+	case ZmItem.F_ATTACHMENT:
+		return item.hasAttach && ZmMsg.hasAttachment;
+
+	case ZmItem.F_STATUS:
+		return item.getStatusTooltip();
+
+	case ZmItem.F_SUBJECT:
+		return item.subject || ZmMsg.noSubject;
+
+	case ZmItem.F_PRIORITY:
+		if (item.isLowPriority) {
+			return ZmMsg.priorityLow;
+		} else if (item.isHighPriority) {
+			return ZmMsg.priorityHigh;
+		}
+
+		break;
+
+	case ZmItem.F_TAG:
+		if (item.tags.length > 0) {
+			var tags = item.tags.join(' & ');
+			return AjxMessageFormat.format(ZmMsg.taggedAs, [tags]);
+		}
+
+		break;
+
+	case ZmItem.F_DATE:
+		return AjxDateUtil.computeWordyDateStr(new Date(), item.date);
+
+	case ZmItem.F_FROM:
+		var addrtype = this._isOutboundFolder() ?
+			AjxEmailAddress.TO : AjxEmailAddress.FROM;
+		var participants = item.getAddresses(addrtype) || item.participants || new AjxVector();
+		var addrs = []
+
+		if (participants.size() <= 0) {
+			return AjxStringUtil.stripTags(ZmMsg.noRecipients);
+		}
+
+		for (var i = 0; i < Math.min(participants.size(), 3); i++) {
+			addrs.push(participants.get(i).toString(true, true));
+		}
+
+		return addrs.join(", ");
+
+	case ZmItem.F_SIZE:
+		if (item.size) {
+			return AjxUtil.formatSize(item.size);
+		}
+
+		break;
+	}
+
+	return ZmListView.prototype._getLabelForField.apply(this, arguments);
+};
+
 ZmMailListView.prototype._initHeaders =
 function() {
 	if (!this._headerInit) {
@@ -371,6 +437,48 @@ function() {
 		this._headerInit[ZmItem.F_DATE]			= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true, cssClass:"ZmMsgListColDate"};
 		this._headerInit[ZmItem.F_SORTED_BY]	= {text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY, resizeable:false};
 	}
+};
+
+ZmMailListView.prototype._getLabelFieldList =
+function() {
+	var headers = [];
+	headers.push(ZmItem.F_SELECTION);
+	if (appCtxt.get(ZmSetting.FLAGGING_ENABLED)) {
+		headers.push(ZmItem.F_FLAG);
+	}
+	headers.push(
+		ZmItem.F_PRIORITY,
+		ZmItem.F_TAG,
+		ZmItem.F_READ,
+		ZmItem.F_STATUS,
+		ZmItem.F_FROM,
+		ZmItem.F_ATTACHMENT,
+		ZmItem.F_SUBJECT,
+		ZmItem.F_FOLDER,
+		ZmItem.F_SIZE
+	);
+	if (appCtxt.accountList.size() > 2) {
+		headers.push(ZmItem.F_ACCOUNT);
+	}
+	headers.push(ZmItem.F_DATE);
+
+	return headers;
+}
+
+ZmMailListView.prototype._getHeaderList =
+function() {
+	var headers;
+	if (this.isMultiColumn()) {
+		headers = this._getLabelFieldList();
+	}
+	else {
+		headers = [
+			ZmItem.F_SELECTION,
+			ZmItem.F_SORTED_BY
+		];
+	}
+
+	return this._getHeaders(this._mode, headers);
 };
 
 ZmMailListView.prototype._getHeaders =
@@ -768,7 +876,7 @@ function(params) {
 	var tooltip,
 		field = params.field,
 		item = params.item,
-		matchIndex = params.match.participant || 0;
+		matchIndex = params.match && params.match.participant || 0;
 
 	if (!item) {
 		return;

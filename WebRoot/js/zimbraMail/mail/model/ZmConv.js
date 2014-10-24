@@ -885,8 +885,35 @@ function(type) {
  */
 ZmConv.prototype.getStatusTooltip =
 function() {
+	if (this.numMsgs === 1) {
+		var msg = appCtxt.getById(this.msgIds[0]);
+		if (msg) {
+			return msg.getStatusTooltip();
+		}
+	}
+
 	var status = [];
-	if (this.isScheduled)	{ status.push(ZmMsg.scheduled); }
+
+	// keep in sync with ZmMailMsg.prototype.getStatusTooltip
+	if (this.isScheduled) {
+		status.push(ZmMsg.scheduled);
+	}
+	if (this.isUnread) {
+		status.push(ZmMsg.unread);
+	}
+	if (this.isReplied) {
+		status.push(ZmMsg.replied);
+	}
+	if (this.isForwarded) {
+		status.push(ZmMsg.forwarded);
+	}
+	if (this.isDraft) {
+		status.push(ZmMsg.draft);
+	} else if (this.isSent) {
+		//sentAt is for some reason "sent", which is what we need.
+		status.push(ZmMsg.sentAt);
+	}
+
 	return status.join(", ");
 };
 

@@ -2852,7 +2852,7 @@ function() {
  */
 ZmMailMsg.prototype.getStatusTooltip =
 function() {
-
+	// keep in sync with ZmConv.prototype.getStatusTooltip
 	var status = [];
 	if (this.isInvite()) {
 		var icon = this.getStatusIcon();
