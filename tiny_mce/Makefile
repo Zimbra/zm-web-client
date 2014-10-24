@@ -27,7 +27,7 @@ DIFF = diff -aur
 
 TINYMCE_VERS := $(shell $(ANT) -q -f ../build.xml get-tinymce-version | head -1)
 TINYMCE_URL = https://github.com/tinymce/tinymce/archive/$(TINYMCE_VERS).tar.gz
-JAKE = $(shell cd $(TINYMCEDIR) && npm bin)/jake
+GRUNT = $(shell cd $(TINYMCEDIR) && npm bin)/grunt
 
 TINYMCEDIR = tinymce-$(TINYMCE_VERS)
 NPMBINDIR = $(shell npm bin)
@@ -42,7 +42,7 @@ all: build
 #
 build:
 	cd $(TINYMCEDIR) && $(NPM) install
-	cd $(TINYMCEDIR) && $(JAKE)
+	cd $(TINYMCEDIR) && $(GRUNT)
 
 #
 # remove anything that shouldn't be checked into Perforce, such as build
@@ -50,6 +50,7 @@ build:
 #
 clean:
 	$(RM) $(TINYMCEDIR)/node_modules
+	$(RM) $(TINYMCEDIR)/tmp
 
 #
 # generate a patch comparing a raw TinyMCE with our patches with the contents
@@ -57,7 +58,7 @@ clean:
 #
 diff: build
 	$(MAKE) TINYMCEDIR=$(TMPDIR)/$(TINYMCEDIR) patch
-	cd $(TINYMCEDIR) && $(JAKE) clean
+	cd $(TINYMCEDIR) && $(GRUNT) clean
 	$(DIFF) -x node_modules $(TMPDIR)/$(TINYMCEDIR) $(TINYMCEDIR) | $(TEE) work.diff
 	@$(RM) TINYMCEDIR=$(TMPDIR)/$(TINYMCEDIR)
 
