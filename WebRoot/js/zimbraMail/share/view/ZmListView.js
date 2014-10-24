@@ -328,6 +328,8 @@ function(ev) {
 		this._checkReplenishOnTimer();
 		this._controller._resetToolbarOperations();
 	}
+
+	this._updateLabelForItem(item);
 };
 
 ZmListView.prototype._getItemFromEvent =
@@ -372,6 +374,8 @@ function(item, field) {
 		//replace the old inner html with the new updated data
 		el.innerHTML = $(html.join("")).html();
 	}
+
+	this._updateLabelForItem(item);
 };
 
 ZmListView.prototype._checkReplenishOnTimer =
@@ -561,7 +565,7 @@ function(item, field, classes) {
 
 ZmListView.prototype._getFragmentSpan =
 function(item) {
-	return ["<span class='ZmConvListFragment' id='",
+	return ["<span class='ZmConvListFragment' aria-hidden='true' id='",
 			this._getFieldId(item, ZmItem.F_FRAGMENT),
 			"'>", this._getFragmentHtml(item), "</span>"].join("");
 };
@@ -1161,6 +1165,60 @@ function(params) {
     return tooltip;
 };
 
+/*
+ * Get the list of fields for the accessibility label. Normally, this
+ * corresponds to the header columns.
+ *
+ * @protected
+ */
+ZmListView.prototype._getLabelFieldList =
+function() {
+	var headers = this._getHeaderList();
+
+	if (headers) {
+		return AjxUtil.map(headers, function(header) {
+			return header._field;
+		});
+	}
+};
+
+/*
+ * Get the accessibility label corresponding to the given field.
+ *
+ * @protected
+ */
+ZmListView.prototype._getLabelForField =
+function(item, field) {
+	var tooltip = this._getToolTip({ item: item, field: field });
+	return AjxStringUtil.stripTags(tooltip);
+};
+
+ZmListView.prototype._updateLabelForItem =
+function(item) {
+	var fields = this._getLabelFieldList();
+	var itemel = this._getElFromItem(item);
+
+	if (!item || !fields || !itemel) {
+		return;
+	}
+
+	var buf = [];
+
+	for (var i = 0; i < fields.length; i++) {
+		var label = this._getLabelForField(item, fields[i]);
+
+		if (label) {
+			buf.push(label);
+		}
+	}
+
+	if (buf.length > 0) {
+		itemel.setAttribute('aria-label', buf.join('; '));
+	} else {
+		itemel.removeAttribute('aria-label');
+	}
+};
+
 ZmListView.prototype._getTagToolTip =
 function(item) {
 	if (!item) { return; }
@@ -1601,6 +1659,13 @@ function(list, noResultsOk, doAdd) {
 		this._setNoResultsHtml();
 	}
 
+};
+
+ZmListView.prototype._addRow =
+function(row, index) {
+	DwtListView.prototype._addRow.apply(this, arguments);
+
+	this._updateLabelForItem(this.getItemFromElement(row));
 };
 
 ZmListView.prototype._getSectionHeaderDiv =
