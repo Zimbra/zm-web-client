@@ -94,38 +94,43 @@ function(parent, obj, tree, elementType, path, account) {
 	var folder;
 	if (elementType == "search") {
 		var types;
-		if (obj.types) {
-			var t = obj.types.split(",");
-			types = [];
-            var mailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
-			for (var i = 0; i < t.length; i++) {
-                var type = ZmSearch.TYPE_MAP[t[i]];
-                if (!type || (!mailEnabled && (type == ZmItem.CONV || type == ZmItem.MSG))) {
-                    continue;
-                }
-				types.push(type);
+		var idParts = obj.id.split(":");
+		// Suppress display of searches for the shared mailbox (See Bug 96090) - it will have an id
+		// of the form 'uuid:id'.  Local searches will just have 'id'
+		if (!idParts || (idParts.length <= 1)) {
+			if (obj.types) {
+				var t = obj.types.split(",");
+				types = [];
+				var mailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
+				for (var i = 0; i < t.length; i++) {
+					var type = ZmSearch.TYPE_MAP[t[i]];
+					if (!type || (!mailEnabled && (type == ZmItem.CONV || type == ZmItem.MSG))) {
+						continue;
+					}
+					types.push(type);
+				}
+				if (types.length == 0) {
+					return null;
+				}
 			}
-            if (types.length == 0) {
-                return null;
-            }
+			DBG.println(AjxDebug.DBG2, "Creating SEARCH with id " + obj.id + " and name " + obj.name);
+			var params = {
+				id: obj.id,
+				name: obj.name,
+				parent: parent,
+				tree: tree,
+				numUnread: obj.u,
+				query: obj.query,
+				types: types,
+				sortBy: obj.sortBy,
+				account: account,
+				color: obj.color,
+				rgb: obj.rgb
+			};
+			folder = new ZmSearchFolder(params);
+			ZmFolderTree._fillInFolder(folder, obj, path);
+			ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, account);
 		}
-		DBG.println(AjxDebug.DBG2, "Creating SEARCH with id " + obj.id + " and name " + obj.name);
-		var params = {
-			id: obj.id,
-			name: obj.name,
-			parent: parent,
-			tree: tree,
-			numUnread: obj.u,
-			query: obj.query,
-			types: types,
-			sortBy: obj.sortBy,
-			account: account,
-			color: obj.color,
-			rgb: obj.rgb
-		};
-		folder = new ZmSearchFolder(params);
-		ZmFolderTree._fillInFolder(folder, obj, path);
-		ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, account);
 	} else {
 		var type = obj.view
 			? (ZmOrganizer.TYPE[obj.view])
