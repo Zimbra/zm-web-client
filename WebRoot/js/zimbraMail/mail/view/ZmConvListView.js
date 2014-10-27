@@ -785,7 +785,7 @@ ZmConvListView.prototype._updateLabelForItem =
 function(item) {
 	ZmMailListView.prototype._updateLabelForItem.apply(this, arguments);
 
-	if (this._isExpandable(item)) {
+	if (item && this._isExpandable(item)) {
 		var el = this._getElFromItem(item);
 		el.setAttribute('aria-expanded', this.isExpanded(item));
 	}
