@@ -372,11 +372,13 @@ function(params) {
 ZmToolBar._setButtonStyle =
 function(button, hint, text, image) {
 	if (hint == "text") {
-		button.setText(text);
+		button.whatToShow = { showText: true };
 	} else if (hint == "icon") {
-		button.setImage(image);
+		button.whatToShow = { showImage: true };
 	} else { // add icon and text if no hint (or unsupported hint) provided
-		button.setText(text);
-		button.setImage(image);
+		button.whatToShow = { showImage: true, showText: true };
 	}
+
+	button.setText(text);
+	button.setImage(image);
 };
