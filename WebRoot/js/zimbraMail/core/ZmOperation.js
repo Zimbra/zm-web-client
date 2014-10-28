@@ -145,7 +145,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_MARK_ALL_READ, {textKey:"markAllRead", image:"ReadMessage"});
 //	ZmOperation.registerOp(ZmId.OP_MOUNT_FOLDER, {textKey:"mountFolder", image:"Folder"});
 	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder", textPrecedence:40, showImageInToolbar: true}); //todo - remove
-	ZmOperation.registerOp(ZmId.OP_MOVE_MENU, {tooltipKey:"moveTooltip", image:"MoveToFolder"}, null,
+	ZmOperation.registerOp(ZmId.OP_MOVE_MENU, {textKey: "move", tooltipKey:"moveTooltip", image:"MoveToFolder", showImageInToolbar: true }, null,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addMoveMenu, parent, true);
 		}));
@@ -201,7 +201,7 @@ function() {
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addColorMenu, parent);
 		}));
-	ZmOperation.registerOp(ZmId.OP_TAG_MENU, {tooltipKey:"tagTooltip", image:"Tag"}, ZmSetting.TAGGING_ENABLED,
+	ZmOperation.registerOp(ZmId.OP_TAG_MENU, {textKey: "tag", tooltipKey:"tagTooltip", image:"Tag", showImageInToolbar: true }, ZmSetting.TAGGING_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addTagMenu, parent, true);
 		}));
