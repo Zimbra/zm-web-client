@@ -144,6 +144,7 @@ function(listener) {
 	var params = {parent:this, parentElement:el, id: "searchDumpsterButton"};
 
 	var button = this._searchButton = new DwtButton(params);
+	el.style.paddingLeft="4px";
 
 	button.setText(ZmMsg.search);
 	button.addSelectionListener(listener);
@@ -567,11 +568,6 @@ function() {
 	}
 };
 
-ZmDumpsterListController.prototype._getToolBarOps =
-function() {
-	return [ZmOperation.MOVE];
-};
-
 ZmDumpsterListController.prototype._createNewView =
 function(view) {
 	return ZmDumpsterListView.createView(view, this._container, this);
@@ -604,21 +600,22 @@ ZmDumpsterListController.prototype._initializeToolBar =
 function(view) {
 	if (this._toolbar[view]) { return; }
 
+	var overrides = {};
+	overrides[ZmOperation.MOVE] = {showImageInToolbar: false,
+								   showTextInToolbar : true,
+								   textKey: "recoverTo"};
 	var tbParams = {
-		parent: this._container,
-		className: "ZmDumpsterDialog-toolbar",
-		buttons: this._getToolBarOps(),
-		posStyle: Dwt.RELATIVE_STYLE,
-		context: view,
-		controller: this,
+		parent:        this._container,
+		className:     "ZmDumpsterDialog-toolbar",
+		buttons:       [ZmOperation.MOVE],
+		overrides:     overrides,
+		posStyle:      Dwt.RELATIVE_STYLE,
+		context:       view,
+		controller:    this,
 		parentElement: (this._container._htmlElId + "_toolbar")
 	};
 	var tb = this._toolbar[view] = new ZmButtonToolBar(tbParams);
 	tb.addSelectionListener(ZmOperation.MOVE, new AjxListener(this, this._moveListener));
-
-	// change text of move button
-	var button = tb.getButton(ZmOperation.MOVE);
-	button.setText(ZmMsg.recoverTo);
 
 };
 
