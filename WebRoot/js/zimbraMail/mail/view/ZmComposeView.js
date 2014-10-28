@@ -2029,14 +2029,15 @@ ZmComposeView.BC_ALL_COMPONENTS = [
 		ZmComposeView.BC_NOTHING
 ];
 
-// nonprinting markers that help us identify components within editor content
+// Nonprinting markers that help us identify components within editor content.
+// The characters used must be zero width, but not trigger any processing (Bug 96049).
 ZmComposeView.BC_TEXT_MARKER = {};
 ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_TEXT_PRE]		= '\u200B\u200B';
 ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_SIG_PRE]		= '\u200C\u200C';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_DIVIDER]		= '\u200D\u200D';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_HEADERS]		= '\uFEFF\uFEFF';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_QUOTED_TEXT]	= '\u200B\u200C';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_SIG_POST]		= '\u200B\u200D';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_DIVIDER]		= '\u2060\u2060';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_HEADERS]		= '\u200B\u200C';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_QUOTED_TEXT]	= '\u200B\u2060';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_SIG_POST]		= '\u200C\u2060';
 
 // HTML marker is an expando attr whose value is the name of the component
 ZmComposeView.BC_HTML_MARKER_ATTR = "data-marker";
