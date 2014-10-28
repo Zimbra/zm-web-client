@@ -1828,6 +1828,10 @@ function() {
 		rootTg.addMember(appCtxt.getSearchController().getTabGroup());
 	}
 
+	if (this._helpButton) {
+		rootTg.addMember(this._helpButton);
+	}
+
 	rootTg.addMember(appCtxt.getAppChooser().getTabGroupMember());
 	rootTg.addMember(appCtxt.refreshButton);
 	rootTg.addMember(appCtxt.getAppController().getNewButton());
@@ -2284,10 +2288,10 @@ ZmZimbraMail.prototype.getDropMenuOptions =
 function(parent, parentElement, adminUrl) {
 
 	var button = new DwtLinkButton({parent: parent, className: DwtButton.LINK_BUTTON_CLASS, parentElement: parentElement, elementTag: "DIV"});
-	button.dontStealFocus();
+	button.whatToShow = { };
 	button.setSize(Dwt.DEFAULT);
 	button.setAlign(DwtLabel.ALIGN_LEFT);
-	button.setText("");
+	button.setText(ZmMsg.help);
 	var menu = new ZmPopupMenu(button);
 
 	var helpListener = new AjxListener(this, this._helpListener);
