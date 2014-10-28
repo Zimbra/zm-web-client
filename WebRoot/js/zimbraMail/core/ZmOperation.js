@@ -133,6 +133,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_EMPTY_FOLDER,{textKey:"emptyFolder",image:"EmptyFolder"});
 	ZmOperation.registerOp(ZmId.OP_FORMAT_HTML, {textKey: "formatAsHtml"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORMAT_TEXT, {textKey: "formatAsText"}, ZmSetting.HTML_COMPOSE_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_FORMAT_MORE_OPTIONS, {textKey: "moreComposeOptions"});
     ZmOperation.registerOp(ZmId.OP_GROUPBY, {textKey:"groupBy"});
     ZmOperation.registerOp(ZmId.OP_GROUPBY_NONE, {textKey:"groupByNone"});
     ZmOperation.registerOp(ZmId.OP_GROUPBY_DATE, {textKey:"groupByDate"});

@@ -1086,7 +1086,7 @@ ZmConvReplyView.prototype._initializeToolbar =
 function() {
 	
 	if (!this._replyToolbar) {
-		var buttons = [ZmOperation.SEND, ZmOperation.CANCEL];
+		var buttons = [ZmOperation.SEND, ZmOperation.CANCEL, ZmOperation.FORMAT_MORE_OPTIONS];
 		var overrides = {};
 		overrides[ZmOperation.CANCEL] = {tooltipKey: "cancel", shortcut: null};
 		var tbParams = {
@@ -1101,11 +1101,7 @@ function() {
 		var tb = this._replyToolbar = new ZmButtonToolBar(tbParams);
 		tb.addSelectionListener(ZmOperation.SEND, this._convView._sendListener.bind(this._convView));
 		tb.addSelectionListener(ZmOperation.CANCEL, this._convView._cancelListener.bind(this._convView));
-		var link = document.createElement("a");
-		link.className = "Link";
-		link.onclick = this._moreOptions.bind(this);
-		link.innerHTML = ZmMsg.moreComposeOptions;
-		tb.addChild(link);
+		tb.addSelectionListener(ZmOperation.FORMAT_MORE_OPTIONS, this._moreOptions.bind(this));
 	}
 };
 
