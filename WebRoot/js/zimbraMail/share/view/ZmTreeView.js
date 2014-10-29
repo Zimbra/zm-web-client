@@ -477,12 +477,10 @@ function(parentNode, organizer, index, noTooltips, omit) {
 
 	if (ds && ds.type == ZmAccount.TYPE_IMAP) {
 		var cname = appCtxt.isFamilyMbox ? null : this._headerClass;
-		var icon =  "Folder";
 		ti = new DwtHeaderTreeItem({
 			parent:this,
 			text:organizer.getName(),
-			className:cname,
-			imageInfo:icon
+			className:cname
 		});
 	} else {
 		// create parent chain
