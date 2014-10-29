@@ -349,6 +349,7 @@ ZmHtmlEditor.prototype.moveCaretToTop =
 function(offset) {
 	if (this._mode == Dwt.TEXT) {
 		var control = this.getContentField();
+		control.scrollTop = 0;
 		if (control.createTextRange) { // IE
 			var range = control.createTextRange();
 			if (offset) {
