@@ -1086,7 +1086,10 @@ ZmConvReplyView.prototype._initializeToolbar =
 function() {
 	
 	if (!this._replyToolbar) {
-		var buttons = [ZmOperation.SEND, ZmOperation.CANCEL, ZmOperation.FORMAT_MORE_OPTIONS];
+		var buttons = [
+			ZmOperation.SEND, ZmOperation.CANCEL,
+			ZmOperation.FILLER, ZmOperation.FORMAT_MORE_OPTIONS
+		];
 		var overrides = {};
 		overrides[ZmOperation.CANCEL] = {tooltipKey: "cancel", shortcut: null};
 		var tbParams = {
