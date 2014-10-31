@@ -1302,15 +1302,13 @@ function(type) {
 	    type !== ZmComposeView.UPLOAD_BRIEFCASE) {
 		var isinline = (type === ZmComposeView.UPLOAD_INLINE);
 
-		inputelem = document.createElement('INPUT');
+		var inputelem = document.createElement('INPUT');
 		inputelem.type = 'file';
 		inputelem.title = ZmMsg.uploadNewFile;
 		inputelem.multiple = true;
 		inputelem.style.display = 'none';
 
-		inputelem.onchange =
-			this._submitMyComputerAttachments.bind(this, null, inputelem,
-			                                       isinline);
+		inputelem.onchange = this._submitMyComputerAttachments.bind(this, null, inputelem, isinline);
 
 		// IE won't react to unparented INPUTs
 		var fragment = document.createDocumentFragment();
@@ -2029,15 +2027,26 @@ ZmComposeView.BC_ALL_COMPONENTS = [
 		ZmComposeView.BC_NOTHING
 ];
 
-// Nonprinting markers that help us identify components within editor content.
-// The characters used must be zero width, but not trigger any processing (Bug 96049).
+// Zero-width space character we can use to create invisible separators for text mode
+// Note: as of 10/31/14, Chrome Canary does not recognize \u200B (though it does find \uFEFF)
+ZmComposeView.BC_MARKER_CHAR = '\u200B';
+ZmComposeView.BC_MARKER_REGEXP = new RegExp(ZmComposeView.BC_MARKER_CHAR, 'g');
+
+// Create a unique marker sequence (vary by length) for each component, and regexes to find them
 ZmComposeView.BC_TEXT_MARKER = {};
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_TEXT_PRE]		= '\u200B\u200B';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_SIG_PRE]		= '\u200C\u200C';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_DIVIDER]		= '\u2060\u2060';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_HEADERS]		= '\u200B\u200C';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_QUOTED_TEXT]	= '\u200B\u2060';
-ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_SIG_POST]		= '\u200C\u2060';
+ZmComposeView.BC_TEXT_MARKER_REGEX1 = {};
+ZmComposeView.BC_TEXT_MARKER_REGEX2 = {};
+
+AjxUtil.foreach(ZmComposeView.BC_ALL_COMPONENTS, function(comp, index) {
+	if (comp !== ZmComposeView.BC_NOTHING) {
+		// Note: relies on BC_NOTHING coming first
+		var markerChar = ZmComposeView.BC_MARKER_CHAR;
+		var marker = ZmComposeView.BC_TEXT_MARKER[comp] = AjxStringUtil.repeat(markerChar, index);
+
+		ZmComposeView.BC_TEXT_MARKER_REGEX1[comp] = new RegExp("^" + marker + "[^" + markerChar + "]");
+		ZmComposeView.BC_TEXT_MARKER_REGEX2[comp] = new RegExp("[^" + markerChar + "]" + marker + "[^" + markerChar + "]");
+	}
+});
 
 // HTML marker is an expando attr whose value is the name of the component
 ZmComposeView.BC_HTML_MARKER_ATTR = "data-marker";
@@ -2448,9 +2457,10 @@ function(mode, params) {
 	return value;
 };
 
+// Removes the invisible markers we use in text mode, since we should not send those out as part of the msg
 ZmComposeView.prototype._removeMarkers =
 function(text) {
-	return text.replace(/\u200B|\u200C|\u200D|\uFEFF/g, "");
+	return text.replace(ZmComposeView.BC_MARKER_REGEXP, '');
 };
 
 ZmComposeView.prototype._normalizeText =
@@ -2478,7 +2488,6 @@ function(comp) {
 	
 	var htmlMode = (this._composeMode === Dwt.HTML);
 	var content = this._getEditorContent(true);
-	var marker = this._getMarker(this._composeMode, comp);
 	var compContent = "";
 
 	var firstComp = this._compList[0];
@@ -2489,6 +2498,7 @@ function(comp) {
 	var lastComp = this._compList[this._compList.length - 1];
 	
 	if (htmlMode) {
+		var marker = this._getMarker(this._composeMode, comp);
 		var idx1 = content.indexOf(marker);
 		if (idx1 !== -1) {
 			var chunk = content.substring(0, idx1);
@@ -2513,21 +2523,33 @@ function(comp) {
 		}
 	}
 	else {
-		var idx1 = content.indexOf(marker);
-		if (idx1 !== -1 && comp === lastComp) {
-			// last component, include everything up to end of content
-			compContent = content.substring(idx1 + 1);
+		// In text mode, components are separated by markers which are varying lengths of a zero-width space
+		var marker1 = this._getMarker(this._composeMode, comp),
+			regex1 = ZmComposeView.BC_TEXT_MARKER_REGEX1[comp],     // matches marker at beginning
+			regex2 = ZmComposeView.BC_TEXT_MARKER_REGEX2[comp],     // matches marker elsewhere
+			start, marker2;
+
+		// look for this component's marker
+		if (regex1.test(content)) {
+			// found it at the start of content
+			start = marker1.length;
 		}
 		else {
-			marker = this._getMarker(this._composeMode, nextComp);
-			var idx2 = content.indexOf(marker);
-			if (idx2 !== -1 && comp === firstComp) {
-				// first component, include everything from beginning of content
-				compContent = content.substring(0, idx2);
+			// found it somewhere after the start
+			start = content.search(regex2) + marker1.length + 1;  // add one to account for non-matching char at beginning of regex
+		}
+		if (start > 0) {
+			marker2 = this._getMarker(this._composeMode, nextComp);
+			// look for the next component's marker so we know where this component's content ends
+			regex2 = marker2 && ZmComposeView.BC_TEXT_MARKER_REGEX2[nextComp];
+			idx2 = regex2 && content.search(regex2) + 1;
+			if (idx2) {
+				// found it, take what's in between
+				compContent = content.substring(start, idx2);
 			}
-			else if (idx1 !== -1 && idx2 !== -1) {
-				// middle component, include everything between the two markers
-				compContent = content.substring(idx1 + 1, idx2);
+			else {
+				// this comp is last component
+				compContent = content.substr(start);
 			}
 		}
 	}
