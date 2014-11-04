@@ -55,8 +55,8 @@
                                exceptionInviteId="${empty param.exInvId? null : param.exInvId}"
                                useInstance="${param.useInstance eq '1'}"
                                istask="${true}"
-                               instanceStartTime="${param.instStartTime}"
-                               instanceDuration="${param.instDuration}"/>
+                               instanceStartTime="${zm:nonNull(param.instStartTime)}"
+                               instanceDuration="${zm:nonNull(param.instDuration)}"/>
         </c:when>
         <c:when test="${uploader.isUpload and not empty message}">
             <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
