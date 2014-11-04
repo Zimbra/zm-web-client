@@ -741,13 +741,14 @@ function(){
     var item = this._getSelectedItem();
     if(item && item instanceof ZmBriefcaseItem){
         var dlg = this._getCheckinDlg();                                        
-        dlg.popup(item, new AjxCallback(this, this._doneCheckin, item));
+        dlg.popup(item, this._doneCheckin.bind(this, item));
     }
 };
 
 ZmBriefcaseController.prototype._doneCheckin =
-function(item, file){
+function(item, files){
     //Update item attribs
+	var file = files[0];
     item.version = file.version;
     item.name = file.name;
     this.unlockItem(item, new AjxCallback(this, this.refreshItem, item));
