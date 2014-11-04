@@ -484,7 +484,6 @@ function(params) {
 	var textEl = document.createElement("textarea");
 	textEl.setAttribute("id", id);
 	textEl.setAttribute("name", id);
-	Dwt.setVisible(textEl, this._mode === Dwt.TEXT);
     if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
         textEl.setAttribute("dir", ZmSetting.RTL);
     }
@@ -493,6 +492,7 @@ function(params) {
         textEl.value = params.content;
     }
 	htmlEl.appendChild(textEl);
+	textEl.style.visibility = (this._mode == Dwt.HTML) ? 'hidden' : 'visible';
 	this._textAreaId = id;
 
     Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
@@ -755,11 +755,11 @@ function(id, content) {
         }
     };
 
-    if (this._mode === Dwt.HTML) {
-        Dwt.setVisible(obj.getContentField(), false);
-    }
-
 	tinyMCE.init(tinyMCEInitObj);
+	var textEl = document.getElementById(id);
+	textEl.style.visibility = 'visible';
+	Dwt.setVisible(textEl, this._mode === Dwt.TEXT);
+
 	this._editor = this.getEditor();
 };
 
