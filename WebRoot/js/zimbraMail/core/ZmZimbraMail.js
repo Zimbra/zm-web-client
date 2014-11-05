@@ -2318,6 +2318,9 @@ function(parent, parentElement, adminUrl) {
 	mi = menu.createMenuItem("newFeatures", {text: ZmMsg.newFeatures});
 	mi.addSelectionListener(new AjxListener(this, this._newFeaturesListener));
 
+	mi = menu.createMenuItem("showCurrentShortcuts", {text: ZmMsg.shortcuts});
+	mi.addSelectionListener(this._showCurrentShortcuts.bind(this));
+
 	menu.createSeparator();
 
 	mi = menu.createMenuItem(ZmZimbraMail.HELP_MENU_ABOUT, {text: ZmMsg.about});
@@ -2500,6 +2503,9 @@ function(parent) {
 
 	mi = menu.createMenuItem("newFeatures", {text: ZmMsg.newFeatures});
 	mi.addSelectionListener(new AjxListener(this, this._newFeaturesListener));
+
+	mi = menu.createMenuItem("showCurrentShortcuts", {text: ZmMsg.shortcuts});
+	mi.addSelectionListener(this._showCurrentShortcuts.bind(this));
 
 	menu.createSeparator();
 
@@ -3370,43 +3376,7 @@ function(actionCode, ev) {
 		}
 
 		case ZmKeyMap.SHORTCUTS: {
-
-			var panel = appCtxt.getShortcutsPanel();
-			var curMap = this.getKeyMapName();
-			var km = appCtxt.getAppController().getKeyMapMgr();
-			var maps = km.getAncestors(curMap);
-			var inherits = (maps && maps.length > 0);
-			maps.unshift(curMap);
-			var maps2 = [];
-			if (inherits) {
-				if (maps.length > 1 && maps[maps.length - 1] == ZmKeyMap.MAP_GLOBAL) {
-					maps.pop();
-					maps2.push(ZmKeyMap.MAP_GLOBAL);
-				}
-			}
-
-			var col1 = {}, col2 = {};
-			col1.type = ZmShortcutList.TYPE_APP;
-			col1.maps = maps;
-			var colList = [col1];
-			if (maps2.length) {
-				col2.type = ZmShortcutList.TYPE_APP;
-				col2.maps = maps2;
-				colList.push(col2);
-			}
-			var col3 = {};
-			col3.type = ZmShortcutList.TYPE_SYS;
-			col3.maps = [];
-			var ctlr = appCtxt.getCurrentController();
-			var testMaps = ["list", "editor", "tabView"];
-			for (var i = 0; i < testMaps.length; i++) {
-				if (ctlr && ctlr.mapSupported(testMaps[i])) {
-					col3.maps.push(testMaps[i]);
-				}
-			}
-			col3.maps.push("button", "menu", "tree", "dialog", "toolbarHorizontal");
-			colList.push(col3);
-			panel.popup(colList);
+			this._showCurrentShortcuts();
 			break;
 		}
 
@@ -3596,6 +3566,46 @@ ZmZimbraMail.prototype.notify =
 function(eventType) {
 	this._evtMgr.notifyListeners(eventType, this._evt);
 };
+
+ZmZimbraMail.prototype._showCurrentShortcuts = function() {
+
+	var panel = appCtxt.getShortcutsPanel();
+	var curMap = this.getKeyMapName();
+	var km = appCtxt.getAppController().getKeyMapMgr();
+	var maps = km.getAncestors(curMap);
+	var inherits = (maps && maps.length > 0);
+	maps.unshift(curMap);
+	var maps2 = [];
+	if (inherits) {
+		if (maps.length > 1 && maps[maps.length - 1] == ZmKeyMap.MAP_GLOBAL) {
+			maps.pop();
+			maps2.push(ZmKeyMap.MAP_GLOBAL);
+		}
+	}
+
+	var col1 = {}, col2 = {};
+	col1.type = ZmShortcutList.TYPE_APP;
+	col1.maps = maps;
+	var colList = [col1];
+	if (maps2.length) {
+		col2.type = ZmShortcutList.TYPE_APP;
+		col2.maps = maps2;
+		colList.push(col2);
+	}
+	var col3 = {};
+	col3.type = ZmShortcutList.TYPE_SYS;
+	col3.maps = [];
+	var ctlr = appCtxt.getCurrentController();
+	var testMaps = ["list", "editor", "tabView"];
+	for (var i = 0; i < testMaps.length; i++) {
+		if (ctlr && ctlr.mapSupported(testMaps[i])) {
+			col3.maps.push(testMaps[i]);
+		}
+	}
+	col3.maps.push("button", "menu", "tree", "dialog", "toolbarHorizontal");
+	colList.push(col3);
+	panel.popup(colList);
+}
 
 // YUCK:
 ZmOrganizer.ZIMLET = "ZIMLET";

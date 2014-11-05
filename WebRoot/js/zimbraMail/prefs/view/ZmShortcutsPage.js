@@ -92,7 +92,7 @@ function(deferred) {
 
 ZmShortcutsPage.prototype._printListener =
 function() {
-	var args = "height=650,width=820,location=no,menubar=yes,resizable=yes,scrollbars=yes,toolbar=no";
+	var args = "height=650,width=900,location=no,menubar=yes,resizable=yes,scrollbars=yes,toolbar=no";
 	var newWin = window.open("", "_blank", args);
 
 	var col1 = {}, col2 = {};
@@ -105,7 +105,7 @@ function() {
 
 	var html = [], i = 0;
 	html[i++] = "<html><head>";
-	html[i++] = "<link href='"+appContextPath+"/css/zm.css' rel='stylesheet' type='text/css' />";
+	html[i++] = "<link href='" + appContextPath + "/css/zm.css' rel='stylesheet' type='text/css' />";
 	html[i++] = "</head><body>";
 	html[i++] = "<div class='ShortcutsPrintHeader'>" + ZmMsg.keyboardShortcuts + "</div>";
 
@@ -166,32 +166,21 @@ function() {
  *        
  * @private
  */
-ZmShortcutList.prototype._renderShortcuts =
-function(cols) {
+ZmShortcutList.prototype._renderShortcuts = function(cols) {
+
 	var html = [];
 	var i = 0;
 	html[i++] = "<div class='ZmShortcutList'>";
-    html[i++] = "<table role='presentation' cellspacing=10 cellpadding=0 border=0>";
-	if (cols[0].title) {
-		html[i++] = "<tr>";
-		var style = ZmShortcutList._getClass("shortcutListType", this._style);
-		for (j = 0; j < cols.length; j++) {
-			html[i++] = "<td><div class='" + style + "'>" + cols[j].title + "</div></td>";
-		}
-		html[i++] = "</tr>";
-	}
-	html[i++] = "<tr>";
 	for (j = 0; j < cols.length; j++) {
 		i = this._getKeysHtml(cols[j], html, i);
 	}
-    html[i++] = "</tr></table>";
 	html[i++] = "</div>";
 
 	return html.join("");
 };
 
-ZmShortcutList.prototype._getKeysHtml =
-function(params, html, i) {
+ZmShortcutList.prototype._getKeysHtml = function(params, html, i) {
+
 	var keys = (params.type == ZmShortcutList.TYPE_APP) ? ZmKeys : AjxKeys;
 	var kmm = appCtxt.getKeyboardMgr().__keyMapMgr;
 	var mapDesc = {}, mapsFound = [], mapsHash = {}, keySequences = {}, mapsToShow = {}, mapsToOmit = {};
@@ -251,21 +240,13 @@ function(params, html, i) {
 			}
 		}
 	}
-	
-	var or = [" ", ZmMsg.or, " "].join("");
-    html[i++] = "<td valign='top'>";
+
 	for (var j = 0; j < maps.length; j++) {
 		var map = maps[j];
 		if (!keySequences[map]) { continue; }
-        html[i++] = "<table class='" + ZmShortcutList._getClass("shortcutListTable", this._style) + "' cellspacing=0 cellpadding=0>";
-		if (this._style == ZmShortcutList.PANEL_STYLE || this._style == ZmShortcutList.PRINT_STYLE) {
-			html[i++] = "<colgroup><col width=100></col><col width=140></col></colgroup>";
-		}
-		html[i++] = "<tr><td class='" + ZmShortcutList._getClass("shortcutListHeaderTd", this._style) + "' colspan=2>";
-        html[i++] = "<div class='" + ZmShortcutList._getClass("shortcutListHeader", this._style) + "'>";
 		var mapDesc = keys[[map, "description"].join(".")];
-		html[i++] = mapDesc;
-		html[i++] = "</div></td></tr>";
+		html[i++] = "<dl class='" + ZmShortcutList._getClass("shortcutListMap", this._style) + "'>";
+		html[i++] = "<lh class='title'>" + mapDesc + "</lh>";
 
 		var actions = keySequences[map];
 		if (actions && actions.length) {
@@ -274,24 +255,16 @@ function(params, html, i) {
 				var action = actions[k];
 				var ks = keys[[action, "display"].join(".")];
 				var desc = keys[[action, "description"].join(".")];
-
-				html[i++] = "<tr><td class='" + ZmShortcutList._getClass("shortcutKeys", this._style) + "'>";
 				var keySeq = ks.split(/\s*;\s*/);
 				var keySeq1 = [];
 				for (var m = 0; m < keySeq.length; m++) {
-					 keySeq1.push(ZmShortcutList._formatKeySequence(keySeq[m], this._style));
+					html[i++] = "<dt>" + ZmShortcutList._formatKeySequence(keySeq[m], this._style) + "</dt>";
+					html[i++] = "<dd>" + desc + "</dd>";
 				}
-				html[i++] = keySeq1.join(or);
-				html[i++] = "</span></td>";
-				html[i++] = "<td class='" + ZmShortcutList._getClass("shortcutDescription", this._style) + "'>";
-				html[i++] = desc;
-				html[i++] = "</td></tr>";
-
 			}
 		}
-        html[i++] = "</table>";
+        html[i++] = "</dl>";
 	}
-    html[i++] = "</td>";
 
 	return i;
 };
@@ -332,17 +305,16 @@ function(key, style) {
 };
 
 /**
- * Returns a string with two styles in it, a base style and a specialized one, eg
- * "shortcutListHeader shortcutListHeader-prefs".
+ * Returns a string with two styles in it, a base style and a modifier, eg "shortcutListMap prefs".
  *
  * @param base		[string]	base style
  * @param style		[string]	style modifier
- * 
+ *
  * @private
  */
 ZmShortcutList._getClass =
 function(base, style) {
-	return [base, [base, style].join("-")].join(" ");
+	return [base, style].join(" ");
 };
 
 
@@ -396,33 +368,35 @@ function() {
 	return false;
 };
 
-ZmShortcutsPanel.prototype._createHtml =
-function() {
+ZmShortcutsPanel.prototype._createHtml = function() {
+
 	var headerId = [this._htmlElId, "header"].join("_");
+	var containerId = [this._htmlElId, "container"].join("_");
 	var contentId = [this._htmlElId, "content"].join("_");
 	var html = [];
 	var i = 0;
-	html[i++] = "<div id='" + headerId + "'>";
-	html[i++] = "<div class='ShortcutsPanelHeader'>" + ZmMsg.keyboardShortcuts + "</div>";
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0>";
-	html[i++] = "<tr><td class='ShortcutsPanelDescription ShortcutsPanelText' width='70%'>" + ZmMsg.shortcutsCurrent + "</td>";
-	html[i++] = "<td class='ShortcutsPanelLinks ShortcutsPanelText' width='30%'>" +
-				"<span class='ShortcutsPanelLink' onclick='ZmShortcutsPanel.closeCallback();'>" + ZmMsg.close + "</span>";
+	html[i++] = "<div class='ShortcutsPanelHeader' id='" + headerId + "'>";
+	html[i++] = "<div class='title'>" + ZmMsg.keyboardShortcuts + "</div>";
+	// set up HTML to create two columns using floats
+	html[i++] = "<div class='container' id='" + containerId + "'>";
+	html[i++] = "<div class='description'>" + ZmMsg.shortcutsCurrent + "</div>";
+	html[i++] = "<div class='actions'>";
+	html[i++] = "<span class='link' onclick='ZmShortcutsPanel.closeCallback();'>" + ZmMsg.close + "</span>";
 	if (!appCtxt.isChildWindow) {
-		html[i++] = "<br /><span class='ShortcutsPanelLink' onclick='ZmShortcutsPanel.newWindowCallback();'>" + ZmMsg.newWindow + "</span></td></tr>";
+		html[i++] = "<br /><span class='link' onclick='ZmShortcutsPanel.newWindowCallback();'>" + ZmMsg.newWindow + "</span>";
 	}
-	html[i++] = "</table>";
+	html[i++] = "</div></div></div>";
 	html[i++] = "<hr />";
-	html[i++] = "</div>";
 	html[i++] = "<div id='" + contentId + "' style='overflow:auto'></div>";
 
 	this.getHtmlElement().innerHTML = html.join("");
 	this._headerDiv = document.getElementById(headerId);
 	this._contentDiv = document.getElementById(contentId);
 	var headerHeight = Dwt.getSize(this._headerDiv).y;
-	var h = this.getSize().y - headerHeight;
-	Dwt.setSize(this._contentDiv, Dwt.DEFAULT, h - 10);
-	this.setZIndex(Dwt.Z_DIALOG);	
+	var containerHeight = Dwt.getSize(containerId).y;
+	var h = this.getSize().y - headerHeight - containerHeight;
+	Dwt.setSize(this._contentDiv, Dwt.DEFAULT, h - 20);
+	this.setZIndex(Dwt.Z_DIALOG);
 };
 
 ZmShortcutsPanel.closeCallback =

@@ -333,8 +333,10 @@ function() {
 		var panel = appCtxt.getShortcutsPanel();
 		panel.popup(params.cols);
 	}
-	
-	this._appViewMgr.loadingView.setVisible(false);
+
+	if (this._appViewMgr.loadingView) {
+		this._appViewMgr.loadingView.setVisible(false);
+	}
 
 	this._kbMgr.setTabGroup(rootTg);
 	this._kbMgr.grabFocus(startupFocusItem);

@@ -183,7 +183,10 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.MOVE:
             if (isExternalAccount) { break; }
-			this._moveListener();
+			var items = this.getItems();
+			if (items && items.length) {
+				this._moveListener();
+			}
 			break;
 
 		case ZmKeyMap.PRINT:

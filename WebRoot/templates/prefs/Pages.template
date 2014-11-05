@@ -1761,19 +1761,12 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</table>
 </template>
 
-
 <template id='prefs.Pages#Shortcuts'>
-		<div class='prefHeader'><$=ZmMsg.keyboardShortcuts$></div>
-		<table role="presentation" class='ZOptionsSectionTable' width=100%>
-			<tr>
-				<td class='ZOptionsSectionMain'>
-					<div align="right">
-						<div id='${id}_SHORTCUT_PRINT' style='width:80px;'></div>
-					</div>
-					<div id='${id}_SHORTCUT_LIST'></div>
-				</td>
-			</tr>
-		</table>
+	<div class='prefHeader'><$=ZmMsg.keyboardShortcuts$></div>
+	<div align="right">
+		<div id='${id}_SHORTCUT_PRINT' style='width:80px;'></div>
+	</div>
+	<div id='${id}_SHORTCUT_LIST'></div>
 </template>
 
 <template id='prefs.Pages#AccountTestContent'>
