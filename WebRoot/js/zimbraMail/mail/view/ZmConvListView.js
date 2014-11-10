@@ -793,7 +793,9 @@ function(item) {
 
 	if (item && this._isExpandable(item)) {
 		var el = this._getElFromItem(item);
-		el.setAttribute('aria-expanded', this.isExpanded(item));
+		if (el && el.setAttribute) {
+			el.setAttribute('aria-expanded', this.isExpanded(item));
+		}
 	}
 }
 
