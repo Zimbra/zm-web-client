@@ -50,14 +50,6 @@
 * If you create and display one of those widgets, you'll have to add a class for it.
 */
 
-/*
-* Fix for Accessibility focus
-*/
-
-*:focus {
-	outline:none;
-}
-
 
 /*
 * Top-level (shell) stuff
