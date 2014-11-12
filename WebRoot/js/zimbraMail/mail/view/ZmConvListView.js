@@ -935,7 +935,7 @@ ZmConvListView.prototype._sortColumn =
 function(columnItem, bSortAsc, callback) {
 
 	// call base class to save the new sorting pref
-	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
+	ZmMailListView.prototype._sortColumn.apply(this, arguments);
 
 	var query;
 	var list = this.getList();

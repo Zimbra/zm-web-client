@@ -445,7 +445,7 @@ function() {
  * have to do this since otherwise we get the one from ZmDoublePaneController and that's not good.
  * @private
  */
-ZmConvController.prototype._setupReadingPaneMenuItems = function() {
+ZmConvController.prototype._setupReadingPaneMenu = function() {
 };
 
 /**

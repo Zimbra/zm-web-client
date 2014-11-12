@@ -339,26 +339,35 @@ function(view) {
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);
 };
 
-ZmConvListController.prototype._setupConvOrderMenuItems =
+ZmConvListController.prototype._setupConvOrderMenu =
 function(view, menu) {
 
-	if (menu.getItemCount() > 0) {
-		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
-	}
+	var convOrderMenuItem = menu.createMenuItem(Dwt.getNextId("CONV_ORDER_"), {
+			text:   ZmMsg.expandConversations,
+			style:  DwtMenuItem.NO_STYLE
+		}),
+		convOrderMenu = new ZmPopupMenu(convOrderMenuItem);
 
-	var ids = [ZmMailListController.CONV_ORDER_DESC, ZmMailListController.CONV_ORDER_ASC];
+	var ids = [ ZmMailListController.CONV_ORDER_DESC, ZmMailListController.CONV_ORDER_ASC ];
 	var setting = appCtxt.get(ZmSetting.CONVERSATION_ORDER);
-	var miParams = {style:DwtMenuItem.RADIO_STYLE, radioGroupId:"CO"};
+	var miParams = {
+		style:          DwtMenuItem.RADIO_STYLE,
+		radioGroupId:   "CO"
+	};
 	for (var i = 0; i < ids.length; i++) {
 		var id = ids[i];
-		if (!menu._menuItems[id]) {
+		if (!convOrderMenu._menuItems[id]) {
 			miParams.text = ZmMailListController.CONV_ORDER_TEXT[id];
-			var mi = menu.createMenuItem(id, miParams);
+			var mi = convOrderMenu.createMenuItem(id, miParams);
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 			mi.setChecked((setting == id), true);
 		}
 	}
+
+	convOrderMenuItem.setMenu(convOrderMenu);
+
+	return convOrderMenu;
 };
 
 // no support for showing total items, which are msgs

@@ -130,7 +130,7 @@ ZmAppChooser.prototype._attachMoreTabMenuItems =
 function(menu){
 
     for (var deletedIndex=0; deletedIndex < this._deletedButtons.length; deletedIndex++){
-        var mi = menu.getItemById("_menuItemId", this._deletedButtons[deletedIndex] + "_menu");
+        var mi = menu.getItemById(ZmOperation.MENUITEM_ID, this._deletedButtons[deletedIndex] + "_menu");
         if (mi) {
             menu.removeChild(mi);
             mi.dispose();
@@ -139,14 +139,14 @@ function(menu){
 
     this._deletedButtons = [];
     for(var index in this._buttons){
-        var item = menu.getItemById("_menuItemId", index + "_menu");
+        var item = menu.getItemById(ZmOperation.MENUITEM_ID, index + "_menu");
         if (item){
             if (item.getText() != this._buttons[index].getText()){
                 item.setText(this._buttons[index].getText());
             }
         } else {
             var mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.CASCADE_STYLE, id: index + "_menu"});
-            mi.setData("_menuItemId", index + "_menu" );
+            mi.setData(ZmOperation.MENUITEM_ID, index + "_menu" );
             mi.setData(Dwt.KEY_ID, index);
             mi.addSelectionListener(this._showTab.bind(this, index));
             mi.setText(this._buttons[index].getText());

@@ -1053,7 +1053,7 @@ function(force) {
         return this._colHeaderActionMenu;
 	}
 
-	var menu = ZmListView.prototype._getActionMenuForColHeader.call(this, force);
+	var menu = ZmListView.prototype._getActionMenuForColHeader.call(this, force, null, "header");
 
 	return menu;
 };

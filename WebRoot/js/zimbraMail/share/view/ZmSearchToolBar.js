@@ -58,8 +58,6 @@ ZmSearchToolBar.SEARCH_BUTTON 		= "SEARCH";
 ZmSearchToolBar.SAVE_BUTTON 		= "SAVE";
 ZmSearchToolBar.SEARCH_MENU_BUTTON	= ZmSearchToolBar.TYPES_BUTTON;	// back-compatibility
 
-ZmSearchToolBar.MENUITEM_ID 		= "_menuItemId";		// menu item key
-
 ZmSearchToolBar.MENU_ITEMS 			= [];		// list of menu items
 ZmSearchToolBar.SETTING 			= {};		// required setting for menu item to appear
 ZmSearchToolBar.MSG_KEY 			= {};		// text for menu item
@@ -110,7 +108,7 @@ function(id) {
 	
 	var menu = this._searchMenu;
 	if (menu) {
-		var mi = menu.getItemById("_menuItemId", id);
+		var mi = menu.getItemById(ZmOperation.MENUITEM_ID, id);
 		if (mi) {
 			menu.removeChild(mi);
 			mi.dispose();
@@ -437,7 +435,7 @@ function() {
 		params.text = ZmMsg[ZmSearchToolBar.MSG_KEY[id]];
 		params.id = ZmSearchToolBar.ID[id];
 		mi = DwtMenuItem.create(params);
-		mi.setData(ZmSearchToolBar.MENUITEM_ID, id);
+		mi.setData(ZmOperation.MENUITEM_ID, id);
 	}
 	
 	this._checkSharedMenuItem();
@@ -456,7 +454,7 @@ ZmMainSearchToolBar.prototype.setOfflineState = function(offline) {
 	for (var i = 0; i < numItems; i++) {
 	    var item = menu.getItem(i);
 		if (item) {
-			var id   = item.getData(ZmSearchToolBar.MENUITEM_ID);
+			var id = item.getData(ZmOperation.MENUITEM_ID);
 			if (id && ZmSearchToolBar.DISABLE_OFFLINE[id])  {
 				item.setEnabled(!offline);
 			}
@@ -469,7 +467,7 @@ function() {
 	var button = this._button[ZmSearchToolBar.TYPES_BUTTON];
 	var menu = button && button.getMenu();
     var item = menu ? menu.getSelectedItem() || menu.getItems()[0] : null;
-	var data = item ? item.getData(ZmMainSearchToolBar.CUSTOM_ITEM_ID) || item.getData(ZmSearchToolBar.MENUITEM_ID) :
+	var data = item ? item.getData(ZmMainSearchToolBar.CUSTOM_ITEM_ID) || item.getData(ZmOperation.MENUITEM_ID) :
 					  ZmSearchToolBar.MENU_ITEMS[0];
 	return data;
 };
@@ -524,7 +522,7 @@ function(icon, text, listener, id) {
 				params.text = btnData.text;
 				item = DwtMenuItem.create(params);
 				item.setData(ZmMainSearchToolBar.CUSTOM_ITEM_ID, btnData);
-				item.setData(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_CUSTOM);
+				item.setData(ZmOperation.MENUITEM_ID, ZmId.SEARCH_CUSTOM);
 				item.setChecked(true, true);
 				item.addSelectionListener(this._customSearchListener);
 			}
@@ -563,7 +561,7 @@ function(menu, icon, text, listener, id) {
 	mi = DwtMenuItem.create(params);
 	var data = { icon:icon, text:text, listener:listener };
 	mi.setData(ZmMainSearchToolBar.CUSTOM_ITEM_ID, data);
-	mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_CUSTOM);
+	mi.setData(ZmOperation.MENUITEM_ID, ZmId.SEARCH_CUSTOM);
 	mi.addSelectionListener(this._customSearchListener);
 
 	// only add separator if this is the first custom search menu item
@@ -590,7 +588,7 @@ function(ev) {
 		button.setToolTipContent(data.text);
 
 		var menu = item.parent;
-		var shareMenuItem = menu ? menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED) : null;
+		var shareMenuItem = menu ? menu.getItemById(ZmOperation.MENUITEM_ID, ZmId.SEARCH_SHARED) : null;
 		if (shareMenuItem) {
 			shareMenuItem.setChecked(false, true);
 			shareMenuItem.setEnabled(false);
@@ -633,7 +631,7 @@ function(expanded) {
 
 ZmMainSearchToolBar.prototype._checkSharedMenuItem =
 function() {
-	var mi = this._searchMenu && this._searchMenu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED);
+	var mi = this._searchMenu && this._searchMenu.getItemById(ZmOperation.MENUITEM_ID, ZmId.SEARCH_SHARED);
 	if (mi) {
 		mi.setChecked(appCtxt.get(ZmSetting.SEARCH_INCLUDES_SHARED));
 	}

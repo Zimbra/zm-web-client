@@ -198,8 +198,8 @@ function(view, force) {
 };
 
 // override if reading pane is supported
-ZmMailListController.prototype._setupReadingPaneMenuItems = function() {};
-ZmMailListController.prototype._setupConvOrderMenuItems = function() {};
+ZmMailListController.prototype._setupReadingPaneMenu = function() {};
+ZmMailListController.prototype._setupConvOrderMenu = function() {};
 
 /**
  * Checks if the reading pane is "on".
@@ -359,7 +359,6 @@ function(actionCode, ev) {
 		case ZmKeyMap.READING_PANE_RIGHT:
 		case ZmKeyMap.READING_PANE_OFF:
 			var menuId = ZmMailListController.ACTION_CODE_TO_MENU_ID[actionCode];
-			this._updateViewMenu(menuId);
 			this.switchView(menuId, true);
 			break;
 
@@ -482,16 +481,18 @@ function(msg, dlg) {
 	msg.list.flagItems({items:[msg], op:"update", value:flags, callback:callback});
 };
 
-ZmMailListController.prototype._updateViewMenu =
-function(id) {
+ZmMailListController.prototype._updateViewMenu = function(id, menu) {
+
 	var viewBtn = this.getCurrentToolbar().getButton(ZmOperation.VIEW_MENU);
-	var menu = viewBtn && viewBtn.getMenu();
+	menu = menu || (viewBtn && viewBtn.getMenu());
 	if (menu) {
 		var mi = menu.getItemById(ZmOperation.MENUITEM_ID, id);
 		if (mi) {
 			mi.setChecked(true, true);
 		}
 	}
+
+	this._colHeaderMenuItem.setVisible(this._mailListView.isMultiColumn());
 };
 
 // Private and protected methods
@@ -1500,14 +1501,10 @@ function(view) {
 ZmMailListController.prototype._setupViewMenu =
 function(view) {
 
-	var viewType = appCtxt.getViewTypeFromId(view);
-	this._updateViewMenu(viewType);
-	this._updateViewMenu(this._getReadingPanePref());
-	this._updateViewMenu(appCtxt.get(ZmSetting.CONVERSATION_ORDER));
-
 	// always reset the view menu button icon to reflect the current view
 	var btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
 	if (btn) {
+		var viewType = appCtxt.getViewTypeFromId(view);
 		btn.setImage(ZmMailListController.GROUP_BY_ICON[viewType]);
 	}
 };
@@ -1517,18 +1514,54 @@ function(view, btn) {
 
 	var menu = this._viewMenu = new ZmPopupMenu(btn, null, null, this);
 	btn.setMenu(menu);
-    var isExternalAccount = appCtxt.isExternalAccount();
-	if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
+    var isExternalAccount = appCtxt.isExternalAccount(),
+	    convsEnabled = appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED);
+
+	if (convsEnabled) {
 		this._setupGroupByMenuItems(view, menu);
 	}
-	this._setupReadingPaneMenuItems(view, menu);
-	if (!isExternalAccount && appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
-		this._setupConvOrderMenuItems(view, menu);
+	if (menu.getItemCount() > 0) {
+		new DwtMenuItem({
+			parent: menu,
+			style:  DwtMenuItem.SEPARATOR_STYLE
+		});
 	}
+	this._readingPaneViewMenu = this._setupReadingPaneMenu(view, menu);
+	if (!isExternalAccount && convsEnabled) {
+		this._convOrderViewMenu = this._setupConvOrderMenu(view, menu);
+	}
+	this._sortViewMenu = this._setupSortViewMenu(view, menu);
+	this._colHeaderViewMenu = this._setupColHeaderViewMenu(view, menu);
+	this._groupByViewMenu = this._mailListView._getGroupByActionMenu(menu, true, true);
 
 	return menu;
 };
 
+ZmMailListController.prototype._setupSortViewMenu = function(view, menu) {
+
+	var	sortMenuItem = menu.createMenuItem(Dwt.getNextId("SORT_"), {
+			text:           ZmMsg.sortBy,
+			style:          DwtMenuItem.NO_STYLE
+		}),
+		sortMenu = this._mailListView._setupSortMenu(sortMenuItem, false);
+
+	sortMenuItem.setMenu(sortMenu);
+
+	return sortMenu;
+};
+
+ZmMailListController.prototype._setupColHeaderViewMenu = function(view, menu) {
+
+	var	colHeaderMenuItem = this._colHeaderMenuItem = menu.createMenuItem(Dwt.getNextId("COL_HEADER_"), {
+			text:           ZmMsg.display,
+			style:          DwtMenuItem.NO_STYLE
+		}),
+		colHeaderMenu = ZmListView.prototype._getActionMenuForColHeader.call(this._mailListView, true, colHeaderMenuItem, "view");
+
+	colHeaderMenuItem.setMenu(colHeaderMenu);
+
+	return colHeaderMenu;
+};
 
 // If we're in the Trash or Junk folder, change the "Delete" button tooltip
 ZmMailListController.prototype._setupDeleteButton =

@@ -367,23 +367,29 @@ function() {
 	return ZmController.prototype._preHideCallback.call(this);
 };
 
-// Adds a "Reading Pane" checked menu item to a view menu
-ZmDoublePaneController.prototype._setupReadingPaneMenuItems =
+// Adds a "Reading Pane" menu to the View menu
+ZmDoublePaneController.prototype._setupReadingPaneMenu =
 function(view, menu) {
 
-	if (menu.getItemCount() > 0) {
-		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
-	}
+	var readingPaneMenuItem = menu.createMenuItem(Dwt.getNextId("READING_PANE_"), {
+			text:   ZmMsg.readingPane,
+			style:  DwtMenuItem.NO_STYLE
+		}),
+		readingPaneMenu = new ZmPopupMenu(readingPaneMenuItem);
 
-	var miParams = {text:ZmMsg.readingPaneAtBottom, style:DwtMenuItem.RADIO_STYLE, radioGroupId:"RP"};
+	var miParams = {
+		text:           ZmMsg.readingPaneAtBottom,
+		style:          DwtMenuItem.RADIO_STYLE,
+		radioGroupId:   "RP"
+	};
 	var ids = ZmDoublePaneController.RP_IDS;
 	var pref = this._getReadingPanePref();
 	for (var i = 0; i < ids.length; i++) {
 		var id = ids[i];
-		if (!menu._menuItems[id]) {
+		if (!readingPaneMenu._menuItems[id]) {
 			miParams.text = ZmMailListController.READING_PANE_TEXT[id];
 			miParams.image = ZmMailListController.READING_PANE_ICON[id];
-			var mi = menu.createMenuItem(id, miParams);
+			var mi = readingPaneMenu.createMenuItem(id, miParams);
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 			if (id == pref) {
@@ -391,6 +397,10 @@ function(view, menu) {
 			}
 		}
 	}
+
+	readingPaneMenuItem.setMenu(readingPaneMenu);
+
+	return readingPaneMenu;
 };
 
 ZmDoublePaneController.prototype._displayResults =

@@ -1293,7 +1293,7 @@ function(ev) {
 	var fixall = item.getData("fixall");
 	var doc = plainText ? document : this._getIframeDoc();
 	var span = doc.getElementById(item.getData("spanId"));
-	var action = item.getData(ZmPopupMenu.MENU_ITEM_ID_KEY);
+	var action = item.getData(ZmOperation.MENUITEM_ID);
 	switch (action) {
 		case "ignore":
 			val = orig;

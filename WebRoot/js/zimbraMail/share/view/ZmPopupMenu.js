@@ -61,12 +61,8 @@ ZmPopupMenu.PARAMS = ["parent", "className", "id", "controller"];
 ZmPopupMenu.prototype = new DwtMenu;
 ZmPopupMenu.prototype.constructor = ZmPopupMenu;
 
-ZmPopupMenu.prototype.toString = 
-function() {
-	return "ZmPopupMenu";
-};
-
-ZmPopupMenu.MENU_ITEM_ID_KEY = "menuItemId";
+ZmPopupMenu.prototype.isZmPopupMenu = true;
+ZmPopupMenu.prototype.toString = function() { return "ZmPopupMenu"; };
 
 /**
  * Adds a section listener.
@@ -163,7 +159,7 @@ function(id, params, htmlElId) {
 	}
 
 	mi.setEnabled(params.enabled !== false);
-	mi.setData(ZmPopupMenu.MENU_ITEM_ID_KEY, id);
+	mi.setData(ZmOperation.MENUITEM_ID, id);
 
     //set context menu tr id
     var row = mi.getRowElement();

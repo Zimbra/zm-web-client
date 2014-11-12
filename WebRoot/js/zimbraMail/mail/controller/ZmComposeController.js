@@ -1303,7 +1303,7 @@ function() {
 ZmComposeController.prototype._getSignatureButton =
 function() {
 	var menu = this._getOptionsMenu();
-	return menu && menu.getItemById(ZmPopupMenu.MENU_ITEM_ID_KEY, ZmOperation.ADD_SIGNATURE);
+	return menu && menu.getItemById(ZmOperation.MENUITEM_ID, ZmOperation.ADD_SIGNATURE);
 };
 
 // only show signature submenu if the account has at least one signature

@@ -89,8 +89,8 @@ function(op, params, setting, callback) {
 };
 
 
-ZmOperation.KEY_ID		= "_opId";
-ZmOperation.MENUITEM_ID	= "_menuItemId";
+ZmOperation.KEY_ID		= "opId";
+ZmOperation.MENUITEM_ID	= "menuItemId";
 
 ZmOperation.NEW_ITEM_OPS	= [];
 ZmOperation.NEW_ITEM_KEY	= {};
