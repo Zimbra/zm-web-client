@@ -70,6 +70,8 @@ ZmTreeController = function(type) {
 	this._treeView = {};	// hash of tree views of this type, by overview ID
 	this._hideEmpty = {};	// which tree views to hide if they have no data
 	this._dataTree = {};	// data tree per account
+
+	this._treeSelectionShortcutDelay = ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY;
 };
 
 ZmTreeController.prototype = new ZmController;
@@ -911,10 +913,13 @@ function(ev, overview, treeItem, item) {
 	}
 
 	if ((overview.selectionSupported || item._showFoldersCallback) && !treeItem._isHeader) {
-		if (ev.kbNavEvent && ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY) {
-			var action = new AjxTimedAction(this, ZmTreeController.prototype._treeSelectionTimedAction, [item, overview]);
-			overview._treeSelectionShortcutDelayActionId =
-				AjxTimedAction.scheduleAction(action, ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY);
+		if (ev.kbNavEvent) {
+			// for shortcuts, process selection via Enter immediately; selection via up/down keys
+			// is delayed (or can be disabled by setting the delay to 0)
+			if (ev.enter || this._treeSelectionShortcutDelay) {
+				var action = new AjxTimedAction(this, ZmTreeController.prototype._treeSelectionTimedAction, [item, overview]);
+				overview._treeSelectionShortcutDelayActionId = AjxTimedAction.scheduleAction(action, this._treeSelectionShortcutDelay);
+			}
 		} else {
 			if ((appCtxt.multiAccounts && (item instanceof ZmOrganizer)) ||
 				(item.type == ZmOrganizer.VOICE))
