@@ -527,6 +527,7 @@ function(account) {
 	}
 	this._updateSearchRows(this._searchInSelect && this._searchInSelect.getValue() || ZmContactsApp.SEARCHFOR_CONTACTS);
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
+    this.sharedContactGroups = [];
 };
 
 ZmContactPicker.prototype.mapFields =
@@ -591,16 +592,17 @@ function(firstTime, result) {
 	else {
 		this._emailList = emailList;
 	}
-
-	this._showResults();
+    var list = this.getSubList();
+    if (this.toString() === "ZmContactPicker") {
+        list = this.loadSharedGroupContacts(list) || list;
+    }
+	this._showResults(list);
 
 };
 
 ZmContactPicker.prototype._showResults =
-function() {
-
-	var list = this.getSubList();
-
+function(aList) {
+    var list = aList || this.getSubList();
 	// special case 1 - search forward another server block, to fill up a page. Could search several times.
 	if (list.size() < ZmContactsApp.SEARCHFOR_MAX && this._serverHasMoreAndPaginationSupported) {
 		this.search(null, null, null, null, null, this._serverContactOffset + ZmContactsApp.SEARCHFOR_MAX); //search another page
@@ -636,8 +638,120 @@ function() {
 
 	this._resetSearchColHeaders(); // bug #2269 - enable/disable sort column per type of search
 	this._setResultsInView(list);
-
 };
+
+ZmContactPicker.prototype.loadSharedGroupContacts =
+    function(aList) {
+
+    var listLen,
+        listArray,
+        contact,
+        item,
+        i,
+        j,
+        k,
+        sharedContactGroupArray,
+        len1,
+        jsonObj,
+        batchRequest,
+        request,
+        response;
+
+        listArray = aList.getArray();
+        listLen = aList.size();
+        sharedContactGroupArray = [];
+
+    for (i = 0 ; i < listLen; i++) {
+        item = listArray[i];
+        contact = item.__contact;
+        if (contact.isGroup() && contact.isShared()) {
+            if (this.sharedContactGroups.indexOf(item.value) !== -1) {
+                return;
+            }
+            this.sharedContactGroups.push(item.value);
+            sharedContactGroupArray.push(item.value);
+        }
+    }
+
+    len1 = sharedContactGroupArray.length;
+    jsonObj = {BatchRequest:{GetContactsRequest:[],_jsns:"urn:zimbra", onerror:'continue'}};
+    batchRequest = jsonObj.BatchRequest;
+    request = batchRequest.GetContactsRequest;
+
+    for (j = 0,k =0; j < len1; j++) {
+        request.push({ cn: {id: sharedContactGroupArray[j]}, _jsns: 'urn:zimbraMail', derefGroupMember: '1', requestId: k++ });
+    }
+        var respCallback = new AjxCallback(this, this.handleSharedContactResponse,[aList]);
+       response =  appCtxt.getAppController().sendRequest({
+            jsonObj:jsonObj,
+            asyncMode:true,
+            callback:respCallback
+        });
+   };
+
+ZmContactPicker.prototype.handleSharedContactResponse =
+    function(aList,response) {
+
+     var contactResponse,
+         contactResponseLength,
+         listArray,
+         listArrayLength,
+         sharedGroupMembers,
+         i,
+         j,
+         k,
+         resp,
+         contact,
+         member,
+         isGal,
+         memberContact,
+         loadMember,
+         listArrElement,
+         sharedGroupMembers;
+
+        if (response && response.getResponse() && response.getResponse().BatchResponse) {
+            contactResponse = response.getResponse().BatchResponse.GetContactsResponse;
+        }
+        if (!contactResponse) {
+            return;
+        }
+        contactResponseLength = contactResponse.length;
+        listArray = aList.getArray();
+        listArrayLength = aList.size();
+
+        for (k= 0; k < listArrayLength; k++) {
+            sharedGroupMembers = [];
+            for (j = 0; j < contactResponseLength; j++) {
+                resp = contactResponse[j];
+                contact = resp.cn[0];
+
+                if (contact.m) {
+                    for (i = 0; i < contact.m.length; i++) {
+                        member = contact.m[i];
+                        isGal = false;
+                        if (member.type == ZmContact.GROUP_GAL_REF) {
+                            isGal = true;
+                        }
+                        if (member.cn && member.cn.length > 0) {
+                            memberContact = member.cn[0];
+                            memberContact.ref = memberContact.ref || (isGal && member.value);
+                            loadMember = ZmContact.createFromDom(memberContact, {list: this.list, isGal: isGal});
+                            loadMember.isDL = isGal && loadMember.attr[ZmContact.F_type] === "group";
+                            appCtxt.cacheSet(member.value, loadMember);
+                            listArrElement = listArray[k];
+                            if (listArrElement.value === contact.id) {
+                                sharedGroupMembers.push( '"'+loadMember.getFullName()+'"' +' <' + loadMember.getEmails() +'>;' ); // Updating the original list with shared members of shared contact group that comes in 'contactResponse'.
+                                aList._array[k].address = sharedGroupMembers.join("");
+                            }
+                        }
+                    }
+                    ZmContact.prototype._loadFromDom(contact);
+                }
+            }
+        }
+        this._showResults(aList); // As async = true, when the response has come, again we render/update the  list with  contactResponse shared contact members,
+    };
+
 
 /**
  * extracted this so it can be used in ZmGroupView where this is different.
