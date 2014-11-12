@@ -36,7 +36,7 @@
         <td align="left" class=TbBt id="caltb">
             <table cellpadding="0" cellspacing="0">
                 <tr valign="middle">
-                    <app:calendarUrl var="refreshUrl" refresh="1"/>
+                    <app:calendarUrl var="refreshUrl" refresh="1" action=""/>
                     <td height="100%">
                         <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"> id="CAL_REFRESH"</c:if>><app:img altkey="ALT_CAL_REFRESH" src="startup/ImgRefresh.png"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
                     </td>
@@ -45,12 +45,12 @@
                     </td>
                     <fmt:formatDate var="dateDf" value="${zm:getCurrentTime(timezone).time}" pattern="yyyyMMdd'T'HHmmss" timeZone="${timezone}"/>
                     <app:calendarUrl var="newApptUrl" date="${dateDf}" action="edit"/>
-                    <app:calendarUrl var="dayViewUrl" date="${dateDf}" view="day"/>
-                    <app:calendarUrl var="weekViewUrl" date="${dateDf}" view="week"/>
-                    <app:calendarUrl var="workWeekViewUrl" date="${dateDf}" view="workWeek"/>
-                    <app:calendarUrl var="monthViewUrl" date="${dateDf}" view="month"/>
-                    <app:calendarUrl var="listViewUrl" date="${dateDf}" view="list"/>
-                    <app:calendarUrl var="scheduleViewUrl" date="${dateDf}" view="schedule"/>
+                    <app:calendarUrl var="dayViewUrl" date="${dateDf}" view="day" action=""/>
+                    <app:calendarUrl var="weekViewUrl" date="${dateDf}" view="week" action=""/>
+                    <app:calendarUrl var="workWeekViewUrl" date="${dateDf}" view="workWeek" action=""/>
+                    <app:calendarUrl var="monthViewUrl" date="${dateDf}" view="month" action=""/>
+                    <app:calendarUrl var="listViewUrl" date="${dateDf}" view="list" action=""/>
+                    <app:calendarUrl var="scheduleViewUrl" date="${dateDf}" view="schedule" action=""/>
                     <td height="100%">
                         <a id="CAL_NEWAPPT" href="${fn:escapeXml(newApptUrl)}"><app:img altkey="ALT_CAL_NEW_APPT" src="calendar/ImgNewAppointment.png"/><span style='padding-left:5px'><fmt:message key="new"/></span></a>
                     </td>
@@ -74,7 +74,7 @@
                         <a id="CAL_SCHED" href="${fn:escapeXml(scheduleViewUrl)}"><app:img altkey="ALT_CAL_SCHEDULE_VIEW" src="calendar/ImgGroupSchedule.png"/><span style='padding-left:5px'><fmt:message key="schedule"/></span></a>
                     </td>
                     <td height="100%"><div class='vertSep'></div></td>
-                    <app:calendarUrl var="todayUrl" nodate="true"/>
+                    <app:calendarUrl var="todayUrl" nodate="true" action=""/>
                     <td height="100%">
                         <a id="CAL_TODAY" href="${fn:escapeXml(todayUrl)}"><app:img altkey="ALT_CAL_TODAY" src="calendar/ImgDate.png"/><span style='padding-left:5px'><fmt:message key="today"/></span></a>
                     </td>
@@ -91,8 +91,8 @@
         </td>
         <c:if test="${not empty prevDate and not empty nextDate and not empty title}">
         <td align=right>
-            <app:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
-            <app:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
+            <app:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}" action=""/>
+            <app:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}" action=""/>
             <table cellspacing=5 cellpadding=0>
                 <tr>
                     <td>
