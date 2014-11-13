@@ -248,37 +248,42 @@ ZmController.prototype.popupUploadErrorDialog =
 function(type, respCode, extraMsg) {
     var warngDlg = appCtxt.getMsgDialog();
     var style = DwtMessageDialog.CRITICAL_STYLE;
-    var msg;
+    var msg = this.createErrorMessage(type, respCode, extraMsg);
+	if (msg.length > 0) {
+		warngDlg.setMessage(msg, style);
+		warngDlg.popup();
+	}
+};
 
-    switch (respCode) {
-    case AjxPost.SC_OK:
-        return true;
+ZmController.prototype.createErrorMessage = function(type, respCode, extraMsg) {
+	var msg = "";
 
-    case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE:
-        var basemsg =
-            type && ZmMsg['attachmentSizeError_' + type] ||
-            ZmMsg.attachmentSizeError;
-        var sizelimit =
-            AjxUtil.formatSize(appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT));
-		msg = AjxMessageFormat.format(basemsg, sizelimit);
+	switch (respCode) {
+		case AjxPost.SC_OK:
+			break;
 
-        break;
+		case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE:
+			var basemsg =
+				type && ZmMsg['attachmentSizeError_' + type] ||
+					ZmMsg.attachmentSizeError;
+			var sizelimit =
+				AjxUtil.formatSize(appCtxt.get(ZmSetting.MESSAGE_SIZE_LIMIT));
+			msg = AjxMessageFormat.format(basemsg, sizelimit);
+			break;
 
-    default:
-        var basemsg =
-            type && ZmMsg['errorAttachment_' + type] ||
-            ZmMsg.errorAttachment;
-        msg = AjxMessageFormat.format(basemsg, respCode || AjxPost.SC_NO_CONTENT);
+		default:
+			var basemsg =
+				type && ZmMsg['errorAttachment_' + type] ||
+					ZmMsg.errorAttachment;
+			msg = AjxMessageFormat.format(basemsg, respCode || AjxPost.SC_NO_CONTENT);
+			break;
+	}
 
-        break;
-    }
-
-    if (extraMsg) {
-        msg += '<br /><br />';
-        msg += extraMsg;
-    }
-    warngDlg.setMessage(msg, style);
-    warngDlg.popup();
+	if ((msg.length > 0) && extraMsg) {
+		msg += '<br /><br />';
+		msg += extraMsg;
+	}
+	return msg;
 };
 
 ZmController.handleScriptError =

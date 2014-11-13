@@ -115,7 +115,7 @@ function(params) {
         req.setRequestHeader("Content-Type",  (file.type || "application/octet-stream") + ";");
         req.setRequestHeader("Content-Disposition", 'attachment; filename="'+ AjxUtil.convertToEntities(fileName) + '"');
 		if (window.csrfToken) {
-			req.setRequestHeader("X-Zimbra-Csrf-Token", csrfToken);
+			req.setRequestHeader("X-Zimbra-Csrf-Token", window.csrfToken);
 		}
 
         if (params.initOneUploadCallback) {
@@ -263,8 +263,7 @@ ZmUploadManager.prototype._popupErrorDialog = function(message) {
 
 
 // --- Upload File Validation -------------------------------------------
-ZmUploadManager.prototype.getErrors =
-function(file, maxSize, errors, extensions){
+ZmUploadManager.prototype.getErrors = function(file, maxSize, errors, extensions){
 	var error = { errorCodes:[], filename: AjxStringUtil.htmlEncode(file.name) };
     var valid = true;
     var size = file.size || file.fileSize || 0;  // fileSize: Safari
@@ -276,7 +275,7 @@ function(file, maxSize, errors, extensions){
 		valid = false;
 		error.errorCodes.push( ZmUploadManager.ERROR_INVALID_EXTENSION );
     }
-    if(ZmAppCtxt.INVALID_NAME_CHARS_RE.test(file.name)) {
+	if (ZmAppCtxt.INVALID_NAME_CHARS_RE.test(file.name)) {
 		valid = false;
 		error.errorCodes.push( ZmUploadManager.ERROR_INVALID_FILENAME );
     }

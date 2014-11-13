@@ -577,7 +577,8 @@ ZmBriefcaseApp.prototype.chkFolderPermission = function(folderId){
  */
 ZmBriefcaseApp.prototype.uploadSaveDocs = function(allResponses, params, status, guids) {
 	if (status != AjxPost.SC_OK) {
-		appCtxt.getAppController().popupUploadErrorDialog(ZmItem.BRIEFCASE, status);
+		var errorMessage = appCtxt.getAppController().createErrorMessage(ZmItem.BRIEFCASE, status);
+		this._popupErrorDialog(errorMessage, params.errorCallback);
 	} else {
 		var docFiles;
 		if (allResponses) {
