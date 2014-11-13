@@ -4488,7 +4488,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	columns: 3;
 }
 
-.ZmShortcutList dl {
+.ZmShortcutList DL {
 	margin-top: 0;
 }
 
@@ -4510,11 +4510,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	color:black;
 }
 
-.shortcutListMap lh {
+.shortcutListMap LH {
 	display: block
 }
 
-.shortcutListMap dt {
+.shortcutListMap DT {
 	display: inline-block;
 	text-align: right;
 	padding-right: 1em;
@@ -4524,17 +4524,17 @@ HTML>BODY .appt-selected .appt_allday_body
 	min-width: 115px;
 }
 
-.shortcutListMap.prefs dt {
+.shortcutListMap.prefs DT {
 	min-width: 144px;
 	margin-bottom: 4px;
 }
 
-.shortcutListMap dd {
+.shortcutListMap DD {
 	display: inline;
 	margin: 0;
 }
 
-.shortcutListMap dd:after {
+.shortcutListMap DD:after {
 	display: block;
 	content: '';
 }

@@ -157,7 +157,7 @@
     pageContext.setAttribute("isLocaleId", localeId != null);
 	pageContext.setAttribute("csrfToken", authResult.getCsrfToken());
 %>
-<html class="user_font_size_normal">
+<html class="user_font_size_normal" lang="${fn:substring(pageContext.request.locale, 0, 2)}">
 <head>
 <!--
  launchZCS.jsp
