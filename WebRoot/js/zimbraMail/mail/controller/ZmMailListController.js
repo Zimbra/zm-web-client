@@ -360,6 +360,7 @@ function(actionCode, ev) {
 		case ZmKeyMap.READING_PANE_OFF:
 			var menuId = ZmMailListController.ACTION_CODE_TO_MENU_ID[actionCode];
 			this.switchView(menuId, true);
+			this._updateViewMenu(menuId, this._readingPaneViewMenu);
 			break;
 
 		case ZmKeyMap.SHOW_FRAGMENT:
