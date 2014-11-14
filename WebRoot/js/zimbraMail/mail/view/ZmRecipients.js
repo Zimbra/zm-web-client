@@ -114,6 +114,7 @@ function(parent, viewId, htmlElId, fieldNames) {
 		this._divId[type] = ids.row;
 		this._buttonTdId[type] = ids.picker;
 		var inputId = this._fieldId[type] = ids.control;
+		var label = ZmMsg[AjxEmailAddress.TYPE_STRING[this._fieldNames[i]]];
 
 		// save field elements
 		this._divEl[type] = document.getElementById(this._divId[type]);
@@ -126,6 +127,7 @@ function(parent, viewId, htmlElId, fieldNames) {
 			bubbleMenuCreatedCallback:			this._bubbleMenuCreated.bind(this),
 			bubbleMenuResetOperationsCallback:	this._bubbleMenuResetOperations.bind(this),
 			inputId:							inputId,
+			label: 								label,
 			type:								type
 		}
 		var aif = this._addrInputField[type] = new ZmAddressInputField(aifParams);
@@ -211,6 +213,11 @@ function() {
     }
 };
 
+ZmRecipients.prototype.getPicker =
+function(type) {
+    return this._pickerButton[type];
+};
+
 ZmRecipients.prototype.getField =
 function(type) {
     return document.getElementById(this._fieldId[type]);
@@ -224,6 +231,18 @@ function(type) {
 ZmRecipients.prototype.getACAddrSelectList =
 function() {
     return this._acAddrSelectList;
+};
+
+ZmRecipients.prototype.getTabGroupMember = function() {
+	var tg = new DwtTabGroup('ZmRecipients');
+
+	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
+		var type = ZmMailMsg.COMPOSE_ADDRS[i];
+		tg.addMember(this.getPicker(type));
+		tg.addMember(this.getAddrInputField(type).getTabGroupMember());
+	}
+
+	return tg;
 };
 
 ZmRecipients.prototype.getAddrInputField =
@@ -427,6 +446,10 @@ function(type, show, skipNotify, skipFocus) {
 	Dwt.setVisible(this._divEl[type], show);
 	this._setAddrFieldValue(type, "");	 // bug fix #750 and #3680
 	this._field[type].noTab = !show;
+	this._addrInputField[type].noTab = !show;
+	if (this._pickerButton[type]) {
+		this._pickerButton[type].noTab = !show;
+	}
 	if (this._resetContainerSize) {
 		this._resetContainerSize();
 	}
