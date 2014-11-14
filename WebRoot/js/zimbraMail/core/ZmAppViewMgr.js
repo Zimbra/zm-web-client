@@ -404,12 +404,14 @@ function(cid, show, comp) {
 		DBG.println("avm", (show ? "SHOW " : "HIDE ") + cid + " / " + comp.toString() + " / " + comp._htmlElId);
 		if (show) {
 			comp.zShow(true);
+			comp.noTab = false;
 		}
 		else {
 			if (comp.getPosition() == Dwt.ABSOLUTE_STYLE) {
 				comp.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 			}
 			comp.zShow(false);
+			comp.noTab = true;
 		}
 	}
 };

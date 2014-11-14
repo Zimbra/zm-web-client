@@ -247,7 +247,9 @@ function(typeOnly) {
 ZmOverview.prototype.getTabGroupMember =
 function() {
 	var tabGroup = new DwtTabGroup();
-	tabGroup.addMember(this.getSelected());
+	if (this.getZIndex() > Dwt.Z_HIDDEN) {
+		tabGroup.addMember(this.getSelected());
+	}
 	return tabGroup;
 };
 

@@ -63,8 +63,6 @@ ZmHtmlEditor = function() {
 	this.initTinyMCEEditor(params);
     this._ignoreWords = {};
 
-    this.getTabGroupMember().addMember(Dwt.byId(this._bodyTextAreaId));
-
     if (params.initCallback)
         this._initCallbacks.push(params.initCallback);
 
@@ -532,10 +530,6 @@ function(ev) {
         // pass to keyboard mgr for kb nav
         retVal = DwtKeyboardMgr.__keyDownHdlr(ev);
     }
-    else if (ev.keyCode === 9) { //Tab key handling
-        ed.execCommand("mceInsertContent", false, "&nbsp;&nbsp;&nbsp;&nbsp;");
-        ev.preventDefault();
-    }
     else if (ev.keyCode === 13) { // enter key
         var parent,
             selection,
@@ -761,6 +755,15 @@ function(id, content) {
 	Dwt.setVisible(textEl, this._mode === Dwt.TEXT);
 
 	this._editor = this.getEditor();
+
+    var tg = this.getTabGroupMember();
+    tg.removeAllMembers();
+    tg.addMember(textEl);
+
+    var firstbutton = this.__getEditorControl('listbox', 'Font Family');
+    console.log(firstbutton);
+    tg.addMember(firstbutton.getEl());
+    tg.addMember(Dwt.byId(this._iFrameId));
 };
 
 ZmHtmlEditor.prototype.onPaste = function(ev) {
@@ -859,14 +862,6 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
             }
         });
     }
-
-    var tg = obj.getTabGroupMember();
-    var firstbutton = this.__getEditorControl('listbox', 'Font Family');
-
-    tg.removeAllMembers();
-    tg.addMember(Dwt.byId(this._bodyTextAreaId));
-    tg.addMember(Dwt.byId(this._iFrameId));
-    tg.addMember(firstbutton.getEl());
 
     // must be assigned on init, to ensure that our handlers are called after
     // in TinyMCE's in 'FormatControls.js'.

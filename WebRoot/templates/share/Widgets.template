@@ -261,6 +261,8 @@
 <template id="share.Widgets#ZmAddressInputField">
 	<div id='${holderId}' class='addrBubbleHolder-empty'>
 		<span id='${dragInsertionBarId}' style='display:none' class='addrBubbleInsertionBar'>&nbsp;</span>
-		<${inputTagName} class='addrInputField user_font_system' id='${inputId}' />
+		<<$=data.inputTagName$> class='addrInputField user_font_system' id='${inputId}'
+		<$ if (data.label) { $> aria-label='${label}' <$ } $>
+		 />
 	</div>
 </template>
