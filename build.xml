@@ -301,6 +301,8 @@
             <lib file="${client.jarfile}"/>
             <lib file="${taglib.jarfile}"/>
             <lib file="${server.jarfile}"/>
+            <lib file="${common.jarfile}"/>
+            <lib file="${native.jarfile}"/>
             <lib dir='${common.jars.dir}' includes='gmbal-api-only-*.jar'/>
             <lib dir='${common.jars.dir}' includes='jaxb-api-*.jar'/>
             <lib dir='${common.jars.dir}' includes='jaxb-core-*.jar'/>
@@ -311,6 +313,21 @@
             <lib dir='${common.jars.dir}' includes='policy-*.jar'/>
             <lib dir='${common.jars.dir}' includes='stax-ex-*.jar'/>
             <lib dir='${common.jars.dir}' includes='streambuffer-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='yuicompressor-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='concurrentlinkedhashmap-lru-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='commons-lang-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='commons-httpclient-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='xercesImpl-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='dom4j-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='guava-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='log4j-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='commons-logging-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='commons-codec-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='apache-log4j-extras-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='unboundid-ldapsdk-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='json-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='xml-apis-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='mail-*.jar'/>
 
             <!-- files from build tree -->
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
