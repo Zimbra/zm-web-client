@@ -246,7 +246,7 @@ ZmShortcutList.prototype._getKeysHtml = function(params, html, i) {
 		if (!keySequences[map]) { continue; }
 		var mapDesc = keys[[map, "description"].join(".")];
 		html[i++] = "<dl class='" + ZmShortcutList._getClass("shortcutListMap", this._style) + "'>";
-		html[i++] = "<lh class='title'>" + mapDesc + "</lh>";
+		html[i++] = "<lh class='title' role='header' aria-level='3'>" + mapDesc + "</lh>";
 
 		var actions = keySequences[map];
 		if (actions && actions.length) {
@@ -363,9 +363,11 @@ function(maps) {
 };
 
 ZmShortcutsPanel.prototype.handleKeyEvent =
-function() {
-	ZmShortcutsPanel.closeCallback();
-	return false;
+function(ev) {
+	if (ev && ev.charCode === 27) {
+		ZmShortcutsPanel.closeCallback();
+		return false;
+	}
 };
 
 ZmShortcutsPanel.prototype._createHtml = function() {
@@ -376,7 +378,7 @@ ZmShortcutsPanel.prototype._createHtml = function() {
 	var html = [];
 	var i = 0;
 	html[i++] = "<div class='ShortcutsPanelHeader' id='" + headerId + "'>";
-	html[i++] = "<div class='title'>" + ZmMsg.keyboardShortcuts + "</div>";
+	html[i++] = "<div class='title' role='header' aria-level='2'>" + ZmMsg.keyboardShortcuts + "</div>";
 	// set up HTML to create two columns using floats
 	html[i++] = "<div class='container' id='" + containerId + "'>";
 	html[i++] = "<div class='description'>" + ZmMsg.shortcutsCurrent + "</div>";
