@@ -182,7 +182,7 @@ function(type) {
 		return;
 	}
 	var menu = this._searchToolBar.getButton(ZmSearchToolBar.TYPES_BUTTON).getMenu();
-	menu.checkItem(ZmSearchToolBar.MENUITEM_ID, type);
+	menu.checkItem(ZmOperation.MENUITEM_ID, type);
 	this._searchMenuListener(null, type, true);
 };
 
@@ -230,7 +230,7 @@ function(menu) {
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		item.addSelectionListener(searchMenuListener);
-		var mi = item.getData(ZmSearchToolBar.MENUITEM_ID);
+		var mi = item.getData(ZmOperation.MENUITEM_ID);
 		// set mail as default search
 		if (mi == ZmId.SEARCH_MAIL) {
 			item.setChecked(true, true);
@@ -338,7 +338,7 @@ ZmSearchController.prototype.resetSearchAllAccounts =
 function() {
 	var button = this.searchAllAccounts && this._searchToolBar.getButton(ZmSearchToolBar.TYPES_BUTTON);
 	var menu = button && button.getMenu();
-	var allAccountsMI = menu && menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_ALL_ACCOUNTS);
+	var allAccountsMI = menu && menu.getItemById(ZmOperation.MENUITEM_ID, ZmId.SEARCH_ALL_ACCOUNTS);
 
 	if (allAccountsMI) {
 		allAccountsMI.setChecked(false, true);
@@ -360,7 +360,7 @@ function() {
 ZmSearchController.prototype.resetSearchToolbar =
 function() {
 	var smb = this._searchToolBar.getButton(ZmSearchToolBar.TYPES_BUTTON);
-	var mi = smb ? smb.getMenu().getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_GAL) : null;
+	var mi = smb ? smb.getMenu().getItemById(ZmOperation.MENUITEM_ID, ZmId.SEARCH_GAL) : null;
 	if (mi) {
 		mi.setVisible(appCtxt.getActiveAccount().isZimbraAccount);
 	}
@@ -826,13 +826,13 @@ function(ev, id, noFocus) {
 	if (!btn) { return; }
 
 	var menu = btn.getMenu();
-	var item = ev ? ev.item : (menu.getItemById(ZmSearchToolBar.MENUITEM_ID, id));
+	var item = ev ? ev.item : (menu.getItemById(ZmOperation.MENUITEM_ID, id));
 
 	if (!item || (!!(item._style & DwtMenuItem.SEPARATOR_STYLE))) { return; }
-	id = item.getData(ZmSearchToolBar.MENUITEM_ID);
+	id = item.getData(ZmOperation.MENUITEM_ID);
 
 	var selItem = menu.getSelectedItem();
-	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED);
+	var sharedMI = menu.getItemById(ZmOperation.MENUITEM_ID, ZmId.SEARCH_SHARED);
 
 	// enable shared menu item if not a gal search
 	if (id == ZmId.SEARCH_GAL) {
@@ -864,7 +864,7 @@ function(ev, id, noFocus) {
 	this._inclSharedItems = sharedMI && sharedMI.getChecked();
 
 	// search all accounts? Only applies to multi-account mbox
-	var allAccountsMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_ALL_ACCOUNTS);
+	var allAccountsMI = menu.getItemById(ZmOperation.MENUITEM_ID, ZmId.SEARCH_ALL_ACCOUNTS);
 	if (allAccountsMI) {
 		if (id == ZmItem.APPT) {
 			this.resetSearchAllAccounts();
@@ -923,7 +923,7 @@ function(ev, id, noFocus) {
  */
 ZmSearchController.prototype._getSharedImage =
 function(selItem) {
-	var selItemId = selItem && selItem.getData(ZmSearchToolBar.MENUITEM_ID);
+	var selItemId = selItem && selItem.getData(ZmOperation.MENUITEM_ID);
 	return (selItemId && ZmSearchToolBar.SHARE_ICON[selItemId])
 		? ZmSearchToolBar.SHARE_ICON[selItemId]
 		: ZmSearchToolBar.ICON[selItemId]; //use regular icon if no share icon
