@@ -2109,32 +2109,34 @@ function(state, force) {
 		date:			dateString,
 		dateCellId:		this._dateCellId,
 		dateTooltip:	dateTooltip
-	};
 
-	var imageSize = isExpanded ? 48 : 32,
-		imageURL  = ai.sentByContact && ai.sentByContact.getImageUrl(imageSize, imageSize),
-		imageAltText = imageURL && ai.sentByContact.getFullName();
+	};
 
 	if (!isExpanded) {
 		var fromId = id + "_0";
 		this._idToAddr[fromId] = ai.fromAddr;
 
+		var imageURL = ai.sentByContact &&
+			ai.sentByContact.getImageUrl(32, 32) ||
+			ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL;
+
 		AjxUtil.hashUpdate(subs, {
-			imageURL:	    imageURL || ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL,
-			imageAltText:   imageAltText || ZmMsg.unknownPerson,
-			from:		    ai.from,
-			fromId:		    fromId,
-			fragment:	    AjxStringUtil.htmlEncode(msg.fragment),
-			isInvite:       this.parent._isCalendarInvite
+			imageURL:	imageURL,
+			from:		ai.from,
+			fromId:		fromId,
+			fragment:	AjxStringUtil.htmlEncode(msg.fragment),
+			isInvite:   this.parent._isCalendarInvite
 		});
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-collapsed", subs);
 	}
 	else {
+		var imageURL = ai.sentByContact &&
+			ai.sentByContact.getImageUrl(48, 48) ||
+			ZmZimbraMail.DEFAULT_CONTACT_ICON;
 
 		AjxUtil.hashUpdate(subs, {
 			hdrTableId:		this._msgView._hdrTableId = id + "_hdrTable",
-			imageURL:		imageURL || ZmZimbraMail.DEFAULT_CONTACT_ICON,
-			imageAltText:   imageAltText || ZmMsg.unknownPerson,
+			imageURL:		imageURL,
 			sentBy:			ai.sentBy,
 			sentByAddr:		ai.sentByAddr,
 			obo:			ai.obo,
