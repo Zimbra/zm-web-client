@@ -357,11 +357,13 @@ function(form) {
 		return;
 	}
 	csrfTokenInput = document.createElement("input");
-	csrfTokenInput.type = "hidden";
-	csrfTokenInput.name = "csrf";
-	csrfTokenInput.id = ZmImportExportController.CSRF_TOKEN_HIDDEN_INPUT_ID;
-	form.appendChild(csrfTokenInput);
+	csrfTokenInput.type  = "hidden";
+	csrfTokenInput.name  = "csrfToken";
+	csrfTokenInput.id    = ZmImportExportController.CSRF_TOKEN_HIDDEN_INPUT_ID;
 	csrfTokenInput.value = window.csrfToken;
+
+	var firstChildEl = form.firstChild;
+	form.insertBefore(csrfTokenInput, firstChildEl);
 };
 
 /**
