@@ -135,9 +135,10 @@ function(parent, viewId, htmlElId, fieldNames) {
 		aif.reparentHtmlElement(ids.cell);
 
 		// save field control
-		this._field[type] = document.getElementById(this._fieldId[type]);
-		if (this._field[type]) {
-			this._field[type].addrType = type;
+		var fieldEl = this._field[type] = document.getElementById(this._fieldId[type]);
+		if (fieldEl) {
+			fieldEl.addrType = type;
+			fieldEl.supportsAutoComplete = true;
 		}
 
 		// create picker
@@ -160,14 +161,15 @@ function(parent, viewId, htmlElId, fieldNames) {
 				button.addrType = type;
 
 				// autocomplete-related handlers
-				if (contactsEnabled || appCtxt.isOffline) {
-					this._acAddrSelectList.handle(this._field[type], aifId);
-				} else {
-					this._setEventHandler(this._fieldId[type], "onKeyUp");
-				}
+				// Enable this even if contacts are not enabled, to provide GAL autoComplete
+				this._acAddrSelectList.handle(fieldEl, aifId);
 
 				this._button[type] = button;
 			}
+		} else {
+			// Mark the field, so that it will be sized properly in ZmAddressInputField._resizeInput.
+			// Otherwise, it is set to 30px wide, which makes it rather hard to type into.
+			fieldEl.supportsAutoComplete = false;
 		}
 	}
 };
