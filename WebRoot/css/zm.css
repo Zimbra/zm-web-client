@@ -1337,6 +1337,11 @@ INPUT[type="text"].search_input-expanded {
 	overflow:auto;
 }
 
+.ZmSearchResultsToolBar .addrBubbleHolder {
+	max-height: 2em;
+	max-height: 2rem;
+}
+
 .attBubbleHolder {
 	display:inline;
 	border-radius:4px;
