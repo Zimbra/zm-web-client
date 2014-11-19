@@ -339,7 +339,7 @@ if (application.getInitParameter("offlineMode") != null) {
 <!DOCTYPE html>
 <!-- set this class so CSS definitions that now use REM size, would work relative to this.
 	Since now almost everything is relative to one of the 2 absolute font size classese -->
-<html class="user_font_size_normal">
+<html class="user_font_size_normal" lang="${fn:substring(pageContext.request.locale, 0, 2)}">
 <head>
 <!--
  login.jsp
@@ -381,7 +381,7 @@ if (application.getInitParameter("offlineMode") != null) {
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<title><fmt:message key="zimbraLoginTitle"/></title>
 	<c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
@@ -409,7 +409,7 @@ if (application.getInitParameter("offlineMode") != null) {
 	<div class="LoginScreen">
 		<div class="${smallScreen?'center-small':'center'}">
 			<div class="contentBox">
-				<h1><a href="http://www.zimbra.com/" id="bannerLink" target="_new">
+				<h1><a href="http://www.zimbra.com/" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'><span class="ScreenReaderOnly"><fmt:message key="zimbraTitle"/></span>
 					<span class="Img${smallScreen?'App':'Login'}Banner"></span>
 				</a></h1>
 				<div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div>
@@ -508,15 +508,15 @@ if (application.getInitParameter("offlineMode") != null) {
 										</select>
 									</c:otherwise>
 								</c:choose>
-                                <script TYPE="text/javascript">
-                                    document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
-                                </script>
+    							<script TYPE="text/javascript">
+    								document.write("<a href='#' onclick='showWhatsThis();' id='ZLoginWhatsThisAnchor' aria-controls='ZLoginWhatsThis'><fmt:message key='whatsThis'/></a>");
+    							</script>
                                 <c:choose>
                                     <c:when test="${touchLoginPageExists}">
-                                        <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientWhatsThisMessage"/></div>
+                                        <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessage"/></div>
                                     </c:when>
                                     <c:otherwise>
-                                        <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientWhatsThisMessageWithoutTablet"/></div>
+                                        <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessageWithoutTablet"/></div>
                                     </c:otherwise>
                                 </c:choose>
 								<div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
@@ -577,8 +577,10 @@ function clientChange(selectValue) {
 
 // if they have JS, write out a "what's this?" link that shows the message below
 function showWhatsThis() {
-	var div = document.getElementById("ZLoginWhatsThis");
-	div.style.display = (div.style.display == "block" ? "none" : "block");
+	var div = document.getElementById("ZLoginWhatsThis"),
+        doHide = (div.style.display === "block");
+	div.style.display = doHide ? "none" : "block";
+    div.setAttribute("aria-expanded", doHide ? "false" : "true");
 }
 
 function onLoad() {
