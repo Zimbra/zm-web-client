@@ -43,8 +43,9 @@
 	</c:if>
 </c:if>
 
-<!-- Touch client exists only in network edition -->
 <%
+    // Touch client exists only in network edition
+
     Boolean touchLoginPageExists = (Boolean) application.getAttribute("touchLoginPageExists");
     if(touchLoginPageExists == null) {
         try {
