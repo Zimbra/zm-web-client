@@ -564,7 +564,7 @@ INPUT[type="text"].search_input-expanded {
 }
 
 .Unread .ZmConvListNumMsgs {
-	background-color:@darken(AppC,40)@;
+	background-color:@UnreadColor@;
 }
 
 .ZmConvExpanded,
@@ -3072,10 +3072,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmApptEditView .ZmFreeBusySchedulerView {
 	max-height: 180px;
 	max-height: 15rem;
-}
-
-.ZmTimeSuggestionPrefDialog {
-    max-width: 600px;
 }
 
 /* Make disabled inputs still readable in scheduler view */

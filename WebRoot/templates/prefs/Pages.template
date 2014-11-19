@@ -1535,13 +1535,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			<td class='ZOptionsField'>
 				<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 					<tr>
-						<td id='${id}_CAL_WORKING_HOURS_NORMAL'><td>
-						<td> <$=ZmMsg.calendarWorkHoursNormal $> <td>
+						<td id='${id}_CAL_WORKING_HOURS_NORMAL'></td>
+						<td><$=ZmMsg.calendarWorkHoursNormal $></td>
 						<td id='${id}_CAL_WORKING_START_TIME' tabindex='48'></td>
-						<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+						<td><$=ZmMsg.calendarWorkHoursDelimiter $></td>
 						<td id='${id}_CAL_WORKING_END_TIME' tabindex='49'></td>
-						<td id='${id}_CAL_WORKING_HOURS_CUSTOM'><td>
-						<td> <$=ZmMsg.calendarWorkHoursCustom $> <td>
+						<td style='width:2em;'></td>
+						<td id='${id}_CAL_WORKING_HOURS_CUSTOM'></td>
+						<td><$=ZmMsg.calendarWorkHoursCustom $></td>
 						<td id='${id}_CAL_CUSTOM_WORK_HOURS'></td>
 					</tr>
 				</table>
