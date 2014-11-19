@@ -36,7 +36,10 @@ ZmZimletTreeController = function() {
 	ZmTreeController.call(this, ZmOrganizer.ZIMLET);
 
     this._eventMgrs = {};
-}
+
+	// don't select zimlet items via arrow shortcut since selection pops up dialog
+	this._treeSelectionShortcutDelay = 0;
+};
 
 ZmZimletTreeController.prototype = new ZmTreeController;
 ZmZimletTreeController.prototype.constructor = ZmZimletTreeController;
