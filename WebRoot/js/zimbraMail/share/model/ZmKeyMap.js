@@ -82,6 +82,7 @@ ZmKeyMap.MAP_MESSAGE			= "message";
 ZmKeyMap.MAP_QUICK_REPLY		= "quickReply";
 ZmKeyMap.MAP_OPTIONS			= "options";
 ZmKeyMap.MAP_TASKS				= "tasks";
+ZmKeyMap.MAP_VIEW_APPOINTMENT	= "viewAppointment";
 ZmKeyMap.MAP_VOICEMAIL			= "voicemail";
 
 // Action codes

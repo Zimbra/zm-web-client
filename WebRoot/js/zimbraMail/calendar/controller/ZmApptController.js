@@ -567,3 +567,7 @@ function() {
 	this._app.popView(true, this.getCurrentViewId());
     this._composeView.cleanup();
 };
+
+ZmApptController.prototype.getKeyMapName = function() {
+	return "viewAppointment";
+};
