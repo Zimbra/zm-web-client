@@ -67,6 +67,7 @@ ZmComposeView = function(parent, controller, composeMode) {
 	recipParams.contextId					= this._controller.getCurrentViewId();
 
 	this._recipients = new ZmRecipients(recipParams);
+	this._attcTabGroup = new DwtTabGroup('ZmComposeViewAttachments');
 
 	this._firstTimeFixImages = true;
 
@@ -329,6 +330,19 @@ function() {
 ZmComposeView.prototype.getAddrFields =
 function() {
 	return this._recipients.getAddrFields();
+};
+
+ZmComposeView.prototype.getTabGroupMember =
+function() {
+	var tg = new DwtTabGroup('ZmComposeView');
+	tg.addMember(this._fromSelect);
+	tg.addMember(this.identitySelect);
+	tg.addMember(this._recipients.getTabGroupMember());
+	tg.addMember(this._subjectField);
+	tg.addMember(this._attButton);
+	tg.addMember(this._attcTabGroup);
+	tg.addMember(this._htmlEditor.getTabGroupMember());
+	return tg;
 };
 
 ZmComposeView.prototype.getAddrInputField =
@@ -1723,6 +1737,7 @@ function(all) {
 		this._attcDiv.innerHTML =
 			AjxTemplate.expand('mail.Message#NoAttachments', { hint: hint });
 		this._attcDiv.style.height = "";
+		this._attcTabGroup.removeAllMembers();
 		this._attachCount = 0;
 	}
 
@@ -3087,7 +3102,7 @@ function(templateId, data) {
 
 	if (appCtxt.multiAccounts) {
 		if (!this._fromSelect) {
-			this._fromSelect = new DwtSelect({parent:this, id:this.getHTMLElId() + "_fromSelect", parentElement:data.fromSelectId});
+			this._fromSelect = new DwtSelect({parent:this, index: 0, id:this.getHTMLElId() + "_fromSelect", parentElement:data.fromSelectId});
 			//this._addSendAsAndSendOboAddresses(this._fromSelect);
 			this._fromSelect.addChangeListener(new AjxListener(this, this._handleFromListener));
 			this._recipients.attachFromSelect(this._fromSelect);
@@ -3095,7 +3110,7 @@ function(templateId, data) {
 	} else {
 		// initialize identity select
 		var identityOptions = this._getIdentityOptions();
-		this.identitySelect = new DwtSelect({parent:this, id:this.getHTMLElId() + "_identitySelect", options:identityOptions});
+		this.identitySelect = new DwtSelect({parent:this, index: 0, id:this.getHTMLElId() + "_identitySelect", options:identityOptions});
 		this._addSendAsAndSendOboAddresses(this.identitySelect);
 		this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity, true);
 
@@ -3643,6 +3658,13 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 			Dwt.setHandler(this._attIncludeOrigLinkEl, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._includeOriginalAttachments, this));
 		}
 	}
+
+	this._attcTabGroup.removeAllMembers();
+	var links = Dwt.byClassName('AttLink', this._attcDiv);
+	for (var i = 0; i < links.length; i++) {
+		this._makeFocusable(links[i]);
+	}
+	this._attcTabGroup.addMember(links);
 };
 
 ZmComposeView.prototype._includeOriginalAttachments =

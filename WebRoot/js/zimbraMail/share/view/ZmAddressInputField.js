@@ -480,6 +480,23 @@ function(targetEl) {
 	return !(this._bubble[targetEl.id] || this.__isInputEl(targetEl));
 };
 
+ZmAddressInputField.prototype.getTabGroupMember =
+function() {
+	if (!this._tabGroup) {
+		var tg = this._tabGroup = new DwtTabGroup('ZmAddressInputField');
+
+		// the composite tab group includes regular children of the control; in
+		// this instance the address bubbles -- we want that, and our raw input
+		var ctg = DwtComposite.prototype.getTabGroupMember.call(this);
+
+		tg.addMember(ctg);
+		tg.addMember(this.getInputElement());
+	}
+
+	return this._tabGroup;
+};
+
+
 /**
  * Makes bubbles out of addresses in pasted text.
  *
@@ -603,12 +620,14 @@ function(params) {
 
 	this._holderId = Dwt.getNextId();
 	this._inputId = params.inputId || Dwt.getNextId();
+	this._label = params.label;
 	this._dragInsertionBarId = Dwt.getNextId();
 	var data = {
 		inputTagName:		AjxEnv.isIE || AjxEnv.isModernIE ?
 								'textarea' : 'input',
 		holderId:			this._holderId,
 		inputId:			this._inputId,
+		label:				this._label,
 		dragInsertionBarId:	this._dragInsertionBarId
 	};
 	this._createHtmlFromTemplate(params.templateId || this.TEMPLATE, data);
@@ -789,7 +808,7 @@ function(ev) {
 		actionMenu.getOp(ZmOperation.EXPAND).setVisible(false);
 
 		this._setContactText(null);
-		menu.popup(0, ev.docX, ev.docY);
+		menu.popup(0, ev.docX || bubble.getXW(), ev.docY || bubble.getYH());
 	}
 
 	// if we are listening for outside mouse clicks, add the action menu to the elements
@@ -896,7 +915,8 @@ ZmAddressInputField.prototype._handleResponseGetContact =
 function(ev, contact) {
 	ZmAddressInputField.menuContext.contact = contact;
 	this._setContactText(contact);
-	this.getActionMenu().popup(0, ev.docX, ev.docY);
+	this.getActionMenu().popup(0, ev.docX || ev.item.getXW(),
+	                           ev.docY || ev.item.getYH());
 };
 
 ZmAddressInputField.prototype._setContactText =
@@ -1503,6 +1523,7 @@ ZmAddressBubble.prototype.constructor = ZmAddressBubble;
 
 ZmAddressBubble.prototype.isZmAddressBubble = true;
 ZmAddressBubble.prototype.toString = function() { return "ZmAddressBubble"; };
+ZmAddressBubble.prototype.isFocusable = true;
 
 ZmAddressBubble.prototype._createElement =
 function() {
@@ -1566,6 +1587,37 @@ function(params) {
 	var addrText = html.join("");
 
 	return expandLinkText + addrText + removeLinkText;
+};
+
+
+/**
+ * Gets the key map name.
+ * 
+ * @return	{string}	the key map name
+ */
+ZmAddressBubble.prototype.getKeyMapName =
+function() {
+	return DwtKeyMap.MAP_BUTTON;
+};
+
+/**
+ * Handles a key action event.
+ * 
+ * @param	{constant}		actionCode		the action code (see {@link DwtKeyMap})
+ * @param	{DwtEvent}		ev		the event
+ * @return	{boolean}		<code>true</code> if the event is handled; <code>false</code> otherwise
+ * @see		DwtKeyMap
+ */
+ZmAddressBubble.prototype.handleKeyAction =
+function(actionCode, ev) {
+	switch (actionCode) {
+		case DwtKeyMap.SELECT:
+		case DwtKeyMap.SUBMENU:
+			this.list._itemActioned(ev, this);
+			break;
+	}
+
+	return true;
 };
 
 /**

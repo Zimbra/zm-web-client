@@ -892,6 +892,7 @@ function(params) {
 	var newButton = this.getNewButton();
 	var tbParams = {
 		parent:				this._shell,
+		context:			ZmOperation.NEW_MENU,
 		buttons:			ZmOperation.NONE,
 		controller:			this,
 		refElementId:		ZmId.SKIN_APP_NEW_BUTTON
@@ -1834,7 +1835,7 @@ function() {
 
 	rootTg.addMember(appCtxt.getAppChooser().getTabGroupMember());
 	rootTg.addMember(appCtxt.refreshButton);
-	rootTg.addMember(appCtxt.getAppController().getNewButton());
+	rootTg.addMember(this._newToolbar);
 
 	var curApp = appCtxt.getCurrentApp();
 	var ovId = curApp && curApp.getOverviewId();
