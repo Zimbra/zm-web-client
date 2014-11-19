@@ -1108,16 +1108,19 @@ function() {
 	var maxWidth = Dwt.getSize(this._holder).x - (this._input.offsetLeft + ((AjxEnv.isTrident) ? (margins.left + paddings.left) : 0) + paddings.right + margins.right + 1);
 	maxWidth = Math.max(maxWidth, 3); //don't get too small - minimum 3 - if it gets negative, the cursor would not show up before starting to type (bug 84924)
 
-	var inputFontSize = DwtCssStyle.getProperty(this._input, "font-size");
-	var strW = AjxStringUtil.getWidth(val, false, inputFontSize);
-	if (AjxEnv.isWindows && (AjxEnv.isFirefox || AjxEnv.isSafari || AjxEnv.isChrome) ){
-		// FF/Win: fudge factor since string is longer in INPUT than when measured in SPAN
-		strW = strW * 1.2;
-	}
-	var pad = this._editMode ? ZmAddressInputField.INPUT_EXTRA_SMALL : ZmAddressInputField.INPUT_EXTRA;
-	var inputWidth = Math.min(strW + pad, maxWidth);
-	if (this._editMode) {
-		inputWidth = Math.max(inputWidth, ZmAddressInputField.INPUT_EXTRA);
+	var inputWidth = "100%";
+	if (this._input.supportsAutoComplete) {
+		var inputFontSize = DwtCssStyle.getProperty(this._input, "font-size");
+		var strW = AjxStringUtil.getWidth(val, false, inputFontSize);
+		if (AjxEnv.isWindows && (AjxEnv.isFirefox || AjxEnv.isSafari || AjxEnv.isChrome) ){
+			// FF/Win: fudge factor since string is longer in INPUT than when measured in SPAN
+			strW = strW * 1.2;
+		}
+		var pad = this._editMode ? ZmAddressInputField.INPUT_EXTRA_SMALL : ZmAddressInputField.INPUT_EXTRA;
+		inputWidth = Math.min(strW + pad, maxWidth);
+		if (this._editMode) {
+			inputWidth = Math.max(inputWidth, ZmAddressInputField.INPUT_EXTRA);
+		}
 	}
 	Dwt.setSize(this._input, inputWidth, Dwt.DEFAULT);
 };
