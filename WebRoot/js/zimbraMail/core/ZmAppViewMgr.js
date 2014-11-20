@@ -603,6 +603,13 @@ function(params) {
 		this._viewByTabId[params.tabParams.id] = viewId;
 	}
 
+	// Accessibility - let AT know this is the main content area
+	var mainView = params.isAppView && params.elements && params.elements[ZmAppViewMgr.C_APP_CONTENT],
+		mainEl = mainView && mainView.getHtmlElement();
+	if (mainEl) {
+		mainEl.setAttribute("role", "main");
+	}
+
 	return view;
 };
 
