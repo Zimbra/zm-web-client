@@ -759,11 +759,6 @@ function(id, content) {
     var tg = this.getTabGroupMember();
     tg.removeAllMembers();
     tg.addMember(textEl);
-
-    var firstbutton = this.__getEditorControl('listbox', 'Font Family');
-    console.log(firstbutton);
-    tg.addMember(firstbutton.getEl());
-    tg.addMember(Dwt.byId(this._iFrameId));
 };
 
 ZmHtmlEditor.prototype.onPaste = function(ev) {
@@ -835,6 +830,7 @@ ZmHtmlEditor.prototype.onPostRender = function(ev) {
 };
 
 ZmHtmlEditor.prototype.onInit = function(ev) {
+
 	var ed = this.getEditor();
     var obj = this,
         tinymceEvent = tinymce.dom.Event,
@@ -875,6 +871,13 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
         tinymceEvent.bind(doc, 'dragover', this._onDragOver.bind(this, dnd));
         tinymceEvent.bind(doc, 'drop', this._onDrop.bind(this, dnd));
     }
+
+	var tg = this.getTabGroupMember();
+	var firstbutton = this.__getEditorControl('listbox', 'Font Family');
+	if (tg && firstbutton) {
+		tg.addMember(firstbutton.getEl());
+	}
+	tg.addMember(Dwt.byId(this._iFrameId));
 
     obj._editorInitialized = true;
 
@@ -927,9 +930,8 @@ ZmHtmlEditor.prototype.__getEditorControl = function(type, tooltip) {
 		}
 	};
 
-	return finditem(ed.theme.panel);
+	return ed ? finditem(ed.theme.panel) : null;
 };
-
 
 ZmHtmlEditor.prototype.onNodeChange = function(event) {
 	// Firefox fires NodeChange events whether the editor is visible or not
