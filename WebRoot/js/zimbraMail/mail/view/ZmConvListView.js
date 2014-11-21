@@ -177,6 +177,8 @@ ZmConvListView = function(params) {
 	this._handleEventType[ZmItem.CONV] = true;
 	this._handleEventType[ZmItem.MSG] = true;
 
+	this.getHtmlElement().setAttribute("aria-label", ZmMsg.conversationList);
+
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
 	this._resetExpansion();
 };
@@ -906,7 +908,7 @@ function() {
 
 ZmConvListView.prototype.isExpanded =
 function(item) {
-	return item && this._expanded[item.id];
+	return Boolean(item && this._expanded[item.id]);
 };
 
 ZmConvListView.prototype._expandItem =
