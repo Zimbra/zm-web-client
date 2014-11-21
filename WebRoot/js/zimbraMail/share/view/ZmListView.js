@@ -1218,7 +1218,7 @@ function(item) {
 	}
 
 	if (buf.length > 0) {
-		itemel.setAttribute('aria-label', buf.join('; '));
+		itemel.setAttribute('aria-label', buf.join(', '));
 	} else {
 		itemel.removeAttribute('aria-label');
 	}
