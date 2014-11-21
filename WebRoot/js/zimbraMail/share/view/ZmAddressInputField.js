@@ -635,6 +635,7 @@ function(params) {
 	this._holder = document.getElementById(this._holderId);
 	this._holder._aifId = this._htmlElId;
 	this._input = document.getElementById(this._inputId);
+	this._input.supportsAutoComplete = true;
 	this._dragInsertionBar = document.getElementById(this._dragInsertionBarId);
 
 	Dwt.setHandler(this._holder, DwtEvent.ONCLICK, ZmAddressInputField.onHolderClick);
