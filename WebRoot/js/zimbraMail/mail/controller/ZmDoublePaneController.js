@@ -330,9 +330,8 @@ function(view) {
 	if (this._tabGroups[view]) { return; }
 
 	ZmListController.prototype._initializeTabGroup.apply(this, arguments);
-	if (!AjxEnv.isIE) {
-		this._tabGroups[view].addMember(this.getCurrentView().getItemView());
-	}
+
+	this._tabGroups[view].addMember(this.getItemView().getTabGroupMember());
 };
 
 ZmDoublePaneController.prototype._setViewContents =

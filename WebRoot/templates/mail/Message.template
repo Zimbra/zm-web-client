@@ -27,7 +27,7 @@
 								<td>&nbsp;</td>
 							</tr>
 						</table>
-						<table role="presentation" id='${hdrTableId}' class='ZPropertySheet' cellspacing='6' style='margin:0 7px;'>
+						<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='6' style='margin:0 7px;'>
 							<tr id='${expandRowId}'>
 								<td>
 									<table role="presentation" align=right>
@@ -625,13 +625,13 @@
 <template id='mail.Message#Conv2View'>
 	<div class='Conv2View' id="${mainDivId}">
 		<div id="${headerDivId}"></div>
-		<div id="${messagesDivId}" class='Conv2Messages'></div>
+		<div role='list' id="${messagesDivId}" class='Conv2Messages'></div>
 	</div>
 </template>
 
 <template id='mail.Message#Conv2Header'>
 	<span class="expandIcon" id='${convExpandId}'></span>
-	<span class="subject" id='${convSubjectId}'></span>
+	<span class="subject" role="heading" aria-level="1" id='${convSubjectId}'></span>
 	<span class="info" id='${convInfoId}'></span>
 </template>
 
