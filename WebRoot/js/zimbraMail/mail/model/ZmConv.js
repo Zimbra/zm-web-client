@@ -885,7 +885,7 @@ function(type) {
  */
 ZmConv.prototype.getStatusTooltip =
 function() {
-	if (this.numMsgs === 1) {
+	if (this.numMsgs === 1 && this.msgIds && this.msgIds.length > 0) {
 		var msg = appCtxt.getById(this.msgIds[0]);
 		if (msg) {
 			return msg.getStatusTooltip();
