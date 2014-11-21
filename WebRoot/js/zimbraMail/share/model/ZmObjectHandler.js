@@ -206,7 +206,7 @@ ZmObjectHandler.prototype.generateSpan =
 function(html, idx, obj, spanId, context, options) {
 	html[idx++] = "<span class='";
 	html[idx++] = this.getClassName(obj);
-	html[idx++] = "' id='";
+	html[idx++] = "' role='link' id='";
 	html[idx++] = spanId;
 	html[idx++] = "'>";
 	idx = this._getHtmlContent(html, idx, obj, context, spanId, options);

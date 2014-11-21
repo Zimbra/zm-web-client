@@ -63,6 +63,16 @@ ZmMailMsgView = function(params) {
 	if (this._controller && this._controller._checkKeepReading) {
 		Dwt.setHandler(this.getHtmlElement(), DwtEvent.ONSCROLL, ZmDoublePaneController.handleScroll);
 	};
+
+	this._tabGroupMember = new DwtTabGroup("ZmMailMsgView");
+	this._headerTabGroup = new DwtTabGroup("ZmMailMsgView (header)");
+	this._attachmentTabGroup = new DwtTabGroup("ZmMailMsgView (attachments)");
+	this._bodyTabGroup = new DwtTabGroup("ZmMailMsgView (body)");
+	this._footerTabGroup = new DwtTabGroup("ZmMailMsgView (footer)");
+
+	this._tabGroupMember.addMember([
+		this._headerTabGroup, this._bodyTabGroup, this._footerTabGroup
+	]);
 };
 
 ZmMailMsgView.prototype = new ZmMailItemView;
@@ -177,14 +187,12 @@ function(msg, force, dayViewCallback) {
 			this._inviteMsgView.resize(true); //make sure the msg preview pane takes the entire area, in case we were viewing an invite. (since then it was resized to allow for day view) - bug 53098
 		}
 		contentDiv.innerHTML = (this._controller.getList().size()) ? AjxTemplate.expand("mail.Message#viewMessage") : "";
-		this.noTab = true;
 		return;
 	}
 
 	msg.force = false;
 	var respCallback = this._handleResponseSet.bind(this, msg, oldMsg, dayViewCallback);
 	this._renderMessage(msg, contentDiv, respCallback);
-	this.noTab = AjxEnv.isIE;
 };
 
 ZmMailMsgView.prototype._getContainer =
@@ -332,10 +340,16 @@ function(listener) {
 
 ZmMailMsgView.prototype.getTabGroupMember =
 function() {
-	if (!this._tabGroupMember) {
-		this._tabGroupMember = new DwtTabGroup("ZmMailMsgView");
-	}
 	return this._tabGroupMember;
+};
+
+ZmMailMsgView.prototype._getMessageTabMember =
+function() {
+	if (this._usingIframe) {
+		return this.getIframe().parentNode;
+	} else {
+		return Dwt.byId(this._msgBodyDivId);
+	}
 };
 
 ZmMailMsgView.prototype.setVisible =
@@ -613,7 +627,8 @@ ZmMailMsgView.prototype._findMailMsgObjects =
 function() {
 	var doc = this.getDocument();
 	if (doc) {
-		this._objectManager.processObjectsInNode(doc, this.getContentContainer());
+		var container = this.getContentContainer();
+		this._objectManager.processObjectsInNode(doc, container);
 	}
 };
 
@@ -1109,6 +1124,9 @@ function(params) {
 		head.appendChild(style);
 	
 		ifw.getIframe().style.visibility = "";
+
+		this._bodyTabGroup.addMember(ifw);
+
 	}
 	else {
 		var div = this._containerEl = document.createElement("div");
@@ -1127,6 +1145,9 @@ function(params) {
 			parent.appendChild(div);
 		}
 		div.innerHTML = this._cleanedHtml || html;
+
+		this._makeFocusable(div);
+		this._bodyTabGroup.addMember(div);
 	}
 
 	if (!params.isTextMsg) {
@@ -1370,6 +1391,7 @@ ZmMailMsgView.prototype._createBubbles = function() {
 		bubble.replaceElement(id);
 		if (this._bubbleList) {
 			this._bubbleList.add(bubble);
+			this._headerTabGroup.addMember(bubble);
 		}
 	}
 };
@@ -1499,8 +1521,13 @@ function(msg, container, doNotClearBubbles) {
 	var html = AjxTemplate.expand(template, subs);
 
 	var el = container || this.getHtmlElement();
+	el.setAttribute('aria-label', subject);
 	el.appendChild(Dwt.parseHtmlFragment(html));
 	this._headerElement = Dwt.byId(this._htmlElId + "_headerElement");
+	this._makeFocusable(this._headerElement);
+
+	this._headerTabGroup.removeAllMembers();
+	this._headerTabGroup.addMember(this._headerElement);
 
     if (this._inviteMsgView) {
         if (this._inviteToolbarCellId && this._inviteToolbarCellId && this._inviteMsgView._inviteToolbar) {
@@ -1510,6 +1537,7 @@ function(msg, container, doNotClearBubbles) {
             this._inviteMsgView._inviteMoveSelect.reparentHtmlElement(this._calendarSelectCellId, 0);
         }
         this._inviteMsgView.repositionCounterToolbar(this._hdrTableId);
+		this._headerTabGroup.addMember(this._inviteMsgView._inviteToolbar);
     }
 
 
@@ -1529,6 +1557,7 @@ function(msg, container, doNotClearBubbles) {
 		var topToolbar = this._getShareToolbar();
 		topToolbar.reparentHtmlElement(container);
 		topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
+		this._headerTabGroup.addMember(topToolbar);
 	}
 };
 
@@ -2002,6 +2031,7 @@ function() {
 	var dividx = idx;	// we might get back here
 	htmlArr[idx++] = "<table id='" + this._attLinksId + "_table' border=0 cellpadding=0 cellspacing=0>";
 
+	var attLinkIds = [];
 	var rows = 0;
 	for (var i = 0; i < attInfo.length; i++) {
 		var att = attInfo[i];
@@ -2017,7 +2047,11 @@ function() {
 		htmlArr[idx++] = "<td>";
 		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='margin-right:1em; margin-bottom:1px'><tr>";
 		htmlArr[idx++] = "<td style='width:18px'>";
-		htmlArr[idx++] = AjxImg.getImageHtml(att.linkIcon, "position:relative;");
+		htmlArr[idx++] = AjxImg.getImageHtml({
+			imageName: att.linkIcon,
+			styles: "position:relative;",
+			altText: ZmMsg.attachment
+		});
 		htmlArr[idx++] = "</td><td style='white-space:nowrap'>";
 
 		if (appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
@@ -2074,6 +2108,7 @@ function() {
 				};
 				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
 				linkCount++;
+				attLinkIds.push(params.id);
 			}
 			// save as vCard
 			else if (vCardLink) {
@@ -2084,6 +2119,7 @@ function() {
 				};
 				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
 				linkCount++;
+				attLinkIds.push(params.id);
 			}
 			// save locally
 			if (att.links.download && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) && !appCtxt.get(ZmSetting.ATTACHMENTS_VIEW_IN_HTML_ONLY)) {
@@ -2101,6 +2137,7 @@ function() {
                 }
                 htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
 				linkCount++;
+				attLinkIds.push(params.id);
 			}
 			// add as Briefcase file
 			if (att.links.briefcase && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) && !appCtxt.isWebClientOffline()) {
@@ -2112,6 +2149,7 @@ function() {
 				};
 				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
 				linkCount++;
+				attLinkIds.push(params.id);
 			}
 			// add ICS as calendar event
 			if (att.links.importICS) {
@@ -2123,6 +2161,7 @@ function() {
 				};
 				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
 				linkCount++;
+				attLinkIds.push(params.id);
 			}
 			// remove attachment from msg
 			if (att.links.remove && !appCtxt.isWebClientOffline()) {
@@ -2134,6 +2173,7 @@ function() {
 				};
 				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
 				linkCount++;
+				attLinkIds.push(params.id);
 			}
 
 			// Attachment Link Handlers (optional)
@@ -2229,6 +2269,12 @@ function() {
 		if (removeAllLink) {
 			removeAllLink.onclick = allAttParams.removeAllCallback;
 		}
+	}
+
+	// add all links to the header tab order
+	var attLinks = attLinksDiv.querySelectorAll('A.AttLink');
+	for (var i = 0; i < attLinks.length; i++) {
+		this._headerTabGroup.addMember(attLinks[i]);
 	}
 };
 

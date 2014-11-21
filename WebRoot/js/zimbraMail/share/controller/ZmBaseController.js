@@ -389,7 +389,7 @@ function(view) {
 
 	this._tabGroups[view] = this._createTabGroup();
 	this._tabGroups[view].newParent(appCtxt.getRootTabGroup());
-	this._toolbar[view].noFocus = true;
+	this._tabGroups[view].addMember(this._toolbar[view]);
 	this._tabGroups[view].addMember(this._view[view].getTabGroupMember());
 };
 
@@ -1380,7 +1380,7 @@ ZmBaseController.prototype._loadContactForMenu = function(menu, address, ev, imI
 			imItem = null;	// done updating item, didn't need server call
 		}
 	}
-	menu.popup(0, ev.docX, ev.docY);
+	menu.popup(0, ev.docX || ev.item.getXW(), ev.docY || ev.item.getYH());
 	var respCallback = this._handleResponseGetContact.bind(this, menu, address, ev, imItem);
 	contactsApp.getContactByEmail(email, respCallback);
 };
@@ -1398,7 +1398,7 @@ ZmBaseController.prototype._handleResponseGetContact = function(menu, address, e
 			ZmImApp.handleResponseGetContact(imItem, address, true);
 		}
 	}
-	menu.popup(0, ev.docX, ev.docY);
+	menu.popup(0, ev.docX || ev.item.getXW(), ev.docY || ev.item.getYH());
 };
 
 /**

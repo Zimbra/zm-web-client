@@ -349,17 +349,8 @@ function(view) {
 
 	ZmBaseController.prototype._initializeTabGroup.apply(this, arguments);
 
-	var toolbar = this._toolbar[view];
-	var tabGroup = this._tabGroups[view];
-	toolbar.noFocus = false;
-	tabGroup.addMember(toolbar);
-	var navtoolbar = this._navToolBar[view];
-	if (navtoolbar) {
-		navtoolbar.noFocus = false;
-		tabGroup.addMember(navtoolbar);
-	}
-
-	tabGroup.addMember(this.getListView());
+	this._tabGroups[view].addMember(this._navToolBar[view]);
+	this._tabGroups[view].addMember(this._view[view]);
 };
 
 /**
