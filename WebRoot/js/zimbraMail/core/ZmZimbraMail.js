@@ -1838,8 +1838,7 @@ function() {
 	rootTg.addMember(this._newToolbar);
 
 	var curApp = appCtxt.getCurrentApp();
-	var ovId = curApp && curApp.getOverviewId();
-	var overview = ovId && appCtxt.getOverviewController().getOverview(ovId);
+	var overview = curApp && curApp.getOverview();
 	if (overview) {
 		rootTg.addMember(overview);
 		ZmController._currentOverview = overview;

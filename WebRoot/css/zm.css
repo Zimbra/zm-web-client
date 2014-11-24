@@ -1154,14 +1154,13 @@ INPUT[type="text"].search_input-expanded {
 /* IE doesn't seem to support the show/hide.  TODO:investigate why */
 #IFNDEF MSIE_LOWER_THAN_9
 	@transition@:visibility 0s linear .5s, opacity .5s linear 0s;
-	visibility:hidden;
 	opacity:0;
 }
 .ZmMailMsgCapsuleView:hover .footer {
 	@transition@-delay:0s;
-	visibility:visible;
 	opacity:1;
 }
+
 /* always show footer while reply box is open */
 .ZmMailMsgCapsuleView.Reply .footer {
 	visibility:visible;
