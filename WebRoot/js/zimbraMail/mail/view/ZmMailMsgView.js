@@ -1446,9 +1446,8 @@ function(msg, container, doNotClearBubbles) {
 
 	// the message view adapts to whatever height the image has, but
 	// more than 96 pixels is a bit silly...
-	var imageURL = ai.sentByContact &&
-		ai.sentByContact.getImageUrl(48, 96) ||
-		ZmZimbraMail.DEFAULT_CONTACT_ICON;
+	var imageURL = ai.sentByContact && ai.sentByContact.getImageUrl(48, 96),
+		imageAltText = imageURL && ai.sentByContact && ai.sentByContact.getFullName();
 
 	var subs = {
 		id: 				this._htmlElId,
@@ -1458,7 +1457,8 @@ function(msg, container, doNotClearBubbles) {
 		attachId:			this._attLinksId,
 		infoBarId:			this._infoBarId,
 		subject:			subject,
-		imageURL:			imageURL,
+		imageURL:			imageURL || ZmZimbraMail.DEFAULT_CONTACT_ICON,
+		imageAltText:		imageAltText || ZmMsg.unknownPerson,
 		dateString:			dateString,
 		dateTooltip:		dateTooltip,
 		hasAttachments:		(attachmentsCount != 0),
@@ -1480,7 +1480,6 @@ function(msg, container, doNotClearBubbles) {
 	else {
 		subs.sentBy = ai.sentBy;
 		subs.sentByNormal = ai.sentByAddr;
-		subs.sentByImageURL = ai.sentByImageURL;
 		subs.sentByAddr = ai.sentByAddr;
 		subs.obo = ai.obo;
 		subs.oboAddr = ai.oboAddr;

@@ -2113,7 +2113,7 @@ function(state, force) {
 
 	var imageSize = isExpanded ? 48 : 32,
 		imageURL  = ai.sentByContact && ai.sentByContact.getImageUrl(imageSize, imageSize),
-		imageAltText = imageURL && ai.sentByContact.getFullName();
+		imageAltText = imageURL && ai.sentByContact && ai.sentByContact.getFullName();
 
 	if (!isExpanded) {
 		var fromId = id + "_0";

@@ -3,7 +3,7 @@
 		<table role="application" class='MsgHeaderTable' id='${id}_headerElement' width=100%>
 			<tr>
 				<td class='MsgHeaderContactContainer'>
-					<img class='MsgHeaderContactImage' src="${imageURL}" onerror="this.style.visibility='hidden'"/>
+					<img class='MsgHeaderContactImage' src="${imageURL}" alt="${imageAltText}" onerror="this.style.visibility='hidden'"/>
 				</td>
 				<td>
 					<div>
