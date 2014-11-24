@@ -1044,7 +1044,8 @@ function(params) {
 			noscroll:				!this._scrollWithIframe,
 			posStyle:				DwtControl.STATIC_STYLE,
 			processHtmlCallback:	callback,
-			useKbMgmt:				true
+			useKbMgmt:				true,
+			title:                  ZmMsg.messageBody
 		};
 		var ifw = this._ifw = new DwtIframe(params1);
 		if (ifw.initFailed) {
