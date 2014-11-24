@@ -1031,21 +1031,26 @@ ZmHtmlEditor.prototype._onDrop = function(dnd, ev) {
 };
 
 ZmHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
+
     this.discardMisspelledWords();
     if (mode === this._mode || (mode !== Dwt.HTML && mode !== Dwt.TEXT)) {
         return;
     }
     this._mode = mode;
+	var textarea = this.getContentField();
     if (mode === Dwt.HTML) {
         if (convert) {
-            var textarea = this.getContentField();
             textarea.value = AjxStringUtil.convertToHtml(textarea.value, true);
         }
         if (this._editorInitialized) {
-            tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
+	        // tinymce will automatically toggle the editor and set the corresponding content.
+            tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);
         }
         else {
-            //switching from plain text to html using tinymces mceToggleEditor method is always using the last editor creation setting. Due to this current ZmHtmlEditor object always point to last ZmHtmlEditor object. Hence initializing the tinymce editor again for the first time when mode is switched from plain text to html.
+            //switching from plain text to html using tinymces mceToggleEditor method is always
+            // using the last editor creation setting. Due to this current ZmHtmlEditor object
+            // always point to last ZmHtmlEditor object. Hence initializing the tinymce editor
+            // again for the first time when mode is switched from plain text to html.
             this.initEditorManager(this._bodyTextAreaId);
         }
     } else {
@@ -1055,18 +1060,23 @@ ZmHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
                 content = this._convertHtml2Text(convertor);
             }
             else {
-                content = AjxStringUtil.convertHtml2Text(this.getContentField().value);
+                content = AjxStringUtil.convertHtml2Text(textarea.value);
             }
         }
         if (this._editorInitialized) {
-            tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
+	        //tinymce will automatically toggles the editor and sets the corresponding content.
+            tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);
         }
-        if (convert) {//tinymce will set html content directly in textarea. Resetting the content after removing the html tags.
+        if (convert) {
+            //tinymce will set html content directly in textarea. Resetting the content after removing the html tags.
             this.setContent(content);
         }
 
-        Dwt.setVisible(this.getContentField(), true);
+        Dwt.setVisible(textarea, true);
     }
+
+	textarea = this.getContentField();
+	textarea.setAttribute('aria-hidden', !Dwt.getVisible(textarea));
 
     this._resetSize();
 };
