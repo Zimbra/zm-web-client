@@ -1195,6 +1195,7 @@ function() {
 ZmListView.prototype._getLabelForField =
 function(item, field) {
 	var tooltip = this._getToolTip({ item: item, field: field });
+	// TODO: fix for tooltips that are callbacks (such as for appts)
 	return AjxStringUtil.stripTags(tooltip);
 };
 
