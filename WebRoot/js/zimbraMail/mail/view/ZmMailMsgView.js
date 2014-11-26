@@ -2047,7 +2047,7 @@ function() {
 		htmlArr[idx++] = "<td>";
 		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='margin-right:1em; margin-bottom:1px'><tr>";
 		htmlArr[idx++] = "<td style='width:18px'>";
-		htmlArr[idx++] = AjxImg.getImageHtml(att.linkIcon, "position:relative;", ZmMsg.attachment);
+		htmlArr[idx++] = AjxImg.getImageHtml(att.linkIcon, "position:relative;", null, false, false, null, ZmMsg.attachment);
 		htmlArr[idx++] = "</td><td style='white-space:nowrap'>";
 
 		if (appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
