@@ -389,7 +389,7 @@ ZmShortcutsPanel.prototype._createHtml = function() {
 	}
 	html[i++] = "</div></div></div>";
 	html[i++] = "<hr />";
-	html[i++] = "<div id='" + contentId + "' style='overflow:auto'></div>";
+	html[i++] = "<div id='" + contentId + "' style='overflow:auto;width: 100%;'></div>";
 
 	this.getHtmlElement().innerHTML = html.join("");
 	this._headerDiv = document.getElementById(headerId);
