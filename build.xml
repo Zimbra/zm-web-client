@@ -328,6 +328,8 @@
             <lib dir='${common.jars.dir}' includes='json-*.jar'/>
             <lib dir='${common.jars.dir}' includes='xml-apis-*.jar'/>
             <lib dir='${common.jars.dir}' includes='mail-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='jackson-core-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='jackson-mapper-*.jar'/>
 
             <!-- files from build tree -->
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
