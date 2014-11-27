@@ -59,7 +59,7 @@ function (item) {
 ZmLocationSuggestionView.prototype._getItemId =
 function(item) {
     var id;
-    if (item.email) {
+    if (item && item.email) {
         id = this._emailToDivIdMap[item.email];
         if (!id) {
             // No email->id mapping - first time accessed, so generate an id and create a mapping.
