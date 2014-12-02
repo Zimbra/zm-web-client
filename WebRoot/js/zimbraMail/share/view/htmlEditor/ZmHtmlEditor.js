@@ -451,18 +451,20 @@ function() {
 ZmHtmlEditor.prototype.clear =
 function() {
 	var editor = this.getEditor();
-    if (editor && this._editorInitialized) {
-        editor.undoManager && editor.undoManager.clear();
-        this.clearDirty();
+	if (editor) {
+		if (this._editorInitialized) {
+			editor.undoManager && editor.undoManager.clear();
+			this.clearDirty();
+		}
+		var field = this.getContentField();
+		if(field) {
+			var textEl = field.cloneNode(false);
+			field.parentNode.replaceChild(textEl, field);//To clear undo/redo queue of textarea
+			//cloning and replacing node will remove event handlers and hence adding it once again
+			Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
+			Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
+		}
 	}
-    var field = this.getContentField();
-    if(field){
-        var textEl = field.cloneNode(false);
-        field.parentNode.replaceChild(textEl, field);//To clear undo/redo queue of textarea
-        //cloning and replacing node will remove event handlers and hence adding it once again
-        Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
-        Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
-    }
 };
 
 ZmHtmlEditor.prototype.getInputElement =
