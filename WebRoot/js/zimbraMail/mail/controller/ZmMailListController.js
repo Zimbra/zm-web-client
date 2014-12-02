@@ -493,14 +493,7 @@ ZmMailListController.prototype._updateViewMenu = function(id, menu) {
 		}
 	}
 
-	// Create "Display" submenu here since it's only needed for multi-column
-	if (!this._colHeaderViewMenu && this._mailListView.isMultiColumn()) {
-		this._colHeaderViewMenu = this._setupColHeaderViewMenu(this._currentView, this._viewMenu);
-	}
-
-	if (this._colHeaderMenuItem && (id === ZmSetting.RP_OFF || id === ZmSetting.RP_BOTTOM || id === ZmSetting.RP_RIGHT)) {
-		this._colHeaderMenuItem.setVisible(this._mailListView.isMultiColumn());
-	}
+	this._colHeaderMenuItem.setVisible(this._mailListView.isMultiColumn());
 };
 
 // Private and protected methods
@@ -1539,7 +1532,7 @@ function(view, btn) {
 		this._convOrderViewMenu = this._setupConvOrderMenu(view, menu);
 	}
 	this._sortViewMenu = this._setupSortViewMenu(view, menu);
-	// col header view menu created in _updateViewMenu (if multi-column)
+	this._colHeaderViewMenu = this._setupColHeaderViewMenu(view, menu);
 	this._groupByViewMenu = this._mailListView._getGroupByActionMenu(menu, true, true);
 
 	return menu;
