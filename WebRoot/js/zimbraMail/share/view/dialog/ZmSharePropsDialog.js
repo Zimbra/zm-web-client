@@ -589,6 +589,10 @@ function(dialog) {
 	var isGuestShare = dialog._guestRadioEl.checked;
 
 	dialog._privatePermission.setVisible(dialog._privatePermissionEnabled && !dialog._noneRadioEl.checked && !isPublicShare);
+	if (isPublicShare) {
+		// Remove private permissions (which may have been set earlier) if the share is a public share
+		dialog._privateEl.checked = false;
+	}
 
 	var hasEmail = AjxStringUtil.trim(dialog._grantee.getValue()) != "";
 	//var hasPassword = AjxStringUtil.trim(dialog._passwordInput.getValue()) != "";
