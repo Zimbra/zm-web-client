@@ -1554,16 +1554,18 @@ ZmMailListView.prototype._groupByActionListener = function(ev) {
 		var column = ZmMailListGroup.getHeaderField(groupId);
 		for (var i = 0; i < ZmMailListView.SINGLE_COLUMN_SORT.length; i++) {
 			if (column == ZmMailListView.SINGLE_COLUMN_SORT[i].field) {
-				var mi = this._colHeaderActionMenu.getMenuItem(column);
-				if (mi) {
-					mi.setChecked(true, true);
-					var label = AjxMessageFormat.format(ZmMsg.arrangeBy, ZmMsg[ZmMailListView.SINGLE_COLUMN_SORT[i].msg]);
-					column = this._headerHash[ZmItem.F_SORTED_BY];
-					var cell = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field));
-					if (cell) {
-						cell.innerHTML = label;
+				if (this._colHeaderActionMenu) {
+					var mi = this._colHeaderActionMenu.getMenuItem(column);
+					if (mi) {
+						mi.setChecked(true, true);
+						var label = AjxMessageFormat.format(ZmMsg.arrangeBy, ZmMsg[ZmMailListView.SINGLE_COLUMN_SORT[i].msg]);
+						column = this._headerHash[ZmItem.F_SORTED_BY];
+						var cell = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field));
+						if (cell) {
+							cell.innerHTML = label;
+						}
+						break;
 					}
-					break;
 				}
 			}
 		}
