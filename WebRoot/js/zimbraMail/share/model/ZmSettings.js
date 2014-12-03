@@ -307,6 +307,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
         ZmSetting.LICENSE_STATUS,           info.license && info.license.status,
         ZmSetting.PREVIOUS_SESSION,         info.prevSession,
         ZmSetting.PUBLIC_URL,               info.publicURL,
+		ZmSetting.ADMIN_URL,                info.adminURL,
         ZmSetting.QUOTA_USED,               info.used,
         ZmSetting.RECENT_MESSAGES,          info.recent,
         ZmSetting.REST_URL,                 info.rest,
@@ -846,6 +847,7 @@ function() {
 	// DOMAIN SETTINGS
 	this.registerSetting("CHANGE_PASSWORD_URL",				{type:ZmSetting.T_CONFIG});
 	this.registerSetting("PUBLIC_URL",						{type:ZmSetting.T_CONFIG});
+	this.registerSetting("ADMIN_URL",						{type:ZmSetting.T_CONFIG});
 	this.registerSetting("DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE",		{type:ZmSetting.T_CONFIG});
 
 	// COS SETTINGS - APPS
@@ -942,8 +944,7 @@ function() {
 	this.registerSetting("IS_ADMIN",						{name:"zimbraIsAdminAccount", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("IS_EXTERNAL",						{name:"zimbraIsExternalVirtualAccount", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("IS_DELEGATED_ADMIN",				{name:"zimbraIsDelegatedAdminAccount", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("ADMIN_REFERENCE",                 {name:"zimbraWebClientAdminReference", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
-    this.registerSetting("MESSAGE_SIZE_LIMIT",           {type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
+    this.registerSetting("MESSAGE_SIZE_LIMIT",              {type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
     this.registerSetting("DOCUMENT_SIZE_LIMIT",             {type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
 
 	// CLIENT SIDE FEATURE SUPPORT

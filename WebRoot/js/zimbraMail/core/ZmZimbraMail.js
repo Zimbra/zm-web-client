@@ -2241,7 +2241,7 @@ function() {
         (appCtxt.get(ZmSetting.IS_ADMIN) ||
          appCtxt.get(ZmSetting.IS_DELEGATED_ADMIN))) {
 
-        adminUrl = appCtxt.get(ZmSetting.ADMIN_REFERENCE);
+        adminUrl = appCtxt.get(ZmSetting.ADMIN_URL);
         if (!adminUrl) {
             adminUrl = ["https://", location.hostname, ":7071"].join("");
         }
