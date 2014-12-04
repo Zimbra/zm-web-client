@@ -268,22 +268,23 @@ function(msg, params) {
 	params.isDraft = msg.isDraft;
 
 	var container = params.parentElement;
-
 	if (container) {
 		// wrap the message element in a DIV with role listitem
 		var listitem = params.parentElement = document.createElement('DIV');
 		listitem.setAttribute('role', 'listitem');
-		container.appendChild(listitem);
+		if (params.index != null) {
+			container.insertBefore(listitem, container.childNodes[params.index]);
+		}
+		else {
+			container.appendChild(listitem);
+		}
 
 		// this method is called when iterating over messages; hence,
-		// the current index is the amount of messages processed
-		var msgcount = this._item.msgs.size();
-		var msgidx = this._msgViewList.length;
-		var messages =
-			AjxMessageFormat.format(ZmMsg.typeMessage, [msgcount]);
-		var label =
-			AjxMessageFormat.format(ZmMsg.itemCount1,
-			                        [msgidx + 1, msgcount, messages]);
+		// the current index is the number of messages processed
+		var msgCount = this._item.msgs ? this._item.msgs.size() : 0;
+		var msgIdx = (params.index != null) ? params.index + 1 : container.childNodes.length;
+		var messages = AjxMessageFormat.format(ZmMsg.typeMessage, [msgCount]);
+		var label = AjxMessageFormat.format(ZmMsg.itemCount1, [msgIdx, msgCount, messages]);
 
 		listitem.setAttribute('aria-label', label);
 
@@ -291,16 +292,14 @@ function(msg, params) {
 		/* listitem.appendChild(util.createHiddenHeader(label, 2)); */
 	}
 
+	AjxUtil.arrayAdd(this._msgViewList, msg.id, params.index);
+	params.index = null;    // index not needed since msg view will be only child of listitem
 	var msgView = this._msgViews[msg.id] = new ZmMailMsgCapsuleView(params);
-	if (params.index !== undefined) {
-		this._msgViewList.splice(params.index, 0, msg.id);
-	}
-	this._msgViewList.push(msg.id);
+
 	// add to tabgroup
 	this.getTabGroupMember().addMember(msgView.getTabGroupMember());
 	msgView.set(msg);
 };
-
 
 ZmConvView2.prototype.clearChangeListeners =
 function() {
@@ -330,6 +329,12 @@ function(noClear) {
 	}
 	this._msgViewList = null;
 	this._currentMsgView = null;
+
+	// remove the listitem wrappers around the msg views (see _renderMessage)
+	var msgsDiv = this._messagesDiv;
+	while (msgsDiv && msgsDiv.lastChild) {
+		msgsDiv.removeChild(msgsDiv.lastChild);
+	}
 
 	if (this._initialized) {
 		this._header.reset();
