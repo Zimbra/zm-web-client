@@ -475,10 +475,6 @@ function() {
 ZmHtmlEditor.prototype.initTinyMCEEditor =
 function(params) {
 	var htmlEl = this.getHtmlElement();
-
-    if( this._mode === Dwt.HTML ){
-        Dwt.setVisible(this.getContentField(), false);
-    }
 	//textarea on which html editor is constructed
 	var id = this._bodyTextAreaId;
 	var textEl = document.createElement("textarea");
@@ -491,8 +487,11 @@ function(params) {
     if ( params.content !== null ) {
         textEl.value = params.content;
     }
+	if (this._mode === Dwt.HTML) {
+		//If the mode is HTML set the text area display as none. After editor is rendered with the content, TinyMCE editor's show method will be called for displaying the editor on the post render event.
+		Dwt.setVisible(textEl, false);
+	}
 	htmlEl.appendChild(textEl);
-	textEl.style.visibility = (this._mode == Dwt.HTML) ? 'hidden' : 'visible';
 	this._textAreaId = id;
 
     Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
@@ -753,9 +752,6 @@ function(id, content) {
 
 	tinyMCE.init(tinyMCEInitObj);
 	var textEl = document.getElementById(id);
-	textEl.style.visibility = 'visible';
-	Dwt.setVisible(textEl, this._mode === Dwt.TEXT);
-
 	this._editor = this.getEditor();
 
     var tg = this.getTabGroupMember();
@@ -826,8 +822,8 @@ ZmHtmlEditor.prototype.onPostRender = function(ev) {
                                     "font-size"   : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE),
                                     "color"       : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR)
                                    });
-
-    Dwt.setVisible(ed.getContainer(), true);
+	//Shows the editor and hides any textarea/div that the editor is supposed to replace.
+	ed.show();
     this._resetSize();
 };
 
