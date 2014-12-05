@@ -751,12 +751,8 @@ function(id, content) {
     };
 
 	tinyMCE.init(tinyMCEInitObj);
-	var textEl = document.getElementById(id);
+	this._setupTabGroup();
 	this._editor = this.getEditor();
-
-    var tg = this.getTabGroupMember();
-    tg.removeAllMembers();
-    tg.addMember(textEl);
 };
 
 ZmHtmlEditor.prototype.onPaste = function(ev) {
@@ -869,13 +865,6 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
         tinymceEvent.bind(doc, 'dragover', this._onDragOver.bind(this, dnd));
         tinymceEvent.bind(doc, 'drop', this._onDrop.bind(this, dnd));
     }
-
-	var tg = this.getTabGroupMember();
-	var firstbutton = this.__getEditorControl('listbox', 'Font Family');
-	if (tg && firstbutton) {
-		tg.addMember(firstbutton.getEl());
-	}
-	tg.addMember(Dwt.byId(this._iFrameId));
 
     obj._editorInitialized = true;
 
@@ -1078,6 +1067,7 @@ ZmHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
 	textarea = this.getContentField();
 	textarea.setAttribute('aria-hidden', !Dwt.getVisible(textarea));
 
+	this._setupTabGroup();
     this._resetSize();
 };
 
@@ -2290,4 +2280,49 @@ ZmHtmlEditor.prototype.getTabGroupMember = function() {
 	}
 
 	return this.__tabGroup;
+};
+
+/**
+ * Set up the editor tab group. This is done by having a separate tab group for each compose mode: one for HTML, one
+ * for TEXT. The current one will be attached to the main tab group. We rebuild the tab group each time for TEXT, though it
+ * shouldn't strictly be necessary. For some reason, it works better that way.
+ *
+ * @private
+ */
+ZmHtmlEditor.prototype._setupTabGroup = function() {
+
+	var mode = this.getMode(),
+		mainTabGroup = this.getTabGroupMember();
+
+	// Don't call replaceMember() repeatedly since it will duplicate the members
+	if (mode === this._curTabGroupMode) {
+		return;
+	}
+
+	if (mode === Dwt.HTML) {
+		// tab group for HTML has first toolbar button and IFRAME
+		var htmlTabGroup = this._htmlModeTabGroup;
+		if (!htmlTabGroup) {
+			htmlTabGroup = this._htmlModeTabGroup = new DwtTabGroup(this.toString() + '-' + mode);
+			var firstbutton = this.__getEditorControl('listbox', 'Font Family');
+			if (firstbutton) {
+				htmlTabGroup.addMember(firstbutton.getEl());
+			}
+			htmlTabGroup.addMember(Dwt.byId(this._iFrameId));
+		}
+		mainTabGroup.replaceMember(this._textModeTabGroup, this._htmlModeTabGroup);
+	}
+	else {
+		// tab group for TEXT has the TEXTAREA
+		var textTabGroup = this._textModeTabGroup;
+		if (textTabGroup) {
+			textTabGroup.removeAllMembers();
+		}
+		else {
+			textTabGroup = this._textModeTabGroup = new DwtTabGroup(this.toString() + '-' + mode);
+		}
+		textTabGroup.addMember(this.getContentField());
+		mainTabGroup.replaceMember(this._htmlModeTabGroup, this._textModeTabGroup);
+	}
+	this._curTabGroupMode = mode;
 };
