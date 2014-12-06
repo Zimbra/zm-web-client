@@ -603,15 +603,15 @@ function(check) {
 	}
 	
 	// next, see if there's an expanded msg view we could bring to the top
-	el = el && el.nextSibling;
-	var msgView, done;
-	while (el && !done) {
-		msgView = DwtControl.findControl(el);
+	var msgView = this._getSiblingMsgView(startMsgView, true),
+		done = false;
+
+	while (msgView && !done) {
 		if (msgView && msgView._expanded) {
 			done = true;
 		}
 		else {
-			el = el.nextSibling;
+			msgView = this._getSiblingMsgView(msgView, true);
 		}
 	}
 	if (msgView && done && canScroll) {
@@ -624,6 +624,23 @@ function(check) {
 	}
 	
 	return false;
+};
+
+// Returns the next or previous msg view based on the given msg view.
+ZmConvView2.prototype._getSiblingMsgView = function(curMsgView, next) {
+
+	var idList = this._msgViewList,
+		index = AjxUtil.indexOf(idList, curMsgView._msgId),
+		msgView = null;
+
+	if (index !== -1) {
+		var id = next ? idList[index + 1] : idList[index - 1];
+		if (id) {
+			msgView = this._msgViews[id];
+		}
+	}
+
+	return msgView;
 };
 
 /**
