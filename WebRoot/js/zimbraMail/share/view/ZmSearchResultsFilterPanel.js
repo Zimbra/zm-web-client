@@ -1105,7 +1105,7 @@ function(button) {
 ZmFolderSearchFilter.prototype._getMoveParams =
 function(dlg) {
 	return {
-		overviewId:		dlg.getOverviewId([this.toString(), this._resultsApp].join("_")),
+		overviewId:		dlg.getOverviewId([this.toString(), this._resultsApp, this._viewId].join("_")),
 		treeIds:		[ZmApp.ORGANIZER[this._resultsApp]],
 		treeStyle:		DwtTree.SINGLE_STYLE
 	};
