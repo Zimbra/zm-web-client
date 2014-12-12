@@ -383,6 +383,20 @@ ZmSettings.prototype.setUserSettings = function(params) {
 			setting.setValue(false, null, setDefault, skipNotify, skipImplicit);
 		}
 	}
+
+	setting = this._settings[ZmSetting.DELEGATED_ADMIN_PREF_FILTERS_ENABLED];
+	if (setting) {
+		var settingFilter = this.get(ZmSetting.ADMIN_PREFERENCE_FILTERS_ENABLED) 
+		                 && this.get(ZmSetting.ADMIN_PREFERENCES_ENABLED);
+		setting.setValue(settingFilter, null, setDefault, skipNotify, skipImplicit);
+	}
+	setting = this._settings[ZmSetting.DELEGATED_ADMIN_VACATION_MSG_FEATURE_ENABLED];
+	if (setting) {
+		var settingOOO = this.get(ZmSetting.ADMIN_PREFERENCE_VACATION_MSG_FEATURE_ENABLED) 
+		              && this.get(ZmSetting.ADMIN_PREFERENCES_ENABLED);
+		setting.setValue(settingOOO, null, setDefault, skipNotify, skipImplicit);
+	}
+
 	if (!this.get(ZmSetting.OPTIONS_ENABLED)) {
 		setting = this._settings[ZmSetting.FILTERS_ENABLED];
 		if (setting) {
@@ -865,6 +879,7 @@ function() {
     this.registerSetting("MAIL_ENABLED",					{name:"zimbraFeatureMailEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
     this.registerSetting("EXTERNAL_USER_MAIL_ADDRESS",		{name:"zimbraExternalUserMailAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
     this.registerSetting("ADMIN_MAIL_ENABLED",				{name:"zimbraFeatureAdminMailEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+    this.registerSetting("ADMIN_PREFERENCES_ENABLED",		{name:"zimbraFeatureAdminPreferencesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("MAIL_UPSELL_ENABLED",				{name:"zimbraFeatureMailUpsellEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("MAIL_UPSELL_URL",					{name:"zimbraFeatureMailUpsellURL", type:ZmSetting.T_COS});
 	this.registerSetting("OPTIONS_ENABLED",					{name:"zimbraFeatureOptionsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -1023,7 +1038,15 @@ function() {
 	this.registerSetting("MAIL_ALIASES",					{name:"zimbraMailAlias", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 	this.registerSetting("ALLOW_FROM_ADDRESSES",			{name:"zimbraAllowFromAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 
-    ZmApp.runAppFunction("registerSettings", this);
+	// Bug 95588: Originally these keys are set by the ZmMailApp, but they should be loaded
+	// for displaying/hiding them when the zimbraFeatureAdminMailEnabled is FALSE but
+	// zimbraFeatureAdminPreferencesEnabled is TRUE.
+	this.registerSetting("ADMIN_PREFERENCE_FILTERS_ENABLED",			 {name:"zimbraFeatureFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("ADMIN_PREFERENCE_VACATION_MSG_FEATURE_ENABLED",{name:"zimbraFeatureOutOfOfficeReplyEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("DELEGATED_ADMIN_PREF_FILTERS_ENABLED",		 {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("DELEGATED_ADMIN_VACATION_MSG_FEATURE_ENABLED", {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+
+	ZmApp.runAppFunction("registerSettings", this);
 };
 
 /**
