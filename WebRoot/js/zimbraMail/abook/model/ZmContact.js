@@ -2571,6 +2571,15 @@ function(node) {
 	if (node.email2)	{ this.attr[ZmContact.F_email2] = node.email2; }
 	if (node.email3)	{ this.attr[ZmContact.F_email3] = node.email3; }
 
+	//in some cases GAL includes an array as the "email" field. Let's separate it to our
+	//usual email, email2, email3, etc
+	var email = this.attr[ZmContact.F_email];
+	if (AjxUtil.isArray(email)) {
+		for (var i = 0; i < email.length; i++) {
+			this.attr[ZmContact.F_email + (i === 0 ? "" : i + 1)] = email[i];
+		}
+	}
+
     //the attr groups is returned as [] so check both null and empty array to set the type
     var groups = this.attr[ZmContact.F_groups];
     if(!groups || (groups instanceof Array && groups.length == 0)) {
