@@ -481,7 +481,22 @@ function(account) {
 	// add chooser
 	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo});
 	this._chooser.reparentHtmlElement(this._htmlElId + "_chooser");
-	this._chooser.resize(this.getSize().x-25, ZmContactPicker.CHOOSER_HEIGHT);
+
+	// If detailed search is enabled, we need to reduce chooser height so that bottom button row appears
+	var chooserHeight = ZmContactPicker.CHOOSER_HEIGHT;
+	if (this._detailedSearch && appCtxt.isChildWindow) {
+		var searchTable = document.getElementById(this._htmlElId + "_searchTable"),
+			searchRow = document.getElementById(this._htmlElId + "_searchNameRow");
+		if (searchTable && searchRow) {
+			// without detailed search, there is one row, so subtract height of any additional rows
+			chooserHeight = chooserHeight - ((searchTable.rows.length - 1) * Dwt.getSize(searchRow).y);
+		}
+		else {
+			chooserHeight = 200;
+		}
+	}
+
+	this._chooser.resize(this.getSize().x - 25, chooserHeight);
 
 	// add paging buttons
 	var pageListener = new AjxListener(this, this._pageListener);
