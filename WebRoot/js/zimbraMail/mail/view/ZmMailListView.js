@@ -1427,7 +1427,7 @@ function(folderId) {
 ZmMailListView.prototype.setGroup =
 function(groupId) {
     this._group = ZmMailListGroup.getGroup(groupId);
-    if (this._folderId) {
+    if (this._folderId && !this._controller.isSearchResults) {
 	    appCtxt.set(ZmSetting.GROUPBY_LIST, groupId || ZmId.GROUPBY_NONE, this._folderId); //persist group Id
 	    appCtxt.set(ZmSetting.GROUPBY_HASH, this._group, this._folderId); //local cache for group object
     }

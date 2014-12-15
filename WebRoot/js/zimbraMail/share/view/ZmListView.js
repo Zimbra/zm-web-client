@@ -1431,7 +1431,7 @@ function() {
 	}
 	var value = fields.join(ZmListView.COL_JOIN);
 	value = (value == this._defaultCols) ? "" : value;
-    if (!appCtxt.isExternalAccount()) {
+    if (!appCtxt.isExternalAccount() && !this._controller.isSearchResults) {
 	    appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, appCtxt.getViewTypeFromId(this.view));
     }
 
