@@ -155,14 +155,20 @@ ZmMailListController.viewToTab = {};
  * @param {constant}	view		the id of the new view
  * @param {Boolean}	force		if <code>true</code>, always redraw view
  */
-ZmMailListController.prototype.switchView =
-function(view, force) {
+ZmMailListController.prototype.switchView = function(view, force) {
+
 	if ((view == ZmId.VIEW_TRAD || view == ZmId.VIEW_CONVLIST) && view != this.getCurrentViewType()) {
 		if (appCtxt.multiAccounts) {
 			delete this._showingAccountColumn;
 		}
 
-		this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[view]);
+		var groupBy = ZmMailListController.GROUP_BY_SETTING[view];
+		if (this.isSearchResults) {
+			appCtxt.getApp(ZmApp.SEARCH).setGroupMailBy(groupBy);
+		}
+		else {
+			this._app.setGroupMailBy(groupBy);
+		}
 
 		var folderId = this._currentSearch && this._currentSearch.folderId;
 		
