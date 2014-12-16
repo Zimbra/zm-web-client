@@ -863,7 +863,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_DELETE_CONV, {textKey:"delConv", image:"DeleteConversation"}, ZmSetting.CONVERSATIONS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_DELETE_MSG, {textKey:"delMsg", image:"DeleteMessage"});
 	ZmOperation.registerOp(ZmId.OP_DELETE_MENU, {textKey:"del", image:"Delete", tooltipKey:"deleteTooltip"});
-	ZmOperation.registerOp(ZmId.OP_DETACH_COMPOSE, {tooltipKey:"detachTooltip", image:"OpenInNewWindow"});
+	ZmOperation.registerOp(ZmId.OP_DETACH_COMPOSE, {tooltipKey:"detachComposeTooltip", image:"OpenInNewWindow"});
 	ZmOperation.registerOp(ZmId.OP_DRAFT, null, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_EDIT_FILTER_RULE, {textKey:"filterEdit", image:"Edit"}, ZmSetting.DELEGATED_ADMIN_PREF_FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORWARD, {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward", shortcut:ZmKeyMap.FORWARD, textPrecedence:46});

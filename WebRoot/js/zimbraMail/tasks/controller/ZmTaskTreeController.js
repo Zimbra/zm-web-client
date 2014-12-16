@@ -161,17 +161,17 @@ function() {
 };
 
 // Returns a list of desired action menu operations
-ZmTaskTreeController.prototype._getActionMenuOps =
-function() {
+ZmTaskTreeController.prototype._getActionMenuOps = function() {
+
 	return [
         ZmOperation.NEW_TASK_FOLDER,
+		ZmOperation.SYNC,
+		ZmOperation.EMPTY_FOLDER,
+		ZmOperation.RECOVER_DELETED_ITEMS,
 		ZmOperation.SHARE_TASKFOLDER,
 		ZmOperation.DELETE_WITHOUT_SHORTCUT,
 		ZmOperation.RENAME_FOLDER,
-		ZmOperation.EDIT_PROPS,
-		ZmOperation.SYNC,
-		ZmOperation.EMPTY_FOLDER,
-		ZmOperation.RECOVER_DELETED_ITEMS
+		ZmOperation.EDIT_PROPS
 	];
 };
 

@@ -122,8 +122,8 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_COPY, {textKey:"copy", image:"Copy"});
 	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", shortcut:ZmKeyMap.DEL, textPrecedence:60});
 	ZmOperation.registerOp(ZmId.OP_DELETE_WITHOUT_SHORTCUT, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", textPrecedence:60});
-	ZmOperation.registerOp(ZmId.OP_DETACH, {textKey:"detachTT", tooltipKey:"detachTT", image:"OpenInNewWindow", showImageInToolbar: true});
-    ZmOperation.registerOp(ZmId.OP_DETACH_WIN, {textKey:"detachTT", tooltipKey:"detachTT", image:"OpenInNewWindow"});
+	ZmOperation.registerOp(ZmId.OP_DETACH, {textKey:"detach", tooltipKey:"detach", image:"OpenInNewWindow", showImageInToolbar: true});
+    ZmOperation.registerOp(ZmId.OP_DETACH_WIN, {textKey:"detach", image:"OpenInNewWindow"});
 	ZmOperation.registerOp(ZmId.OP_EDIT, {textKey:"edit", tooltipKey:"editTooltip", image:"Edit", shortcut:ZmKeyMap.EDIT});
 	ZmOperation.registerOp(ZmId.OP_EDIT_AS_NEW, {textKey:"editAsNew", tooltipKey:"editTooltip", image:"Edit", shortcut:ZmKeyMap.EDIT});
 	ZmOperation.registerOp(ZmId.OP_EDIT_PROPS, {textKey:"editProperties", tooltipKey:"editPropertiesTooltip", image:"Properties"});
@@ -152,7 +152,6 @@ function() {
 		}));
 
     ZmOperation.registerOp(ZmId.OP_MUTE_CONV, {textKey:"muteConv", tooltipKey:"muteConvTooltip", image:"Mute", shortcut:ZmKeyMap.MUTE_UNMUTE_CONV});
-	ZmOperation.registerOp(ZmId.OP_OPTS, {textKey:"options", tooltipKey:"options", image:"ContextMenu"});
 	ZmOperation.registerOp(ZmId.OP_NEW_FOLDER, {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder", shortcut:ZmKeyMap.NEW_FOLDER}, ZmSetting.USER_FOLDERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_MENU, {textKey:"_new", shortcut:ZmKeyMap.NEW, textPrecedence:100}, null,
 		AjxCallback.simpleClosure(function(parent) {
@@ -160,6 +159,8 @@ function() {
 		}));
 	ZmOperation.registerOp(ZmId.OP_NEW_TAG, {textKey:"newTag", tooltipKey:"newTagTooltip", image:"NewTag", shortcut:ZmKeyMap.NEW_TAG}, ZmSetting.TAGGING_ENABLED);
     ZmOperation.registerOp(ZmId.OP_NOTIFY, {textKey: "notify", image:"Feedback"});
+	ZmOperation.registerOp(ZmId.OP_OPEN_IN_TAB, {textKey:"openInTab", image:"OpenInNewTab"});
+	ZmOperation.registerOp(ZmId.OP_OPTS, {textKey:"options", tooltipKey:"options", image:"ContextMenu"});
 	ZmOperation.registerOp(ZmId.OP_PAGE_BACK, {image:"LeftArrow", shortcut:ZmKeyMap.PREV_PAGE});
 	ZmOperation.registerOp(ZmId.OP_PAGE_FORWARD, {image:"RightArrow", shortcut:ZmKeyMap.NEXT_PAGE});
 	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, textPrecedence:30, showImageInToolbar: true}, ZmSetting.PRINT_ENABLED);

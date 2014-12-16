@@ -132,11 +132,15 @@ function() {
  */
 ZmSearchTreeController.prototype._getActionMenuOps =
 function() {
-	return [ZmOperation.DELETE_WITHOUT_SHORTCUT,
-			ZmOperation.RENAME_SEARCH,
-			ZmOperation.EDIT_PROPS,
-			ZmOperation.MOVE,
-			ZmOperation.EXPAND_ALL];
+
+	return [
+		ZmOperation.MOVE,
+		ZmOperation.DELETE_WITHOUT_SHORTCUT,
+		ZmOperation.RENAME_SEARCH,
+		ZmOperation.EDIT_PROPS,
+		ZmOperation.OPEN_IN_TAB,
+		ZmOperation.EXPAND_ALL
+	];
 };
 
 /**
@@ -167,14 +171,18 @@ function() {
  * 
  * @private
  */
-ZmSearchTreeController.prototype._itemClicked =
-function(searchFolder) {
+ZmSearchTreeController.prototype._itemClicked = function(searchFolder, openInTab) {
+
 	if (searchFolder._showFoldersCallback) {
 		searchFolder._showFoldersCallback.run();
 		return;
 	}
 
-	appCtxt.getSearchController().redoSearch(searchFolder.search, false, {getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML)});
+	appCtxt.getSearchController().redoSearch(searchFolder.search, false, {
+		getHtml:        appCtxt.get(ZmSetting.VIEW_AS_HTML),
+		userInitiated:  openInTab,
+		origin:         ZmId.SEARCH
+	});
 };
 
 // Miscellaneous

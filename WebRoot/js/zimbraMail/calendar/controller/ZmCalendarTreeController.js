@@ -315,19 +315,19 @@ ZmCalendarTreeController.prototype._getRemoteActionMenuOps = function() {
 };
 
 // Returns a list of desired action menu operations
-ZmCalendarTreeController.prototype._getActionMenuOps =
-function() {
-    if(appCtxt.getCurrentApp().containsWritableFolder()) {
+ZmCalendarTreeController.prototype._getActionMenuOps = function() {
+
+    if (appCtxt.getCurrentApp().containsWritableFolder()) {
         return [
             ZmOperation.NEW_CALENDAR,
+	        ZmOperation.SYNC,
+	        ZmOperation.EMPTY_FOLDER,
+	        ZmOperation.RECOVER_DELETED_ITEMS,
             ZmOperation.SHARE_CALENDAR,
+	        ZmOperation.MOVE,
             ZmOperation.DELETE_WITHOUT_SHORTCUT,
-            ZmOperation.MOVE,
             ZmOperation.EDIT_PROPS,
-            ZmOperation.SYNC,
-            ZmOperation.DETACH_WIN,
-            ZmOperation.EMPTY_FOLDER,
-            ZmOperation.RECOVER_DELETED_ITEMS
+            ZmOperation.DETACH_WIN
         ];
     }
     else {
