@@ -3662,7 +3662,13 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 	this._attcTabGroup.removeAllMembers();
 	var links = Dwt.byClassName('AttLink', this._attcDiv);
 	for (var i = 0; i < links.length; i++) {
+		// MailMsg attachments are not displayed via the href, but rather using onClick.
+		var onClick = links[i].onclick;
 		this._makeFocusable(links[i]);
+		if (onClick) {
+			Dwt.clearHandler(links[i], DwtEvent.ONCLICK);
+			Dwt.setHandler(links[i], DwtEvent.ONCLICK, onClick);
+		}
 	}
 	this._attcTabGroup.addMember(links);
 };
