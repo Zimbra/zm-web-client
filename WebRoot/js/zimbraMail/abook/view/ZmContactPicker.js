@@ -54,6 +54,8 @@ ZmContactPicker = function(buttonInfo) {
 	this._searchCleared = {};
 	this._ignoreSetDragBoundries = true;
 
+	this.setSize(Dwt.DEFAULT, this._getDialogHeight());
+
 	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
 };
 
@@ -62,7 +64,7 @@ ZmContactPicker.prototype.constructor = ZmContactPicker;
 
 // Consts
 
-ZmContactPicker.CHOOSER_HEIGHT = 300;
+ZmContactPicker.DIALOG_HEIGHT = 460;
 
 ZmContactPicker.SEARCH_BASIC = "search";
 ZmContactPicker.SEARCH_NAME = "name";
@@ -155,6 +157,8 @@ function(buttonId, addrs, str, account) {
 	this._nextButton.setEnabled(false);
 
 	this.search(null, true, true);
+
+	this._resizeChooser();
 
 	DwtDialog.prototype.popup.call(this);
     if ((this.getLocation().x < 0 ||  this.getLocation().y < 0) ){
@@ -449,6 +453,32 @@ function(fieldId) {
 	return (this._searchCleared[fieldId] && field) ? AjxStringUtil.trim(field.value) : "";
 };
 
+
+ZmContactPicker.prototype._getDialogHeight =
+function() {
+	return ZmContactPicker.DIALOG_HEIGHT - (appCtxt.isChildWindow ? 100 : 0);
+};
+
+ZmContactPicker.prototype._getSectionHeight =
+function(idSuffix) {
+	return Dwt.getSize(document.getElementById(this._htmlElId + idSuffix)).y;
+
+};
+
+ZmContactPicker.prototype._resizeChooser =
+function() {
+
+	var chooserHeight = this._getDialogHeight()
+			- this._getSectionHeight("_handle")  //the header
+			- this._getSectionHeight("_searchTable")
+			- this._getSectionHeight("_paging")
+			- this._getSectionHeight("_buttonsSep")
+			- this._getSectionHeight("_buttons")
+			- 30; //still need some magic to account for some margins etc.
+
+	this._chooser.resize(this.getSize().x - 25, chooserHeight);
+};
+
 /**
  * called only when ZmContactPicker is first created. Sets up initial layout.
  * 
@@ -481,22 +511,6 @@ function(account) {
 	// add chooser
 	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo});
 	this._chooser.reparentHtmlElement(this._htmlElId + "_chooser");
-
-	// If detailed search is enabled, we need to reduce chooser height so that bottom button row appears
-	var chooserHeight = ZmContactPicker.CHOOSER_HEIGHT;
-	if (this._detailedSearch && appCtxt.isChildWindow) {
-		var searchTable = document.getElementById(this._htmlElId + "_searchTable"),
-			searchRow = document.getElementById(this._htmlElId + "_searchNameRow");
-		if (searchTable && searchRow) {
-			// without detailed search, there is one row, so subtract height of any additional rows
-			chooserHeight = chooserHeight - ((searchTable.rows.length - 1) * Dwt.getSize(searchRow).y);
-		}
-		else {
-			chooserHeight = 200;
-		}
-	}
-
-	this._chooser.resize(this.getSize().x - 25, chooserHeight);
 
 	// add paging buttons
 	var pageListener = new AjxListener(this, this._pageListener);
@@ -801,6 +815,8 @@ function(searchFor) {
 	for (var i=0; i<fieldIds.length; i++) {
 		this._tabGroup.addMember(this._searchField[fieldIds[i]]);
 	}
+
+	this._resizeChooser();
 };
 
 /**
