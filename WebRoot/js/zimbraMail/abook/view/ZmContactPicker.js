@@ -51,7 +51,6 @@ ZmContactPicker = function(buttonInfo) {
 	this._ascending = true; //asending or descending search. Keep it stored for pagination to do the right sort.
 	this._emailList = new AjxVector();
 	this._detailedSearch = appCtxt.get(ZmSetting.DETAILED_CONTACT_SEARCH_ENABLED);
-	this._searchCleared = {};
 	this._ignoreSetDragBoundries = true;
 
 	this.setSize(Dwt.DEFAULT, this._getDialogHeight());
@@ -71,13 +70,6 @@ ZmContactPicker.SEARCH_NAME = "name";
 ZmContactPicker.SEARCH_EMAIL = "email";
 ZmContactPicker.SEARCH_DEPT = "dept";
 ZmContactPicker.SEARCH_PHONETIC = "phonetic";
-
-ZmContactPicker.HINT = {};
-ZmContactPicker.HINT[ZmContactPicker.SEARCH_BASIC] = ZmMsg.contactPickerHint;
-ZmContactPicker.HINT[ZmContactPicker.SEARCH_NAME] = ZmMsg.contactPickerHint;
-ZmContactPicker.HINT[ZmContactPicker.SEARCH_EMAIL] = ZmMsg.contactPickerEmailHint;
-ZmContactPicker.HINT[ZmContactPicker.SEARCH_DEPT] = ZmMsg.contactPickerDepartmentHint;
-ZmContactPicker.HINT[ZmContactPicker.SEARCH_PHONETIC] = ZmMsg.contactPickerPhoneticHint;
 
 ZmContactPicker.SHOW_ON_GAL = [ZmContactPicker.SEARCH_BASIC, ZmContactPicker.SEARCH_NAME, ZmContactPicker.SEARCH_EMAIL, ZmContactPicker.SEARCH_DEPT];
 ZmContactPicker.SHOW_ON_NONGAL = [ZmContactPicker.SEARCH_BASIC, ZmContactPicker.SEARCH_NAME, ZmContactPicker.SEARCH_PHONETIC, ZmContactPicker.SEARCH_EMAIL];
@@ -139,18 +131,8 @@ function(buttonId, addrs, str, account) {
 	for (var fieldId in this._searchField) {
 		var field = this._searchField[fieldId];
 		field.disabled = false;
-		if (str) {
-			field.className = "";
-			field.value = AjxUtil.isObject(str) ? (str[fieldId] || "") : str;
-			this._searchCleared[fieldId] = true;
-		} else {
-			field.className = "searchFieldHint";
-			field.value = ZmContactPicker.HINT[fieldId];
-			this._searchCleared[fieldId] = false;
-		}
+		field.value = (AjxUtil.isObject(str) ? str[fieldId] : str) || "";
 	}
-	var focusField = this._searchField[ZmContactPicker.SEARCH_BASIC] || this._searchField[ZmContactPicker.SEARCH_NAME];
-	focusField.focus();
 
 	// reset paging buttons
 	this._prevButton.setEnabled(false);
@@ -169,6 +151,10 @@ function(buttonId, addrs, str, account) {
                 var dragElement = document.getElementById(this._dragHandleId);
                 DwtDraggable.setDragBoundaries(dragElement, 100 - currentSize.x, size.x - 100, 0, size.y - 100);
     }
+
+	var focusField = this._searchField[ZmContactPicker.SEARCH_BASIC] || this._searchField[ZmContactPicker.SEARCH_NAME];
+	appCtxt.getKeyboardMgr().grabFocus(focusField);
+
 };
 
 
@@ -429,28 +415,13 @@ function() {
     }
 };
 
-ZmContactPicker.prototype.clearSearch =
-function(el) {
-	if (el) {
-		for (var fieldId in this._searchField) {
-			if (el == this._searchField[fieldId]) {
-				if (!this._searchCleared[fieldId]) {
-					el.className = el.value = "";
-					this._searchCleared[fieldId] = true;
-				}
-				break;
-			}
-		}
-	}
-};
-
 ZmContactPicker.prototype.getSearchFieldValue =
 function(fieldId) {
 	if (!fieldId && !this._detailedSearch) {
 		fieldId = ZmContactPicker.SEARCH_BASIC;
 	}
 	var field = this._searchField[fieldId];
-	return (this._searchCleared[fieldId] && field) ? AjxStringUtil.trim(field.value) : "";
+	return field && AjxStringUtil.trim(field.value) || "";
 };
 
 
@@ -543,7 +514,6 @@ function(account) {
 		if (field) {
 			this._searchField[fieldId] = field;
 			Dwt.setHandler(field, DwtEvent.ONKEYUP, ZmContactPicker._keyPressHdlr);
-			Dwt.setHandler(field, DwtEvent.ONCLICK, ZmContactPicker._onclickHdlr);
 		}
 	}
 
@@ -639,7 +609,7 @@ function(aList) {
 	}
 
 	if (this._searchIcon) { //does not exist in ZmGroupView case
-		this._searchIcon.className = "ImgSearch";
+		this._searchIcon.className = "";
 	}
 	this._searchButton.setEnabled(true);
 
@@ -940,7 +910,6 @@ ZmContactPicker._keyPressHdlr =
 function(ev) {
 	var stb = DwtControl.getTargetControl(ev);
 	var charCode = DwtKeyEvent.getCharCode(ev);
-	stb.clearSearch(DwtUiEvent.getTarget(ev));
 	if (stb._keyPressCallback && (charCode == 13 || charCode == 3)) {
 		stb._keyPressCallback.run();
 		return false;
@@ -948,14 +917,6 @@ function(ev) {
 	return true;
 };
 
-/**
- * @private
- */
-ZmContactPicker._onclickHdlr =
-function(ev) {
-	var stb = DwtControl.getTargetControl(ev);
-	stb.clearSearch(DwtUiEvent.getTarget(ev));
-};
 
 /***********************************************************************************/
 

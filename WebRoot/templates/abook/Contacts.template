@@ -976,7 +976,7 @@
 						</tr>
 						<$ } else { $>
 						<tr id='${id}_searchRow'>
-							<td><input type='text' autocomplete='off' nowrap id='${id}_searchField' style='padding:.35em;width:25em;'></td>
+							<td><input type='text' placeholder="<$= ZmMsg.contactPickerHint $>" autocomplete='off' nowrap id='${id}_searchField' style='width:25em;'></td>
 							<td id='${id}_searchButton'></td>
 							<td width='20' valign='middle'><div id='${id}_searchIcon' class='ImgSearch'></div></td>
 						</tr>
