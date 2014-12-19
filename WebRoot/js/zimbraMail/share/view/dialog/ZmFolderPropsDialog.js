@@ -59,6 +59,7 @@ ZmFolderPropsDialog = function(parent, className) {
 	this._folderChangeListener = new AjxListener(this, this._handleFolderChange);
 
 	this._createView();
+	this._initializeTabGroup();
 };
 
 ZmFolderPropsDialog.prototype = new DwtDialog;
@@ -406,6 +407,7 @@ function(row, share) {
 
 		Dwt.setHandler(link, DwtEvent.ONCLICK, handlers[i]);
 		Dwt.associateElementWithObject(link, share);
+		this._sharesGroup.getTabGroupMember().addMember(link);
 
 		cell.appendChild(link);
 	}
@@ -449,3 +451,7 @@ function() {
     this.setView(this._baseContainerView);
 };
 
+ZmFolderPropsDialog.prototype._initializeTabGroup = function(){
+	this._tabGroup.addMember(this._sharesGroup.getTabGroupMember(), 0);
+	this._tabGroup.addMember(this._tabContainer.getTabGroupMember(), 0);
+};
