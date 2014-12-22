@@ -2854,8 +2854,8 @@ function(contactId) {
 // For mapAttrs(), prepare a hash where each key is the base name of an attr (without an ending number and lowercased),
 // and the value is a numerically sorted list of attr names in their original form.
 ZmContact.ATTR_VARIANTS = {};
-(function() {
-	var keys = Object.keys(ZmContact),
+ZmContact.initAttrVariants = function(attrClass) {
+	var keys = Object.keys(attrClass),
 		len = keys.length, key, i,
 		attrs = [];
 
@@ -2863,7 +2863,7 @@ ZmContact.ATTR_VARIANTS = {};
 	for (i = 0; i < len; i++) {
 		key = keys[i];
 		if (key.indexOf('F_') === 0) {
-			attrs.push(ZmContact[key]);
+			attrs.push(attrClass[key]);
 		}
 	}
 
@@ -2891,7 +2891,8 @@ ZmContact.ATTR_VARIANTS = {};
 		}
 		ZmContact.ATTR_VARIANTS[base].push(attr);
 	}
-})();
+};
+ZmContact.initAttrVariants(ZmContact);
 
 /**
  * Takes a hash of attrs and values and maps it to our attr names as best as it can. Scalar attrs will map if they
@@ -2923,6 +2924,9 @@ ZmContact.mapAttrs = function(attrs) {
 				for (i = 0; i < len; i++) {
 					newAttrs[baseAttrs[i]] = value[i];
 				}
+			} else {
+				// Any overlooked attributes are simply passed along
+				newAttrs[attr] = value[0];
 			}
 		}
 	}
