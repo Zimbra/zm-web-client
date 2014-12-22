@@ -277,7 +277,7 @@ form {
     border:0px;
     color:#4b5878;
     font-size:14px;
-    overflow:hidden;    
+    overflow:auto;
 }
 
 #timeZone{
