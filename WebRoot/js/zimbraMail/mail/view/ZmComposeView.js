@@ -107,7 +107,7 @@ ZmComposeView.UPLOAD_FIELD_NAME			= "attUpload";
 ZmComposeView.FORWARD_ATT_NAME			= "ZmComposeView_forAttName";
 ZmComposeView.FORWARD_MSG_NAME			= "ZmComposeView_forMsgName";
 ZmComposeView.ADD_ORIG_MSG_ATTS			= "add_original_attachments";
-ZmComposeView.MAX_ATTM_NAME_LEN	= 30;
+ZmComposeView.MAX_ATTM_NAME_LEN	        = 30;
 
 // max # of attachments to show
 ZmComposeView.SHOW_MAX_ATTACHMENTS		= AjxEnv.is800x600orLower ? 2 : 3;
@@ -119,14 +119,19 @@ ZmComposeView.HTML_TAG_RE				= /(<[^>]+>)/g;
 ZmComposeView.QUOTED_CONTENT_RE			= new RegExp("^----- ", "m");
 ZmComposeView.HTML_QUOTED_CONTENT_RE	= new RegExp("<br>----- ", "i");
 
+// Address components
 ZmComposeView.OP = {};
 ZmComposeView.OP[AjxEmailAddress.TO]	= ZmId.CMP_TO;
 ZmComposeView.OP[AjxEmailAddress.CC]	= ZmId.CMP_CC;
 ZmComposeView.OP[AjxEmailAddress.BCC]	= ZmId.CMP_BCC;
 
-ZmComposeView.UPLOAD_COMPUTER = 1;
-ZmComposeView.UPLOAD_INLINE = 2;
-ZmComposeView.UPLOAD_BRIEFCASE = 3;
+// Upload sources
+ZmComposeView.UPLOAD_COMPUTER           = 'computer';
+ZmComposeView.UPLOAD_INLINE             = 'inline';
+ZmComposeView.UPLOAD_BRIEFCASE          = 'briefcase';
+
+// Quoted content - distinguish "" from a lack of quoted content
+ZmComposeView.EMPTY                     = '__empty__';
 
 // Public methods
 
@@ -2173,8 +2178,8 @@ function(comp, mode, params) {
 		
 	mode = mode || this._composeMode;
 	var value = this._components[mode] && this._components[mode][comp];
-	if (value) {
-		return value;
+	if (value || value === ZmComposeView.EMPTY) {
+		return value === ZmComposeView.EMPTY ? "" : value;
 	}
 
 	switch (comp) {
@@ -2711,7 +2716,7 @@ function(op, quotedText, check) {
 	}
 
 	if (!check) {
-		this.setComponent(ZmComposeView.BC_QUOTED_TEXT, quotedText);
+		this.setComponent(ZmComposeView.BC_QUOTED_TEXT, quotedText || ZmComposeView.EMPTY);
 	}
 		
 	return true;
