@@ -476,8 +476,11 @@ if (application.getInitParameter("offlineMode") != null) {
 										<tr>
 											<td>&nbsp;</td>
 											<td class="submitTD">
-												<input id="remember" value="1" type="checkbox" name="zrememberme" />
-												<label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label>
+                                                <c:set var="isSignedInDisabled" value="${domainInfo.attrs.zimbraWebClientStaySignedInDisabled}"/>
+                                                <c:if test="${isSignedInDisabled eq false}">
+                                                    <input id="remember" value="1" type="checkbox" name="zrememberme" />
+                                                    <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label>
+                                                </c:if>
 												<input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
 											</td>
 										</tr>
