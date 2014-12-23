@@ -1593,7 +1593,7 @@ function(win) {
 		setTimeout(function() { 
 					if (win.innerHeight == 0)
 						appCtxt.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
-				}, 50);
+				}, 200);
 		};
 };
 

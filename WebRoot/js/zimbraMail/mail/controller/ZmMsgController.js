@@ -95,7 +95,7 @@ function(msg, parentController, callback, markRead, hidePagination, forceLoad, n
 	} else {
 		// May have been explicitly marked as unread
 		var marked = false;
-		if (msg.isUnread && (appCtxt.get(ZmSetting.MARK_MSG_READ) != ZmSetting.MARK_READ_NONE)) {
+		if (!msg.isReadOnly() && msg.isUnread && (appCtxt.get(ZmSetting.MARK_MSG_READ) != ZmSetting.MARK_READ_NONE)) {
 			if (msg.list) {
 				// Need to mark it on the server
 				marked = true;
