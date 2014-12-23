@@ -2228,6 +2228,7 @@ function(state, force) {
 
 		AjxUtil.hashUpdate(subs, {
 			imageURL:	    imageURL || ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL,
+			defaultImageUrl:	ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL,
 			imageAltText:   imageAltText || ZmMsg.unknownPerson,
 			from:		    ai.from,
 			fromId:		    fromId,
@@ -2241,6 +2242,7 @@ function(state, force) {
 		AjxUtil.hashUpdate(subs, {
 			hdrTableId:		this._msgView._hdrTableId = id + "_hdrTable",
 			imageURL:		imageURL || ZmZimbraMail.DEFAULT_CONTACT_ICON,
+			defaultImageUrl:	ZmZimbraMail.DEFAULT_CONTACT_ICON,
 			imageAltText:   imageAltText || ZmMsg.unknownPerson,
 			sentBy:			ai.sentBy,
 			sentByAddr:		ai.sentByAddr,
