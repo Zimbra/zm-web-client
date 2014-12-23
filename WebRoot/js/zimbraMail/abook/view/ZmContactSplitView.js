@@ -534,6 +534,9 @@ ZmContactSplitView.prototype._showContact =
 function(subs) {
 	this._objectManager.reset();
 	this._resetVisibility(false);
+
+	subs.defaultImageUrl = ZmZimbraMail.DEFAULT_CONTACT_ICON;
+
 	this._contactView.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitView_content", subs);
 
 	// notify zimlets that a new contact is being shown.
@@ -878,6 +881,7 @@ function(data) {
 		var contact = member.__contact;
 		if (contact) {
 			itemListData.imageUrl = contact.getImageUrl();
+			itemListData.defaultImageUrl = ZmZimbraMail.DEFAULT_CONTACT_ICON;
 			itemListData.imgClassName = contact.getIconLarge();
 			itemListData.email = data.findObjects(contact.getEmail(), ZmObjectManager.EMAIL, true);
 			itemListData.title = data.findObjects(contact.getAttr(ZmContact.F_jobTitle), ZmObjectManager.TITLE, true);
