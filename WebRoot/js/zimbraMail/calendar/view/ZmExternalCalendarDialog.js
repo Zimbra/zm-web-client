@@ -135,7 +135,8 @@ function(ev) {
                 };
             }
             this._controller.setExternalCalendarData(extCalData);
-            this._controller._newListener(ev);
+            // Fix for Bug: 85158 and regression due to Bug: 82811. Passing isExternalCalendar => true
+            this._controller._newListener(ev, null, true);
         break;
 
         case ZmExternalCalendarDialog.THIRD_VIEW :
