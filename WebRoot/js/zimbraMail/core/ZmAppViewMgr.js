@@ -283,6 +283,8 @@ function(viewId, components, show, app) {
 	if (!view) { return; }
 
 	var list = [];
+	var i = 0;
+	var numComponents = AjxUtil.arraySize(components);
 	for (var cid in components) {
 		var comp = components[cid];
 		if (!comp) { continue; }
@@ -304,7 +306,7 @@ function(viewId, components, show, app) {
 			list.push(cid);
 		}
 
-		this.displayComponent(cid, doShow);
+		this.displayComponent(cid, doShow, false, null, i < numComponents - 1);
 
 		// TODO: move this code
 		if (cid == ZmAppViewMgr.C_SASH) {
@@ -318,6 +320,7 @@ function(viewId, components, show, app) {
 			}
 			comp.setCursor("default");
 		}
+		i++;
 	}
 	if (show) {
 		this._fitToContainer(list);
@@ -423,10 +426,11 @@ function(cid, show, comp) {
  * @param {boolean}		show	if true, show the component; otherwise hide it
  * @param {boolean}		doFit	if true, fit component to container
  * @param {object}		comp	if provided, pass this to showComponent, so it does not just look for the cid in the current view (useful for previous view. see ZmAppViewMgr.prototype._setViewVisible)
+ * @param {boolean}		noReflow	if true, tell skin to not refit all components
  */
 ZmAppViewMgr.prototype.displayComponent =
-function(cid, show, doFit, comp) {
-	this.showSkinElement(cid, show);
+function(cid, show, doFit, comp, noReflow) {
+	this.showSkinElement(cid, show, noReflow);
 	this.showComponent(cid, show, comp);
 	if (doFit) {
 		this._fitToContainer(cid);
@@ -1210,13 +1214,14 @@ function(viewId, show) {
 		for (var i = 0; i < ZmAppViewMgr.ALL_COMPONENTS.length; i++) {
 			var cid = ZmAppViewMgr.ALL_COMPONENTS[i];
 			var oldComp = this.getViewComponent(cid, this._lastViewId);
+			var noReflow = i < ZmAppViewMgr.ALL_COMPONENTS.length - 1;
 			if (oldComp) {
-				this.displayComponent(cid, false, null, oldComp);
+				this.displayComponent(cid, false, null, oldComp, noReflow);
 			}
 			var comp = this.getViewComponent(cid, viewId);
 			if (comp) {
 				if (!this.isHidden(cid, viewId)) {
-					this.displayComponent(cid, true, null, comp);
+					this.displayComponent(cid, true, null, comp, noReflow);
 					toFit.push(cid);
 				}
 			}
