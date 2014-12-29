@@ -73,7 +73,6 @@ ZmContactPicker.SEARCH_PHONETIC = "phonetic";
 
 ZmContactPicker.SHOW_ON_GAL = [ZmContactPicker.SEARCH_BASIC, ZmContactPicker.SEARCH_NAME, ZmContactPicker.SEARCH_EMAIL, ZmContactPicker.SEARCH_DEPT];
 ZmContactPicker.SHOW_ON_NONGAL = [ZmContactPicker.SEARCH_BASIC, ZmContactPicker.SEARCH_NAME, ZmContactPicker.SEARCH_PHONETIC, ZmContactPicker.SEARCH_EMAIL];
-	
 
 // Public methods
 
@@ -527,6 +526,19 @@ function(account) {
 	this._updateSearchRows(this._searchInSelect && this._searchInSelect.getValue() || ZmContactsApp.SEARCHFOR_CONTACTS);
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
     this.sharedContactGroups = [];
+
+	//add tabgroups for keyboard navigation
+	this._tabGroup = new DwtTabGroup(this.toString());
+	this._tabGroup.removeAllMembers();
+	this._tabGroup.addMember(this._searchField[ZmContactPicker.SEARCH_BASIC] || this._searchField[ZmContactPicker.SEARCH_NAME]);
+	this._tabGroup.addMember(this._searchButton);
+	this._tabGroup.addMember(this._searchInSelect);
+	this._tabGroup.addMember(this._chooser.getTabGroupMember());
+	this._tabGroup.addMember(this._prevButton);
+	this._tabGroup.addMember(this._nextButton);
+	for (var i = 0; i < this._buttonList.length; i++) {
+		this._tabGroup.addMember(this._button[this._buttonList[i]]);
+	}
 };
 
 ZmContactPicker.prototype.mapFields =
