@@ -70,12 +70,10 @@
                 <fmt:message key="voiceErrorPIN"/>
             </app:status>
         </c:when>
-
         <c:otherwise>
             <app:status style="Critical">
                 <fmt:message key="${error.code}"/>
             </app:status>
-            <!-- ${fn:escapeXml(error.id)} -->
         </c:otherwise>
     </c:choose>
 </c:if>
