@@ -317,6 +317,7 @@
             <lib dir='${common.jars.dir}' includes='concurrentlinkedhashmap-lru-*.jar'/>
             <lib dir='${common.jars.dir}' includes='commons-lang-*.jar'/>
             <lib dir='${common.jars.dir}' includes='commons-httpclient-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='commons-fileupload-*.jar'/>
             <lib dir='${common.jars.dir}' includes='xercesImpl-*.jar'/>
             <lib dir='${common.jars.dir}' includes='dom4j-*.jar'/>
             <lib dir='${common.jars.dir}' includes='guava-*.jar'/>
