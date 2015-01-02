@@ -282,7 +282,6 @@ function(viewId, components, show, app) {
 	var view = this._getView(viewId, app);
 	if (!view) { return; }
 
-	var list = [];
 	var i = 0;
 	var numComponents = AjxUtil.arraySize(components);
 	for (var cid in components) {
@@ -303,10 +302,9 @@ function(viewId, components, show, app) {
 		
 		if (this._hasSkin) {
 			this.getContainer(cid, comp);
-			list.push(cid);
 		}
 
-		this.displayComponent(cid, doShow, false, null, i < numComponents - 1);
+		this.displayComponent(cid, doShow, false, null, true);
 
 		// TODO: move this code
 		if (cid == ZmAppViewMgr.C_SASH) {
@@ -323,7 +321,7 @@ function(viewId, components, show, app) {
 		i++;
 	}
 	if (show) {
-		this._fitToContainer(list);
+		this.fitAll();
 	}
 };
 ZmAppViewMgr.prototype.addComponents = ZmAppViewMgr.prototype.setViewComponents;
@@ -1208,28 +1206,25 @@ function(viewId, show) {
 	var view = this._view[viewId] || this._emptyView;
 	view.visible = show;
 	
-	var toFit = [];
 	if (show) {
 
 		for (var i = 0; i < ZmAppViewMgr.ALL_COMPONENTS.length; i++) {
 			var cid = ZmAppViewMgr.ALL_COMPONENTS[i];
 			var oldComp = this.getViewComponent(cid, this._lastViewId);
-			var noReflow = i < ZmAppViewMgr.ALL_COMPONENTS.length - 1;
 			if (oldComp) {
-				this.displayComponent(cid, false, null, oldComp, noReflow);
+				this.displayComponent(cid, false, null, oldComp, true);
 			}
 			var comp = this.getViewComponent(cid, viewId);
 			if (comp) {
 				if (!this.isHidden(cid, viewId)) {
-					this.displayComponent(cid, true, null, comp, noReflow);
-					toFit.push(cid);
+					this.displayComponent(cid, true, null, comp, true);
 				}
 			}
 		}
 
 		// fit the components now that we're done messing with the skin
 		if (this._hasSkin) {
-			this._fitToContainer(toFit);
+			this.fitAll();
 		}
 		
 		this._setTitle(viewId);
