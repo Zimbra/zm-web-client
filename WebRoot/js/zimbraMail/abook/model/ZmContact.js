@@ -2854,16 +2854,23 @@ function(contactId) {
 // For mapAttrs(), prepare a hash where each key is the base name of an attr (without an ending number and lowercased),
 // and the value is a numerically sorted list of attr names in their original form.
 ZmContact.ATTR_VARIANTS = {};
+ZmContact.IGNORE_ATTR_VARIANT = {};
+ZmContact.IGNORE_ATTR_VARIANT[ZmContact.F_groups] = true;
+
 ZmContact.initAttrVariants = function(attrClass) {
 	var keys = Object.keys(attrClass),
-		len = keys.length, key, i,
+		len = keys.length, key, i, attr,
 		attrs = [];
 
 	// first, grab all the attr names
+	var ignoreVariant = attrClass.IGNORE_ATTR_VARIANT || {};
 	for (i = 0; i < len; i++) {
 		key = keys[i];
 		if (key.indexOf('F_') === 0) {
-			attrs.push(attrClass[key]);
+			attr = attrClass[key];
+			if (!ignoreVariant[attr]) {
+				attrs.push(attr);
+			}
 		}
 	}
 
@@ -2917,16 +2924,16 @@ ZmContact.mapAttrs = function(attrs) {
 	for (attr in attrs) {
 		value = attrs[attr];
 		if (value) {
-			value = AjxUtil.toArray(value);
 			baseAttrs = ZmContact.ATTR_VARIANTS[attr.toLowerCase()];
 			if (baseAttrs) {
+				value = AjxUtil.toArray(value);
 				var len = Math.min(value.length, baseAttrs.length), i;
 				for (i = 0; i < len; i++) {
 					newAttrs[baseAttrs[i]] = value[i];
 				}
 			} else {
-				// Any overlooked attributes are simply passed along
-				newAttrs[attr] = value[0];
+				// Any overlooked/ignored attributes are simply passed along
+				newAttrs[attr] = value;
 			}
 		}
 	}
