@@ -58,7 +58,7 @@ ZmBriefcaseController = function(container, app, type, sessionId, searchResultsC
 	this._listeners[ZmOperation.VIEW_FILE_AS_HTML]	= this._viewAsHtmlListener.bind(this);
     this._listeners[ZmOperation.EDIT_FILE]			= this._editFileListener.bind(this);
     this._listeners[ZmOperation.RENAME_FILE]		= this._renameFileListener.bind(this);
-    this._listeners[ZmOperation.NEW_BRIEFCASE_WIN]	= this._newWinListener.bind(this);
+    this._listeners[ZmOperation.DETACH_WIN]			= this._newWinListener.bind(this);
 
 	this._listeners[ZmOperation.NEW_DOC]			= this._handleDoc.bind(this, ZmOperation.NEW_DOC);
 
@@ -146,7 +146,7 @@ function() {
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		list.push(ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT, ZmOperation.SEP);
 	}
-	list.push(ZmOperation.NEW_BRIEFCASE_WIN, ZmOperation.SEP);
+	list.push(ZmOperation.DETACH_WIN, ZmOperation.SEP);
 
 	list.push(ZmOperation.CHECKOUT, ZmOperation.CHECKIN, ZmOperation.DISCARD_CHECKOUT, ZmOperation.RESTORE_VERSION);
 
@@ -288,7 +288,7 @@ function(parent, num) {
 	parent.enable([ZmOperation.NEW_DOC], true);
 	parent.enable([ZmOperation.MOVE, ZmOperation.MOVE_MENU], ( isItemSelected &&  !isReadOnly && !isShared && !isOldRevision));
     parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
-    parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, (isItemSelected && !isFolderSelected && num==1));
+    parent.enable(ZmOperation.DETACH_WIN, (isItemSelected && !isFolderSelected && num==1));
 
     var firstItem = items && items[0];
     var isWebDoc = firstItem && !firstItem.isFolder && firstItem.isWebDoc();
@@ -378,7 +378,7 @@ function(parent, num) {
                 ZmOperation.CHECKOUT,
                 ZmOperation.DISCARD_CHECKOUT,
                 ZmOperation.RESTORE_VERSION,
-                ZmOperation.NEW_BRIEFCASE_WIN,
+                ZmOperation.DETACH_WIN,
                 ZmOperation.DELETE
             ], false);
             parent.setItemVisible(ZmOperation.TAG_MENU, false);
@@ -391,7 +391,7 @@ function(parent, num) {
                 ZmOperation.CHECKIN,
                 ZmOperation.CHECKOUT,
                 ZmOperation.DISCARD_CHECKOUT,
-                ZmOperation.NEW_BRIEFCASE_WIN,
+                ZmOperation.DETACH_WIN,
                 ZmOperation.DELETE
             ], true);
         }
