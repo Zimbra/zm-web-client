@@ -372,9 +372,8 @@ function(item, field) {
 
 ZmConvListView.prototype._getCellClass =
 function(item, field, params) {
-	return (item.type == ZmItem.CONV && field == ZmItem.F_SIZE)
-		? "Count ZmMsgListColSize"
-		: (ZmMailListView.prototype._getCellClass.apply(this, arguments));
+	var cls = ZmMailListView.prototype._getCellClass.apply(this, arguments);
+	return item.type === ZmItem.CONV && field === ZmItem.F_SIZE ? "Count " + cls : cls;
 };
 
 
