@@ -292,8 +292,10 @@ function(contentType, name, winName) {
     if (AjxDispatcher.run("GetBriefcaseController").chkFolderPermission(folderId)) {
         if (contentType == ZmMimeTable.APP_ZIMBRA_DOC) {
             var win = appCtxt.getNewWindow(false, null, null, winName);
-            win.command = "documentEdit";
-            win.params = { name: name, folderId: folderId };
+	        if (win) {
+	            win.command = "documentEdit";
+	            win.params = { name: name, folderId: folderId };
+	        }
         }
     }
 };

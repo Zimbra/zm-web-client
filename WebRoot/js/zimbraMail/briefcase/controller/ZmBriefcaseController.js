@@ -902,15 +902,16 @@ function(items){
     for (var i = 0; i < items.length; i++) {
         var item = items[i];
         if (item.isWebDoc()) {
-			var win = appCtxt.getNewWindow(false, null, null,
-										   this._getWindowName(item.name));
-            win.command = "documentEdit";
-            win.params = {
-				restUrl: item.getRestUrl(),
-				id: item.id,
-				name: item.name,
-				folderId: item.folderId
-			};
+			var win = appCtxt.getNewWindow(false, null, null, this._getWindowName(item.name));
+	        if (win) {
+	            win.command = "documentEdit";
+	            win.params = {
+					restUrl: item.getRestUrl(),
+					id: item.id,
+					name: item.name,
+					folderId: item.folderId
+				};
+	        }
         }
     }
 };

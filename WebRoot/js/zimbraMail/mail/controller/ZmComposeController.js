@@ -235,13 +235,14 @@ function(params) {
 	if (params.inNewWindow) {
         var msgId = (params.msg && params.msg.nId) || Dwt.getNextId();
 		var newWinObj = ac.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId.replace(/\s|\-/g, '_'));
-
-		// this is how child window knows what to do once loading:
-		newWinObj.command = "compose";
-		newWinObj.params = params;
-        if (newWinObj.win) {
-            newWinObj.win.focus();
-        }
+		if (newWinObj) {
+			// this is how child window knows what to do once loading:
+			newWinObj.command = "compose";
+			newWinObj.params = params;
+	        if (newWinObj.win) {
+	            newWinObj.win.focus();
+	        }
+		}
 	} else {
 		this._setView(params);
 		this._listController = params.listController;
@@ -294,7 +295,7 @@ function() {
 	// this is how child window knows what to do once loading:
     var msgId = (msg && msg.nId) || Dwt.getNextId();
 	var newWinObj = appCtxt.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId.replace(/\s|\-/g, '_'));
-    if (newWinObj.win) {
+    if (newWinObj && newWinObj.win) {
         newWinObj.win.focus();
     }
 	newWinObj.command = "composeDetach";
