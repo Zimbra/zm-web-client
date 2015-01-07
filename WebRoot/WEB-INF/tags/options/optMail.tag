@@ -402,7 +402,7 @@
 				</tr>
 				<tr>
 					<td><input id="pop3DownloadFromNow" name='zimbraPrefPop3DownloadSince' type="radio"
-							   value="${now}">
+							   value="${now}" ${not empty pop3DownloadSince ? "checked" : ""}>
 					</td>
 					<td style='padding-left:5px' nowrap>
 						<label for="pop3DownloadFromNow"><fmt:message key="optionsAccessPopDownloadFromNow" /></label>
