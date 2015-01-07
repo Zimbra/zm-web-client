@@ -66,10 +66,7 @@ ZmDocsEditController.prototype.resize = function(ev){
     docsEdit.setDisplay("none");
     var w = document.body.clientWidth;
     var h = document.body.clientHeight;
-    if (!AjxEnv.isIE) {
-        w += 2;
-        h -= 2;
-    }
+
     docsEdit.setDisplay("block");
     docsEdit.setBounds(0, 0, w, h);
 
