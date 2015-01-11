@@ -956,23 +956,14 @@ function() {
 	return rule;
 };
 
-ZmFilterRule.checkPreconditions =
-function(obj) {
+ZmFilterRule.checkPreconditions = function(obj) {
+
     if (!ZmFilterRule.__preConditionsInitialized) {
         ZmFilterRule.__preConditionsInitialized = true;
         ZmFilterRule._setPreconditions();
     }
 
-	var pre = obj && obj.precondition;
-	if (!pre) { return true; }
-
-	var conds = AjxUtil.toArray(pre);
-	for (var i = 0; i < conds.length; i++) {
-		if (!appCtxt.get(conds[i])) {
-			return false;
-		}
-	}
-	return true;
+	return appCtxt.checkPrecondition(obj && obj.precondition ? obj.precondition : true);
 };
 
 /**

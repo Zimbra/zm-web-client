@@ -63,7 +63,7 @@ ZmOperation.SETUP[ZmOperation.FILLER]	= {};	// expandable space (for right-align
 
 // preconditions for operations - no automatic checking is done, so a client
 // of this class has to check them on its own if it wants
-ZmOperation.SETTING = {};
+ZmOperation.PRECONDITION = {};
 
 // code to run after an operation has been created - typically used to create
 // a menu for a button
@@ -73,19 +73,21 @@ ZmOperation.CALLBACK = {};
  * Defines the aspects of an operation, and the ID that refers to it.
  * 
  * @param {String}	op		the name of the operation
- * @param {String}	text		the msg key for button or menu item text
- * @param {String}	tooltip	the msg key for tooltip text
- * @param {String}	image		the icon class for the button or menu item
- * @param {String}	disImage	the disabled version of image; defaults to image + "Dis"
- * @param {constant}	setting	the setting which acts as a precondition for this operation
+ * @param {hash}	params:
+ *      @param {String}	text		the msg key for button or menu item text
+ *      @param {String}	tooltip	the msg key for tooltip text
+ *      @param {String}	image		the icon class for the button or menu item
+ *      @param {String}	disImage	the disabled version of image; defaults to image + "Dis"
+ *      @param {Boolean|String|Function}    precondition (overrides setting if present)
+ * @param {constant}	precondition	must evaluate to true for this operation not to be filtered out
  * @param {AjxCallback}	callback	the callback to run after this operation has been created
  */
-ZmOperation.registerOp =
-function(op, params, setting, callback) {
+ZmOperation.registerOp = function(op, params, precondition, callback) {
+
 	ZmOperation[op] = op;
 	ZmOperation.SETUP[op] = params || {};
-	if (setting)	{ ZmOperation.SETTING[op]	= setting; }
-	if (callback)	{ ZmOperation.CALLBACK[op]	= callback; }
+	if (precondition)	{ ZmOperation.PRECONDITION[op]	= precondition; }
+	if (callback)	    { ZmOperation.CALLBACK[op]	    = callback; }
 };
 
 
@@ -459,9 +461,10 @@ function(list) {
 	// remove disabled operations
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
-		if (!op) { continue; }
-		var setting = ZmOperation.SETTING[op];
-		if (!setting || appCtxt.get(setting)) {
+		if (!op) {
+			continue;
+		}
+		if (appCtxt.checkPrecondition(ZmOperation.PRECONDITION[op])) {
 			newList.push(op);
 		}
 	}

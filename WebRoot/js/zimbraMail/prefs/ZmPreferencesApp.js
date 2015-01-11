@@ -276,9 +276,10 @@ function() {
                   });
 };
 
-ZmPreferencesApp.prototype._registerPrefs =
-function() {
+ZmPreferencesApp.prototype._registerPrefs = function() {
+
 	var sections = {
+
 		GENERAL: {
 			title: ZmMsg.general,
 			templateId: "prefs.Pages#General",
@@ -306,207 +307,193 @@ function() {
                 ZmSetting.OFFLINE_UPDATE_NOTIFY //offline
 			]
 		},
+
         ACCOUNTS: {
-			icon: "Accounts",
-			title: (appCtxt.isOffline ? ZmMsg.personas : ZmMsg.accounts),
-			templateId: "prefs.Pages#Accounts",
-			priority: 9,
+			icon:           "Accounts",
+			title:          appCtxt.isOffline ? ZmMsg.personas : ZmMsg.accounts,
+			templateId:     "prefs.Pages#Accounts",
+			priority:       9,
 			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED) || appCtxt.get(ZmSetting.ADMIN_PREFERENCES_ENABLED),
-			prefs: [
-				ZmSetting.ACCOUNTS,
-				ZmSetting.SAVE_TO_SENT_DELEGATED_TARGET
-			],
-			manageDirty: true,
-			createView: function(parent, section, controller) {
-				return new ZmAccountsPage(parent, section, controller);
-			}
+			prefs:          [ ZmSetting.ACCOUNTS, ZmSetting.SAVE_TO_SENT_DELEGATED_TARGET ],
+			manageDirty:    true,
+			createView:     function(parent, section, controller) {
+								return new ZmAccountsPage(parent, section, controller);
+							}
 		},
+
         FILTERS: {
-			icon: "MailRule",
-			title: ZmMsg.filterRules,
-			templateId: "prefs.Pages#MailFilters",
-			priority: 50,
+			icon:           "MailRule",
+			title:          ZmMsg.filterRules,
+			templateId:     "prefs.Pages#MailFilters",
+			priority:       50,
 			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)) || appCtxt.get(ZmSetting.DELEGATED_ADMIN_PREF_FILTERS_ENABLED),
-			prefs: [
-				ZmSetting.FILTERS
-			],
-			manageChanges: true,
-			createView: function(parent, section, controller) {
-				return controller.getFilterController(section).getFilterView();
-			}
+			prefs:          [ ZmSetting.FILTERS ],
+			manageChanges:  true,
+			createView:     function(parent, section, controller) {
+								return controller.getFilterController(section).getFilterView();
+							}
 		},
+
         SIGNATURES: {
-			icon: "AddSignature",
-			title: ZmMsg.signatures,
-			templateId: "prefs.Pages#Signatures",
-			priority: 51,
+			icon:           "AddSignature",
+			title:          ZmMsg.signatures,
+			templateId:     "prefs.Pages#Signatures",
+			priority:       51,
 			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) || (appCtxt.get(ZmSetting.ADMIN_PREFERENCES_ENABLED) && appCtxt.get(ZmSetting.SIGNATURES_ENABLED)),
-			prefs:[
-				ZmSetting.SIGNATURES,
-				ZmSetting.SIGNATURE_STYLE,
-				ZmSetting.SIGNATURE_ENABLED
-			],
-			manageDirty: true,
-			createView: function(parent, section, controller) {
-				return new ZmSignaturesPage(parent, section, controller);
-			}
+			prefs:          [ ZmSetting.SIGNATURES, ZmSetting.SIGNATURE_STYLE, ZmSetting.SIGNATURE_ENABLED ],
+			manageDirty:    true,
+			createView:     function(parent, section, controller) {
+								return new ZmSignaturesPage(parent, section, controller);
+							}
 		},
+
         OUTOFOFFICE: {
-            icon: "OutOfOffice",
-			title: ZmMsg.outOfOffice,
-            priority: 55,
-            templateId: "prefs.Pages#OutOfOffice",
+            icon:           "OutOfOffice",
+			title:          ZmMsg.outOfOffice,
+            priority:       55,
+            templateId:     "prefs.Pages#OutOfOffice",
             precondition: appCtxt.get(ZmSetting.VACATION_MSG_FEATURE_ENABLED) || appCtxt.get(ZmSetting.DELEGATED_ADMIN_VACATION_MSG_FEATURE_ENABLED),
-            prefs: [
-                ZmSetting.START_DATE_ENABLED,
-                ZmSetting.END_DATE_ENABLED,
-                ZmSetting.VACATION_DURATION_ENABLED,
-                ZmSetting.VACATION_DURATION_ALL_DAY,
-                ZmSetting.VACATION_CALENDAR_ENABLED,
-                ZmSetting.VACATION_FROM,
-                ZmSetting.VACATION_FROM_TIME,
-				ZmSetting.VACATION_MSG_ENABLED,
-				ZmSetting.VACATION_MSG,
-                ZmSetting.VACATION_EXTERNAL_MSG_ENABLED,
-				ZmSetting.VACATION_EXTERNAL_MSG,
-                ZmSetting.VACATION_EXTERNAL_TYPE,
-                ZmSetting.VACATION_CALENDAR_TYPE,
-				ZmSetting.VACATION_UNTIL,
-                ZmSetting.VACATION_UNTIL_TIME
-            ],
-            manageDirty: true,
-			createView: function(parent, section, controller) {
-				AjxDispatcher.require("Alert");
-				return new ZmMailPrefsPage(parent, section, controller);
-			}
+	        prefs:          [
+				                ZmSetting.START_DATE_ENABLED,
+				                ZmSetting.END_DATE_ENABLED,
+				                ZmSetting.VACATION_DURATION_ENABLED,
+				                ZmSetting.VACATION_DURATION_ALL_DAY,
+				                ZmSetting.VACATION_CALENDAR_ENABLED,
+				                ZmSetting.VACATION_FROM,
+				                ZmSetting.VACATION_FROM_TIME,
+								ZmSetting.VACATION_MSG_ENABLED,
+								ZmSetting.VACATION_MSG,
+				                ZmSetting.VACATION_EXTERNAL_MSG_ENABLED,
+								ZmSetting.VACATION_EXTERNAL_MSG,
+				                ZmSetting.VACATION_EXTERNAL_TYPE,
+				                ZmSetting.VACATION_CALENDAR_TYPE,
+								ZmSetting.VACATION_UNTIL,
+				                ZmSetting.VACATION_UNTIL_TIME
+				            ],
+            manageDirty:    true,
+			createView:     function(parent, section, controller) {
+								AjxDispatcher.require("Alert");
+								return new ZmMailPrefsPage(parent, section, controller);
+							}
         },
+
         TRUSTED_ADDR: {
-			title: ZmMsg.trustedAddrs,
-			icon: "TrustedAddresses",
-			templateId: "prefs.Pages#Trusted",
-			priority: 60,
+			title:          ZmMsg.trustedAddrs,
+			icon:           "TrustedAddresses",
+			templateId:     "prefs.Pages#Trusted",
+			priority:       60,
 			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED) || appCtxt.get(ZmSetting.ADMIN_PREFERENCES_ENABLED),
-			createView: function(parent, section, controller) {
-				return new ZmTrustedPage(parent, section, controller, "Prefs_Pages_TrustedAddresses");
-			},
-            manageDirty: true,
-            prefs: [
-				    ZmSetting.TRUSTED_ADDR_LIST
-                ]
+			createView:     function(parent, section, controller) {
+								return new ZmTrustedPage(parent, section, controller, "Prefs_Pages_TrustedAddresses");
+							},
+            manageDirty:    true,
+            prefs:          [ ZmSetting.TRUSTED_ADDR_LIST ]
 		},
+
 		SHARING: {
-			title: ZmMsg.sharing,
-			icon: "SharedContact",
-			templateId: "prefs.Pages#SharingPrefPage",
-			priority: 85,
-			precondition: ZmSetting.SHARING_ENABLED,
-			manageChanges: true,
-			createView: function(parent, section, controller) {
-				AjxDispatcher.require("Share");
-				return new ZmSharingPage(parent, section, controller, "Prefs_Pages_Sharing");
-			}
+			title:          ZmMsg.sharing,
+			icon:           "SharedContact",
+			templateId:     "prefs.Pages#SharingPrefPage",
+			priority:       85,
+			precondition:   ZmSetting.SHARING_ENABLED,
+			manageChanges:  true,
+			createView:     function(parent, section, controller) {
+								AjxDispatcher.require("Share");
+								return new ZmSharingPage(parent, section, controller, "Prefs_Pages_Sharing");
+							}
 		},
+
 		NOTIFICATIONS: {
-			title: ZmMsg.notifications,
-			icon: "ApptReminder",
-			templateId: "prefs.Pages#Notifications",
-			priority: 88,
-			precondition: [ZmSetting.CALENDAR_ENABLED, ZmSetting.TASKS_ENABLED],
-			prefs: [
-                ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS,
-                ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS
-			],
-            createView: function(parent, section, controller) {
-                return new ZmNotificationsPage(parent, section, controller);
-            }
+			title:              ZmMsg.notifications,
+			icon:               "ApptReminder",
+			templateId:         "prefs.Pages#Notifications",
+			priority:           88,
+			precondition:       [ ZmSetting.CALENDAR_ENABLED, ZmSetting.TASKS_ENABLED ],
+			preconditionAny:    true,
+			prefs:              [ ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS, ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS ],
+            createView:         function(parent, section, controller) {
+					                return new ZmNotificationsPage(parent, section, controller);
+					            }
 		},
+
 		MOBILE: {
-			title: ZmMsg.mobileDevices,
-			icon: "Mobile",
-			templateId: "prefs.Pages#MobileDevices",
-			priority: 90,
-			precondition: ZmSetting.MOBILE_SYNC_ENABLED,
-			manageChanges: true,
-			createView: function(parent, section, controller) {
-				return new ZmMobileDevicesPage(parent, section, controller);
-			}
+			title:          ZmMsg.mobileDevices,
+			icon:           "Mobile",
+			templateId:     "prefs.Pages#MobileDevices",
+			priority:       90,
+			precondition:   ZmSetting.MOBILE_SYNC_ENABLED,
+			manageChanges:  true,
+			createView:     function(parent, section, controller) {
+								return new ZmMobileDevicesPage(parent, section, controller);
+							}
 		},
+
 		IMPORT_EXPORT: {
-			title: ZmMsg.importExport,
-			icon: "SendReceive",
-			templateId: "data.ImportExport#ImportExportPrefPage",
-			priority: 100,
-			precondition: [ZmSetting.IMPORT_ENABLED, ZmSetting.EXPORT_ENABLED],
-			prefs: [
-				ZmSetting.IMPORT_FOLDER,
-				ZmSetting.IMPORT_BUTTON,
-				ZmSetting.EXPORT_FOLDER,
-				ZmSetting.EXPORT_BUTTON
-			],
-			manageChanges: true,
-			createView: function(parent, section, controller) {
-				AjxDispatcher.require("ImportExport");
-				return new ZmImportExportPage(parent, section, controller);
-			}
+			title:              ZmMsg.importExport,
+			icon:               "SendReceive",
+			templateId:         "data.ImportExport#ImportExportPrefPage",
+			priority:           100,
+			precondition:       [ ZmSetting.IMPORT_ENABLED, ZmSetting.EXPORT_ENABLED ],
+			preconditionAny:    true,
+			prefs:              [
+									ZmSetting.IMPORT_FOLDER,
+									ZmSetting.IMPORT_BUTTON,
+									ZmSetting.EXPORT_FOLDER,
+									ZmSetting.EXPORT_BUTTON
+								],
+			manageChanges:      true,
+			createView:         function(parent, section, controller) {
+									AjxDispatcher.require("ImportExport");
+									return new ZmImportExportPage(parent, section, controller);
+								}
 		},
+
 		SHORTCUTS: {
-			title: ZmMsg.shortcuts,
-			icon: "Shortcut",
-			templateId: "prefs.Pages#Shortcuts",
-			priority: 120,
-			precondition: ZmSetting.USE_KEYBOARD_SHORTCUTS,
-			createView: function(parent, section, controller) {
-				return new ZmShortcutsPage(parent, section, controller);
-			}
+			title:          ZmMsg.shortcuts,
+			icon:           "Shortcut",
+			templateId:     "prefs.Pages#Shortcuts",
+			priority:       120,
+			precondition:   ZmSetting.USE_KEYBOARD_SHORTCUTS,
+			createView:     function(parent, section, controller) {
+								return new ZmShortcutsPage(parent, section, controller);
+							}
 		},
+
         PREF_ZIMLETS: {
-			title: ZmMsg.zimlets,
-	        icon: "Zimlet",
-			templateId: "prefs.Pages#Zimlets",
-			manageDirty: true,
-            priority: 140,
-			precondition: ZmSetting.CHECKED_ZIMLETS_ENABLED,
-			prefs: [
-				ZmSetting.CHECKED_ZIMLETS,
-                ZmSetting.OFFLINE_ZIMLET_SYNC_ACCOUNT_ID
-			],
-            createView: function(parent, section, controller) {
-				return new ZmZimletsPage(parent, section, controller);
-			}
+			title:          ZmMsg.zimlets,
+	        icon:           "Zimlet",
+			templateId:     "prefs.Pages#Zimlets",
+			manageDirty:    true,
+            priority:       140,
+			precondition:   ZmSetting.CHECKED_ZIMLETS_ENABLED,
+			prefs:          [
+								ZmSetting.CHECKED_ZIMLETS,
+				                ZmSetting.OFFLINE_ZIMLET_SYNC_ACCOUNT_ID
+							],
+            createView:     function(parent, section, controller) {
+								return new ZmZimletsPage(parent, section, controller);
+							}
 		}
-		/* QUICKCOMMANDS: {
-			icon: "QuickCommand",
-			title: ZmMsg.quickCommands,
-			templateId: "prefs.Pages#QuickCommandList",
-			priority: 130,
-			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)),
-			prefs: [
-				ZmSetting.QUICK_COMMAND_LIST
-			],
-			manageChanges: true,
-			createView: function(parent, section, controller) {
-				return new ZmQuickCommandPage(parent, section, controller, new ZmQuickCommandListViewController());
-			}
-		}*/
 	};
+
     if (appCtxt.isOffline) {
         sections["BACKUP"] = {
-			title: ZmMsg.offlineBackups,
-			icon: "backup",
-            manageDirty: true,
-			templateId: "prefs.Pages#BackUp",
-			priority: 130,
-            prefs: [
-                ZmSetting.OFFLINE_BACKUP_NOW_BUTTON,
-                ZmSetting.OFFLINE_BACKUP_INTERVAL,
-                ZmSetting.OFFLINE_BACKUP_PATH,
-                ZmSetting.OFFLINE_BACKUP_KEEP,
-                ZmSetting.OFFLINE_BACKUP_ACCOUNT_ID,
-                ZmSetting.OFFLINE_BACKUP_RESTORE
-            ],
-			createView: function(parent, section, controller) {
-				return new ZmBackupPage(parent, section, controller);
-			}
+			title:          ZmMsg.offlineBackups,
+			icon:           "backup",
+            manageDirty:    true,
+			templateId:     "prefs.Pages#BackUp",
+			priority:       130,
+            prefs:          [
+				                ZmSetting.OFFLINE_BACKUP_NOW_BUTTON,
+				                ZmSetting.OFFLINE_BACKUP_INTERVAL,
+				                ZmSetting.OFFLINE_BACKUP_PATH,
+				                ZmSetting.OFFLINE_BACKUP_KEEP,
+				                ZmSetting.OFFLINE_BACKUP_ACCOUNT_ID,
+				                ZmSetting.OFFLINE_BACKUP_RESTORE
+				            ],
+			createView:     function(parent, section, controller) {
+								return new ZmBackupPage(parent, section, controller);
+							}
 		}
     }
 
@@ -535,7 +522,7 @@ function() {
 	ZmPref.registerPref("COMPOSE_INIT_FONT_COLOR", {
 		displayOptions: 	["rgb(0, 0, 0)"],
 		displayContainer:	ZmPref.TYPE_COLOR,
-		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
+		precondition:		ZmSetting.HTML_COMPOSE_ENABLED
 	});
 
 	var styles=[],names=[];
@@ -550,7 +537,8 @@ function() {
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions: 	names,
 		options: 			styles,
-		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED],
+		precondition:		[ ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED ],
+		preconditionAny:    true,
 		approximateFunction: function(id) {
 			// Choose the style that comes closest, or the first if none is found
 			if (AjxUtil.indexOf(styles, id) != -1) {
@@ -559,10 +547,6 @@ function() {
 			return ZmPref._normalizeFontId(id);
 		}
 	});
-
-    /*ZmPref.registerPref("QUICK_COMMAND_LIST", {
-		displayContainer:	ZmPref.TYPE_CUSTOM
-	});*/
 
 	// Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile...
 	var fontSizeOptions = [AjxMessageFormat.format(ZmMsg.pt,"8"), AjxMessageFormat.format(ZmMsg.pt,"10"),
@@ -598,7 +582,7 @@ function() {
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions: 	fontSizeOptions,
         options:            fontSizeValueOptions,
-		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
+		precondition:		ZmSetting.HTML_COMPOSE_ENABLED
 	});
 
 	ZmPref.registerPref("COMPOSE_SAME_FORMAT", {
@@ -715,7 +699,7 @@ function() {
 	ZmPref.registerPref("NEW_WINDOW_COMPOSE", {
 		displayName:		ZmMsg.composeInNewWin,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		AjxCallback.simpleClosure(ZmPref.requireAllPreConditions, null, ZmSetting.MAIL_ENABLED, ZmSetting.DETACH_COMPOSE_ENABLED)
+		precondition:		[ ZmSetting.MAIL_ENABLED, ZmSetting.DETACH_COMPOSE_ENABLED ]
 	});
 
     ZmPref.registerPref("MAIL_MANDATORY_SPELLCHECK", {
@@ -913,13 +897,14 @@ function() {
 	ZmPref.registerPref("SEARCH_INCLUDES_SPAM", {
 		displayName:		ZmMsg.includeJunkFolder,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		AjxCallback.simpleClosure(ZmPref.requireAllPreConditions, null, ZmSetting.MAIL_ENABLED, ZmSetting.SPAM_ENABLED)
+		precondition:		[ ZmSetting.MAIL_ENABLED, ZmSetting.SPAM_ENABLED ]
 	});
 
 	ZmPref.registerPref("SEARCH_INCLUDES_TRASH", {
 		displayName:		ZmMsg.includeTrashFolder,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		[ZmSetting.MAIL_ENABLED, ZmSetting.CONTACTS_ENABLED]
+		precondition:		[ ZmSetting.MAIL_ENABLED, ZmSetting.CONTACTS_ENABLED ],
+		preconditionAny:    true
 	});
 
 	ZmPref.registerPref("SHOW_FRAGMENTS", {

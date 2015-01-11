@@ -280,7 +280,8 @@ function() {
 			icon: "MailApp",
 			templateId: "prefs.Pages#Mail",
 			priority: 10,
-			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED) || appCtxt.get(ZmSetting.ADMIN_DELEGATED),
+			precondition: [ ZmSetting.MAIL_ENABLED, ZmSetting.ADMIN_DELEGATED ],
+			preconditionAny: true,
 			prefs: [
 				ZmSetting.AUTO_READ_RECEIPT_ENABLED,
 				ZmSetting.DEDUPE_MSG_TO_SELF,
@@ -722,7 +723,7 @@ function() {
 	var notifyText = ZmDesktopAlert.getInstance().getDisplayText();
 	ZmPref.registerPref("MAIL_NOTIFY_TOASTER", {
 		displayFunc:		function() { return notifyText; },
-		precondition:		function() { return !!notifyText; },
+		precondition:		!!notifyText,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
