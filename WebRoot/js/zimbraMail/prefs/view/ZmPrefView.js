@@ -168,11 +168,18 @@ function(sectionId) {
  * 
  * @private
  */
-ZmPrefView.prototype._addSection =
-function(section, index) {
+ZmPrefView.prototype._addSection = function(section, index) {
+
 	// does the section meet the precondition?
-	if ((!appCtxt.multiAccounts || (appCtxt.multiAccounts && appCtxt.getActiveAccount().isMain)) && !this._controller.checkPreCondition(section)) { return false; }
-	if (this.prefView[section.id]) return false; // Section already exists
+	if ((!appCtxt.multiAccounts || (appCtxt.multiAccounts && appCtxt.getActiveAccount().isMain)) &&
+		!appCtxt.checkPrecondition(section.precondition, section.preconditionAny)) {
+
+		return false;
+	}
+
+	if (this.prefView[section.id]) {
+		return false; // Section already exists
+	}
 
 	// create pref page's view
 	var view = (section.createView)
@@ -355,8 +362,8 @@ function(dirtyCheck, noValidation, batchCommand) {
 	return dirtyCheck ? false : list;
 };
 
-ZmPrefView.prototype._checkSection =
-function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSaveCommand) {
+ZmPrefView.prototype._checkSection = function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSaveCommand) {
+
 	var settings = appCtxt.getSettings();
 	var prefs = section && section.prefs;
 	var isAllDayVacation = false;
@@ -365,7 +372,9 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSave
 		if (!viewPage._prefPresent || !viewPage._prefPresent[id]) { continue; }
 		var setup = ZmPref.SETUP[id];
         var defaultError = setup.errorMessage;
-		if (!this._controller.checkPreCondition(setup)) { continue; }
+		if (!appCtxt.checkPrecondition(setup.precondition, setup.preconditionAny)) {
+			continue;
+		}
 
 		var type = setup ? setup.displayContainer : null;
 		// ignore non-form elements

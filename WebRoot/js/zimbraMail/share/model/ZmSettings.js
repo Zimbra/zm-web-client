@@ -140,6 +140,25 @@ function(id, key) {
 };
 
 /**
+ * Sets the value of the given setting.
+ *
+ * @param {String}	id		the ID of the setting
+ * @param {Object}	value			the new value for the setting
+ * @param {String}	key 			optional key for use by hash table data type
+ * @param {Boolean}	setDefault		if <code>true</code>, also set the default value
+ * @param {Boolean}	skipNotify		if <code>true</code>, do not notify listeners
+ * @param {Boolean}	skipImplicit		if <code>true</code>, do not check for change to implicit pref
+ */
+ZmSettings.prototype.set = function(id, value, key, setDefault, skipNotify, skipImplicit) {
+	if (id && this._settings[id]) {
+		this._settings[id].setValue(value, key, setDefault, skipNotify, skipImplicit);
+	}
+	else {
+		DBG.println(AjxDebug.DBG1, "ZmSettings.set: ID missing (value = " + value);
+	}
+};
+
+/**
  * Gets the setting.
  *
  * @param {String}	id		the ID of the setting
@@ -291,7 +310,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 	}
 
     // Voice feature
-    this._settings["VOICE_ENABLED"].setValue(this._hasVoiceFeature(), null, false, true);
+    this.set(ZmSetting.VOICE_ENABLED, this._hasVoiceFeature(), null, false, true);
 
     var accountName = params.accountName;
     var setDefault = params.preInit ? false : params.setDefault;
@@ -318,7 +337,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
     for (var i = 0; i < settings.length; i += 2) {
         var value = settings[i+1];
         if (value != null) {
-            this._settings[settings[i]].setValue(value, null, setDefault, skipNotify, skipImplicit);
+            this.set(settings[i], value, null, setDefault, skipNotify, skipImplicit);
         }
     }
 
@@ -336,7 +355,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 
 	// Server may provide us with SSO-enabled URL for Community integration (integration URL with OAuth signature)
 	if (info.communityURL) {
-		this.getSetting(ZmSetting.SOCIAL_EXTERNAL_URL).setValue(info.communityURL, null, setDefault, skipNotify);
+		this.set(ZmSetting.SOCIAL_EXTERNAL_URL, info.communityURL, null, setDefault, skipNotify);
 	}
 
 	if (params.preInit) {
@@ -357,14 +376,8 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		// for offline, find out whether this client supports prism-specific features
 		if (appCtxt.isOffline) {
 			if (AjxEnv.isPrism && window.platform) {
-				setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
-				if (setting) {
-					setting.setValue(true, null, setDefault, skipNotify, skipImplicit);
-				}
-				setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE];
-				if (setting) {
-					setting.setValue(true, null, setDefault, skipNotify, skipImplicit);
-				}
+				this.set(ZmSetting.OFFLINE_SUPPORTS_MAILTO, true, null, setDefault, skipNotify, skipImplicit);
+				this.set(ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE, true, null, setDefault, skipNotify, skipImplicit);
 			}
 
 			// bug #45804 - sharing always enabled for offline
@@ -378,10 +391,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		setting.defaultValue = this.get(ZmSetting.USERNAME);
 	}
 	if (this.get(ZmSetting.FORCE_CAL_OFF)) {
-		setting = this._settings[ZmSetting.CALENDAR_ENABLED];
-		if (setting) {
-			setting.setValue(false, null, setDefault, skipNotify, skipImplicit);
-		}
+		this.set(ZmSetting.CALENDAR_ENABLED, false, null, setDefault, skipNotify, skipImplicit);
 	}
 
 	setting = this._settings[ZmSetting.DELEGATED_ADMIN_PREF_FILTERS_ENABLED];
@@ -398,10 +408,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 	}
 
 	if (!this.get(ZmSetting.OPTIONS_ENABLED)) {
-		setting = this._settings[ZmSetting.FILTERS_ENABLED];
-		if (setting) {
-			setting.setValue(false, null, setDefault, skipNotify, skipImplicit);
-		}
+		this.set(ZmSetting.FILTERS_ENABLED, false, null, setDefault, skipNotify, skipImplicit);
 	}
 
 	// load zimlets *only* for the main account
@@ -435,7 +442,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		appCtxt.set(ZmSetting.FORWARD_INCLUDE_HEADERS, list[2], null, setDefault, skipNotify);
 	}
 
-    //Populate Sort Order Defaults
+    // Populate Sort Order Defaults
     var sortPref =  ZmSettings.DEFAULT_SORT_PREF;
     sortPref[ZmId.VIEW_CONVLIST]			= ZmSearch.DATE_DESC;
     sortPref[ZmId.VIEW_CONV]				= ZmSearch.DATE_DESC;
@@ -449,15 +456,14 @@ ZmSettings.prototype.setUserSettings = function(params) {
 
     var sortOrderSetting = this._settings[ZmSetting.SORTING_PREF];
     if (sortOrderSetting) {
-
-        //Populate empty sort pref's with defaultValues
-        for(var pref in sortPref){
-            if(!sortOrderSetting.getValue(pref)){
+        // Populate empty sort pref's with defaultValues
+        for (var pref in sortPref){
+            if (!sortOrderSetting.getValue(pref)){
                 sortOrderSetting.setValue(sortPref[pref], pref, false, true);
             }
         }
 
-        //Explicitly Set defaultValue
+        // Explicitly Set defaultValue
         sortOrderSetting.defaultValue = AjxUtil.hashCopy(sortPref);
     }
 	
@@ -614,12 +620,12 @@ function(response) {
 			locale.id = locale.id.replace(/^in/,"id");
 			ZmLocale.create(locale.id, locale.name, ZmMsg["localeName_" + locale.id] || locale.localName);
 		}
-        if(locales.length === 1) {
+        if (locales.length === 1) {
             //Fix for bug# 80762 - Set the value to always true in case of only one language/locale present
-            this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(true);
+            this.set(ZmSetting.LOCALE_CHANGE_ENABLED, true);
         }
         else {
-            this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(ZmLocale.hasChoices());
+            this.set(ZmSetting.LOCALE_CHANGE_ENABLED, ZmLocale.hasChoices());
         }
 	}
 };
@@ -767,33 +773,32 @@ ZmSettings.prototype._setDefaults =
 function() {
 
 	var value = AjxUtil.formatUrl({host:location.hostname, path:"/service/soap/", qsReset:true});
-	this._settings[ZmSetting.CSFE_SERVER_URI].setValue(value, null, false, true);
+	this.set(ZmSetting.CSFE_SERVER_URI, value, null, false, true);
 
 	// CSFE_MSG_FETCHER_URI
 	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co"}});
-	this._settings[ZmSetting.CSFE_MSG_FETCHER_URI].setValue(value, null, false, true);
+	this.set(ZmSetting.CSFE_MSG_FETCHER_URI, value, null, false, true);
 
 	// CSFE_UPLOAD_URI
 	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/upload", qsReset:true, qsArgs:{lbfums:""}});
-	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value, null, false, true);
+	this.set(ZmSetting.CSFE_UPLOAD_URI, value, null, false, true);
 
 	// CSFE_ATTACHMENT_UPLOAD_URI
 	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/upload", qsReset:true});
-	this._settings[ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI].setValue(value, null, false, true);
+	this.set(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI, value, null, false, true);
 
 	// CSFE EXPORT URI
 	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co", id:"{0}", fmt:"csv"}});
-	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
+	this.set(ZmSetting.CSFE_EXPORT_URI, value, null, false, true);
 
 	var h = location.hostname;
 	var isDev = ((h.indexOf(".zimbra.com") != -1) || (window.appDevMode && (/\.local$/.test(h) || (!appCtxt.isOffline && h == "localhost"))));
-	this._settings[ZmSetting.IS_DEV_SERVER].setValue(isDev);
+	this.set(ZmSetting.IS_DEV_SERVER, isDev);
 	if (isDev || window.isScriptErrorOn) {
-		this._settings[ZmSetting.SHOW_SCRIPT_ERRORS].setValue(true, null, false, true);
+		this.set(ZmSetting.SHOW_SCRIPT_ERRORS, true, null, false, true);
 	}
 
 	this.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError);
-
 };
 
 ZmSettings.prototype.persistImplicitSortPrefs =

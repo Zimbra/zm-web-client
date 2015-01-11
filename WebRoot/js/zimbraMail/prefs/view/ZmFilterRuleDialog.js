@@ -586,7 +586,7 @@ function(conf, field, options, rowData, testType, rowId) {
 		for (var i = 0; i < options.length; i++) {
 			var o = options[i];
 			// skip if the action or this option is disabled
-			var okay = ZmFilterRule.checkPreconditions(ZmFilterRule.CONDITIONS[o] || ZmFilterRule.ACTIONS[o]);
+			var okay = ZmFilterRule.checkPreconditions(ZmFilterRule.CONDITIONS[o] || ZmFilterRule.ACTIONS[o] || o);
 			if (!okay && (o !== ZmFilterRule.A_FORWARD || !rowData || !rowData.a)) {
 				continue;
 			}
