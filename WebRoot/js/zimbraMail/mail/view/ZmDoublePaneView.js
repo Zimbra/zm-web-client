@@ -161,9 +161,6 @@ function() {
 ZmDoublePaneView.prototype.setItem =
 function(item, force, dontFocus) {
 	this._itemView.set(item, force);
-	if (!dontFocus) {
-		this._controller._restoreFocus();	// bug 47700
-	}
 	this._controller._checkKeepReading();
  };
 

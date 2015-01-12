@@ -266,6 +266,15 @@ function(view) {
 	}
 };
 
+ZmMsgController.prototype._initializeTabGroup =
+function(view) {
+	if (this._tabGroups[view]) { return; }
+
+	ZmMailListController.prototype._initializeTabGroup.apply(this, arguments);
+
+	this._tabGroups[view].removeMember(this._view[view]);
+};
+
 ZmMsgController.prototype._getSearchFolderId =
 function() {
 	return this._msg.folderId ? this._msg.folderId : (this._msg.list && this._msg.list.search) ?
