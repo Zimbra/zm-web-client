@@ -30,6 +30,8 @@ ZmFolderRetentionView = function(dialog, parent) {
 
     this._dialog = dialog;
     this._initialized = false;
+	// Make sure mouse down clicks propagate to the select controls
+	this._propagateEvent[DwtEvent.ONMOUSEDOWN] = true;
 };
 
 ZmFolderRetentionView.prototype = new ZmFolderDialogTabView;
