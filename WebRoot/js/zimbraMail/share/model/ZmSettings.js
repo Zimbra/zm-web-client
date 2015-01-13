@@ -309,7 +309,15 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		}
 	}
 
-    // Voice feature
+	// For delegated admin who can see prefs but not mail, we still need to register the mail settings so
+	// they can be created and set below in createFromJs().
+	if (this.get(ZmSetting.ADMIN_DELEGATED)) {
+		if (!this.get(ZmSetting.ADMIN_MAIL_ENABLED) && this.get(ZmSetting.ADMIN_PREFERENCES_ENABLED)) {
+			(new ZmMailApp()).enableMailPrefs();
+		}
+	}
+
+	// Voice feature
     this.set(ZmSetting.VOICE_ENABLED, this._hasVoiceFeature(), null, false, true);
 
     var accountName = params.accountName;
@@ -346,12 +354,18 @@ ZmSettings.prototype.setUserSettings = function(params) {
         this.createFromJs(info.attrs._attrs, setDefault, skipNotify, skipImplicit);
     }
 
-    // admin mail enabled setting takes precedence if admin delegated
-    if (this.get(ZmSetting.ADMIN_DELEGATED) && !this.get(ZmSetting.ADMIN_MAIL_ENABLED)) {
-        this.getSetting(ZmSetting.MAIL_ENABLED).setValue(false);
-	    var mailApp = new ZmMailApp();
-	    mailApp.enableMailPrefs();
-    }
+	// By default, everything but mail is enabled for delegated admin. Require an additional setting to allow admin to view mail.
+	if (this.get(ZmSetting.ADMIN_DELEGATED)) {
+		this.set(ZmSetting.MAIL_ENABLED, this.get(ZmSetting.ADMIN_MAIL_ENABLED), setDefault, skipNotify, skipImplicit);
+		var enableMailPrefs = this.get(ZmSetting.MAIL_ENABLED) || (this.get(ZmSetting.ADMIN_DELEGATED) && this.get(ZmSetting.ADMIN_PREFERENCES_ENABLED));
+		this.set(ZmSetting.MAIL_PREFERENCES_ENABLED, enableMailPrefs, setDefault, skipNotify, skipImplicit);
+		// Disable other areas where mail could be exposed to a prefs-only admin
+		if (this.get(ZmSetting.MAIL_PREFERENCES_ENABLED) && !this.get(ZmSetting.MAIL__ENABLED)) {
+			this.set(ZmSetting.MAIL_FORWARDING_ENABLED, false, setDefault, skipNotify, skipImplicit);
+			this.set(ZmSetting.FILTERS_MAIL_FORWARDING_ENABLED, false, setDefault, skipNotify, skipImplicit);
+			this.set(ZmSetting.NOTIF_FEATURE_ENABLED, false, setDefault, skipNotify, skipImplicit);
+		}
+	}
 
 	// Server may provide us with SSO-enabled URL for Community integration (integration URL with OAuth signature)
 	if (info.communityURL) {
@@ -392,19 +406,6 @@ ZmSettings.prototype.setUserSettings = function(params) {
 	}
 	if (this.get(ZmSetting.FORCE_CAL_OFF)) {
 		this.set(ZmSetting.CALENDAR_ENABLED, false, null, setDefault, skipNotify, skipImplicit);
-	}
-
-	setting = this._settings[ZmSetting.DELEGATED_ADMIN_PREF_FILTERS_ENABLED];
-	if (setting) {
-		var settingFilter = this.get(ZmSetting.ADMIN_PREFERENCE_FILTERS_ENABLED) 
-		                 && this.get(ZmSetting.ADMIN_PREFERENCES_ENABLED);
-		setting.setValue(settingFilter, null, setDefault, skipNotify, skipImplicit);
-	}
-	setting = this._settings[ZmSetting.DELEGATED_ADMIN_VACATION_MSG_FEATURE_ENABLED];
-	if (setting) {
-		var settingOOO = this.get(ZmSetting.ADMIN_PREFERENCE_VACATION_MSG_FEATURE_ENABLED) 
-		              && this.get(ZmSetting.ADMIN_PREFERENCES_ENABLED);
-		setting.setValue(settingOOO, null, setDefault, skipNotify, skipImplicit);
 	}
 
 	if (!this.get(ZmSetting.OPTIONS_ENABLED)) {
@@ -1043,13 +1044,9 @@ function() {
 	this.registerSetting("MAIL_ALIASES",					{name:"zimbraMailAlias", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 	this.registerSetting("ALLOW_FROM_ADDRESSES",			{name:"zimbraAllowFromAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 
-	// Bug 95588: Originally these keys are set by the ZmMailApp, but they should be loaded
-	// for displaying/hiding them when the zimbraFeatureAdminMailEnabled is FALSE but
-	// zimbraFeatureAdminPreferencesEnabled is TRUE.
-	this.registerSetting("ADMIN_PREFERENCE_FILTERS_ENABLED",			 {name:"zimbraFeatureFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("ADMIN_PREFERENCE_VACATION_MSG_FEATURE_ENABLED",{name:"zimbraFeatureOutOfOfficeReplyEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("DELEGATED_ADMIN_PREF_FILTERS_ENABLED",		 {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("DELEGATED_ADMIN_VACATION_MSG_FEATURE_ENABLED", {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	// Internal pref to control display of mail-related preferences. The only time it will be false is for a delegated admin with zimbraFeatureAdminMailEnabled and
+	// zimbraFeatureAdminPreferencesEnabled set to FALSE.
+	this.registerSetting("MAIL_PREFERENCES_ENABLED",	    {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 
 	ZmApp.runAppFunction("registerSettings", this);
 };
