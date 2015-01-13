@@ -2415,9 +2415,10 @@ ZmMailApp.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
 // viewing or replying a conv; if we're in one of those, we still show its messages
 ZmMailApp.getFoldersToOmit = function(search) {
 
+	search = search || appCtxt.getCurrentSearch();
+
 	var folders = ZmMailApp.FOLDERS_TO_OMIT,
 		omit = [],
-		search = search || appCtxt.getCurrentSearch(),
 		curFolderId = search && search.folderId;
 
 	var isUserInitiatedSearch = search && search.userInitiated;
@@ -2430,3 +2431,12 @@ ZmMailApp.getFoldersToOmit = function(search) {
 	return AjxUtil.arrayAsHash(omit);
 };
 
+/*
+returns the folders to omit in case of reply/reply-all/forward - this includes DRAFTS always in addition to the others as returned by ZmMailApp.getFoldersToOmit
+(the others depend on current folder, but DRAFTS should always be ignored when replying/forwarding, even under Drafts folder)
+ */
+ZmMailApp.getReplyFoldersToOmit = function(search) {
+	var omit = ZmMailApp.getFoldersToOmit(search);
+	omit[ZmFolder.ID_DRAFTS] = true;
+	return omit;
+};

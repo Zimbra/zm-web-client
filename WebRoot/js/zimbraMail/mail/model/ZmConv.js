@@ -686,7 +686,7 @@ function(params, callback) {
 
 ZmConv.prototype._handleResponseGetFirstHotMsg = function(params, callback) {
 
-	var msg = this.msgs.getFirstHit(params.offset, params.limit);
+	var msg = this.msgs.getFirstHit(params.offset, params.limit, params.foldersToOmit);
 	// should have a loaded msg
 	if (msg && msg._loaded) {
 		if (callback) {

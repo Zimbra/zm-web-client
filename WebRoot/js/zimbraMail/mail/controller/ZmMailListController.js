@@ -1045,13 +1045,13 @@ function(ev) {
 		action = ZmOperation.REPLY;
 	}
 
-	this._doAction({ev:ev, action:action, foldersToOmit:ZmMailApp.getFoldersToOmit()});
+	this._doAction({ev: ev, action: action, foldersToOmit: ZmMailApp.getReplyFoldersToOmit()});
 };
 
 ZmMailListController.prototype._forwardListener =
 function(ev) {
 	var action = ev.item.getData(ZmOperation.KEY_ID);
-	this._doAction({ev:ev, action:action, foldersToOmit:ZmMailApp.getFoldersToOmit()});
+	this._doAction({ev: ev, action: action, foldersToOmit: ZmMailApp.getReplyFoldersToOmit()});
 };
 
 ZmMailListController.prototype._forwardConvListener = function(ev) {
