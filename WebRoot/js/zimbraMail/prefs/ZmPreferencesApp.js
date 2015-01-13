@@ -313,7 +313,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 			title:          appCtxt.isOffline ? ZmMsg.personas : ZmMsg.accounts,
 			templateId:     "prefs.Pages#Accounts",
 			priority:       9,
-			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED) || appCtxt.get(ZmSetting.ADMIN_PREFERENCES_ENABLED),
+			precondition:   ZmSetting.MAIL_PREFERENCES_ENABLED,
 			prefs:          [ ZmSetting.ACCOUNTS, ZmSetting.SAVE_TO_SENT_DELEGATED_TARGET ],
 			manageDirty:    true,
 			createView:     function(parent, section, controller) {
@@ -326,7 +326,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 			title:          ZmMsg.filterRules,
 			templateId:     "prefs.Pages#MailFilters",
 			priority:       50,
-			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)) || appCtxt.get(ZmSetting.DELEGATED_ADMIN_PREF_FILTERS_ENABLED),
+	        precondition:   [ ZmSetting.MAIL_PREFERENCES_ENABLED, ZmSetting.FILTERS_ENABLED ],
 			prefs:          [ ZmSetting.FILTERS ],
 			manageChanges:  true,
 			createView:     function(parent, section, controller) {
@@ -339,7 +339,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 			title:          ZmMsg.signatures,
 			templateId:     "prefs.Pages#Signatures",
 			priority:       51,
-			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) || (appCtxt.get(ZmSetting.ADMIN_PREFERENCES_ENABLED) && appCtxt.get(ZmSetting.SIGNATURES_ENABLED)),
+	        precondition:   [ ZmSetting.MAIL_PREFERENCES_ENABLED, ZmSetting.SIGNATURES_ENABLED ],
 			prefs:          [ ZmSetting.SIGNATURES, ZmSetting.SIGNATURE_STYLE, ZmSetting.SIGNATURE_ENABLED ],
 			manageDirty:    true,
 			createView:     function(parent, section, controller) {
@@ -352,7 +352,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 			title:          ZmMsg.outOfOffice,
             priority:       55,
             templateId:     "prefs.Pages#OutOfOffice",
-            precondition: appCtxt.get(ZmSetting.VACATION_MSG_FEATURE_ENABLED) || appCtxt.get(ZmSetting.DELEGATED_ADMIN_VACATION_MSG_FEATURE_ENABLED),
+	        precondition:   [ ZmSetting.MAIL_PREFERENCES_ENABLED, ZmSetting.VACATION_MSG_FEATURE_ENABLED ],
 	        prefs:          [
 				                ZmSetting.START_DATE_ENABLED,
 				                ZmSetting.END_DATE_ENABLED,
@@ -382,7 +382,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 			icon:           "TrustedAddresses",
 			templateId:     "prefs.Pages#Trusted",
 			priority:       60,
-			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED) || appCtxt.get(ZmSetting.ADMIN_PREFERENCES_ENABLED),
+	        precondition:   ZmSetting.MAIL_PREFERENCES_ENABLED,
 			createView:     function(parent, section, controller) {
 								return new ZmTrustedPage(parent, section, controller, "Prefs_Pages_TrustedAddresses");
 							},

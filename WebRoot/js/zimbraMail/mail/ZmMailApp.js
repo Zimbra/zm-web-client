@@ -280,8 +280,7 @@ function() {
 			icon: "MailApp",
 			templateId: "prefs.Pages#Mail",
 			priority: 10,
-			precondition: [ ZmSetting.MAIL_ENABLED, ZmSetting.ADMIN_DELEGATED ],
-			preconditionAny: true,
+			precondition: ZmSetting.MAIL_PREFERENCES_ENABLED,
 			prefs: [
 				ZmSetting.AUTO_READ_RECEIPT_ENABLED,
 				ZmSetting.DEDUPE_MSG_TO_SELF,
@@ -784,7 +783,7 @@ function(checked) {
  * combination of an empty away msg and a checked box for "send away message". Since a
  * pref is validated only if it changes, we have to have validation functions for both
  * prefs.
- * 
+ *
  * @private
  */
 ZmMailApp.validateVacationMsg =
@@ -854,7 +853,7 @@ function(checked) {
  */
 ZmMailApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp(ZmId.OP_ADD_FILTER_RULE, {textKey:"createFilter", image:"Plus"}, ZmSetting.DELEGATED_ADMIN_PREF_FILTERS_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_ADD_FILTER_RULE, {textKey:"createFilter", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_ADD_FILTER_RULE_ADDRESS, {textKey: "createFilter", image: "Plus"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_ADD_SIGNATURE, {textKey:"signature", image:"AddSignature", tooltipKey:"chooseSignature"}, ZmSetting.SIGNATURES_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_CHECK_MAIL, {textKey:"checkMail", tooltipKey:"checkMailPrefDefault", image:"Refresh", textPrecedence:90, showImageInToolbar: true});
@@ -866,7 +865,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_DELETE_MENU, {textKey:"del", image:"Delete", tooltipKey:"deleteTooltip"});
 	ZmOperation.registerOp(ZmId.OP_DETACH_COMPOSE, {tooltipKey:"detachComposeTooltip", image:"OpenInNewWindow"});
 	ZmOperation.registerOp(ZmId.OP_DRAFT, null, ZmSetting.SAVE_DRAFT_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_EDIT_FILTER_RULE, {textKey:"filterEdit", image:"Edit"}, ZmSetting.DELEGATED_ADMIN_PREF_FILTERS_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_EDIT_FILTER_RULE, {textKey:"filterEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORWARD, {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward", shortcut:ZmKeyMap.FORWARD, textPrecedence:46});
 	ZmOperation.registerOp(ZmId.OP_FORWARD_ATT, {textKey:"forwardAtt", tooltipKey:"forwardAtt", image:"Forward"});
 	ZmOperation.registerOp(ZmId.OP_FORWARD_CONV, {textKey:"forwardConv", tooltipKey:"forwardConv", image:"Forward"});
@@ -892,13 +891,13 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_PRIORITY_HIGH, {textKey:"priorityHigh", image:"PriorityHigh_list"});
 	ZmOperation.registerOp(ZmId.OP_PRIORITY_LOW, {textKey:"priorityLow", image:"PriorityLow_list"});
 	ZmOperation.registerOp(ZmId.OP_PRIORITY_NORMAL, {textKey:"priorityNormal", image:"PriorityNormal_list"});
-	ZmOperation.registerOp(ZmId.OP_REMOVE_FILTER_RULE, {textKey:"filterRemove", image:"Delete"}, ZmSetting.DELEGATED_ADMIN_PREF_FILTERS_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_REMOVE_FILTER_RULE, {textKey:"filterRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
     ZmOperation.registerOp(ZmId.OP_REDIRECT, {textKey:"mailRedirect", tooltipKey:"mailRedirectTooltip", image:"Redirect"});
 	ZmOperation.registerOp(ZmId.OP_REPLY, {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply", shortcut:ZmKeyMap.REPLY, textPrecedence:50});
 	ZmOperation.registerOp(ZmId.OP_REPLY_ALL, {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll", shortcut:ZmKeyMap.REPLY_ALL, textPrecedence:48});
 	ZmOperation.registerOp(ZmId.OP_REQUEST_READ_RECEIPT, {textKey:"requestReadReceipt", image:"ReadMessage"});
 	ZmOperation.registerOp(ZmId.OP_RESET, {textKey:"reset", image:"Refresh", tooltipKey: "refreshFilters"});
-	ZmOperation.registerOp(ZmId.OP_RUN_FILTER_RULE, {textKey:"filterRun", image:"SwitchFormat"}, ZmSetting.FILTERS_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_RUN_FILTER_RULE, {textKey:"filterRun", image:"SwitchFormat"}, [ ZmSetting.MAIL_ENABLED, ZmSetting.FILTERS_ENABLED ]);
 	ZmOperation.registerOp(ZmId.OP_SAVE_DRAFT, {textKey:"saveDraft", tooltipKey:"saveDraftTooltip", image:"DraftFolder", shortcut:ZmKeyMap.SAVE}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SEND_MENU, {textKey:"send", tooltipKey:"sendTooltip", image:"Send"}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SEND_LATER, {textKey:"sendLater", tooltipKey:"sendLaterTooltip", image:"SendLater"}, ZmSetting.SAVE_DRAFT_ENABLED);
