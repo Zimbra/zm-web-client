@@ -356,7 +356,7 @@ function(params) {
 	var tdId = params.parent._htmlElId + (params.tdId || params.buttonId);
 	var buttonEl = document.getElementById(tdId);
 	if (buttonEl) {
-		var btnParams = {parent:params.parent, style:params.style, id:params.buttonId, template: params.template, className: params.className};
+		var btnParams = {parent:params.parent, index: params.index, style:params.style, id:params.buttonId, template: params.template, className: params.className};
 		button = (params.type && params.type == "toolbar") ? (new DwtToolBarButton(btnParams)) : (new DwtButton(btnParams));
 		var hint = Dwt.getAttr(buttonEl, "hint");
 		ZmToolBar._setButtonStyle(button, hint, params.lbl, params.icon);
