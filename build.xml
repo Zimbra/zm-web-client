@@ -620,7 +620,8 @@
 
     <target name='compile' depends='init,external'>
         <mkdir dir='${build.classes.dir}'/>
-        <javac destdir="${build.classes.dir}" classpathref="class.path" debug="true" target="${javac.target}">
+        <javac destdir="${build.classes.dir}" classpathref="class.path"
+               debug="true" target="${javac.target}" includeantruntime="false">
             <src location='${src.dir}'/>
         </javac>
     </target>
