@@ -234,6 +234,12 @@ ZmHtmlEditor.prototype.getTextVersion = function (convertor, keepModeDiv) {
         : this.getContentField().value;
 };
 
+ZmHtmlEditor.prototype._focus = function() {
+	if (this._mode === Dwt.HTML && this.getEditor()) {
+		this.getEditor().focus();
+	}
+};
+
 /**
  * Returns the content of the editor.
  * 
@@ -474,11 +480,6 @@ function() {
 	Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
 	Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
 
-};
-
-ZmHtmlEditor.prototype.getInputElement =
-function() {
-	return this.getBodyField();
 };
 
 ZmHtmlEditor.prototype.initTinyMCEEditor =
@@ -760,7 +761,6 @@ function(id, content) {
     };
 
 	tinyMCE.init(tinyMCEInitObj);
-	this._setupTabGroup();
 	this._editor = this.getEditor();
 };
 
@@ -878,6 +878,7 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
     obj._editorInitialized = true;
 
     this._resetSize();
+	this._setupTabGroup();
 
     AjxUtil.foreach(this._initCallbacks, function(fn) { fn.run() });
 };
@@ -1076,7 +1077,7 @@ ZmHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
 	textarea = this.getContentField();
 	textarea.setAttribute('aria-hidden', !Dwt.getVisible(textarea));
 
-	this._setupTabGroup();
+    this._setupTabGroup();
     this._resetSize();
 };
 
@@ -2317,7 +2318,7 @@ ZmHtmlEditor.prototype._setupTabGroup = function() {
 			if (firstbutton) {
 				htmlTabGroup.addMember(firstbutton.getEl());
 			}
-			htmlTabGroup.addMember(Dwt.byId(this._iFrameId));
+			htmlTabGroup.addMember(this);
 		}
 		mainTabGroup.replaceMember(this._textModeTabGroup, this._htmlModeTabGroup);
 	}
