@@ -2476,6 +2476,9 @@ ZmComposeController.prototype._uploadImage = function(blob, callback, errorCallb
     req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     req.setRequestHeader("Content-Type", blob.type);
     req.setRequestHeader("Content-Disposition", 'attachment; filename="' + AjxUtil.convertToEntities(blob.name) + '"');
+    if (window.csrfToken) {
+        req.setRequestHeader("X-Zimbra-Csrf-Token", window.csrfToken);
+    }
     req.onreadystatechange = function() {
         if (req.readyState === 4) {
             if (req.status === 200) {
