@@ -1061,8 +1061,10 @@ function(params) {
 			posStyle:				DwtControl.STATIC_STYLE,
 			processHtmlCallback:	callback,
 			useKbMgmt:				true,
-			title:                  ZmMsg.messageBody
+			title:                  this._getIframeTitle()
 		};
+
+		// TODO: cache iframes
 		var ifw = this._ifw = new DwtIframe(params1);
 		if (ifw.initFailed) {
 			AjxDebug.println(AjxDebug.MSG_DISPLAY, "Message display: IFRAME was not ready");
@@ -2850,4 +2852,8 @@ function(check) {
 		return true;
 	}
 	return false;
+};
+
+ZmMailMsgView.prototype._getIframeTitle = function() {
+	return AjxMessageFormat.format(ZmMsg.messageTitle, this._msg.subject);
 };
