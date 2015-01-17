@@ -189,6 +189,9 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 ZmConvListView.prototype.isZmConvListView = true;
 ZmConvListView.prototype.toString = function() { return "ZmConvListView"; };
 
+ZmConvListView.prototype.role = 'tree';
+ZmConvListView.prototype.itemRole = 'treeitem';
+
 // Constants
 
 ZmListView.FIELD_CLASS[ZmItem.F_EXPAND] = "Expand";

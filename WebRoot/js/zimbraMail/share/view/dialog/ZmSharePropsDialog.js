@@ -695,13 +695,13 @@ function() {
 	var shareWith = new DwtPropertySheet(this, null, null, DwtPropertySheet.RIGHT);
 	var shareWithProperties = [
 		{ label: "<label id='LblShareWith_user' for='ShareWith_user' >" +  ZmMsg.shareWithUserOrGroup + "</label>",
-		  field: ["<input type='radio' id='ShareWith_user' name='",shareWithRadioName,"' value='",ZmShare.TYPE_USER,"'>"].join("")
+		  field: [ "<input type='radio' id='ShareWith_user' name='", shareWithRadioName, "' value='", ZmShare.TYPE_USER, "' aria-labelledby='LblShareWith_user'>" ].join("")
 		},
 		{ label: "<label id='LblShareWith_external' for='ShareWith_external' >" + ZmMsg.shareWithGuest + "</label>",
-		  field: ["<input type='radio' id='ShareWith_external' name='",shareWithRadioName,"' value='",ZmShare.TYPE_GUEST,"'>"].join("")
+		  field: [ "<input type='radio' id='ShareWith_external' name='", shareWithRadioName, "' value='", ZmShare.TYPE_GUEST, "' aria-labelledby='LblShareWith_external'>" ].join("")
 		},
 		{ label: "<label id='LblShareWith_public' for='ShareWith_public' >" + ZmMsg.shareWithPublicLong + "</label>",
-		  field: ["<input type='radio' id='ShareWith_public' name='",shareWithRadioName,"' value='",ZmShare.TYPE_PUBLIC,"'>"].join("")
+		  field: [ "<input type='radio' id='ShareWith_public' name='", shareWithRadioName, "' value='", ZmShare.TYPE_PUBLIC, "' aria-labelledby='LblShareWith_public'>" ].join("")
 		}
 	];
 	for (var i = 0; i < shareWithProperties.length; i++) {
@@ -754,28 +754,22 @@ function() {
 
 	var roles = [ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER, ZmShare.ROLE_ADMIN];
 	for (var i = 0; i < roles.length; i++) {
-		var role = roles[i];
+		var role = roles[i],
+			rowId = 'ShareRole_Row_' + role,
+			radioId = 'ShareRole_' + role,
+			labelId = 'LblShareRole_' + role;
 
-		html[idx++] = "<tr id='ShareRole_Row_";
-        html[idx++] = role;
-        html[idx++] = "'><td style='padding-left:10px; vertical-align:top;'><input type='radio' name='";
-		html[idx++] = roleRadioName;
-		html[idx++] = "' value='";
-		html[idx++] = role;
-		html[idx++] = "' id='ShareRole_";
-        html[idx++] = role;
-        html[idx++] = "'></td><td style='font-weight:bold; padding:0 0.5em 0 .25em;'>";
-		html[idx++] = "<label for='ShareRole_";
-        	html[idx++] = role;
-        	html[idx++] = "'>";
+		html[idx++] = "<tr id='" + rowId + "'>";
+        html[idx++] = "<td style='padding-left:10px; vertical-align:top;'>";
+		html[idx++] = "<input type='radio' name='" + roleRadioName + "' value='" + role + "' id='" + radioId + "' aria-labelledby='" + labelId + "'>";
+        html[idx++] = "</td>";
+		html[idx++] = "<td style='font-weight:bold; padding:0 0.5em 0 .25em;'>";
+		html[idx++] = "<label for='" + radioId + "' id='" + labelId + "'>";
 		html[idx++] = ZmShare.getRoleName(role);
 		html[idx++] = "</label>"
-		html[idx++] = "</td><td style='white-space:nowrap'>";
-		html[idx++] = "<label for='ShareRole_";
-        	html[idx++] = role;
-        	html[idx++] = "'>";
+		html[idx++] = "</td>";
+		html[idx++] = "<td style='white-space:nowrap'>";
 		html[idx++] = ZmShare.getRoleActions(role);
-		html[idx++] = "</label>"
 		html[idx++] = "</td></tr>";
 	}
 

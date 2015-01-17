@@ -620,6 +620,7 @@ UL.DwtListView-Rows {
 	@WindowTitleText-normal@
 	@NoWrap@
 	vertical-align:top;
+	text-align:center;
 	@MoveCursor@
 }
 
