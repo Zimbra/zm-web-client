@@ -2095,6 +2095,10 @@ INPUT[type="text"].search_input-expanded {
 	@FullSize@
 }
 
+.ZmExternalCalendarDialog {
+    white-space: nowrap;
+}
+
 /* Outer container for all calendar display views */
 .calendar_view {
 	@FullSize@
