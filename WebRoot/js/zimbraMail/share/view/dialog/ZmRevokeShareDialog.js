@@ -133,6 +133,7 @@ function() {
 	element.appendChild(this._confirmMsgEl);
 	element.appendChild(this._reply.getHtmlElement());
 
+	this._tabGroup.addMember(this._reply.getTabGroupMember());
 	return view;
 };
 

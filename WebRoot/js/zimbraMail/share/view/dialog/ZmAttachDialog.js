@@ -341,6 +341,7 @@ function(enable) {
 			ZmMsg.inlineAttachmentOption,
 			"</label>"
 		].join("");
+		this._tabGroup.addMember(this._inlineOption.getElementsByTagName('input')[0],0);
 	} else {
 		this._inlineOption.innerHTML = "";
 	}

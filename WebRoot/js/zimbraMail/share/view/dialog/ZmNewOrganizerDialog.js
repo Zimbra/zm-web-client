@@ -417,6 +417,9 @@ function() {
 	if (this._colorSelect) {
 		list.push(this._colorSelect);
 	}
+	if (this._remoteCheckboxField) {
+		list.push(this._remoteCheckboxField);
+	}
 	if (this._overview[this._curOverviewId]) {
 		list.push(this._overview[this._curOverviewId]);
 	}

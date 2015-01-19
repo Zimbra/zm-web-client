@@ -67,7 +67,6 @@ ZmSharePropsDialog = function(shell, className) {
 
 	// set view
 	this.setView(this._createView());
-	this._tabGroupComplete = false;
 };
 
 ZmSharePropsDialog.prototype = new DwtDialog;
@@ -164,11 +163,6 @@ function(mode, object, share) {
 
 	if (this._inheritEl) {
 		this._inheritEl.checked = share ? share.link.inh : isNewShare;
-	}
-
-	if (!this._tabGroupComplete) {
-		this._tabGroup.addMember(this._grantee, 0);
-		this._tabGroupComplete = true;
 	}
 
 	var perm = share && share.link.perm;
@@ -841,6 +835,13 @@ function() {
 		Dwt.setHandler(radioEls[i], DwtEvent.ONCLICK, ZmSharePropsDialog._handleEdit);
 		Dwt.associateElementWithObject(radioEls[i], this);
 	}
+
+	this._tabGroup.addMember(shareWith.getTabGroupMember());
+	this._tabGroup.addMember(this._grantee);
+	this._tabGroup.addMember(this._rolesGroup.getTabGroupMember());
+	this._tabGroup.addMember(this._messageGroup.getTabGroupMember());
+	this._tabGroup.addMember(this._urlGroup.getTabGroupMember());
+	this._tabGroup.addMember(this._reply.getTabGroupMember());
 
 	return view;
 };
