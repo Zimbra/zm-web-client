@@ -191,6 +191,26 @@ function(event) {
         Dwt.setVisible(this._nameInputEl,  true);
 	}
 
+	var hasFolderInfo = !!organizer.getToolTip();
+	if (hasFolderInfo) {
+		var unreadProp = this._props.getProperty(this._unreadId),
+			unreadLabel = unreadProp && document.getElementById(unreadProp.labelId);
+		if (unreadLabel) {
+			unreadLabel.innerHTML = AjxMessageFormat.format(ZmMsg.makeLabel, organizer._getUnreadLabel());
+		}
+		this._unreadEl.innerHTML = organizer.numUnread;
+		var totalProp = this._props.getProperty(this._totalId),
+			totalLabel = totalProp && document.getElementById(totalProp.labelId);
+		if (totalLabel) {
+			totalLabel.innerHTML = AjxMessageFormat.format(ZmMsg.makeLabel, organizer._getItemsText());
+		}
+		this._totalEl.innerHTML = organizer.numTotal;
+		this._sizeEl.innerHTML = AjxUtil.formatSize(organizer.sizeTotal);
+	}
+	this._props.setPropertyVisible(this._unreadId, hasFolderInfo && organizer.numUnread);
+	this._props.setPropertyVisible(this._totalId, hasFolderInfo);
+	this._props.setPropertyVisible(this._sizeId, hasFolderInfo && organizer.sizeTotal);
+
 	if (organizer.type === ZmOrganizer.SEARCH) {
 		this._queryInputEl.value = organizer.search.query;
 		this._props.setPropertyVisible(this._queryId, true);
@@ -266,8 +286,9 @@ function(response) {
 	return true;
 };
 
-ZmFolderPropertyView.prototype._createView =
-function() {
+// TODO: This seems awkward. Should use a template.
+ZmFolderPropertyView.prototype._createView = function() {
+
 	// create html elements
 	this._nameOutputEl = document.createElement("SPAN");
 	this._nameInputEl = document.createElement("INPUT");
@@ -284,6 +305,10 @@ function() {
 	this._typeEl = document.createElement("DIV");
 	this._urlEl = document.createElement("DIV");
 	this._permEl = document.createElement("DIV");
+
+	this._unreadEl = document.createElement("SPAN");
+	this._totalEl = document.createElement("SPAN");
+	this._sizeEl = document.createElement("SPAN");
 
 	var nameEl = document.createElement("DIV");
 	nameEl.appendChild(this._nameOutputEl);
@@ -305,6 +330,9 @@ function() {
 	this._urlId   = this._props.addProperty(ZmMsg.urlLabel,    this._urlEl);
 	this._permId  = this._props.addProperty(ZmMsg.permissions, this._permEl);
 	this._colorId = this._props.addProperty(ZmMsg.colorLabel,  this._color);
+	this._unreadId = this._props.addProperty(AjxMessageFormat.format(ZmMsg.makeLabel, ZmMsg.unread),  this._unreadEl);
+	this._totalId = this._props.addProperty(AjxMessageFormat.format(ZmMsg.makeLabel, ZmMsg.messages),  this._totalEl);
+	this._sizeId = this._props.addProperty(ZmMsg.sizeLabel,  this._sizeEl);
 
 	var prop = this._props.getProperty(namePropId);
 	this._nameOutputEl.setAttribute('aria-labelledby', prop.labelId);
