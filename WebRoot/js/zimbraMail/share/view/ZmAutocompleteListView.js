@@ -227,8 +227,8 @@ ZmAutocompleteListView.CALLBACKS = [
 ];
 
 // map of characters that are completion characters
-ZmAutocompleteListView.DELIMS			= [',', ';', '\n', '\r', '\t'];	// used when list is not showing
-ZmAutocompleteListView.DELIM_CODES		= [188, 59, 186, 3, 13, 9];		// used when list is showing
+ZmAutocompleteListView.DELIMS			= [',', ';', '\n', '\r'];	// used when list is not showing
+ZmAutocompleteListView.DELIM_CODES		= [188, 59, 186, 3, 13];		// used when list is showing
 
 ZmAutocompleteListView.WAIT_ID = "wait";
 
@@ -273,9 +273,8 @@ function(ev) {
 				result = false;
 			}
 		}
-		else if ((key == 9) && aclv._complete(element)) {
-			// a Tab following an address turns it into a bubble
-			result = true;
+		else if (key === 9) {
+			aclv._popdown();
 		}
 		
 		aclv._inputValue[element.id] = element.value;
