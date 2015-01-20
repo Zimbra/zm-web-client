@@ -152,7 +152,7 @@ function(folderId) {
 	}
 	var folder = appCtxt.getById(folderId);
 	var parent = folder.parent;
-	return this._folderToIdentity[folderId] || this.selectIdentityFromFolder(parent && parent.id);
+	return this._folderToIdentity[folder.getRemoteId()] || this.selectIdentityFromFolder(parent && parent.id);
 };
 
 ZmIdentityCollection.prototype.selectIdentity =
