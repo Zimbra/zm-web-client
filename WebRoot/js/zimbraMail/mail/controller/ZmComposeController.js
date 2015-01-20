@@ -1148,7 +1148,8 @@ function(msg) {
 		? appCtxt.accountList.defaultAccount : null;
 	var identityCollection = appCtxt.getIdentityCollection(account);
 	if (!msg) {
-		var curSearch = appCtxt.getApp(ZmApp.MAIL).currentSearch;
+		var ac = window.parentAppCtxt || window.appCtxt;
+		var curSearch = ac.getApp(ZmApp.MAIL).currentSearch;
 		var folderId = curSearch && curSearch.folderId;
 		if (folderId) {
 			return identityCollection.selectIdentityFromFolder(folderId);
