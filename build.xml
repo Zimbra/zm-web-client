@@ -110,7 +110,8 @@
     <!-- TINY_MCE INTEGRATION -->
     <property name="tinymce.version" value="4.1.6"/>
     <property name='tinymce.dir' value='${js.dir}/ajax/3rdparty/tinymce'/>
-    <property name='tinymce.js.dir' value='tiny_mce/tinymce-${tinymce.version}/js/tinymce' />
+    <property name='tinymce.root.dir' value='tiny_mce' />
+    <property name='tinymce.js.dir' value='${tinymce.root.dir}/tinymce-${tinymce.version}/js/tinymce' />
     <property name="tinymce.custom.dir" value="tiny_mce/custom"/>
 
     <!-- MODERNIZR INTEGRATION -->
@@ -1554,6 +1555,10 @@ if (ext == null) ext = "";
 
     <target name="get-tinymce-version">
         <echo message="${tinymce.version}" />
+    </target>
+
+    <target name="build-tinymce">
+        <exec executable="make" dir="${tinymce.root.dir}" failonerror="true" />
     </target>
 
     <target name="tinymce">
