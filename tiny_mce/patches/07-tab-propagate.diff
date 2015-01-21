@@ -1,0 +1,105 @@
+From c2d6f16ff16321f4cddf5f906b03580e0bfa8bdb Mon Sep 17 00:00:00 2001
+From: Dan Villiom Podlaski Christiansen <dchristiansen@zimbra.com>
+Date: Tue, 20 Jan 2015 16:53:42 +0100
+Subject: [PATCH] Prevent handled tab events from propagating outside the
+ editor.
+
+Allow 'tab' to escape from non-modal elements. Otherwise, the
+containing application might assume that it should handle it.
+
+Currently, TinyMCE always propagates tab key events. Unfortunately,
+containing applications have little way of knowing whether this is a
+tab that they should intercept -- such as in the toolbar -- or a tab
+they should most definitely ignore -- such as in menus and dialogs.
+
+We handle this by only letting tab keys propagate when unhandled; in
+order to prevent toolbars from becoming tab sinks, we also add a
+notion of controls that wrap focus. The latter currently applies to
+menus and windows.
+---
+ js/tinymce/classes/ui/KeyboardNavigation.js | 15 ++++++++++++++-
+ js/tinymce/classes/ui/Menu.js               |  1 +
+ js/tinymce/classes/ui/Window.js             |  2 ++
+ 3 files changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/js/tinymce/classes/ui/KeyboardNavigation.js b/js/tinymce/classes/ui/KeyboardNavigation.js
+index 354756b..698895a 100644
+--- a/js/tinymce/classes/ui/KeyboardNavigation.js
++++ b/js/tinymce/classes/ui/KeyboardNavigation.js
+@@ -219,6 +219,8 @@ define("tinymce/ui/KeyboardNavigation", [
+ 		 * @private
+ 		 * @param {Number} dir Direction to move in positive means forward, negative means backwards.
+ 		 * @param {Array} elements Optional array of elements to move within defaults to the current navigation roots elements.
++		 *
++		 * @return {Boolean} Whether focus moved.
+ 		 */
+ 		function moveFocus(dir, elements) {
+ 			var idx = -1, navigationRoot = getNavigationRoot();
+@@ -232,7 +234,14 @@ define("tinymce/ui/KeyboardNavigation", [
+ 			}
+ 
+ 			idx += dir;
++
++			if (!navigationRoot.settings.wrapFocus && (idx < 0 || idx >= elements.length)) {
++				return false;
++			}
++
+ 			navigationRoot.lastAriaIndex = moveFocusToIndex(idx, elements);
++
++			return true;
+ 		}
+ 
+ 		/**
+@@ -310,8 +319,10 @@ define("tinymce/ui/KeyboardNavigation", [
+ 				if (elm) {
+ 					elm.focus();
+ 				}
++
++				return true;
+ 			} else {
+-				moveFocus(e.shiftKey ? -1 : 1);
++				return moveFocus(e.shiftKey ? -1 : 1);
+ 			}
+ 		}
+ 
+@@ -372,6 +383,7 @@ define("tinymce/ui/KeyboardNavigation", [
+ 					var cancelEv = cancel();
+ 					if (cancelEv.isDefaultPrevented()) {
+ 						e.preventDefault();
++						e.stopPropagation();
+ 					}
+ 					if (cancelEv.isPropagationStopped()) {
+ 						e.stopPropagation();
+@@ -387,6 +399,7 @@ define("tinymce/ui/KeyboardNavigation", [
+ 				case 9: // DOM_VK_TAB
+ 					if (tab(e) !== false) {
+ 						e.preventDefault();
++						e.stopPropagation();
+ 					}
+ 					break;
+ 			}
+diff --git a/js/tinymce/classes/ui/Menu.js b/js/tinymce/classes/ui/Menu.js
+index 5efdd3f..1b8c9c7 100644
+--- a/js/tinymce/classes/ui/Menu.js
++++ b/js/tinymce/classes/ui/Menu.js
+@@ -29,6 +29,7 @@ define("tinymce/ui/Menu", [
+ 			layout: 'stack',
+ 			role: 'application',
+ 			bodyRole: 'menu',
++			wrapFocus: true,
+ 			ariaRoot: true
+ 		},
+ 
+diff --git a/js/tinymce/classes/ui/Window.js b/js/tinymce/classes/ui/Window.js
+index a779431..68ebde5 100644
+--- a/js/tinymce/classes/ui/Window.js
++++ b/js/tinymce/classes/ui/Window.js
+@@ -31,6 +31,8 @@ define("tinymce/ui/Window", [
+ 			layout: 'flex',
+ 			containerCls: 'panel',
+ 			role: 'dialog',
++			ariaRoot: true,
++			wrapFocus: true,
+ 			callbacks: {
+ 				submit: function() {
+ 					this.fire('submit', {data: this.toJSON()});
