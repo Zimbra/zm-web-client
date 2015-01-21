@@ -1438,8 +1438,7 @@ function(msg, container, doNotClearBubbles) {
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	// bug fix #31512 - if no sent date then display received date
 	var date = new Date(msg.sentDate || msg.date);
-	var dateString = AjxDateUtil.computeDateStr(new Date(), date);
-	var dateTooltip = appCtxt.get(ZmSetting.BROWSER_TOOLTIPS_ENABLED) ? dateFormatter.format(date) : "";
+	var dateString = dateFormatter.format(date);
 
 	var additionalHdrs = [];
 	var invite = msg.invite;
@@ -1486,7 +1485,6 @@ function(msg, container, doNotClearBubbles) {
 		imageURL:			imageURL || ZmZimbraMail.DEFAULT_CONTACT_ICON,
 		imageAltText:		imageAltText || ZmMsg.unknownPerson,
 		dateString:			dateString,
-		dateTooltip:		dateTooltip,
 		hasAttachments:		(attachmentsCount != 0),
 		attachmentsCount:	attachmentsCount,
 		bwo:                ai.bwo,
