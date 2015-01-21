@@ -122,7 +122,6 @@ AjxPackage.require("zimbraMail.share.view.dialog.ZmQuickAddDialog");
 
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHtmlEditor");
 AjxPackage.require("zimbraMail.share.view.ZmDragAndDrop");
-AjxPackage.require("zimbraMail.share.view.ZmFolderChooser");
 
 AjxPackage.require("zimbraMail.share.controller.ZmController");
 AjxPackage.require("zimbraMail.share.controller.ZmBaseController");
@@ -146,6 +145,8 @@ AjxPackage.require("zimbraMail.abook.ZmContactsApp");
 AjxPackage.require("zimbraMail.abook.model.ZmContact");
 AjxPackage.require("zimbraMail.abook.model.ZmContactList");
 AjxPackage.require("zimbraMail.briefcase.ZmBriefcaseApp");
+
+AjxPackage.require("zimbraMail.share.view.ZmFolderChooser");
 
 AjxPackage.require("zimbraMail.calendar.model.ZmCalBaseItem");
 AjxPackage.require("zimbraMail.calendar.model.ZmCalItem");
