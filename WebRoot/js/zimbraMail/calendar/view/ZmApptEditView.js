@@ -1597,12 +1597,10 @@ function() {
 
 ZmApptEditView.prototype._setIdentityVisible =
 function() {
-	if (!appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) return;
-
 	var div = document.getElementById(this._htmlElId + "_identityContainer");
 	if (!div) return;
 
-	var visible = this.identitySelect ? this.identitySelect.getOptionCount() > 1 : false;
+	var visible = this.identitySelect && appCtxt.get(ZmSetting.IDENTITIES_ENABLED) ? this.identitySelect.getOptionCount() > 1 : false;
     Dwt.setVisible(div, visible);
 };
 
