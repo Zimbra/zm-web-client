@@ -151,14 +151,10 @@ function(keepFocus) {
 	if (this._newTaskInputEl && Dwt.getVisibility(this._newTaskInputEl)) {
 		var name = AjxStringUtil.trim(this._newTaskInputEl.value);
 		if (name != "") {
-            if (ZmTaskEditView.INVALID_SUBJECT_REGEX.test(name)) {
-                this.showErrorMessage(ZmMsg.invalidTaskSubject);
-            } else {
-                var respCallback = new AjxCallback(this, this._saveNewTaskResponse, [keepFocus]);
-                var errorCallback = new AjxCallback(this, this._handleNewTaskError);
-                this._controller.quickSave(name, respCallback, errorCallback);
-            }
-		} else {
+			var respCallback = new AjxCallback(this, this._saveNewTaskResponse, [keepFocus]);
+			var errorCallback = new AjxCallback(this, this._handleNewTaskError);
+			this._controller.quickSave(name, respCallback, errorCallback);
+ 		} else {
 			this._saveNewTaskResponse(keepFocus);
 		}
 	}
