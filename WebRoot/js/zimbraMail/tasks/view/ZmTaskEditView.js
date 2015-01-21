@@ -82,10 +82,6 @@ ZmTaskEditView.STATUS_VALUES = [
 ZmTaskEditView.DIALOG_X = 50;
 ZmTaskEditView.DIALOG_Y = 100;
 
-// Characters disallowed in the Task subject name
-ZmTaskEditView.INVALID_SUBJECT_REGEX = /[\/\":]/;
-
-
 // Public Methods
 
 /**
@@ -255,30 +251,25 @@ function() {
 	var errorMsg;
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
     if (subj && subj.length) {
-
-        if (ZmTaskEditView.INVALID_SUBJECT_REGEX.test(subj)) {
-            errorMsg = ZmMsg.invalidTaskSubject;
-        } else {
-            var startDate = AjxStringUtil.trim(this._startDateField.value);
-            var endDate =   AjxStringUtil.trim(this._endDateField.value);
-            if (startDate.length > 0 && (!DwtTimeSelect.validStartEnd(this._startDateField, this._endDateField))) {
-                if(endDate.length <= 0) {
-                    errorMsg = ZmMsg.errorEmptyTaskDueDate;
-                } else {
-                    errorMsg = ZmMsg.errorInvalidDates;
-                }
-            }
-            var remindTime =  DwtTimeSelect.parse(this._remindTimeSelect.getInputField().getValue());
-            if (!remindTime) {
-                errorMsg = AjxMsg.invalidTimeString;
-            }
-            var completion =  this.getpCompleteInputValue();
-            if (!completion.valid) {
-                errorMsg = ZmMsg.errorInvalidPercentage;
-            } else if ((completion.percent < 0) || (completion.percent > 100)) {
-                errorMsg = ZmMsg.errorInvalidPercentage;
-            }
-        }
+		var startDate = AjxStringUtil.trim(this._startDateField.value);
+		var endDate =   AjxStringUtil.trim(this._endDateField.value);
+		if (startDate.length > 0 && (!DwtTimeSelect.validStartEnd(this._startDateField, this._endDateField))) {
+			if(endDate.length <= 0) {
+				errorMsg = ZmMsg.errorEmptyTaskDueDate;
+			} else {
+				errorMsg = ZmMsg.errorInvalidDates;
+			}
+		}
+		var remindTime =  DwtTimeSelect.parse(this._remindTimeSelect.getInputField().getValue());
+		if (!remindTime) {
+			errorMsg = AjxMsg.invalidTimeString;
+		}
+		var completion =  this.getpCompleteInputValue();
+		if (!completion.valid) {
+			errorMsg = ZmMsg.errorInvalidPercentage;
+		} else if ((completion.percent < 0) || (completion.percent > 100)) {
+			errorMsg = ZmMsg.errorInvalidPercentage;
+		}
     } else {
 		errorMsg = ZmMsg.errorMissingSubject;
 	}
