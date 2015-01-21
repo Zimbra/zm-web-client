@@ -1,0 +1,22 @@
+From 192bb0ed4e5adf3668d2ade8e065a98471d5d21f Mon Sep 17 00:00:00 2001
+From: Dan Villiom Podlaski Christiansen <dchristiansen@zimbra.com>
+Date: Tue, 20 Jan 2015 14:13:33 +0100
+Subject: [PATCH] The aria-describedby attribute should point to Window titles.
+
+---
+ js/tinymce/classes/ui/Window.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/js/tinymce/classes/ui/Window.js b/js/tinymce/classes/ui/Window.js
+index e5abe1f..a779431 100644
+--- a/js/tinymce/classes/ui/Window.js
++++ b/js/tinymce/classes/ui/Window.js
+@@ -91,7 +91,7 @@ define("tinymce/ui/Window", [
+ 				self.close();
+ 			});
+ 
+-			self.aria('describedby', self.describedBy || self._id + '-none');
++			self.aria('describedby', self.describedBy || self._id + '-title');
+ 			self.aria('label', settings.title);
+ 			self._fullscreen = false;
+ 		},

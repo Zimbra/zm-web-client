@@ -1,0 +1,22 @@
+From aed1c63f2c5928a8dcb1ff4befbb6b7937b73c7f Mon Sep 17 00:00:00 2001
+From: Dan Villiom Podlaski Christiansen <dchristiansen@zimbra.com>
+Date: Tue, 20 Jan 2015 15:35:56 +0100
+Subject: [PATCH] Use the similarly named role for comboboxes.
+
+---
+ js/tinymce/classes/ui/ComboBox.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/js/tinymce/classes/ui/ComboBox.js b/js/tinymce/classes/ui/ComboBox.js
+index d98297c..9b8e22c 100644
+--- a/js/tinymce/classes/ui/ComboBox.js
++++ b/js/tinymce/classes/ui/ComboBox.js
+@@ -309,7 +309,7 @@ define("tinymce/ui/ComboBox", [
+ 
+ 			if (icon || text) {
+ 				openBtnHtml = (
+-					'<div id="' + id + '-open" class="' + prefix + 'btn ' + prefix + 'open" tabIndex="-1" role="button">' +
++					'<div id="' + id + '-open" class="' + prefix + 'btn ' + prefix + 'open" tabIndex="-1" role="combobox">' +
+ 						'<button id="' + id + '-action" type="button" hidefocus="1" tabindex="-1">' +
+ 							(icon != 'caret' ? '<i class="' + icon + '"></i>' : '<i class="' + prefix + 'caret"></i>') +
+ 							(text ? (icon ? ' ' : '') + text : '') +
