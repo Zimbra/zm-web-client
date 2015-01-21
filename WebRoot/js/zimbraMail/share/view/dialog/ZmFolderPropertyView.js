@@ -235,12 +235,8 @@ function(event) {
     var url = organizer.url ? AjxStringUtil.htmlEncode(organizer.url).replace(/&amp;/g,'%26') : null;
 	var urlDisplayString = url;
 	if (urlDisplayString) {
-        urlDisplayString = AjxStringUtil.clipByLength(urlDisplayString,50);
-    }
-
-    if(urlDisplayString){
-        urlDisplayString = ['<a target=_new href="',url,'">',urlDisplayString,'</a>'].join("");
-    }
+		urlDisplayString = [ '<a target=_new href="',url,'">', AjxStringUtil.clipByLength(urlDisplayString, 50), '</a>' ].join("");
+	}
 
     this._urlEl.innerHTML = urlDisplayString || "";
 
@@ -330,8 +326,8 @@ ZmFolderPropertyView.prototype._createView = function() {
 	this._urlId   = this._props.addProperty(ZmMsg.urlLabel,    this._urlEl);
 	this._permId  = this._props.addProperty(ZmMsg.permissions, this._permEl);
 	this._colorId = this._props.addProperty(ZmMsg.colorLabel,  this._color);
-	this._unreadId = this._props.addProperty(AjxMessageFormat.format(ZmMsg.makeLabel, ZmMsg.unread),  this._unreadEl);
 	this._totalId = this._props.addProperty(AjxMessageFormat.format(ZmMsg.makeLabel, ZmMsg.messages),  this._totalEl);
+	this._unreadId = this._props.addProperty(AjxMessageFormat.format(ZmMsg.makeLabel, ZmMsg.unread),  this._unreadEl);
 	this._sizeId = this._props.addProperty(ZmMsg.sizeLabel,  this._sizeEl);
 
 	var prop = this._props.getProperty(namePropId);
