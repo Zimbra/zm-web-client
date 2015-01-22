@@ -408,7 +408,7 @@
 					</fmt:message>
 				</app:status>
 				<c:if test="${not empty param.delRedirectUrl}" >
-					<zm:redirect url="${param.delRedirectUrl}&actionMessageMoved=${true}&movedFolderName=${movedFolderName}" />
+					<zm:redirect url="${param.delRedirectUrl}&actionMessageMoved=${true}&movedFolderId=${folderid}"/>
 				</c:if>
 			</c:when>
 			<c:when test="${zm:actionSet(param, 'actionMove')}">
