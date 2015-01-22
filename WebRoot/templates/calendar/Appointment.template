@@ -509,7 +509,6 @@
                     <td colspan='2'>
                         <table role="presentation"><tr>
                             <td colspan='2' id='${id}_reminderSelect'></td>
-                            <td style="padding:0 0 0 8px;"><div id='${id}_reminderConfigure'></div></td>
                             <td><div id='${id}_reminderEmailCheckbox'></div></td>
                             <$ if (appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)) { $>
                                 <td><div id='${id}_reminderDeviceEmailCheckbox'></div></td>
