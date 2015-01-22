@@ -794,20 +794,6 @@ function() {
 };
 
 /**
- * Gets the link properties dialog.
- * 
- * @return	{ZmLinkPropsDialog}		the link properties dialog
- */
-ZmAppCtxt.prototype.getLinkPropsDialog =
-function() {
-	if (!this._linkPropsDialog) {
-		AjxDispatcher.require("Extras");
-		this._linkPropsDialog = new ZmLinkPropsDialog(this._shell);
-	}
-	return this._linkPropsDialog;
-};
-
-/**
  * Gets the share properties dialog.
  * 
  * @return	{ZmSharePropsDialog}		the share properties dialog
