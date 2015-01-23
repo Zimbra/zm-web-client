@@ -1,6 +1,6 @@
-From c2d6f16ff16321f4cddf5f906b03580e0bfa8bdb Mon Sep 17 00:00:00 2001
+From 359f42734c823fd529b62be9b957aa8cc9154bbd Mon Sep 17 00:00:00 2001
 From: Dan Villiom Podlaski Christiansen <dchristiansen@zimbra.com>
-Date: Tue, 20 Jan 2015 16:53:42 +0100
+Date: Thu, 22 Jan 2015 14:27:33 +0100
 Subject: [PATCH] Prevent handled tab events from propagating outside the
  editor.
 
@@ -15,13 +15,34 @@ they should most definitely ignore -- such as in menus and dialogs.
 We handle this by only letting tab keys propagate when unhandled; in
 order to prevent toolbars from becoming tab sinks, we also add a
 notion of controls that wrap focus. The latter currently applies to
-menus and windows.
+all float panels.
 ---
+ js/tinymce/classes/ui/FloatPanel.js         |  5 ++++-
  js/tinymce/classes/ui/KeyboardNavigation.js | 15 ++++++++++++++-
- js/tinymce/classes/ui/Menu.js               |  1 +
- js/tinymce/classes/ui/Window.js             |  2 ++
- 3 files changed, 17 insertions(+), 1 deletion(-)
+ js/tinymce/classes/ui/Window.js             |  1 +
+ 3 files changed, 19 insertions(+), 2 deletions(-)
 
+diff --git a/js/tinymce/classes/ui/FloatPanel.js b/js/tinymce/classes/ui/FloatPanel.js
+index e8efaca..cfd4283 100644
+--- a/js/tinymce/classes/ui/FloatPanel.js
++++ b/js/tinymce/classes/ui/FloatPanel.js
+@@ -185,6 +185,9 @@ define("tinymce/ui/FloatPanel", [
+ 
+ 	var FloatPanel = Panel.extend({
+ 		Mixins: [Movable, Resizable],
++		Defaults: {
++			wrapFocus: true
++		},
+ 
+ 		/**
+ 		 * Constructs a new control instance with the specified settings.
+@@ -397,4 +400,4 @@ define("tinymce/ui/FloatPanel", [
+ 	}
+ 
+ 	return FloatPanel;
+-});
+\ No newline at end of file
++});
 diff --git a/js/tinymce/classes/ui/KeyboardNavigation.js b/js/tinymce/classes/ui/KeyboardNavigation.js
 index 354756b..698895a 100644
 --- a/js/tinymce/classes/ui/KeyboardNavigation.js
@@ -78,28 +99,15 @@ index 354756b..698895a 100644
  					}
  					break;
  			}
-diff --git a/js/tinymce/classes/ui/Menu.js b/js/tinymce/classes/ui/Menu.js
-index 5efdd3f..1b8c9c7 100644
---- a/js/tinymce/classes/ui/Menu.js
-+++ b/js/tinymce/classes/ui/Menu.js
-@@ -29,6 +29,7 @@ define("tinymce/ui/Menu", [
- 			layout: 'stack',
- 			role: 'application',
- 			bodyRole: 'menu',
-+			wrapFocus: true,
- 			ariaRoot: true
- 		},
- 
 diff --git a/js/tinymce/classes/ui/Window.js b/js/tinymce/classes/ui/Window.js
-index a779431..68ebde5 100644
+index a779431..3ac0c5d 100644
 --- a/js/tinymce/classes/ui/Window.js
 +++ b/js/tinymce/classes/ui/Window.js
-@@ -31,6 +31,8 @@ define("tinymce/ui/Window", [
+@@ -31,6 +31,7 @@ define("tinymce/ui/Window", [
  			layout: 'flex',
  			containerCls: 'panel',
  			role: 'dialog',
 +			ariaRoot: true,
-+			wrapFocus: true,
  			callbacks: {
  				submit: function() {
  					this.fire('submit', {data: this.toJSON()});

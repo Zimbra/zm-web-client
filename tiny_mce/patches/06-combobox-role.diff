@@ -1,22 +1,47 @@
-From aed1c63f2c5928a8dcb1ff4befbb6b7937b73c7f Mon Sep 17 00:00:00 2001
+From 3366074471b6a4b373f35afec6861f7292c3d848 Mon Sep 17 00:00:00 2001
 From: Dan Villiom Podlaski Christiansen <dchristiansen@zimbra.com>
-Date: Tue, 20 Jan 2015 15:35:56 +0100
-Subject: [PATCH] Use the similarly named role for comboboxes.
+Date: Wed, 21 Jan 2015 13:21:01 +0100
+Subject: [PATCH] Use the combobox role for menu buttons located elsewhere than
+ menus.
 
 ---
- js/tinymce/classes/ui/ComboBox.js | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ js/tinymce/classes/ui/MenuButton.js | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/js/tinymce/classes/ui/ComboBox.js b/js/tinymce/classes/ui/ComboBox.js
-index d98297c..9b8e22c 100644
---- a/js/tinymce/classes/ui/ComboBox.js
-+++ b/js/tinymce/classes/ui/ComboBox.js
-@@ -309,7 +309,7 @@ define("tinymce/ui/ComboBox", [
+diff --git a/js/tinymce/classes/ui/MenuButton.js b/js/tinymce/classes/ui/MenuButton.js
+index ed6ca35..8c348ab 100644
+--- a/js/tinymce/classes/ui/MenuButton.js
++++ b/js/tinymce/classes/ui/MenuButton.js
+@@ -17,9 +17,8 @@
+  */
+ define("tinymce/ui/MenuButton", [
+ 	"tinymce/ui/Button",
+-	"tinymce/ui/Factory",
+-	"tinymce/ui/MenuBar"
+-], function(Button, Factory, MenuBar) {
++	"tinymce/ui/Factory"
++], function(Button, Factory) {
+ 	"use strict";
  
- 			if (icon || text) {
- 				openBtnHtml = (
--					'<div id="' + id + '-open" class="' + prefix + 'btn ' + prefix + 'open" tabIndex="-1" role="button">' +
-+					'<div id="' + id + '-open" class="' + prefix + 'btn ' + prefix + 'open" tabIndex="-1" role="combobox">' +
- 						'<button id="' + id + '-action" type="button" hidefocus="1" tabindex="-1">' +
- 							(icon != 'caret' ? '<i class="' + icon + '"></i>' : '<i class="' + prefix + 'caret"></i>') +
- 							(text ? (icon ? ' ' : '') + text : '') +
+ 	// TODO: Maybe add as some global function
+@@ -168,7 +167,12 @@ define("tinymce/ui/MenuButton", [
+ 
+ 			icon = self.settings.icon ? prefix + 'ico ' + prefix + 'i-' + icon : '';
+ 
+-			self.aria('role', self.parent() instanceof MenuBar ? 'menuitem' : 'button');
++			var parentrolemap = {
++				buttongroup: 'button',
++				toolbar: 'button',
++				menubar: 'menuitem'
++			};
++			self.aria('role', parentrolemap[self.parent().type] || 'combobox');
+ 
+ 			return (
+ 				'<div id="' + id + '" class="' + self.classes() + '" tabindex="-1">' +
+@@ -258,4 +262,4 @@ define("tinymce/ui/MenuButton", [
+ 	});
+ 
+ 	return MenuButton;
+-});
+\ No newline at end of file
++});

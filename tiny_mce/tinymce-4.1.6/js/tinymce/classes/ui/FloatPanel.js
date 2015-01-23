@@ -185,6 +185,9 @@ define("tinymce/ui/FloatPanel", [
 
 	var FloatPanel = Panel.extend({
 		Mixins: [Movable, Resizable],
+		Defaults: {
+			wrapFocus: true
+		},
 
 		/**
 		 * Constructs a new control instance with the specified settings.

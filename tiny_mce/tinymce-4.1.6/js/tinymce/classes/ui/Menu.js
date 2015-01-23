@@ -29,7 +29,6 @@ define("tinymce/ui/Menu", [
 			layout: 'stack',
 			role: 'application',
 			bodyRole: 'menu',
-			wrapFocus: true,
 			ariaRoot: true
 		},
 
