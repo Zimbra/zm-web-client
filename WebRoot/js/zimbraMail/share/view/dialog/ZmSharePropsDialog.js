@@ -76,16 +76,28 @@ ZmSharePropsDialog.prototype.isZmSharePropsDialog = true;
 ZmSharePropsDialog.prototype.toString = function() { return "ZmSharePropsDialog"; };
 
 // Constants
-/**
- * Defines the "new" mode.
- */
+
+
+// modes
 ZmSharePropsDialog.NEW	= ZmShare.NEW;
-/**
- * Defines the "edit" mode.
- */
 ZmSharePropsDialog.EDIT	= ZmShare.EDIT;
 
+// roles
+ZmSharePropsDialog.SHARE_WITH = [ 'user', 'external', 'public' ];
+ZmSharePropsDialog.SHARE_WITH_MSG = {
+	user:       ZmMsg.shareWithUserOrGroup,
+	external:   ZmMsg.shareWithGuest,
+	'public':     ZmMsg.shareWithPublicLong
+};
+ZmSharePropsDialog.SHARE_WITH_TYPE = {
+	user:       ZmShare.TYPE_USER,
+	external:   ZmShare.TYPE_GUEST,
+	'public':     ZmShare.TYPE_PUBLIC
+};
+
+
 // Data
+
 ZmSharePropsDialog.prototype._mode = ZmSharePropsDialog.NEW;
 
 
@@ -669,8 +681,8 @@ function() {
 	return perm;
 };
 
-ZmSharePropsDialog.prototype._createView =
-function() {
+ZmSharePropsDialog.prototype._createView = function() {
+
 	var view = new DwtComposite(this);
 
 	// ids
@@ -682,39 +694,18 @@ function() {
 	var urlId = Dwt.getNextId();
 	var permissionId = Dwt.getNextId();
 
-	// radio names
-	var shareWithRadioName = this._htmlElId+"_shareWith";
-	var roleRadioName = this._htmlElId+"_role";
-
+	var shareWithRadioName = this._htmlElId + "_shareWith";
 	var shareWith = new DwtPropertySheet(this, null, null, DwtPropertySheet.RIGHT);
-	var shareWithProperties = [
-		{ label: "<label id='LblShareWith_user' for='ShareWith_user' >" +  ZmMsg.shareWithUserOrGroup + "</label>",
-		  field: [ "<input type='radio' id='ShareWith_user' name='", shareWithRadioName, "' value='", ZmShare.TYPE_USER, "' aria-labelledby='LblShareWith_user'>" ].join("")
-		},
-		{ label: "<label id='LblShareWith_external' for='ShareWith_external' >" + ZmMsg.shareWithGuest + "</label>",
-		  field: [ "<input type='radio' id='ShareWith_external' name='", shareWithRadioName, "' value='", ZmShare.TYPE_GUEST, "' aria-labelledby='LblShareWith_external'>" ].join("")
-		},
-		{ label: "<label id='LblShareWith_public' for='ShareWith_public' >" + ZmMsg.shareWithPublicLong + "</label>",
-		  field: [ "<input type='radio' id='ShareWith_public' name='", shareWithRadioName, "' value='", ZmShare.TYPE_PUBLIC, "' aria-labelledby='LblShareWith_public'>" ].join("")
-		}
-	];
-	for (var i = 0; i < shareWithProperties.length; i++) {
-		var property = shareWithProperties[i];
-		var propId = shareWith.addProperty(property.label, property.field);
+	var shareWithProperties = [], sw, label, value;
+	for (var i = 0; i < ZmSharePropsDialog.SHARE_WITH.length; i++) {
+		sw = ZmSharePropsDialog.SHARE_WITH[i];
+		label = "<label id='LblShareWith_" + sw + "'>" + ZmSharePropsDialog.SHARE_WITH_MSG[sw] + "</label>";
+		value = "<input type='radio' id='ShareWith_" + sw + "' name='" + shareWithRadioName + "' value='" + ZmSharePropsDialog.SHARE_WITH_TYPE[sw] + "'>";
+		shareWith.addProperty(label, value);
 	}
-
-	//var password = new DwtComposite(this);
-	//this._passwordInput = new DwtInputField({parent: password, id:"ShareDialog_password"});
-	//this._passwordInput.setData(Dwt.KEY_OBJECT, this);
-	//this._passwordInput.setRequired(true);
-	//this._passwordButton = new DwtButton({parent:password, id:"ShareDialog_Button"});
-	//this._passwordButton.setText(ZmMsg.changePassword);
-	//this._passwordButton.addSelectionListener(new AjxListener(this, this._handleChangeButton));
-	//Dwt.associateElementWithObject(this._passwordInput.getInputElement(), this);
 
 	this._shareWithOptsProps = new DwtPropertySheet(this);
 	this._shareWithOptsProps.addProperty(ZmMsg.emailLabel, this._grantee);
-	//this._passwordId = this._shareWithOptsProps.addProperty(ZmMsg.passwordLabel, password);
 
 	var otherHtml = [
 		"<table class='ZCheckboxTable'>",
@@ -728,11 +719,23 @@ function() {
 	].join("");
 
 	this._props = new DwtPropertySheet(view);
-	this._props.addProperty(ZmMsg.nameLabel, "<span id='"+nameId+"'></span>");
-    this._props.addProperty(ZmMsg.typeLabel, "<span id='"+typeId+"'></span>");
-    this._markReadId = this._props.addProperty(ZmMsg.sharingDialogMarkReadLabel, "<span id='"+markReadValueId+"'></span>");
-	this._props.addProperty(ZmMsg.shareWithLabel, shareWith);
+	this._props.addProperty(ZmMsg.nameLabel, "<span id='" + nameId + "'></span>");
+    this._props.addProperty(ZmMsg.typeLabel, "<span id='" + typeId + "'></span>");
+    this._markReadId = this._props.addProperty(ZmMsg.sharingDialogMarkReadLabel, "<span id='" + markReadValueId + "'></span>");
+	var shareWithId = this._props.addProperty(ZmMsg.shareWithLabel, shareWith);
 	var otherId = this._props.addProperty(ZmMsg.otherLabel, otherHtml);
+
+	// Accessibility: set aria-labelledby for each radio button to two IDs, one is the group label, other is label for that button
+	var shareWithLabelId = this._props.getProperty(shareWithId).labelId,
+		radioId, radioEl;
+	for (var i = 0; i < ZmSharePropsDialog.SHARE_WITH.length; i++) {
+		sw = ZmSharePropsDialog.SHARE_WITH[i];
+		radioId = 'ShareWith_' + sw;
+		radioEl = document.getElementById(radioId);
+		if (radioEl) {
+			radioEl.setAttribute('aria-labelledby', [ shareWithLabelId, 'LblShareWith_' + sw ].join(' '));
+		}
+	}
 
 	this._inheritEl = document.getElementById(inheritId);
 
@@ -746,19 +749,24 @@ function() {
 	var html = [];
 	html[idx++] = "<table class='ZRadioButtonTable'>";
 
+	this._rolesGroup = new DwtGrouper(view);
+
+	var roleRadioName = this._htmlElId + "_role";
 	var roles = [ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER, ZmShare.ROLE_ADMIN];
 	for (var i = 0; i < roles.length; i++) {
 		var role = roles[i],
 			rowId = 'ShareRole_Row_' + role,
 			radioId = 'ShareRole_' + role,
-			labelId = 'LblShareRole_' + role;
+			labelId = 'LblShareRole_' + role,
+			legendId = this._rolesGroup._labelEl.id,
+			labelledBy = [ legendId, labelId ].join(' ');
 
 		html[idx++] = "<tr id='" + rowId + "'>";
         html[idx++] = "<td style='padding-left:10px; vertical-align:top;'>";
-		html[idx++] = "<input type='radio' name='" + roleRadioName + "' value='" + role + "' id='" + radioId + "' aria-labelledby='" + labelId + "'>";
+		html[idx++] = "<input type='radio' name='" + roleRadioName + "' value='" + role + "' id='" + radioId + "' aria-labelledby='" + labelledBy + "'>";
         html[idx++] = "</td>";
 		html[idx++] = "<td style='font-weight:bold; padding:0 0.5em 0 .25em;'>";
-		html[idx++] = "<label for='" + radioId + "' id='" + labelId + "'>";
+		html[idx++] = "<label id='" + labelId + "'>";
 		html[idx++] = ZmShare.getRoleName(role);
 		html[idx++] = "</label>"
 		html[idx++] = "</td>";
@@ -769,7 +777,6 @@ function() {
 
 	html[idx++] = "</table>";
 
-	this._rolesGroup = new DwtGrouper(view);
 	this._rolesGroup.setLabel(ZmMsg.role);
 	this._rolesGroup.setContent(html.join(""));
 
@@ -786,6 +793,7 @@ function() {
 	this._messageGroup = new DwtGrouper(view);
 	this._messageGroup.setLabel(ZmMsg.message);
 	this._messageGroup.setView(this._reply);
+	this._reply.setAttribute('aria-labelledby', this._messageGroup._labelEl.id);
 
 	// add url group
 	var urlHtml = [
@@ -822,12 +830,9 @@ function() {
 		Dwt.associateElementWithObject(radioEls[i], this);
 	}
 
-	//var inputEl = this._passwordInput.getInputElement();
-	//Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleEdit);
-
-	var radios = ["_noneRadioEl", "_viewerRadioEl", "_managerRadioEl", "_adminRadioEl"];
-	var radioEls = document.getElementsByName(roleRadioName);
-	var roles = [ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER, ZmShare.ROLE_ADMIN];
+	radios = ["_noneRadioEl", "_viewerRadioEl", "_managerRadioEl", "_adminRadioEl"];
+	radioEls = document.getElementsByName(roleRadioName);
+	roles = [ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER, ZmShare.ROLE_ADMIN];
 	this._radioElByRole = {};
 	for (var i = 0; i < radioEls.length; i++) {
 		this[radios[i]] = radioEls[i];

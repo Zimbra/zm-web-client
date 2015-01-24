@@ -107,7 +107,7 @@ ZmOverview = function(params, controller) {
 		this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [params]);
 	}
 
-	element.setAttribute('aria-label', ZmMsg.overviewLabel);
+	this.setAttribute('aria-label', ZmMsg.overviewLabel);
 };
 
 ZmOverview.prototype = new DwtComposite;

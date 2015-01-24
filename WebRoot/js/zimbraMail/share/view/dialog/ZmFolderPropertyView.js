@@ -330,10 +330,6 @@ ZmFolderPropertyView.prototype._createView = function() {
 	this._unreadId = this._props.addProperty(AjxMessageFormat.format(ZmMsg.makeLabel, ZmMsg.unread),  this._unreadEl);
 	this._sizeId = this._props.addProperty(ZmMsg.sizeLabel,  this._sizeEl);
 
-	var prop = this._props.getProperty(namePropId);
-	this._nameOutputEl.setAttribute('aria-labelledby', prop.labelId);
-	this._nameInputEl.setAttribute('aria-labelledby', prop.labelId);
-
     if (appCtxt.isWebClientOfflineSupported) {
         this._offlineEl = document.createElement("DIV");
 		this._offlineEl.style.whiteSpace = "nowrap";
