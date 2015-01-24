@@ -27,7 +27,7 @@ ZmMailMsgListView = function(params) {
 	this._controller = params.controller;
 	params.headerList = this._getHeaderList();
 	ZmMailListView.call(this, params);
-	this.getHtmlElement().setAttribute("aria-label", ZmMsg.messageList);
+	this.setAttribute("aria-label", ZmMsg.messageList);
 };
 
 ZmMailMsgListView.prototype = new ZmMailListView;

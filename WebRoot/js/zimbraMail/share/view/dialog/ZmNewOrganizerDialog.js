@@ -46,10 +46,8 @@ ZmNewOrganizerDialog = function(parent, className, title, type, extraButtons) {
 ZmNewOrganizerDialog.prototype = new ZmDialog;
 ZmNewOrganizerDialog.prototype.constructor = ZmNewOrganizerDialog;
 
-ZmNewOrganizerDialog.prototype.toString = 
-function() {
-	return "ZmNewOrganizerDialog";
-};
+ZmNewOrganizerDialog.prototype.isZmNewOrganizerDialog = true;
+ZmNewOrganizerDialog.prototype.toString = function() { return "ZmNewOrganizerDialog"; };
 
 //override the following if needed
 ZmNewOrganizerDialog.prototype._folderLocationLabel = ZmMsg.newFolderParent;
@@ -99,7 +97,9 @@ function(params, account) {
 				overviewTrees:	[this._organizerType],
 	            treeStyle:      this._treeStyle
 			};
-			this._setOverview(overviewParams);
+			var overview = this._setOverview(overviewParams);
+			overview.removeAttribute('aria-label');
+			overview.setAttribute('aria-labelledby', this._htmlElId + '_parentLabel');
 
 			if (this._folderTreeView) {
 				// bug #18533 - always make sure header item is visible in "New" dialog
@@ -273,9 +273,7 @@ function(html, idx) {
 ZmNewOrganizerDialog.prototype._setupControls =
 function() {
 	this._setupStandardControls();
-DBG.timePt("setup content");
 	this._setupExtraControls();
-DBG.timePt("set overview");
 };
 
 ZmNewOrganizerDialog.prototype._setupStandardControls =
@@ -292,7 +290,11 @@ function() {
 ZmNewOrganizerDialog.prototype._setupColorControl =
 function() {
     var el = document.getElementById(this._colorSelectId);
-	this._colorSelect = new ZmColorButton({parent:this,parentElement:el});
+	this._colorSelect = new ZmColorButton({
+		parent:         this,
+		parentElement:  el,
+		labelId:        this._htmlElId + '_lblColor'
+	});
 };
 
 ZmNewOrganizerDialog.prototype._setupExtraControls =

@@ -134,8 +134,7 @@ function() {
 	this._header.replaceElement(headerDivId);
 
 	 // label our control after the subject element
-	this.getHtmlElement().setAttribute('aria-labelledby',
-	                                   this._header._convSubjectId);
+	this.setAttribute('aria-labelledby', this._header._convSubjectId);
 
 	if (this._controller && this._controller._checkKeepReading) {
 		Dwt.setHandler(this._messagesDiv, DwtEvent.ONSCROLL, ZmDoublePaneController.handleScroll);
@@ -1351,7 +1350,7 @@ function(msg, force) {
 	if (this._expanded) {
 		this._convView._hasBeenExpanded[msg.id] = true;
 	}
-	this.getHtmlElement().setAttribute('aria-expanded', Boolean(this._expanded));
+	this.setAttribute('aria-expanded', Boolean(this._expanded));
 	this._setHeaderClass();
 
 	var dayViewCallback = null;
@@ -1924,7 +1923,7 @@ function(expanded) {
 
 	var showCalInConv = appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR);
 	this._expanded = expanded;
-	this.getHtmlElement().setAttribute('aria-expanded', Boolean(this._expanded));
+	this.setAttribute('aria-expanded', Boolean(this._expanded));
 	if (this._expanded && !this._msgBodyCreated) {
 		// Provide a callback to ensure address bubbles are properly set up
 		var dayViewCallback = null;

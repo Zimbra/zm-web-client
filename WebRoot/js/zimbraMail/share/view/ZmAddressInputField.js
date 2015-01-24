@@ -100,7 +100,7 @@ ZmAddressInputField.prototype.constructor = ZmAddressInputField;
 
 ZmAddressInputField.prototype.isZmAddressInputField = true;
 ZmAddressInputField.prototype.isInputControl = true;
-ZmAddressInputField.prototype.role = 'combobox';
+//ZmAddressInputField.prototype.role = 'combobox';
 ZmAddressInputField.prototype.toString = function() { return "ZmAddressInputField"; };
 
 ZmAddressInputField.prototype.TEMPLATE = "share.Widgets#ZmAddressInputField";

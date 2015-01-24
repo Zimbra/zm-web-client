@@ -409,8 +409,7 @@ function(id) {
 	var newBtn = this._buttons[id];
 	if (newBtn) {
 		newBtn.setSelected(true);
-		this.getHtmlElement().setAttribute('aria-activedescendant',
-		                                   newBtn.getHTMLElId());
+		this.setAttribute('aria-activedescendant', newBtn.getHTMLElId());
 
 		if (newBtn._toggleText != null && newBtn._toggleText != "") {
 			// hide text for previously selected button first
