@@ -174,18 +174,21 @@ function(params, account) {
  * 
  * @param	{ZmAccount}	account		the account
  */
-ZmNewOrganizerDialog.prototype.reset =
-function(account) {
+ZmNewOrganizerDialog.prototype.reset = function(account) {
+
 	ZmDialog.prototype.reset.apply(this, arguments);
 
 	if (this._remoteCheckboxField) {
 		this._remoteCheckboxField.checked = false;
-		var urlRow = document.getElementById(this._remoteCheckboxFieldId+"URLrow");
-		if (urlRow) urlRow.style.display = "none";
+		var urlRow = document.getElementById(this._remoteCheckboxFieldId + "URLrow");
+		if (urlRow) {
+			urlRow.style.display = "none";
+		}
 	}
 
 	if (this._urlField) {
 		this._urlField.value = "";
+		this._urlField.noTab = true;
 	}
 
 	if (appCtxt.multiAccounts) {
@@ -248,10 +251,9 @@ function(html, idx) {
 	return idx;
 };
 
-ZmNewOrganizerDialog.prototype._createRemoteContentHtml =
-function(html, idx) {
+ZmNewOrganizerDialog.prototype._createRemoteContentHtml = function(html, idx) {
+
 	this._remoteCheckboxFieldId = this._htmlElId + "_remote";
-	this._urlFieldId = this._htmlElId + "_url";
 
 	var subs = {
 		id: this._htmlElId,
@@ -308,7 +310,7 @@ function() {
 	this._remoteCheckboxField = document.getElementById(this._remoteCheckboxFieldId);
 	if (this._remoteCheckboxField) {
 		this._urlField = document.getElementById(this._remoteCheckboxFieldId + "URLfield");
-		Dwt.setHandler(this._remoteCheckboxField, DwtEvent.ONCLICK, this._handleCheckbox);
+		Dwt.setHandler(this._remoteCheckboxField, DwtEvent.ONCLICK, this._handleCheckbox.bind(this));
 	}
 };
 
@@ -421,6 +423,9 @@ function() {
 	}
 	if (this._remoteCheckboxField) {
 		list.push(this._remoteCheckboxField);
+		if (this._urlField) {
+			list.push(this._urlField);
+		}
 	}
 	if (this._overview[this._curOverviewId]) {
 		list.push(this._overview[this._curOverviewId]);
@@ -449,15 +454,17 @@ function(ev) {
 
 // html event handlers
 
-ZmNewOrganizerDialog.prototype._handleCheckbox =
-function(event) {
+ZmNewOrganizerDialog.prototype._handleCheckbox = function(event) {
+
 	event = event || window.event;
 	var target = DwtUiEvent.getTarget(event);
-	var urlRow = document.getElementById(target.id+"URLrow");
-	var urlField= document.getElementById(target.id+"URLfield");	
+	var urlRow = document.getElementById(target.id + "URLrow");
 	urlRow.style.display = target.checked ? (AjxEnv.isIE ? "block" : "table-row") : "none";
-	if (target.checked) {
-		urlField.focus();
+	if (this._urlField) {
+		if (target.checked) {
+			this._urlField.focus();
+		}
+		this._urlField.noTab = !target.checked;
 	}
 };
 

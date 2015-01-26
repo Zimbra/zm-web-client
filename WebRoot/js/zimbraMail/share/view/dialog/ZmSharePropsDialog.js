@@ -788,12 +788,13 @@ ZmSharePropsDialog.prototype._createView = function() {
 	Dwt.associateElementWithObject(this._privateEl, this);
 
 	// add message group
-	this._reply = new ZmShareReply(view);
-
 	this._messageGroup = new DwtGrouper(view);
 	this._messageGroup.setLabel(ZmMsg.message);
+	this._reply = new ZmShareReply({
+		parent:     view,
+		legendId:   this._messageGroup._labelEl.id
+	});
 	this._messageGroup.setView(this._reply);
-	this._reply.setAttribute('aria-labelledby', this._messageGroup._labelEl.id);
 
 	// add url group
 	var urlHtml = [
