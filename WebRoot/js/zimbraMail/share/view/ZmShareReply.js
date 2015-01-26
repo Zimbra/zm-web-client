@@ -36,12 +36,18 @@
  * @param	{Array}	options			an array of options
  * @extends		DwtComposite
  */
-ZmShareReply = function(parent, className, options) {
-	className = className || "ZmShareReply";
-	DwtComposite.call(this, {parent:parent, className:className, id: "ZmShareReply"});
+ZmShareReply = function(params) {
+
+	params = Dwt.getParams(arguments, ZmShareReply.PARAMS);
+
+	params.className = params.className || "ZmShareReply";
+	params.id = "ZmShareReply";
+	DwtComposite.call(this, params);
 	this._tabGroup = new DwtTabGroup(this.toString());
-	this._initControl(options);
+	this._initControl(params);
 };
+
+ZmShareReply.PARAMS = [ 'parent', 'className', 'options' ];
 
 ZmShareReply.prototype = new DwtComposite;
 ZmShareReply.prototype.constructor = ZmShareReply;
@@ -154,10 +160,14 @@ function(event) {
 	this.setReplyType(type);
 };
 
-ZmShareReply.prototype._initControl = function(options) {
+ZmShareReply.prototype._initControl = function(params) {
 
-	this._replyType = new DwtSelect({parent:this, id: "ZmShareReplySelect"});
-    options = options || ZmShareReply.DEFAULT_OPTIONS;
+	this._replyType = new DwtSelect({
+		parent:   this,
+		id:       "ZmShareReplySelect",
+		legendId: params.legendId
+	});
+    var options = params.options || ZmShareReply.DEFAULT_OPTIONS;
     this.setReplyOptions(options);
 	this._replyType.addChangeListener(this._handleReplyType.bind(this));
 
