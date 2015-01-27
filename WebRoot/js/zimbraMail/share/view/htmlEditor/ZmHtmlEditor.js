@@ -191,10 +191,6 @@ function() {
 		Dwt.insetBounds(Dwt.insetBounds({x: 0, y: 0, width: x, height: y},
 		                                Dwt.getMargins(body)),
 		                Dwt.getInsets(body));
-    var bodyOffsetHeight = body.offsetHeight;
-    if (this._editorInitialized  && body.scrollHeight - bodyOffsetHeight < 25) {
-        body.offsetHeight = bodyOffsetHeight + 25;
-    }
 
 	Dwt.setSize(body, Math.max(0, bounds.width), Math.max(0, bounds.height));
 };
