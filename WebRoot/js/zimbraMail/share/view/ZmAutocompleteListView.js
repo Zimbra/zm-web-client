@@ -265,18 +265,11 @@ function(ev) {
 		var visible = aclv.getVisible();
 		aclv._actionHandled = false;
 		// DBG.println("ac", "key = " + key + ", isDelim: " + isDelim);
-		if ((isDelim && visible) || (key == 27 || (visible && (key == 38 || key == 40)))) {
-			DBG.println("ac", "handle action for key " + key);
-			if (aclv.handleAction(key, isDelim, element)) {
-				aclv._actionHandled = true;
-//				return ZmAutocompleteListView._echoKey(false, ev);
-				result = false;
-			}
+		if (visible && aclv.handleAction(key, isDelim, element)) {
+			aclv._actionHandled = true;
+			result = false;
 		}
-		else if (key === 9) {
-			aclv._popdown();
-		}
-		
+
 		aclv._inputValue[element.id] = element.value;
 		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYDOWN, element && element.id, [ev, aclv, result, element]);
 		// DBG.println("ac", ev.type.toUpperCase() + " cbResult: " + cbResult);
@@ -698,6 +691,7 @@ function(element) {
  *
  * The following keys are action keys:
  *	38 40		up/down arrows (list selection)
+ *	37 39		left/right arrows (dl expansion)
  *	27			escape (hide list)
  *
  * The following keys are delimiters (trigger completion when list is up):
@@ -719,9 +713,29 @@ function(key, isDelim, element) {
 
 	if (isDelim) {
 		this._update();
+	} else if (key == 37 && this._curExpanded) {
+		// handle left key with an expanded DL
+		this._memberListView._popdown();
+
+	} else if (key == 39) {
+		// right arrow
+		var dwttext = this._expandText && this._expandText[this._selected];
+
+		// if the caret is at the end of the input, expand a distribution list,
+		// if possible
+		if(!dwttext || Dwt.getSelectionStart(element) !== element.value.length) {
+			return false;
+		}
+
+		// fake a click
+		dwttext.notifyListeners(DwtEvent.ONMOUSEDOWN);
+
 	} else if (key == 38 || key == 40) {
 		// handle up and down arrow keys
-		if (this.size() <= 1) {
+		if (this._curExpanded) {
+			return this._memberListView.handleAction(key, isDelim, element);
+		}
+		if (this.size() < 1) {
 			return;
 		}
 		if (key == 40) {
@@ -736,6 +750,11 @@ function(key, isDelim, element) {
 		else if (!this._cancelPendingRequests(element)) {
 			return false;
 		}
+	} else if (key == 9) {
+		this._popdown();
+		return false;
+	} else {
+		return false;
 	}
 	return true;
 };
@@ -1391,12 +1410,19 @@ function(id) {
 	this._selected = id;
 
 	var match = this._matchHash[id];
-	var msg = match.name || match.email;
+	var msg;
 
-	if (match.isGroup) {
-		msg = AjxMessageFormat.format(ZmMsg.autocompleteGroup, msg);
-	} else if (match.isDL) {
-		msg = AjxMessageFormat.format(ZmMsg.autocompleteDL, msg);
+	if (!match) {
+		msg = AjxStringUtil.convertHtml2Text(Dwt.byId(this._selected));
+	} else {
+		var msg = match.name || match.email;
+
+		if (match.isGroup) {
+			msg = AjxMessageFormat.format(ZmMsg.autocompleteGroup, msg);
+		} else if (match.isDL) {
+			msg = AjxMessageFormat.format(ZmMsg.autocompleteDL, msg);
+		}
+
 	}
 
 	this._setLiveRegionText(msg);
@@ -1405,7 +1431,7 @@ function(id) {
 ZmAutocompleteListView.prototype._getRowId =
 function(rows, id, len) {
 
-	if (len <= 1) {
+	if (len < 1) {
 		return;
 	}
 
