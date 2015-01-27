@@ -633,10 +633,10 @@ INPUT[type="text"].search_input-expanded {
 	margin:0px;
 }
 
-.Row.ZmConvExpanded .ZmMsgListColFrom SPAN:first-child,
-.Row.ZmConvExpanded .ZmMsgListColSubject SPAN {
-	margin-left:2em;
-}
+.Row.ZmConvExpanded .ZmMsgListColFrom SPAN:first-child,xx
+.Row.ZmConvExpanded .ZmMsgListColSubject SPAN {xx
+	margin-left:2em;xx
+}xx
 
 /* put space between display of tag icons and their names */
 .Tags A {

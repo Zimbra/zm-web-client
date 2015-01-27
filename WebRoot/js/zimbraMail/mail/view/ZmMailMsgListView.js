@@ -165,11 +165,11 @@ function(htmlArr, idx, msg, field, colIdx, params, classes) {
 			if (!this._isMultiColumn) {
 				htmlArr[idx++] = "<span class='ZmConvListFragment' id='" + this._getFieldId(msg, ZmItem.F_FRAGMENT) + "'>";
 			}
-			else {
-				htmlArr[idx++] = "<span>"; //need a span so I can target it via CSS rule, so the margin is within the column content, and doesn't push the other columns
-			}
+//			else {
+//				htmlArr[idx++] = "<span>"; //need a span so I can target it via CSS rule, so the margin is within the column content, and doesn't push the other columns
+//			}
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
-			htmlArr[idx++] = "</span>";
+//			htmlArr[idx++] = "</span>";
 		} else {
 			// msg on its own (TV) shows subject and fragment
 			var subj = msg.subject || ZmMsg.noSubject;
