@@ -38,8 +38,6 @@ ZmMailMsgListView.prototype.toString = function() {	return "ZmMailMsgListView"; 
 
 // Consts
 
-ZmMailMsgListView.INDENT		= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-
 // TODO: move to CV
 ZmMailMsgListView.SINGLE_COLUMN_SORT_CV = [
 	{field:ZmItem.F_FROM,	msg:"from"		},
@@ -145,9 +143,6 @@ function(htmlArr, idx, msg, field, colIdx, params, classes) {
 				htmlArr[idx++] = "&nbsp;";
 			}
 		} else {
-			if ((this._mode == ZmId.VIEW_CONVLIST) && this._isMultiColumn) {
-				htmlArr[idx++] = ZmMailMsgListView.INDENT;
-			}
 			var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 			var fromText = fromAddr && (fromAddr.getName() || fromAddr.getDispName() || fromAddr.getAddress());
 			if (fromText) {
@@ -167,16 +162,14 @@ function(htmlArr, idx, msg, field, colIdx, params, classes) {
 		htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + ">";
 		if (this._mode == ZmId.VIEW_CONV || this._mode == ZmId.VIEW_CONVLIST) {
 			// msg within a conv shows just the fragment
-			if ((this._mode == ZmId.VIEW_CONVLIST) && this._isMultiColumn) {
-				htmlArr[idx++] = ZmMailMsgListView.INDENT;
-			}
 			if (!this._isMultiColumn) {
 				htmlArr[idx++] = "<span class='ZmConvListFragment' id='" + this._getFieldId(msg, ZmItem.F_FRAGMENT) + "'>";
 			}
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
-			if (!this._isMultiColumn) {
-				htmlArr[idx++] = "</span>";
+			else {
+				htmlArr[idx++] = "<span>"; //need a span so I can target it via CSS rule, so the margin is within the column content, and doesn't push the other columns
 			}
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
+			htmlArr[idx++] = "</span>";
 		} else {
 			// msg on its own (TV) shows subject and fragment
 			var subj = msg.subject || ZmMsg.noSubject;
