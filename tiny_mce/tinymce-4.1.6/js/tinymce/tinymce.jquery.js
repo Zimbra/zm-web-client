@@ -21819,6 +21819,8 @@ define("tinymce/ui/KeyboardNavigation", [
 		 * @private
 		 * @param {Number} dir Direction to move in positive means forward, negative means backwards.
 		 * @param {Array} elements Optional array of elements to move within defaults to the current navigation roots elements.
+		 *
+		 * @return {Boolean} Whether focus moved.
 		 */
 		function moveFocus(dir, elements) {
 			var idx = -1, navigationRoot = getNavigationRoot();
@@ -21832,7 +21834,14 @@ define("tinymce/ui/KeyboardNavigation", [
 			}
 
 			idx += dir;
+
+			if (!navigationRoot.settings.wrapFocus && (idx < 0 || idx >= elements.length)) {
+				return false;
+			}
+
 			navigationRoot.lastAriaIndex = moveFocusToIndex(idx, elements);
+
+			return true;
 		}
 
 		/**
@@ -21910,8 +21919,10 @@ define("tinymce/ui/KeyboardNavigation", [
 				if (elm) {
 					elm.focus();
 				}
+
+				return true;
 			} else {
-				moveFocus(e.shiftKey ? -1 : 1);
+				return moveFocus(e.shiftKey ? -1 : 1);
 			}
 		}
 
@@ -21921,7 +21932,7 @@ define("tinymce/ui/KeyboardNavigation", [
 		 * @private
 		 */
 		function cancel() {
-			focusedControl.fire('cancel');
+			return focusedControl.fire('cancel');
 		}
 
 		/**
@@ -21969,7 +21980,14 @@ define("tinymce/ui/KeyboardNavigation", [
 					break;
 
 				case 27: // DOM_VK_ESCAPE
-					cancel();
+					var cancelEv = cancel();
+					if (cancelEv.isDefaultPrevented()) {
+						e.preventDefault();
+						e.stopPropagation();
+					}
+					if (cancelEv.isPropagationStopped()) {
+						e.stopPropagation();
+					}
 					break;
 
 				case 14: // DOM_VK_ENTER
@@ -21981,6 +21999,7 @@ define("tinymce/ui/KeyboardNavigation", [
 				case 9: // DOM_VK_TAB
 					if (tab(e) !== false) {
 						e.preventDefault();
+						e.stopPropagation();
 					}
 					break;
 			}
@@ -23567,6 +23586,8 @@ define("tinymce/ui/Window", [
 			layout: 'flex',
 			containerCls: 'panel',
 			role: 'dialog',
+			ariaRoot: true,
+			wrapFocus: true,
 			callbacks: {
 				submit: function() {
 					this.fire('submit', {data: this.toJSON()});
@@ -23621,11 +23642,13 @@ define("tinymce/ui/Window", [
 				}
 			});
 
-			self.on('cancel', function() {
+			self.on('cancel', function(e) {
+				e.preventDefault();
+				e.stopPropagation();
 				self.close();
 			});
 
-			self.aria('describedby', self.describedBy || self._id + '-none');
+			self.aria('describedby', self.describedBy || self._id + '-title');
 			self.aria('label', settings.title);
 			self._fullscreen = false;
 		},
@@ -30597,7 +30620,7 @@ define("tinymce/ui/Button", [
 			icon = self.settings.icon ? prefix + 'ico ' + prefix + 'i-' + icon : '';
 
 			return (
-				'<div id="' + id + '" class="' + self.classes() + '" tabindex="-1" aria-labelledby="' + id + '">' +
+				'<div id="' + id + '" class="' + self.classes() + '" tabindex="-1">' +
 					'<button role="presentation" type="button" tabindex="-1">' +
 						(icon ? '<i class="' + icon + '"' + image + '></i>' : '') +
 						(self._text ? (icon ? '\u00a0' : '') + self.encode(self._text) : '') +
@@ -31108,7 +31131,7 @@ define("tinymce/ui/ComboBox", [
 
 			if (icon || text) {
 				openBtnHtml = (
-					'<div id="' + id + '-open" class="' + prefix + 'btn ' + prefix + 'open" tabIndex="-1" role="button">' +
+					'<div id="' + id + '-open" class="' + prefix + 'btn ' + prefix + 'open" tabIndex="-1" role="combobox">' +
 						'<button id="' + id + '-action" type="button" hidefocus="1" tabindex="-1">' +
 							(icon != 'caret' ? '<i class="' + icon + '"></i>' : '<i class="' + prefix + 'caret"></i>') +
 							(text ? (icon ? ' ' : '') + text : '') +
@@ -32231,16 +32254,24 @@ define("tinymce/ui/Form", [
 
 			// Wrap any labeled items in FormItems
 			items.each(function(ctrl) {
-				var formItem, label = ctrl.settings.label;
+				var formItem, inputId, label = ctrl.settings.label;
 
 				if (label) {
+					inputId = ctrl._id;
+
+					// point to the INPUTs of comboxes
+					// see the corresbonding TODO in ComboBox.js
+					if (ctrl.subinput) {
+						inputId += '-' + ctrl.ariaTarget;
+					}
+
 					formItem = new FormItem(Tools.extend({
 						items: {
 							type: 'label',
 							id: ctrl._id + '-l',
 							text: label,
 							flex: 0,
-							forId: ctrl._id,
+							forId: inputId,
 							disabled: ctrl.disabled()
 						}
 					}, self.settings.formItemDefaults));
@@ -34010,6 +34041,7 @@ define("tinymce/ui/MenuButton", [
 				self.menu.on('cancel', function(e) {
 					if (e.control.parent() === self.menu) {
 						e.stopPropagation();
+						e.preventDefault();
 						self.focus();
 						self.hideMenu();
 					}
@@ -34091,7 +34123,7 @@ define("tinymce/ui/MenuButton", [
 			self.aria('role', self.parent() instanceof MenuBar ? 'menuitem' : 'button');
 
 			return (
-				'<div id="' + id + '" class="' + self.classes() + '" tabindex="-1" aria-labelledby="' + id + '">' +
+				'<div id="' + id + '" class="' + self.classes() + '" tabindex="-1">' +
 					'<button id="' + id + '-open" role="presentation" type="button" tabindex="-1">' +
 						(icon ? '<i class="' + icon + '"' + image + '></i>' : '') +
 						'<span>' + (self._text ? (icon ? '\u00a0' : '') + self.encode(self._text) : '') + '</span>' +
@@ -34660,6 +34692,7 @@ define("tinymce/ui/Menu", [
 			layout: 'stack',
 			role: 'application',
 			bodyRole: 'menu',
+			wrapFocus: true,
 			ariaRoot: true
 		},
 
