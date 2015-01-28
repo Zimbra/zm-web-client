@@ -30,12 +30,23 @@
 #ENDIF
 }
 
-.ZmHtmlEditor .mce-btn {
-	@ToolbarButtonBorder@
+.ZmHtmlEditor .mce-btn-group .mce-btn {
+	@ButtonBorder@
+	@ButtonShadowDefault@
+	@NoRoundCorners@
+	border-right: none;
+}
+
+.mce-container .mce-grid td.mce-grid-cell div {
+	border-color: @ButtonBorderColor@;
+}
+
+.mce-container .mce-grid td.mce-grid-cell div:focus {
+	border-color: @AltC@;
+	outline: @AltC@ solid 2px;
 }
 
 .ZmHtmlEditor .mce-btn:hover {
-	background-color: @ButtonHovColorTop@;
 	background-image: none;
 #IFDEF MSIE_LOWER_THAN_10
 	filter: none;
@@ -50,6 +61,31 @@
 	@InputBorder@
 }
 
+.ZmHtmlEditor .mce-btn-group .mce-first {
+	@ButtonRoundingLeft@
+}
+
+.ZmHtmlEditor .mce-btn-group .mce-last {
+	@ButtonBorder@
+	@NoRoundCorners@
+	@ButtonRoundingRight@
+}
+
+.ZmHtmlEditor .mce-btn-group .mce-first.mce-last {
+	@ButtonRounding@
+}
+
+.ZmHtmlEditor .mce-btn-group .mce-first:focus,
+.ZmHtmlEditor .mce-btn-group .mce-last:focus {
+	background-color: @ButtonBorderColor@;
+	@ButtonBorder-focused@
+}
+
+.ZmHtmlEditor .mce-btn-group .mce-first:focus,
+.ZmHtmlEditor .mce-btn-group .mce-last:focus {
+
+}
+
 #IFNDEF MSIE_LOWER_THAN_9
 .ZmHtmlEditor .mce-btn:not(.mce-disabled):active,
 #ENDIF
@@ -57,21 +93,42 @@
 .ZmHtmlEditor .mce-btn.mce-active,
 .ZmHtmlEditor .mce-btn.mce-active:hover
 {
-	background-color: @ButtonActColorTop@;
-	background-image: none;
 #IFDEF MSIE_LOWER_THAN_10
 	filter: none;
 #ENDIF
 	@NoShadow@
 }
 
-/* .ZmHtmlEditor .mce-btn-group .mce-btn { */
-/* 	@roundCorners(0px)@ */
-/* 	@ToolbarButtonBorder@ */
-/* } */
+#IFNDEF MSIE_LOWER_THAN_9
+.ZmHtmlEditor .mce-btn-group .mce-btn:not(.mce-disabled):active,
+#ENDIF
+.ZmHtmlEditor .mce-btn-group .mce-btn.mce-active
+{
+	@ButtonBorder-active@
+	@ButtonShadowActive@
+}
 
-.ZmHtmlEditor .mce-btn-group .mce-btn {
-	border-color: @ToolbarButtonBorderColor@;
+.ZmHtmlEditor .mce-btn-group .mce-btn.mce-disabled
+{
+	@ButtonBorder-disabled@
+	@ButtonShadowDisabled@
+}
+
+.ZmHtmlEditor .mce-btn-group .mce-btn:hover,
+.ZmHtmlEditor .mce-btn-group .mce-btn.mce-active:hover
+{
+	@ButtonBorder-hover@
+	@ButtonShadowActive@
+}
+
+.ZmHtmlEditor .mce-btn-group .mce-btn:focus,
+.ZmHtmlEditor .mce-btn-group .mce-btn .mce-active:focus {
+	@ButtonBorder-focused@
+}
+
+.ZmHtmlEditor .mce-btn-group .mce-btn:focus + .mce-btn,
+.ZmHtmlEditor .mce-btn-group .mce-btn .mce-active:focus + .mce-btn {
+	border-left-color: @AltC@;
 }
 
 #IFDEF MSIE_LOWER_THAN_9
@@ -81,18 +138,4 @@
 #ENDIF
 {
 	border-left: 1px solid @lighten(ToolbarButtonBorderColor, 50)@;
-}
-
-.ZmHtmlEditor .mce-btn-group .mce-first {
-	border-left-color: @ToolbarButtonBorderColor@;
-	@ButtonRoundingLeft@
-}
-
-.ZmHtmlEditor .mce-btn-group .mce-last {
-	border-right-color: @ToolbarButtonBorderColor@;
-	@ButtonRoundingRight@
-}
-
-.ZmHtmlEditor .mce-btn-group .mce-first.mce-last {
-	@ButtonRounding@
 }
