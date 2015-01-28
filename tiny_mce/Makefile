@@ -15,10 +15,12 @@
 
 RM = rm -rf
 TEE = tee
+MKDIR = mkdir -p
 
 CURL = curl
 NODE = node
 NPM = npm --loglevel error --color false
+GRUNT = $(NPMBINDIR)/grunt --no-color
 TAR = tar
 ANT = ant -emacs
 P4 = p4
@@ -27,10 +29,12 @@ DIFF = diff -aur
 
 TINYMCE_VERS := $(shell $(ANT) -q -f ../build.xml get-tinymce-version | head -1)
 TINYMCE_URL = https://github.com/tinymce/tinymce/archive/$(TINYMCE_VERS).tar.gz
-GRUNT = $(shell cd $(TINYMCEDIR) && npm bin)/grunt
 
 TINYMCEDIR = tinymce-$(TINYMCE_VERS)
-NPMBINDIR = $(shell npm bin)
+NPMBINDIR = $(shell cd $(TINYMCEDIR); npm bin)
+
+# may not be set on Linux
+TMPDIR ?= /tmp/$(USER)
 
 .PHONY:
 
@@ -42,7 +46,7 @@ all: build
 #
 build:
 	cd $(TINYMCEDIR) && $(NPM) install
-	cd $(TINYMCEDIR) && $(GRUNT)
+	cd $(TINYMCEDIR) && $(GRUNT) minify
 
 #
 # remove anything that shouldn't be checked into Perforce, such as build
@@ -57,6 +61,7 @@ clean:
 # of the current TinyMCE directory.
 #
 diff: build
+	$(MKDIR) $(TMPDIR)
 	$(MAKE) TINYMCEDIR=$(TMPDIR)/$(TINYMCEDIR) patch
 	cd $(TINYMCEDIR) && $(GRUNT) clean
 	$(DIFF) -x node_modules $(TMPDIR)/$(TINYMCEDIR) $(TINYMCEDIR) | $(TEE) work.diff
