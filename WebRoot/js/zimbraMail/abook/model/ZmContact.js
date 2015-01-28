@@ -333,7 +333,8 @@ ZmContact.DISPLAY_FIELDS = [].concat(
 ZmContact.IGNORE_FIELDS = [].concat(
 	ZmContact.GAL_FIELDS,
 	ZmContact.MYCARD_FIELDS,
-	ZmContact.X_FIELDS
+	ZmContact.X_FIELDS,
+	[ZmContact.F_imagepart]
 );
 
 ZmContact.ALL_FIELDS = [].concat(
