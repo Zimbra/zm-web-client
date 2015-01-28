@@ -259,6 +259,7 @@ function(selected) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	if (spellCheckButton) {
 		spellCheckButton.setSelected((selected || false));
+		spellCheckButton.setAttribute('aria-pressed', selected);
 	}
 };
 

@@ -73,6 +73,10 @@ ZmMailMsgView = function(params) {
 	this._tabGroupMember.addMember([
 		this._headerTabGroup, this._bodyTabGroup, this._footerTabGroup
 	]);
+
+	if (this._mode === ZmId.VIEW_TRAD) {
+		this.setAttribute('role', 'region');
+	}
 };
 
 ZmMailMsgView.prototype = new ZmMailItemView;
@@ -1484,7 +1488,7 @@ function(msg, container, doNotClearBubbles) {
 		infoBarId:			this._infoBarId,
 		subject:			subject,
 		imageURL:			imageURL || ZmZimbraMail.DEFAULT_CONTACT_ICON,
-		imageAltText:		imageAltText || ZmMsg.unknownPerson,
+		imageAltText:		imageAltText || ZmMsg.noContactImage,
 		dateString:			dateString,
 		dateTooltip:		dateTooltip,
 		hasAttachments:		(attachmentsCount != 0),
