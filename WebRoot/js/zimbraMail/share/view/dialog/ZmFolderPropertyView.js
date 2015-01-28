@@ -298,13 +298,17 @@ function() {
 	this._props = new DwtPropertySheet(this);
 	this._color = new ZmColorButton({parent:this});
 
-	this._props.addProperty(ZmMsg.nameLabel, nameEl);
+	var namePropId = this._props.addProperty(ZmMsg.nameLabel, nameEl);
 	this._props.addProperty(ZmMsg.typeLabel, this._typeEl);
 	this._queryId = this._props.addProperty(ZmMsg.queryLabel, queryEl);
 	this._ownerId = this._props.addProperty(ZmMsg.ownerLabel,  this._ownerEl);
 	this._urlId   = this._props.addProperty(ZmMsg.urlLabel,    this._urlEl);
 	this._permId  = this._props.addProperty(ZmMsg.permissions, this._permEl);
 	this._colorId = this._props.addProperty(ZmMsg.colorLabel,  this._color);
+
+	var prop = this._props.getProperty(namePropId);
+	this._nameOutputEl.setAttribute('aria-labelledby', prop.labelId);
+	this._nameInputEl.setAttribute('aria-labelledby', prop.labelId);
 
     if (appCtxt.isWebClientOfflineSupported) {
         this._offlineEl = document.createElement("DIV");

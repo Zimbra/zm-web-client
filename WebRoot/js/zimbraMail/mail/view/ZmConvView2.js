@@ -2125,7 +2125,7 @@ function(part) {
 };
 
 ZmMailMsgCapsuleView.prototype._getIframeTitle = function() {
-	return AjxMessageFormat.format(ZmMsg.messageTitleInConv, [ this._index + 1, this._convView.subject ]);
+	return AjxMessageFormat.format(ZmMsg.messageTitleInConv, this._index + 1);
 };
 
 /**

@@ -299,5 +299,5 @@ function(msg, loc) {
  */
 ZmDialog.prototype._getTabGroupMembers =
 function() {
-	return [this._nameField];
+	return this._nameField ? [ this._nameField ] : [];
 };
