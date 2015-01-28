@@ -731,7 +731,7 @@ function(id, content) {
         language: tinyMCE.getlanguage(appCtxt.get(ZmSetting.LOCALE_NAME)),
         directionality : appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION),
         paste_retain_style_properties : "all",
-		paste_data_images: true,
+		paste_data_images: false,
         paste_remove_styles_if_webkit : false,
         table_default_attributes: { cellpadding: '3px', border: '1px' },
         table_default_styles: { width: '90%', tableLayout: 'fixed' },
@@ -2257,8 +2257,8 @@ function(ev) {
 
     for (; i < length; i++) {
         table = tableArray[i];
-        //set the table border as 1 if it is 0
-        if (table && table.border === "0") {
+        //set the table border as 1 if it is 0 or unset
+        if (table && (table.border === "0" || table.border === "")) {
             table.border = 1;
         }
     }
