@@ -100,6 +100,7 @@ ZmAddressInputField.prototype.constructor = ZmAddressInputField;
 
 ZmAddressInputField.prototype.isZmAddressInputField = true;
 ZmAddressInputField.prototype.isInputControl = true;
+ZmAddressInputField.prototype.role = 'combobox';
 ZmAddressInputField.prototype.toString = function() { return "ZmAddressInputField"; };
 
 ZmAddressInputField.prototype.TEMPLATE = "share.Widgets#ZmAddressInputField";
@@ -1189,6 +1190,11 @@ function() {
 	
 	this._bubbleList.set(list);
 	return this._bubbleList;
+};
+
+ZmAddressInputField.prototype.getBubbleCount =
+function() {
+	return this._getBubbleList().getArray().length;
 };
 
 // returns the index of the given bubble among all the holder's elements (not just bubbles)

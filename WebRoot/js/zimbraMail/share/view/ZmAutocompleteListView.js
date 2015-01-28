@@ -798,7 +798,7 @@ function(on, str) {
 		div = this._waitingDiv = document.createElement("div");
 		div.className = "acWaiting";
 		var html = [], idx = 0;
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0>";
+		html[idx++] = "<table role='presentation' cellpadding=0 cellspacing=0 border=0>";
 		html[idx++] = "<tr>";
 		html[idx++] = "<td><div class='ImgSpinner'></div></td>";
 		html[idx++] = "<td>" + ZmMsg.autocompleteWaiting + "</td>";
@@ -813,6 +813,8 @@ function(on, str) {
 		this._popdown();
 		var loc = this._getDefaultLoc();
 		Dwt.setLocation(div, loc.x, loc.y);
+
+		this._setLiveRegionText(ZmMsg.autocompleteWaiting);
 	}
 	this._waitingStr = on ? str : "";
 
@@ -890,6 +892,9 @@ function(context, list) {
 	} else if (!context.isComplete) {
 		this._popdown();
 		this._showNoResults();
+
+		var msg = AjxMessageFormat.format(ZmMsg.autocompleteMatches, 0);
+		this._setLiveRegionText(msg);
 	}
 };
 
@@ -992,6 +997,8 @@ function(context, match, noFocus) {
 	var el = context.element;
 	var addrInput = el && el._aifId && DwtControl.ALL_BY_ID[el._aifId];
 	if (addrInput) {
+		var bubbleCount = addrInput.getBubbleCount();
+
 		if (match && match.multipleAddresses) {
 			// mass complete (add all) from a DL
 			addrInput.addValue(context.address);
@@ -1007,6 +1014,11 @@ function(context, match, noFocus) {
 			}
 			addrInput.addBubble(bubbleParams);
 		}
+
+		var msg = AjxMessageFormat.format(ZmMsg.autocompleteAddressesAdded,
+		                                  addrInput.getBubbleCount() - bubbleCount);
+		this._setLiveRegionText(msg);
+
 		el = addrInput._input;
 		// Input field loses focus along the way. Restore it when the stack is finished
 		if (AjxEnv.isIE) {
@@ -1074,13 +1086,40 @@ function() {
 	var table = this._tableId && document.getElementById(this._tableId);
 	if (!table) {
 		var html = [], idx = 0;
-		this._tableId = Dwt.getNextId();
-		html[idx++] = "<table id='" + this._tableId + "' cellpadding=0 cellspacing=0 border=0>";
+		this._tableId = this.getHTMLElId() + '_table';
+		html[idx++] = "<table role='presentation' id='" + this._tableId + "' cellpadding=0 cellspacing=0 border=0>";
 		html[idx++] = "</table>";
 		this.getHtmlElement().innerHTML = html.join("");
 		table = document.getElementById(this._tableId);
 	}
 	return table;
+};
+
+ZmAutocompleteListView.prototype._setLiveRegionText =
+function(text) {
+	// Lazily create accessibility live region
+	var id = this.getHTMLElId() + '_liveRegion';
+	var liveRegion = Dwt.byId(id);
+
+	if (!liveRegion) {
+		liveRegion = document.createElement('div');
+		liveRegion.id = id;
+		liveRegion.className = 'ScreenReaderOnly';
+		liveRegion.setAttribute('role', 'alert');
+		liveRegion.setAttribute('aria-label', ZmMsg.autocomplete);
+		liveRegion.setAttribute('aria-live', 'assertive');
+		liveRegion.setAttribute('aria-relevant', 'additions');
+		liveRegion.setAttribute('aria-atomic', true);
+		appCtxt.getShell().getHtmlElement().appendChild(liveRegion);
+	}
+
+	// Set the live region text content
+	Dwt.removeChildren(liveRegion);
+	if (text) {
+		var paragraph = document.createElement('p');
+		paragraph.appendChild(document.createTextNode(text));
+		liveRegion.appendChild(paragraph);
+	}
 };
 
 // Creates the list and its member elements based on the matches we have. Each match becomes a
@@ -1129,6 +1168,9 @@ function(list, context) {
 		this._expandText = {};
 		this._addLinks(this._expandText, "Expand", ZmMsg.expand, ZmMsg.expandTooltip, this.expandDL, context);
 	}
+
+	var msg = AjxMessageFormat.format(ZmMsg.autocompleteMatches, len);
+	this._setLiveRegionText(msg);
 
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
 		function() {
@@ -1347,6 +1389,17 @@ function(id) {
 	this._showLink(this._expandLink, this._expandText, id, true);
 
 	this._selected = id;
+
+	var match = this._matchHash[id];
+	var msg = match.name || match.email;
+
+	if (match.isGroup) {
+		msg = AjxMessageFormat.format(ZmMsg.autocompleteGroup, msg);
+	} else if (match.isDL) {
+		msg = AjxMessageFormat.format(ZmMsg.autocompleteDL, msg);
+	}
+
+	this._setLiveRegionText(msg);
 };
 
 ZmAutocompleteListView.prototype._getRowId =
