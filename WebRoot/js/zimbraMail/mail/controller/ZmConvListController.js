@@ -130,11 +130,20 @@ function(actionCode, ev) {
 	DBG.println(AjxDebug.DBG3, "ZmConvListController.handleKeyAction");
 	
 	var mlv = this._mailListView;
+	var capsuleEl = DwtUiEvent.getTargetWithClass(ev, 'ZmMailMsgCapsuleView');
 	
 	switch (actionCode) {
 
 		case ZmKeyMap.EXPAND:
 		case ZmKeyMap.COLLAPSE:
+			if (capsuleEl) {
+				var capsule = DwtControl.fromElement(capsuleEl);
+				if ((actionCode == ZmKeyMap.EXPAND) != capsule.isExpanded()) {
+					capsule._toggleExpansion();
+				}
+
+				break;
+			}
 			if (mlv.getSelectionCount() != 1) { return false; }
 			var item = mlv.getItemFromElement(mlv._kbAnchor);
 			if (!item) { return false; }
@@ -144,6 +153,10 @@ function(actionCode, ev) {
 			break;
 
 		case ZmKeyMap.TOGGLE:
+			if (capsuleEl) {
+				DwtControl.fromElement(capsuleEl)._toggleExpansion();
+				break;
+			}
 			if (mlv.getSelectionCount() != 1) { return false; }
 			var item = mlv.getItemFromElement(mlv._kbAnchor);
 			if (!item) { return false; }
@@ -153,11 +166,13 @@ function(actionCode, ev) {
 			break;
 
 		case ZmKeyMap.EXPAND_ALL:
-			mlv._expandAll(true);
-			break;
-
 		case ZmKeyMap.COLLAPSE_ALL:
-			mlv._expandAll(false);
+			var expand = (actionCode == ZmKeyMap.EXPAND_ALL)
+			if (capsuleEl) {
+				DwtControl.fromElement(capsuleEl).parent.setExpanded(expand);
+			} else {
+				mlv._expandAll(expand);
+			}
 			break;
 
 		case ZmKeyMap.NEXT_UNREAD_MSG:

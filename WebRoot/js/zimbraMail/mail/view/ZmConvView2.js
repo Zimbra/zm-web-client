@@ -1916,6 +1916,10 @@ function(expanded) {
 
 	if (this.isDisposed()) { return; }
 
+	if (Dwt.isAncestor(this.getHtmlElement(), document.activeElement)) {
+		this.getHtmlElement().focus();
+	}
+
 	var showCalInConv = appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR);
 	this._expanded = expanded;
 	this.getHtmlElement().setAttribute('aria-expanded', Boolean(this._expanded));
