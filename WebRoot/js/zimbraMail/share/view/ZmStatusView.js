@@ -133,39 +133,6 @@ function(all) {
     this._toast.dismiss();
 };
 
-// Static functions
-
-/**
- * Gets the style class name based on status level.
- * 
- * @param     {ZmStatusView}        work        the view
- * @return    {String}                          the class
- */
-ZmStatusView.getClass =
-function(work) {
-    switch (work.level) {
-        case ZmStatusView.LEVEL_CRITICAL:    return "ZToastCrit";
-        case ZmStatusView.LEVEL_WARNING:     return "ZToastWarn";
-        default:                             return "ZToastInfo";
-    }
-};
-
-/**
- * Gets the image based on status level.
- * 
- * @param     {ZmStatusView}        work        the view
- * @return    {String}                          the image
- */
-ZmStatusView.getImageHtml =
-function(work) {
-    switch (work.level) {
-        case ZmStatusView.LEVEL_CRITICAL:    return "Critical";
-        case ZmStatusView.LEVEL_WARNING:     return "Warning";
-        default:                             return "Success";
-    }
-};
-
-
 // Protected methods
 
 ZmStatusView.prototype._updateStatusMsg =
@@ -177,11 +144,8 @@ function() {
 			work.dismissCallback.run();
 		this.nextStatus();
 	} else {
-		var level = ZmStatusView.getClass(work);
-		var icon = ZmStatusView.getImageHtml(work);
-
 		this._toast = work.toast;
-		this._toast.popup(level, work.msg, icon, null, work.transitions, work.dismissCallback, work.finishCallback);
+		this._toast.popup(work);
 	}
 };
 
@@ -220,11 +184,15 @@ ZmToast = function(parent, id) {
     this._funcs["next"] = AjxCallback.simpleClosure(this.transition, this);
 }
 ZmToast.prototype = new DwtComposite;
+
 ZmToast.prototype.constructor = ZmToast;
 ZmToast.prototype.toString =
 function() {
     return "ZmToast";
 };
+
+ZmToast.prototype.role = 'alert';
+ZmToast.prototype.isFocusable = true;
 
 // Constants
 /**
@@ -301,28 +269,61 @@ function() {
 };
 
 ZmToast.prototype.popup =
-function(level, text, icon, loc, customTransitions, dismissCallback, finishCallback) {
+function(work) {
     this.__clear();
     this._poppedUp = true;
     this._dismissed = false;
-    this._dismissCallback = dismissCallback;
-    this._finishCallback = finishCallback;
+    this._dismissCallback = work.dismissCallback;
+    this._finishCallback = work.finishCallback;
+
+    var icon, className, label;
+
+    switch (work.level) {
+    case ZmStatusView.LEVEL_CRITICAL:
+        className = "ZToastCrit";
+        icon = "Critical";
+        label = AjxMsg.criticalMsg;
+        break;
+
+    case ZmStatusView.LEVEL_WARNING:
+        className = "ZToastWarn";
+        icon = "Warning";
+        label = AjxMsg.warningMsg;
+        break;
+
+    case ZmStatusView.LEVEL_INFO:
+    default:
+        className = "ZToastInfo";
+        icon = "Success";
+        label = AjxMsg.infoMsg;
+        break;
+    }
 
     // setup display
     var el = this.getHtmlElement();
-    Dwt.delClass(el, ZmToast.LEVEL_RE, level || "ZToastInfo")
-
-    if (this._textEl) {
-        this._textEl.innerHTML = text || "";
-    }
+    Dwt.delClass(el, ZmToast.LEVEL_RE, className);
 
     if (this._iconEl) {
-        AjxImg.setImage(this._iconEl, icon, false);
+        this._iconEl.innerHTML = AjxImg.getImageHtml({
+            imageName: icon, altText: label
+        });
+    }
+
+    if (this._textEl) {
+        // we use and add a dedicated SPAN to make sure that we trigger all
+        // screen readers
+        var span = document.createElement('SPAN');
+        span.innerHTML = work.msg || "";
+
+        Dwt.removeChildren(this._textEl);
+        this._textEl.appendChild(span);
     }
 
     // get transitions
-    var location = appCtxt.getSkinHint("toast", "location") || loc;
-    var transitions = customTransitions || appCtxt.getSkinHint("toast", "transitions") || ZmToast.DEFAULT_TRANSITIONS;
+    var location = appCtxt.getSkinHint("toast", "location");
+    var transitions =
+        (work.transitions || appCtxt.getSkinHint("toast", "transitions") ||
+         ZmToast.DEFAULT_TRANSITIONS);
 
     transitions = [].concat( {type:"position", location:location}, transitions, {type:"hide"} );
 
@@ -334,12 +335,14 @@ function(level, text, icon, loc, customTransitions, dismissCallback, finishCallb
 ZmToast.prototype.popdown =
 function() {
     this.__clear();
-    Dwt.setLocation(this.getHtmlElement(), Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+    this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
     this._poppedUp = false;
+
     if (!this._dismissed) {
         if (this._finishCallback)
             this._finishCallback.run();
     }
+
     this._dismissed = false;
 };
 
@@ -370,9 +373,7 @@ function() {
 
     var state = this._state = this._createState(transition);
 
-    var el = this.getHtmlElement();
-    //Dwt.setOpacity(el, state.opacity);
-    Dwt.setLocation(el, state.x, state.y);
+    this.setLocation(state.x, state.y);
 
     this._funcs[transition.type || "next"]();
 };
@@ -383,7 +384,12 @@ ZmToast.prototype._createHtml =
 function(templateId) {
     var data = { id: this._htmlElId };
     this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
-    Dwt.setZIndex(this.getHtmlElement(), Dwt.Z_TOAST);
+    this.setZIndex(Dwt.Z_TOAST);
+    var el = this.getHtmlElement();
+
+    el.setAttribute('aria-live', 'assertive');
+    el.setAttribute('aria-relevant', 'additions');
+    el.setAttribute('aria-atomic', true);
 };
 
 ZmToast.prototype._createHtmlFromTemplate =
@@ -403,24 +409,23 @@ function(transition) {
             state[name] = defaults[name];
         }
     }
-    var el = this.getHtmlElement();
-    
+
     switch (state.type) {
         case "fade-in":
-            Dwt.setOpacity(el, 0);
-            Dwt.setLocation(el, null, 0);
+            this.setOpacity(0);
+            this.setLocation(null, 0);
             state.value = state.start;
             break;
         case "fade-out":
         case "fade":
-            Dwt.setLocation(el, null, 0);
+            this.setLocation(null, 0);
             state.value = state.start;
             break;
         case "slide-in":
         case "slide-out":
         case "slide":{
-            Dwt.setLocation(el, null, -36);
-            Dwt.setOpacity(el, 100);
+            this.setLocation(null, -36);
+            this.setOpacity(100);
             state.value = state.start;
             break;
         }
@@ -444,11 +449,10 @@ function() {
     var location = this._state.location || "C";
     var containerId = "skin_container_toast"; // Skins may specify an optional element with this id. Toasts will then be placed relative to this element, rather than to the the zshell
 
-    var el = this.getHtmlElement();
     var container = Dwt.byId(containerId) || this.shell.getHtmlElement();
     
     var bsize = Dwt.getSize(container);
-    var tsize = Dwt.getSize(el);
+    var tsize = this.getSize();
 
     var x = (bsize.x - tsize.x) / 2;
     var y = (bsize.y - tsize.y) / 2;
@@ -468,23 +472,27 @@ function() {
     var offset = Dwt.toWindow(container);
     x += offset.x;
     y += offset.y;
-    Dwt.setLocation(el, x, y);
+    this.setLocation(x, y);
 
     this._funcs["next"]();
 };
 
 ZmToast.prototype.__show =
 function() {
-    var el = this.getHtmlElement();
-    Dwt.setVisible(el, true);
-    Dwt.setVisibility(el, true);
+    this.setVisible(true);
+    this.setVisibility(true);
     this._funcs["next"]();
 };
 
 ZmToast.prototype.__hide =
 function() {
-    var el = this.getHtmlElement();
-    Dwt.setLocation(el, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+    this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+    if (this._textEl) {
+		Dwt.removeChildren(this._textEl);
+    }
+    if (this._iconEl) {
+		Dwt.removeChildren(this._iconEl);
+    }
     this._funcs["next"]();
 };
 
@@ -587,8 +595,7 @@ function() {
         opacity = this._state.end;
     }
 
-    var el = this.getHtmlElement();
-    Dwt.setOpacity(el, opacity);
+    this.setOpacity(opacity);
 
     if (isOver) {
         this.__clear();
@@ -616,9 +623,8 @@ function() {
         top = this._state.end;
     }
 
-    var el = this.getHtmlElement();
-    //Dwt.setOpacity(el, opacity);
-    Dwt.setLocation(el, null, top);
+    //this.setOpacity(opacity);
+    this.setLocation(null, top);
     //el.style.top = top+'px';
 
 
