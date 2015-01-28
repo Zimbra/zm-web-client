@@ -3541,6 +3541,7 @@ function() {
 
 	var visible = this.identitySelect.getOptionCount() > 1;
 	Dwt.setVisible(div, visible);
+	this.identitySelect.setVisible(visible);
 };
 
 ZmComposeView.prototype.getIdentity =
