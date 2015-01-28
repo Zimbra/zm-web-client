@@ -510,7 +510,7 @@ if (application.getInitParameter("offlineMode") != null) {
 									</c:otherwise>
 								</c:choose>
     							<script TYPE="text/javascript">
-    								document.write("<a href='#' onclick='showWhatsThis();' id='ZLoginWhatsThisAnchor' aria-controls='ZLoginWhatsThis'><fmt:message key='whatsThis'/></a>");
+    								document.write("<a href='#' onclick='showWhatsThis();' id='ZLoginWhatsThisAnchor' aria-controls='ZLoginWhatsThis' aria-expanded='false'><fmt:message key='whatsThis'/></a>");
     							</script>
                                 <c:choose>
                                     <c:when test="${touchLoginPageExists}">
@@ -578,10 +578,11 @@ function clientChange(selectValue) {
 
 // if they have JS, write out a "what's this?" link that shows the message below
 function showWhatsThis() {
-	var div = document.getElementById("ZLoginWhatsThis"),
-        doHide = (div.style.display === "block");
-	div.style.display = doHide ? "none" : "block";
-    div.setAttribute("aria-expanded", doHide ? "false" : "true");
+	var anchor = document.getElementById('ZLoginWhatsThisAnchor'),
+        tooltip = document.getElementById("ZLoginWhatsThis"),
+        doHide = (tooltip.style.display === "block");
+    tooltip.style.display = doHide ? "none" : "block";
+    anchor.setAttribute("aria-expanded", doHide ? "false" : "true");
 }
 
 function onLoad() {

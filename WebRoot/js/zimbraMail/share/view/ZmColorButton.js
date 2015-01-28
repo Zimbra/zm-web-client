@@ -20,19 +20,24 @@
  */
 
 ZmColorButton = function(params) {
-    if (arguments.length == 0) return;
+
+    if (arguments.length == 0) {
+	    return;
+    }
+
     DwtButton.call(this, params);
     var menu = new ZmColorMenu({parent:this,hideNone:params.hideNone});
     menu.addSelectionListener(new AjxListener(this, this._handleSelection));
     this.setMenu(menu);
     this._colorMenu = menu;
+	this._labelId = params.labelId;
 };
+
 ZmColorButton.prototype = new DwtButton;
 ZmColorButton.prototype.constructor = ZmColorButton;
 
-ZmColorButton.prototype.toString = function() {
-    return "ZmColorButton";
-};
+ZmColorButton.prototype.isZmColorButton = true;
+ZmColorButton.prototype.toString = function() { return "ZmColorButton"; };
 
 //
 // Public methods
@@ -46,19 +51,29 @@ ZmColorButton.prototype.setImage = function(image, skipMenu) {
 };
 
 ZmColorButton.prototype.setValue = function(color) {
-	var standardColorCode = ZmOrganizer.getStandardColorNumber(color);
-	if(standardColorCode != -1) {
-	 this._color = standardColorCode;
-	} else {
-    this._color = color;
+
+	var standardColorCode = ZmOrganizer.getStandardColorNumber(color),
+		colorMenuItemId;
+
+	if (standardColorCode !== -1) {
+		this._color = standardColorCode;
+		colorMenuItemId = 'COLOR_' + standardColorCode;
+	}
+	else {
+        this._color = color;
 	}
     var image = this.getImage();
     if (image) {
-        image = image.replace(/,.*$/,"");
+        image = image.replace(/,.*$/, "");
 		var displayColor = this._color || ZmOrganizer.COLOR_VALUES[ZmOrganizer.ORG_DEFAULT_COLOR]; //default to gray
         this.setImage([image, this._color].join(",color="), true);
     }
     this.setText(this._colorMenu.getTextForColor(this._color));
+
+	if (colorMenuItemId) {
+		this.removeAttribute('aria-label');
+		this.setAttribute('aria-labelledby', [ this._labelId, colorMenuItemId ].join(' '));
+	}
 };
 
 

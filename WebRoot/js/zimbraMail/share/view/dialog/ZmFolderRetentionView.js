@@ -269,18 +269,22 @@ function(policyElement) {
     components.customUnit.disabled   = disabled;
 }
 
-ZmFolderRetentionView.prototype._handleSelectionChange =
-function(policyElement) {
-    var components = this._components[policyElement];
-    var policySelect   = components.policySelect;
-    var policySelection = policySelect.options[policySelect.selectedIndex].value;
-    var visible = (policySelection == "custom");
+ZmFolderRetentionView.prototype._handleSelectionChange = function(policyElement) {
+
+    var components = this._components[policyElement],
+        policySelect   = components.policySelect,
+	    selectedOption = policySelect.options[policySelect.selectedIndex],
+        policySelection = selectedOption.value,
+        visible = (policySelection == "custom");
 
     // Show hide the custom unit and values fields based on whether the policy
     // selected is a system defined policy, or custom
     components.customValue.style.visibility = visible ? "visible" : "hidden";
     components.customUnit.style.visibility  = visible ? "visible" : "hidden";
-}
+
+	// accessibility
+	policySelect.setAttribute('aria-label', AjxMessageFormat.format(ZmMsg.policyTypeLabel, selectedOption.innerHTML));
+};
 
 ZmFolderRetentionView.prototype._createView =
 function() {

@@ -45,8 +45,7 @@ ZmShareReply = function(parent, className, options) {
 
 ZmShareReply.prototype = new DwtComposite;
 ZmShareReply.prototype.constructor = ZmShareReply;
-ZmShareReply.prototype.role = 'dialog';
-ZmShareReply.prototype.isFocusable = true;
+//ZmShareReply.prototype.isFocusable = true;
 
 // Constants
 /**
@@ -155,13 +154,13 @@ function(event) {
 	this.setReplyType(type);
 };
 
-ZmShareReply.prototype._initControl =
-function(options) {
+ZmShareReply.prototype._initControl = function(options) {
+
 	this._replyType = new DwtSelect({parent:this, id: "ZmShareReplySelect"});
     options = options || ZmShareReply.DEFAULT_OPTIONS;
     this.setReplyOptions(options);
-	this._replyType.addChangeListener(new AjxListener(this, this._handleReplyType));
-	
+	this._replyType.addChangeListener(this._handleReplyType.bind(this));
+
 	var doc = document;
 	this._replyTypeEl = doc.createElement("DIV");
 	this._replyTypeEl.style.paddingBottom = "0.5em";
@@ -170,6 +169,7 @@ function(options) {
 	this._replyStandardMailNoteEl = doc.createElement("DIV");
 	this._replyStandardMailNoteEl.style.paddingBottom = "0.125em";
 	this._replyStandardMailNoteEl.style.width = "30em";
+	this._makeFocusable(this._replyStandardMailNoteEl);
 	this._replyStandardMailNoteEl.innerHTML = ZmMsg.sendMailAboutShareNote;
 	
 	var div = doc.createElement("DIV");
@@ -188,6 +188,7 @@ function(options) {
 	var element = this.getHtmlElement();
 	element.appendChild(this._replyControlsEl);
 	this._tabGroup.addMember(this._replyType);
+	this._tabGroup.addMember(this._replyStandardMailNoteEl);
 	this._tabGroup.addMember(this._replyNoteEl);
 };
 

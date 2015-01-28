@@ -871,6 +871,11 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
     this._resetSize();
 	this._setupTabGroup();
 
+	var iframe = Dwt.getElement(this._iFrameId);
+	if (iframe) {
+		iframe.setAttribute('title', ZmMsg.htmlEditorTitle);
+	}
+
     AjxUtil.foreach(this._initCallbacks, function(fn) { fn.run() });
 };
 
