@@ -49,7 +49,6 @@ ZmFolderTreeController = function(type, dropTgt) {
 	this._listeners[ZmOperation.EMPTY_FOLDER]			= this._emptyListener.bind(this);
 	this._listeners[ZmOperation.RECOVER_DELETED_ITEMS]	= this._recoverListener.bind(this);
 	this._listeners[ZmOperation.SYNC_OFFLINE_FOLDER]	= this._syncOfflineFolderListener.bind(this);
-	this._listeners[ZmOperation.FOLDER_INFO]	        = this._folderInfoListener.bind(this);
 };
 
 ZmFolderTreeController.prototype = new ZmTreeController;
@@ -174,7 +173,6 @@ function(parent, type, id) {
 	}
 
 	parent.enable(ZmOperation.OPEN_IN_TAB, true);
-	parent.enable(ZmOperation.FOLDER_INFO, true);
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
 	if (nId != ZmOrganizer.ID_ROOT && !folder.isReadOnly()) {
 		// always enable for shared folders since we dont get this info from server
@@ -297,8 +295,7 @@ function() {
 		ZmOperation.EDIT_PROPS,
 		ZmOperation.SYNC_OFFLINE_FOLDER,
 		ZmOperation.OPEN_IN_TAB,
-		ZmOperation.EXPAND_ALL,
-		ZmOperation.FOLDER_INFO
+		ZmOperation.EXPAND_ALL
 	];
 };
 
@@ -726,20 +723,6 @@ ZmFolderTreeController.prototype._shareFolderListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
-};
-
-// Displays the folder info in a dialog (same info as in tooltip)
-ZmFolderTreeController.prototype._folderInfoListener = function(ev) {
-
-	var folder = this._getActionedOrganizer(ev),
-		info = folder && folder.getToolTip();
-
-	if (info) {
-		var dlg = appCtxt.getMsgDialog();
-		dlg.reset();
-		dlg.setMessage(info, DwtMessageDialog.INFO_STYLE, ZmMsg.folderInfoTitle);
-		dlg.popup();
-	}
 };
 
 // Miscellaneous

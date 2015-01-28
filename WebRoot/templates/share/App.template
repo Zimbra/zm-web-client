@@ -111,12 +111,7 @@
 <$ } $>
 		<tr>
 			<td id='tt_m_label' valign='top' style='padding-right:20px'>
-				<$ if (data.itemText == ZmMsg.messages) { $>
-				    <$= ZmMsg.totalMessagesLabel $>
-				<$ } $>
-				<$  else { $>
-                    <$= AjxMessageFormat.format(ZmMsg.makeLabel, data.itemText) $>
-			    <$ } $>
+                <$= AjxMessageFormat.format(ZmMsg.makeLabel, data.itemText) $>
 			</td>
 			<td id='tt_m_count' valign='top'>
 				<$= data.numTotal $>

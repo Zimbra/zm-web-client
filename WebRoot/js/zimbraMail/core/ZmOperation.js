@@ -131,7 +131,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_EXPAND_ALL, {textKey:"expandAll", image:"Plus"});
 //	ZmOperation.registerOp(ZmId.OP_EXPORT_FOLDER, {textKey:"exportFolder", image:"MailExport"});
 	ZmOperation.registerOp(ZmId.OP_EMPTY_FOLDER,{textKey:"emptyFolder",image:"EmptyFolder"});
-	ZmOperation.registerOp(ZmId.OP_FOLDER_INFO, {textKey:"getInfo", image:"Information"});
 	ZmOperation.registerOp(ZmId.OP_FORMAT_HTML, {textKey: "formatAsHtml"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORMAT_TEXT, {textKey: "formatAsText"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORMAT_MORE_OPTIONS, {textKey: "moreComposeOptions"});
