@@ -63,11 +63,12 @@ function(list, contact) {
 	// add row for selecting all at top of list
 	var dl = appCtxt.getApp(ZmApp.CONTACTS).getDL(contact.getEmail());
 	var numMembers = dl ? dl.total : list.length;
+	var selectId = this._getId("Row", 1);
 	if (numMembers != 1) {
 		var table = this._getTable();
 		var row = table.insertRow(0);
 		row.className = this._origClass;
-		row.id = this._selectAllRowId = this._getId("Row", "selectAll");
+		selectId = row.id = this._selectAllRowId = this._getId("Row", "selectAll");
 		var cell = row.insertCell(-1);
 		cell.className = "AutocompleteMatchIcon";
 		cell.innerHTML = AjxImg.getImageHtml("Blank16");
@@ -76,10 +77,9 @@ function(list, contact) {
 		cell.innerHTML = AjxMessageFormat.format(text, [numMembers]);
 	}
 
-	// autoselect first real row
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
 		function() {
-			this._setSelected(this._getId("Row", 1));
+			this._setSelected(selectId);
 		}), 100);
 };
 
