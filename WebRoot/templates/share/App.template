@@ -99,6 +99,14 @@
                 <div id='tt_f_name' style='overflow-x:hidden;'><$= AjxStringUtil.htmlEncode(data.name) $></div>
             </th>
 	    </tr>
+		<tr>
+			<td id='tt_m_label' valign='top' style='padding-right:20px'>
+                <$= AjxMessageFormat.format(ZmMsg.makeLabel, data.itemText) $>
+			</td>
+			<td id='tt_m_count' valign='top'>
+				<$= data.numTotal $>
+			</td>
+		</tr>
 <$ if (data.numUnread) { $>
 		<tr>
 			<td id='tt_u_label' valign='top'>
@@ -109,14 +117,6 @@
 			</td>
 		</tr>
 <$ } $>
-		<tr>
-			<td id='tt_m_label' valign='top' style='padding-right:20px'>
-                <$= AjxMessageFormat.format(ZmMsg.makeLabel, data.itemText) $>
-			</td>
-			<td id='tt_m_count' valign='top'>
-				<$= data.numTotal $>
-			</td>
-		</tr>
 <$ if (data.sizeTotal) { $>
 		<tr>
 			<td id='tt_s_label' valign='top'>
