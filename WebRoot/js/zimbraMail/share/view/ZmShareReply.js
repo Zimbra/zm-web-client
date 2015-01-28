@@ -39,11 +39,14 @@
 ZmShareReply = function(parent, className, options) {
 	className = className || "ZmShareReply";
 	DwtComposite.call(this, {parent:parent, className:className, id: "ZmShareReply"});
+	this._tabGroup = new DwtTabGroup(this.toString());
 	this._initControl(options);
 };
 
 ZmShareReply.prototype = new DwtComposite;
 ZmShareReply.prototype.constructor = ZmShareReply;
+ZmShareReply.prototype.role = 'dialog';
+ZmShareReply.prototype.isFocusable = true;
 
 // Constants
 /**
@@ -184,4 +187,10 @@ function(options) {
 	// append controls
 	var element = this.getHtmlElement();
 	element.appendChild(this._replyControlsEl);
+	this._tabGroup.addMember(this._replyType);
+	this._tabGroup.addMember(this._replyNoteEl);
+};
+
+ZmShareReply.prototype.getTabGroupMember = function(){
+	return this._tabGroup;
 };

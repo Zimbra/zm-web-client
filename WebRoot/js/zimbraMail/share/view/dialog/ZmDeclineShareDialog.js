@@ -55,6 +55,7 @@ ZmDeclineShareDialog = function(parent, className) {
 
 	// create formatters
 	this._formatter = new AjxMessageFormat(ZmMsg.declineShareConfirm);
+	this._tabGroup.addMember(this._reply.getTabGroupMember());
 };
 
 ZmDeclineShareDialog.prototype = new DwtDialog;

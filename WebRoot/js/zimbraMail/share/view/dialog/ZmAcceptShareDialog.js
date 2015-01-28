@@ -186,5 +186,10 @@ function() {
 	el.appendChild(this._detailsEl);
 	el.appendChild(this._questionEl);
 	el.appendChild(settings);
+
+	this._tabGroup.addMember(this._color.getTabGroupMember());
+	this._tabGroup.addMember(this._propSheet.getTabGroupMember());
+	this._tabGroup.addMember(this._reply.getTabGroupMember());
+
 	return view;
 };
