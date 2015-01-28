@@ -1829,6 +1829,9 @@ function() {
 		rootTg.addMember(appCtxt.getSearchController().getTabGroup());
 	}
 
+	rootTg.addMember(this._userNameField);
+	rootTg.addMember(this._usedQuotaField);
+
 	if (this._helpButton) {
 		rootTg.addMember(this._helpButton);
 	}
@@ -2629,25 +2632,29 @@ function(val) {
  * Sets the user info.
  *
  */
-ZmZimbraMail.prototype.setUserInfo =
-function() {
-	if (appCtxt.isOffline) { return; }
+ZmZimbraMail.prototype.setUserInfo = function() {
+
+	if (appCtxt.isOffline) {
+		return;
+	}
 
 	// username
 	var login = appCtxt.getLoggedInUsername();
 	var username = (appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
 	if (username) {
-        this._userNameField.getHtmlElement().innerHTML =  AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(username, 24));
+		var el = this._userNameField.getHtmlElement();
+        el.innerHTML =  AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(username, 24));
+		el.setAttribute('aria-label', username);
 		if (AjxEnv.isLinux) {	// bug fix #3355
-			this._userNameField.getHtmlElement().style.lineHeight = "13px";
+			el.style.lineHeight = "13px";
 		}
 	}
 
     this.setQuotaInfo(login, username);
 };
 
-ZmZimbraMail.prototype.setQuotaInfo =
-function(login, username) {
+ZmZimbraMail.prototype.setQuotaInfo = function(login, username) {
+
     var quota = appCtxt.get(ZmSetting.QUOTA);
 	var usedQuota = (appCtxt.get(ZmSetting.QUOTA_USED)) || 0;
 	var data = {
@@ -2670,7 +2677,11 @@ function(login, username) {
 		data.desc = AjxMessageFormat.format(ZmMsg.usingDescUnlimited, [data.size]);
 		quotaTemplateId = 'UsedUnlimited';
 	}
-    this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data);
+
+	var el = this._usedQuotaField.getHtmlElement();
+    el.innerHTML = AjxTemplate.expand('share.Quota#' + quotaTemplateId, data);
+	el.setAttribute('aria-label', data.desc);
+
 	// tooltip for username/quota fields
 	var html = AjxTemplate.expand('share.Quota#Tooltip', data);
 	this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(html);
@@ -3138,9 +3149,16 @@ function() {
  */
 ZmZimbraMail.prototype._createUserInfo =
 function(className, cid, id) {
+
 	var position = appCtxt.getSkinHint(cid, "position");
 	var posStyle = position || Dwt.ABSOLUTE_STYLE;
-	var ui = new DwtComposite({parent:this._shell, className:className, posStyle:posStyle, id:id});
+	var ui = new DwtComposite({
+		parent:         this._shell,
+		className:      className,
+		posStyle:       posStyle,
+		id:             id,
+		isFocusable:    true
+	});
 	ui._setMouseEventHdlrs();
 	return ui;
 };
