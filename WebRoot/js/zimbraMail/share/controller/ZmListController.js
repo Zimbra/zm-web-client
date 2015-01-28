@@ -349,7 +349,11 @@ function(view) {
 
 	ZmBaseController.prototype._initializeTabGroup.apply(this, arguments);
 
-	this._tabGroups[view].addMember(this._navToolBar[view]);
+	var navToolBar = this._navToolBar[view];
+	if (navToolBar) {
+		this._tabGroups[view].addMember(navToolBar.getTabGroupMember());
+	}
+
 	this._tabGroups[view].addMember(this._view[view]);
 };
 

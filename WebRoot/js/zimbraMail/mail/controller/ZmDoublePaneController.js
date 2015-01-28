@@ -331,7 +331,9 @@ function(view) {
 
 	ZmListController.prototype._initializeTabGroup.apply(this, arguments);
 
-	this._tabGroups[view].addMember(this.getItemView().getTabGroupMember());
+	if (this._view[view] !== this.getItemView()) {
+		this._tabGroups[view].addMember(this.getItemView().getTabGroupMember());
+	}
 };
 
 ZmDoublePaneController.prototype._setViewContents =

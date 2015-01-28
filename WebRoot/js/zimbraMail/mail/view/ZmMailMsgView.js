@@ -1040,6 +1040,7 @@ function(params) {
 	}
 
 	this._msgBodyDivId = [this._htmlElId, ZmId.MV_MSG_BODY].join("_");
+	this._bodyTabGroup.removeAllMembers();
 	
 	this._usingIframe = this._useIframe(params.isTextMsg, html, params.isTruncated);
 	DBG.println(AjxDebug.DBG1, "Use IFRAME: " + this._usingIframe);
