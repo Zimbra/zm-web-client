@@ -206,11 +206,7 @@ function() {
 			});
 
 	this._createTabGroup();
-	this._tabGroup.addMember(this._searchToolBar.getSearchField());
-	var buttons = this._searchToolBar.getButtons();
-	for (var i = 0; i < buttons.length; i++) {
-		this._tabGroup.addMember(buttons[i]);
-	}
+	this._tabGroup.addMember(this._searchToolBar.getChildren());
 	
 	// Register keyboard callback for search field
 	this._searchToolBar.registerEnterCallback(this._toolbarSearch.bind(this));

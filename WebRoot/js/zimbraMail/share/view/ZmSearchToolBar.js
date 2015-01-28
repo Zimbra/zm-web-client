@@ -49,6 +49,7 @@ ZmSearchToolBar.prototype.constructor = ZmSearchToolBar;
 
 ZmSearchToolBar.prototype.isZmSearchToolBar = true;
 ZmSearchToolBar.prototype.toString = function() { return "ZmSearchToolBar"; };
+ZmSearchToolBar.prototype.role = 'toolbar';
 
 // Consts
 
@@ -360,6 +361,7 @@ function() {
 		var firstItem = ZmSearchToolBar.MENU_ITEMS[0];
 		var button = this._button[ZmSearchToolBar.TYPES_BUTTON] = ZmToolBar.addButton({
 					parent:		this, 
+					index:		0,
 					tdId:		"_searchMenuButton",
 					buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_MENU),
 					tooltip:	ZmMsg[ZmSearchToolBar.TT_MSG_KEY[firstItem]],
