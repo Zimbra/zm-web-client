@@ -315,6 +315,11 @@ function(policyElement, allComponents) {
         components.customUnit.options[i] = new Option(unit.label, unit.id);
     }
 
+	this._tabGroup.addMember(components.policyEnable);
+	this._tabGroup.addMember(components.policySelect);
+	this._tabGroup.addMember(components.customValue);
+	this._tabGroup.addMember(components.customUnit);
+
     Dwt.setHandler(components.policyEnable, "onclick", this._handleEnableClick.bind(this, policyElement));
     Dwt.setHandler(components.policySelect, "onclick", this._handleSelectionChange.bind(this, policyElement));
 }

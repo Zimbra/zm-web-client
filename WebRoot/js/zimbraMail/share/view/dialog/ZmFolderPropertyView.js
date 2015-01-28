@@ -37,6 +37,7 @@ ZmFolderPropertyView = function(dialog, parent) {
     if (arguments.length == 0) return;
     ZmFolderDialogTabView.call(this, parent, "ZmFolderPropertyView");
     this._dialog = dialog;
+
 };
 
 ZmFolderPropertyView.prototype = new ZmFolderDialogTabView;
@@ -265,7 +266,6 @@ function(response) {
 	return true;
 };
 
-
 ZmFolderPropertyView.prototype._createView =
 function() {
 	// create html elements
@@ -305,6 +305,7 @@ function() {
 	this._urlId   = this._props.addProperty(ZmMsg.urlLabel,    this._urlEl);
 	this._permId  = this._props.addProperty(ZmMsg.permissions, this._permEl);
 	this._colorId = this._props.addProperty(ZmMsg.colorLabel,  this._color);
+
     if (appCtxt.isWebClientOfflineSupported) {
         this._offlineEl = document.createElement("DIV");
 		this._offlineEl.style.whiteSpace = "nowrap";
@@ -316,7 +317,7 @@ function() {
 	container.appendChild(this._props.getHtmlElement());
 	container.appendChild(excludeFbEl);
 	container.appendChild(globalMarkReadEl);
+	this._contentEl = container;
 
-    this._contentEl = container;
-
+	this._tabGroup.addMember(this._props.getTabGroupMember());
 };
