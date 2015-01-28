@@ -738,10 +738,13 @@ function(overviewId, account) {
  * @private
  */
 ZmCalendarTreeController.prototype._newListener =
-function(ev, account) {
+function(ev, account, isExternalCalendar) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	var newDialog = this._getNewDialog();
-    if (this._extCalData) {
+
+    // Fix for Bug: 85158 and regression due to Bug: 82811
+    // Pass a flag isExternalCalendar from ZmExternalCalendarDialog::_nextButtonListener to help decide creating external calendar or local calendar
+    if (isExternalCalendar && this._extCalData) {
         var iCalData = this._extCalData.iCal;
         newDialog.setICalData(iCalData);
         newDialog.setTitle(ZmMsg.addExternalCalendar);
@@ -764,10 +767,6 @@ function(ev, account) {
 	}
 
 	ZmController.showDialog(newDialog, this._newCb, this._pendingActionData, account);
-
-    // Clear the external calendar data once dialog is rendered
-    // Fix for bug: 82811
-    this.setExternalCalendarData(null);
 
 	newDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newDialog);
 };
