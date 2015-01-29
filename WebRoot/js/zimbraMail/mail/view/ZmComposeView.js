@@ -162,6 +162,8 @@ function(params) {
 	this._isIncludingOriginalAttachments = false;
 	this._originalAttachmentsInitialized = false;
 
+	this.isEditAsNew = params.isEditAsNew;
+
 	this._acceptFolderId = params.acceptFolderId;
 	var msg = this._msg = this._origMsg = params.msg;
 	var oboMsg = msg || (params.selectedMessages && params.selectedMessages.length && params.selectedMessages[0]);
@@ -887,7 +889,7 @@ function(msg) {
 		var notifyActionMap = ZmComposeView.NOTIFY_ACTION_MAP || {};
 		var inviteMode = notifyActionMap[this._action] ? notifyActionMap[this._action] : this._action;
 		msg.inviteMode = isInviteReply ? inviteMode : null;
-        if (this._action !== ZmOperation.NEW_MESSAGE && (!msg.isDraft  || msg.isReplied)){  //Bug: 82942 - in-reply-to shouldn't be added to new messages.
+        if (!this.isEditAsNew && this._action !== ZmOperation.NEW_MESSAGE && (!msg.isDraft || msg.isReplied)){  //Bug: 82942 - in-reply-to shouldn't be added to new messages.
 			 //when editing a saved draft (only from the drafts folder "edit") - _origMsg is the draft msg instead of the replied to message.
             msg.irtMessageId = this._origMsg.isDraft ? this._origMsg.irtMessageId : this._origMsg.messageId;
         }
@@ -1248,6 +1250,8 @@ function(idoc) {
 };
 
 /**
+ * the comment below is no longer true, but I keep it for history purposes as this is so complicated. Bug 50178 changed to setting dfsrc instead of src...
+ * todo - perhaps rewrite the whole thing regarding inline attachments.
  * Change the src tags on inline img's to point to cid's, which is what we
  * want for an outbound MIME msg.
  */
@@ -1263,8 +1267,7 @@ function(idoc) {
 			var src = img.src && unescape(img.src);
 			var dfsrc = img.getAttribute("dfsrc") || img.getAttribute("data-mce-src");
 			if (dfsrc && dfsrc.indexOf("cid:") === 0) {
-				cid = dfsrc;
-				img.removeAttribute("dfsrc");
+				return; //dfsrc already set so nothing to do
 			} else if (img.src && img.src.indexOf("cid:") === 0) {
 				cid = img.src;
 			} else if ( dfsrc && dfsrc.substring(0,4) === "doc:"){
