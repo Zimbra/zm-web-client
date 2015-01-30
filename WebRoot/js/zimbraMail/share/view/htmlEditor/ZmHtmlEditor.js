@@ -481,6 +481,7 @@ function(params) {
 	var textEl = document.createElement("textarea");
 	textEl.setAttribute("id", id);
 	textEl.setAttribute("name", id);
+	textEl.setAttribute("aria-label", ZmMsg.composeBody);
     if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
         textEl.setAttribute("dir", ZmSetting.RTL);
     }
@@ -874,6 +875,10 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
 	var iframe = Dwt.getElement(this._iFrameId);
 	if (iframe) {
 		iframe.setAttribute('title', ZmMsg.htmlEditorTitle);
+		var body = this._getIframeDoc().body;
+		if (body) {
+			body.setAttribute('aria-label', ZmMsg.composeBody);
+		}
 	}
 
     AjxUtil.foreach(this._initCallbacks, function(fn) { fn.run() });
