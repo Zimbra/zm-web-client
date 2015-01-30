@@ -534,9 +534,8 @@
 
 				<$ for (var i = 0; i < data.attachments.length; i++) { $>
 					<$ var attachment = data.attachments[i]; $>
-					<$ var spanId = Dwt.getNextId(data.rowId)$>
 
-					<span id='<$= spanId $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
+					<span id='<$= attachment.spanId $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
 						<span>
 							<input type="hidden" mid='<$=attachment.mid$>' value='<$=attachment.part$>' name='<$= data.fwdFieldName $>' >
 						</span>
@@ -550,7 +549,7 @@
 						<$ if (attachment.size) { $>
 							(<$= attachment.size $>)
 						<$ } $>
-						<span onclick="window.appCtxt.getCurrentView()._removeAttachedFile('<$= spanId $>', '<$= attachment.part$>' )" class="ImgBubbleDelete AttachmentClose"></span>
+						<span tabindex=0 onclick="<$= attachment.closeHandler $>" onkeypress="<$= attachment.closeHandler $>" class="ImgBubbleDelete AttachmentClose" role="button" aria-label="<$= ZmMsg.remove $>"></span>
 					</span>
 				<$ } $>
 
