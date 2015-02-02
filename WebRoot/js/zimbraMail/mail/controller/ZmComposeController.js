@@ -509,7 +509,8 @@ function(attId, docIds, draftType, callback, contactId) {
 		tempMsg = new ZmMailMsg();
 		this._composeView.setDocAttachments(tempMsg, docIds);
 	}
-	var msg = this._composeView.getMsg(attId, isDraft, tempMsg, isTimed, contactId);
+	var removeMarkers = !isDraft || isTimed;
+	var msg = this._composeView.getMsg(attId, isDraft, tempMsg, isTimed, contactId, removeMarkers);
 
 	if (!msg) {
 		return;
