@@ -122,11 +122,6 @@ function(state) {
     DwtButton.prototype.setDisplayState.call(this, state);
 };
 
-ZmAppButton.prototype.getKeyMapName =
-function() {
-	return "ZmAppButton";
-};
-
 ZmAppButton.prototype.handleKeyAction =
 function(actionCode, ev) {
 
