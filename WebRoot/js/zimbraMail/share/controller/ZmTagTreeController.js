@@ -104,15 +104,14 @@ function() {
  * 
  * @private
  */
-ZmTagTreeController.prototype._getActionMenuOps = function() {
-
+ZmTagTreeController.prototype._getActionMenuOps =
+function() {
 	return [
 		ZmOperation.NEW_TAG,
 		ZmOperation.MARK_ALL_READ,
-		ZmOperation.DELETE_WITHOUT_SHORTCUT,
 		ZmOperation.RENAME_TAG,
-		ZmOperation.TAG_COLOR_MENU,
-		ZmOperation.OPEN_IN_TAB
+		ZmOperation.DELETE_WITHOUT_SHORTCUT,
+		ZmOperation.TAG_COLOR_MENU
 	];
 };
 
@@ -146,8 +145,8 @@ function() {
  * 
  * @private
  */
-ZmTagTreeController.prototype._itemClicked = function(tag, openInTab) {
-
+ZmTagTreeController.prototype._itemClicked =
+function(tag) {
 	var searchFor;
 	switch (appCtxt.getCurrentAppName()) {
 		case ZmApp.CONTACTS:    searchFor = ZmItem.CONTACT; break;
@@ -158,15 +157,13 @@ ZmTagTreeController.prototype._itemClicked = function(tag, openInTab) {
 	}
 
 	var params = {
-		query:              tag.createQuery(),
-		searchFor:          searchFor,
-		noGal:              true,
-		inclSharedItems:    true,
-		getHtml:            appCtxt.get(ZmSetting.VIEW_AS_HTML),
-		accountName:        appCtxt.multiAccounts ? tag.getAccount().name : null,
-		userInitiated:      openInTab
+		query: tag.createQuery(),
+		searchFor: searchFor,
+		noGal: true,
+		inclSharedItems: true,
+		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+		accountName: (appCtxt.multiAccounts ? tag.getAccount().name : null)
 	};
-
     //Bug:45878 Don't do a multi-account search for tags
     var sc = appCtxt.getSearchController();
 	sc.searchAllAccounts = false;

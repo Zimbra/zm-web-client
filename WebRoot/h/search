@@ -236,10 +236,9 @@
     </app:status>
 </c:when>
 <c:when test="${zm:boolean(param.actionMessageMoved)}" >
-    <c:set var="movedFolderName" value="${zm:getFolderName(pageContext, param.movedFolderId)}"/>
     <app:status>
         <fmt:message  key="actionSingleMessageMoved">
-            <fmt:param value="${movedFolderName}"/>
+            <fmt:param value="${param.movedFolderName}"/>
         </fmt:message>
     </app:status>
 </c:when>

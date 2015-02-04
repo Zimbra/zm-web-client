@@ -1579,7 +1579,7 @@ function(win) {
 		setTimeout(function() { 
 					if (win.innerHeight == 0)
 						appCtxt.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
-				}, 200);
+				}, 50);
 		};
 };
 
@@ -2213,56 +2213,4 @@ ZmAppCtxt.prototype.isRemoteId = function(id) {
  */
 ZmAppCtxt.prototype.getClipboard = function() {
 	return AjxClipboard.isSupported() ? new AjxClipboard() : null;
-};
-
-/**
- * Checks a precondition which may be in one of several forms: a boolean, a settings constant, a function, or a list.
- *
- * @param {Boolean|String|Function|Array}   precondition    something that evaluates to true or false
- * @param {Boolean}                         listAny         (optional) if a list is provided, whether just one (instead of all) must be true
- *
- * @return boolean  false if the precondition evaluates to false or null, otherwise true
- */
-ZmAppCtxt.prototype.checkPrecondition = function(precondition, listAny) {
-
-	// Lack of a precondition evaluates to true
-	if (precondition === undefined) {
-		return true;
-	}
-
-	// A precondition of null should not happen
-	if (precondition === null) {
-		return false;
-	}
-
-	// Boolean speaks for itself
-	if (AjxUtil.isBoolean(precondition)) {
-		return precondition;
-	}
-
-	// Client setting: fetch value from settings
-	if (AjxUtil.isString(precondition) && ZmSetting.hasOwnProperty(precondition)) {
-		return appCtxt.get(precondition);
-	}
-
-	// Function: evaluate and return result
-	if (AjxUtil.isFunction(precondition)) {
-		return precondition();
-	}
-
-	// Array can be treated in one of two modes, where all have to be true, or just one does
-	if (AjxUtil.isArray(precondition)) {
-		for (var i = 0; i < precondition.length; i++) {
-			var result = this.checkPrecondition(precondition[i]);
-			if (listAny && result) {
-				return true;
-			}
-			if (!listAny && !result) {
-				return false;
-			}
-		}
-		return !listAny;
-	}
-
-	return true;
 };

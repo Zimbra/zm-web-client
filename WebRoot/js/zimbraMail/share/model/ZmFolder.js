@@ -229,30 +229,9 @@ function(folderA, folderB, nonMail) {
 	}
 
 	if (nonMail) {
-		//for nonp-mail apps, trash last of all things
-		if (folderA.isTrash()) {
-			return 1;
-		}
-		if (folderB.isTrash()) {
-			return -1;
-		}
-		//system before non-system (except for trash)
-		if (folderA.isSystem() && !folderB.isSystem()) {
-			return -1;
-		}
-		if (!folderA.isSystem() && folderB.isSystem()) {
-			return 1;
-		}
-		if (folderA.isSystem() && folderB.isSystem()) {
-			//for 2 system folders, the default one is first, and the rest ordered alphabetically (again except for trash that appears after the user folders)
-			if (folderA.isDefault()) {
-				return -1;
-			}
-			if (folderB.isDefault()) {
-				return 1;
-			}
-			//the other cases will be sorted by name below. Either 2 system or 2 user folders.
-		}
+		// trash folder should always go last w/in personal folders, for NON MAIL folders. (In mail it's at the end of the system folders as ordered by ZmFolder.SORT_ORDER)
+		if (folderA.nId == ZmFolder.ID_TRASH) { return 1; }
+		if (folderB.nId == ZmFolder.ID_TRASH) { return -1; }
 	}
 	else {
 		if (!ZmFolder.SORT_ORDER[folderA.nId] && ZmFolder.SORT_ORDER[folderB.nId]) { return 1; }

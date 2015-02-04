@@ -40,8 +40,6 @@
 ZmSearchApp = function(container, parentController) {
 
 	ZmApp.call(this, ZmApp.SEARCH, container, parentController);
-
-	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 };
 
 ZmSearchApp.prototype = new ZmApp;
@@ -86,13 +84,4 @@ function(searchResultsController) {
 	if (saveButton) {
 		saveButton.setEnabled(!appCtxt.isWebClientOffline());
 	}
-};
-
-// search app maintains its own "group mail by" setting
-ZmSearchApp.prototype.getGroupMailBy = function() {
-	return ZmMailApp.prototype.getGroupMailBy.call(this);
-};
-
-ZmSearchApp.prototype.setGroupMailBy = 	function(groupBy) {
-	this._groupBy = groupBy;
 };

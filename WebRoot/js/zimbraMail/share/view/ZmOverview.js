@@ -159,11 +159,10 @@ function(treeIds, omit) {
  * @param {String}	treeId	the organizer ID
  * @param {Hash}	omit	a hash of organizer ids to ignore
  */
-ZmOverview.prototype.setTreeView = function(treeId, omit) {
-
-	if (!appCtxt.checkPrecondition(ZmOrganizer.PRECONDITION[treeId])) {
-		return;
-	}
+ZmOverview.prototype.setTreeView =
+function(treeId, omit) {
+	// check for false since setting precondition is optional (can be null)
+	if (appCtxt.get(ZmOrganizer.PRECONDITION[treeId]) === false) { return; }
 
 	AjxDispatcher.require(ZmOrganizer.ORG_PACKAGE[treeId]);
 	var treeController = this._controller.getTreeController(treeId);

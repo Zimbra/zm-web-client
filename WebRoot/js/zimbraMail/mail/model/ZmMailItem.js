@@ -168,9 +168,9 @@ function(node) {
 		// if we can find the person in contacts, use the name from there
 		var contactList = AjxDispatcher.run("GetContacts"),
 			contact = contactList && contactList.getContactByEmail(node.a),
-			fileAsName = contact && contact.getFileAs(false);
+			fullName = contact && contact.getFullName();
 
-		var addr = new AjxEmailAddress(node.a, type, fileAsName || node.p, node.d, node.isGroup, node.isGroup && node.exp);
+		var addr = new AjxEmailAddress(node.a, type, fullName || node.p, node.d, node.isGroup, node.isGroup && node.exp);
 		var ac = window.parentAppCtxt || window.appCtxt;
 		ac.setIsExpandableDL(node.a, addr.canExpand);
 		this.participants.add(addr);

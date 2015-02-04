@@ -565,26 +565,24 @@ function() {
 		allTags[tagId] = true;
 	}
 
-	if (this.msgs) {
-		var msgs = this.msgs.getArray();
-		if (!(msgs && msgs.length)) { return; }
-		for (var i = 0; i < msgs.length; i++) {
-			for (var tagId in msgs[i].tagHash) {
-				newTags[tagId] = true;
-				allTags[tagId] = true;
-			}
+	var msgs = this.msgs.getArray();
+	if (!(msgs && msgs.length)) { return; }
+	for (var i = 0; i < msgs.length; i++) {
+		for (var tagId in msgs[i].tagHash) {
+			newTags[tagId] = true;
+			allTags[tagId] = true;
 		}
+	}
 
-		var notify = false;
-		for (var tagId in allTags) {
-			if (!this.tagHash[tagId] && newTags[tagId]) {
-				if (this.tagLocal(tagId, true)) {
-					notify = true;
-				}
-			} else if (this.tagHash[tagId] && !newTags[tagId]) {
-				if (this.tagLocal(tagId, false)) {
-					notify = true;
-				}
+	var notify = false;
+	for (var tagId in allTags) {
+		if (!this.tagHash[tagId] && newTags[tagId]) {
+			if (this.tagLocal(tagId, true)) {
+				notify = true;
+			}
+		} else if (this.tagHash[tagId] && !newTags[tagId]) {
+			if (this.tagLocal(tagId, false)) {
+				notify = true;
 			}
 		}
 	}
@@ -686,7 +684,7 @@ function(params, callback) {
 
 ZmConv.prototype._handleResponseGetFirstHotMsg = function(params, callback) {
 
-	var msg = this.msgs.getFirstHit(params.offset, params.limit, params.foldersToOmit);
+	var msg = this.msgs.getFirstHit(params.offset, params.limit);
 	// should have a loaded msg
 	if (msg && msg._loaded) {
 		if (callback) {

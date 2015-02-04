@@ -167,19 +167,11 @@ function() {
 // Returns a list of desired action menu operations
 ZmBriefcaseTreeController.prototype._getActionMenuOps =
 function() {
-
-	var ops = [
-		ZmOperation.NEW_BRIEFCASE,
-		ZmOperation.EMPTY_FOLDER,
-		ZmOperation.RECOVER_DELETED_ITEMS
-	];
+	var ops = [ZmOperation.NEW_BRIEFCASE];
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_BRIEFCASE);
 	}
-	ops.push(
-		ZmOperation.DELETE_WITHOUT_SHORTCUT,
-		ZmOperation.EDIT_PROPS
-	);
+	ops.push(ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.EDIT_PROPS, ZmOperation.EMPTY_FOLDER, ZmOperation.RECOVER_DELETED_ITEMS);
 	return ops;
 };
 

@@ -343,6 +343,8 @@ ZmShareSearchDialog.prototype._appendChild = function(childNode, parentNode, che
 };
 
 ZmShareSearchDialog.prototype._appendShareNodes = function(owners) {
+    // is there anything to do?
+    if (!owners) return;
 
     // run through owners
     for (var j = 0; j < owners.length; j++) {

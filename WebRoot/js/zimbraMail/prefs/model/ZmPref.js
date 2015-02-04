@@ -547,7 +547,14 @@ function() {
  * @param priority      [int]       The section priority used when determining
  *                                  the order of the sections.
  * @param precondition  [any]       (Optional) Specifies the precondition
- *                                  under which this section is shown.
+ *                                  under which this section is shown. If this
+ *                                  parameter is a function, it returns a
+ *                                  boolean signifying that this section is
+ *                                  present -- true to show this section. If
+ *                                  this parameter is <em>not</em> a function,
+ *                                  then it is considered a setting identifier
+ *                                  that determines the presence of this
+ *                                  section.
  * @param prefs         [Array]     List of preferences that appear in this
  *                                  section.
  * @param manageChanges [boolean]   Determines whether this section manages
@@ -618,6 +625,20 @@ function(prefId) {
 		}
 	}
 	return null;
+};
+
+/** Returns true if <em>all</em> of the preconditions pass. */
+ZmPref.requireAllPreConditions =
+function(pre1 /* ..., preN */) {
+	var app = appCtxt.getApp(ZmApp.PREFERENCES);
+	var controller = app.getPrefController();
+
+	for (var i = 0; i < arguments.length; i++) {
+		if (!controller.checkPreCondition( null, arguments[i])) {
+			return false;
+		}
+	}
+	return true;
 };
 
 // Make sure the pref sections are init'd

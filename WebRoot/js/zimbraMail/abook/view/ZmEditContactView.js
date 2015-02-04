@@ -420,10 +420,10 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 	// fill in base fields
 	for (var id in ZmEditContactView.ATTRS) {
 		var value = contact.getAttr(ZmEditContactView.ATTRS[id]);
-		if (id === "FOLDER" || id === "IMAGE") {
+		if (id == "FOLDER") {
 			continue;
 		}
-		if (id === "FILE_AS") {
+		if (id == "FILE_AS") {
 			value = value || ZmContact.FA_LAST_C_FIRST;
 		}
 		this.setValue(id, value);
@@ -1106,18 +1106,12 @@ ZmEditContactViewImage.IMAGE_URL = "/service/content/proxy?aid=@aid@";
  * @param	{String}	value	the image src value
  * @private
  */
-ZmEditContactViewImage.prototype.setValue = function(value, promptOnError) {
-	// Save current image source to display in case user picks an improper file.
-	this._currentSrc = this._src;
-	// Save original image source to know if "Do you want to save..." prompt is needed
-	if (typeof this._originalSrc === "undefined") {
-		this._originalSrc = this._src;
-	}
+ZmEditContactViewImage.prototype.setValue = function(value) {
 	this._src = value;
 	if (!value) {
 		this._imgEl.src = ZmZimbraMail.DEFAULT_CONTACT_ICON;
 		this._badgeEl.className = "ImgAdd";
-
+        
 	}
 	else {
 		this._imgEl.src = value;
@@ -1125,7 +1119,7 @@ ZmEditContactViewImage.prototype.setValue = function(value, promptOnError) {
         this.setToolTipContent(ZmMsg.editImg);
 	}
 	this.parent.setDirty("IMAGE", true);
-    this._imgEl.onerror = this._handleCorruptImageError.bind(this, promptOnError);
+    this._imgEl.onerror = this._handleCorruptImageError.bind(this);
 };
 
 /**
@@ -1181,7 +1175,7 @@ ZmEditContactViewImage.prototype._chooseImage = function() {
 ZmEditContactViewImage.prototype._handleImageSaved = function(folder, filenames, files) {
 	var dialog = appCtxt.getUploadDialog();
 	dialog.popdown();
-	this.setValue(ZmEditContactViewImage.IMAGE_URL.replace(/@aid@/, files[0].guid), true);
+	this.setValue(ZmEditContactViewImage.IMAGE_URL.replace(/@aid@/, files[0].guid));
 	this.parent.update();
 };
 
@@ -1195,19 +1189,9 @@ ZmEditContactViewImage.prototype._createElement = function() {
 /**
  * @private
  */
-ZmEditContactViewImage.prototype._handleCorruptImageError = function(promptOnError) {
-	// display current image if exists, otherwise will set default contact image
-    this.setValue(this._currentSrc);
-	if (this._originalSrc == this._currentSrc) {
-		// == not === to acount for null and "" which should satisfy the condition
-		this.parent.setDirty("IMAGE", false);
-	}
-	if (promptOnError) {
-		// Don't display this dialog in cases where image is missing not due to user input.
-		// E.g. LinkedIn changed their url schema which led to broken links. In such cases
-		// don't obtrusively prompt the user to select an image, but pretend it was never set.
-		this._popupCorruptImageErrorDialog();
-	}
+ZmEditContactViewImage.prototype._handleCorruptImageError = function() {
+    this.setValue();    // setting default contact image
+    this._popupCorruptImageErrorDialog();
 };
 
 /**

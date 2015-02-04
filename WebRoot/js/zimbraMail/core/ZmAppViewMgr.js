@@ -282,8 +282,7 @@ function(viewId, components, show, app) {
 	var view = this._getView(viewId, app);
 	if (!view) { return; }
 
-	var i = 0;
-	var numComponents = AjxUtil.arraySize(components);
+	var list = [];
 	for (var cid in components) {
 		var comp = components[cid];
 		if (!comp) { continue; }
@@ -302,9 +301,10 @@ function(viewId, components, show, app) {
 		
 		if (this._hasSkin) {
 			this.getContainer(cid, comp);
+			list.push(cid);
 		}
 
-		this.displayComponent(cid, doShow, false, null, true);
+		this.displayComponent(cid, doShow);
 
 		// TODO: move this code
 		if (cid == ZmAppViewMgr.C_SASH) {
@@ -318,10 +318,9 @@ function(viewId, components, show, app) {
 			}
 			comp.setCursor("default");
 		}
-		i++;
 	}
 	if (show) {
-		this.fitAll();
+		this._fitToContainer(list);
 	}
 };
 ZmAppViewMgr.prototype.addComponents = ZmAppViewMgr.prototype.setViewComponents;
@@ -424,11 +423,10 @@ function(cid, show, comp) {
  * @param {boolean}		show	if true, show the component; otherwise hide it
  * @param {boolean}		doFit	if true, fit component to container
  * @param {object}		comp	if provided, pass this to showComponent, so it does not just look for the cid in the current view (useful for previous view. see ZmAppViewMgr.prototype._setViewVisible)
- * @param {boolean}		noReflow	if true, tell skin to not refit all components
  */
 ZmAppViewMgr.prototype.displayComponent =
-function(cid, show, doFit, comp, noReflow) {
-	this.showSkinElement(cid, show, noReflow);
+function(cid, show, doFit, comp) {
+	this.showSkinElement(cid, show);
 	this.showComponent(cid, show, comp);
 	if (doFit) {
 		this._fitToContainer(cid);
@@ -1206,25 +1204,27 @@ function(viewId, show) {
 	var view = this._view[viewId] || this._emptyView;
 	view.visible = show;
 	
+	var toFit = [];
 	if (show) {
 
 		for (var i = 0; i < ZmAppViewMgr.ALL_COMPONENTS.length; i++) {
 			var cid = ZmAppViewMgr.ALL_COMPONENTS[i];
 			var oldComp = this.getViewComponent(cid, this._lastViewId);
 			if (oldComp) {
-				this.displayComponent(cid, false, null, oldComp, true);
+				this.displayComponent(cid, false, null, oldComp);
 			}
 			var comp = this.getViewComponent(cid, viewId);
 			if (comp) {
 				if (!this.isHidden(cid, viewId)) {
-					this.displayComponent(cid, true, null, comp, true);
+					this.displayComponent(cid, true, null, comp);
+					toFit.push(cid);
 				}
 			}
 		}
 
 		// fit the components now that we're done messing with the skin
 		if (this._hasSkin) {
-			this.fitAll();
+			this._fitToContainer(toFit);
 		}
 		
 		this._setTitle(viewId);

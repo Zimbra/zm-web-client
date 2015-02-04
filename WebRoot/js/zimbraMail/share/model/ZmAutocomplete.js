@@ -738,16 +738,12 @@ ZmSearchAutocomplete.ICON["url"] = "URL";
 /**
  * @private
  */
-ZmSearchAutocomplete.prototype._registerHandler = function(op, params) {
-
-	var loadFunc = params.loader || this._loadFunc[params.listType];
-	this._op[op] = {
-		loader:     loadFunc.bind(this),
-		text:       params.text, icon:params.icon,
-		listType:   params.listType || op, matchText:params.matchText || params.text,
-		quoteMatch: params.quoteMatch
-	};
-};
+ZmSearchAutocomplete.prototype._registerHandler =
+		function(op, params) {
+			var loadFunc = params.loader || this._loadFunc[params.listType];
+			this._op[op] = {loader:loadFunc.bind(this), text:params.text, icon:params.icon,
+				listType:params.listType || op, matchText:params.matchText || params.text, quoteMatch:params.quoteMatch};
+		};
 
 /**
  * Returns a list of matches for a given query operator.
@@ -757,255 +753,261 @@ ZmSearchAutocomplete.prototype._registerHandler = function(op, params) {
  * @param {ZmAutocompleteListView}	aclv		needed to show wait msg
  * @param {Hash}					options		a hash of additional options
  */
-ZmSearchAutocomplete.prototype.autocompleteMatch = function(str, callback, aclv, options) {
+ZmSearchAutocomplete.prototype.autocompleteMatch =
+		function(str, callback, aclv, options) {
 
-	if (ZmSearchAutocomplete._ignoreNextKey) {
-		ZmSearchAutocomplete._ignoreNextKey = false;
-		return;
-	}
+			if (ZmSearchAutocomplete._ignoreNextKey) {
+				ZmSearchAutocomplete._ignoreNextKey = false;
+				return;
+			}
 
-	str = str.toLowerCase().replace(/"/g, '');
+			str = str.toLowerCase().replace(/"/g, '');
 
-	var idx = str.lastIndexOf(" ");
-	if (idx != -1 && idx <= str.length) {
-		str = str.substr(idx + 1);
-	}
-	var m = str.match(/\b-?\$?([a-z]+):/);
-	if (!(m && m.length)) {
-		callback();
-		return;
-	}
+			var idx = str.lastIndexOf(" ");
+			if (idx != -1 && idx <= str.length) {
+				str = str.substr(idx + 1);
+			}
+			var m = str.match(/\b-?\$?([a-z]+):/);
+			if (!(m && m.length)) {
+				callback();
+				return;
+			}
 
-	var op = m[1];
-	var opHash = this._op[op];
-	if (!opHash) {
-		callback();
-		return;
-	}
-	var list = this._list[opHash.listType];
-	if (list) {
-		callback(this._getMatches(op, str));
-	} else {
-		var respCallback = this._handleResponseLoad.bind(this, op, str, callback);
-		this._list[opHash.listType] = [];
-		opHash.loader(opHash.listType, respCallback);
-	}
-};
+			var op = m[1];
+			var opHash = this._op[op];
+			if (!opHash) {
+				callback();
+				return;
+			}
+			var list = this._list[opHash.listType];
+			if (list) {
+				callback(this._getMatches(op, str));
+			} else {
+				var respCallback = this._handleResponseLoad.bind(this, op, str, callback);
+				this._list[opHash.listType] = [];
+				opHash.loader(opHash.listType, respCallback);
+			}
+		};
 
 // TODO - some validation of search ops and args
-ZmSearchAutocomplete.prototype.isComplete = function(str, returnStr) {
+ZmSearchAutocomplete.prototype.isComplete =
+		function(str, returnStr) {
+			var pq = new ZmParsedQuery(str);
+			var tokens = pq.getTokens();
+			if (!pq.parseFailed && tokens && (tokens.length == 1)) {
+				return returnStr ? tokens[0].toString() : true;
+			}
+			else {
+				return false;
+			}
+		};
 
-	var pq = new ZmParsedQuery(str);
-	var tokens = pq.getTokens();
-	if (!pq.parseFailed && tokens && (tokens.length == 1)) {
-		return returnStr ? tokens[0].toString() : true;
-	}
-	else {
-		return false;
-	}
-};
-
-ZmSearchAutocomplete.prototype.getAddedBubbleClass = function(str) {
-
-	var pq = new ZmParsedQuery(str);
-	var tokens = pq.getTokens();
-	return (!pq.parseFailed && tokens && (tokens.length == 1) && tokens[0].type);
-};
-
-/**
- * @private
- */
-ZmSearchAutocomplete.prototype._getMatches = function(op, str) {
-
-	var opHash = this._op[op];
-	var results = [], app;
-	var list = this._list[opHash.listType];
-	var rest = str.substr(str.indexOf(":") + 1);
-	if (opHash.listType == ZmId.ORG_FOLDER) {
-		rest = rest.replace(/^\//, "");	// remove leading slash in folder path
-		app = appCtxt.getCurrentAppName();
-		if (!ZmApp.ORGANIZER[app]) {
-			app = null;
-		}
-	}
-	for (var i = 0, len = list.length; i < len; i++) {
-		var o = list[i];
-		var text = opHash.text ? opHash.text(o) : o;
-		var test = text.toLowerCase();
-		if (app && ZmOrganizer.APP[o.type] != app) {
-			continue;
-		}
-		if (!rest || (test.indexOf(rest) == 0)) {
-			var matchText = opHash.matchText ? opHash.matchText(o) :
-					opHash.quoteMatch ? [op, ":", '"', text, '"'].join("") :
-							[op, ":", text].join("");
-			matchText = str.replace(op + ":" + rest, matchText);
-			results.push({text:			text,
-				icon:			opHash.icon ? opHash.icon(o) : null,
-				matchText:	matchText,
-				exactMatch:	(test.length == rest.length)});
-		}
-	}
-
-	// no need to show list of one item that is same as what was typed
-	if (results.length == 1 && results[0].exactMatch) {
-		results = [];
-	}
-
-	return results;
-};
+ZmSearchAutocomplete.prototype.getAddedBubbleClass =
+		function(str) {
+			var pq = new ZmParsedQuery(str);
+			var tokens = pq.getTokens();
+			return (!pq.parseFailed && tokens && (tokens.length == 1) && tokens[0].type);
+		};
 
 /**
  * @private
  */
-ZmSearchAutocomplete.prototype._handleResponseLoad = function(op, str, callback) {
-	callback(this._getMatches(op, str));
-};
+ZmSearchAutocomplete.prototype._getMatches =
+		function(op, str) {
+
+			var opHash = this._op[op];
+			var results = [], app;
+			var list = this._list[opHash.listType];
+			var rest = str.substr(str.indexOf(":") + 1);
+			if (opHash.listType == ZmId.ORG_FOLDER) {
+				rest = rest.replace(/^\//, "");	// remove leading slash in folder path
+				app = appCtxt.getCurrentAppName();
+				if (!ZmApp.ORGANIZER[app]) {
+					app = null;
+				}
+			}
+			for (var i = 0, len = list.length; i < len; i++) {
+				var o = list[i];
+				var text = opHash.text ? opHash.text(o) : o;
+				var test = text.toLowerCase();
+				if (app && ZmOrganizer.APP[o.type] != app) {
+					continue;
+				}
+				if (!rest || (test.indexOf(rest) == 0)) {
+					var matchText = opHash.matchText ? opHash.matchText(o) :
+							opHash.quoteMatch ? [op, ":", '"', text, '"'].join("") :
+									[op, ":", text].join("");
+					matchText = str.replace(op + ":" + rest, matchText);
+					results.push({text:			text,
+						icon:			opHash.icon ? opHash.icon(o) : null,
+						matchText:	matchText,
+						exactMatch:	(test.length == rest.length)});
+				}
+			}
+
+			// no need to show list of one item that is same as what was typed
+			if (results.length == 1 && results[0].exactMatch) {
+				results = [];
+			}
+
+			return results;
+		};
 
 /**
  * @private
  */
-ZmSearchAutocomplete.prototype._loadTags = function(listType, callback) {
-
-	var list = this._list[listType];
-	var tags = appCtxt.getTagTree().asList();
-	for (var i = 0, len = tags.length; i < len; i++) {
-		var tag = tags[i];
-		if (tag.id != ZmOrganizer.ID_ROOT) {
-			list.push(tag);
-		}
-	}
-	list.sort(ZmTag.sortCompare);
-	if (callback) {
-		callback();
-	}
-};
+ZmSearchAutocomplete.prototype._handleResponseLoad =
+		function(op, str, callback) {
+			callback(this._getMatches(op, str));
+		};
 
 /**
  * @private
  */
-ZmSearchAutocomplete.prototype._loadFolders = function(listType, callback) {
+ZmSearchAutocomplete.prototype._loadTags =
+		function(listType, callback) {
 
-	var list = this._list[listType];
-	var folderTree = appCtxt.getFolderTree();
-	var folders = folderTree ? folderTree.asList({includeRemote:true}) : [];
-	for (var i = 0, len = folders.length; i < len; i++) {
-		var folder = folders[i];
-		if (folder.id !== ZmOrganizer.ID_ROOT && !ZmFolder.HIDE_ID[folder.id] && folder.id !== ZmFolder.ID_DLS) {
-			list.push(folder);
-		}
-	}
-	list.sort(ZmFolder.sortComparePath);
-	if (callback) {
-		callback();
-	}
-};
-
-/**
- * @private
- */
-ZmSearchAutocomplete.prototype._loadFlags = function(listType, callback) {
-
-	var flags = AjxUtil.filter(ZmParsedQuery.IS_VALUES, function(flag) {
-		return appCtxt.checkPrecondition(ZmParsedQuery.IS_VALUE_PRECONDITION[flag]);
-	});
-	this._list[listType] = flags.sort();
-	if (callback) {
-		callback();
-	}
-};
+			var list = this._list[listType];
+			var tags = appCtxt.getTagTree().asList();
+			for (var i = 0, len = tags.length; i < len; i++) {
+				var tag = tags[i];
+				if (tag.id != ZmOrganizer.ID_ROOT) {
+					list.push(tag);
+				}
+			}
+			list.sort(ZmTag.sortCompare);
+			if (callback) {
+				callback();
+			}
+		};
 
 /**
  * @private
  */
-ZmSearchAutocomplete.prototype._loadObjects = function(listType, callback) {
+ZmSearchAutocomplete.prototype._loadFolders =
+		function(listType, callback) {
 
-	var list = this._list[listType];
-	list.push("attachment");
-	var idxZimlets = appCtxt.getZimletMgr().getIndexedZimlets();
-	if (idxZimlets.length) {
-		for (var i = 0; i < idxZimlets.length; i++) {
-			list.push(idxZimlets[i].keyword);
-		}
-	}
-	list.sort();
-	if (callback) {
-		callback();
-	}
-};
-
-/**
- * @private
- */
-ZmSearchAutocomplete.prototype._loadTypes = function(listType, callback) {
-
-	AjxDispatcher.require("Extras");
-	var attachTypeList = new ZmAttachmentTypeList();
-	var respCallback = this._handleResponseLoadTypes.bind(this, attachTypeList, listType, callback);
-	attachTypeList.load(respCallback);
-};
+			var list = this._list[listType];
+			var folderTree = appCtxt.getFolderTree();
+			var folders = folderTree ? folderTree.asList({includeRemote:true}) : [];
+			for (var i = 0, len = folders.length; i < len; i++) {
+				var folder = folders[i];
+				if (folder.id !== ZmOrganizer.ID_ROOT && !ZmFolder.HIDE_ID[folder.id] && folder.id !== ZmFolder.ID_DLS) {
+					list.push(folder);
+				}
+			}
+			list.sort(ZmFolder.sortComparePath);
+			if (callback) {
+				callback();
+			}
+		};
 
 /**
  * @private
  */
-ZmSearchAutocomplete.prototype._handleResponseLoadTypes = function(attachTypeList, listType, callback) {
+ZmSearchAutocomplete.prototype._loadFlags =
+		function(listType, callback) {
 
-	this._list[listType] = attachTypeList.getAttachments();
-	if (callback) {
-		callback();
-	}
-};
-
-/**
- * @private
- */
-ZmSearchAutocomplete.prototype._loadCommands = function(listType, callback) {
-
-	var list = this._list[listType];
-	for (var funcName in ZmClientCmdHandler.prototype) {
-		if (funcName.indexOf("execute_") == 0) {
-			list.push(funcName.substr(8));
-		}
-	}
-	list.sort();
-	if (callback) {
-		callback();
-	}
-};
+			this._list[listType] = ZmParsedQuery.IS_VALUES.sort();
+			if (callback) {
+				callback();
+			}
+		};
 
 /**
  * @private
  */
-ZmSearchAutocomplete.prototype._folderTreeChangeListener = function(ev) {
+ZmSearchAutocomplete.prototype._loadObjects =
+		function(listType, callback) {
 
-	var fields = ev.getDetail("fields");
-	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE ||
-			((ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME])) {
-
-		var listType = ZmId.ORG_FOLDER;
-		if (this._list[listType]) {
-			this._list[listType] = [];
-			this._loadFolders(listType);
-		}
-	}
-};
+			var list = this._list[listType];
+			list.push("attachment");
+			var idxZimlets = appCtxt.getZimletMgr().getIndexedZimlets();
+			if (idxZimlets.length) {
+				for (var i = 0; i < idxZimlets.length; i++) {
+					list.push(idxZimlets[i].keyword);
+				}
+			}
+			list.sort();
+			if (callback) {
+				callback();
+			}
+		};
 
 /**
  * @private
  */
-ZmSearchAutocomplete.prototype._tagTreeChangeListener = function(ev) {
+ZmSearchAutocomplete.prototype._loadTypes =
+		function(listType, callback) {
 
-	var fields = ev.getDetail("fields");
-	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE ||
-			((ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME])) {
+			AjxDispatcher.require("Extras");
+			var attachTypeList = new ZmAttachmentTypeList();
+			var respCallback = this._handleResponseLoadTypes.bind(this, attachTypeList, listType, callback);
+			attachTypeList.load(respCallback);
+		};
 
-		var listType = "tag";
-		if (this._list[listType]) {
-			this._list[listType] = [];
-			this._loadTags(listType);
-		}
-	}
-};
+/**
+ * @private
+ */
+ZmSearchAutocomplete.prototype._handleResponseLoadTypes =
+		function(attachTypeList, listType, callback) {
+
+			this._list[listType] = attachTypeList.getAttachments();
+			if (callback) {
+				callback();
+			}
+		};
+
+/**
+ * @private
+ */
+ZmSearchAutocomplete.prototype._loadCommands =
+		function(listType, callback) {
+			var list = this._list[listType];
+			for (var funcName in ZmClientCmdHandler.prototype) {
+				if (funcName.indexOf("execute_") == 0) {
+					list.push(funcName.substr(8));
+				}
+			}
+			list.sort();
+			if (callback) {
+				callback();
+			}
+		};
+
+/**
+ * @private
+ */
+ZmSearchAutocomplete.prototype._folderTreeChangeListener =
+		function(ev) {
+			var fields = ev.getDetail("fields");
+			if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE ||
+					((ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME])) {
+
+				var listType = ZmId.ORG_FOLDER;
+				if (this._list[listType]) {
+					this._list[listType] = [];
+					this._loadFolders(listType);
+				}
+			}
+		};
+
+/**
+ * @private
+ */
+ZmSearchAutocomplete.prototype._tagTreeChangeListener =
+		function(ev) {
+			var fields = ev.getDetail("fields");
+			if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE ||
+					((ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME])) {
+
+				var listType = "tag";
+				if (this._list[listType]) {
+					this._list[listType] = [];
+					this._loadTags(listType);
+				}
+			}
+		};
 
 /**
  * Creates a people search auto-complete.
@@ -1021,51 +1023,54 @@ ZmPeopleSearchAutocomplete = function() {
 ZmPeopleSearchAutocomplete.prototype = new ZmAutocomplete;
 ZmPeopleSearchAutocomplete.prototype.constructor = ZmPeopleSearchAutocomplete;
 
-ZmPeopleSearchAutocomplete.prototype.toString = function() { return "ZmPeopleSearchAutocomplete"; };
+ZmPeopleSearchAutocomplete.prototype.toString =
+		function() {
+			return "ZmPeopleSearchAutocomplete";
+		};
 
-ZmPeopleSearchAutocomplete.prototype._doSearch = function(str, aclv, options, acType, callback, account) {
+ZmPeopleSearchAutocomplete.prototype._doSearch =
+		function(str, aclv, options, acType, callback, account) {
+			var params = {
+				query: str,
+				types: AjxVector.fromArray([ZmItem.CONTACT]),
+				sortBy: ZmSearch.NAME_ASC,
+				contactSource: ZmId.SEARCH_GAL,
+				accountName: account && account.name
+			};
 
-	var params = {
-		query: str,
-		types: AjxVector.fromArray([ZmItem.CONTACT]),
-		sortBy: ZmSearch.NAME_ASC,
-		contactSource: ZmId.SEARCH_GAL,
-		accountName: account && account.name
-	};
+			var search = new ZmSearch(params);
 
-	var search = new ZmSearch(params);
-
-	var searchParams = {
-		callback:		this._handleResponseDoAutocomplete.bind(this, str, aclv, options, acType, callback, account),
-		errorCallback:	this._handleErrorDoAutocomplete.bind(this, str, aclv),
-		timeout:		ZmAutocomplete.AC_TIMEOUT,
-		noBusyOverlay:	true
-	};
-	return search.execute(searchParams);
-};
+			var searchParams = {
+				callback:		this._handleResponseDoAutocomplete.bind(this, str, aclv, options, acType, callback, account),
+				errorCallback:	this._handleErrorDoAutocomplete.bind(this, str, aclv),
+				timeout:		ZmAutocomplete.AC_TIMEOUT,
+				noBusyOverlay:	true
+			};
+			return search.execute(searchParams);
+		};
 
 /**
  * @private
  */
-ZmPeopleSearchAutocomplete.prototype._handleResponseDoAutocomplete = function(str, aclv, options, acType, callback, account, result) {
+ZmPeopleSearchAutocomplete.prototype._handleResponseDoAutocomplete =
+		function(str, aclv, options, acType, callback, account, result) {
+			// if we get back results for other than the current string, ignore them
+			if (str != this._curAcStr) {
+				return;
+			}
 
-	// if we get back results for other than the current string, ignore them
-	if (str != this._curAcStr) {
-		return;
-	}
+			var resp = result.getResponse();
+			var cl = resp.getResults(ZmItem.CONTACT);
+			var resultList = (cl && cl.getArray()) || [];
+			var list = [];
 
-	var resp = result.getResponse();
-	var cl = resp.getResults(ZmItem.CONTACT);
-	var resultList = (cl && cl.getArray()) || [];
-	var list = [];
+			for (var i = 0; i < resultList.length; i++) {
+				var match = new ZmAutocompleteMatch(resultList[i], options, true);
+				list.push(match);
+			}
+			var complete = !(resp && resp.getAttribute("more"));
 
-	for (var i = 0; i < resultList.length; i++) {
-		var match = new ZmAutocompleteMatch(resultList[i], options, true);
-		list.push(match);
-	}
-	var complete = !(resp && resp.getAttribute("more"));
-
-	// we assume the results from the server are sorted by ranking
-	callback(list);
-	this._cacheResults(str, acType, list, true, complete && resp._respEl.canBeCached, null, account);
-};
+			// we assume the results from the server are sorted by ranking
+			callback(list);
+			this._cacheResults(str, acType, list, true, complete && resp._respEl.canBeCached, null, account);
+		};

@@ -184,7 +184,11 @@ function() {
 	ZmPref.registerPref("GAL_AUTOCOMPLETE", {
 		displayName:		ZmMsg.galAutocomplete,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:       [ ZmSetting.GAL_AUTOCOMPLETE_ENABLED, ZmSetting.GAL_ENABLED ]
+		precondition:
+			function() {
+				return appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED) &&
+					   appCtxt.get(ZmSetting.GAL_ENABLED);
+			}
 	});
 
 	ZmPref.registerPref("IMPORT", {
@@ -195,9 +199,11 @@ function() {
 	ZmPref.registerPref("INITIALLY_SEARCH_GAL", {
 		displayName:		ZmMsg.initiallySearchGal,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:       function() {
-								return appCtxt.get(ZmSetting.GAL_ENABLED) && appCtxt.getActiveAccount().isZimbraAccount;
-							}
+		precondition:
+			function() {
+				return appCtxt.get(ZmSetting.GAL_ENABLED) &&
+					   appCtxt.getActiveAccount().isZimbraAccount;
+			}
 	});
 };
 

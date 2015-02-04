@@ -250,6 +250,7 @@ function(parent, type, id) {
 	}
 	this._enableRecoverDeleted(parent, isTrash);
 
+
 	// we always enable sharing in case we're in multi-mbox mode
 	this._resetButtonPerSetting(parent, ZmOperation.SHARE_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));
 };
@@ -282,19 +283,15 @@ function() {
  * 
  * @private
  */
-ZmFolderTreeController.prototype._getActionMenuOps = function() {
-
+ZmFolderTreeController.prototype._getActionMenuOps =
+function() {
 	return [
 		ZmOperation.NEW_FOLDER,
-		ZmOperation.SYNC,
-		ZmOperation.SYNC_ALL,
 		ZmOperation.MARK_ALL_READ,
-		ZmOperation.EMPTY_FOLDER,
-		ZmOperation.RECOVER_DELETED_ITEMS,
-		ZmOperation.SHARE_FOLDER,
-		ZmOperation.MOVE,
 		ZmOperation.DELETE_WITHOUT_SHORTCUT,
 		ZmOperation.RENAME_FOLDER,
+		ZmOperation.MOVE,
+		ZmOperation.SHARE_FOLDER,
 		ZmOperation.EDIT_PROPS,
 		ZmOperation.SYNC_OFFLINE_FOLDER,
 		ZmOperation.OPEN_IN_TAB,
@@ -335,15 +332,15 @@ function() {
 
 /**
  * Called when a left click occurs (by the tree view listener). The folder that
- * was clicked may be a search, since those can appear in Trash within the folder tree. The
+ * was clicked may be a search, since those can appear in the folder tree. The
  * appropriate search will be performed.
  *
  * @param {ZmOrganizer}		folder		the folder or search that was clicked
  * 
  * @private
  */
-ZmFolderTreeController.prototype._itemClicked = function(folder, openInTab) {
-
+ZmFolderTreeController.prototype._itemClicked =
+function(folder) {
 	// bug 41196 - turn off new mail notifier if inactive account folder clicked
 	if (appCtxt.isOffline) {
 		var acct = folder.getAccount();
@@ -360,7 +357,7 @@ ZmFolderTreeController.prototype._itemClicked = function(folder, openInTab) {
 		// if the clicked item is a search (within the folder tree), hand
 		// it off to the search tree controller
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
-		stc._itemClicked(folder, openInTab);
+		stc._itemClicked(folder);
 	} else if (folder.id == ZmFolder.ID_ATTACHMENTS) {
 		var attController = AjxDispatcher.run("GetAttachmentsController");
 		attController.show();
@@ -393,14 +390,12 @@ ZmFolderTreeController.prototype._itemClicked = function(folder, openInTab) {
 			}
 		}
 		var params = {
-			query:          folder.createQuery(),
-			searchFor:      searchFor,
-			getHtml:        folder.nId == ZmFolder.ID_DRAFTS || appCtxt.get(ZmSetting.VIEW_AS_HTML),
-			types:          folder.nId == ZmOrganizer.ID_SYNC_FAILURES ? [ZmItem.MSG] : null, // for Sync Failures folder, always show in traditional view
-			sortBy:         sortBy,
-			accountName:    acct && acct.name,
-			userInitiated:  openInTab,
-			origin:         ZmId.SEARCH
+			query: folder.createQuery(),
+			searchFor: searchFor,
+			getHtml: (folder.nId == ZmFolder.ID_DRAFTS) || appCtxt.get(ZmSetting.VIEW_AS_HTML),
+			types: ((folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null), // for Sync Failures folder, always show in traditional view
+			sortBy: sortBy,
+			accountName: (acct && acct.name)
 		};
 
 		sc.resetSearchAllAccounts();

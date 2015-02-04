@@ -25,7 +25,7 @@ ZmExternalCalendarDialog = function(params) {
     var cancel = new DwtDialog_ButtonDescriptor(ZmExternalCalendarDialog.SHARE_CANCEL_BUTTON, ZmMsg.cancel, DwtDialog.ALIGN_RIGHT);
     var parent = params.parent || appCtxt.getShell();
     this._controller = params.controller;
-    ZmDialog.call(this, {parent:parent, className:"ZmExternalCalendarDialog", standardButtons:[DwtDialog.NO_BUTTONS], extraButtons: [back, next, cancel], id:'ADD_EXTERNAL_CAL_DIALOG'});
+    ZmDialog.call(this, {parent:parent, standardButtons:[DwtDialog.NO_BUTTONS], extraButtons: [back, next, cancel], id:'ADD_EXTERNAL_CAL_DIALOG'});
 
 	this.setButtonListener(ZmExternalCalendarDialog.BACK_BUTTON, new AjxListener(this, this._backButtonListener));
 	this.setButtonListener(ZmExternalCalendarDialog.NEXT_BUTTON, new AjxListener(this, this._nextButtonListener));

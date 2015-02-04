@@ -633,11 +633,6 @@ INPUT[type="text"].search_input-expanded {
 	margin:0px;
 }
 
-.Row.ZmConvExpanded .ZmMsgListColFrom SPAN:first-child,
-.Row.ZmConvExpanded .ZmMsgListColSubject SPAN {
-	margin-left:2em;
-}
-
 /* put space between display of tag icons and their names */
 .Tags A {
 	@NoWrap@
@@ -920,12 +915,18 @@ INPUT[type="text"].search_input-expanded {
 }
 
 .Conv2Header .expandIcon {
-	padding:.5em 5px;
+	left:0px;
+	padding:.5em 0px 0px 5px;
+	position:absolute;
+	top:0px;
 	@ActiveCursor@
 }
 
 .Conv2Header .subject {
 	@FontSize-bigger@
+	left:22px;
+	position:absolute;
+	top:.18em;
 	white-space:nowrap;
 }
 
@@ -2092,10 +2093,6 @@ INPUT[type="text"].search_input-expanded {
 .ZmCalViewMgr {
 	@PageBg@
 	@FullSize@
-}
-
-.ZmExternalCalendarDialog {
-    white-space: nowrap;
 }
 
 /* Outer container for all calendar display views */

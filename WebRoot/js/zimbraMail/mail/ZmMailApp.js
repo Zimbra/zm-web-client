@@ -244,7 +244,6 @@ function(settings) {
 	settings.registerSetting("SHOW_BCC",			            {type:ZmSetting.T_PREF, defaultValue:false});
     settings.registerSetting("SHOW_FRAGMENTS",					{name:"zimbraPrefShowFragments", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("SHOW_MAIL_CONFIRM",				{name:"zimbraFeatureConfirmationPageEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("SHOW_CHATS_FOLDER",				{name:"zimbraPrefShowChatsFolderInMail", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SIGNATURE",						{name:"zimbraPrefMailSignature", type:ZmSetting.T_PREF});
 	settings.registerSetting("SIGNATURE_ENABLED",				{name:"zimbraPrefMailSignatureEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SIGNATURE_STYLE",					{name:"zimbraPrefMailSignatureStyle", type:ZmSetting.T_PREF, defaultValue:ZmSetting.SIG_OUTLOOK});
@@ -281,7 +280,7 @@ function() {
 			icon: "MailApp",
 			templateId: "prefs.Pages#Mail",
 			priority: 10,
-			precondition: ZmSetting.MAIL_PREFERENCES_ENABLED,
+			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED) || appCtxt.get(ZmSetting.ADMIN_DELEGATED),
 			prefs: [
 				ZmSetting.AUTO_READ_RECEIPT_ENABLED,
 				ZmSetting.DEDUPE_MSG_TO_SELF,
@@ -723,7 +722,7 @@ function() {
 	var notifyText = ZmDesktopAlert.getInstance().getDisplayText();
 	ZmPref.registerPref("MAIL_NOTIFY_TOASTER", {
 		displayFunc:		function() { return notifyText; },
-		precondition:		!!notifyText,
+		precondition:		function() { return !!notifyText; },
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
@@ -784,7 +783,7 @@ function(checked) {
  * combination of an empty away msg and a checked box for "send away message". Since a
  * pref is validated only if it changes, we have to have validation functions for both
  * prefs.
- *
+ * 
  * @private
  */
 ZmMailApp.validateVacationMsg =
@@ -864,7 +863,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_DELETE_CONV, {textKey:"delConv", image:"DeleteConversation"}, ZmSetting.CONVERSATIONS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_DELETE_MSG, {textKey:"delMsg", image:"DeleteMessage"});
 	ZmOperation.registerOp(ZmId.OP_DELETE_MENU, {textKey:"del", image:"Delete", tooltipKey:"deleteTooltip"});
-	ZmOperation.registerOp(ZmId.OP_DETACH_COMPOSE, {tooltipKey:"detachComposeTooltip", image:"OpenInNewWindow"});
+	ZmOperation.registerOp(ZmId.OP_DETACH_COMPOSE, {tooltipKey:"detachTooltip", image:"OpenInNewWindow"});
 	ZmOperation.registerOp(ZmId.OP_DRAFT, null, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_EDIT_FILTER_RULE, {textKey:"filterEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORWARD, {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward", shortcut:ZmKeyMap.FORWARD, textPrecedence:46});
@@ -898,7 +897,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_REPLY_ALL, {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll", shortcut:ZmKeyMap.REPLY_ALL, textPrecedence:48});
 	ZmOperation.registerOp(ZmId.OP_REQUEST_READ_RECEIPT, {textKey:"requestReadReceipt", image:"ReadMessage"});
 	ZmOperation.registerOp(ZmId.OP_RESET, {textKey:"reset", image:"Refresh", tooltipKey: "refreshFilters"});
-	ZmOperation.registerOp(ZmId.OP_RUN_FILTER_RULE, {textKey:"filterRun", image:"SwitchFormat"}, [ ZmSetting.MAIL_ENABLED, ZmSetting.FILTERS_ENABLED ]);
+	ZmOperation.registerOp(ZmId.OP_RUN_FILTER_RULE, {textKey:"filterRun", image:"SwitchFormat"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SAVE_DRAFT, {textKey:"saveDraft", tooltipKey:"saveDraftTooltip", image:"DraftFolder", shortcut:ZmKeyMap.SAVE}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SEND_MENU, {textKey:"send", tooltipKey:"sendTooltip", image:"Send"}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SEND_LATER, {textKey:"sendLater", tooltipKey:"sendLaterTooltip", image:"SendLater"}, ZmSetting.SAVE_DRAFT_ENABLED);
@@ -2415,10 +2414,9 @@ ZmMailApp.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
 // viewing or replying a conv; if we're in one of those, we still show its messages
 ZmMailApp.getFoldersToOmit = function(search) {
 
-	search = search || appCtxt.getCurrentSearch();
-
 	var folders = ZmMailApp.FOLDERS_TO_OMIT,
 		omit = [],
+		search = search || appCtxt.getCurrentSearch(),
 		curFolderId = search && search.folderId;
 
 	var isUserInitiatedSearch = search && search.userInitiated;
@@ -2431,12 +2429,3 @@ ZmMailApp.getFoldersToOmit = function(search) {
 	return AjxUtil.arrayAsHash(omit);
 };
 
-/*
-returns the folders to omit in case of reply/reply-all/forward - this includes DRAFTS always in addition to the others as returned by ZmMailApp.getFoldersToOmit
-(the others depend on current folder, but DRAFTS should always be ignored when replying/forwarding, even under Drafts folder)
- */
-ZmMailApp.getReplyFoldersToOmit = function(search) {
-	var omit = ZmMailApp.getFoldersToOmit(search);
-	omit[ZmFolder.ID_DRAFTS] = true;
-	return omit;
-};

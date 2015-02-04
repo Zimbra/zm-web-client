@@ -333,8 +333,7 @@ ZmContact.DISPLAY_FIELDS = [].concat(
 ZmContact.IGNORE_FIELDS = [].concat(
 	ZmContact.GAL_FIELDS,
 	ZmContact.MYCARD_FIELDS,
-	ZmContact.X_FIELDS,
-	[ZmContact.F_imagepart]
+	ZmContact.X_FIELDS
 );
 
 ZmContact.ALL_FIELDS = [].concat(
@@ -2572,9 +2571,6 @@ function(node) {
 	if (node.email2)	{ this.attr[ZmContact.F_email2] = node.email2; }
 	if (node.email3)	{ this.attr[ZmContact.F_email3] = node.email3; }
 
-	// in case attrs are coming in from an external GAL, make an effort to map them, including multivalued ones
-	this.attr = ZmContact.mapAttrs(this.attr);
-
     //the attr groups is returned as [] so check both null and empty array to set the type
     var groups = this.attr[ZmContact.F_groups];
     if(!groups || (groups instanceof Array && groups.length == 0)) {
@@ -2850,95 +2846,6 @@ function(contactId) {
 		return contact;
 	}
 	return null;
-};
-
-// For mapAttrs(), prepare a hash where each key is the base name of an attr (without an ending number and lowercased),
-// and the value is a numerically sorted list of attr names in their original form.
-ZmContact.ATTR_VARIANTS = {};
-ZmContact.IGNORE_ATTR_VARIANT = {};
-ZmContact.IGNORE_ATTR_VARIANT[ZmContact.F_groups] = true;
-
-ZmContact.initAttrVariants = function(attrClass) {
-	var keys = Object.keys(attrClass),
-		len = keys.length, key, i, attr,
-		attrs = [];
-
-	// first, grab all the attr names
-	var ignoreVariant = attrClass.IGNORE_ATTR_VARIANT || {};
-	for (i = 0; i < len; i++) {
-		key = keys[i];
-		if (key.indexOf('F_') === 0) {
-			attr = attrClass[key];
-			if (!ignoreVariant[attr]) {
-				attrs.push(attr);
-			}
-		}
-	}
-
-	// sort numerically, eg so that we get ['email', 'email2', 'email10'] in right order
-	var numRegex = /^([a-zA-Z]+)(\d+)$/;
-	attrs.sort(function(a, b) {
-		var aMatch = a.match(numRegex),
-			bMatch = b.match(numRegex);
-		// check if both are numbered attrs with same base
-		if (aMatch && bMatch && aMatch[1] === bMatch[1]) {
-			return aMatch[2] - bMatch[2];
-		}
-		else {
-			return a > b ? 1 : (a < b ? -1 : 0);
-		}
-	});
-
-	// construct hash mapping generic base name to its iterated attr names
-	var attr, base;
-	for (i = 0; i < attrs.length; i++) {
-		attr = attrs[i];
-		base = attr.replace(/\d+$/, '').toLowerCase();
-		if (!ZmContact.ATTR_VARIANTS[base]) {
-			ZmContact.ATTR_VARIANTS[base] = [];
-		}
-		ZmContact.ATTR_VARIANTS[base].push(attr);
-	}
-};
-ZmContact.initAttrVariants(ZmContact);
-
-/**
- * Takes a hash of attrs and values and maps it to our attr names as best as it can. Scalar attrs will map if they
- * have the same name or only differ by case. A multivalued attr will map to a set of our attributes that share the
- * same case-insensitive base name. Some examples:
- *
- *      FIRSTNAME: "Mildred"    =>      firstName: "Mildred"
- *      email: ['a', 'b']       =>      email: 'a',
- *                                      email2: 'b'
- *      WorkEmail: ['y', 'z']   =>      workEmail1: 'y',
- *                                      workEmail2: 'z'
- *      IMaddress: ['f', 'g']   =>      imAddress1: 'f',
- *                                      imAddress2: 'g'
- *
- * @param   {Object}    attrs       hash of attr names/values
- *
- * @returns {Object}    hash of attr names/values using known attr names ZmContact.F_*
- */
-ZmContact.mapAttrs = function(attrs) {
-
-	var attr, value, baseAttrs, newAttrs = {};
-	for (attr in attrs) {
-		value = attrs[attr];
-		if (value) {
-			baseAttrs = ZmContact.ATTR_VARIANTS[attr.toLowerCase()];
-			if (baseAttrs) {
-				value = AjxUtil.toArray(value);
-				var len = Math.min(value.length, baseAttrs.length), i;
-				for (i = 0; i < len; i++) {
-					newAttrs[baseAttrs[i]] = value[i];
-				}
-			} else {
-				// Any overlooked/ignored attributes are simply passed along
-				newAttrs[attr] = value;
-			}
-		}
-	}
-	return newAttrs;
 };
 
 // these need to be kept in sync with ZmContact.F_*

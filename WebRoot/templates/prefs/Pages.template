@@ -150,7 +150,7 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-	<div class='prefHeader'><$=ZmMsg.otherSettings$></div>
+	<div class='prefHeader'><$=ZmMsg.other$></div>
 	<table role="presentation" class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>

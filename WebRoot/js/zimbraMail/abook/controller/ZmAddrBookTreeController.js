@@ -219,21 +219,19 @@ function() {
  * 
  * @private
  */
-ZmAddrBookTreeController.prototype._getActionMenuOps = function() {
-
+ZmAddrBookTreeController.prototype._getActionMenuOps =
+function() {
 	var ops = [];
 	if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
 		ops.push(ZmOperation.NEW_ADDRBOOK);
 	}
-	ops.push(
-		ZmOperation.EMPTY_FOLDER,
-		ZmOperation.RECOVER_DELETED_ITEMS,
-		ZmOperation.SHARE_ADDRBOOK,
-		ZmOperation.DELETE_WITHOUT_SHORTCUT,
-		ZmOperation.RENAME_FOLDER,
-		ZmOperation.EDIT_PROPS,
-		ZmOperation.EXPAND_ALL
-	);
+	ops.push(ZmOperation.SHARE_ADDRBOOK,
+			ZmOperation.DELETE_WITHOUT_SHORTCUT,
+			ZmOperation.RENAME_FOLDER,
+			ZmOperation.EDIT_PROPS,
+			ZmOperation.EXPAND_ALL,
+			ZmOperation.EMPTY_FOLDER,
+			ZmOperation.RECOVER_DELETED_ITEMS);
 
 	return ops;
 };

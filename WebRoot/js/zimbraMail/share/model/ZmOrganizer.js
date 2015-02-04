@@ -1412,7 +1412,7 @@ function() {
 			if (organizer && (organizer == this || organizer.isChildOf(this))) {
 				var folderId = this.parent.id;
 				if (this.parent.nId == ZmOrganizer.ID_ROOT) {
-					folderId = ZmOrganizer.getSystemId(this.getDefaultFolderId());
+					folderId = ZmOrganizer.getSystemId(ZmOrganizer.DEFAULT_FOLDER[this.type]);
 				}
 				var skipNotify = false;
 				treeView.setSelected(folderId, skipNotify);
@@ -1940,22 +1940,6 @@ function () {
 	return (this.nId < ZmOrganizer.FIRST_USER_ID[this.type]);
 };
 
-ZmOrganizer.prototype.isDefault =
-function () {
-	return this.nId == this.getDefaultFolderId();
-};
-
-ZmOrganizer.prototype.getDefaultFolderId =
-function() {
-	return ZmOrganizer.DEFAULT_FOLDER[this.type];
-};
-
-ZmOrganizer.prototype.isTrash =
-function () {
-	return this.nId == ZmFolder.ID_TRASH;
-};
-
-
 /**
  * Checks if the organizer gets its contents from an external feed.
  *
@@ -2291,7 +2275,7 @@ function(name, showUnread, noMarkup) {
 ZmOrganizer.prototype._getItemsText =
 function() {
 	var result = ZmMsg[ZmOrganizer.ITEMS_KEY[this.type]];
-	if (!result || this.isTrash()) {
+	if (!result || (this.nId == ZmFolder.ID_TRASH)) {
 		result = ZmMsg.items;
 	}
 	return result;

@@ -1205,12 +1205,7 @@ function(width) {
 	}
 
     // add location input field
-	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION, {
-		strictMode:            false,
-		noAddrBubbles:         !appCtxt.get(ZmSetting.GAL_ENABLED),
-		bubbleAddedCallback:   this._handleAddedAttendees.bind(this, ZmCalBaseItem.LOCATION),
-		bubbleRemovedCallback: this._handleRemovedAttendees.bind(this, ZmCalBaseItem.LOCATION)
-	});
+	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION, {strictMode:false, noAddrBubbles:!appCtxt.get(ZmSetting.GAL_ENABLED)});
 
     this._mainId = this._htmlElId + "_main";
     this._main   = document.getElementById(this._mainId);
@@ -1597,10 +1592,12 @@ function() {
 
 ZmApptEditView.prototype._setIdentityVisible =
 function() {
+	if (!appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) return;
+
 	var div = document.getElementById(this._htmlElId + "_identityContainer");
 	if (!div) return;
 
-	var visible = this.identitySelect && appCtxt.get(ZmSetting.IDENTITIES_ENABLED) ? this.identitySelect.getOptionCount() > 1 : false;
+	var visible = this.identitySelect ? this.identitySelect.getOptionCount() > 1 : false;
     Dwt.setVisible(div, visible);
 };
 
@@ -2115,7 +2112,7 @@ function(text, el, match) {
         }
 
         this._updateScheduler(type, attendee);
-
+        
 	}else if(match.email){
         if((type == ZmCalBaseItem.PERSON || type == ZmCalBaseItem.OPTIONAL_PERSON) && this._scheduleAssistant) {
             var attendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[type].getValue());
@@ -2133,7 +2130,6 @@ function(text, el, match) {
 
 ZmApptEditView.prototype._handleAddedAttendees =
 function(addrType) {
-	this._activeInputField = addrType;
     this.handleAttendeeChange();
 };
 
@@ -2912,7 +2908,6 @@ function(ev) {
         ZmAutocompleteListView.onKeyUp(ev);
     }
     if (key == 32 || key == 59 || key == 186) {
-		this._activeInputField = el._attType;
         this.handleAttendeeChange();
     }else {
         this.updateToolbarOps();
@@ -2928,8 +2923,7 @@ function(ev) {
     if (this._schedActionId) {
         AjxTimedAction.cancelAction(this._schedActionId);
     }
-	var attType = this._activeInputField || ZmCalBaseItem.PERSON;
-    this._schedActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._handleAttendeeField, attType), 300);
+    this._schedActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._handleAttendeeField, ZmCalBaseItem.PERSON), 300);
 
     // attendee changes may cause our input fields to change their height
     this.resize();

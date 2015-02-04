@@ -47,6 +47,7 @@ ZmConvView2 = function(params) {
 
 	this.addControlListener(this._scheduleResize.bind(this));
 	this._setAllowSelection();
+	this._setAllowSelection();
 	this._setEventHdlrs([DwtEvent.ONMOUSEOUT, DwtEvent.ONMOUSEOVER, DwtEvent.ONMOUSEENTER, DwtEvent.ONMOUSELEAVE]); // needed by object manager
 	this._objectManager = true;
 };
@@ -892,9 +893,7 @@ ZmConvView2Header = function(params) {
 	DwtComposite.call(this, params);
 
 	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEUP, DwtEvent.ONDBLCLICK]);
-	//the following allows selection. See also comment in DwtComposite.prototype._mouseDownListener
-	this.setEventPropagation(true, [DwtEvent.ONMOUSEDOWN, DwtEvent.ONSELECTSTART, DwtEvent.ONMOUSEUP, DwtEvent.ONMOUSEMOVE]);
-
+	
 	this._convView = this.parent;
 	this._conv = this.parent._item;
 	this._controller = this.parent._controller;
@@ -920,6 +919,7 @@ ZmConvView2Header.prototype.set =
 function(conv) {
 
 	this._item = conv;
+	this._setExpandIcon()
 	this._setSubject();
 	this._setInfo();
 	this.setVisible(true);
@@ -1273,9 +1273,8 @@ ZmMailMsgCapsuleView = function(params) {
 
 	this._convView = this.parent;
 	this._controller = params.controller;
-	//the Boolean is to make sure undefined changes to false as otherwise this leaks down (_expanded becomes undefined) and causes problems (undefined != false in ZmConvView2.prototype.getExpanded)
-	this._forceExpand = Boolean(params.forceExpand);
-	this._forceCollapse = Boolean(params.forceCollapse);
+	this._forceExpand = params.forceExpand;
+	this._forceCollapse = params.forceCollapse;
 	this._forceOriginal = params.forceOriginal && !(DBG && DBG.getDebugLevel() == "orig");
 	this._isDraft = params.isDraft;
 	this._index = params.index;
@@ -1418,13 +1417,7 @@ function(el) {
 	if (styleObj && styleObj.height) {
 		var props = [ 'height', 'marginTop', 'marginBottom', 'paddingTop', 'paddingBottom' ];
 		for (var i = 0; i < props.length; i++) {
-			var prop = props[i];
-			var h = parseInt(styleObj[prop]);
-			if (prop === "height" && isNaN(h)) {
-				//default to offsetHeight if height is NaN (i.e. "auto" - this would happen for IE8 since getComputedStyleObject returns htmlElement.currentStyle, which has "auto" type stuff (i.e. not computed)
-				height = el.offsetHeight;
-				break;
-			}
+			var h = parseInt(styleObj[props[i]]);
 			height += isNaN(h) ? 0 : h;
 		}
 	}
@@ -2216,8 +2209,10 @@ function(state, force) {
 
 	this._dateCellId = id + "_dateCell";
 	var date = msg.sentDate || msg.date;
+	var dateString = AjxDateUtil.computeDateStr(this._convView._now || new Date(), date);
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
-	var dateString = dateFormatter.format(new Date(date));
+	this._fullDateString = dateFormatter.format(new Date(date));
+	var dateTooltip = this._browserToolTip ? this._fullDateString : "";
 
 	this._readIconId = id + "_read";
 	this._readCellId = id + "_readCell";
@@ -2228,6 +2223,7 @@ function(state, force) {
 		readCellId:		this._readCellId,
 		date:			dateString,
 		dateCellId:		this._dateCellId,
+		dateTooltip:	dateTooltip
 	};
 
 	var imageSize = isExpanded ? 48 : 32,
@@ -2240,7 +2236,6 @@ function(state, force) {
 
 		AjxUtil.hashUpdate(subs, {
 			imageURL:	    imageURL || ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL,
-			defaultImageUrl:	ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL,
 			imageAltText:   imageAltText || ZmMsg.unknownPerson,
 			from:		    ai.from,
 			fromId:		    fromId,
@@ -2254,7 +2249,6 @@ function(state, force) {
 		AjxUtil.hashUpdate(subs, {
 			hdrTableId:		this._msgView._hdrTableId = id + "_hdrTable",
 			imageURL:		imageURL || ZmZimbraMail.DEFAULT_CONTACT_ICON,
-			defaultImageUrl:	ZmZimbraMail.DEFAULT_CONTACT_ICON,
 			imageAltText:   imageAltText || ZmMsg.unknownPerson,
 			sentBy:			ai.sentBy,
 			sentByAddr:		ai.sentByAddr,
@@ -2296,14 +2290,19 @@ function(ev) {
 	if (el && el.id) {
 		var id = el.id;
 		if (!id) { return ""; }
-		var addr = this._idToAddr[id];
-		if (addr) {
-			var ttParams = {address:addr, ev:ev, noRightClick:true};
-			var ttCallback = new AjxCallback(this,
-				function(callback) {
-					appCtxt.getToolTipMgr().getToolTip(ZmToolTipMgr.PERSON, ttParams, callback);
-				});
-			return {callback:ttCallback};
+		if (id == this._dateCellId) {
+			return this._fullDateString;
+		}
+		else {
+			var addr = this._idToAddr[id];
+			if (addr) {
+				var ttParams = {address:addr, ev:ev, noRightClick:true};
+				var ttCallback = new AjxCallback(this,
+					function(callback) {
+						appCtxt.getToolTipMgr().getToolTip(ZmToolTipMgr.PERSON, ttParams, callback);
+					});
+				return {callback:ttCallback};
+			}
 		}
 	}
 };

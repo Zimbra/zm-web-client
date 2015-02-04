@@ -155,20 +155,14 @@ ZmMailListController.viewToTab = {};
  * @param {constant}	view		the id of the new view
  * @param {Boolean}	force		if <code>true</code>, always redraw view
  */
-ZmMailListController.prototype.switchView = function(view, force) {
-
+ZmMailListController.prototype.switchView =
+function(view, force) {
 	if ((view == ZmId.VIEW_TRAD || view == ZmId.VIEW_CONVLIST) && view != this.getCurrentViewType()) {
 		if (appCtxt.multiAccounts) {
 			delete this._showingAccountColumn;
 		}
 
-		var groupBy = ZmMailListController.GROUP_BY_SETTING[view];
-		if (this.isSearchResults) {
-			appCtxt.getApp(ZmApp.SEARCH).setGroupMailBy(groupBy);
-		}
-		else {
-			this._app.setGroupMailBy(groupBy);
-		}
+		this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[view]);
 
 		var folderId = this._currentSearch && this._currentSearch.folderId;
 		
@@ -499,14 +493,7 @@ ZmMailListController.prototype._updateViewMenu = function(id, menu) {
 		}
 	}
 
-	// Create "Display" submenu here since it's only needed for multi-column
-	if (!this._colHeaderViewMenu && this._mailListView.isMultiColumn()) {
-		this._colHeaderViewMenu = this._setupColHeaderViewMenu(this._currentView, this._viewMenu);
-	}
-
-	if (this._colHeaderMenuItem && (id === ZmSetting.RP_OFF || id === ZmSetting.RP_BOTTOM || id === ZmSetting.RP_RIGHT)) {
-		this._colHeaderMenuItem.setVisible(this._mailListView.isMultiColumn());
-	}
+	this._colHeaderMenuItem.setVisible(this._mailListView.isMultiColumn());
 };
 
 // Private and protected methods
@@ -1045,13 +1032,13 @@ function(ev) {
 		action = ZmOperation.REPLY;
 	}
 
-	this._doAction({ev: ev, action: action, foldersToOmit: ZmMailApp.getReplyFoldersToOmit()});
+	this._doAction({ev:ev, action:action, foldersToOmit:ZmMailApp.getFoldersToOmit()});
 };
 
 ZmMailListController.prototype._forwardListener =
 function(ev) {
 	var action = ev.item.getData(ZmOperation.KEY_ID);
-	this._doAction({ev: ev, action: action, foldersToOmit: ZmMailApp.getReplyFoldersToOmit()});
+	this._doAction({ev:ev, action:action, foldersToOmit:ZmMailApp.getFoldersToOmit()});
 };
 
 ZmMailListController.prototype._forwardConvListener = function(ev) {
@@ -1545,7 +1532,7 @@ function(view, btn) {
 		this._convOrderViewMenu = this._setupConvOrderMenu(view, menu);
 	}
 	this._sortViewMenu = this._setupSortViewMenu(view, menu);
-	// col header view menu created in _updateViewMenu (if multi-column)
+	this._colHeaderViewMenu = this._setupColHeaderViewMenu(view, menu);
 	this._groupByViewMenu = this._mailListView._getGroupByActionMenu(menu, true, true);
 
 	return menu;

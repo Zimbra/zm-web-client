@@ -365,23 +365,17 @@ function() {
 /**
  * Gets the item type, based on searchFor. The type is the same as the searchFor, except for mail in which the type is either msg or conv based on view.
  *
- * @param   {String}	searchFor		   general description of what to search for
- * @param   {Boolean}   userInitiated      true if using a search tab
+ * @param {String}	searchFor		general description of what to search for
  * @return	{String}	type
  * 
  * @see		#search
  */
 ZmSearchController.prototype.getTypeFromSearchFor =
-function(searchFor, userInitiated) {
+function(searchFor) {
 
-	var type = searchFor;
-	if (searchFor === ZmId.SEARCH_MAIL) {
-		var app = appCtxt.getApp(userInitiated ? ZmApp.SEARCH : ZmApp.MAIL);
-		type = app.getGroupMailBy();
-	}
-
-	return type;
+	return searchFor === ZmId.SEARCH_MAIL ? appCtxt.getApp(ZmApp.MAIL).getGroupMailBy() : searchFor;
 };
+
 
 /**
  * Get the searchFor var which is the same as type except for mail, in which case the type is either msg or conv but searchFor is mail.
@@ -528,7 +522,7 @@ function(params, noRender, callback, errorCallback) {
 
 	//this makes sure for mail we get the type from the user's setting (CONV/MSG).
 	if (!params.forceTypes) {
-		type = this.getTypeFromSearchFor(searchFor, params.userInitiated);
+		type = this.getTypeFromSearchFor(searchFor);
 	}
 
 	var types = AjxVector.fromArray([type]); //need this Vector (one item) only for couple more usages below that I'm afraid to change now.

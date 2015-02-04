@@ -640,7 +640,7 @@ ZmFilterRule.A_LABEL = {};
 ZmFilterRule.A_LABEL[ZmFilterRule.A_KEEP]		= ZmMsg.keepInInbox;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_KEEP_SENT]	= ZmMsg.keepInSent;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_FOLDER]		= ZmMsg.moveIntoFolder;
-ZmFilterRule.A_LABEL[ZmFilterRule.A_DISCARD]	= ZmMsg.discard;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_DISCARD]	= ZmMsg.del;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_STOP]		= ZmMsg.stopEvaluation;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_FLAG]		= ZmMsg.filterMarkAs;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_TAG]		= ZmMsg.tagWith;
@@ -956,14 +956,23 @@ function() {
 	return rule;
 };
 
-ZmFilterRule.checkPreconditions = function(obj) {
-
+ZmFilterRule.checkPreconditions =
+function(obj) {
     if (!ZmFilterRule.__preConditionsInitialized) {
         ZmFilterRule.__preConditionsInitialized = true;
         ZmFilterRule._setPreconditions();
     }
 
-	return appCtxt.checkPrecondition(obj && obj.precondition ? obj.precondition : true);
+	var pre = obj && obj.precondition;
+	if (!pre) { return true; }
+
+	var conds = AjxUtil.toArray(pre);
+	for (var i = 0; i < conds.length; i++) {
+		if (!appCtxt.get(conds[i])) {
+			return false;
+		}
+	}
+	return true;
 };
 
 /**

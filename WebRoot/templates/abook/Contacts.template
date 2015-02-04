@@ -290,7 +290,6 @@
 <template id='abook.Contacts#SplitView_group'>
 	<$
 		var imageUrl = data.imageUrl;
-		var defaultImageUrl = data.defaultImageUrl;
 		var email = data.email;
 		var title = data.title;
 		var fullName = data.fullName;
@@ -309,9 +308,6 @@
 				height='48'
 			<$ } else { $>
 				style='max-width:48px;max-height:48px;'
-			<$ } $>
-			<$ if (defaultImageUrl) { $>
-				onerror='this.onerror=null;this.src="${defaultImageUrl}";'
 			<$ } $>
 			border='0'></td>
 		<$ } else { $>
@@ -348,7 +344,6 @@
 	<$
 		var contact = data.contact;
 		var imageUrl = contact.getImageUrl();
-		var defaultImageUrl = data.defaultImageUrl;
 		var accountName = appCtxt.multiAccounts && contact.account && contact.account.getDisplayName();
 		var tagsId = data.id + (contact.isGroup() ? '_tags_group' : '_tags_contact'); 
 		var imgClassName = contact.isDistributionList() ? 'Group_48' : contact.isGroup() ? 'GroupPerson_48' : 'Person_48';
@@ -362,9 +357,6 @@
 					height='48'
 				<$ } else { $>
 					style='max-width:48px;max-height:48px;'
-				<$ } $>
-				<$ if (defaultImageUrl) { $>
-					onerror='this.onerror=null;this.src="${defaultImageUrl}";'
 				<$ } $>
 				 border=0></td>
 			<$ } else { $>
@@ -960,13 +952,15 @@
 		<table role="presentation" width='100%'>
 			<tr>
 				<td width='600'>
-					<table role="presentation" class='ZPropertySheet' cellspacing='6' id='${id}_searchTable'>
+					<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 						<$ if (data.detailed) { $>
+						<tr>
+							<td valign='middle' colspan='3' width='400'><div id='${id}_searchIcon' class='ImgSearch'></div></td>
+						</tr>
 						<tr id='${id}_searchNameRow'>
 							<td align='right'><span id='${id}_searchNameFieldLbl'><$= ZmMsg.nameLabel $></span></td>
 							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchNameField' aria-labelledby='${id}_searchNameFieldLbl'></td>
 							<td id='${id}_searchButton' rowspan='3' valign='top'></td>
-							<td width='20' valign='middle'><div id='${id}_searchIcon' class='ImgSearch'></div></td>
 						</tr>
 						<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
 						<tr id='${id}_searchPhoneticRow'>
@@ -984,9 +978,9 @@
 						</tr>
 						<$ } else { $>
 						<tr id='${id}_searchRow'>
-							<td><input type='text' placeholder="<$= ZmMsg.contactPickerHint $>" autocomplete='off' nowrap id='${id}_searchField' style='width:25em;' aria-label='<$=ZmMsg.search$>'></td>
-							<td id='${id}_searchButton'></td>
 							<td width='20' valign='middle'><div id='${id}_searchIcon' class='ImgSearch'></div></td>
+							<td><input type='text' autocomplete='off' nowrap id='${id}_searchField' style='padding:.35em;width:25em;' aria-label='<$=ZmMsg.search$>'></td>
+							<td id='${id}_searchButton'></td>
 						</tr>
 						<$ } $>
 					</table>

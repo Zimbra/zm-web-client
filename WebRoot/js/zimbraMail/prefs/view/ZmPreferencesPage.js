@@ -201,9 +201,7 @@ function() {
 			// ignore if doesn't meet pre-condition
 			var setup = ZmPref.SETUP[id];
 
-			if (!setup || !appCtxt.checkPrecondition(setup.precondition, setup.preconditionAny)) {
-				continue;
-			}
+			if (!setup || !this._controller.checkPreCondition(setup)) { continue; }
 
 			// perform load function
 			if (setup.loadFunction) {
@@ -1228,10 +1226,11 @@ function(ev) {
 };
 
 /**
- * Returns true if any of the specified prefs are enabled (or have no preconditions).
+ * Returns true if any of the specified prefs are enabled (or have no
+ * preconditions).
  */
-ZmPreferencesPage.prototype._isEnabled = function(prefId1 /* ..., prefIdN */) {
-
+ZmPreferencesPage.prototype._isEnabled =
+function(prefId1 /* ..., prefIdN */) {
 	for (var i = 0; i < arguments.length; i++) {
 		var prefId = arguments[i];
 
@@ -1242,9 +1241,7 @@ ZmPreferencesPage.prototype._isEnabled = function(prefId1 /* ..., prefIdN */) {
 			return false;
 		}
 
-		var setup = ZmPref.SETUP[prefId],
-			prefPrecondition = setup && setup.precondition;
-		if (appCtxt.checkPrecondition(prefPrecondition || prefId, prefPrecondition && setup.preconditionAny)) {
+		if (this._controller.checkPreCondition(ZmPref.SETUP[prefId], prefId)) {
 			return true;
 		}
 	}

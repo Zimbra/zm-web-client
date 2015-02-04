@@ -413,9 +413,7 @@ function() {
 ZmShortcutsPanel.newWindowCallback =
 function() {
 	var newWinObj = appCtxt.getNewWindow(false, 820, 650);
-	if (newWinObj) {
-		newWinObj.command = "shortcuts";
-		newWinObj.params = {cols:ZmShortcutsPanel.INSTANCE._cols};
-	}
+	newWinObj.command = "shortcuts";
+	newWinObj.params = {cols:ZmShortcutsPanel.INSTANCE._cols};
 	ZmShortcutsPanel.closeCallback();
 };

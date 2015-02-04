@@ -595,10 +595,6 @@ function(dialog) {
 	var isGuestShare = dialog._guestRadioEl.checked;
 
 	dialog._privatePermission.setVisible(dialog._privatePermissionEnabled && !dialog._noneRadioEl.checked && !isPublicShare);
-	if (isPublicShare) {
-		// Remove private permissions (which may have been set earlier) if the share is a public share
-		dialog._privateEl.checked = false;
-	}
 
 	var hasEmail = AjxStringUtil.trim(dialog._grantee.getValue()) != "";
 	//var hasPassword = AjxStringUtil.trim(dialog._passwordInput.getValue()) != "";
@@ -629,11 +625,11 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 
     if (appCtxt.getCurrentApp().getName() === ZmId.APP_BRIEFCASE) {
         this._rolesGroup.setVisible(isUserShare || isGuestShare);
-        guestRadioLabelEl.innerHTML = ZmMsg.shareWithExternalGuest;
+        guestRadioLabelEl.innerText = ZmMsg.shareWithExternalGuest;
     }
     else {
 	    this._rolesGroup.setVisible(isUserShare);
-        guestRadioLabelEl.innerHTML = ZmMsg.shareWithGuest;
+        guestRadioLabelEl.innerText = ZmMsg.shareWithGuest;
     }
 	this._messageGroup.setVisible(!isPublicShare);
 	this._privatePermission.setVisible(this._privatePermissionEnabled && !isPublicShare);

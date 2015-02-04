@@ -235,14 +235,13 @@ function(params) {
 	if (params.inNewWindow) {
         var msgId = (params.msg && params.msg.nId) || Dwt.getNextId();
 		var newWinObj = ac.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId.replace(/\s|\-/g, '_'));
-		if (newWinObj) {
-			// this is how child window knows what to do once loading:
-			newWinObj.command = "compose";
-			newWinObj.params = params;
-	        if (newWinObj.win) {
-	            newWinObj.win.focus();
-	        }
-		}
+
+		// this is how child window knows what to do once loading:
+		newWinObj.command = "compose";
+		newWinObj.params = params;
+        if (newWinObj.win) {
+            newWinObj.win.focus();
+        }
 	} else {
 		this._setView(params);
 		this._listController = params.listController;
@@ -296,7 +295,7 @@ function() {
 	// this is how child window knows what to do once loading:
     var msgId = (msg && msg.nId) || Dwt.getNextId();
 	var newWinObj = appCtxt.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId.replace(/\s|\-/g, '_'));
-    if (newWinObj && newWinObj.win) {
+    if (newWinObj.win) {
         newWinObj.win.focus();
     }
 	newWinObj.command = "composeDetach";
@@ -509,8 +508,7 @@ function(attId, docIds, draftType, callback, contactId) {
 		tempMsg = new ZmMailMsg();
 		this._composeView.setDocAttachments(tempMsg, docIds);
 	}
-	var removeMarkers = !isDraft || isTimed;
-	var msg = this._composeView.getMsg(attId, isDraft, tempMsg, isTimed, contactId, removeMarkers);
+	var msg = this._composeView.getMsg(attId, isDraft, tempMsg, isTimed, contactId);
 
 	if (!msg) {
 		return;
@@ -1130,6 +1128,12 @@ function(params) {
 		}
 	}
 
+
+    if (params && params.isEditAsNew){ // bug: 79175 - edit as new should clear "in reply to" field
+        cv._msg = null; //clear _msg in cv so during send we don't use it for "in reply to"
+    }
+
+
     cv.checkAttachments();
     this.sendMsgCallback = params.sendMsgCallback;
 
@@ -1144,8 +1148,7 @@ function(msg) {
 		? appCtxt.accountList.defaultAccount : null;
 	var identityCollection = appCtxt.getIdentityCollection(account);
 	if (!msg) {
-		var ac = window.parentAppCtxt || window.appCtxt;
-		var curSearch = ac.getApp(ZmApp.MAIL).currentSearch;
+		var curSearch = appCtxt.getApp(ZmApp.MAIL).currentSearch;
 		var folderId = curSearch && curSearch.folderId;
 		if (folderId) {
 			return identityCollection.selectIdentityFromFolder(folderId);
@@ -2473,9 +2476,6 @@ ZmComposeController.prototype._uploadImage = function(blob, callback, errorCallb
     req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     req.setRequestHeader("Content-Type", blob.type);
     req.setRequestHeader("Content-Disposition", 'attachment; filename="' + AjxUtil.convertToEntities(blob.name) + '"');
-    if (window.csrfToken) {
-        req.setRequestHeader("X-Zimbra-Csrf-Token", window.csrfToken);
-    }
     req.onreadystatechange = function() {
         if (req.readyState === 4) {
             if (req.status === 200) {

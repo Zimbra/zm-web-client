@@ -140,25 +140,6 @@ function(id, key) {
 };
 
 /**
- * Sets the value of the given setting.
- *
- * @param {String}	id		the ID of the setting
- * @param {Object}	value			the new value for the setting
- * @param {String}	key 			optional key for use by hash table data type
- * @param {Boolean}	setDefault		if <code>true</code>, also set the default value
- * @param {Boolean}	skipNotify		if <code>true</code>, do not notify listeners
- * @param {Boolean}	skipImplicit		if <code>true</code>, do not check for change to implicit pref
- */
-ZmSettings.prototype.set = function(id, value, key, setDefault, skipNotify, skipImplicit) {
-	if (id && this._settings[id]) {
-		this._settings[id].setValue(value, key, setDefault, skipNotify, skipImplicit);
-	}
-	else {
-		DBG.println(AjxDebug.DBG1, "ZmSettings.set: ID missing (value = " + value);
-	}
-};
-
-/**
  * Gets the setting.
  *
  * @param {String}	id		the ID of the setting
@@ -309,16 +290,8 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		}
 	}
 
-	// For delegated admin who can see prefs but not mail, we still need to register the mail settings so
-	// they can be created and set below in createFromJs().
-	if (this.get(ZmSetting.ADMIN_DELEGATED)) {
-		if (!this.get(ZmSetting.ADMIN_MAIL_ENABLED) && this.get(ZmSetting.ADMIN_PREFERENCES_ENABLED)) {
-			(new ZmMailApp()).enableMailPrefs();
-		}
-	}
-
-	// Voice feature
-    this.set(ZmSetting.VOICE_ENABLED, this._hasVoiceFeature(), null, false, true);
+    // Voice feature
+    this._settings["VOICE_ENABLED"].setValue(this._hasVoiceFeature(), null, false, true);
 
     var accountName = params.accountName;
     var setDefault = params.preInit ? false : params.setDefault;
@@ -334,7 +307,6 @@ ZmSettings.prototype.setUserSettings = function(params) {
         ZmSetting.LICENSE_STATUS,           info.license && info.license.status,
         ZmSetting.PREVIOUS_SESSION,         info.prevSession,
         ZmSetting.PUBLIC_URL,               info.publicURL,
-		ZmSetting.ADMIN_URL,                info.adminURL,
         ZmSetting.QUOTA_USED,               info.used,
         ZmSetting.RECENT_MESSAGES,          info.recent,
         ZmSetting.REST_URL,                 info.rest,
@@ -345,7 +317,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
     for (var i = 0; i < settings.length; i += 2) {
         var value = settings[i+1];
         if (value != null) {
-            this.set(settings[i], value, null, setDefault, skipNotify, skipImplicit);
+            this._settings[settings[i]].setValue(value, null, setDefault, skipNotify, skipImplicit);
         }
     }
 
@@ -354,22 +326,16 @@ ZmSettings.prototype.setUserSettings = function(params) {
         this.createFromJs(info.attrs._attrs, setDefault, skipNotify, skipImplicit);
     }
 
-	// By default, everything but mail is enabled for delegated admin. Require an additional setting to allow admin to view mail.
-	if (this.get(ZmSetting.ADMIN_DELEGATED)) {
-		this.set(ZmSetting.MAIL_ENABLED, this.get(ZmSetting.ADMIN_MAIL_ENABLED), setDefault, skipNotify, skipImplicit);
-		var enableMailPrefs = this.get(ZmSetting.MAIL_ENABLED) || (this.get(ZmSetting.ADMIN_DELEGATED) && this.get(ZmSetting.ADMIN_PREFERENCES_ENABLED));
-		this.set(ZmSetting.MAIL_PREFERENCES_ENABLED, enableMailPrefs, setDefault, skipNotify, skipImplicit);
-		// Disable other areas where mail could be exposed to a prefs-only admin
-		if (this.get(ZmSetting.MAIL_PREFERENCES_ENABLED) && !this.get(ZmSetting.MAIL__ENABLED)) {
-			this.set(ZmSetting.MAIL_FORWARDING_ENABLED, false, setDefault, skipNotify, skipImplicit);
-			this.set(ZmSetting.FILTERS_MAIL_FORWARDING_ENABLED, false, setDefault, skipNotify, skipImplicit);
-			this.set(ZmSetting.NOTIF_FEATURE_ENABLED, false, setDefault, skipNotify, skipImplicit);
-		}
-	}
+    // admin mail enabled setting takes precedence if admin delegated
+    if (this.get(ZmSetting.ADMIN_DELEGATED) && !this.get(ZmSetting.ADMIN_MAIL_ENABLED)) {
+        this.getSetting(ZmSetting.MAIL_ENABLED).setValue(false);
+	    var mailApp = new ZmMailApp();
+	    mailApp.enableMailPrefs();
+    }
 
 	// Server may provide us with SSO-enabled URL for Community integration (integration URL with OAuth signature)
 	if (info.communityURL) {
-		this.set(ZmSetting.SOCIAL_EXTERNAL_URL, info.communityURL, null, setDefault, skipNotify);
+		this.getSetting(ZmSetting.SOCIAL_EXTERNAL_URL).setValue(info.communityURL, null, setDefault, skipNotify);
 	}
 
 	if (params.preInit) {
@@ -390,8 +356,14 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		// for offline, find out whether this client supports prism-specific features
 		if (appCtxt.isOffline) {
 			if (AjxEnv.isPrism && window.platform) {
-				this.set(ZmSetting.OFFLINE_SUPPORTS_MAILTO, true, null, setDefault, skipNotify, skipImplicit);
-				this.set(ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE, true, null, setDefault, skipNotify, skipImplicit);
+				setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
+				if (setting) {
+					setting.setValue(true, null, setDefault, skipNotify, skipImplicit);
+				}
+				setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE];
+				if (setting) {
+					setting.setValue(true, null, setDefault, skipNotify, skipImplicit);
+				}
 			}
 
 			// bug #45804 - sharing always enabled for offline
@@ -405,11 +377,16 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		setting.defaultValue = this.get(ZmSetting.USERNAME);
 	}
 	if (this.get(ZmSetting.FORCE_CAL_OFF)) {
-		this.set(ZmSetting.CALENDAR_ENABLED, false, null, setDefault, skipNotify, skipImplicit);
+		setting = this._settings[ZmSetting.CALENDAR_ENABLED];
+		if (setting) {
+			setting.setValue(false, null, setDefault, skipNotify, skipImplicit);
+		}
 	}
-
 	if (!this.get(ZmSetting.OPTIONS_ENABLED)) {
-		this.set(ZmSetting.FILTERS_ENABLED, false, null, setDefault, skipNotify, skipImplicit);
+		setting = this._settings[ZmSetting.FILTERS_ENABLED];
+		if (setting) {
+			setting.setValue(false, null, setDefault, skipNotify, skipImplicit);
+		}
 	}
 
 	// load zimlets *only* for the main account
@@ -443,7 +420,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		appCtxt.set(ZmSetting.FORWARD_INCLUDE_HEADERS, list[2], null, setDefault, skipNotify);
 	}
 
-    // Populate Sort Order Defaults
+    //Populate Sort Order Defaults
     var sortPref =  ZmSettings.DEFAULT_SORT_PREF;
     sortPref[ZmId.VIEW_CONVLIST]			= ZmSearch.DATE_DESC;
     sortPref[ZmId.VIEW_CONV]				= ZmSearch.DATE_DESC;
@@ -457,14 +434,15 @@ ZmSettings.prototype.setUserSettings = function(params) {
 
     var sortOrderSetting = this._settings[ZmSetting.SORTING_PREF];
     if (sortOrderSetting) {
-        // Populate empty sort pref's with defaultValues
-        for (var pref in sortPref){
-            if (!sortOrderSetting.getValue(pref)){
+
+        //Populate empty sort pref's with defaultValues
+        for(var pref in sortPref){
+            if(!sortOrderSetting.getValue(pref)){
                 sortOrderSetting.setValue(sortPref[pref], pref, false, true);
             }
         }
 
-        // Explicitly Set defaultValue
+        //Explicitly Set defaultValue
         sortOrderSetting.defaultValue = AjxUtil.hashCopy(sortPref);
     }
 	
@@ -621,12 +599,12 @@ function(response) {
 			locale.id = locale.id.replace(/^in/,"id");
 			ZmLocale.create(locale.id, locale.name, ZmMsg["localeName_" + locale.id] || locale.localName);
 		}
-        if (locales.length === 1) {
+        if(locales.length === 1) {
             //Fix for bug# 80762 - Set the value to always true in case of only one language/locale present
-            this.set(ZmSetting.LOCALE_CHANGE_ENABLED, true);
+            this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(true);
         }
         else {
-            this.set(ZmSetting.LOCALE_CHANGE_ENABLED, ZmLocale.hasChoices());
+            this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(ZmLocale.hasChoices());
         }
 	}
 };
@@ -774,32 +752,33 @@ ZmSettings.prototype._setDefaults =
 function() {
 
 	var value = AjxUtil.formatUrl({host:location.hostname, path:"/service/soap/", qsReset:true});
-	this.set(ZmSetting.CSFE_SERVER_URI, value, null, false, true);
+	this._settings[ZmSetting.CSFE_SERVER_URI].setValue(value, null, false, true);
 
 	// CSFE_MSG_FETCHER_URI
 	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co"}});
-	this.set(ZmSetting.CSFE_MSG_FETCHER_URI, value, null, false, true);
+	this._settings[ZmSetting.CSFE_MSG_FETCHER_URI].setValue(value, null, false, true);
 
 	// CSFE_UPLOAD_URI
 	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/upload", qsReset:true, qsArgs:{lbfums:""}});
-	this.set(ZmSetting.CSFE_UPLOAD_URI, value, null, false, true);
+	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value, null, false, true);
 
 	// CSFE_ATTACHMENT_UPLOAD_URI
 	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/upload", qsReset:true});
-	this.set(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI, value, null, false, true);
+	this._settings[ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI].setValue(value, null, false, true);
 
 	// CSFE EXPORT URI
 	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co", id:"{0}", fmt:"csv"}});
-	this.set(ZmSetting.CSFE_EXPORT_URI, value, null, false, true);
+	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
 
 	var h = location.hostname;
 	var isDev = ((h.indexOf(".zimbra.com") != -1) || (window.appDevMode && (/\.local$/.test(h) || (!appCtxt.isOffline && h == "localhost"))));
-	this.set(ZmSetting.IS_DEV_SERVER, isDev);
+	this._settings[ZmSetting.IS_DEV_SERVER].setValue(isDev);
 	if (isDev || window.isScriptErrorOn) {
-		this.set(ZmSetting.SHOW_SCRIPT_ERRORS, true, null, false, true);
+		this._settings[ZmSetting.SHOW_SCRIPT_ERRORS].setValue(true, null, false, true);
 	}
 
 	this.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError);
+
 };
 
 ZmSettings.prototype.persistImplicitSortPrefs =
@@ -867,7 +846,6 @@ function() {
 	// DOMAIN SETTINGS
 	this.registerSetting("CHANGE_PASSWORD_URL",				{type:ZmSetting.T_CONFIG});
 	this.registerSetting("PUBLIC_URL",						{type:ZmSetting.T_CONFIG});
-	this.registerSetting("ADMIN_URL",						{type:ZmSetting.T_CONFIG});
 	this.registerSetting("DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE",		{type:ZmSetting.T_CONFIG});
 
 	// COS SETTINGS - APPS
@@ -885,7 +863,6 @@ function() {
     this.registerSetting("MAIL_ENABLED",					{name:"zimbraFeatureMailEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
     this.registerSetting("EXTERNAL_USER_MAIL_ADDRESS",		{name:"zimbraExternalUserMailAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
     this.registerSetting("ADMIN_MAIL_ENABLED",				{name:"zimbraFeatureAdminMailEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-    this.registerSetting("ADMIN_PREFERENCES_ENABLED",		{name:"zimbraFeatureAdminPreferencesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("MAIL_UPSELL_ENABLED",				{name:"zimbraFeatureMailUpsellEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("MAIL_UPSELL_URL",					{name:"zimbraFeatureMailUpsellURL", type:ZmSetting.T_COS});
 	this.registerSetting("OPTIONS_ENABLED",					{name:"zimbraFeatureOptionsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -965,7 +942,8 @@ function() {
 	this.registerSetting("IS_ADMIN",						{name:"zimbraIsAdminAccount", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("IS_EXTERNAL",						{name:"zimbraIsExternalVirtualAccount", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("IS_DELEGATED_ADMIN",				{name:"zimbraIsDelegatedAdminAccount", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});
-    this.registerSetting("MESSAGE_SIZE_LIMIT",              {type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
+	this.registerSetting("ADMIN_REFERENCE",                 {name:"zimbraWebClientAdminReference", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
+    this.registerSetting("MESSAGE_SIZE_LIMIT",           {type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
     this.registerSetting("DOCUMENT_SIZE_LIMIT",             {type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
 
 	// CLIENT SIDE FEATURE SUPPORT
@@ -1044,11 +1022,7 @@ function() {
 	this.registerSetting("MAIL_ALIASES",					{name:"zimbraMailAlias", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 	this.registerSetting("ALLOW_FROM_ADDRESSES",			{name:"zimbraAllowFromAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 
-	// Internal pref to control display of mail-related preferences. The only time it will be false is for a delegated admin with zimbraFeatureAdminMailEnabled and
-	// zimbraFeatureAdminPreferencesEnabled set to FALSE.
-	this.registerSetting("MAIL_PREFERENCES_ENABLED",	    {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-
-	ZmApp.runAppFunction("registerSettings", this);
+    ZmApp.runAppFunction("registerSettings", this);
 };
 
 /**

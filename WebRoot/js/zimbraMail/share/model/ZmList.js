@@ -576,16 +576,9 @@ function(params, result) {
 			//ZmModel.prototype._notify.call(item, ZmEvent.E_MOVE, details);
 		}
 		// batched change notification
-		//todo - it's probably possible that different items have different _lists they are in
-		// thus getting the lists just from the first item is not enough. But hopefully good
-		// enough for the most common cases. Prior to this fix it was only taking the current list
-		// the first item is in, so this is already better. :)
 		var item = movedItems[0];
-		for (var listId in item._list) {
-			var list = appCtxt.getById(listId);
-			if (!list) {
-				continue;
-			}
+		var list = item.list;
+        if (list) {
             list._evt.batchMode = true;
             list._evt.item = item;	// placeholder
             list._evt.items = movedItems;
