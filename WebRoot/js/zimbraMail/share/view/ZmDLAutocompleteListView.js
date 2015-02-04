@@ -238,7 +238,7 @@ function(clearDL) {
 		var dlBubble = document.getElementById(this._dlBubbleId);
 		if (dlBubble) {
 			var addrInput = DwtControl.ALL_BY_ID[dlBubble._aifId];
-			if (addrInput) {
+			if (addrInput && addrInput.removeBubble) { //it's not always really addrInput - from msg/conv view it's the msg or conv view, (unlike compose view where it's really address input
 				addrInput.removeBubble(this._dlBubbleId);
 				this._dlBubbleId = null;
 			}
