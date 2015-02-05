@@ -43,16 +43,24 @@
  ****/
 
  /* bug 56316 originally */
-.user_font_modern {
+.user_font_modern,
+.user_font_modern TEXTAREA,
+.user_font_modern INPUT {
 	@FontFamily-modern@
 }
-.user_font_classic {
+.user_font_classic,
+.user_font_classic TEXTAREA,
+.user_font_classic INPUT {
 	@FontFamily-classic@
 }
-.user_font_wide {
+.user_font_wide,
+.user_font_wide TEXTAREA,
+.user_font_wide INPUT {
 	@FontFamily-wide@
 }
-.user_font_system {
+.user_font_system,
+.user_font_system TEXTAREA,
+.user_font_system INPUT {
 	@FontFamily-system@
 }
 
