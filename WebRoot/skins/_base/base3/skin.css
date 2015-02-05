@@ -584,8 +584,6 @@ SELECT						{	@FieldBorder@	}
 .overviewHeader .ZButton	{ height:auto;	}
 .FirstOverviewHeader.overviewHeader { padding-top:0px;	}
 .RowDouble							{ height:auto; padding-top:0px; 		}
-.RowDouble>TABLE,
-.RowDouble .ZmRowDoubleHeader		{ border:1px solid white; 			}
 .RowDouble .TopRow,
 .RowDouble .ImgCheckboxChecked,
 .RowDouble .ImgCheckboxUnchecked 	{ margin:6px 0px 0px; }
