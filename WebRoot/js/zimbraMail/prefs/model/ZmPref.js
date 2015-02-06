@@ -368,6 +368,69 @@ function(pref, value, list) {
 	list.push(prefToChange);
 };
 
+ZmPref.addOOOVacationExternalPrefToList = function(list, aPrefName, aNewPrefValue){
+    var lastPrefValue = appCtxt.get(aPrefName);     // prefvalue before saving ..
+    if (lastPrefValue !== aNewPrefValue) {          // donot add pref to list if pref value is not changed
+        prefToAdd = appCtxt.getSettings().getSetting(aPrefName);
+        prefToAdd.setValue(aNewPrefValue);
+        list.push(prefToAdd);
+    }
+};
+    /**
+     * On saving, for OOO vacation external reply, depending upon the option that the user has chosen in
+       external select dropdown, we add the relevant pref that maps to the selected option in dropdown to the list that constructs the request.
+     */
+ZmPref.addOOOVacationExternalPrefOnSave =
+    function(pref, value, list, viewPage) {
+
+        var externalSelect,
+            selectedText;
+
+        ZmPref.addOOOVacationExternalPrefToList(list, ZmSetting.VACATION_EXTERNAL_SUPPRESS, value);
+        externalSelect = viewPage.getFormObject(ZmSetting.VACATION_EXTERNAL_SUPPRESS);
+        selectedText = externalSelect.getText();
+
+        if (selectedText.indexOf(ZmMsg.vacationExternalReplySuppress) === -1) { //In external select, first three options are selected .
+            if (selectedText === ZmMsg.vacationExternalAllStandard) { //first  option is selected ..
+                ZmPref.addOOOVacationExternalPrefToList(list, ZmSetting.VACATION_EXTERNAL_MSG_ENABLED, false);
+                return;
+            }
+            if (selectedText === ZmMsg.vacationExternalAllCustom) { //second option ALL is selected ..
+                ZmPref.addOOOVacationExternalPrefToList(list, ZmSetting.VACATION_EXTERNAL_TYPE, 'ALL');
+            }
+            if (selectedText === ZmMsg.vacationExternalAllExceptABCustom) { //third option ALLNOTINAB is selected ..
+                ZmPref.addOOOVacationExternalPrefToList(list, ZmSetting.VACATION_EXTERNAL_TYPE, 'ALLNOTINAB');
+            }
+            ZmPref.addOOOVacationExternalPrefToList(list, ZmSetting.VACATION_EXTERNAL_MSG_ENABLED, true);
+        }
+    };
+
+    /* For OOO section, this method is called only for the first time after reloading .
+       When OOO section loads, depending upon which OOO external select option the user has earlier saved in preferences,
+       we show the relevant OOO vacation external select option, and make the external text area hide /show correspondingly.
+       We get the value of OOO vacation external pref from appCtxt and then proceed .
+     */
+ZmPref.initOOOVacationExternalSuppress = function(){
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.VACATION_EXTERNAL_MSG);
+    var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView().getView(section.id);
+    var externalTextArea  = view.getFormObject(ZmSetting.VACATION_EXTERNAL_MSG);
+    var externalSelect =  view.getFormObject(ZmSetting.VACATION_EXTERNAL_SUPPRESS);
+    if(appCtxt.get(ZmSetting.VACATION_EXTERNAL_SUPPRESS)){ // when last option is saved in preferences
+        externalTextArea.setVisible(false);
+        return;
+    }
+    if(!appCtxt.get(ZmSetting.VACATION_EXTERNAL_MSG_ENABLED)){ // handle when 1st option is selected
+        externalSelect.setSelected(0);
+        externalTextArea.setVisible(false);
+        return;
+    }
+    var stringToOptionValue = {
+        'ALL' : 1,
+        'ALLNOTINAB' : 2
+    };
+    externalSelect.setSelected(stringToOptionValue[appCtxt.get(ZmSetting.VACATION_EXTERNAL_TYPE)]);
+};
+
 ZmPref.initIncludeWhat =
 function(select, value) {
 	// wait until prefix/headers checkboxes have been created
@@ -675,6 +738,20 @@ ZmPref._normalizeFontName = function(fontId) {
 };
 ZmPref._normalizeFontValue = function(fontId) {
 	return ZmPref.FONT_FAMILY[ZmPref._normalizeFontId(fontId)].value;
+};
+
+ZmPref.handleOOOVacationExternalOptionChange = function(ev) {
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.VACATION_EXTERNAL_MSG);
+    var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView().getView(section.id);
+    var externalTextArea  = view.getFormObject(ZmSetting.VACATION_EXTERNAL_MSG);
+    var externalSelect =  view.getFormObject(ZmSetting.VACATION_EXTERNAL_SUPPRESS);
+    var selectedIndex = externalSelect.getSelectedOption().getItem()._optionIndex;
+
+    if (selectedIndex === 0 || selectedIndex === 3 ) {
+        externalTextArea.setVisible(false);
+    } else {
+        externalTextArea.setVisible(true);
+    }
 };
 
 ZmPref.FONT_FAMILY = {};

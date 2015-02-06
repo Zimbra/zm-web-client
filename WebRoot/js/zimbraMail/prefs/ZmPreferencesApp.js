@@ -366,6 +366,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 				                ZmSetting.VACATION_EXTERNAL_MSG_ENABLED,
 								ZmSetting.VACATION_EXTERNAL_MSG,
 				                ZmSetting.VACATION_EXTERNAL_TYPE,
+                                ZmSetting.VACATION_EXTERNAL_SUPPRESS,
 				                ZmSetting.VACATION_CALENDAR_TYPE,
 								ZmSetting.VACATION_UNTIL,
 				                ZmSetting.VACATION_UNTIL_TIME

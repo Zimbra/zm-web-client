@@ -2313,118 +2313,117 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#OutOfOffice'>
-	<div class='prefHeader'><$=ZmMsg.outOfOffice$></div>
-	<table role="presentation" class='ZOptionsSectionTable' width=100%>
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table role="presentation" width='100%' class='ZPropertySheet' cellspacing='6'>
-					<tr>
-						<td class="ZOptionsLabel" style="vertical-align:top;width:inherit;"><$=ZmMsg.outOfOfficeLabel$></td>
-						<td class='ZOptionsField'>
-							<div id='${id}_VACATION_MSG_ENABLED' tabindex='150'></div>
-						</td>
-					</tr>
-					<tr>
-						<td class="ZOptionsLabel" style="vertical-align:top;width:inherit;"><$=ZmMsg.autoReplyLabel$></td>
-						<td class='ZOptionsField'>
-							<table role="presentation" class="ZPropertySheet" cellspacing='6'>
-								<tr><td>
-									<textarea id='${id}_VACATION_MSG' tabindex='160' rows=6 cols=70></textarea>
-									<span style="display:none">
-										<input type="hidden" name="st_dt" id="${id}_VACATION_FROM"/>
-										<input type="hidden" name="ed_dt" id="${id}_VACATION_UNTIL"/>
-									</span>
-								</td></tr>
-							</table>
-						</td>
-					<tr>
-					<tr>
-						<td class="ZOptionsLabel" style="vertical-align:top;width:inherit;"><$=ZmMsg.timePeriodLabel$></td>
-						<td>
-							<table role="presentation">
-								<tr><td>
-									<input type="checkbox" id="${id}_VACATION_DURATION_ENABLED" tabindex='170'>
-								</td></tr>
-								<tr><td>
-									<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-										<tr>
-											<td align="right"><$=ZmMsg.startLabel$></td>
-											<td class='ZmOOODuration' >
-												<table role="presentation"><tr>
-													<td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_FROM1'></td>
-													<td class="miniCalendarButton" id='${id}_startMiniCal'></td>
-												</tr></table>
-											</td>
-											<td id='${id}_VACATION_FROM_TIME' class='ZmOOODuration' ></td>
-											<td><div id='${id}_VACATION_DURATION_ALL_DAY' class='ZmOOODuration' ></div></td>
-										</tr>
-										<tr>
-											<td align="right"><$=ZmMsg.endLabel$></td>
-											<td class='ZmOOODuration'>
-												<table role="presentation"><tr>
-													<td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_UNTIL1'></td>
-													<td class="miniCalendarButton" id='${id}_endMiniCal'></td>
-												</tr></table>
-											</td>
-											<td colspan="2" class='ZmOOODuration' id='${id}_VACATION_UNTIL_TIME'></td>
-										</tr>
-										<tr>
-											<td align="right"><$=ZmMsg.calendarLabel$></td>
-											<td colspan="3">
-												<table role="presentation"><tr>
-													<td class='ZmOOOCalendar'><div id='${id}_VACATION_CALENDAR_ENABLED' tabindex='180'></div></td>
-													<td class='ZmOOOCalendar'><div id='${id}_VACATION_CALENDAR_TYPE' tabindex='190' size='3' /></td>
-												</tr></table>
-											</td>
-										</tr>
-									</table>
-								</td></tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td class="ZOptionsLabel" style="vertical-align:top;width:inherit;"><$=ZmMsg.externalSendersLabel$></td>
-						<td class='ZOptionsField'>
-							<table role="presentation">
-								<tr>
-									<td><input id='${id}_VACATION_EXTERNAL_MSG_ENABLED' tabindex='200' type=checkbox></td>
-									<td><div id='${id}_VACATION_EXTERNAL_TYPE' tabindex='210' size='3' /></td>
-								</tr>
-							</table>
-							<textarea id='${id}_VACATION_EXTERNAL_MSG' tabindex='220' rows=6 cols=70 onfocus="this.rows=10;"></textarea>
-						</td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>
+    <div class='prefHeader'><$=ZmMsg.outOfOffice$></div>
+        <table role="presentation" class='ZOptionsSectionTable' width=100%>
+            <tr>
+                <td class='ZOptionsSectionMain'>
+                    <table role="presentation" width='100%' class='ZPropertySheet' cellspacing='6'>
+                        <tr>
+                            <td class="ZOptionsLabel" style="vertical-align:top;width:inherit;"><$=ZmMsg.outOfOfficeLabel$></td>
+                            <td class='ZOptionsField'>
+                                <div id='${id}_VACATION_MSG_ENABLED' tabindex='150'></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ZOptionsLabel" style="vertical-align:top;width:inherit;"><$=ZmMsg.autoReplyLabel$></td>
+                            <td class='ZOptionsField'>
+                                <table role="presentation" class="ZPropertySheet" cellspacing='6'>
+                                    <tr><td>
+                                        <textarea id='${id}_VACATION_MSG' tabindex='160' rows=6 cols=70></textarea>
+                                        <span style="display:none">
+                                            <input type="hidden" name="st_dt" id="${id}_VACATION_FROM"/>
+                                            <input type="hidden" name="ed_dt" id="${id}_VACATION_UNTIL"/>
+                                        </span>
+                                    </td></tr>
+                                </table>
+                            </td>
+                        <tr>
+                        <tr>
+                            <td class="ZOptionsLabel" style="vertical-align:top;width:inherit;"><$=ZmMsg.externalSendersLabel$></td>
+                            <td class='ZOptionsField'>
+                                <table role="presentation">
+                                    <tr>
+                                    <td><div id='${id}_VACATION_EXTERNAL_SUPPRESS' tabindex='210' size='3' /></td>
+                                    </tr>
+                                </table>
+                                <textarea id='${id}_VACATION_EXTERNAL_MSG' tabindex='220' rows=6 cols=70 onfocus="this.rows=10;"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ZOptionsLabel" style="vertical-align:top;width:inherit;"><$=ZmMsg.timePeriodLabel$></td>
+                            <td>
+                                <table role="presentation">
+                                    <tr><td>
+                                        <input type="checkbox" id="${id}_VACATION_DURATION_ENABLED" tabindex='170'>
+                                    </td></tr>
+                        <tr><td>
+                            <table role="presentation" class='ZPropertySheet' cellspacing='6'>
+                                <tr>
+                                    <td align="right"><$=ZmMsg.startLabel$></td>
+                                    <td class='ZmOOODuration' >
+                                        <table role="presentation"><tr>
+                                            <td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_FROM1'></td>
+                                            <td class="miniCalendarButton" id='${id}_startMiniCal'></td>
+                                        </tr></table>
+                                    </td>
+                                    <td id='${id}_VACATION_FROM_TIME' class='ZmOOODuration' ></td>
+                                    <td><div id='${id}_VACATION_DURATION_ALL_DAY' class='ZmOOODuration' ></div></td>
+                                </tr>
+                                <tr>
+                                    <td align="right"><$=ZmMsg.endLabel$></td>
+                                    <td class='ZmOOODuration'>
+                                        <table role="presentation"><tr>
+                                            <td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_UNTIL1'></td>
+                                            <td class="miniCalendarButton" id='${id}_endMiniCal'></td>
+                                        </tr></table>
+                                    </td>
+                                    <td colspan="2" class='ZmOOODuration' id='${id}_VACATION_UNTIL_TIME'></td>
+                                </tr>
+                                <tr>
+                                    <td align="right"><$=ZmMsg.vacationCalMsg$></td>
+                                    <td colspan="3">
+                                        <table role="presentation"><tr>
+                                            <td class='ZmOOOCalendar'><div id='${id}_VACATION_CALENDAR_ENABLED' tabindex='180'></div></td>
+                                            <td class='ZmOOOCalendar'><div id='${id}_VACATION_CALENDAR_TYPE' tabindex='190' size='3' /></td>
+                                        </tr></table>
+                                    </td>
+                                </tr>
+                                </table>
+                            </td></tr>
+                            </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
 </template>
 
 <template id='prefs.Pages#OfflineSettings'>
-	<div style='width:475px;'>
-		<div><$=ZmMsg.offlineDescription$></div>
-		<div class='horizSep'></div>
-		<div class='ZmOfflineItem'>
-			<table role="presentation" class='ZRadioButtonTable'><tr>
-				<td><input id='${id}_ENABLE_OFFLINE_RADIO' type=radio name='${id}_OFFLINE_SETTING'
-					<$ if (data.isWebClientOfflineSupported) { $>
-						checked
-					<$ } $> ></td>
-				<td><label for='${id}_ENABLE_OFFLINE_RADIO' class='Text'><$=ZmMsg.enableOffline$></label></td>
-			</tr></table>
-			<div class='ZmOfflineDetails'><$=ZmMsg.enableOfflineDetails$></div>
-		</div>
-		<div class='ZmOfflineItem'>
-			<table role="presentation" class='ZRadioButtonTable'><tr>
-				<td><input id='${id}_DISABLE_OFFLINE_RADIO' type=radio name='${id}_OFFLINE_SETTING'
-					<$ if (!data.isWebClientOfflineSupported) { $>
-						checked
-					<$ } $> ></td>
-				<td><label for='${id}_DISABLE_OFFLINE_RADIO' class='Text'><$=ZmMsg.disableOffline$></label></td>
-			<tr></table>
-			<div class='ZmOfflineDetails'><$=ZmMsg.disableOfflineDetails$></div>
-		</div>
-	</div>
+    <div style='width:475px;'>
+        <div><$=ZmMsg.offlineDescription$></div>
+        <div class='horizSep'></div>
+        <div class='ZmOfflineItem'>
+            <table role="presentation" class='ZRadioButtonTable'><tr>
+                <td><input id='${id}_ENABLE_OFFLINE_RADIO' type=radio name='${id}_OFFLINE_SETTING'
+                    <$ if (data.isWebClientOfflineSupported) { $>
+                        checked
+                    <$ } $> ></td>
+                <td><label for='${id}_ENABLE_OFFLINE_RADIO' class='Text'><$=ZmMsg.enableOffline$></label></td>
+            </tr></table>
+            <div class='ZmOfflineDetails'><$=ZmMsg.enableOfflineDetails$></div>
+        </div>
+        <div class='ZmOfflineItem'>
+            <table role="presentation" class='ZRadioButtonTable'><tr>
+                <td><input id='${id}_DISABLE_OFFLINE_RADIO' type=radio name='${id}_OFFLINE_SETTING'
+                    <$ if (!data.isWebClientOfflineSupported) { $>
+                        checked
+                    <$ } $> ></td>
+                <td><label for='${id}_DISABLE_OFFLINE_RADIO' class='Text'><$=ZmMsg.disableOffline$></label></td>
+            <tr></table>
+            <div class='ZmOfflineDetails'><$=ZmMsg.disableOfflineDetails$></div>
+        </div>
+    </div>
 </template>
 
 <template id='prefs.Pages#SocialfoxSettings'>
