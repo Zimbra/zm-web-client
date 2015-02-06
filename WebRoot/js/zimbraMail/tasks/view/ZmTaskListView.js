@@ -127,6 +127,10 @@ ZmTaskListView._NEW_TASK_ROW_ID = "_newTaskBannerId";
 
 // Public Methods
 
+ZmTaskListView.prototype.getNewTaskRowId = function() {
+	  return this._htmlElId + ZmTaskListView._NEW_TASK_ROW_ID;
+};
+
 
 ZmTaskListView.prototype.setSize =
 function(width, height) {
@@ -253,7 +257,7 @@ function(sechdr) {
 };
 
 ZmTaskListView.prototype.setTaskInputVisible = function(visible) {
-    var el = document.getElementById(ZmTaskListView._NEW_TASK_ROW_ID);
+    var el = document.getElementById(this.getNewTaskRowId());
     if (el) {
         Dwt.setVisible(el, visible);
     }
@@ -378,7 +382,7 @@ function(list, noResultsOk, doAdd) {
 
 	// add custom row to allow user to quickly enter tasks from w/in listview
 	div = document.createElement("DIV");
-	div.id = ZmTaskListView._NEW_TASK_ROW_ID;
+	div.id = this.getNewTaskRowId();
 
 	htmlArr = [];
 	var idx = 0;
@@ -411,8 +415,9 @@ ZmTaskListView.prototype._resetListView =
 function() {
 	// explicitly remove each child (setting innerHTML causes mem leak)
 	var cDiv;
+	var newTaskRowId = this.getNewTaskRowId();
 	while (this._parentEl.hasChildNodes()) {
-		if (this._parentEl.lastChild.id == "_newTaskBannerId") { break; }
+		if (this._parentEl.lastChild.id === newTaskRowId) { break; }
 		cDiv = this._parentEl.removeChild(this._parentEl.lastChild);
 		this._data[cDiv.id] = null;
 	}
@@ -622,10 +627,15 @@ function(el) {
 
 		Dwt.setHandler(this._newTaskInputEl, DwtEvent.ONBLUR, ZmTaskListView._handleOnBlur);
 		Dwt.setHandler(this._newTaskInputEl, DwtEvent.ONKEYPRESS, ZmTaskListView._handleKeyPress);
-		this.shell.getHtmlElement().appendChild(this._newTaskInputEl);
+
+		// The input field must be a child of the list container, otherwise it will not be shown/hidden properly.
+		// However, it cannot be a child of the list itself, since it should have a fixed position.
+		var parentEl = document.getElementById(this._htmlElId);
+		parentEl.appendChild(this._newTaskInputEl);
 
 		this._newTaskInputEl.style.padding  = "0px";
 		this._newTaskInputEl.style.borderWidth  = "0px";
+
 		this._resetInputSize(el);
 	} else {
         // Preserve any existing newTask text.  This will be cleared when
@@ -901,7 +911,7 @@ function(next, addSelect, kbNavEvent) {
 		var itemDiv = (this._kbAnchor)
 		? this._getSiblingElement(this._kbAnchor, next)
 		: this._parentEl.firstChild;
-		if (itemDiv && itemDiv.id == "_newTaskBannerId") {
+		if (itemDiv && itemDiv.id === this.getNewTaskRowId()) {
 			document.getElementById(this.dId).onclick();
 			return;
 		}
@@ -1010,7 +1020,12 @@ function(el) {
 		el = el || document.getElementById(this.dId);
 		if (el) {
 			var bounds = Dwt.getBounds(el);
-			Dwt.setBounds(this._newTaskInputEl, bounds.x, bounds.y, bounds.width, bounds.height);
+			// Get the container location.  Dwt.getBounds does not work - the container is positioned absolute with
+			// no top/left specified.
+			var taskListContainerEl = this.getHtmlElement();
+			var taskListLocationPt = Dwt.toWindow(taskListContainerEl, 0, 0, null, null);
+			// Offset the input field over the 'new Task' text, inside the container.
+			Dwt.setBounds(this._newTaskInputEl, bounds.x - taskListLocationPt.x, bounds.y - taskListLocationPt.y, bounds.width, bounds.height);
 		}
 	}
 };

@@ -195,7 +195,8 @@ function(results, folderId) {
 		DBG.timePt("getting tree controller", true);
 	}
 
-    this.getListView().setTaskInputVisible(folderId != ZmOrganizer.ID_TRASH);
+	var origin = results && results.search && results.search.origin;
+	this.getListView().setTaskInputVisible((folderId != ZmOrganizer.ID_TRASH) && (origin !== "Search") &&  (origin !== "SearchResults"));
 };
 
 ZmTaskListController.prototype.getCurrentView = 
