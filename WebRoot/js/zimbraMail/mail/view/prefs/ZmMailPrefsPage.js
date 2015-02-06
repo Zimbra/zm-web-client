@@ -185,11 +185,6 @@ function() {
 		Dwt.setHandler(this._endDateField, DwtEvent.ONBLUR, dateFieldListener);
 
 		this._durationCheckbox = this.getFormObject(ZmSetting.VACATION_DURATION_ENABLED);
-        this._extMsgCheckbox = this.getFormObject(ZmSetting.VACATION_EXTERNAL_MSG_ENABLED);
-		if (this._extMsgCheckbox._textEl) {
-			this._extMsgCheckbox._textEl.style.paddingRight = "3px";
-		}
-
         this._allDayCheckbox = this.getFormObject(ZmSetting.VACATION_DURATION_ALL_DAY);
         // Base initial _allDayCheckbox.checked on whether the start is Midnight and end
         // is 23:59:59 (which fortunately cannot be directly specified by the user).
@@ -429,8 +424,7 @@ function(startDate, endDate, endModified) {
 ZmMailPrefsPage.prototype._setupCheckbox =
 function(id, setup, value) {
 	var cbox = ZmPreferencesPage.prototype._setupCheckbox.apply(this, arguments);
-	if (id == ZmSetting.VACATION_EXTERNAL_MSG_ENABLED ||
-        id == ZmSetting.VACATION_CALENDAR_ENABLED ||
+	if (id == ZmSetting.VACATION_CALENDAR_ENABLED ||
         id == ZmSetting.VACATION_DURATION_ENABLED ||
         id == ZmSetting.VACATION_DURATION_ALL_DAY)
 	{
@@ -486,7 +480,7 @@ ZmMailPrefsPage.prototype._handleEnableVacationMsg =
 function(cbox, noDuration, id, evt) {
 	var textarea = this.getFormObject(ZmSetting.VACATION_MSG);
     var extTextarea = this.getFormObject(ZmSetting.VACATION_EXTERNAL_MSG);
-    var externalTypeSelect = this.getFormObject(ZmSetting.VACATION_EXTERNAL_TYPE);
+    var externalTypeSelect = this.getFormObject(ZmSetting.VACATION_EXTERNAL_SUPPRESS);
 	if (textarea) {
         if (id == ZmSetting.VACATION_DURATION_ALL_DAY) {
             this._enableDateTimeControls(true);
@@ -497,13 +491,11 @@ function(cbox, noDuration, id, evt) {
             calCheckBox.setEnabled(cbox.isSelected());
             var calendarType = this.getFormObject(ZmSetting.VACATION_CALENDAR_TYPE);
             calendarType.setEnabled(calCheckBox.isSelected() && cbox.isSelected());
-		}else if(id == ZmSetting.VACATION_EXTERNAL_MSG_ENABLED){
-            externalTypeSelect.setEnabled(cbox.isSelected());
-            extTextarea.setEnabled(cbox.isSelected());
-        }else if(id == ZmSetting.VACATION_CALENDAR_ENABLED){
+		}else if(id == ZmSetting.VACATION_CALENDAR_ENABLED){
             var calendarType = this.getFormObject(ZmSetting.VACATION_CALENDAR_TYPE);
             calendarType.setEnabled(cbox.isSelected());
          }else {
+
             // MESSAGE_ENABLED, main On/Off switch
 			var enabled = cbox.getSelectedValue()=="true";
 			textarea.setEnabled(enabled);
@@ -518,13 +510,8 @@ function(cbox, noDuration, id, evt) {
 
             var calendarType = this.getFormObject(ZmSetting.VACATION_CALENDAR_TYPE);
             calendarType.setEnabled(calCheckBox.isSelected() && this._durationCheckbox.isSelected() && enabled);
-
-            this._extMsgCheckbox.setEnabled(enabled);
-            var externalEnabled = this._extMsgCheckbox.isSelected() && enabled;
-
-            externalTypeSelect.setEnabled(externalEnabled);
-            extTextarea.setEnabled(externalEnabled);
-
+            externalTypeSelect.setEnabled(enabled);
+            extTextarea.setEnabled(enabled);
             this._allDayCheckbox.setEnabled(enabled && this._durationCheckbox.isSelected());
             this._enableDateTimeControls(enabled && this._durationCheckbox.isSelected());
 		}

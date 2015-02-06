@@ -423,9 +423,18 @@ ZmPrefView.prototype._checkSection = function(section, viewPage, dirtyCheck, noV
 			comparableValue = value.substr(0, 8);
 			comparableOrigValue = origValue.substr(0, 8);
 		}
+    /**
+        In OOO vacation external select, first three options have same value i.e false, so we do
+                    comparableValue = !comparableOrigValue;
+         so that it enters the inner "_prefChanged" function and from there we add pref to list, depending upon which
+         option is selected and it maps to which pref.  Both comparableValue and comparableOrigValue are local variables
+         to this function, so no issues .
+     */
+        if (id === "VACATION_EXTERNAL_SUPPRESS") {
+            comparableValue = !comparableOrigValue;
+        }
 
-
-		if (this._prefChanged(pref.dataType, comparableOrigValue, comparableValue)) {
+            if (this._prefChanged(pref.dataType, comparableOrigValue, comparableValue)) {
 			var isValid = true;
 			if (!noValidation) {
 				var maxLength = setup ? setup.maxLength : null;
@@ -439,7 +448,7 @@ ZmPrefView.prototype._checkSection = function(section, viewPage, dirtyCheck, noV
 			if (isValid) {
                 if (!dirtyCheck && isSaveCommand) {
                     if (setup.setFunction) {
-                        setup.setFunction(pref, value, list);
+                        setup.setFunction(pref, value, list, viewPage);
                     } else {
                         pref.setValue(value);
                         if (pref.name) {
