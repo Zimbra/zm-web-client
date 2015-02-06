@@ -101,12 +101,6 @@ ZmButtonToolBar = function(params) {
 
 	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
 
-	var text = this.getButton(ZmOperation.TEXT);
-	if (text) {
-		text.addClassName("itemCountText");
-	}
-
-
 	if (secondaryOpList && secondaryOpList.length) {
 		var actionsButton =  this._secondaryButton = this.getButton(ZmOperation.ACTIONS_MENU);
 
@@ -169,7 +163,7 @@ function(id, params) {
 			var context = this._toolbarType ? [this._context, this._toolbarType].join("_") : this._context;
 			id = [ZmId.WIDGET, AjxStringUtil.toMixed(context, "_", true), AjxStringUtil.toMixed(id, "_")].join("");
 		}
-		params.textClassName = params.textClassName || "ZWidgetTitle";
+		params.textClassName = params.textClassName || "DwtText ZWidgetTitle";
 		b = new DwtText({parent:this, className:params.textClassName, id:id});
 	} else {
 		params.id = params.domId || (this._context ? ZmId.getButtonId(this._context, id, this._toolbarType) : null);
