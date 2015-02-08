@@ -342,7 +342,12 @@ function() {
 	var inputFieldId = this._htmlElId + "_inputField";
 	var inputField = document.getElementById(inputFieldId);
 	if (inputField) {
-		this._searchField = new DwtInputField({parent:this, hint:ZmMsg.searchInput, inputId:ZmId.SEARCH_INPUTFIELD});
+		this._searchField = new DwtInputField({
+			parent:     this,
+			hint:       ZmMsg.searchInput,
+			label:      ZmMsg.searchInput,
+			inputId:    ZmId.SEARCH_INPUTFIELD
+		});
 		var inputEl = this._searchField.getInputElement();
 		inputEl.className = "search_input";
 		this._searchField.reparentHtmlElement(inputFieldId);
@@ -418,7 +423,12 @@ function() {
 			this._createCustomSearchMenuItem(menu, csmi.icon, csmi.text, csmi.listener);
 		}
 	}
-	var params = {parent:menu, enabled:true, radioGroupId:0};
+	var params = {
+		parent:         menu,
+		enabled:        true,
+		radioGroupId:   0,
+		style:          DwtMenuItem.RADIO_STYLE
+	};
 	for (var i = 0; i < ZmSearchToolBar.MENU_ITEMS.length; i++) {
 		var id = ZmSearchToolBar.MENU_ITEMS[i];
 
@@ -431,6 +441,10 @@ function() {
 		var setting = ZmSearchToolBar.SETTING[id];
 		if (setting && !appCtxt.get(setting)) { continue; }
 
+		var isCheckStyle = (id == ZmId.SEARCH_SHARED || id == ZmId.SEARCH_ALL_ACCOUNTS);
+		if (isCheckStyle) {
+			params.style = DwtMenuItem.CHECK_STYLE;
+		}
 		params.style = (id == ZmId.SEARCH_SHARED || id == ZmId.SEARCH_ALL_ACCOUNTS)
 			? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
 		params.imageInfo = ZmSearchToolBar.ICON[id];
@@ -438,6 +452,9 @@ function() {
 		params.id = ZmSearchToolBar.ID[id];
 		mi = DwtMenuItem.create(params);
 		mi.setData(ZmOperation.MENUITEM_ID, id);
+		if (!isCheckStyle) {
+			mi.setAttribute('aria-label', ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]]);
+		}
 	}
 	
 	this._checkSharedMenuItem();

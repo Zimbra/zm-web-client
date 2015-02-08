@@ -910,8 +910,9 @@ function(ev, id, noFocus) {
 
 	// set button tooltip
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
-	if (id != ZmId.SEARCH_SHARED) { 
+	if (id != ZmId.SEARCH_SHARED && id != ZmId.SEARCH_ALL_ACCOUNTS) {
 		btn.setToolTipContent(tooltip);
+		btn.setAttribute('aria-label', tooltip);
 	}
 	
 	if (!noFocus) {

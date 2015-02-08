@@ -2300,6 +2300,7 @@ function(parent, parentElement, adminUrl) {
 	button.setSize(Dwt.DEFAULT);
 	button.setAlign(DwtLabel.ALIGN_LEFT);
 	button.setText(ZmMsg.help);
+	button.setAttribute('aria-label', ZmMsg.userActions);
 	var menu = new ZmPopupMenu(button);
 
 	var helpListener = new AjxListener(this, this._helpListener);
