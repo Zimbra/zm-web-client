@@ -373,8 +373,8 @@ function(calItem) {
 
 ZmApptView.prototype._getSubs =
 function(calItem) {
-	var subject = calItem.getName();
-	var location = calItem.getAttendeesText(ZmCalBaseItem.LOCATION, true) || calItem.location;
+	var subject   = calItem.getName();
+	var location  = calItem.location;
 	var equipment = calItem.getAttendeesText(ZmCalBaseItem.EQUIPMENT, true);
 	var isException = calItem._orig.isException;
 	var dateStr = this._getTimeString(calItem);
