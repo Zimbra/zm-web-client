@@ -312,7 +312,7 @@ function(results, callback, searchResultsController) {
 
 ZmTasksApp.prototype._handleLoadShowSearchResults =
 function(results, callback, searchResultsController) {
-	var folderId = results && results.search && results.search.isSimple() && results.search.folderId;
+	var folderId = results && results.search && results.search.isSimple() && results.search.folderId || null;
 	var sessionId = searchResultsController ? searchResultsController.getCurrentViewId() : ZmApp.MAIN_SESSION;
 	var controller = AjxDispatcher.run("GetTaskListController", sessionId, searchResultsController);
 	controller.show(results, folderId);

@@ -14,7 +14,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 --%>
-<%@ tag body-content="empty" import="java.util.Date,java.text.*" %>
+<%@ tag body-content="empty" import="java.util.Date,java.text.*,com.zimbra.common.util.DateUtil" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -363,20 +363,19 @@
 </tr>
 </table>
 <c:if test="${mailbox.features.pop3Enabled}">
-	<c:set var="pop3DownloadSince" value="${mailbox.prefs.pop3DownloadSince}" />
-	<%	PageContext pageContext = (PageContext)jspContext;
+	<c:set var="pop3DownloadSince" value="${mailbox.prefs.pop3DownloadSince}"/>
+    <%	PageContext pageContext = (PageContext)jspContext;
 
-		// NOTE: We need to adjust to UTC for formatting purposes
-		Date now = new Date();
-		now.setHours(now.getHours() - now.getTimezoneOffset());
+        // NOTE: We need to adjust to UTC for formatting purposes
+		Date dateObj = new Date();
+		String now = DateUtil.toGeneralizedTime(dateObj);
 		pageContext.setAttribute("now", now, PageContext.PAGE_SCOPE);
 
 		// NOTE: We need to adjust from UTC for formatting purposes
 		Date current = null;
 		String pop3DownloadSince = (String)pageContext.findAttribute("pop3DownloadSince");
 		if (pop3DownloadSince != null && pop3DownloadSince.length() > 0) {
-			current = new SimpleDateFormat("yyyyMMddHHmmss'Z'").parse(pop3DownloadSince);
-			current.setHours(current.getHours() + current.getTimezoneOffset());
+		    current = DateUtil.parseGeneralizedTime(pop3DownloadSince);
 		}
 		pageContext.setAttribute("current", current, PageContext.PAGE_SCOPE);
 	%>
@@ -403,7 +402,7 @@
 				</tr>
 				<tr>
 					<td><input id="pop3DownloadFromNow" name='zimbraPrefPop3DownloadSince' type="radio"
-							   value="<fmt:formatDate value="${now}" pattern="yyyyMMddHHmmss'Z'" />">
+							   value="${now}" ${not empty pop3DownloadSince ? "checked" : ""}>
 					</td>
 					<td style='padding-left:5px' nowrap>
 						<label for="pop3DownloadFromNow"><fmt:message key="optionsAccessPopDownloadFromNow" /></label>

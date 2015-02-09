@@ -244,6 +244,7 @@ function(settings) {
 	settings.registerSetting("SHOW_BCC",			            {type:ZmSetting.T_PREF, defaultValue:false});
     settings.registerSetting("SHOW_FRAGMENTS",					{name:"zimbraPrefShowFragments", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("SHOW_MAIL_CONFIRM",				{name:"zimbraFeatureConfirmationPageEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("SHOW_CHATS_FOLDER",				{name:"zimbraPrefShowChatsFolderInMail", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SIGNATURE",						{name:"zimbraPrefMailSignature", type:ZmSetting.T_PREF});
 	settings.registerSetting("SIGNATURE_ENABLED",				{name:"zimbraPrefMailSignatureEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SIGNATURE_STYLE",					{name:"zimbraPrefMailSignatureStyle", type:ZmSetting.T_PREF, defaultValue:ZmSetting.SIG_OUTLOOK});
@@ -255,6 +256,7 @@ function(settings) {
     settings.registerSetting("VACATION_FROM_TIME",				{type:ZmSetting.T_PREF, defaultValue:""});
 	settings.registerSetting("VACATION_MSG",					{name:"zimbraPrefOutOfOfficeReply", type:ZmSetting.T_PREF, defaultValue:""});
     settings.registerSetting("VACATION_EXTERNAL_TYPE",			{name:"zimbraPrefExternalSendersType", type:ZmSetting.T_PREF, defaultValue:"ALL"});
+    settings.registerSetting("VACATION_EXTERNAL_SUPPRESS",	    {name:"zimbraPrefOutOfOfficeSuppressExternalReply", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
     settings.registerSetting("VACATION_CALENDAR_TYPE",			{name:"zimbraPrefOutOfOfficeFreeBusyStatus", type:ZmSetting.T_PREF, defaultValue:"OUTOFOFFICE"});
 	settings.registerSetting("VACATION_CALENDAR_APPT_ID",		{name:"zimbraPrefOutOfOfficeCalApptID", type:ZmSetting.T_METADATA, defaultValue:"-1", isImplicit:true, section:ZmSetting.M_IMPLICIT});
     settings.registerSetting("VACATION_CALENDAR_ENABLED",		{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -280,7 +282,7 @@ function() {
 			icon: "MailApp",
 			templateId: "prefs.Pages#Mail",
 			priority: 10,
-			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED) || appCtxt.get(ZmSetting.ADMIN_DELEGATED),
+			precondition: ZmSetting.MAIL_PREFERENCES_ENABLED,
 			prefs: [
 				ZmSetting.AUTO_READ_RECEIPT_ENABLED,
 				ZmSetting.DEDUPE_MSG_TO_SELF,
@@ -327,6 +329,7 @@ function() {
                 ZmSetting.VACATION_EXTERNAL_MSG_ENABLED,
 				ZmSetting.VACATION_EXTERNAL_MSG,
                 ZmSetting.VACATION_EXTERNAL_TYPE,
+                ZmSetting.VACATION_EXTERNAL_SUPPRESS,
                 ZmSetting.VACATION_CALENDAR_TYPE,
 				ZmSetting.VACATION_UNTIL,
                 ZmSetting.VACATION_UNTIL_TIME,
@@ -687,12 +690,19 @@ function() {
         inputId:            ["VACATION_MSG_DISABLED", "VACATION_MSG_ENABLED"]
 	});
 
-    ZmPref.registerPref("VACATION_EXTERNAL_TYPE", {
-		displayName:		ZmMsg.vacationExternalType,
-		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg.vacationExteralAll,ZmMsg.vacationExternalAllExceptAB],
-		options:			 ["ALL","ALLNOTINAB"]
-	});
+    ZmPref.registerPref("VACATION_EXTERNAL_TYPE", {  // The inside content been left empty, as we just need to register this pref with settings.
+    });                                              // Depending upon the option the user has chosen in OOO vacation external select dropdown, on saving we add the relevant pref to the list that constructs the request, refer ZmPref.addOOOVacationExternalPrefToList
+
+    ZmPref.registerPref("VACATION_EXTERNAL_SUPPRESS", {
+        displayContainer:   ZmPref.TYPE_SELECT,
+        displayOptions:     [ZmMsg.vacationExternalAllStandard, ZmMsg.vacationExternalAllCustom, ZmMsg.vacationExternalAllExceptABCustom, ZmMsg.vacationExternalReplySuppress],
+        options:            [false, false, false, true],
+        initFunction:       ZmPref.initOOOVacationExternalSuppress,
+        setFunction:        ZmPref.addOOOVacationExternalPrefOnSave,
+        changeFunction:     ZmPref.handleOOOVacationExternalOptionChange,
+        validationFunction:	ZmMailApp.validateExternalVacationMsg,
+        errorMessage:		ZmMsg.missingAwayMessage
+    });
 
     ZmPref.registerPref("VACATION_CALENDAR_TYPE", {
 		displayName:		ZmMsg.vacationExternalType,
@@ -705,24 +715,17 @@ function() {
 		displayName:		ZmMsg.externalAwayMessage,
 		displayContainer:	ZmPref.TYPE_TEXTAREA,
 		maxLength:			ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE],
-		errorMessage:       AjxMessageFormat.format(ZmMsg.invalidAwayMessage, ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE]),
-		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
-		validationFunction:	ZmMailApp.validateExternalVacationMsg
+        precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
 	});
 
-	ZmPref.registerPref("VACATION_EXTERNAL_MSG_ENABLED", {
-		displayName:		ZmMsg.externalAwayMessageEnabled,
-		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
-		validationFunction:	ZmMailApp.validateExternalVacationMsgEnabled,
-		errorMessage:		ZmMsg.missingAwayMessage
-	});
+	ZmPref.registerPref("VACATION_EXTERNAL_MSG_ENABLED", {  // The content been left empty, as we just need to register this pref with settings.
+    });                                                     // Depending upon the option the user has chosen in OOO external select dropdown, on saving we add the relevant pref to the list that constructs the request, refer ZmPref.addOOOVacationExternalPrefToList
 
 	AjxDispatcher.require("Alert");
 	var notifyText = ZmDesktopAlert.getInstance().getDisplayText();
 	ZmPref.registerPref("MAIL_NOTIFY_TOASTER", {
 		displayFunc:		function() { return notifyText; },
-		precondition:		function() { return !!notifyText; },
+		precondition:		!!notifyText,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
@@ -783,7 +786,7 @@ function(checked) {
  * combination of an empty away msg and a checked box for "send away message". Since a
  * pref is validated only if it changes, we have to have validation functions for both
  * prefs.
- * 
+ *
  * @private
  */
 ZmMailApp.validateVacationMsg =
@@ -805,32 +808,41 @@ function(awayMsg) {
  */
 ZmMailApp.validateVacationMsgEnabled =
 function(checked) {
-	if (!checked) { return true; }
-	var section = ZmPref.getPrefSectionWithPref(ZmSetting.VACATION_MSG);
-	if (!section) { return false; }
-	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
-	var input = view.getView(section.id).getFormObject(ZmSetting.VACATION_MSG);
-	if (!input) { return false; }
-	var awayMsg = input.getValue();
-	return (awayMsg && (awayMsg.length > 0));
+    if (!checked) { return true; }
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.VACATION_MSG);
+    if (!section) { return false; }
+    var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
+    var input = view.getView(section.id).getFormObject(ZmSetting.VACATION_MSG);
+    if (!input) { return false; }
+    var awayMsg = input.getValue();
+    return (awayMsg && (awayMsg.length > 0));
 };
 
 /**
- * Make sure the server won't be sending out a blank away msg for the external user. Check for a
- * combination of an empty away msg and a checked box for "send away message". Since a
- * pref is validated only if it changes, we have to have validation functions for both
- * prefs.
- *
+ * Make sure the server won't be sending out a blank away msg for the external user.
+ * We are ignoring this validation in two cases :
+ * a) when 'Do not send auto replies' radio button is selected
+ * b) in OOO vacation external sender type, first and last option is selected, as in this case the
+ * OOO external message container is not visible
  * @private
  */
 ZmMailApp.validateExternalVacationMsg =
-function(awayMsg) {
-	if (awayMsg && (awayMsg.length > 0)) { return true; }
-	var section = ZmPref.getPrefSectionWithPref(ZmSetting.VACATION_EXTERNAL_MSG_ENABLED);
-	if (!section) { return false; }
-	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
-	var input = view.getView(section.id).getFormObject(ZmSetting.VACATION_EXTERNAL_MSG_ENABLED);
-	return (input && !input.isSelected());
+function() {
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.VACATION_MSG_ENABLED);
+    if (!section) { return false; }
+    var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView().getView(section.id);
+    var cbox = view.getFormObject(ZmSetting.VACATION_MSG_ENABLED);
+    if (cbox && cbox.getSelectedValue()==="false"){ // 'Do not send auto replies' radio button is selected ..
+        return true;
+    }
+    var externalSelect =  view.getFormObject(ZmSetting.VACATION_EXTERNAL_SUPPRESS);
+    var selectOptionValue = externalSelect.getText();
+    if (selectOptionValue.indexOf(ZmMsg.vacationExternalAllStandard) >=0 || selectOptionValue.indexOf(ZmMsg.vacationExternalReplySuppress) >=0) {
+        return true;
+    }
+    var externalTxtArea = view.getFormObject(ZmSetting.VACATION_EXTERNAL_MSG);
+    var awayMsg = externalTxtArea.getValue();
+    return (awayMsg && (awayMsg.length > 0));
 };
 
 /**
@@ -838,14 +850,14 @@ function(awayMsg) {
  */
 ZmMailApp.validateExternalVacationMsgEnabled =
 function(checked) {
-	if (!checked) { return true; }
-	var section = ZmPref.getPrefSectionWithPref(ZmSetting.VACATION_EXTERNAL_MSG);
-	if (!section) { return false; }
-	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
-	var input = view.getView(section.id).getFormObject(ZmSetting.VACATION_EXTERNAL_MSG);
-	if (!input) { return false; }
-	var awayMsg = input.getValue();
-	return (awayMsg && (awayMsg.length > 0));
+    if (!checked) { return true; }
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.VACATION_EXTERNAL_MSG);
+    if (!section) { return false; }
+    var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
+    var input = view.getView(section.id).getFormObject(ZmSetting.VACATION_EXTERNAL_MSG);
+    if (!input) { return false; }
+    var awayMsg = input.getValue();
+    return (awayMsg && (awayMsg.length > 0));
 };
 
 /**
@@ -863,7 +875,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_DELETE_CONV, {textKey:"delConv", image:"DeleteConversation"}, ZmSetting.CONVERSATIONS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_DELETE_MSG, {textKey:"delMsg", image:"DeleteMessage"});
 	ZmOperation.registerOp(ZmId.OP_DELETE_MENU, {textKey:"del", image:"Delete", tooltipKey:"deleteTooltip"});
-	ZmOperation.registerOp(ZmId.OP_DETACH_COMPOSE, {tooltipKey:"detachTooltip", image:"OpenInNewWindow"});
+	ZmOperation.registerOp(ZmId.OP_DETACH_COMPOSE, {tooltipKey:"detachComposeTooltip", image:"OpenInNewWindow"});
 	ZmOperation.registerOp(ZmId.OP_DRAFT, null, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_EDIT_FILTER_RULE, {textKey:"filterEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORWARD, {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward", shortcut:ZmKeyMap.FORWARD, textPrecedence:46});
@@ -897,7 +909,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_REPLY_ALL, {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll", shortcut:ZmKeyMap.REPLY_ALL, textPrecedence:48});
 	ZmOperation.registerOp(ZmId.OP_REQUEST_READ_RECEIPT, {textKey:"requestReadReceipt", image:"ReadMessage"});
 	ZmOperation.registerOp(ZmId.OP_RESET, {textKey:"reset", image:"Refresh", tooltipKey: "refreshFilters"});
-	ZmOperation.registerOp(ZmId.OP_RUN_FILTER_RULE, {textKey:"filterRun", image:"SwitchFormat"}, ZmSetting.FILTERS_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_RUN_FILTER_RULE, {textKey:"filterRun", image:"SwitchFormat"}, [ ZmSetting.MAIL_ENABLED, ZmSetting.FILTERS_ENABLED ]);
 	ZmOperation.registerOp(ZmId.OP_SAVE_DRAFT, {textKey:"saveDraft", tooltipKey:"saveDraftTooltip", image:"DraftFolder", shortcut:ZmKeyMap.SAVE}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SEND_MENU, {textKey:"send", tooltipKey:"sendTooltip", image:"Send"}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SEND_LATER, {textKey:"sendLater", tooltipKey:"sendLaterTooltip", image:"SendLater"}, ZmSetting.SAVE_DRAFT_ENABLED);
@@ -2414,9 +2426,10 @@ ZmMailApp.FOLDERS_TO_OMIT = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
 // viewing or replying a conv; if we're in one of those, we still show its messages
 ZmMailApp.getFoldersToOmit = function(search) {
 
+	search = search || appCtxt.getCurrentSearch();
+
 	var folders = ZmMailApp.FOLDERS_TO_OMIT,
 		omit = [],
-		search = search || appCtxt.getCurrentSearch(),
 		curFolderId = search && search.folderId;
 
 	var isUserInitiatedSearch = search && search.userInitiated;
@@ -2429,3 +2442,12 @@ ZmMailApp.getFoldersToOmit = function(search) {
 	return AjxUtil.arrayAsHash(omit);
 };
 
+/*
+returns the folders to omit in case of reply/reply-all/forward - this includes DRAFTS always in addition to the others as returned by ZmMailApp.getFoldersToOmit
+(the others depend on current folder, but DRAFTS should always be ignored when replying/forwarding, even under Drafts folder)
+ */
+ZmMailApp.getReplyFoldersToOmit = function(search) {
+	var omit = ZmMailApp.getFoldersToOmit(search);
+	omit[ZmFolder.ID_DRAFTS] = true;
+	return omit;
+};

@@ -451,7 +451,10 @@ function() {
     this.setView(this._baseContainerView);
 };
 
-ZmFolderPropsDialog.prototype._initializeTabGroup = function(){
-	this._tabGroup.addMember(this._sharesGroup.getTabGroupMember(), 0);
+ZmFolderPropsDialog.prototype._initializeTabGroup = function() {
+
+	if (this._sharesGroup) {
+		this._tabGroup.addMember(this._sharesGroup.getTabGroupMember(), 0);
+	}
 	this._tabGroup.addMember(this._tabContainer.getTabGroupMember(), 0);
 };

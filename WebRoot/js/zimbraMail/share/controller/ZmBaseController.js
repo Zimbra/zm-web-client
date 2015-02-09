@@ -322,6 +322,11 @@ function(view, className) {
 	};
 	var tb = this._toolbar[view] = new ZmButtonToolBar(tbParams);
 
+	var text = tb.getButton(ZmOperation.TEXT);
+	if (text) {
+		text.addClassName("itemCountText");
+	}
+
 	var button;
 	for (var i = 0; i < tb.opList.length; i++) {
 		button = tb.opList[i];

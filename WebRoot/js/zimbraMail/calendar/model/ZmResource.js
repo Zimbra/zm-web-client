@@ -49,6 +49,8 @@ ZmResource.F_description		= "description";
 ZmResource.ATTR_LOCATION	= "Location";
 ZmResource.ATTR_EQUIPMENT	= "Equipment";
 
+ZmContact.initAttrVariants(ZmResource);
+
 /**
 * Creates a resource from an XML node.
 *

@@ -216,11 +216,6 @@ TD.DwtListView-ColumnActive  {
 
 /* Row styling */
 
-.Row,
-.RowDouble {
-	border-bottom-color:@darken(AppC,25)@ !important;
-}
-
 .Row {
 	height:20px;
 	height:2rem;
@@ -245,15 +240,7 @@ TD.DwtListView-ColumnActive  {
 /* Double-row styling*/
 
 .RowDouble {
-	border-top-color:transparent !important;
-	border-right-color:transparent !important;
-	border-left-color:transparent !important;
 	padding:.25em .5em;
-}
-
-.RowDouble>TABLE,
-.RowDouble .ZmRowDoubleHeader {
-	border-color:transparent;
 }
 
 .RowDouble .TopRow {

@@ -239,7 +239,7 @@ function(loc) {
 	this._privacySelect.setSelectedValue((defaultPrivacyOption == ZmSetting.CAL_VISIBILITY_PRIV) ?  "PRI" : "PUB");
 
     Dwt.setVisible(this._suggestions, false);
-    Dwt.setVisible(this._suggestLocation, appCtxt.get(ZmSetting.GAL_ENABLED));
+    Dwt.setVisible(this._suggestLocation, false);
 
 	DBG.timePt("ZmQuickAddDialog#popup", true);
 };
@@ -360,10 +360,6 @@ function() {
         this._reminderDeviceEmailCheckbox = new DwtCheckbox({parent: this});
         this._reminderDeviceEmailCheckbox.replaceElement(document.getElementById(this._htmlElId + "_reminderDeviceEmailCheckbox"));
         this._reminderDeviceEmailCheckbox.setText(ZmMsg.deviceEmail);
-        this._reminderConfigure = new DwtText({parent:this,className:"FakeAnchor"});
-        this._reminderConfigure.setText(ZmMsg.remindersConfigure);
-        this._reminderConfigure.getHtmlElement().onclick = AjxCallback.simpleClosure(this._handleConfigureClick, this);
-        this._reminderConfigure.replaceElement(document.getElementById(this._htmlElId+"_reminderConfigure"));
         this._setEmailReminderControls();
 
         var settings = appCtxt.getSettings();
@@ -679,7 +675,6 @@ function() {
     this._reminderDeviceEmailCheckbox.setToolTipContent(deviceEmailEnabled ? deviceEmail : null);
 
     var configureEnabled = !emailEnabled && !deviceEmailEnabled;
-    this._reminderConfigure.setVisible(configureEnabled);
     this._reminderEmailCheckbox.setVisible(!configureEnabled);
     this._reminderDeviceEmailCheckbox.setVisible((!configureEnabled && appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)));
 };

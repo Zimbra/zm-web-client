@@ -27,7 +27,6 @@
 		<css>
 			<file>../_base/base3/skin.css</file>
 			<file>skin.css</file>
-			<file>editor.css</file>
 		</css>
     </common>
     <advanced>

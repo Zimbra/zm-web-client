@@ -1150,7 +1150,7 @@ function(field, itemIdx, isOutboundFolder) {
  */
 ZmListView.prototype._getToolTip =
 function(params) {
-    var tooltip, field = params.field, item = params.item;
+    var tooltip, field = params.field, item = params.item, div = params.div;
 	if (field == ZmItem.F_FLAG) {
 		return null; //no tooltip for the flag
     } else if (field == ZmItem.F_PRIORITY) {
@@ -1164,8 +1164,8 @@ function(params) {
     } else if (field == ZmItem.F_ATTACHMENT) {
         // disable att tooltip for now, we only get att info once msg is loaded
         // tooltip = this._getAttachmentToolTip(item);
-    } else if (field == ZmItem.F_DATE) {
-        tooltip = this._getDateToolTip(item, params.div);
+    } else if (div && (field == ZmItem.F_DATE)) {
+        tooltip = this._getDateToolTip(item, div);
     }
     return tooltip;
 };
@@ -1431,7 +1431,7 @@ function() {
 	}
 	var value = fields.join(ZmListView.COL_JOIN);
 	value = (value == this._defaultCols) ? "" : value;
-    if (!appCtxt.isExternalAccount()) {
+    if (!appCtxt.isExternalAccount() && !this._controller.isSearchResults) {
 	    appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, appCtxt.getViewTypeFromId(this.view));
     }
 

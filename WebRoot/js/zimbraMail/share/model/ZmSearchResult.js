@@ -53,12 +53,12 @@ function(type) {
 	type = type || this.type;
 	if (!this._results) {
 		// probably got an exception - return an empty list
-		return ZmItem.RESULTS_LIST[type](this.search);
+		return this._getResultsList(type);
 	} else if (this.search.idsOnly) {
 		return this._results;
 	} else {
 		// if we don't have results for the requested type, the search was probably for the wrong type
-		return this._results[type] ? this._results[type] : type && ZmItem.RESULTS_LIST[type](this.search);
+		return this._results[type] ? this._results[type] : type && this._getResultsList(type);
 	}
 };
 
@@ -102,7 +102,7 @@ function(respEl) {
 		if (data) {
 			if (!this._results[currentType]) {
 				// create list as needed - may invoke package load
-				this._results[currentType] = ZmItem.RESULTS_LIST[currentType](this.search);
+				this._results[currentType] =  this._getResultsList(currentType);
 			}
 			for (var j = 0; j < data.length; j++) {
 				this._results[currentType].addFromDom(data[j]);
@@ -162,7 +162,7 @@ function(respEl) {
 				count += data.length;
 				if (!this._results[type]) {
 					// create list as needed - may invoke package load
-					this._results[type] = ZmItem.RESULTS_LIST[type](this.search);
+					this._results[type] = this._getResultsList(type);
 				}
 				for (var j = 0; j < data.length; j++) {
 					var item = data[j];
@@ -179,7 +179,7 @@ function(respEl) {
 		}
 	}
 	if (!count && defaultType) {
-		this._results[defaultType] = ZmItem.RESULTS_LIST[defaultType](this.search);
+		this._results[defaultType] = this._getResultsList(defaultType);
 	}
 	if ((isGalSearch || this.search.isGalAutocompleteSearch) && this._results[ZmItem.CONTACT]) {
 		this._results[ZmItem.CONTACT].setIsGal(true);
@@ -208,3 +208,22 @@ function(a, b) {
 	var bf = b.getFileAs && b.getFileAs().toLowerCase();
 	return af < bf ? -1 : (af > bf ? 1 : 0);
 };
+
+ZmSearchResult.prototype._getResultsList =
+function(type) {
+
+	if (type && typeof(ZmItem.RESULTS_LIST[type]) === "function") {
+		return ZmItem.RESULTS_LIST[type](this.search);
+	} else {
+		DBG.println(
+			AjxDebug.DBG1,
+			AjxMessageFormat.format(
+				"!type || ZmItem.RESULTS_LIST[type] !== function. Active app: {0}, type: {1}, searchFor: {2}.",
+				[appCtxt.getCurrentAppName(), type, this.search.searchFor]
+			)
+		);
+		return new ZmList(type, this.search);
+	}
+
+};
+

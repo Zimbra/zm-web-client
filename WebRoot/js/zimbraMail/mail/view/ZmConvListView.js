@@ -375,9 +375,8 @@ function(item, field) {
 
 ZmConvListView.prototype._getCellClass =
 function(item, field, params) {
-	return (item.type == ZmItem.CONV && field == ZmItem.F_SIZE)
-		? "Count ZmMsgListColSize"
-		: (ZmMailListView.prototype._getCellClass.apply(this, arguments));
+	var cls = ZmMailListView.prototype._getCellClass.apply(this, arguments);
+	return item.type === ZmItem.CONV && field === ZmItem.F_SIZE ? "Count " + cls : cls;
 };
 
 
@@ -618,6 +617,11 @@ function(conv) {
 	var omit = ZmMailApp.getFoldersToOmit(),
 		num = 0, id;
 
+	if (AjxUtil.arraySize(conv.msgFolder) < conv.numMsgs) {
+		//if msgFolder is empty, or does not include folders for all numMsgs message, for some reason (there are complicated cases like that), assume all messages are displayed.
+		// This should not cause too big of a problem, as when the user expands, it will load the conv with the correct msgFolder and display only the relevant messages.
+		return conv.numMsgs;
+	}
 	for (id in conv.msgFolder) {
 		if (!omit[conv.msgFolder[id]]) {
 			num++;
@@ -1080,9 +1084,11 @@ function(ev) {
 			this._addRow(div, convIndex + msgIndex + 1);
 			rowIds.push(div.id);
 		}
-		forceUpdateConvSize = true;
-		convToUpdate = conv;
-		handled = ev.handled = true;
+		if (conv) { //see bug 91083 for change prior to this "if" wrapper I add here just in case.
+			forceUpdateConvSize = true;
+			convToUpdate = conv;
+			handled = ev.handled = true;
+		}
 	}
 
 	// The sort index we're given is relative to a list of convs. We want one relative to a list view which may

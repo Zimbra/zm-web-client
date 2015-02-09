@@ -43,16 +43,24 @@
  ****/
 
  /* bug 56316 originally */
-.user_font_modern {
+.user_font_modern,
+.user_font_modern TEXTAREA,
+.user_font_modern INPUT {
 	@FontFamily-modern@
 }
-.user_font_classic {
+.user_font_classic,
+.user_font_classic TEXTAREA,
+.user_font_classic INPUT {
 	@FontFamily-classic@
 }
-.user_font_wide {
+.user_font_wide,
+.user_font_wide TEXTAREA,
+.user_font_wide INPUT {
 	@FontFamily-wide@
 }
-.user_font_system {
+.user_font_system,
+.user_font_system TEXTAREA,
+.user_font_system INPUT {
 	@FontFamily-system@
 }
 
@@ -427,29 +435,6 @@ TD.vSpace {
 
 
 
-/*
- *  New tag dialog
----UNUSED---
-.TagColorMenu {
-	background-color:white;
-	border:1px solid #CCC;
-}
-*/
-
-
-/*
- * New folder dialog
----UNUSED---
-.FolderTree {
-	background-color:white;
-	width:400px;
-	height:200px;
-	border:1px solid #999999;
-	padding:@BoxPaddingSize@ 0 0 @BoxPaddingSize@;
-}
-.FolderTree TD {padding:0;}
- */
-
 
 /*
  *  Row display and highlighting in list views
@@ -474,6 +459,10 @@ TD.vSpace {
 	@ListItemHeightDouble@
 	border-bottom-color:#CCC;  /* TODO: Color should be a property reference */
 	padding-top:3px;
+}
+
+.Row, .RowDouble {
+	@TransparentBorder@
 }
 
 .Row TABLE, .RowDouble TABLE {
@@ -545,7 +534,7 @@ TD.vSpace {
 /* .Row-matched, */
 .Row-matched-dragProxy 			{ 	@ListItemContainer-matched@		}
 
-.Row-matched TABLE, 
+.Row-matched TABLE,
 .Row-matched-drag TABLE 		{	table-layout:fixed;					}
 
 .Row-focused 					{	@ListItemContainer-focused@		}

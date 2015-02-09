@@ -63,7 +63,7 @@ ZmOperation.SETUP[ZmOperation.FILLER]	= {};	// expandable space (for right-align
 
 // preconditions for operations - no automatic checking is done, so a client
 // of this class has to check them on its own if it wants
-ZmOperation.SETTING = {};
+ZmOperation.PRECONDITION = {};
 
 // code to run after an operation has been created - typically used to create
 // a menu for a button
@@ -73,19 +73,21 @@ ZmOperation.CALLBACK = {};
  * Defines the aspects of an operation, and the ID that refers to it.
  * 
  * @param {String}	op		the name of the operation
- * @param {String}	text		the msg key for button or menu item text
- * @param {String}	tooltip	the msg key for tooltip text
- * @param {String}	image		the icon class for the button or menu item
- * @param {String}	disImage	the disabled version of image; defaults to image + "Dis"
- * @param {constant}	setting	the setting which acts as a precondition for this operation
+ * @param {hash}	params:
+ *      @param {String}	text		the msg key for button or menu item text
+ *      @param {String}	tooltip	the msg key for tooltip text
+ *      @param {String}	image		the icon class for the button or menu item
+ *      @param {String}	disImage	the disabled version of image; defaults to image + "Dis"
+ *      @param {Boolean|String|Function}    precondition (overrides setting if present)
+ * @param {constant}	precondition	must evaluate to true for this operation not to be filtered out
  * @param {AjxCallback}	callback	the callback to run after this operation has been created
  */
-ZmOperation.registerOp =
-function(op, params, setting, callback) {
+ZmOperation.registerOp = function(op, params, precondition, callback) {
+
 	ZmOperation[op] = op;
 	ZmOperation.SETUP[op] = params || {};
-	if (setting)	{ ZmOperation.SETTING[op]	= setting; }
-	if (callback)	{ ZmOperation.CALLBACK[op]	= callback; }
+	if (precondition)	{ ZmOperation.PRECONDITION[op]	= precondition; }
+	if (callback)	    { ZmOperation.CALLBACK[op]	    = callback; }
 };
 
 
@@ -122,8 +124,8 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_COPY, {textKey:"copy", image:"Copy"});
 	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", shortcut:ZmKeyMap.DEL, textPrecedence:60});
 	ZmOperation.registerOp(ZmId.OP_DELETE_WITHOUT_SHORTCUT, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", textPrecedence:60});
-	ZmOperation.registerOp(ZmId.OP_DETACH, {textKey:"detachTT", tooltipKey:"detachTT", image:"OpenInNewWindow", showImageInToolbar: true});
-    ZmOperation.registerOp(ZmId.OP_DETACH_WIN, {textKey:"detachTT", tooltipKey:"detachTT", image:"OpenInNewWindow"});
+	ZmOperation.registerOp(ZmId.OP_DETACH, {textKey:"detach", tooltipKey:"detach", image:"OpenInNewWindow", showImageInToolbar: true});
+    ZmOperation.registerOp(ZmId.OP_DETACH_WIN, {textKey:"detach", image:"OpenInNewWindow"});
 	ZmOperation.registerOp(ZmId.OP_EDIT, {textKey:"edit", tooltipKey:"editTooltip", image:"Edit", shortcut:ZmKeyMap.EDIT});
 	ZmOperation.registerOp(ZmId.OP_EDIT_AS_NEW, {textKey:"editAsNew", tooltipKey:"editTooltip", image:"Edit", shortcut:ZmKeyMap.EDIT});
 	ZmOperation.registerOp(ZmId.OP_EDIT_PROPS, {textKey:"editProperties", tooltipKey:"editPropertiesTooltip", image:"Properties"});
@@ -152,7 +154,6 @@ function() {
 		}));
 
     ZmOperation.registerOp(ZmId.OP_MUTE_CONV, {textKey:"muteConv", tooltipKey:"muteConvTooltip", image:"Mute", shortcut:ZmKeyMap.MUTE_UNMUTE_CONV});
-	ZmOperation.registerOp(ZmId.OP_OPTS, {textKey:"options", tooltipKey:"options", image:"ContextMenu"});
 	ZmOperation.registerOp(ZmId.OP_NEW_FOLDER, {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder", shortcut:ZmKeyMap.NEW_FOLDER}, ZmSetting.USER_FOLDERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_MENU, {textKey:"_new", shortcut:ZmKeyMap.NEW, textPrecedence:100}, null,
 		AjxCallback.simpleClosure(function(parent) {
@@ -160,6 +161,8 @@ function() {
 		}));
 	ZmOperation.registerOp(ZmId.OP_NEW_TAG, {textKey:"newTag", tooltipKey:"newTagTooltip", image:"NewTag", shortcut:ZmKeyMap.NEW_TAG}, ZmSetting.TAGGING_ENABLED);
     ZmOperation.registerOp(ZmId.OP_NOTIFY, {textKey: "notify", image:"Feedback"});
+	ZmOperation.registerOp(ZmId.OP_OPEN_IN_TAB, {textKey:"openInTab", image:"OpenInNewTab"});
+	ZmOperation.registerOp(ZmId.OP_OPTS, {textKey:"options", tooltipKey:"options", image:"ContextMenu"});
 	ZmOperation.registerOp(ZmId.OP_PAGE_BACK, {image:"LeftArrow", shortcut:ZmKeyMap.PREV_PAGE});
 	ZmOperation.registerOp(ZmId.OP_PAGE_FORWARD, {image:"RightArrow", shortcut:ZmKeyMap.NEXT_PAGE});
 	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, textPrecedence:30, showImageInToolbar: true}, ZmSetting.PRINT_ENABLED);
@@ -458,9 +461,10 @@ function(list) {
 	// remove disabled operations
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
-		if (!op) { continue; }
-		var setting = ZmOperation.SETTING[op];
-		if (!setting || appCtxt.get(setting)) {
+		if (!op) {
+			continue;
+		}
+		if (appCtxt.checkPrecondition(ZmOperation.PRECONDITION[op])) {
 			newList.push(op);
 		}
 	}

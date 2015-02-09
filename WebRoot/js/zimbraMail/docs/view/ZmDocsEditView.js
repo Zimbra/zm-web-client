@@ -266,8 +266,9 @@ function() {
 ZmDocsEditView.prototype._resetSize =
 function() {
 	var bounds = this.getInsetBounds();
+	var editorInsets = this._editor.getInsets();
 
-	bounds.height -= this._toolbar.getSize().y + Dwt.getSize(this._footerEl).y;
+	bounds.height -= this._toolbar.getOuterSize().y + Dwt.getOuterSize(this._footerEl).y + editorInsets.top + editorInsets.bottom;
 
 	this._editor.setSize(bounds.width, bounds.height);
 };

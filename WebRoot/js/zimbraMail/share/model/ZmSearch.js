@@ -958,8 +958,16 @@ function() {
  * TODO: handle "field[lastName]" and "#lastName"
  */
 ZmParsedQuery = function(query) {
+
 	this.hasOrTerm = false;
 	this._tokens = this._parse(AjxStringUtil.trim(query, true));
+
+	// preconditions for flags
+	if (!ZmParsedQuery.IS_VALUE_PRECONDITION) {
+		ZmParsedQuery.IS_VALUE_PRECONDITION = {};
+		ZmParsedQuery.IS_VALUE_PRECONDITION['flagged']      = ZmSetting.FLAGGING_ENABLED;
+		ZmParsedQuery.IS_VALUE_PRECONDITION['unflagged']    = ZmSetting.FLAGGING_ENABLED;
+	}
 };
 
 ZmParsedQuery.prototype.isZmParsedQuery = true;

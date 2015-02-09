@@ -1230,8 +1230,6 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 			newPtst = ZmCalBaseItem.PSTATUS_TENTATIVE;
 			toastMessage = ZmMsg.inviteAcceptedTentatively;
 			break;
-		case ZmOperation.REPLY_NEW_TIME:
-			verb = "DELEGATED"; break; // XXX: WRONG MAPPING!
 	}
 	request.verb = verb;
 
@@ -1288,18 +1286,9 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 		request.idnt = this.identity.id;
 	}
 
-	var replyActionMap = {};
-	replyActionMap[ZmOperation.REPLY_ACCEPT_NOTIFY]		= ZmOperation.REPLY_ACCEPT;
-	replyActionMap[ZmOperation.REPLY_ACCEPT_IGNORE]		= ZmOperation.REPLY_ACCEPT;
-	replyActionMap[ZmOperation.REPLY_DECLINE_NOTIFY]	= ZmOperation.REPLY_DECLINE;
-	replyActionMap[ZmOperation.REPLY_DECLINE_IGNORE]	= ZmOperation.REPLY_DECLINE;
-	replyActionMap[ZmOperation.REPLY_TENTATIVE_NOTIFY]	= ZmOperation.REPLY_TENTATIVE;
-	replyActionMap[ZmOperation.REPLY_TENTATIVE_IGNORE]	= ZmOperation.REPLY_TENTATIVE;
-
-	if (!replyActionMap[this.inviteMode]) {
-		needsRsvp = this._origMsg.needsRsvp();
+	if (ignoreNotify) { //bug 53974
+		needsRsvp = false;
 	}
-    if(ignoreNotify) needsRsvp = false;
 	this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName, toastMessage);
 };
 

@@ -320,6 +320,7 @@ function(ev) {
         op = (mode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) ? ZmOperation.VIEW_APPT_INSTANCE : ZmOperation.VIEW_APPT_SERIES;
     }
 
+	this._action =  ZmCalItemComposeController.SAVE_CLOSE;
     var saveCallback = new AjxCallback(this, this._handleSaveResponse);
     var calViewCtrl = this._app.getCalController();
 	// This will trigger a call to  ZmMailMsg.sendInviteReply, which updates the offline appointment ptst field

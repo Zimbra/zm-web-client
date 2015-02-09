@@ -51,8 +51,9 @@ ZmContactPicker = function(buttonInfo) {
 	this._ascending = true; //asending or descending search. Keep it stored for pagination to do the right sort.
 	this._emailList = new AjxVector();
 	this._detailedSearch = appCtxt.get(ZmSetting.DETAILED_CONTACT_SEARCH_ENABLED);
-	this._searchCleared = {};
 	this._ignoreSetDragBoundries = true;
+
+	this.setSize(Dwt.DEFAULT, this._getDialogHeight());
 
 	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
 };
@@ -65,20 +66,13 @@ ZmContactPicker.prototype.toString = function() { return "ZmContactPicker"; };
 
 // Consts
 
-ZmContactPicker.CHOOSER_HEIGHT = 300;
+ZmContactPicker.DIALOG_HEIGHT = 460;
 
 ZmContactPicker.SEARCH_BASIC = "search";
 ZmContactPicker.SEARCH_NAME = "name";
 ZmContactPicker.SEARCH_EMAIL = "email";
 ZmContactPicker.SEARCH_DEPT = "dept";
 ZmContactPicker.SEARCH_PHONETIC = "phonetic";
-
-ZmContactPicker.HINT = {};
-ZmContactPicker.HINT[ZmContactPicker.SEARCH_BASIC] = ZmMsg.contactPickerHint;
-ZmContactPicker.HINT[ZmContactPicker.SEARCH_NAME] = ZmMsg.contactPickerHint;
-ZmContactPicker.HINT[ZmContactPicker.SEARCH_EMAIL] = ZmMsg.contactPickerEmailHint;
-ZmContactPicker.HINT[ZmContactPicker.SEARCH_DEPT] = ZmMsg.contactPickerDepartmentHint;
-ZmContactPicker.HINT[ZmContactPicker.SEARCH_PHONETIC] = ZmMsg.contactPickerPhoneticHint;
 
 ZmContactPicker.SHOW_ON_GAL = [ZmContactPicker.SEARCH_BASIC, ZmContactPicker.SEARCH_NAME, ZmContactPicker.SEARCH_EMAIL, ZmContactPicker.SEARCH_DEPT];
 ZmContactPicker.SHOW_ON_NONGAL = [ZmContactPicker.SEARCH_BASIC, ZmContactPicker.SEARCH_NAME, ZmContactPicker.SEARCH_PHONETIC, ZmContactPicker.SEARCH_EMAIL];
@@ -131,24 +125,16 @@ function(buttonId, addrs, str, account) {
 	for (var fieldId in this._searchField) {
 		var field = this._searchField[fieldId];
 		field.disabled = false;
-		if (str) {
-			field.className = "";
-			field.value = AjxUtil.isObject(str) ? (str[fieldId] || "") : str;
-			this._searchCleared[fieldId] = true;
-		} else {
-			field.className = "searchFieldHint";
-			field.value = ZmContactPicker.HINT[fieldId];
-			this._searchCleared[fieldId] = false;
-		}
+		field.value = (AjxUtil.isObject(str) ? str[fieldId] : str) || "";
 	}
-	var focusField = this._searchField[ZmContactPicker.SEARCH_BASIC] || this._searchField[ZmContactPicker.SEARCH_NAME];
-	focusField.focus();
 
 	// reset paging buttons
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
 
 	this.search(null, true, true);
+
+	this._resizeChooser();
 
 	DwtDialog.prototype.popup.call(this);
     if ((this.getLocation().x < 0 ||  this.getLocation().y < 0) ){
@@ -159,6 +145,10 @@ function(buttonId, addrs, str, account) {
                 var dragElement = document.getElementById(this._dragHandleId);
                 DwtDraggable.setDragBoundaries(dragElement, 100 - currentSize.x, size.x - 100, 0, size.y - 100);
     }
+
+	var focusField = this._searchField[ZmContactPicker.SEARCH_BASIC] || this._searchField[ZmContactPicker.SEARCH_NAME];
+	appCtxt.getKeyboardMgr().grabFocus(focusField);
+
 };
 
 
@@ -419,28 +409,39 @@ function() {
     }
 };
 
-ZmContactPicker.prototype.clearSearch =
-function(el) {
-	if (el) {
-		for (var fieldId in this._searchField) {
-			if (el == this._searchField[fieldId]) {
-				if (!this._searchCleared[fieldId]) {
-					el.className = el.value = "";
-					this._searchCleared[fieldId] = true;
-				}
-				break;
-			}
-		}
-	}
-};
-
 ZmContactPicker.prototype.getSearchFieldValue =
 function(fieldId) {
 	if (!fieldId && !this._detailedSearch) {
 		fieldId = ZmContactPicker.SEARCH_BASIC;
 	}
 	var field = this._searchField[fieldId];
-	return (this._searchCleared[fieldId] && field) ? AjxStringUtil.trim(field.value) : "";
+	return field && AjxStringUtil.trim(field.value) || "";
+};
+
+
+ZmContactPicker.prototype._getDialogHeight =
+function() {
+	return ZmContactPicker.DIALOG_HEIGHT - (appCtxt.isChildWindow ? 100 : 0);
+};
+
+ZmContactPicker.prototype._getSectionHeight =
+function(idSuffix) {
+	return Dwt.getSize(document.getElementById(this._htmlElId + idSuffix)).y;
+
+};
+
+ZmContactPicker.prototype._resizeChooser =
+function() {
+
+	var chooserHeight = this._getDialogHeight()
+			- this._getSectionHeight("_handle")  //the header
+			- this._getSectionHeight("_searchTable")
+			- this._getSectionHeight("_paging")
+			- this._getSectionHeight("_buttonsSep")
+			- this._getSectionHeight("_buttons")
+			- 30; //still need some magic to account for some margins etc.
+
+	this._chooser.resize(this.getSize().x - 25, chooserHeight);
 };
 
 /**
@@ -475,7 +476,6 @@ function(account) {
 	// add chooser
 	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo});
 	this._chooser.reparentHtmlElement(this._htmlElId + "_chooser");
-	this._chooser.resize(this.getSize().x-25, ZmContactPicker.CHOOSER_HEIGHT);
 
 	// add paging buttons
 	var pageListener = new AjxListener(this, this._pageListener);
@@ -508,7 +508,6 @@ function(account) {
 		if (field) {
 			this._searchField[fieldId] = field;
 			Dwt.setHandler(field, DwtEvent.ONKEYUP, ZmContactPicker._keyPressHdlr);
-			Dwt.setHandler(field, DwtEvent.ONCLICK, ZmContactPicker._onclickHdlr);
 		}
 	}
 
@@ -622,7 +621,7 @@ function(aList) {
 	}
 
 	if (this._searchIcon) { //does not exist in ZmGroupView case
-		this._searchIcon.className = "ImgSearch";
+		this._searchIcon.className = "";
 	}
 	this._searchButton.setEnabled(true);
 
@@ -798,6 +797,8 @@ function(searchFor) {
 	for (var i=0; i<fieldIds.length; i++) {
 		this._tabGroup.addMember(this._searchField[fieldIds[i]]);
 	}
+
+	this._resizeChooser();
 };
 
 /**
@@ -921,7 +922,6 @@ ZmContactPicker._keyPressHdlr =
 function(ev) {
 	var stb = DwtControl.getTargetControl(ev);
 	var charCode = DwtKeyEvent.getCharCode(ev);
-	stb.clearSearch(DwtUiEvent.getTarget(ev));
 	if (stb._keyPressCallback && (charCode == 13 || charCode == 3)) {
 		stb._keyPressCallback.run();
 		return false;
@@ -929,14 +929,6 @@ function(ev) {
 	return true;
 };
 
-/**
- * @private
- */
-ZmContactPicker._onclickHdlr =
-function(ev) {
-	var stb = DwtControl.getTargetControl(ev);
-	stb.clearSearch(DwtUiEvent.getTarget(ev));
-};
 
 /***********************************************************************************/
 

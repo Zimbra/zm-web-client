@@ -204,8 +204,8 @@ function(newWidth, newHeight) {
 	this.setSize(newWidth, newHeight);
 	var height = (newHeight == Dwt.DEFAULT) ? newHeight : newHeight - DwtListView.HEADERITEM_HEIGHT;
 	Dwt.setSize(this._parentEl, newWidth, height);
-	//recalculate the css styles after resize
-	this.recalculateCssStyle();
+	//see bug 87712, but no more need to call recalculateCssStyle from here,
+	// since _restColWidth calls recalculateCssStyle, and it's called from ZmDoublePaneView.prototype._resetSize
 };
 
 ZmMailListView.prototype.calculateMaxEntries =
@@ -1427,7 +1427,7 @@ function(folderId) {
 ZmMailListView.prototype.setGroup =
 function(groupId) {
     this._group = ZmMailListGroup.getGroup(groupId);
-    if (this._folderId) {
+    if (this._folderId && !this._controller.isSearchResults) {
 	    appCtxt.set(ZmSetting.GROUPBY_LIST, groupId || ZmId.GROUPBY_NONE, this._folderId); //persist group Id
 	    appCtxt.set(ZmSetting.GROUPBY_HASH, this._group, this._folderId); //local cache for group object
     }

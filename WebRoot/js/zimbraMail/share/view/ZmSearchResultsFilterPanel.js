@@ -118,8 +118,9 @@ function() {
 		apps:	[ZmApp.MAIL, ZmApp.CALENDAR, ZmApp.TASKS]
 	};
 	ZmSearchResultsFilterPanel.BASIC_FILTER[ZmSearchResultsFilterPanel.ID_FLAGGED] = {
-		text:	ZmMsg.filterIsFlagged,
-		term:	new ZmSearchToken("is", "flagged")
+		text:	        ZmMsg.filterIsFlagged,
+		term:	        new ZmSearchToken("is", "flagged"),
+		precondition:   ZmSetting.FLAGGING_ENABLED
 	};
 	ZmSearchResultsFilterPanel.BASIC_FILTER[ZmSearchResultsFilterPanel.ID_UNREAD] = {
 		text:	ZmMsg.filterisUnread,
@@ -173,7 +174,7 @@ function() {
 		handler:		"ZmTagSearchFilter",
 		searchOp:		"tag",
 		apps:			ZmSearchResultsFilterPanel.ALL_APPS,
-		precondition:	(appCtxt.getTagTree() && appCtxt.getTagTree().size() > 0)
+		precondition:	appCtxt.getTagTree() && appCtxt.getTagTree().size() > 0
 	};
 	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_FOLDER] = {
 		text: 		ZmMsg.filterFolder,
@@ -206,20 +207,15 @@ function() {
 };
 
 // returns a list of filters that apply for the results' app
-ZmSearchResultsFilterPanel.prototype._getApplicableFilters =
-function(filterIds, filterHash) {
+ZmSearchResultsFilterPanel.prototype._getApplicableFilters = function(filterIds, filterHash) {
 	
 	var filters = [];
 	for (var i = 0; i < filterIds.length; i++) {
 		var id = filterIds[i];
 		var filter = filterHash[id];
 		filter.index = i;
-		if (filter.precondition != null) {
-			var pre = filter.precondition;
-			var result = (pre === true || pre === false) ? pre : (typeof(pre) == "function") ? pre() : appCtxt.get(pre);
-			if (!result) {
-				continue;
-			}
+		if (!appCtxt.checkPrecondition(filter.precondition)) {
+			continue;
 		}
 		var apps = (filter.apps == ZmSearchResultsFilterPanel.ALL_APPS) ? filter.apps : AjxUtil.arrayAsHash(filter.apps || [ZmApp.MAIL]);
 		if ((filter.apps == ZmSearchResultsFilterPanel.ALL_APPS) || apps[this._resultsApp]) {
@@ -407,7 +403,7 @@ function(query) {
 	var filtersIds = ZmSearchResultsFilterPanel.BASIC_FILTER_LIST;
 	for (var i = 0; i < filtersIds.length; i++) {
 		var id = filtersIds[i];
-		cb = this._checkbox[id];
+		var cb = this._checkbox[id];
 		if (!cb) {
 			continue;
 		}
@@ -1105,8 +1101,9 @@ function(button) {
 ZmFolderSearchFilter.prototype._getMoveParams =
 function(dlg) {
 	return {
-		overviewId:		dlg.getOverviewId([this.toString(), this._resultsApp].join("_")),
+		overviewId:		dlg.getOverviewId([this.toString(), this._resultsApp, this._viewId].join("_")),
 		treeIds:		[ZmApp.ORGANIZER[this._resultsApp]],
+		noRootSelect: 	true,
 		treeStyle:		DwtTree.SINGLE_STYLE
 	};
 };

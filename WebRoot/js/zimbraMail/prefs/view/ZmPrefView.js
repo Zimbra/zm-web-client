@@ -168,11 +168,18 @@ function(sectionId) {
  * 
  * @private
  */
-ZmPrefView.prototype._addSection =
-function(section, index) {
+ZmPrefView.prototype._addSection = function(section, index) {
+
 	// does the section meet the precondition?
-	if ((!appCtxt.multiAccounts || (appCtxt.multiAccounts && appCtxt.getActiveAccount().isMain)) && !this._controller.checkPreCondition(section)) { return false; }
-	if (this.prefView[section.id]) return false; // Section already exists
+	if ((!appCtxt.multiAccounts || (appCtxt.multiAccounts && appCtxt.getActiveAccount().isMain)) &&
+		!appCtxt.checkPrecondition(section.precondition, section.preconditionAny)) {
+
+		return false;
+	}
+
+	if (this.prefView[section.id]) {
+		return false; // Section already exists
+	}
 
 	// create pref page's view
 	var view = (section.createView)
@@ -355,8 +362,8 @@ function(dirtyCheck, noValidation, batchCommand) {
 	return dirtyCheck ? false : list;
 };
 
-ZmPrefView.prototype._checkSection =
-function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSaveCommand) {
+ZmPrefView.prototype._checkSection = function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSaveCommand) {
+
 	var settings = appCtxt.getSettings();
 	var prefs = section && section.prefs;
 	var isAllDayVacation = false;
@@ -365,7 +372,9 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSave
 		if (!viewPage._prefPresent || !viewPage._prefPresent[id]) { continue; }
 		var setup = ZmPref.SETUP[id];
         var defaultError = setup.errorMessage;
-		if (!this._controller.checkPreCondition(setup)) { continue; }
+		if (!appCtxt.checkPrecondition(setup.precondition, setup.preconditionAny)) {
+			continue;
+		}
 
 		var type = setup ? setup.displayContainer : null;
 		// ignore non-form elements
@@ -414,9 +423,18 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSave
 			comparableValue = value.substr(0, 8);
 			comparableOrigValue = origValue.substr(0, 8);
 		}
+    /**
+        In OOO vacation external select, first three options have same value i.e false, so we do
+                    comparableValue = !comparableOrigValue;
+         so that it enters the inner "_prefChanged" function and from there we add pref to list, depending upon which
+         option is selected and it maps to which pref.  Both comparableValue and comparableOrigValue are local variables
+         to this function, so no issues .
+     */
+        if (id === "VACATION_EXTERNAL_SUPPRESS") {
+            comparableValue = !comparableOrigValue;
+        }
 
-
-		if (this._prefChanged(pref.dataType, comparableOrigValue, comparableValue)) {
+            if (this._prefChanged(pref.dataType, comparableOrigValue, comparableValue)) {
 			var isValid = true;
 			if (!noValidation) {
 				var maxLength = setup ? setup.maxLength : null;
@@ -430,7 +448,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSave
 			if (isValid) {
                 if (!dirtyCheck && isSaveCommand) {
                     if (setup.setFunction) {
-                        setup.setFunction(pref, value, list);
+                        setup.setFunction(pref, value, list, viewPage);
                     } else {
                         pref.setValue(value);
                         if (pref.name) {

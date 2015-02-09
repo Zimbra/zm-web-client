@@ -290,18 +290,9 @@ function() {
  * 
  * @private
  */
-ZmKeyMap.prototype._checkMap =
-function(mapName) {
-	var result;
-	var mapPre = ZmKeyMap.MAP_PRECONDITION[mapName];
-	if (!mapPre) {
-		result = true;
-	} else if (typeof mapPre == "string" || typeof mapPre == "number") {
-		result = appCtxt.get(mapPre);
-	} else if (typeof mapPre == "function") {
-		result = mapPre();
-	}
-	this._checkedMap[mapName] = result;
+ZmKeyMap.prototype._checkMap = function(mapName) {
+
+	var result = this._checkedMap[mapName] = appCtxt.checkPrecondition(ZmKeyMap.MAP_PRECONDITION[mapName]);
 	return result;
 };
 
@@ -316,18 +307,12 @@ function(mapName) {
  * 
  * @private
  */
-ZmKeyMap.prototype._checkAction =
-function(mapName, action) {
-	if ((this._checkedMap[mapName] === false) ||
-		(!this._checkedMap[mapName] && !this._checkMap(mapName))) { return false; }
-	var mapPre = ZmKeyMap.ACTION_PRECONDITION[mapName];
-	if (!mapPre) { return true; }
-	var pre = mapPre[action];
-	if (!pre) { return true; }
-	if (typeof pre == "string" || typeof pre == "number") {
-		return appCtxt.get(pre);
-	} else if (typeof pre == "function") {
-		return pre();
+ZmKeyMap.prototype._checkAction = function(mapName, action) {
+
+	if (this._checkedMap[mapName] === false || (!this._checkedMap[mapName] && !this._checkMap(mapName))) {
+		return false;
 	}
-	return true;
+
+	var mapPre = ZmKeyMap.ACTION_PRECONDITION[mapName];
+	return appCtxt.checkPrecondition(mapPre && mapPre[action]);
 };

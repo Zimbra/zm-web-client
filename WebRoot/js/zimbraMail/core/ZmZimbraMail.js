@@ -562,6 +562,11 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
     if (!appCtxt.get(ZmSetting.SPAM_ENABLED)) {
         ZmFolder.HIDE_ID[ZmFolder.ID_SPAM] = true;
     }
+
+	// Chats hidden by default, check for override
+	if (appCtxt.get(ZmSetting.SHOW_CHATS_FOLDER)) {
+		delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
+	}
 };
 
 /**
@@ -2244,7 +2249,7 @@ function() {
         (appCtxt.get(ZmSetting.IS_ADMIN) ||
          appCtxt.get(ZmSetting.IS_DELEGATED_ADMIN))) {
 
-        adminUrl = appCtxt.get(ZmSetting.ADMIN_REFERENCE);
+        adminUrl = appCtxt.get(ZmSetting.ADMIN_URL);
         if (!adminUrl) {
             adminUrl = ["https://", location.hostname, ":7071"].join("");
         }

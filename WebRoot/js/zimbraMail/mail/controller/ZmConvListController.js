@@ -451,10 +451,6 @@ ZmConvListController.prototype._resetForwardConv = function(parent, num) {
 	}
 };
 
-ZmConvListController.prototype._forwardListener = function(ev) {
-	var action = ev.item.getData(ZmOperation.KEY_ID);
-	this._doAction({ev:ev, action:action, foldersToOmit:ZmMailApp.getFoldersToOmit()});
-};
 
 /**
  * Figure out if the given view change is destructive. If so, put up pop shield.

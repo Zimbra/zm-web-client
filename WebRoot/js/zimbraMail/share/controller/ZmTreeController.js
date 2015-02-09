@@ -50,22 +50,23 @@ ZmTreeController = function(type) {
 	
 	// common listeners
 	this._listeners = {};
-	this._listeners[ZmOperation.DELETE]			= new AjxListener(this, this._deleteListener);
-	this._listeners[ZmOperation.DELETE_WITHOUT_SHORTCUT]			= new AjxListener(this, this._deleteListener);
-	this._listeners[ZmOperation.MOVE]			= new AjxListener(this, this._moveListener);
-	this._listeners[ZmOperation.EXPAND_ALL]		= new AjxListener(this, this._expandAllListener);
-	this._listeners[ZmOperation.MARK_ALL_READ]	= new AjxListener(this, this._markAllReadListener);
-	this._listeners[ZmOperation.SYNC]			= new AjxListener(this, this._syncListener);
-	this._listeners[ZmOperation.SYNC_ALL]		= new AjxListener(this, this._syncAllListener);
-	this._listeners[ZmOperation.EDIT_PROPS]		= new AjxListener(this, this._editPropsListener);
-	this._listeners[ZmOperation.EMPTY_FOLDER]   = new AjxListener(this, this._emptyListener);
-	this._listeners[ZmOperation.FIND_SHARES]	= this._findSharesListener.bind(this);
+	this._listeners[ZmOperation.DELETE]			            = this._deleteListener.bind(this);
+	this._listeners[ZmOperation.DELETE_WITHOUT_SHORTCUT]    = this._deleteListener.bind(this);
+	this._listeners[ZmOperation.MOVE]			            = this._moveListener.bind(this);
+	this._listeners[ZmOperation.EXPAND_ALL]		            = this._expandAllListener.bind(this);
+	this._listeners[ZmOperation.MARK_ALL_READ]	            = this._markAllReadListener.bind(this);
+	this._listeners[ZmOperation.SYNC]			            = this._syncListener.bind(this);
+	this._listeners[ZmOperation.SYNC_ALL]		            = this._syncAllListener.bind(this);
+	this._listeners[ZmOperation.EDIT_PROPS]		            = this._editPropsListener.bind(this);
+	this._listeners[ZmOperation.EMPTY_FOLDER]               = this._emptyListener.bind(this);
+	this._listeners[ZmOperation.FIND_SHARES]	            = this._findSharesListener.bind(this);
+	this._listeners[ZmOperation.OPEN_IN_TAB]                = this._openInTabListener.bind(this);
 
 	// drag-and-drop
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+	this._dragSrc.addDragListener(this._dragListener.bind(this));
 	this._dropTgt = new DwtDropTarget(ZmTreeController.DROP_SOURCES[type]);
-	this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
+	this._dropTgt.addDropListener(this._dropListener.bind(this));
 
 	this._treeView = {};	// hash of tree views of this type, by overview ID
 	this._hideEmpty = {};	// which tree views to hide if they have no data
@@ -213,6 +214,11 @@ ZmTreeController.prototype._handleAddShare = function () {
 		asyncMode: true
 	};
 	appCtxt.getAppController().sendRequest(params);
+};
+
+// Opens a view of the given organizer in a search tab
+ZmTreeController.prototype._openInTabListener = function(ev) {
+	this._itemClicked(this._getActionedOrganizer(ev), true);
 };
 
 

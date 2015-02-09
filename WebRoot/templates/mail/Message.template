@@ -651,7 +651,11 @@
 	
 <template id='mail.Message#Conv2MsgHeader-collapsed'>
 	<div class='image'>
-		<img src="${imageURL}" alt="${imageAltText}" />
+		<img src="${imageURL}" alt="${imageAltText}"
+		<$ if (data.defaultImageUrl) { $>
+			onerror="this.onerror=null;this.src='${defaultImageUrl}';"
+		<$ } $>
+		/>
 	</div>
 	<div class='info'>
 		<div id='${fromId}' class='ZmConvListFrom'>${from}</div>
@@ -663,7 +667,11 @@
 
 <template id='mail.Message#Conv2MsgHeader-expanded'>
 	<div class='image'>
-		 <img src="${imageURL}" alt="${imageAltText}" />
+		<img src="${imageURL}" alt="${imageAltText}"
+		<$ if (data.defaultImageUrl) { $>
+			onerror="this.onerror=null;this.src='${defaultImageUrl}';"
+		<$ } $>
+		/>
 	</div>
 	<div class='info'>
 		<table role="presentation" id='${hdrTableId}' class='ZPropertySheet' cellspacing='6'>

@@ -374,7 +374,7 @@ function() {
 	var notifyText = ZmDesktopAlert.getInstance().getDisplayText();
 	ZmPref.registerPref("CAL_REMINDER_NOTIFY_TOASTER", {
 		displayFunc:		function() { return notifyText; },
-		precondition:		function() { return !!notifyText; },
+		precondition:		!!notifyText,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
