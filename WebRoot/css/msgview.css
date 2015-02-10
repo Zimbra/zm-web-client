@@ -84,6 +84,19 @@ body.MsgBody {
 .MsgBody .QuotedText1 { color: green; }
 .MsgBody .QuotedText2 { color: red; }
 
+.user_font_modern {
+	@FontFamily-modern@
+}
+.user_font_classic {
+	@FontFamily-classic@
+}
+.user_font_wide {
+	@FontFamily-wide@
+}
+.user_font_system {
+	@FontFamily-system@
+}
+
 .user_font_size_small {
 	font-size:@UserFontSize-small@
 }
