@@ -258,7 +258,9 @@ function(node) {
 	this.cachekey								= node.cachekey;
 	this.size				= this.s			= node.s;
 	this.contentDisposition	= this.cd			= node.cd;
-	this.contentId			= this.ci			= node.ci;
+	var ci = node.ci;
+	//in some cases the content ID is not wrapped by angle brackets (mistake by the mail application), so make sure we wrap it if not
+	this.contentId			= this.ci			= ci && ci.indexOf("<") !== 0 ? "<" + ci + ">" : ci;
 	this.contentLocation	= this.cl			= node.cl;
 	this.fileName			= this.filename		= node.filename;
 	this.isTruncated		= this.truncated	= !!(node.truncated);
