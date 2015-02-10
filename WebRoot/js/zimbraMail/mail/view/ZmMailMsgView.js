@@ -1093,6 +1093,7 @@ function(params) {
 
 		//update root html elment class to reflect user selected font size - so that if we use our relative font size properties in CSS inside (stuff from msgview.css) it would be relative to this and not to the browser default.
 		Dwt.addClass(idoc.documentElement, "user_font_size_" + appCtxt.get(ZmSetting.FONT_SIZE));
+		Dwt.addClass(idoc.documentElement, "user_font_" + appCtxt.get(ZmSetting.FONT_NAME));
 
 		// assign the right class name to the iframe body
 		idoc.body.className = this._getBodyClass() + (params.isTextMsg ? " MsgBody-text" : " MsgBody-html");
@@ -1110,7 +1111,7 @@ function(params) {
 	
 		if (!ZmMailMsgView._CSS) {
 			// Make a synchronous request for the CSS. Should we do this earlier?
-			var cssUrl = appContextPath + "/css/msgview.css?v=" + cacheKillerVersion;
+			var cssUrl = [appContextPath, "/css/msgview.css?v=", cacheKillerVersion, "&locale=", window.appRequestLocaleId, "&skin=", window.appCurrentSkin].join("");
 			if (AjxEnv.supported.localstorage) {
 				ZmMailMsgView._CSS = localStorage.getItem(cssUrl);
 			}
