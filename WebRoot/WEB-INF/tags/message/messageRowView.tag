@@ -77,8 +77,8 @@
                             <c:if test="${mailbox.features.tagging}">
                                 <th class='Img' nowrap><app:img src="startup/ImgTag.png" altkey="ALT_TAG_TAG"/></th>
                             </c:if>
-                            <th class='Img' nowrap=""><app:img src="startup/ImgMsgStatus.png"/></th>
-                            <th width="160" nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/></th>
+                            <th class='MsgStatusImg' nowrap='nowrap'>&nbsp;</th>
+                            <th width="10%" nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/></th>
                             <th class='Img' nowrap width='20'><app:img src="startup/ImgAttachment.png" altkey="ALT_ATTACHMENT"/></th>
                             <th nowrap>
                                 <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
@@ -122,8 +122,8 @@
                                     <c:if test="${mailbox.features.tagging}">
                                         <td class='Img'><app:miniTagImage ids="${msgHit.tagIds}"/></td>
                                     </c:if>
-                                    <td class="Img"><app:img src="${msgHit.statusImage}" altkey='${msgHit.statusImageAltKey}'/></td>
-                                    <td width='160'><%-- allow this column to wrap --%>
+                                    <td class='MsgStatusImg' align="center"><app:img src="${msgHit.statusImage}" altkey='${msgHit.statusImageAltKey}'/></td>
+                                    <td width='10%'><%-- allow this column to wrap --%>
                                         <c:set var="dispAddr" value="${zm:truncate(msgHit.displayAddresses,20,true)}"/>${fn:escapeXml(empty dispAddr ? unknownRecipient : dispAddr)}
                                     </td>
                                     <td class='Img'><app:attachmentImage attachment="${msgHit.hasAttachment}"/></td>
@@ -149,7 +149,7 @@
                                         </c:if>
 						            </td>
                                     <td nowrap='nowrap' width='5%'>${fn:escapeXml(zm:displaySize(pageContext, msgHit.size))}</td>
-						            <td width='65'>${fn:escapeXml(zm:displayMsgDate(pageContext, msgHit.date))}</td>
+						            <td nowrap='nowrap' width='5%'>${fn:escapeXml(zm:displayMsgDate(pageContext, msgHit.date))}</td>
 								</tr>
 							</c:forEach>
 						</tbody>
