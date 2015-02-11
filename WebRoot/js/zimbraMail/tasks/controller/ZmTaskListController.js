@@ -838,7 +838,9 @@ function(tasks) {
 	batchCmd.run();
 
     // Mark the action as complete, so that the undo in the toast message will work
-    actionLogItem.setComplete();
+	if (actionLogItem) {
+		actionLogItem.setComplete();
+	}
 
     var summary = ZmList.getActionSummary({type:ZmItem.TASK, actionTextKey:"actionTrash", numItems:tasks.length});
 	
