@@ -210,12 +210,7 @@ function(params) {
 	}
 
 	this._setSubject(action, msg || (params.selectedMessages && params.selectedMessages[0]), params.subjOverride);
-	this._setBody({
-		action: action,
-		msg: msg,
-		extraBodyText: params.extraBodyText,
-		firstLoad: true
-	});
+	this._setBody(action, msg, params.extraBodyText);
 	if (params.extraBodyText) {
 		this._isDirty = true;
 	}
@@ -525,7 +520,7 @@ function() {
 * Returns the message from the form, after some basic input validation.
 */
 ZmComposeView.prototype.getMsg =
-function(attId, isDraft, dummyMsg, forceBail, contactId, removeMarkers) {
+function(attId, isDraft, dummyMsg, forceBail, contactId) {
 
 	// Check destination addresses.
 	var addrs = this._recipients.collectAddrs();
@@ -651,7 +646,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId, removeMarkers) {
 	// --------------------------------------------
 
 	// build MIME
-	var top = this._getTopPart(msg, isDraft, null, removeMarkers);
+	var top = this._getTopPart(msg, isDraft);
 
 	msg.setTopPart(top);
 	msg.setSubject(subject);
@@ -732,12 +727,12 @@ function(attId, isDraft, dummyMsg, forceBail, contactId, removeMarkers) {
 };
 
 ZmComposeView.prototype._getTopPart =
-function(msg, isDraft, bodyContent, removeMarkers) {
+function(msg, isDraft, bodyContent) {
 		
 	// set up message parts as necessary
 	var top = new ZmMimePart();
 	var textContent;
-	var content = bodyContent || this._getEditorContent(removeMarkers);
+	var content = bodyContent || this._getEditorContent();
 
 	if (this._composeMode == Dwt.HTML) {
 		top.setContentType(ZmMimeTable.MULTI_ALT);
@@ -770,7 +765,7 @@ function(msg, isDraft, bodyContent, removeMarkers) {
 			if (!isDraft) {
 				this._cleanupSignatureIds(idoc);
 			}
-			htmlPart.setContent(this._fixStyles(this._getEditorContent(removeMarkers)));
+			htmlPart.setContent(this._fixStyles(this._getEditorContent(!isDraft)));
 		}
 		else {
 			htmlPart.setContent(bodyContent);
@@ -829,18 +824,18 @@ function(msg, isDraft, bodyContent, removeMarkers) {
 	// TODO: zimlets are being lazy here, and text content could be large; zimlets should get content from parts
 	msg.textBodyContent = !this._htmlEditor ? textContent : (this._composeMode === Dwt.HTML)
 		? this._htmlEditor.getTextVersion()
-		: this._getEditorContent(removeMarkers);
+		: this._getEditorContent();
 		
 	return top;
 };
 
 // Returns the editor content with any markers stripped (unless told not to strip them)
 ZmComposeView.prototype._getEditorContent =
-function(removeMarkers) {
+function(leaveMarkers) {
 	var content = "";
 	if (this._htmlEditor) {
 		content = this._htmlEditor.getContent(true);
-		if (removeMarkers) {
+		if (!leaveMarkers && (this._composeMode === Dwt.TEXT)) {
 			content = this._removeMarkers(content);
 		}
 	}
@@ -1463,7 +1458,7 @@ function(params) {
 	if (mode === Dwt.HTML) {
 		var markerHtml = "";
 		if (params.style === ZmSetting.SIG_OUTLOOK) {
-			markerHtml = this._getHtmlMarkerAttr(params.marker);
+			markerHtml = " " + ZmComposeView.BC_HTML_MARKER_ATTR + "='" + params.marker + "'";
 		}
 		sigContent = ["<div id=\"", signatureId, "\"", markerHtml, ">", sigContent, "</div>"].join('');
 	}
@@ -1647,7 +1642,7 @@ function(params) {
 	if (params.style === ZmSetting.SIG_INTERNET) {
 		var mode = params.mode || this._composeMode;
 		if (mode === Dwt.HTML) {
-			sep = "<div" + this._getHtmlMarkerAttr(params.marker) + ">-- " + this._crlf + "</div>";
+			sep = "<div " + ZmComposeView.BC_HTML_MARKER_ATTR + "='" + params.marker + "'>-- " + this._crlf + "</div>";
 		}
 		else {
 			sep += "-- " + this._crlf;
@@ -1990,21 +1985,9 @@ function(action, msg, subjOverride) {
 	}
 };
 
-/**
- * @param {Hash}		params				a hash of parameters:
- * @param {constant}	action				draft, reply, new message, forward, etc
- * @param {ZmMailMsg}	msg					the original message (reply/forward), or address (new message)
- * @param {String}		extraBodyText		text for new msg (optional)
- * @param {Boolean}		noEditorUpdate		(optional)
- * @param {Boolean}		keepAttachments		(optional)
- * @param {Boolean}		firstLoad			true if draft loaded for the first time (optional)
- */
 ZmComposeView.prototype._setBody =
-function(params) {
-
-	var action = params.action;
-	var msg = params.msg;
-
+function(action, msg, extraBodyText, noEditorUpdate, keepAttachments) {
+		
 	this._setReturns();
 	var htmlMode = (this._composeMode === Dwt.HTML);
 
@@ -2042,10 +2025,10 @@ function(params) {
 	// make sure we've loaded the part with the type we want to reply in, if it's available
 	if (msg && (incOptions.what === ZmSetting.INC_BODY || incOptions.what === ZmSetting.INC_SMART)) {
 		var desiredPartType = htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
-		msg.getBodyPart(desiredPartType, this._setBody1.bind(this, params));
+		msg.getBodyPart(desiredPartType, this._setBody1.bind(this, action, msg, extraBodyText, noEditorUpdate, keepAttachments));
 	}
 	else {
-		this._setBody1(params);
+		this._setBody1(action, msg, extraBodyText, noEditorUpdate, keepAttachments);
 	}
 };
 
@@ -2081,7 +2064,6 @@ ZmComposeView.BC_ALL_COMPONENTS = [
 // Note: as of 10/31/14, Chrome Canary does not recognize \u200B (though it does find \uFEFF)
 ZmComposeView.BC_MARKER_CHAR = '\u200B';
 ZmComposeView.BC_MARKER_REGEXP = new RegExp(ZmComposeView.BC_MARKER_CHAR, 'g');
-ZmComposeView.BC_HTML_MARKER_REGEXP = new RegExp('(<?class\s*=\s*[\'\"][^\'\"]*?)(data-marker__.*?__)(.*?\"|\')', 'g');
 
 // Create a unique marker sequence (vary by length) for each component, and regexes to find them
 ZmComposeView.BC_TEXT_MARKER = {};
@@ -2103,12 +2085,8 @@ AjxUtil.foreach(ZmComposeView.BC_ALL_COMPONENTS, function(comp, index) {
 ZmComposeView.BC_HTML_MARKER_ATTR = "data-marker";
 
 ZmComposeView.prototype._setBody1 =
-function(params) {
-
-	var action = params.action;
-	var msg = params.msg;
-	var noEditorUpdate = params.noEditorUpdate;
-
+function(action, msg, extraBodyText, noEditorUpdate, keepAttachments) {
+		
 	var htmlMode = (this._composeMode === Dwt.HTML);
 	var isDraft = (action === ZmOperation.DRAFT);
 	var incOptions = this._controller._curIncOptions;
@@ -2116,9 +2094,16 @@ function(params) {
 	// clear in case of switching from "as attachment" back to "include original message" or to "don't include original"
 	this._msgAttId = null;
 
+	if (extraBodyText) {
+		this.setComponent(ZmComposeView.BC_TEXT_PRE, this._normalizeText(extraBodyText, htmlMode));
+	}
+
 	var compList = ZmComposeView.BC_ALL_COMPONENTS;
 		
-	if (action === ZmOperation.REPLY_CANCEL) {
+	if (action === ZmOperation.DRAFT) {
+		compList = [ZmComposeView.BC_QUOTED_TEXT];
+	}
+	else if (action === ZmOperation.REPLY_CANCEL) {
 		compList = [ZmComposeView.BC_TEXT_PRE, ZmComposeView.BC_SIG_PRE, ZmComposeView.BC_SIG_POST];
 	}
 	else if (incOptions.what === ZmSetting.INC_NONE || incOptions.what === ZmSetting.INC_ATTACH) {
@@ -2142,10 +2127,9 @@ function(params) {
 	if (msg && (what === ZmSetting.INC_BODY || what === ZmSetting.INC_SMART)) {
 		bodyInfo = this._getBodyContent(msg, htmlMode, what);
 	}
-	params.incOptions = incOptions;
-	params.bodyInfo = bodyInfo;
+	var params = {action:action, msg:msg, incOptions:incOptions, bodyInfo:bodyInfo};
 	var value = this._layoutBodyComponents(compList, null, params);
-
+		
 	if (this._htmlEditor && !noEditorUpdate) {
 		this._htmlEditor.setContent(value);
 	    if (!htmlMode && ZmComposeController.IS_REPLY[action]) {
@@ -2160,7 +2144,7 @@ function(params) {
 
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var hasInlineImages = (bodyInfo.hasInlineImages) || !ac.get(ZmSetting.VIEW_AS_HTML);
-	if (!params.keepAttachments) {
+	if (!keepAttachments) {
 		//do not call this when switching between text and html editor.
 		this._showForwardField(msg || this._msg, action, incOptions, hasInlineImages, bodyInfo.hasInlineAtts);
 	}
@@ -2204,9 +2188,7 @@ function(comp, compValue, mode) {
  */
 ZmComposeView.prototype.getComponent =
 function(comp, mode, params) {
-
-	params = params || {};
-
+		
 	mode = mode || this._composeMode;
 	var value = this._components[mode] && this._components[mode][comp];
 	if (value || value === ZmComposeView.EMPTY) {
@@ -2215,7 +2197,7 @@ function(comp, mode, params) {
 
 	switch (comp) {
 		case ZmComposeView.BC_SIG_PRE: {
-			return this._getSignatureComponent(ZmSetting.SIG_OUTLOOK, mode, params);
+			return this._getSignatureComponent(ZmSetting.SIG_OUTLOOK, mode);
 		}
 		case ZmComposeView.BC_DIVIDER: {
 			return this._getDivider(mode, params);
@@ -2224,10 +2206,10 @@ function(comp, mode, params) {
 			return this._getHeaders(mode, params);
 		}
 		case ZmComposeView.BC_QUOTED_TEXT: {
-			return this._getBodyComponent(mode, params);
+			return this._getBodyComponent(mode, params || {});
 		}
 		case ZmComposeView.BC_SIG_POST:
-			return this._getSignatureComponent(ZmSetting.SIG_INTERNET, mode, params);
+			return this._getSignatureComponent(ZmSetting.SIG_INTERNET, mode);
 	}
 };
 
@@ -2255,7 +2237,7 @@ function(components, mode, params) {
 	if (!(components && components.length)) {
 		return "";
 	}
-
+		
 	mode = mode || this._composeMode;
 	var htmlMode = (mode === Dwt.HTML);
 	this._headerText = "";
@@ -2279,30 +2261,12 @@ function(components, mode, params) {
 		}
 	}
 
-	var isDraft = (params.action === ZmOperation.DRAFT);
-	var extraBodyText = params.extraBodyText;
-
-	if (isDraft && !extraBodyText) {
-		extraBodyText = this.getUserText({action: params.action, msg: params.msg, firstLoad: params.firstLoad});
-	}
-
-	if (extraBodyText) {
-		this.setComponent(ZmComposeView.BC_TEXT_PRE, this._normalizeText(extraBodyText, htmlMode));
-		value = extraBodyText + value;
-		this._compList.unshift(ZmComposeView.BC_TEXT_PRE);
-	}
-
 	return value;
 };
 
 ZmComposeView.prototype._getMarker =
 function(mode, comp) {
 	return (this._marker && this._marker[mode] &&  this._marker[mode][comp]) || "";
-};
-
-ZmComposeView.prototype._getHtmlMarkerAttr =
-function(marker) {
-	return  ' class="' + ZmComposeView.BC_HTML_MARKER_ATTR + marker + '" ';
 };
 
 // Chart for determining number of blank lines between non-empty components.
@@ -2348,20 +2312,13 @@ function(comp1, comp2, val1, val2) {
 };
 
 ZmComposeView.prototype._getSignatureComponent =
-function(style, mode, params) {
-
-	params = params || {};
-
-	var comp = (style === ZmSetting.SIG_OUTLOOK) ? ZmComposeView.BC_SIG_PRE : ZmComposeView.BC_SIG_POST;
-
-	if (params.action === ZmOperation.DRAFT && params.msg && params.firstLoad) {
-		return this.getComponentContent(comp, params.msg.getBodyContent());
-	}
-
+function(style, mode) {
+		
 	var value = "";
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var account = ac.multiAccounts && this.getFromAccount();
 	if (ac.get(ZmSetting.SIGNATURES_ENABLED, null, account) && ac.get(ZmSetting.SIGNATURE_STYLE, null, account) === style) {
+		var comp = (style === ZmSetting.SIG_OUTLOOK) ? ZmComposeView.BC_SIG_PRE : ZmComposeView.BC_SIG_POST;
 		var params = {
 			style:		style,
 			account:	account,
@@ -2377,26 +2334,16 @@ ZmComposeView.prototype._getDivider =
 function(mode, params) {
 
 	mode = mode || this._composeMode;
-	params = params || {};
-
 	var htmlMode = (mode === Dwt.HTML);
-	var action = params.action || this._action;
-	var msg = params.msg || this._msg;
-	var incOptions = params.incOptions || this._controller._curIncOptions;
-
-	if (action === ZmOperation.DRAFT && msg) {
-		// Need to get the divider from original message in case of draft,
-		// because we don't know if the original action was forward or reply
-		// and therefore don't know which user setting to lookup and therefore don't know incOptions.headers
-		return this.getComponentContent(ZmComposeView.BC_DIVIDER, msg.getBodyContent());
-	}
-
+	var action = (params && params.action) || this._action;
+	var msg = (params && params.msg) || this._msg;
+	var incOptions = (params && params.incOptions) || this._controller._curIncOptions;
 	var preface = "";
 	var marker = htmlMode && this._getMarker(mode, ZmComposeView.BC_DIVIDER);
 	if (incOptions && incOptions.headers) {
 		// divider is just a visual separator if there are headers below it
 		if (htmlMode) {
-			preface = '<hr id="' + AjxStringUtil.HTML_SEP_ID + '"' + this._getHtmlMarkerAttr(marker) + '>';
+			preface = '<hr id="' + AjxStringUtil.HTML_SEP_ID + '" ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">';
 		} else {
 			var msgText = (action === ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
 			preface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES, this._crlf].join("");
@@ -2419,7 +2366,7 @@ function(mode, params) {
 		preface = AjxMessageFormat.format(ZmMsg.replyPrefix, [date, time, address]);
 		preface += this._crlf;
 		if (htmlMode) {
-			preface = '<span id="' + AjxStringUtil.HTML_SEP_ID + '"' + this._getHtmlMarkerAttr(marker) + '>' + preface + '</span>';
+			preface = '<span id="' + AjxStringUtil.HTML_SEP_ID + '" ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + preface + '</span>';
 		}
 	}
 		
@@ -2432,17 +2379,9 @@ function(mode, params) {
 	mode = mode || this._composeMode;
 	var htmlMode = (mode === Dwt.HTML);
 	params = params || {};
-	var action = params.action || this._action;
-	var msg = params.msg || this._msg;
-
-	if (action === ZmOperation.DRAFT && msg) {
-		// Need to get the headers from original message in case of draft,
-		// because we don't know if the original action was forward or reply
-		// and therefore don't know which user setting to lookup and therefore don't know incOptions.headers
-		return this.getComponentContent(ZmComposeView.BC_HEADERS, msg.getBodyContent());
-	}
-
-	var incOptions = params.incOptions || this._controller._curIncOptions;
+	var action = (params && params.action) || this._action;
+	var msg = (params && params.msg) || this._msg;
+	var incOptions = (params && params.incOptions) || this._controller._curIncOptions;
 
 	var value = "";
 	var headers = [];
@@ -2471,13 +2410,13 @@ function(mode, params) {
 			incOptions.pre = !htmlMode && appCtxt.get(ZmSetting.REPLY_PREFIX);
 			wrapParams.prefix = incOptions.pre;
 			if (htmlMode) {
-				wrapParams.before = '<div' + this._getHtmlMarkerAttr(marker) + '>' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
+				wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
 				wrapParams.after = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
 			}
 			value = AjxStringUtil.wordWrap(wrapParams);
 		}
 		else if (htmlMode) {
-			wrapParams.before = '<div' + this._getHtmlMarkerAttr(marker) + '>';
+			wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">';
 			wrapParams.after = '</div>';
 			value = AjxStringUtil.wordWrap(wrapParams);
 		}
@@ -2494,16 +2433,10 @@ function(mode, params) {
 
 	mode = mode || this._composeMode;
 	params = params || {};
-	var action = params.action || this._action;
-	var firstLoad = params.firstLoad;
+	var action = (params && params.action) || this._action;
 	var htmlMode = (mode === Dwt.HTML);
-	var msg = params.msg || this._msg;
-
-	if (action === ZmOperation.DRAFT && msg && params.firstLoad) {
-		return this.getComponentContent(ZmComposeView.BC_QUOTED_TEXT, msg.getBodyContent());
-	}
-
-	var incOptions = params.incOptions || this._controller._curIncOptions;
+	var msg = (params && params.msg) || this._msg;
+	var incOptions = (params && params.incOptions) || this._controller._curIncOptions;
 	var what = incOptions.what;
 	var bodyInfo = params.bodyInfo || this._getBodyContent(msg, htmlMode, what);
 
@@ -2533,12 +2466,12 @@ function(mode, params) {
 		if (htmlMode) {
 			var marker = this._getMarker(Dwt.HTML, ZmComposeView.BC_QUOTED_TEXT);
 			if (incOptions.prefix) {
-				wrapParams.before = '<div' + this._getHtmlMarkerAttr(marker) + '>' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
+				wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
 				wrapParams.after = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
 				wrapParams.prefix = appCtxt.get(ZmSetting.REPLY_PREFIX);
 			}
 			else {
-				wrapParams.before = '<div' + this._getHtmlMarkerAttr(marker) + '>';
+				wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">';
 				wrapParams.after = '</div>';
 			}
 			value = AjxStringUtil.wordWrap(wrapParams);
@@ -2560,11 +2493,7 @@ function(mode, params) {
 // Removes the invisible markers we use in text mode, since we should not send those out as part of the msg
 ZmComposeView.prototype._removeMarkers =
 function(text) {
-	if (this._composeMode === Dwt.TEXT) {
-		return text.replace(ZmComposeView.BC_MARKER_REGEXP, '');
-	} else {
-		return text.replace(ZmComposeView.BC_HTML_MARKER_REGEXP, '$1$3');
-	}
+	return text.replace(ZmComposeView.BC_MARKER_REGEXP, '');
 };
 
 ZmComposeView.prototype._normalizeText =
@@ -2575,6 +2504,7 @@ function(text, isHtml) {
         text = AjxStringUtil.trimHtml(text);
 	}
 	else {
+		text = this._removeMarkers(text);
 		text = text.replace(/\n+$/g, "\n");	// compress trailing line returns
 	}
 
@@ -2585,13 +2515,12 @@ function(text, isHtml) {
  * Returns the value of the given component as extracted from the content of the editor.
  * 
  * @param {string}		comp		component identifier (ZmComposeView.BC_*)
- * @param {string}		messageContent	optional message content to extract conponent content from.
  */
 ZmComposeView.prototype.getComponentContent =
-function(comp, messageContent) {
+function(comp) {
 	
 	var htmlMode = (this._composeMode === Dwt.HTML);
-	var content = messageContent || this._getEditorContent();
+	var content = this._getEditorContent(true);
 	var compContent = "";
 
 	var firstComp = this._compList[0];
@@ -2603,13 +2532,28 @@ function(comp, messageContent) {
 	
 	if (htmlMode) {
 		var marker = this._getMarker(this._composeMode, comp);
-		var className = ZmComposeView.BC_HTML_MARKER_ATTR + marker;
-
-		var contentEl = document.createElement('html');
-		contentEl.innerHTML = content.match(/<body[^>]*>[\s\S]*<\/body>/gi);
-
-		var component = Dwt.byClassName(className, contentEl)[0];
-		compContent = component && component.outerHTML || "";
+		var idx1 = content.indexOf(marker);
+		if (idx1 !== -1) {
+			var chunk = content.substring(0, idx1);
+			// found the marker (an element ID), now back up to opening of tag
+			idx1 = chunk.lastIndexOf("<");
+			if (idx1 !== -1) {
+				if (comp === lastComp) {
+					compContent = content.substring(idx1);
+				}
+				else {
+					marker = this._getMarker(Dwt.HTML, nextComp);
+					var idx2 = marker && content.indexOf(marker);
+					if (idx2 !== -1) {
+						chunk = content.substring(0, idx2);
+						idx2 = chunk.lastIndexOf("<");
+						if (idx2 !== -1) {
+							compContent = content.substring(idx1, idx2);
+						}
+					}
+				}
+			}
+		}
 	}
 	else {
 		// In text mode, components are separated by markers which are varying lengths of a zero-width space
@@ -2624,32 +2568,21 @@ function(comp, messageContent) {
 			start = marker1.length;
 		}
 		else {
-			var regex2Idx = content.search(regex2);
-			// either not found or found it somewhere after the start
-			start = (regex2Idx === -1) ? -1 : regex2Idx + marker1.length + 1;  // add one to account for non-matching char at beginning of regex
+			// found it somewhere after the start
+			start = content.search(regex2) + marker1.length + 1;  // add one to account for non-matching char at beginning of regex
 		}
-
 		if (start > 0) {
-			if (messageContent) {
+			marker2 = this._getMarker(this._composeMode, nextComp);
+			// look for the next component's marker so we know where this component's content ends
+			regex2 = marker2 && ZmComposeView.BC_TEXT_MARKER_REGEX2[nextComp];
+			idx2 = regex2 && content.search(regex2) + 1;
+			if (idx2) {
+				// found it, take what's in between
+				compContent = content.substring(start, idx2);
+			}
+			else {
+				// this comp is last component
 				compContent = content.substr(start);
-				idx2 = compContent.indexOf(ZmComposeView.BC_MARKER_CHAR);
-				if (idx2 !== -1) {
-					// found it, take what's in between
-					compContent = compContent.substring(0, idx2);
-				}
-			} else {
-				marker2 = this._getMarker(this._composeMode, nextComp);
-				// look for the next component's marker so we know where this component's content ends
-				regex2 = marker2 && ZmComposeView.BC_TEXT_MARKER_REGEX2[nextComp];
-				idx2 = regex2 && content.search(regex2) + 1;
-				if (idx2) {
-					// found it, take what's in between
-					compContent = content.substring(start, idx2);
-				}
-				else {
-					// this comp is last component
-					compContent = content.substr(start);
-				}
 			}
 		}
 	}
@@ -2678,17 +2611,10 @@ function(comp) {
  * Returns text that the user has typed into the editor, as long as it comes first.
  */
 ZmComposeView.prototype.getUserText =
-function(params) {
-
-	params = params || {};
-	var isDraft = params.action === ZmOperation.DRAFT;
+function() {
+		
 	var htmlMode = (this._composeMode === Dwt.HTML);
-	var content;
-	if (isDraft && params.msg && params.firstLoad) {
-		content = params.msg.getBodyContent();
-	} else {
-		content = this._getEditorContent();
-	}
+	var content = this._getEditorContent(true);
 	var userText = content;
 	if (htmlMode) {
 		var firstComp;
@@ -2715,7 +2641,7 @@ function(params) {
 			userText = this.getComponentContent(ZmComposeView.BC_TEXT_PRE);
 		}
 		else if (this._compList.length > 0) {
-			var idx = content.indexOf(ZmComposeView.BC_MARKER_CHAR);
+			var idx = content.indexOf(this._getMarker(this._composeMode, this._compList[0]));
 			if (idx !== -1) {
 				userText = content.substring(0, idx);
 			}
@@ -2768,7 +2694,7 @@ function(op, quotedText, check) {
 			}
 			if (htmlMode) {
 				var marker = this._getMarker(Dwt.HTML, ZmComposeView.BC_QUOTED_TEXT);
-				wrapParams.before = '<div' + this._getHtmlMarkerAttr(marker) + '>' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
+				wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
 				wrapParams.after = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
 			}
 			quotedText = AjxStringUtil.wordWrap(wrapParams);
@@ -2793,7 +2719,7 @@ function(op, quotedText, check) {
 		}
 		if (op === ZmOperation.FORMAT_HTML) {
 			var marker = this._getMarker(Dwt.HTML, ZmComposeView.BC_QUOTED_TEXT);
-			var openTag = '<div' + this._getHtmlMarkerAttr(marker) + '>' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
+			var openTag = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
 			var closeTag = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
 			quotedText = AjxStringUtil.convertToHtml(quotedText, true, openTag, closeTag);
 		}
@@ -3012,13 +2938,7 @@ function(params, noEditorUpdate) {
 		this.cleanupAttachments(true);
 	}
 	this._isDirty = this._isDirty || this.isDirty();
-	this._setBody({
-		action: action,
-		msg: msg,
-		extraBodyText: params.extraBodyText,
-		noEditorUpdate: noEditorUpdate,
-		keepAttachments: params.keepAttachments
-	});
+	this._setBody(action, msg, params.extraBodyText, noEditorUpdate, params.keepAttachments);
 	this._setFormValue();
 	this._resetBodySize();
 };
@@ -4300,12 +4220,7 @@ function(params) {
 		}
 	}
 	this._setSubject(action, msg, params.subjectOverride);
-	this._setBody({
-		action: action,
-		msg: msg,
-		extraBodyText: params.extraBodyText,
-		noEditorUpdate: true
-	});
+	this._setBody(action, msg, params.extraBodyText, true);
 	var oboMsg = msg || (params.selectedMessages && params.selectedMessages.length && params.selectedMessages[0]);
 	var obo = this._getObo(params.accountName, oboMsg);
 		
