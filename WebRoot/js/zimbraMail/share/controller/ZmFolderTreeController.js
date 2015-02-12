@@ -287,11 +287,15 @@ ZmFolderTreeController.prototype._getActionMenuOps =
 function() {
 	return [
 		ZmOperation.NEW_FOLDER,
+		ZmOperation.SYNC,
+		ZmOperation.SYNC_ALL,
 		ZmOperation.MARK_ALL_READ,
+		ZmOperation.EMPTY_FOLDER,
+		ZmOperation.RECOVER_DELETED_ITEMS,
+		ZmOperation.SHARE_FOLDER,
+		ZmOperation.MOVE,
 		ZmOperation.DELETE_WITHOUT_SHORTCUT,
 		ZmOperation.RENAME_FOLDER,
-		ZmOperation.MOVE,
-		ZmOperation.SHARE_FOLDER,
 		ZmOperation.EDIT_PROPS,
 		ZmOperation.SYNC_OFFLINE_FOLDER,
 		ZmOperation.OPEN_IN_TAB,
