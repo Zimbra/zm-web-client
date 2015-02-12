@@ -2113,6 +2113,7 @@ function() {
 		this._inviteMsgView._dayView = null; // for some reason the DOM of it gets lost so we have to null it so we don't try to access it later - instead of would be re-created.
 		this._inviteCalendarContainer = null;
 	}
+	this._forceExpand = true;
 	// redo loading and display of entire msg
 	this.set(this._msg, true);
 	
