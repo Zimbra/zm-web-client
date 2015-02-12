@@ -1415,14 +1415,13 @@ function(id) {
 	if (!match) {
 		msg = AjxStringUtil.convertHtml2Text(Dwt.byId(this._selected));
 	} else {
-		var msg = match.name || match.email;
-
+		var msg = AjxMessageFormat.format(ZmMsg.autocompleteMatchText, [ match.name, match.email ]);
 		if (match.isGroup) {
 			msg = AjxMessageFormat.format(ZmMsg.autocompleteGroup, msg);
-		} else if (match.isDL) {
+		}
+		else if (match.isDL) {
 			msg = AjxMessageFormat.format(ZmMsg.autocompleteDL, msg);
 		}
-
 	}
 
 	this._setLiveRegionText(msg);
