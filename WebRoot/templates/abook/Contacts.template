@@ -989,7 +989,7 @@
 					<$ if (data.showSelect) { $>
 						<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 							<tr>
-								<td class='Label nobreak'><$= ZmMsg.showNames $></td>
+								<td class='Label nobreak' id='${id}_listSelectLbl'><$= ZmMsg.showNames $></td>
 								<td id='${id}_listSelect'></td>
 							</tr>
 						</table>

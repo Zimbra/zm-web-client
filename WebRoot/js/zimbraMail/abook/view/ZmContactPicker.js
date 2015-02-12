@@ -465,7 +465,12 @@ function(account) {
 	var selectCellId = this._htmlElId + "_listSelect";
 	var selectCell = document.getElementById(selectCellId);
 	if (selectCell) {
-		this._searchInSelect = new DwtSelect({parent:this, parentElement:selectCellId, id: Dwt.getNextId("ZmContactPickerSelect_")});
+		this._searchInSelect = new DwtSelect({
+			parent:         this,
+			parentElement:  selectCellId,
+			id:             Dwt.getNextId("ZmContactPickerSelect_"),
+			legendId:       this._htmlElId + '_listSelectLbl'
+		});
 		this._resetSelectDiv();
 		this._searchInSelect.addChangeListener(new AjxListener(this, this._searchTypeListener));
 	} else {

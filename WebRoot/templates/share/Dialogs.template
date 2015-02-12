@@ -493,11 +493,11 @@
 		</td>
 	</tr>
 	<tr style='display:none;' id='${id}_remoteURLrow'>
-		<td class='Label'>
+		<td class='Label' id='${id}_remoteURLlbl'>
 			<$= ZmMsg.urlLabel $>
 		</td>
 		<td>
-			<input autocomplete='off' type='text' class='Field' id='${id}_remoteURLfield' />
+			<input autocomplete='off' type='text' class='Field' id='${id}_remoteURLfield' aria-labelledby='${id}_remoteURLlbl' />
 		</td>
 	</tr>
 </template>
