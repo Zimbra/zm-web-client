@@ -144,7 +144,7 @@ function(htmlArr, idx, msg, field, colIdx, params, classes) {
 			}
 		} else {
 			var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
-			var fromText = fromAddr && (fromAddr.getName() || fromAddr.getDispName() || fromAddr.getAddress());
+			var fromText = fromAddr && fromAddr.getText();
 			if (fromText) {
 				htmlArr[idx++] = "<span id='";
 				htmlArr[idx++] = this._getFieldId(msg, ZmItem.F_FROM);

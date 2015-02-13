@@ -33,23 +33,18 @@ ZmMailListFromGroup.prototype.constructor =  ZmMailListFromGroup;
 
 /**
  *  returns HTML string for all sections.
- *  @param {boolean} sortAsc    true/false if sort ascending
  *  @return {String} HTML for all sections including section header
- * @param sortAsc
  */
 ZmMailListFromGroup.prototype.getAllSections =
-function(sortAsc) {
+function() {
     var htmlArr = [];
-    var keys = this._sortKeys(sortAsc);
+	var sections = this._sectionList;
 
-    for(var i=0; i<keys.length; i++) {
-        var key = keys[i].addr;
-        if (this._section[key].length > 0) {
-            var sectionHeader = keys[i].title;
-            htmlArr.push(this.getSectionHeader(sectionHeader));
-            htmlArr.push(this._section[key].join(""));
-        }
-    }
+	for (var i = 0; i < sections.length; i++) {
+		var section = sections[i];
+		htmlArr.push(this.getSectionHeader(section));
+		htmlArr.push(this._section[section].join(""));
+	}
 
     return htmlArr.join("");
 };
@@ -57,54 +52,22 @@ function(sortAsc) {
 /**
  * Adds item to section
  * @param {ZmMailMsg} msg   mail message
- * @param {String} item  HTML to add to section
+ * @param {String} itemHtml  HTML to add to section
  * @return {String} section returns section if successfully added, else returns null
  */
 ZmMailListFromGroup.prototype.addMsgToSection =
-function(msg, item){
-    var email = null;
+function(msg, itemHtml){
     var fromParticipant =  msg.getAddress(AjxEmailAddress.FROM);
-    if (fromParticipant) {
-        email = fromParticipant.getAddress();
-        if (this._section.hasOwnProperty(email)) {
-            this._section[email].push(item);
-        } else {
-            this._section[email] = [];
-            this._section[email].push(item);
-            var title = this._getSectionTitle(fromParticipant);
-            this._sectionTitle[email] = {addr: email, title:title};
-        }
-    }
-    return email;
-};
-
-
-/**
- * Determines if message is in group
- * @param {String} section ID of section
- * @param {ZmMailMsg} msg
- * @return {boolean} true/false
- */
-ZmMailListFromGroup.prototype.isMsgInSection =
-function(section, msg) {
-
-    var addr;
-    var participants = msg.participants;
-    if (participants) {
-        var arr = participants.getArray();
-        for (var i=0; i<arr.length; i++){
-            if (arr[i].getType() == "FROM") {
-              addr = arr[i].getAddress();
-              break;
-            }
-        }
-    }
-
-    if (addr && addr == section) {
-       return true;
-    }
-
-    return false;
+    if (!fromParticipant) {
+		return null;
+	}
+	var section = fromParticipant.getText();
+	if (!this._section.hasOwnProperty(section)) {
+		this._section[section] = [];
+		this._sectionList.push(section);
+	}
+	this._section[section].push(itemHtml);
+	return section;
 };
 
 /**
@@ -114,64 +77,16 @@ function(section, msg) {
  */
 ZmMailListFromGroup.prototype.getSortBy =
 function(sortAsc) {
-    if (sortAsc) {
-        return ZmSearch.NAME_ASC;
-    }
-    return ZmSearch.NAME_DESC;
+    return sortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC;
 };
 
 ZmMailListFromGroup.prototype._init =
 function() {
     this._section = {};
-    this._sectionTitle = {};
-};
-
-ZmMailListFromGroup.prototype._sortKeys =
-function(sortAsc) {
-  var keys = [];
-  var i=0;
-  for (var name in this._sectionTitle) {
-      keys[i++] = {addr: this._sectionTitle[name].addr, title: this._sectionTitle[name].title};
-  }
-
-  var sortAscIgnoreCase = function(a, b) {
-    a = a.title.toLowerCase();
-    b = b.title.toLowerCase();
-    if (a > b)
-        return 1;
-    if (a < b)
-        return -1;
-    return 0;
-  };
-
-  var sortDescIgnoreCase = function(a, b) {
-    a = a.title.toLowerCase();
-    b = b.title.toLowerCase();
-    if (a < b)
-        return 1;
-    if (a > b)
-        return -1;
-    return 0;
-  };
-
-  keys.sort(sortAscIgnoreCase);
-  if (!sortAsc) {
-      keys.reverse(sortDescIgnoreCase);
-  }
-  return keys;
-};
-
-ZmMailListFromGroup.prototype._getSectionTitle =
-function(participant) {
-    var sectionHeader = participant.getAddress();
-    var name = participant.getName();
-    if (name) {
-        sectionHeader = name;
-    }
-    return sectionHeader;
+	this._sectionList = [];
 };
 
 ZmMailListFromGroup.prototype._getSectionHeaderTitle =
 function(section) {
-    return this._sectionTitle[section].title;
+	return section;
 };
