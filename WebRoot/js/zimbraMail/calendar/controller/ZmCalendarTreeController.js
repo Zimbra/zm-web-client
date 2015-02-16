@@ -819,6 +819,7 @@ ZmCalendarTreeController.POLLING_INTERVAL = "1m";
 ZmCalendarTreeController.CONN_TYPE_CLEARTEXT = "cleartext";
 ZmCalendarTreeController.CONN_TYPE_SSL = "ssl";
 ZmCalendarTreeController.SSL_PORT = "443";
+ZmCalendarTreeController.ALT_GOOGLE_CALDEV_SERVER = "apidata.googleusercontent.com";
 ZmCalendarTreeController.DATA_SOURCE_ATTR_YAHOO = "p:/principals/users/_USERNAME_";
 ZmCalendarTreeController.DATA_SOURCE_ATTR = "p:/calendar/dav/_USERNAME_/user";
 
@@ -829,28 +830,26 @@ function(organizer, errorCallback) {
 
     var url,
         port,
-        urlPort,
+        urlComponents,
         hostUrl,
         jsonObj,
         connType = ZmCalendarTreeController.CONN_TYPE_CLEARTEXT,
         dsa = ZmCalendarTreeController.DATA_SOURCE_ATTR;
 
+
     hostUrl = calDav.hostUrl;
-    if(hostUrl.indexOf(":") === -1) {
-        url = hostUrl;
-        port = ZmCalendarTreeController.SSL_PORT;
-    }
-    else {
-        urlPort = hostUrl.split(":");
-        url = urlPort[0];
-        port = urlPort[1];
-    }
+    urlComponents = AjxStringUtil.parseURL(hostUrl);
+	url = urlComponents.domain;
+	port = urlComponents.port || ZmCalendarTreeController.SSL_PORT;    	
+	dsa = urlComponents.path ? "p:" + urlComponents.path : ZmCalendarTreeController.DATA_SOURCE_ATTR;
+    
 
     if(port == ZmCalendarTreeController.SSL_PORT) {
         connType = ZmCalendarTreeController.CONN_TYPE_SSL;
     }
 
-    if(calDav.hostUrl.indexOf(ZmMsg.sharedCalCalDAVServerGoogle) === -1) { // Not google url
+    if (calDav.hostUrl.indexOf(ZmMsg.sharedCalCalDAVServerGoogle) === -1 
+    	&& calDav.hostUrl.indexOf(ZmCalendarTreeController.ALT_GOOGLE_CALDEV_SERVER) === -1) { // Not google url
         dsa = ZmCalendarTreeController.DATA_SOURCE_ATTR_YAHOO;
     }
 
