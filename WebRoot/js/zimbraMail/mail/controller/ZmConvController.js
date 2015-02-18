@@ -316,9 +316,9 @@ function() {
 	return popView;
 };
 
-ZmConvController.prototype.getKeyMapName =
-function() {
-	return ZmKeyMap.MAP_CONVERSATION;
+ZmConvController.prototype.getKeyMapName = function() {
+	// if user is quick replying, don't use the mapping of conv/mail list - so Ctrl+Z works
+	return this._convView && this._convView.isActiveQuickReply() ? ZmKeyMap.MAP_QUICK_REPLY : ZmKeyMap.MAP_CONVERSATION;
 };
 
 ZmConvController.prototype.handleKeyAction =
