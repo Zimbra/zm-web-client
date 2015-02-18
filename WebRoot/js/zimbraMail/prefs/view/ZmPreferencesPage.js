@@ -1244,7 +1244,7 @@ ZmPreferencesPage.prototype._isEnabled = function(prefId1 /* ..., prefIdN */) {
 
 		var setup = ZmPref.SETUP[prefId],
 			prefPrecondition = setup && setup.precondition;
-		if (appCtxt.checkPrecondition(prefPrecondition || prefId, prefPrecondition && setup.preconditionAny)) {
+		if (appCtxt.checkPrecondition(prefPrecondition, prefPrecondition && setup.preconditionAny)) {
 			return true;
 		}
 	}
