@@ -223,8 +223,11 @@ function(id) {
 
 ZmDocsEditView.prototype.loadDoc =
 function(item) {
-    var content =
-		this._docMgr.fetchDocumentContent(item) || "<br/>";
+	var content = this._docMgr.fetchDocumentContent(item) || "<br/>";
+
+	//resurrecting code from bug 74873 that was removed in bug 84887.
+	//this was in ZmDocsEditController.prototype.loadDocument. But fixed so it can take attributes before dfsrc, and choose http or https in this one line
+	content = content.replace(/<img ([^>]*)dfsrc="http(s?):\/\//gi, '<img $1 src="http$2://');
 
     if(this._editor) {
         this._editor.setContent(content);
