@@ -1702,6 +1702,10 @@ ZmEditContactViewInputSelect.prototype._createInput = function() {
 	input.setHandler(DwtEvent.ONKEYDOWN, AjxCallback.simpleClosure(this._handleInputKeyDown, this, input));
 	input.setHandler(DwtEvent.ONKEYUP, AjxCallback.simpleClosure(this._handleInputKeyUp, this, input));
 	input.setHandler(DwtEvent.ONMOUSEDOWN, AjxCallback.simpleClosure(this._handleMouseDown, this, input));
+	if (AjxEnv.isIE  && !AjxEnv.isIE9 && !AjxEnv.isIE8) {
+		// Add a handler to account for IE's 'clear an input field' X control. IE10+
+		input.setHandler(DwtEvent.ONMOUSEUP,   this._handleMouseUp.bind(this, input));
+	}
 	input.setHandler(DwtEvent.ONPASTE, AjxCallback.simpleClosure(this._onPaste, this, input));
 	return input;
 };
@@ -1755,6 +1759,21 @@ function(input, evt) {
 	var value = input.getValue();
 	input.setData("OLD_VALUE", value);
 	return true;
+};
+
+ZmEditContactViewInputSelect.prototype._handleMouseUp = function(input, evt) {
+	// Handle IE's 'clear the input field' X - Delay testing until its had a chance to
+	// clear the field
+	setTimeout(this._checkCleared.bind(this, input), 0);
+	return true;
+};
+ZmEditContactViewInputSelect.prototype._checkCleared = function(input) {
+	// Check for a change in input
+	var ovalue = input.getData("OLD_VALUE");
+	var nvalue = input.getValue();
+	if (ovalue != null && ovalue != nvalue) {
+		this.setDirty(true);
+	}
 };
 
 ZmEditContactViewInputSelect.prototype._onPaste =
