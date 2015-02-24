@@ -69,7 +69,7 @@ ZmAppCtxt._AUTHTOKEN_EVENT = 'AUTHTOKEN';
 
 //Regex constants
 //Bug fix # 79986, #81095. Invalid file names are < > , ? | / \ * :
-ZmAppCtxt.INVALID_NAME_CHARS = "[\\|?<>:*\",\\\\\/]";
+ZmAppCtxt.INVALID_NAME_CHARS = "[\\|?<>:*\"\\\\\/]";
 ZmAppCtxt.INVALID_NAME_CHARS_RE = new RegExp(ZmAppCtxt.INVALID_NAME_CHARS);
 
 /**
