@@ -982,7 +982,10 @@ function(context, match) {
 			for (var i = 0; i < results.length; i++) {
 				var result = results[i];
 				var key = this._getKey(result);
-				if (context.key === key) {
+				// Compare el.value to key too. Edge case: user types complete email and presses enter
+				// before new autocomplete request is sent. In this case context.key is only a part of key and el.value.
+				// Bug 86577
+				if (context.key === key || el.value === key) {
 					newValue += newText;
 				}
 				else {
