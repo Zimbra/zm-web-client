@@ -45,7 +45,7 @@ ZmSocialApp.prototype.toString = function() {	return "ZmSocialApp"; };
 ZmApp.SOCIAL                        = ZmId.APP_SOCIAL;
 ZmApp.CLASS[ZmApp.SOCIAL]		    = "ZmSocialApp";
 ZmApp.SETTING[ZmApp.SOCIAL]		    = ZmSetting.SOCIAL_ENABLED;
-ZmApp.UPSELL_SETTING[ZmApp.SOCIAL]	= ZmSetting.SOCIAL_EXTERNAL_URL;    // use presence of URL to determine enabled
+ZmApp.UPSELL_SETTING[ZmApp.SOCIAL]	= ZmSetting.SOCIAL_EXTERNAL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.SOCIAL]	    = 100;
 
 ZmSocialApp.prototype._registerApp = function() {
