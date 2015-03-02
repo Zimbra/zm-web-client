@@ -152,10 +152,10 @@ function(view, force) {
 					// reset the replyView with the warning before turning off the pane
 					if (!force && !convView._controller.popShield(null, this.switchView.bind(this, view, true))) {
 						// redo setChecked on the oldView menu item if user cancels
-						this._viewMenu.getMenuItem(oldView)._setChecked(true);
+						this._readingPaneViewMenu.getMenuItem(oldView)._setChecked(true);
 						return;
 					}
-					this._viewMenu.getMenuItem(view)._setChecked(true);
+					this._readingPaneViewMenu.getMenuItem(view)._setChecked(true);
 					replyView.reset();
 				}
 			}
