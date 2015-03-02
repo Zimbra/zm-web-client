@@ -875,7 +875,6 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
     obj._editorInitialized = true;
 
     this._resetSize();
-	this._setupTabGroup();
 
 	var iframe = Dwt.getElement(this._iFrameId);
 	if (iframe) {
@@ -2297,6 +2296,8 @@ ZmHtmlEditor.prototype.getTabGroupMember = function() {
 		this.__tabGroup = new DwtTabGroup(this.toString());
 	}
 
+	this._setupTabGroup(this.__tabGroup);
+
 	return this.__tabGroup;
 };
 
@@ -2307,16 +2308,12 @@ ZmHtmlEditor.prototype.getTabGroupMember = function() {
  *
  * @private
  */
-ZmHtmlEditor.prototype._setupTabGroup = function() {
+ZmHtmlEditor.prototype._setupTabGroup = function(mainTabGroup) {
 
-	var mode = this.getMode(),
-		mainTabGroup = this.getTabGroupMember();
+	var mode = this.getMode();
+	mainTabGroup = mainTabGroup || this.__tabGroup;
 
-	// Don't call replaceMember() repeatedly since it will duplicate the members
-	if (mode === this._curTabGroupMode) {
-		return;
-	}
-
+	mainTabGroup.removeAllMembers();
 	if (mode === Dwt.HTML) {
 		// tab group for HTML has first toolbar button and IFRAME
 		var htmlTabGroup = this._htmlModeTabGroup;
@@ -2328,7 +2325,7 @@ ZmHtmlEditor.prototype._setupTabGroup = function() {
 			}
 			htmlTabGroup.addMember(this);
 		}
-		mainTabGroup.replaceMember(this._textModeTabGroup, this._htmlModeTabGroup);
+		mainTabGroup.addMember(htmlTabGroup);
 	}
 	else {
 		// tab group for TEXT has the TEXTAREA
@@ -2340,7 +2337,6 @@ ZmHtmlEditor.prototype._setupTabGroup = function() {
 			textTabGroup = this._textModeTabGroup = new DwtTabGroup(this.toString() + '-' + mode);
 		}
 		textTabGroup.addMember(this.getContentField());
-		mainTabGroup.replaceMember(this._htmlModeTabGroup, this._textModeTabGroup);
+		mainTabGroup.addMember(textTabGroup);
 	}
-	this._curTabGroupMode = mode;
 };
