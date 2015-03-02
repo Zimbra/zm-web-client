@@ -83,6 +83,7 @@ ZmMimeTable.TEXT_VCARD				= "text/x-vcard";
 ZmMimeTable.TEXT_DIRECTORY  	    = "text/directory";
 ZmMimeTable.TEXT_PLAIN				= "text/plain";
 ZmMimeTable.TEXT_XML				= "text/xml";
+ZmMimeTable.TEXT_CSV				= "text/csv";
 ZmMimeTable.VIDEO					= "video";
 ZmMimeTable.VIDEO_WMV				= "video/x-ms-wmv";
 ZmMimeTable.XML_ZIMBRA_SHARE		= "xml/x-zimbra-share";
@@ -127,6 +128,7 @@ ZmMimeTable._table[ZmMimeTable.TEXT_HTML]			= {desc: ZmMsg.htmlDocument, image: 
 ZmMimeTable._table[ZmMimeTable.TEXT_JAVA]			= {desc: ZmMsg.javaSource, image: "GenericDoc", imageLarge: "GenericDoc_48"};
 ZmMimeTable._table[ZmMimeTable.TEXT_PLAIN]			= {desc: ZmMsg.textFile, image: "Doc", imageLarge: "Doc_48", query: "text"};
 ZmMimeTable._table[ZmMimeTable.TEXT_XML]			= {desc: ZmMsg.xmlDocument, image: "GenericDoc", imageLarge: "GenericDoc_48"};
+ZmMimeTable._table[ZmMimeTable.TEXT_CSV]			= {desc: ZmMsg.csvDocument, image: "GenericDoc", imageLarge: "GenericDoc_48"};
 ZmMimeTable._table[ZmMimeTable.VIDEO]				= {desc: ZmMsg.video, image: "VideoDoc", imageLarge: "VideoDoc_48"};
 ZmMimeTable._table[ZmMimeTable.VIDEO_WMV]			= {desc: ZmMsg.msWMV, image: "VideoDoc", imageLarge: "VideoDoc_48"};
 
