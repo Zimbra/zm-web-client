@@ -363,6 +363,18 @@
   </error-page>
 
   <servlet>
+    <servlet-name>WebServlet</servlet-name>
+    <servlet-class>com.zimbra.webClient.servlet.WebServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>WebAdminServlet</servlet-name>
+    <servlet-class>com.zimbra.webClient.servlet.WebAdminServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet>
     <servlet-name>Forwarder</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.Forward</servlet-class>
     <async-supported>true</async-supported>
