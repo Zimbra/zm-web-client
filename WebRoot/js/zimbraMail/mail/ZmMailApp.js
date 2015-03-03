@@ -1486,7 +1486,7 @@ function(creates, type, items, currList, sortBy, convs, last) {
 		if (!item) {
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: create " + type + " object " + create.id);
 			var itemClass = eval(ZmList.ITEM_CLASS[type]);
-			item = itemClass.createFromDom(create, {});
+			item = itemClass.createFromDom(create, {list: currList});
 		}
 		else if (item.type == ZmItem.MSG) {
 			// bug 47589: make sure conv knows its folders
