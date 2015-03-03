@@ -4004,6 +4004,10 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 #ENDIF
 
+.ZOptionsField.ZOptionsSubField, .ZOptionsInfo.ZOptionsSubField {
+	padding-left:2em;
+}
+
 .ZDeviceOptionsTable INPUT {
 	width:100%;
 }

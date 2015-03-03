@@ -434,7 +434,7 @@ ZmPrefView.prototype._checkSection = function(section, viewPage, dirtyCheck, noV
             comparableValue = !comparableOrigValue;
         }
 
-            if (this._prefChanged(pref.dataType, comparableOrigValue, comparableValue)) {
+        if (this._prefChanged(pref.dataType, comparableOrigValue, comparableValue)) {
 			var isValid = true;
 			if (!noValidation) {
 				var maxLength = setup ? setup.maxLength : null;

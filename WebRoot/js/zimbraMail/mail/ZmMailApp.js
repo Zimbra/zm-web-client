@@ -300,6 +300,7 @@ function() {
 				ZmSetting.MAIL_LIFETIME_TRASH,
 				ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED,
 				ZmSetting.MAIL_NOTIFY_SOUNDS,
+				ZmSetting.MAIL_NOTIFY_ALL,
 				ZmSetting.MAIL_NOTIFY_APP,
 				ZmSetting.MAIL_NOTIFY_BROWSER,
 				ZmSetting.MAIL_NOTIFY_TOASTER,
@@ -307,7 +308,6 @@ function() {
 				ZmSetting.MAIL_SEND_READ_RECEIPTS,
 				ZmSetting.MARK_MSG_READ,
 				ZmSetting.NOTIF_ADDRESS,
-				ZmSetting.NOTIF_ENABLED,
 				ZmSetting.OFFLINE_NOTIFY_NEWMAIL_ON_INBOX,
 				ZmSetting.OPEN_MAIL_IN_NEW_WIN,
 				ZmSetting.PAGE_SIZE,
@@ -502,6 +502,14 @@ function() {
 		errorMessage:		ZmMsg.errorMissingFwdAddr
 	});
 
+	ZmPref.registerPref("MAIL_NOTIFY_ALL", {
+		displayName:		ZmMsg.messageNotificationFoldersLabel,
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:		ZmPref.ORIENT_VERTICAL,
+		displayOptions:		[ ZmMsg.messageNotificationFoldersInbox, ZmMsg.messageNotificationFoldersAll ],
+		options:			[ false, true ]
+	});
+
 	ZmPref.registerPref("MAIL_NOTIFY_SOUNDS", {
 		displayName:		ZmMsg.playSound,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
@@ -540,15 +548,8 @@ function() {
 		validationFunction: ZmPref.validateEmail,
 		errorMessage:       ZmMsg.invalidEmail,
 		precondition:		ZmSetting.NOTIF_FEATURE_ENABLED,
-		hint:				ZmMsg.enterEmailAddress
-	});
-
-	ZmPref.registerPref("NOTIF_ENABLED", {
-		displayName:		ZmMsg.mailNotifEnabled,
-		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		ZmSetting.NOTIF_FEATURE_ENABLED,
-		validationFunction:	ZmMailApp.validateSendNotification,
-		errorMessage:		ZmMsg.errorMissingNotifyAddr
+		hint:				ZmMsg.enterEmailAddress,
+		setFunction:        ZmPref.setMailNotificationAddressValue
 	});
 
 	ZmPref.registerPref("OPEN_MAIL_IN_NEW_WIN", {
@@ -766,19 +767,6 @@ function(checked) {
 	if (!section) { return false; }
 	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
 	var input = view.getView(section.id).getFormObject(ZmSetting.MAIL_FORWARDING_ADDRESS);
-	return (input != null && input.isValid());
-};
-
-/**
- * @private
- */
-ZmMailApp.validateSendNotification =
-function(checked) {
-	if (!checked) { return true; }
-	var section = ZmPref.getPrefSectionWithPref(ZmSetting.NOTIF_ADDRESS);
-	if (!section) { return false; }
-	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
-	var input = view.getView(section.id).getFormObject(ZmSetting.NOTIF_ADDRESS);
 	return (input != null && input.isValid());
 };
 
