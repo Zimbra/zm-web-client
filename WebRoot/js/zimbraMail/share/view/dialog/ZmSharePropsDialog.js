@@ -696,11 +696,12 @@ ZmSharePropsDialog.prototype._createView = function() {
 
 	var shareWithRadioName = this._htmlElId + "_shareWith";
 	var shareWith = new DwtPropertySheet(this, null, null, DwtPropertySheet.RIGHT);
-	var shareWithProperties = [], sw, label, value;
+	var shareWithProperties = [], sw, label, value, swRadioId;
 	for (var i = 0; i < ZmSharePropsDialog.SHARE_WITH.length; i++) {
 		sw = ZmSharePropsDialog.SHARE_WITH[i];
-		label = "<label id='LblShareWith_" + sw + "'>" + ZmSharePropsDialog.SHARE_WITH_MSG[sw] + "</label>";
-		value = "<input type='radio' id='ShareWith_" + sw + "' name='" + shareWithRadioName + "' value='" + ZmSharePropsDialog.SHARE_WITH_TYPE[sw] + "'>";
+        swRadioId = "ShareWith_" + sw;
+		label = "<label id='LblShareWith_" + sw + "'for='" + swRadioId + "'>" + ZmSharePropsDialog.SHARE_WITH_MSG[sw] + "</label>";
+        value = "<input type='radio' id='" + swRadioId + "' name='" + shareWithRadioName + "' value='" + ZmSharePropsDialog.SHARE_WITH_TYPE[sw] + "'>";
 		shareWith.addProperty(label, value);
 	}
 
@@ -766,7 +767,7 @@ ZmSharePropsDialog.prototype._createView = function() {
 		html[idx++] = "<input type='radio' name='" + roleRadioName + "' value='" + role + "' id='" + radioId + "' aria-labelledby='" + labelledBy + "'>";
         html[idx++] = "</td>";
 		html[idx++] = "<td style='font-weight:bold; padding:0 0.5em 0 .25em;'>";
-		html[idx++] = "<label id='" + labelId + "'>";
+		html[idx++] = "<label id='" + labelId + "' for='"+radioId+"' >";
 		html[idx++] = ZmShare.getRoleName(role);
 		html[idx++] = "</label>"
 		html[idx++] = "</td>";
