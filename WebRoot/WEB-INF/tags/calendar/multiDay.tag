@@ -482,7 +482,18 @@
                         </c:if>
                         <c:choose>
                             <c:when test="${not empty cell.appt and cell.isFirst}">
-                                <td <c:if test="${diffDay}">class='ZhCalDaySEP' </c:if> valign="top" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>
+                                <c:choose>
+                                    <c:when test="${cell.rowSpan ne 1} and ${diffDay}">
+                                        <c:set var="className" value="ZhCalDaySEP js-resize"/>
+                                    </c:when>
+                                    <c:when test="${cell.rowSpan ne 1}">
+                                        <c:set var="className" value="js-resize"/>
+                                    </c:when>
+                                    <c:when test="${diffDay}">
+                                        <c:set var="className" value="ZhCalDaySEP"/>
+                                    </c:when>
+                                </c:choose>
+                                <td  class=${className} valign="top" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>
                                     <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
                                     <app:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${cell.day.startTime}" end="${cell.day.endTime}" timezone="${timezone}"/>
                                 </td>

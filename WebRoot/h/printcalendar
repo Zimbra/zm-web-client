@@ -121,6 +121,13 @@
 </app:handleError>
 <script type="text/javascript">
     <!--
+    //Bug 97582 - Print out of 1 hour meetings are displayed as 30 minute meeting
+    //Set individual appointment height to their parent td height
+    var apptsToResize = document.querySelectorAll('.js-resize');
+    for(var i = 0, len = apptsToResize.length; i < len; i++){
+        var td = apptsToResize[i];
+        td.children[0].style.height = td.offsetHeight;
+    }
     setTimeout('window.print()', 2000);
 
     // -->
