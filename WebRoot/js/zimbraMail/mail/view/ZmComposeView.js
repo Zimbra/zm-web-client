@@ -2567,7 +2567,7 @@ function(comp) {
 			// found it at the start of content
 			start = marker1.length;
 		}
-		else {
+		else if (regex2.test(content)) {
 			// found it somewhere after the start
 			start = content.search(regex2) + marker1.length + 1;  // add one to account for non-matching char at beginning of regex
 		}
