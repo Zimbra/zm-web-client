@@ -2719,9 +2719,10 @@ function(op, quotedText, check) {
 		}
 		if (op === ZmOperation.FORMAT_HTML) {
 			var marker = this._getMarker(Dwt.HTML, ZmComposeView.BC_QUOTED_TEXT);
-			var openTag = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
-			var closeTag = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
+			var openTag =  AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
+			var closeTag = AjxStringUtil.HTML_QUOTE_PREFIX_POST;
 			quotedText = AjxStringUtil.convertToHtml(quotedText, true, openTag, closeTag);
+			quotedText = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + quotedText + '</div>';
 		}
 		else {
 			quotedText = this._htmlToText(quotedText);
