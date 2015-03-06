@@ -71,8 +71,6 @@ ZmConvView2.prototype.role = 'region';
 ZmConvView2.prototype.set =
 function(conv, force) {
 
-	if (!force && this._item && conv && (this._item == conv)) { return false; }
-	
 	var gotConv = (conv != null);
 	this.reset(gotConv);
 	this._item = conv;
