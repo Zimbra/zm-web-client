@@ -125,18 +125,7 @@ function(item, force) {
 	if (changed) {
 		this.setReadingPane(true);	// so that second view gets positioned
 	}
-    else if (item.isUnread && item === itemView._item) {
-		//bug 77255 - case is only when clicking on same conv again.
-		var msgViews = itemView._msgViews;
-		var msgViewList = itemView._msgViewList;
-		var firstMsgId = msgViewList && msgViewList[0];
-		var firstMsg = msgViews && firstMsgId && msgViews[firstMsgId];
-        //expand most recent msg
-		if (firstMsg && !firstMsg._expanded) {
-	        firstMsg._toggleExpansion();
-    	    firstMsg._item._markReadLocal(true);
-		}
-    }
+
 	return ZmDoublePaneView.prototype.setItem.apply(this, arguments);
 };
 
