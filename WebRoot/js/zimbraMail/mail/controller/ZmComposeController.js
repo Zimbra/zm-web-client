@@ -813,6 +813,7 @@ function() {
 		action:			this._action,
 		msg:			this._msg,
 		extraBodyText:	this._composeView.getUserText(),
+		keepAttachments: true,
 		op:				ZmId.OP_ADD_SIGNATURE
  	};
 	this._composeView.resetBody(params);
