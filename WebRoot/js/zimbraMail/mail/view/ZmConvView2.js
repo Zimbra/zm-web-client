@@ -64,12 +64,8 @@ ZmConvView2.prototype.role = 'region';
  * Displays the given conversation.
  * 
  * @param {ZmConv}		conv		the conversation to display
- * @param {boolean}		force		if true, re-render even if already showing this conv
- * 
- * @return	{boolean}	true if a conv was displayed
  */
-ZmConvView2.prototype.set =
-function(conv, force) {
+ZmConvView2.prototype.set = function(conv) {
 
 	var gotConv = (conv != null);
 	this.reset(gotConv);
@@ -455,7 +451,7 @@ function() {
 	var rpLoc = this._controller._getReadingPanePref();
 	if (this._rpLoc && this._item) {
 		if (this._rpLoc != ZmSetting.RP_OFF && rpLoc != ZmSetting.RP_OFF && this._rpLoc != rpLoc) {
-			this.set(this._item, true);
+			this.set(this._item);
 		}
 	}
 	this._rpLoc = rpLoc;

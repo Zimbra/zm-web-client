@@ -107,7 +107,7 @@ function(view, force) {
 			var itemView = this.getItemView();
 			var conv = itemView && itemView.getItem();
 			if (conv) {
-				itemView.set(conv, true);
+				itemView.set(conv);
 			}
 		}
 	} else {
