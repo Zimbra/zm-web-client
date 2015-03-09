@@ -38,10 +38,12 @@
  * @extends		ZmAutocompleteListView
  */
 ZmDLAutocompleteListView = function(params) {
+	params.isFocusable = true;
 	ZmAutocompleteListView.call(this, params);
 	this._parentAclv = params.parentAclv;
 	this._dlScrollDiv = this.getHtmlElement();
 	this._selectionCallback = params.selectionCallback;
+	this._expandTextId = params.expandTextId;
 	Dwt.setHandler(this._dlScrollDiv, DwtEvent.ONSCROLL, ZmDLAutocompleteListView.handleDLScroll);
 };
 
@@ -52,6 +54,29 @@ ZmDLAutocompleteListView.prototype.toString =
 function() {
 	return "ZmDLAutocompleteListView";
 };
+
+
+ZmDLAutocompleteListView.prototype.getKeyMapName = function() {
+	return ZmKeyMap.MAP_DL_ADDRESS_LIST;
+};
+
+ZmDLAutocompleteListView.prototype.handleKeyAction = function(actionCode, ev) {
+	DBG.println("aif", "handle shortcut: " + actionCode);
+
+	switch (actionCode) {
+		case DwtKeyMap.SELECT_NEXT:	this._setSelected(ZmAutocompleteListView.NEXT); break;
+		case DwtKeyMap.SELECT_PREV:	this._setSelected(ZmAutocompleteListView.PREV); break;
+		case DwtKeyMap.ENTER:		this._update();  break;
+		case DwtKeyMap.CANCEL:		if (this._parentAclv && this._expandTextId) {
+										this._parentAclv._setExpandText(this._expandTextId, false);
+									}
+									this._popdown();
+									break;
+		default: return false;
+	}
+	return true;
+};
+
 
 ZmDLAutocompleteListView.prototype._set =
 function(list, contact) {
@@ -265,6 +290,7 @@ function(loc) {
 		loc.x = newX;
 	}
 	ZmAutocompleteListView.prototype._popup.call(this, loc);
+	this.focus();
 };
 
 ZmDLAutocompleteListView.prototype._popdown =

@@ -713,10 +713,6 @@ function(key, isDelim, element) {
 
 	if (isDelim) {
 		this._update();
-	} else if (key == 37 && this._curExpanded) {
-		// handle left key with an expanded DL
-		this._memberListView._popdown();
-
 	} else if (key == 39) {
 		// right arrow
 		var dwttext = this._expandText && this._expandText[this._selected];
@@ -732,9 +728,6 @@ function(key, isDelim, element) {
 
 	} else if (key == 38 || key == 40) {
 		// handle up and down arrow keys
-		if (this._curExpanded) {
-			return this._memberListView.handleAction(key, isDelim, element);
-		}
 		if (this.size() < 1) {
 			return;
 		}
@@ -1163,6 +1156,7 @@ function(list, context) {
 			var row = table.insertRow(-1);
 			row.className = this._origClass;
 			row.id = rowId;
+			row.index = i;
 			var html = [], idx = 0;
 			var cell = row.insertCell(-1);
 			cell.className = "AutocompleteMatchIcon";
@@ -1596,9 +1590,7 @@ function(params) {
 		}
 		this._dataAPI.expandDL(contact, 0, this._handleResponseExpandDL.bind(this, contact, params));
 	}
-	if (params.element) {
-		params.element.focus();
-	}
+
 };
 
 ZmAutocompleteListView.prototype._handleResponseExpandDL =
@@ -1606,7 +1598,9 @@ function(contact, params, matches) {
 
 	var mlv = this._memberListView;
 	if (!mlv) {
-		mlv = this._memberListView = new ZmDLAutocompleteListView({parent:appCtxt.getShell(), parentAclv:this, selectionCallback: this._selectionCallback});
+		mlv = this._memberListView = new ZmDLAutocompleteListView({parent:appCtxt.getShell(), parentAclv:this,
+                                                                   selectionCallback: this._selectionCallback,
+                                                                   expandTextId: params.textId});
 	}
 	mlv._dlContact = contact;
 	mlv._dlBubbleId = params.textId;
