@@ -2562,6 +2562,7 @@ function(comp) {
 			regex2 = ZmComposeView.BC_TEXT_MARKER_REGEX2[comp],     // matches marker elsewhere
 			start, marker2;
 
+		var prePreText = "";
 		// look for this component's marker
 		if (regex1.test(content)) {
 			// found it at the start of content
@@ -2569,7 +2570,12 @@ function(comp) {
 		}
 		else if (regex2.test(content)) {
 			// found it somewhere after the start
-			start = content.search(regex2) + marker1.length + 1;  // add one to account for non-matching char at beginning of regex
+			var markerIndex = content.search(regex2) + 1; // add one to account for non-matching char at beginning of regex
+			start = markerIndex + marker1.length;
+			if (comp === ZmComposeView.BC_TEXT_PRE) {
+				//special case - include stuff before the first marker for the pre text (user can add stuff before it by clicking and/or moving the cursor beyond the invisible marker)
+				prePreText = content.substring(0, markerIndex);
+			}
 		}
 		if (start > 0) {
 			marker2 = this._getMarker(this._composeMode, nextComp);
@@ -2584,6 +2590,7 @@ function(comp) {
 				// this comp is last component
 				compContent = content.substr(start);
 			}
+			compContent = prePreText + compContent;
 		}
 	}
 
