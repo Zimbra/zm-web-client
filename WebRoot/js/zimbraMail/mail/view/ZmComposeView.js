@@ -1162,10 +1162,10 @@ function(msg, idoc, account) {
 
 	var showImages = false;
 	if (msg) {
-		var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
+		var addr = msg.getAddress(AjxEmailAddress.FROM);
 		var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
 		var sentBy = (sender && sender.address) ? sender : addr;
-		var sentByAddr = sentBy && sentBy !== ZmMsg.unknown ? sentBy.getAddress() : null;
+		var sentByAddr = sentBy && sentBy.getAddress();
 		if (sentByAddr) {
 			msg.sentByAddr = sentByAddr;
 			msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@")+1);
