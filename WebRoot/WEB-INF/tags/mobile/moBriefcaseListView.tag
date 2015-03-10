@@ -124,7 +124,8 @@
                 <span class="Img ${mimeImg}">&nbsp;</span>
             </span>
             <span class="td m" onclick='return zClickLink("a${bchit.id}")'>
-                <c:set var="briefUrl" value="/home/${mailbox.accountInfo.name}${folder.path}/${bchit.document.name}?auth=co"/>
+                <c:set var="briefUrlName" value="/home/${mailbox.accountInfo.name}${folder.path}/${bchit.document.name}"/>
+                <c:set var="briefUrl" value="${zm:encodePath(briefUrlName)}?auth=co"/>
                 <a id="a${bchit.id}" href="${briefUrl}" target="_blank">
                 <div>
                     <strong><c:out escapeXml="true" value="${zm:truncate(bchit.document.name,100,true)}"/></strong>

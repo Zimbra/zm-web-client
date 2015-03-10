@@ -122,8 +122,8 @@
                         </c:otherwise>
                     </c:choose>
                     <c:set var="aid" value="A${status.index}"/>
-                    <c:set var="briefUrl" value="/home/${mailbox.accountInfo.name}${folder.path}/${bchit.document.name}?auth=co"/>
-
+                        <c:set var="briefUrlName" value="/home/${mailbox.accountInfo.name}${folder.path}/${bchit.document.name}"/>
+                        <c:set var="briefUrl" value="${zm:encodePath(briefUrlName)}?auth=co"/>
                         <div class="ZmThumbnailItem" style="">
                             <div align="left">
                                 <input class="chk"
