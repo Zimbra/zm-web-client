@@ -123,7 +123,7 @@ function(data) {
 		else if (startDelta > ZmQuickReminderDialog.SOON)	td.className = 'ZmReminderSoon';
 		else											td.className = 'ZmReminderFuture';
 
-		td.innerHTML = this._formatDeltaString(startDelta);
+		td.innerHTML = ZmReminderDialog.formatDeltaString(startDelta);
 	}
 };
 
@@ -201,62 +201,4 @@ function(appt) {
 ZmQuickReminderDialog.prototype._computeDelta =
 function(appt) {
 	return ((new Date()).getTime() - appt.getStartTime());
-};
-	
-ZmQuickReminderDialog.prototype._formatDeltaString =
-function(deltaMSec) {
-	var prefix = deltaMSec < 0 ? "In" : "OverdueBy";
-	deltaMSec = Math.abs(deltaMSec);
-
-	// calculate parts
-	var years =  Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 365));
-	if (years != 0)
-		deltaMSec -= years * AjxDateUtil.MSEC_PER_DAY * 365;
-	var months = Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 30.42));
-	if (months > 0)
-		deltaMSec -= Math.floor(months * AjxDateUtil.MSEC_PER_DAY * 30.42);
-	var days = Math.floor(deltaMSec / AjxDateUtil.MSEC_PER_DAY);
-	if (days > 0)
-		deltaMSec -= days * AjxDateUtil.MSEC_PER_DAY;
-	var hours = Math.floor(deltaMSec / AjxDateUtil.MSEC_PER_HOUR);
-	if (hours > 0)
-		deltaMSec -= hours * AjxDateUtil.MSEC_PER_HOUR;
-	var mins = Math.floor(deltaMSec / 60000);
-	if (mins > 0)
-		deltaMSec -= mins * 60000;
-	var secs = Math.floor(deltaMSec / 1000);
-	if (secs > 30 && mins < 59) mins++;
-
-	var secs = 0;
-
-	// determine message
-	var amount;
-	if (years > 0) {
-		amount = "Years";
-		if (years <= 3 && months > 0) {
-			amount = "YearsMonths";
-		}
-	} else if (months > 0) {
-		amount = "Months";
-		if (months <= 3 && days > 0) {
-			amount = "MonthsDays";
-		}
-	} else if (days > 0) {
-		amount = "Days";
-		if (days <= 2 && hours > 0) {
-			amount = "DaysHours";
-		}
-	} else if (hours > 0) {
-		amount = "Hours";
-		if (hours < 5 && mins > 0) {
-			amount = "HoursMinutes";
-		}
-	} else {
-		amount = "Minutes";
-	}
-
-	// format message
-	var key = ["reminder",prefix,amount].join("");
-	var args = [deltaMSec, years, months, days, hours, mins, secs];
-	return AjxMessageFormat.format(ZmMsg[key], args);
 };
