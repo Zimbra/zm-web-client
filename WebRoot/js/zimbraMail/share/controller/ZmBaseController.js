@@ -1294,6 +1294,7 @@ ZmBaseController.prototype._getBubbleActionMenu = function() {
 		}
 	}
 
+	menu.setVisible(true);
 	var clipboard = appCtxt.getClipboard();
 	if (clipboard) {
 		clipboard.addClient([ this.toString(), this._currentViewId ].join('-'), menu.getOp(ZmOperation.COPY), {
