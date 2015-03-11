@@ -85,7 +85,7 @@ function() {
         for (var i = 0; i < appts.length && i < 5; i++) {
             var appt = appts[i];
             var startDelta = this._computeDelta(appt);
-            var delta = startDelta ? this._formatDeltaString(startDelta, appt.isAllDayEvent()) : "";
+            var delta = startDelta ? ZmReminderDialog.formatDeltaString(startDelta, appt.isAllDayEvent()) : "";
             var text = [appt.getName(), ", ", this._getDurationText(appt), "\n(", delta, ")"].join("");
             if (AjxEnv.isMac) {
                 ZmDesktopAlert.getInstance().start(ZmMsg.reminders, text, true);
@@ -374,7 +374,7 @@ function(data) {
 						: startDelta > ZmReminderDialog.SOON ? "ZmReminderSoon"
 						: "ZmReminderFuture";
 
-		td.innerHTML = startDelta ? this._formatDeltaString(startDelta, data.appt.isAllDayEvent()) : "";
+		td.innerHTML = startDelta ? ZmReminderDialog.formatDeltaString(startDelta, data.appt.isAllDayEvent()) : "";
 	}
 };
 
@@ -765,8 +765,8 @@ function(appt) {
 	return deltaTime;
 };
 
-ZmReminderDialog.prototype._formatDeltaString =
-function(deltaMSec, isAllDay) {
+ZmReminderDialog.formatDeltaString = function(deltaMSec, isAllDay) {
+
 	var prefix = deltaMSec < 0 ? "In" : "OverdueBy";
 	deltaMSec = Math.abs(deltaMSec);
 
@@ -777,8 +777,9 @@ function(deltaMSec, isAllDay) {
     var hours  = 0;
     var mins   = 0;
     var secs   = 0;
-	var years =  Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 365));
-	if (years != 0) {
+
+	years =  Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 365));
+	if (years !== 0) {
 		deltaMSec -= years * AjxDateUtil.MSEC_PER_DAY * 365;
     }
 	months = Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 30.42));
@@ -810,18 +811,21 @@ function(deltaMSec, isAllDay) {
 		if (years <= 3 && months > 0) {
 			amount = "YearsMonths";
 		}
-	} else if (months > 0) {
+	}
+	else if (months > 0) {
 		amount = "Months";
 		if (months <= 3 && days > 0) {
 			amount = "MonthsDays";
 		}
-	} else if (days > 0) {
+	}
+	else if (days > 0) {
 		amount = "Days";
 		if (!isAllDay && (days <= 2 && hours > 0)) {
             // Only include hours if not an all day appt/task
 			amount = "DaysHours";
 		}
-	} else {
+	}
+	else {
         if (isAllDay) {
             // 'Overdue' from start of day, which really means due today
             amount ="Today";
@@ -838,7 +842,7 @@ function(deltaMSec, isAllDay) {
     }
 
 	// format message
-	var key = ["reminder",prefix,amount].join("");
+	var key = ["reminder", prefix, amount].join("");
 	var args = [deltaMSec, years, months, days, hours, mins, secs];
 	return AjxMessageFormat.format(ZmMsg[key], args);
 };
