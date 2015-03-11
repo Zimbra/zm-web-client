@@ -265,7 +265,7 @@ function(msg, params) {
 		// wrap the message element in a DIV with role listitem
 		var listitem = params.parentElement = document.createElement('DIV');
 		listitem.setAttribute('role', 'listitem');
-		if (params.index != null) {
+		if ((params.index != null) && container.childNodes[params.index]) {
 			container.insertBefore(listitem, container.childNodes[params.index]);
 		}
 		else {
