@@ -673,7 +673,7 @@ function(msg) {
 	newMsg.subscribeReq = msg.subscribeReq;
 
 	// TODO: When/if you get rid of this function, also remove the cloneOf uses in:
-	//		ZmBaseController.prototype._tagListener
+	//		ZmBaseController.prototype._doTag
 	//		ZmBaseController.prototype._setTagMenu
 	//		ZmMailMsgView.prototype._setTags
 	//		ZmMailMsgView.prototype._handleResponseSet

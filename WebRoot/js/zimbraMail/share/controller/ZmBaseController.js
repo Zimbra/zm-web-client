@@ -529,12 +529,6 @@ function(ev, items) {
 		var tagAdded = menuItem.getData(ZmTagMenu.KEY_TAG_ADDED);
 		items = items || this.getItems();
 
-		for (var i=0; i<items.length; i++) {
-			if (items[i].cloneOf) {
-				items[i] = items[i].cloneOf;
-			}
-		}
-
 		if (tagEvent == ZmEvent.E_TAGS && tagAdded) {
 			this._doTag(items, menuItem.getData(Dwt.KEY_OBJECT), true);
 		} else if (tagEvent == ZmEvent.E_CREATE) {
@@ -797,6 +791,13 @@ function(items, tag, doTag) {
 
 	items = AjxUtil.toArray(items);
 	if (!items.length) { return; }
+
+	//see bug 79756 as well as this bug, bug 98316.
+	for (var i = 0; i < items.length; i++) {
+		if (items[i].cloneOf) {
+			items[i] = items[i].cloneOf;
+		}
+	}
 
 	var params = {items:items, tag:tag, doTag:doTag};
 	var list = params.list = this._getList(params.items);
