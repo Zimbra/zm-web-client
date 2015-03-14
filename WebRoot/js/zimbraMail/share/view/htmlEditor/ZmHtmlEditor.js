@@ -872,6 +872,8 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
         tinymceEvent.bind(doc, 'drop', this._onDrop.bind(this, dnd));
     }
 
+	this._overrideTinyMCEMethods();
+
     obj._editorInitialized = true;
 
     this._resetSize();
@@ -2224,16 +2226,13 @@ ZmHtmlEditor.prototype._settingChangeListener = function(ev) {
  */
 ZmHtmlEditor.onShowMenu =
 function(menu) {
-    if (menu && menu.isMenuVisible) {
+    if (menu && menu._visible) {
         var omemParams = {
-            id:					"ZmHtmlEditor",
-            elementId:			(menu.classPrefix === "mceMenu") ? ("menu_" + menu.id) : (menu.id + "_menu"),
-            outsideListener:	function(){
-                                    this.hideMenu();
-                                }.bind(menu)
+            id:					"ZmHtmlEditor" + menu._id,
+            elementId:			menu._id,
+            outsideListener:	menu.hide.bind(menu)
         };
         appCtxt.getOutsideMouseEventMgr().startListening(omemParams);
-        ZmHtmlEditor.isListening = 1;
     }
 };
 
@@ -2244,13 +2243,12 @@ function(menu) {
  */
 ZmHtmlEditor.onHideMenu =
 function(menu) {
-    if (menu && menu.isMenuVisible === 0 && ZmHtmlEditor.isListening) {
+    if (menu && !menu._visible) {
         var omemParams = {
-            id:					"ZmHtmlEditor",
-            elementId:			(menu.classPrefix === "mceMenu") ? ("menu_" + menu.id) : (menu.id + "_menu")
+            id:					"ZmHtmlEditor" + menu._id,
+            elementId:			menu._id
         };
         appCtxt.getOutsideMouseEventMgr().stopListening(omemParams);
-        delete ZmHtmlEditor.isListening;
     }
 };
 
@@ -2332,4 +2330,43 @@ ZmHtmlEditor.prototype._setupTabGroup = function(mainTabGroup) {
 		modeTabGroup.addMember(this.getContentField());
 	}
 	mainTabGroup.addMember(modeTabGroup);
+};
+
+/**
+ Overriding TinyMCE's default show and hide methods of floatpanel and panelbutton. Notifying ZmHtmlEditor about the menu's show and hide events (useful for hiding the menu when mousdedown event happens outside the editor)
+ **/
+ZmHtmlEditor.prototype._overrideTinyMCEMethods = function() {
+	var tinymceUI = tinymce.ui;
+	if (!tinymceUI) {
+		return;
+	}
+
+	var floatPanelPrototype = tinymceUI.FloatPanel && tinymceUI.FloatPanel.prototype;
+	if (floatPanelPrototype) {
+
+		var tinyMCEShow = floatPanelPrototype.show;
+		floatPanelPrototype.show = function() {
+			tinyMCEShow.apply(this, arguments);
+			ZmHtmlEditor.onShowMenu(this);
+		};
+
+		var tinyMCEHide = floatPanelPrototype.hide;
+		floatPanelPrototype.hide = function() {
+			tinyMCEHide.apply(this, arguments);
+			ZmHtmlEditor.onHideMenu(this);
+		};
+	}
+
+	var panelButtonPrototype = tinymceUI.PanelButton && tinymceUI.PanelButton.prototype;
+	if (panelButtonPrototype) {
+		var tinyMCEShowPanel = panelButtonPrototype.showPanel;
+		panelButtonPrototype.showPanel = function() {
+			var isPanelExist = this.panel;
+			tinyMCEShowPanel.apply(this, arguments);
+			//when isPanelExist is true, floatPanelPrototype.show method will be called which will call ZmHtmlEditor.onShowMenu method.
+			if (!isPanelExist) {
+				ZmHtmlEditor.onShowMenu(this.panel);
+			}
+		}
+	}
 };
