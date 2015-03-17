@@ -1072,15 +1072,7 @@ function(ev, treeView, overviewId) {
 		if (!node && (ev.event != ZmEvent.E_CREATE)) { continue; }
 
 		var fields = ev.getDetail("fields");
-		if (ev.event == ZmEvent.E_FLAGS) {
-			var flag = ev.getDetail("flag");
-			var state = ev.getDetail("state");
-			// handle "Mark All As Read" by clearing unread count
-			if ((flag == ZmItem.FLAG_UNREAD) && !state) {
-				node.setText(organizer.getName(false));
-				this._evHandled[overviewId] = true;
-			}
-		} else if (ev.event == ZmEvent.E_DELETE) {
+		if (ev.event == ZmEvent.E_DELETE) {
 			if (organizer.nId == ZmFolder.ID_TRASH || organizer.nId == ZmFolder.ID_SPAM) {
 				node.setText(organizer.getName(false));	// empty Trash or Junk
 			} else {
@@ -1148,40 +1140,77 @@ function(ev, treeView, overviewId) {
 				((organizer.nId == ZmFolder.ID_DRAFTS || organizer.rid == ZmFolder.ID_DRAFTS ||
 				  organizer.nId == ZmOrganizer.ID_OUTBOX) && fields[ZmOrganizer.F_TOTAL]))
 			{
-				var parentNode = this._getParentNode(organizer, ev, overviewId);
-				if (!parentNode) { return; }
-				this._updateOverview(parentNode, node, fields, organizer, treeView);
+				this._updateOverview({
+					organizer:  organizer,
+					node:       node,
+					fields:     fields,
+					treeView:   treeView,
+					overviewId: overviewId,
+					ev:         ev
+				});
+
 				this._evHandled[overviewId] = true;
 			}
 		}
 	}
 };
 
-ZmTreeController.prototype._updateOverview =
-function(parentNode, node, fields, organizer, treeView) {
-	node.setText(organizer.getName(treeView._showUnread));
-	if (fields && fields[ZmOrganizer.F_NAME]) {
+/**
+ * Handle an organizer change by updating the tree view. For example, a name change requires sorting.
+ *
+ * @param   params      hash            hash of params:
+ *
+ *          organizer   ZmOrganizer     organizer that changed
+ *          node        DwtTreeItem     organizer node in tree view
+ *          fields      hash            changed fields
+ *          treeView    ZmTreeView      tree view for this organizer type
+ *          overviewId  string          ID of containing overview
+ *          ev          ZmEvent         change event
+ *
+ * @private
+ */
+ZmTreeController.prototype._updateOverview = function(params) {
+
+	var org = params.organizer,
+		node = params.node,
+		parentNode = this._getParentNode(org, params.ev, params.overviewId);
+
+	node.setText(org.getName(params.treeView._showUnread));
+
+	// If the name changed, re-sort the containing list
+	if (params.fields && params.fields[ZmOrganizer.F_NAME]) {
 		if (parentNode && (parentNode.getNumChildren() > 1)) {
 			var nodeSelected = node._selected;
 			// remove and re-insert the node (if parent has more than one child)
 			node.dispose();
-			var idx = ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type]));
-			node = treeView._addNew(parentNode, organizer, idx);
+			var idx = ZmTreeView.getSortIndex(parentNode, org, eval(ZmTreeView.COMPARE_FUNC[org.type]));
+			node = params.treeView._addNew(parentNode, org, idx);
 			if (nodeSelected) {
 				//if it was selected, re-select it so it is highlighted. No need for notifications.
-				treeView.setSelected(organizer, true);
+				params.treeView.setSelected(org, true);
 			}
 		} else {
-			node.setDndText(organizer.getName());
+			node.setDndText(org.getName());
 		}
 		appCtxt.getAppViewMgr().updateTitle();
 	}
 
-	this._fixupTreeNode(node, organizer, treeView);
+	// A folder aggregates unread status of its descendents, so propagate up parent chain
+	if (params.fields[ZmOrganizer.F_UNREAD]) {
+		var parent = org.parent;
+		while (parent && parentNode && parent.nId != ZmOrganizer.ID_ROOT) {
+			parentNode.setText(parent.getName(params.treeView._showUnread));
+			parentNode = this._getParentNode(parent, params.ev, params.overviewId);
+			parent = parent.parent;
+		}
+	}
+
+	// Miscellaneous cleanup (color, selection)
+	this._fixupTreeNode(node, org, params.treeView);
 };
 
-ZmTreeController.prototype._getParentNode =
-function(organizer, ev, overviewId) {
+ZmTreeController.prototype._getParentNode = function(organizer, ev, overviewId) {
+
 	if (organizer.parent) {
 		// if node being moved to root, we assume new parent must be the container of its type
 		var type = (organizer.parent.nId == ZmOrganizer.ID_ROOT) ? ev.type : null;

@@ -2273,8 +2273,10 @@ function(name, showUnread, noMarkup) {
 	if (!noMarkup) {
 		name = AjxStringUtil.htmlEncode(name, true);
 	}
-	if (showUnread && this.numUnread > 0) {
-        name = AjxMessageFormat.format(ZmMsg.folderUnread, [name, this.numUnread]);
+	if (showUnread && this.hasUnreadDescendent()) {
+		if (this.numUnread > 0) {
+            name = AjxMessageFormat.format(ZmMsg.folderUnread, [name, this.numUnread]);
+		}
 		if (!noMarkup) {
 			name = ["<span style='font-weight:bold'>", name, "</span>"].join("");
 		}
@@ -2300,4 +2302,27 @@ function() {
 ZmOrganizer.prototype._getUnreadLabel = 
 function() {
 	return ZmMsg.unread;	
+};
+
+/**
+ * Returns true if any descendent folders have unread messages.
+ *
+ * @returns {boolean}   true if any descendent folders have unread messages
+ */
+ZmOrganizer.prototype.hasUnreadDescendent = function() {
+
+	if (this.numUnread > 0) {
+		return true;
+	}
+
+	var a = this.children.getArray(),
+		sz = this.children.size();
+
+	for (var i = 0; i < sz; i++) {
+		if (a[i].hasUnreadDescendent()) {
+			return true;
+		}
+	}
+
+	return false;
 };

@@ -35,18 +35,19 @@ function() {
 // ZmFolderTreeController methods
 //
 
-ZmMailFolderTreeController.prototype._updateOverview =
-function(parentNode, node, fields, organizer, treeView) {
-	ZmTreeController.prototype._updateOverview.call(this, parentNode, node, fields, organizer, treeView);
+ZmMailFolderTreeController.prototype._updateOverview = function(params) {
+
+	ZmTreeController.prototype._updateOverview.call(this, params);
 
 	// for multi-account allow account header to update based on Inbox's unread count
-	if (appCtxt.multiAccounts &&
-		(fields[ZmOrganizer.F_UNREAD] && organizer.isSystem()) ||
-		(fields[ZmOrganizer.F_TOTAL] && (organizer.nId == ZmFolder.ID_DRAFTS || organizer.nId == ZmOrganizer.ID_OUTBOX)))
-	{
+	var org = params.organizer, fields = params.fields;
+	if (appCtxt.multiAccounts && (fields[ZmOrganizer.F_UNREAD] && org.isSystem()) ||
+		(fields[ZmOrganizer.F_TOTAL] && (org.nId == ZmFolder.ID_DRAFTS || org.nId == ZmOrganizer.ID_OUTBOX))) {
+
 		var ovc = appCtxt.getApp(ZmApp.MAIL).getOverviewContainer(true);
-		if (ovc)
-			ovc.updateLabel(organizer);
+		if (ovc) {
+			ovc.updateLabel(org);
+		}
 	}
 };
 
