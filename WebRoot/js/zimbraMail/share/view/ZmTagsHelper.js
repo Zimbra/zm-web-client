@@ -120,6 +120,9 @@ function(params) {
 
 ZmTagsHelper._tagClick =
 function(parentId, tagName) {
+	if (appCtxt.isChildWindow) {
+		return;
+	}
 	var tag = ZmTagsHelper._getTagClicked(tagName);
 	var view = DwtControl.fromElementId(parentId);
 	appCtxt.getSearchController().search({query: tag.createQuery(), inclSharedItems: true});
