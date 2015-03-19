@@ -502,6 +502,7 @@ ZmMsgController.prototype._setStatics = function() {
 			ZmKeyMap.MOVE,
 			ZmKeyMap.PRINT,
 			ZmKeyMap.TAG,
+			ZmKeyMap.UNTAG,
 			ZmKeyMap.REPLY,
 			ZmKeyMap.REPLY_ALL,
 			ZmKeyMap.SPAM,

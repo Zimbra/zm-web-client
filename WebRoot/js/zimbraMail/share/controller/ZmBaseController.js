@@ -816,6 +816,12 @@ function(items) {
 	items = AjxUtil.toArray(items);
 	if (!items.length) { return; }
 
+	//see bug 79756 as well as this bug.
+	for (var i = 0; i < items.length; i++) {
+		if (items[i].cloneOf) {
+			items[i] = items[i].cloneOf;
+		}
+	}
 	var params = {items:items};
 	var list = params.list = this._getList(params.items);
 	this._setupContinuation(this._doRemoveAllTags, null, params);
