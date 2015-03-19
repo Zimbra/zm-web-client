@@ -803,16 +803,9 @@
 		<table role="presentation" id='${id}_alphabet' width='80%' class='AlphabetBarTable'' cellspacing='0'>
 			<tr>
 				<$ for (var i = 0; i < data.numLetters; i++) { $>
-					<td _idx="<$= i $>" onclick="ZmContactAlphabetBar.alphabetClicked(this
-						<$ if (i > 0) { $>
-							, '<$= data.sortVals[data.alphabet[i]] || data.alphabet[i] $>'
-							<$ if (i+1 < data.numLetters) { $>
-								, '<$= data.endSortVals[data.alphabet[i]] || data.alphabet[i+1] $>'
-							<$ } $>
-						<$ } $>
-						); return false;"
-						<$ if (data.alphabet[i].length > 1) { $> colspan='<$= data.alphabet[i].length/2 + 1 $>' <$ } $>
-						class='DwtButton AlphabetBarCell' <$= (i>0) ? " style='border-left-width:0;'>" : ">" $>
+					<td _idx="<$= i $>"	role='button'
+						class='DwtButton AlphabetBarCell'
+<$ if (data.alphabet[i].length > 1) { $> colspan='<$= data.alphabet[i].length/2 + 1 $>' <$ } $> >
 						<$= data.alphabet[i] $>
 					</td>
 				<$ } $>

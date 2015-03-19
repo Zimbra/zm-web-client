@@ -1668,9 +1668,18 @@ INPUT[type="text"].search_input-expanded {
 	table-layout:fixed;
 }
 
+.AlphabetBarCell:focus, .AlphabetBarCell:hover {
+	@ButtonBorder-hover@
+}
+
 .AlphabetBarCell {
 	@ActiveCursor@
 	text-align:center;
+	border-left-width: 0px;
+}
+
+.AlphabetBarCell:first-child {
+	border-left-width: 1px;
 }
 
 .AlphabetBarCell SPAN {

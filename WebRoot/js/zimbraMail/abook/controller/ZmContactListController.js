@@ -473,6 +473,21 @@ function(view) {
 	}
 };
 
+ZmContactListController.prototype._initializeTabGroup =
+function(view) {
+	if (this._tabGroups[view]) { return; }
+
+	ZmListController.prototype._initializeTabGroup.call(this, view);
+
+	var tg = this._tabGroups[view];
+
+	// we don't focus the member directly; only its children
+	tg.removeMember(this._view[view]);
+
+	tg.addMemberBefore(this._parentView[view].getAlphabetBar(),
+	                   this._view[view].getTabGroupMember());
+}
+
 // If we're in the Trash folder, change the "Delete" button tooltip
 ZmContactListController.prototype._setupDeleteButton = function(parent) {
 	var folder = this._getSearchFolder();

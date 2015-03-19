@@ -298,10 +298,12 @@ ZmContactAlphabetBar = function(parent) {
 	this._currentLetter = null;
 	this.setSelected(this._all, true);
 	this._enabled = true;
+	this.addListener(DwtEvent.ONCLICK, this._onClick.bind(this));
 };
 
 ZmContactAlphabetBar.prototype = new DwtComposite;
 ZmContactAlphabetBar.prototype.constructor = ZmContactAlphabetBar;
+ZmContactAlphabetBar.prototype.role = 'toolbar';
 
 /**
  * Returns a string representation of the object.
@@ -402,6 +404,10 @@ function(cell, selected) {
 	cell.className = selected
 		? "DwtButton-active AlphabetBarCell"
 		: "DwtButton AlphabetBarCell";
+	cell.setAttribute('aria-selected', selected);
+	if (selected) {
+		this.getHtmlElement().setAttribute('aria-activedescendant', cell.id);
+	}
 };
 
 /**
@@ -470,18 +476,60 @@ function() {
 	this._alphabetBarId = this._htmlElId + "_alphabet";
 	var alphabet = ZmMsg.alphabet.split(",");
 
+	this.startSortMap =
+		ZmContactAlphabetBar._parseSortVal(ZmMsg.alphabetSortValue);
+
+	this.endSortMap =
+		ZmContactAlphabetBar._parseSortVal(ZmMsg.alphabetEndSortValue);
+
 	var subs = {
 		id: 			this._htmlElId,
 		alphabet: 		alphabet,
 		numLetters: 	alphabet.length,
-		sortVals:		ZmContactAlphabetBar._parseSortVal(ZmMsg.alphabetSortValue),
-		endSortVals:	ZmContactAlphabetBar._parseSortVal(ZmMsg.alphabetEndSortValue)
 	};
 
 	var element = this.getHtmlElement();
 	element.innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
-	Dwt.setHandler(element, DwtEvent.ONMOUSEOUT, ZmContactAlphabetBar._onMouseOut);
-	Dwt.setHandler(element, DwtEvent.ONMOUSEOVER, ZmContactAlphabetBar._onMouseOver);
+	this.setAttribute('aria-label', ZmMsg.alphabetLabel);
+
+	AjxUtil.foreach(Dwt.byClassName('AlphabetBarCell', element),
+	                this._makeFocusable.bind(this));
+};
+
+ZmContactAlphabetBar.prototype.getInputElement =
+function() {
+	return this._current;
+};
+
+ZmContactAlphabetBar.prototype.getKeyMapName =
+function() {
+	return DwtKeyMap.MAP_TOOLBAR_HORIZ;
+};
+
+ZmContactAlphabetBar.prototype.handleKeyAction =
+function(actionCode, ev) {
+	var target =
+		Dwt.hasClass(ev.target, 'AlphabetBarCell') ? ev.target : this._current;
+
+	switch (actionCode) {
+	case DwtKeyMap.PREV:
+		var previous = Dwt.getPreviousElementSibling(target);
+		if (previous) {
+			previous.focus();
+		}
+		return true;
+
+	case DwtKeyMap.NEXT:
+		var next = Dwt.getNextElementSibling(target);
+		if (next) {
+			next.focus();
+		}
+		return true;
+
+	case DwtKeyMap.SELECT:
+		target.click();
+		return true;
+	}
 };
 
 ZmContactAlphabetBar._parseSortVal =
@@ -503,33 +551,32 @@ function(sortVal) {
 /**
  * @private
  */
-ZmContactAlphabetBar._onMouseOver =
-function(event) {
-	var cell = DwtUiEvent.getTarget(event);
-	if (cell.nodeName.toLowerCase() !== "td") {
-		return;
-	}
-	// get reference to alphabet bar - ugh
-	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
-	if (alphabetBar.enabled()) {
-		cell.className = "DwtButton-hover AlphabetBarCell";
-	}
-};
+ZmContactAlphabetBar.prototype._onClick =
+function(ev) {
+	var cell = DwtUiEvent.getTarget(ev);
 
-/**
- * @private
- */
-ZmContactAlphabetBar._onMouseOut =
-function(event) {
-	var cell = DwtUiEvent.getTarget(event);
-	if (cell.nodeName.toLowerCase() !== "td") {
+	if (!Dwt.hasClass(cell, 'AlphabetBarCell') ||
+	    !this.enabled() || !this.reset(cell)) {
 		return;
 	}
-	// get reference to alphabet bar - ugh
-	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
-	if (alphabetBar.enabled()) {
-		alphabetBar.setSelected(cell, cell == alphabetBar.getCurrent());
+
+	var idx = AjxUtil.indexOf(cell.parentNode.children, cell);
+	var alphabet = ZmMsg.alphabet.split(",");
+
+	var startLetter = null, endLetter = null;
+
+	if (idx > 0) {
+		startLetter = alphabet[idx].substr(0, 1);
+		startLetter = this.startSortMap[startLetter] || startLetter;
+
+		if (idx < alphabet.length - 1) {
+			endLetter = alphabet[idx + 1].substr(0, 1);
+			endLetter = this.endSortMap[endLetter] || endLetter;
+		}
 	}
+
+	var clc = AjxDispatcher.run("GetContactListController");
+	clc.searchAlphabet(startLetter, endLetter);
 };
 
 
