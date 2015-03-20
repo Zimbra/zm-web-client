@@ -21922,7 +21922,10 @@ define("tinymce/ui/KeyboardNavigation", [
 
 				return true;
 			} else {
-				return moveFocus(e.shiftKey ? -1 : 1);
+				var navigationRoot = getNavigationRoot(),
+					ignoreTab = navigationRoot && navigationRoot.settings.ignoreTab;
+
+				return !ignoreTab ? moveFocus(e.shiftKey ? -1 : 1) : false;
 			}
 		}
 
