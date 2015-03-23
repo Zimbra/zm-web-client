@@ -282,7 +282,7 @@ function(ev) {
             break;
 
         case ZmOperation.MONTH_VIEW:
-            Dwt.setDisplay(workDaysOnlyContainer, Dwt.DISPLAY_NONE);
+            Dwt.setDisplay(workDaysOnlyContainer, Dwt.DISPLAY_BLOCK);
             Dwt.setDisplay(oneWeekPerPageContainer, Dwt.DISPLAY_NONE);
             Dwt.setDisplay(oneDayPerPageContainer, Dwt.DISPLAY_NONE);
             Dwt.setDisplay(hoursContainer, Dwt.DISPLAY_NONE);

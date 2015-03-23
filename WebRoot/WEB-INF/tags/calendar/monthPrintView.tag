@@ -97,7 +97,7 @@
 <table width="100%"  cellpadding="0" cellspacing="0" border="0" class="zPrintMsgs">
     <c:forEach begin="1" end="${noOfMonths}" varStatus="stat">
         <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
-        <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>        
+        <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
         <tr>
         <td class='ZhAppContent'>
             <table width="100%" class='ZhCalMonthHeaderTable' cellpadding=2 cellspacing=0 border=0>
@@ -125,8 +125,8 @@
                 <c:forEach var="week" begin="1" end="6">
                 <c:if test="${not doneLoop}">
                     <tr>
-                        <c:forEach var="dow" begin="1" end="7" varStatus="dowStatus">
-                            <c:if test="${empty param.wd or param.wd eq false or workDays[dow - 1] eq true}">
+                        <c:forEach var="dow" begin="${mailbox.prefs.calendarFirstDayOfWeek}" end="${mailbox.prefs.calendarFirstDayOfWeek+6}" varStatus="dowStatus">
+                            <c:if test="${empty param.wd or param.wd eq false or workDays[dow mod 7] eq true}">
                                 <td width="14%" class='ZhCalMonthDay${currentDay.timeInMillis eq date.timeInMillis ? 'Selected':''}'>
                                     <table width="100%" cellspacing="2">
                                         <c:choose>
