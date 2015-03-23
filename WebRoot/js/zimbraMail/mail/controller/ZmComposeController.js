@@ -411,7 +411,7 @@ function() {
 		this._action != ZmOperation.FORWARD_ATT)
 	{
 		if (composeMode == Dwt.HTML) {
-            view._focusHtmlEditor();
+ 			setTimeout(view._focusHtmlEditor.bind(view), 100);
 		}
 		this._composeView._setBodyFieldCursor();
 	}

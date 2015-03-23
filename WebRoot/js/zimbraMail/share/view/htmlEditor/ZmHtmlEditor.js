@@ -200,15 +200,12 @@ function(editor) {
     var currentObj = this,
         bodyField;
 
-    if (currentObj._mode === Dwt.HTML) {
+   if (currentObj._mode === Dwt.HTML) {
         editor = editor || currentObj.getEditor();
         if (currentObj._editorInitialized && editor) {
             editor.focus();
             currentObj.setFocusStatus(true);
             editor.getWin().scrollTo(0,0);
-        }
-        else {
-            currentObj._initCallbacks.push(currentObj.focus.bind(currentObj, editor));
         }
     }
     else {
@@ -716,6 +713,7 @@ function(id, content) {
     var tinyMCEInitObj = {
         // General options
 		mode :  (this._mode == Dwt.HTML)? "exact" : "none",
+		auto_focus: true,
 		elements:  id,
         plugins : plugins.join(' '),
 		toolbar: toolbarbuttons.join(' '),
