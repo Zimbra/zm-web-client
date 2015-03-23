@@ -335,6 +335,7 @@ function(ev) {
 	if (parentButton == this._startDateButton) {
 		this._startDateField.value = newDate;
 	} else {
+		if (ev.detail < new Date()) { return; }
 		this._endDateField.value = newDate;
 	}
 
