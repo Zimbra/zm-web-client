@@ -536,13 +536,24 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 			// Local contact, GAL contact, or distribution list
 			var email = AjxEmailAddress.parse(match.email);
 			if (email) {
-				this.fullAddress = email.toString();
-				this.name = email.getName();
 				this.email = email.getAddress();
+				if (this.type == ZmAutocomplete.AC_TYPE_CONTACT) {
+					var contactList = AjxDispatcher.run("GetContacts");
+					var contact = contactList && contactList.getById(match.id);
+					var fileAsName = contact && ZmContact.computeFileAs(contact);
+
+					this.fullAddress = "\"" + fileAsName + "\" <" + email.getAddress() + ">";
+					this.name = fileAsName;
+					this.text = AjxStringUtil.htmlEncode(this.fullAddress);
+				} else {
+					this.fullAddress = email.toString();
+					this.name = email.getName();
+					this.text = AjxStringUtil.htmlEncode(match.email);
+				}
 			} else {
 				this.email = match.email;
+				this.text = AjxStringUtil.htmlEncode(match.email);
 			}
-			this.text = AjxStringUtil.htmlEncode(match.email);
 			if (options && options.needItem && window.ZmContact) {
 				this.item = new ZmContact(null);
 				this.item.initFromEmail(email || match.email);

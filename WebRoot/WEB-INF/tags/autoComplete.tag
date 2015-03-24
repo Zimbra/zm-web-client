@@ -31,6 +31,120 @@
 
 <script type="text/javascript">
     <!--
+    <fmt:bundle basename="/messages/ZmMsg">
+        var ptnFileAsLastFirst   = '<fmt:message key="fileAsLastFirst" />';
+        var ptnFileAsFirstLast   = '<fmt:message key="fileAsFirstLast" />';
+        var ptnFileAsNameCompany = '<fmt:message key="fileAsNameCompany" />';
+        var ptnFileAsCompanyAsSecondaryOnly = '<fmt:message key="fileAsCompanyAsSecondaryOnly" />';
+        var ptnFileAsNameAsSecondaryOnly    = '<fmt:message key="fileAsNameAsSecondaryOnly" />';
+    </fmt:bundle>
+
+    (function() {
+	var i = 1;
+        FA_LAST_C_FIRST         = i++;
+        FA_FIRST_LAST           = i++;
+        FA_COMPANY              = i++;
+        FA_LAST_C_FIRST_COMPANY = i++;
+        FA_FIRST_LAST_COMPANY   = i++;
+        FA_COMPANY_LAST_C_FIRST = i++;
+        FA_COMPANY_FIRST_LAST   = i++;
+        FA_CUSTOM               = i++;
+    })();
+
+    /**
+     * Same logic defined in the ZmContact.js#computeFileAs
+     */
+    function computeFileAs(fileAs, first, last, full, nick, company) {
+
+        var fa;
+        var val = parseInt(fileAs);
+        switch(val) {
+            case FA_LAST_C_FIRST:
+            default: {                   // Last, First
+                fa = fileAsLastFirst(first, last, full, nick);
+            }
+            break;
+
+            case FA_FIRST_LAST: {        // First Last
+                fa = fileAsFirstLast(first, last, full, nick);
+            }
+            break;
+
+            case FA_COMPANY: {           // Company
+                fa = company;
+            }
+            break;
+
+            case FA_LAST_C_FIRST_COMPANY: {  // Last, First (Company)
+                var name = fileAsLastFirst(first, last, full, nick);
+                fa = fileAsNameCompany(name, company);
+            }
+            break;
+
+            case FA_FIRST_LAST_COMPANY: {    // First Last (Company)
+                var name = fileAsFirstLast(first, last, full, nick);
+                fa = fileAsNameCompany(name, company);
+            }
+            break;
+
+            case FA_COMPANY_LAST_C_FIRST: {  // Company (Last, First)
+                var name = fileAsLastFirst(first, last);
+                fa = fileAsCompanyName(name, company);
+            }
+            break;
+
+            case FA_COMPANY_FIRST_LAST: {    // Company (First Last)
+                var name = fileAsFirstLast(first, last);
+                fa = fileAsCompanyName(name, company);
+            }
+            break;
+
+            case FA_CUSTOM: {                // custom looks like this: "8:foobar"
+                fa = fileAs.substring(2);
+            }
+            break;
+        }
+        return fa || full || "";
+    }
+
+    function fileAsLastFirst(first, last, fullname, nickname) {
+        if (first && last) {
+            return ptnFileAsLastFirst.replace("{0}", first).replace("{1}", last);
+        }
+        return last || first || fullname || nickname || "";
+    }
+
+    function fileAsFirstLast(first, last, fullname, nickname) {
+        if (first && last) {
+            return ptnFileAsFirstLast.replace("{0}", first).replace("{1}", last);
+        }
+        return first || last || fullname || nickname || "";
+    }
+
+    function fileAsNameCompany(name, company) {
+        if (name && company) {
+            return ptnFileAsNameCompany.replace("{0}", name).replace("{1}", company);
+        }
+        if (company) {
+            return ptnFileAsCompanyAsSecondaryOnly.replace("{0}", company);
+        }
+        return name;
+    }
+
+    function fileAsCompanyName(name, company) {
+        if (company && name) {
+            return ptnFileAsCompanyName.replace("{0}", name).replace("{1}", company);
+        }
+        if (name) {
+            return ptnFileAsNameAsSecondaryOnly.replace("{0}", name);
+        }
+        return company;
+    }
+
+    function getAddressPart(str) {
+        return str.match(/<.+@.+>$/);
+    }
+
     var zimbraAutoComplete = function() {
         var zhEncode = function(s) {return s == null ? '' : s.replace(/&/g, "&amp;").replace(/[<]/g, "&lt;").replace(/>/g, "&gt;");}
         var zhFmt = function(str,query,bold) {
@@ -72,18 +186,44 @@
             }
         };
 
+        /**
+         * Generate the label string shown next to the email address
+         * in the auto-complete pull-down list.  This label string
+         * should be aligned with the formatting rule in Contact list
+         * whose items are generated using ZmContact.js#computeFileAs
+         */
+        var formatNameLabel = function(sQuery, oResponse, oPayload) {
+            var allResults = oResponse.results;
+            for (var i = 0; i < allResults.length; i++) {
+                var oResult = oResponse.results[i];
+                var fileAs = oResult["fileas"];
+                var email     = oResult["email"];
+
+                var first = oResult["first"];
+                var last  = oResult["last"];
+                var full  = oResult["full"];
+                var nick  = oResult["nick"];
+                var company = oResult["company"];
+
+                oResult["email"]
+                    = "\"" + computeFileAs(fileAs, first, last, full, nick, company) + "\""
+                    + " " + getAddressPart(email);
+            }
+            return true;
+        };
+
 		window.JSON = null;
         var myDataSource = new YAHOO.util.XHRDataSource("<c:url value='/h/ac' />");
         myDataSource.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
         myDataSource.responseSchema = {
             resultsList : "Result", // String pointer to result data
-            fields : ["email","ranking","display","type","id","l","isGroup"]
+            fields : ["email","ranking","display","type","id","l","isGroup","fileas","first","middle","last","full","nick","company"]
         };
 
         var expandGroup = {
-        	sendRequest : function(params) {
-        	   YAHOO.util.Connect.asyncRequest('GET', "<c:url value='/h/grpcontacts' />"+"?id="+params.query, params.callback);
-        	}
+                sendRequest : function(params) {
+                    YAHOO.util.Connect.asyncRequest('GET', "<c:url value='/h/grpcontacts' />"+"?id="+params.query, params.callback);
+                }
         };
 
         var initAuto = function(field,container) {
@@ -91,6 +231,7 @@
             ac.delimChar = [",",";"];
             ac.queryDelay = 0.25;
             ac.formatResult = myacformat;
+            ac.doBeforeLoadData = formatNameLabel;
             ac.queryMatchContains = true;
             ac.maxResultsDisplayed = 20;
             ac.allowBrowserAutocomplete = false;
