@@ -455,6 +455,12 @@ function(a, b) {
  */
 ZmContact.computeFileAs =
 function(contact) {
+	/*
+	 * Bug 97900: To keep the same logic of generating the FileAs contact
+	 *    label string between the Ajax client, and HTML client, when the
+	 *    computeFileAs(), and fileAs*() functions are modified, please 
+	 *    change the corresponding functions defined in the autoComplete.tag 
+	 */
 	var attr = (contact instanceof ZmContact) ? contact.getAttrs() : contact;
 	if (!attr) return;
 
@@ -553,12 +559,12 @@ ZmContact.fileAsLastFirst =
 function(first, last, fullname, nickname) {
 	if (first && last)
 		return AjxMessageFormat.format(ZmMsg.fileAsLastFirst, [first, last]);
-	return first || last || fullname || nickname || "";
+	return last || first || fullname || nickname || "";
 };
 
 /**
  * Name printing helper "Name (Company)".
- * 
+ *
  * @param	{String}	name		the contact name
  * @param	{String}	company		the company
  * @return	{String}	the name format
