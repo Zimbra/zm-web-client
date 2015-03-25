@@ -995,8 +995,7 @@ function(composeMode, initOnly) {
 	var quotedText = modeSwitch && this._getQuotedText();
 	this._composeMode = composeMode;
 	this._setReturns();
-	var curMember = htmlMode ? this._htmlEditor : this._bodyField;
-		
+
 	// switch the editor's mode
 	this._htmlEditor.setContent("");
 	this._htmlEditor.setMode(composeMode);
@@ -1019,16 +1018,8 @@ function(composeMode, initOnly) {
 	// recalculate form value since HTML mode inserts HTML tags
 	this._setFormValue();
 
-	// update the tabbing group
-	var newMember = (composeMode === Dwt.TEXT) ? this._bodyField : this._htmlEditor;
-	if (curMember && newMember && (curMember !== newMember) && this._controller._tabGroup) {
-		this._controller._tabGroup.replaceMember(curMember, newMember);
-		// focus via replaceMember() doesn't take, try again
-		if (composeMode === Dwt.HTML) {
-			this._retryHtmlEditorFocus();
-		}
-	}
 	if (!htmlMode) {
+		this._retryHtmlEditorFocus(); //this was previously in a block I removed, so keeping it here. (don't want to create rare focus regressions)
 		this._moveCaretOnTimer();
 	}
 
