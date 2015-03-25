@@ -1329,6 +1329,9 @@ function(addrs, options, type) {
 };
 
 ZmMailMsgView.prototype._getBubbleHtml = function(addr, options) {
+	if (!addr) {
+		return "";
+	}
 
 	options = options || {};
 
