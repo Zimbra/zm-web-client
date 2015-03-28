@@ -211,9 +211,12 @@ function(groupId, isMultiColumn) {
  * @param {String} sortField
  */
 ZmMailListGroup.getGroupIdFromSortField =
-function(sortField) {
+function(sortField, type) {
     switch (sortField) {
         case ZmId.FLD_FROM:
+			if (type === ZmItem.CONV) {
+				return ZmId.GROUPBY_NONE;
+			}
             return ZmId.GROUPBY_FROM;
 
         case ZmId.FLD_SIZE:
