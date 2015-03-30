@@ -1094,6 +1094,24 @@ function() {
 
 ZmHtmlEditor.prototype.insertImage =
 function(src, dontExecCommand, width, height, dfsrc) {
+	// We can have a situation where:
+	//   Paste plugin does a createPasteBin, creating a marker element that it uses
+	//   We upload a pasted image.
+	//   The upload completes, and we do a SaveDraft. It calls insertImage.
+	//   A timeout function from the plugin executes before or after insertImage, and calls removePasteBin.
+	//
+	//   InsertImage executes. If the pasteBin has not been removed when we try to insert the image, it interferes with
+	//   tinyMCE insertion.  No image is inserted in the editor body, and we end up with an attachment
+	//    bubble instead.
+	var  pasteBinClone;
+	var ed = this.getEditor();
+
+	// *** Begin code copied from Paste Plugin Clipboard.js, removePasteBin
+	while ((pasteBinClone = ed.dom.get('mcepastebin'))) {
+		ed.dom.remove(pasteBinClone);
+		ed.dom.unbind(pasteBinClone);
+	}
+	// *** End copied code from removePasteBin
 
 	var html = [];
 	var idx= 0 ;
@@ -1116,7 +1134,6 @@ function(src, dontExecCommand, width, height, dfsrc) {
 	}
 	html[idx++] = ">";
 
-	var ed = this.getEditor();
 
     ed.focus();
 
