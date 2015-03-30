@@ -439,7 +439,9 @@ define("tinymce/pasteplugin/Clipboard", [
 					}
 
 					removePasteBin();
-					createPasteBin();
+					if (Env.ie || (Object.keys(clipboardContent).length !== 0)) {
+						createPasteBin();
+					}
 
 					// Remove pastebin if we get a keyup and no paste event
 					// For example pasting a file in IE 11 will not produce a paste event
@@ -473,7 +475,7 @@ define("tinymce/pasteplugin/Clipboard", [
 
 				// Not a keyboard paste prevent default paste and try to grab the clipboard contents using different APIs
 				// Don't prevent the default if there is no clipboard content (See Bug 97552), and its not IE (which
-				// will crash on trying the default).
+				// will crash on trying the default if pasting an image).
 				if (!isKeyBoardPaste && (Env.ie || (Object.keys(clipboardContent).length !== 0))) {
 					e.preventDefault();
 				}
