@@ -581,36 +581,6 @@
 
  <env-entry>
     <description>
-        Nginx Lookup Extension Handlers in SERVER:PORT format seperated by space
-    </description>
-    <env-entry-name>nginxLookUpHandlers</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getAllReverseProxyURLs%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>reverseProxyRouteLookupTimeout</env-entry-name>
-    <env-entry-type>java.lang.Integer</env-entry-type>
-    <env-entry-value>%%zimbraReverseProxyRouteLookupTimeout%%</env-entry-value>
-  </env-entry>
-
-  <env-entry>
-    <env-entry-name>reverseProxyRouteLookupTimeoutCache</env-entry-name>
-    <env-entry-type>java.lang.Integer</env-entry-type>
-    <env-entry-value>%%zimbraReverseProxyRouteLookupTimeoutCache%%</env-entry-value>
-  </env-entry>
-
- <env-entry>
-    <description>
-        UpStream Mail Servers in SERVER:PORT format seperated by space
-    </description>
-    <env-entry-name>upstreamMailServers</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%getAllReverseProxyBackends%%</env-entry-value>
-  </env-entry>
-
- <env-entry>
-    <description>
         Zimbra Services Installed on the server.
     </description>
     <env-entry-name>zimbraServicesEnabled</env-entry-name>
