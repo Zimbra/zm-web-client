@@ -1761,21 +1761,34 @@ INPUT[type="text"].search_input-expanded {
 	@PageBg@
 }
 
-.ZmContactView .contactHeaderTable,
-.ZmContactInfoView .contactHeaderTable {
+.ZmContactView .contactContentTable {
+	width: 100%;
+}
+
+.ZmContactView .headerRow .rowLabel,
+.ZmContactView .headerRow .rowType {
+	width: 1%;
+}
+
+.ZmContactView .headerRow .rowType > DIV {
+	@BoxMargin@
+}
+
+.ZmContactView .headerRow,
+.ZmContactInfoView .headerRow {
 	background-color:@darken(AppC,5)@;
 	border-bottom:1px solid @darken(AppC,50)@;
 }
 
-.ZmContactView .contactHeaderTableImage,
-.ZmContactInfoView .contactHeaderTableImage {
+.ZmContactView .headerRowImage,
+.ZmContactInfoView .headerRowImage {
 	vertical-align:top;
 }
 
-.ZmContactView .contactHeaderTableImage IMG,
-.ZmContactInfoView .contactHeaderTableImage IMG,
-.ZmContactView .contactHeaderTableImage DIV,
-.ZmContactInfoView .contactHeaderTableImage DIV {
+.ZmContactView .headerRowImage IMG,
+.ZmContactInfoView .headerRowImage IMG,
+.ZmContactView .headerRowImage DIV,
+.ZmContactInfoView .headerRowImage DIV {
 	@ContactImageRadius@
 }
 
@@ -1791,6 +1804,10 @@ INPUT[type="text"].search_input-expanded {
 	float:left;
 	margin:.5em;
 	width:30%;
+}
+
+.contactHeaderTags {
+	padding-top: .5em;
 }
 
 .contactGroupTableImage {
@@ -1839,8 +1856,8 @@ INPUT[type="text"].search_input-expanded {
 	width:100%;
 }
 
-.ZmContactInfoView .contactHeaderTable .ImgGroupPerson_48,
-.ZmContactView .contactHeaderTable .ImgGroupPerson_48 {
+.ZmContactInfoView .headerRow .ImgGroupPerson_48,
+.ZmContactView .headerRow .ImgGroupPerson_48 {
 	@ContactImageRadius@
 }
 
@@ -1901,6 +1918,7 @@ INPUT[type="text"].search_input-expanded {
 	vertical-align:top;
 }
 
+.ZmContactSplitView .headerRow .rowType,
 .ZmContactView .contactLocation,
 .ZmContactInfoView .contactLocation {
 	@FontSize-big@
@@ -5621,7 +5639,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	vertical-align:top;
 }
 
-.ZmEditContactView .contactHeaderTable {
+.ZmEditContactView .headerRow {
 	background-color:@darken(AppC,20)@;
 }
 
@@ -5654,6 +5672,15 @@ If you feel compelled to have a background color, please do so on a per skin lev
     white-space: nowrap;
 }
 
+.ZmContactSplitView *:focus {
+	@FocusOutline@
+}
+
+.ZmContactSplitView .rowType > DIV {
+	/* keep icons in the type, such as the location icon, on the same line */
+	display: inline-block;
+}
+
 /* cells with inputs generally need less top padding,
  * but there are variations for checkboxes and radiobuttons
  */
@@ -5672,18 +5699,16 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmEditContactView .rowLabel, .ZmContactSplitView .rowLabel {
 	text-align:right;
 	font-weight:bold;
+	width: 1%;
 }
 
 .ZmEditContactView .rowValue, .ZmContactSplitView .rowValue {
-	max-width:800px;
-	word-wrap:break-word;
-#IFNDEF MSIE
-	width:150px;
-#ENDIF
-}
-
-.ZmEditContactView .rowValue, .ZmContactSplitView .rowValue[colspan] {
-	width:auto;
+	max-width: 840px;
+	min-width: 180px;
+	max-width: 70rem;
+	min-width: 15rem;
+	width: 1%;
+	word-wrap: break-word;
 }
 
 .ZmContactSplitView .rowValue SPAN,
@@ -5693,6 +5718,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .ZmContactSplitView .rowType {
 	color:gray;
+	width: auto;
 }
 
 .ZmContactSplitView .Object {

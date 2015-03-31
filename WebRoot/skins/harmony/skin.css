@@ -230,7 +230,7 @@ TD.DwtListView-ColumnActive  {
 	border-color:transparent;
 }
 
-.ZmContactInfoView .contactHeaderTable {
+.ZmContactInfoView .headerRow {
 	background-color:transparent;
 	border-color:transparent;
 	margin: .25em 0px;
@@ -257,8 +257,8 @@ TD.DwtListView-ColumnActive  {
 /* Contact styling */
 .ZmContactSplitView,
 .ZmContactSimpleView,
-.ZmContactInfoView .contactHeaderTable,
-.ZmContactView .contactHeaderTable {
+.ZmContactInfoView .headerRow,
+.ZmContactView .headerRow {
 	background-color:transparent;
 	border-color:transparent;
 }
@@ -269,7 +269,7 @@ TD.DwtListView-ColumnActive  {
 	padding:1em 1em 0;
 }
 
-.ZmContactInfoView .contactHeaderTable {
+.ZmContactInfoView .headerRow {
 	margin-bottom:.5em;
 	padding-top:.25em;
 }

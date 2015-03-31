@@ -125,7 +125,7 @@
 
 <template id="abook.Contacts#SplitView_address_value">
 	<tr valign=top>
-		<td class=rowLabel><$= data.seenone ? "" : data.label $></td>
+		<td class=rowLabel><$= data.first ? data.label : "" $></td>
 		<td id='${id}_<$=data.name$>' class=rowValue>
             <$ var address = data.address;
                if (address.City || address.State || address.PostalCode) { $>

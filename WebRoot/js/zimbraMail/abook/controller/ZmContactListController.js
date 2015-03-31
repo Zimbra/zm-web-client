@@ -481,11 +481,10 @@ function(view) {
 
 	var tg = this._tabGroups[view];
 
-	// we don't focus the member directly; only its children
-	tg.removeMember(this._view[view]);
-
 	tg.addMemberBefore(this._parentView[view].getAlphabetBar(),
 	                   this._view[view].getTabGroupMember());
+
+	tg.addMember(this._parentView[view].getTabGroupMember());
 }
 
 // If we're in the Trash folder, change the "Delete" button tooltip

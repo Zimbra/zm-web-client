@@ -97,7 +97,10 @@ function(params) {
 	html[i++] = "<span class='TagImage' onclick='";
 	html[i++] = tagClick;
 	html[i++] = "'>";
-	html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null);
+	html[i++] = AjxImg.getImageHtml({
+		imageName: tag.getIconWithColor(),
+		altText: ZmMsg.tag
+	});
 	html[i++] = "</span>";
 
 	html[i++] = "<span class='TagName' onclick='";

@@ -554,7 +554,7 @@ function(x, y, width, height) {
 	}
 	this._groupMembersListView.setSize(Dwt.DEFAULT, height-150);
 
-	var headerTableHeight = Dwt.getSize(this._headerTable).y;
+	var headerTableHeight = Dwt.getSize(this._headerRow).y;
 	var tabBarHeight = this._tabBar ? Dwt.getSize(this._tabBar).y : 0; //only DL
 	var searchFieldsRowHeight = Dwt.getSize(this._searchFieldsRow).y;
 	var manualAddRowHeight = Dwt.getSize(this._manualAddRow).y;
@@ -717,7 +717,7 @@ function() {
 		this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupView", params);
 	}
 
-	this._headerTable = document.getElementById(this._htmlElId + "_headerTable");
+	this._headerRow = document.getElementById(this._headerRowId);
 	this._tabBar = document.getElementById(this._htmlElId + "_tabView_tabbar"); //only for DLs
 	this._searchFieldsRow = document.getElementById(this._htmlElId + "_searchFieldsRow");
 	this._manualAddRow = document.getElementById(this._htmlElId + "_manualAddRow");

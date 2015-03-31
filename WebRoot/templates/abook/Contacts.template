@@ -44,7 +44,7 @@
 			<$= AjxTemplate.expand("#ZmEditContactView_headerName", data) $>
 			<$= AjxTemplate.expand("#ZmEditContactView_headerJobInfo", data) $>
 		</td>
-		<td class='contactHeaderCell' width='1%'>
+		<td class='contactHeaderCell'>
 			<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 			<tr>
 				<td style='text-align:right;white-space:nowrap;'><$=ZmMsg.fileAsLabel$></td>
@@ -274,8 +274,8 @@
 </template>
 
 <template id='abook.Contacts#SplitView_content'>
+	<table id='${id}_details' class='contactContentTable'>
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
-	<table role="presentation" id='${id}_details' class='contactContentTable'>
 	<$= ZmContactSplitView.showContactEmails(data) $>
 	<$= ZmContactSplitView.showContactPhones(data) $>
 	<$= ZmContactSplitView.showContactIMs(data) $>
@@ -348,16 +348,18 @@
 	<$
 		var contact = data.contact;
 		var imageUrl = contact.getImageUrl();
+		var imageLabel = contact.isDistributionList() ? ZmMsg.distributionList : contact.isGroup() ? ZmMsg.group : ZmMsg.contact;
 		var defaultImageUrl = data.defaultImageUrl;
 		var accountName = appCtxt.multiAccounts && contact.account && contact.account.getDisplayName();
-		var tagsId = data.id + (contact.isGroup() ? '_tags_group' : '_tags_contact'); 
+		var tagsId = data.id + '_tags_contact'; 
 		var imgClassName = contact.isDistributionList() ? 'Group_48' : contact.isGroup() ? 'GroupPerson_48' : 'Person_48';
 		var isEdit = data.isEdit;
 	$>
-	<table role="presentation" width=100% id='${id}_headerTable' class='contactHeaderTable <$= data.contactHdrClass $> ZPropertySheet' cellspacing='6'>
-		<tr>
+		<tr class='headerRow' id='${id}_headerRow'>
 			<$ if (imageUrl) { $>
-				<td width='48' rowspan='2' class='contactHeaderTableImage'><img src='<$= imageUrl $>'
+				<td class='rowLabel'>
+					<div class='headerRowImage'>
+						<img src='<$= imageUrl $>'
 				<$ if (AjxEnv.isIE) { $>
 					height='48'
 				<$ } else { $>
@@ -366,18 +368,29 @@
 				<$ if (defaultImageUrl) { $>
 					onerror='this.onerror=null;this.src="${defaultImageUrl}";'
 				<$ } $>
-				 border=0></td>
+					border=0 alt='<$= imageLabel $>'>
+					</div>
+				</td>
 			<$ } else { $>
-				<td width='48' rowspan='2' class='contactHeaderTableImage'><$= AjxImg.getImageHtml(imgClassName) $></td>
+				<td class='rowLabel'>
+					<div class='headerRowImage'>
+						<$= AjxImg.getImageHtml({
+							imageName: imgClassName, altText: imageLabel
+						}) $>
+					</div>
+				</td>
 			<$ } $>
-			<td>
+			<td class='rowValue'>
 				<$= AjxTemplate.expand("#SplitView_headerName", data) $>
 				<$= AjxTemplate.expand("#SplitView_headerJobInfo", data) $>
 				<$ if (data.dlInfo && data.dlInfo.description) { $>
 					<div><$= AjxStringUtil.htmlEncode(data.dlInfo.description) $></div>
 				<$ } $>
+				<$ if (!isEdit) {$>
+					<div class='contactHeaderTags' id='<$= tagsId $>'></div>
+				<$ } $>
 			</td>
-			<td valign='top' align='right' width='1%'>
+			<td class='rowType' valign='top'>
 				<$ if (accountName) { $>
 					<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 						<tr>
@@ -386,28 +399,25 @@
 						</tr>
 					</table>
 				<$ } $>
-				<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-					<tr>
-                        <td id='${id}_locationLabel' class='contactLocation'><$= ZmMsg.locationLabel $></td>
-						<$ if (!isEdit) { $>
-							<td id='${id}_locationFolder' class='companyFolder'>
-                                <$ if (data.addrbook) { $>
-								    <$= AjxImg.getImageHtml(data.addrbook.getIconWithColor()) $>&nbsp;<$= data.addrbook.getName() $>
-                                <$ } else { $>
-                                    <$= AjxImg.getImageHtml('GAL') $>&nbsp;<$= ZmMsg.GAL $>
-                                <$ } $>
-							</td>
-						<$ } else { $>
+				<$ if (!isEdit) { $>
+					<$ if (data.addrbook) { $>
+						<$= AjxImg.getImageHtml({
+								imageName: data.addrbook.getIconWithColor(),
+								altText: ZmMsg.locationLabel
+							}) $>&nbsp;<$= data.addrbook.getName() $>
+					<$ } else { $>
+						<$= AjxImg.getImageHtml('GAL') $>&nbsp;<$= ZmMsg.GAL $>
+					<$ } $>
+				<$ } else { $>
+					<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+						<tr>
+							<td id='${id}_locationLabel' class='contactLocation'><$= ZmMsg.locationLabel $></td>
 							<td id='${id}_LOCATION_FOLDER'></td>
-						<$ } $>
-					</tr>
-				</table>
+						</tr>
+					</table>
+				<$ } $>
 			</td>
 		</tr>
-		<$ if (!isEdit) {$>
-			<tr><td id='<$= tagsId $>' colspan='2'></td></tr>
-		<$ } $>
-	</table>
 </template>
 
 <template id='abook.Contacts#SplitView_headerName'>
@@ -499,8 +509,8 @@
 </template>
 
 <template id='abook.Contacts#SplitView_dlmember-expanded'>
-	<td <$= data.seenone ? "" : data.expandTdText $>><$= data.html.join("") $></td>
-	<td class='rowLabel'><$= data.seenone ? "" : ZmMsg.membersLabel $></td>
+	<td <$= data.first ? data.expandTdText : ""  $>><$= data.html.join("") $></td>
+	<td class='rowLabel'><$= data.first ? ZmMsg.membersLabel : "" $></td>
 	<td colspan='2' class='rowValue'>
 		<$= data.value $>
 	</td>
@@ -508,8 +518,13 @@
 
 <template id='abook.Contacts#SplitView_address_value'>
 	<tr valign='top'>
-		<td class='rowLabel' width='1%'><$= data.seenone ? "" : data.label $></td>
-		<td id='${id}_<$=data.name$>' class='rowValue' width='1%'>
+		<td class='rowLabel'>
+			<!-- only show the first label visually -->
+			<label for='${labelId}' class='<$= data.first ? "" : "ScreenReaderOnly" $>'>
+				${label}
+			</label>
+		</td>
+		<td id='${labelId}' class='rowValue'>
 			<$ var address = data.address;
 			if (address.Street) { $>
 				<div><$=address.Street$></div>
@@ -527,7 +542,11 @@
 				<div><$=address.Country$></div>
 			<$ } $>
 		</td>
-		<td class='rowType'>&nbsp;<$= data.type $></td>
+		<td class='rowType'>
+			<label for='${labelId}'>
+				&nbsp;<$= data.type $>
+			</label>
+		</td>
 	</tr>
 </template>
 
@@ -536,23 +555,34 @@
 	<$ if (data.isDL) { $>
 	<td><div class='ImgBlank_16'></div></td>
 	<$ } $>
-	<td class='rowLabel' width='1%'><$= data.seenone ? "" : data.label $></td>
-	<td id='${id}_<$=data.name1.replace(/['"]/g,"")$>' <$= data.type ? " width='1%'" : "colspan='2'" $> class='rowValue'>
+	<td class='rowLabel' id='${labelId}_label'>
+		<!-- only show the first label visually -->
+		<label for='${labelId}_label' class='<$= data.first ? "" : "ScreenReaderOnly" $>'>
+			${label}
+		</label>
+	</td>
+	<td id='${labelId}_value' <$= data.type ? "" : "colspan='2'" $> class='rowValue' aria-labelledby='${labelId}_label ${labelId}_type'>
 		<$= data.value $>
 	</td>
 	<$ if (data.type) { $>
-		<td class='rowType'>&nbsp;<$= data.type $></td>
+		<td id='${labelId}_type' class='rowType'>
+			<label for='${labelId}_label'>
+				&nbsp;${type}
+			</label>
+		</td>
 	<$ } $>
 </tr>
 </template>
 
 <template id='abook.Contacts#SplitViewGroup'>
-	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+	<table class='contactContentTable'>
+		<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+	</table>
 	<$ if (data.dlInfo) { $>
 	<table role="presentation" class='contactHeaderSubTable NoneBg ZPropertySheet' width='100%' cellspacing='6'>
 		<tr>
 			<td><ul id='${id}_subscriptionMsg' style='margin:.5em 0;padding-left:53px;'></ul></td>
-			<td id='${id}_subscriptionButton' width='1%'></td>
+			<td id='${id}_subscriptionButton'></td>
 		</tr>
 	</table>
 	<$ } $>
@@ -578,12 +608,16 @@
 <!-------------------------------- ZmGroupView -------------------------------->
 <!----------------------------------------------------------------------------->
 <template id='abook.Contacts#GroupView'>
-	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+	<table class='ZPropertySheet'>
+		<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+	</table>
 	<$= AjxTemplate.expand("abook.Contacts#GroupViewMembers", data) $>
 </template>
 
 <template id='abook.Contacts#DlView'>
-	<$= AjxTemplate.expand('abook.Contacts#SplitView_header', data) $>
+	<table class='ZPropertySheet'>
+		<$= AjxTemplate.expand('abook.Contacts#SplitView_header', data) $>
+	</table>
 	<div id='${id}_tabViewContainer'></div>
 </template>
 
