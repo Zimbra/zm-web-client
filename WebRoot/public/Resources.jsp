@@ -1,4 +1,5 @@
 <%@ page session="false" %>
+<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Zimbra Collaboration Suite Web Client
@@ -46,7 +47,8 @@ If not, see <http://www.gnu.org/licenses/>.
     String localeId = (String) request.getAttribute("localeId");
 	if (localeId == null) localeId = request.getParameter("localeId");
 	if (localeId != null) {
-		localeId = localeId.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;");
+	    localeId = localeId.replaceAll("[^A-Za-z_]","");
+	    localeId = BeanUtils.cook(localeId);
         int index = localeId.indexOf("_");
         if (index == -1) {
             localeQs = "&language=" + localeId;

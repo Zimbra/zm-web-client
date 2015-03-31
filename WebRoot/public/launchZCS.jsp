@@ -124,6 +124,7 @@
 	Locale locale = request.getLocale();
     String localeId = getAttribute(request, "localeId", null);
     if (localeId != null) {
+    	localeId = localeId.replaceAll("[^A-Za-z_]","");
         localeId = BeanUtils.cook(localeId);
         int index = localeId.indexOf("_");
         if (index == -1) {
