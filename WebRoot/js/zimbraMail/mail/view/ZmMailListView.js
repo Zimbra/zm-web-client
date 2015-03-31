@@ -773,7 +773,7 @@ function(clickedCol, ev) {
 	var hdr = this.getItemFromElement(clickedCol);
 	var group = this.getGroup(this._folderId);
 	if (group && hdr && hdr._sortable) {
-        var groupId = ZmMailListGroup.getGroupIdFromSortField(hdr._sortable);
+        var groupId = ZmMailListGroup.getGroupIdFromSortField(hdr._sortable, this.type);
 		if (groupId != group.id) {
             this.setGroup(groupId);
 		}
@@ -1623,7 +1623,7 @@ function(ev) {
 	}
     var sortField = ev && ev.item && ev.item.getData(ZmOperation.MENUITEM_ID);
     if (this._group && sortField) {
-        var groupId = ZmMailListGroup.getGroupIdFromSortField(sortField);
+        var groupId = ZmMailListGroup.getGroupIdFromSortField(sortField, this.type);
         this.setGroup(groupId);
     }
     this._setGroupByCheck();
