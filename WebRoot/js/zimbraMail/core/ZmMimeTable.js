@@ -141,7 +141,7 @@ ZmMimeTable._table[ZmMimeTable.TEXT_HTML]			= {desc: ZmMsg.htmlDocument, image: 
 ZmMimeTable._table[ZmMimeTable.TEXT_JAVA]			= {desc: ZmMsg.javaSource, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
 ZmMimeTable._table[ZmMimeTable.TEXT_PLAIN]			= {desc: ZmMsg.textFile, image: "Doc", imageLarge: "Doc_48", dataUri: ZmMimeTable._icons.doc, query: "text"};
 ZmMimeTable._table[ZmMimeTable.TEXT_XML]			= {desc: ZmMsg.xmlDocument, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
-ZmMimeTable._table[ZmMimeTable.TEXT_CSV]			= {desc: ZmMsg.csvDocument, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
+ZmMimeTable._table[ZmMimeTable.TEXT_CSV]			= {desc: ZmMsg.csvDocument, image: "MSExcelDoc", imageLarge: "MSExcelDoc_48", dataUri: ZmMimeTable._icons.spreadsheet};
 ZmMimeTable._table[ZmMimeTable.VIDEO]				= {desc: ZmMsg.video, image: "VideoDoc", imageLarge: "VideoDoc_48", dataUri: ZmMimeTable._icons.video};
 ZmMimeTable._table[ZmMimeTable.VIDEO_WMV]			= {desc: ZmMsg.msWMV, image: "VideoDoc", imageLarge: "VideoDoc_48", dataUri: ZmMimeTable._icons.video};
 
