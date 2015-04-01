@@ -1118,7 +1118,7 @@ function(params) {
 		cv.reEnableDesignMode();
 
 		this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
-		if (this._msgIds) {
+		if (this._msgIds || cv._msgAttId) {
 			this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);
 		}
 		else if (msg && (action == ZmOperation.DRAFT)) {
