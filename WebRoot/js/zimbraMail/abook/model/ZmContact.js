@@ -456,10 +456,10 @@ function(a, b) {
 ZmContact.computeFileAs =
 function(contact) {
 	/*
-	 * Bug 97900: To keep the same logic of generating the FileAs contact
+	 * Bug 98176: To keep the same logic of generating the FileAs contact
 	 *    label string between the Ajax client, and HTML client, when the
-	 *    computeFileAs(), and fileAs*() functions are modified, please 
-	 *    change the corresponding functions defined in the autoComplete.tag 
+	 *    computeFileAs(), and fileAs*() functions are modified, please
+	 *    change the corresponding functions defined in the autoComplete.tag
 	 */
 	var attr = (contact instanceof ZmContact) ? contact.getAttrs() : contact;
 	if (!attr) return;

@@ -196,6 +196,10 @@
             var allResults = oResponse.results;
             for (var i = 0; i < allResults.length; i++) {
                 var oResult = oResponse.results[i];
+                var isGroup = oResult["isGroup"];
+                if (isGroup) {
+                    continue;
+                }
                 var fileAs = oResult["fileas"];
                 var email     = oResult["email"];
 
