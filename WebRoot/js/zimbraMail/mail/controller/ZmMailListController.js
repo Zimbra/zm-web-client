@@ -77,8 +77,7 @@ ZmMailListController = function(container, mailApp, type, sessionId, searchResul
 	this._acceptShareListener = this._acceptShareHandler.bind(this);
 	this._declineShareListener = this._declineShareHandler.bind(this);
 
-	this._listeners[ZmOperation.ADD_FILTER_RULE]	= this._filterListener.bind(this, false);
-	this._listeners[ZmOperation.ADD_FILTER_RULE_ADDRESS] = this._filterListener.bind(this, true);
+	this._listeners[ZmOperation.ADD_FILTER_RULE]	= this._filterListener.bind(this, false, null);
 	this._listeners[ZmOperation.CREATE_APPT]		= this._createApptListener.bind(this);
 	this._listeners[ZmOperation.CREATE_TASK]		= this._createTaskListener.bind(this);
 
@@ -1652,14 +1651,72 @@ function(params) {
 };
 
 ZmMailListController.prototype._filterListener =
-function(isAddress) {
+function(isAddress, rule) {
 
 	if (isAddress) {
-		this._handleResponseFilterListener(this._actionEv.address);
+		this._handleResponseFilterListener(rule, this._actionEv.address);
 	}
 	else {
-		this._getLoadedMsg(null, this._handleResponseFilterListener.bind(this));
+		this._getLoadedMsg(null, this._handleResponseFilterListener.bind(this, rule));
 	}
+};
+
+
+ZmMailListController.prototype._setAddToFilterMenu =
+function(parent) {
+	if (this._filterMenu) {
+		return;
+	}
+
+	var menuItem = parent.getOp(ZmOperation.ADD_TO_FILTER_RULE);
+	this._filterMenu = new ZmPopupMenu(parent);
+	menuItem.setMenu(this._filterMenu);
+
+	this._rules = AjxDispatcher.run("GetFilterRules");
+	this._rules.addChangeListener(this._rulesChangeListener.bind(this));
+	this._resetFilterMenu();
+};
+
+ZmMailListController.prototype._resetFilterMenu =
+function() {
+	var filterItems = this._filterMenu.getItems();
+	while (filterItems.length > 0) {
+		this._filterMenu.removeChild(filterItems[0]);
+	}
+	this._rules.loadRules(false, this._populateFiltersMenu.bind(this));
+};
+
+ZmMailListController.prototype._populateFiltersMenu =
+function(results){
+	var filters = results.getResponse();
+	var menu = this._filterMenu;
+
+	var newItem = new DwtMenuItem({parent: menu});
+	newItem.setText(ZmMsg.newFilter);
+	newItem.setImage("Plus");
+	newItem.addSelectionListener(this._filterListener.bind(this, true, null));
+
+	if (!filters.size()) {
+		return;
+	}
+	menu.createSeparator();
+
+	for (var i = 0; i < filters.size(); i++) {
+		var rule = filters.get(i);
+		var mi = new DwtMenuItem({parent: menu});
+		mi.setText(AjxStringUtil.clipByLength(rule.name, 20));
+		mi.addSelectionListener(this._filterListener.bind(this, true, rule));
+	}
+};
+
+ZmMailListController.prototype._rulesChangeListener =
+function(ev){
+	if (ev.handled || ev.type !== ZmEvent.S_FILTER) {
+		return;
+	}
+
+	this._resetFilterMenu();
+	ev.handled = true;
 };
 
 ZmMailListController.prototype._createApptListener =
@@ -1702,7 +1759,7 @@ function(msg) {
 };
 
 ZmMailListController.prototype._handleResponseFilterListener =
-function(msgOrAddr) {
+function(rule, msgOrAddr) {
 
 	if (!msgOrAddr) {
 		return;
@@ -1716,13 +1773,21 @@ function(msgOrAddr) {
 	}
 	if (appCtxt.isChildWindow) {
 		var mailListController = window.opener.AjxDispatcher.run("GetMailListController");
-		mailListController._handleResponseFilterListener(msgOrAddr);
+		mailListController._handleResponseFilterListener(rule, msgOrAddr);
 		window.close();
 		return;
 	}
 	
 	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
-	var rule = new ZmFilterRule();
+	var editMode = !!rule;
+	if (rule) {
+		//this is important, without this, in case the user goes to the Filters page, things get messed up and trying to save an
+		// edited filter complains about the existence of a filter with the same name.
+		rule = this._rules.getRuleByName(rule.name) || rule;
+	}
+	else {
+		rule = new ZmFilterRule();
+	}
 
 	if (msg) {
 		var listId = msg.getListIdHeader();
@@ -1753,6 +1818,7 @@ function(msgOrAddr) {
 				var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT];
 				rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_IS, subj, subjMod);
 			}
+			rule.setGroupOp(ZmFilterRule.GROUP_ALL);
 		}
 	}
 	else {
@@ -1760,14 +1826,15 @@ function(msgOrAddr) {
 		rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, msgOrAddr.isAjxEmailAddress ? msgOrAddr.address : msgOrAddr, subjMod);
 	}
 
-	rule.addAction(ZmFilterRule.A_KEEP);
-	rule.setGroupOp(ZmFilterRule.GROUP_ALL);
+	if (!editMode) {
+		rule.addAction(ZmFilterRule.A_KEEP);
+	}
 
 	var accountName = appCtxt.multiAccounts && msg && msg.getAccount().name,
 		folder = msg && appCtxt.getById(msg.getFolderId()),
 		outgoing = !!(folder && folder.isOutbound());
 
-	appCtxt.getFilterRuleDialog().popup(rule, null, null, accountName, outgoing);
+	appCtxt.getFilterRuleDialog().popup(rule, editMode, null, accountName, outgoing);
 };
 
 /**
