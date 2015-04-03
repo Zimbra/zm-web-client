@@ -703,6 +703,7 @@ function( control ) {
         parent: signaturePage,
         parentElement: valueEl.parentNode,
         textAreaId: "TEXTAREA_SIGNATURE",
+		autoFocus: true,
         attachmentCallback:
             signaturePage._insertImagesListener.bind(signaturePage)
     });

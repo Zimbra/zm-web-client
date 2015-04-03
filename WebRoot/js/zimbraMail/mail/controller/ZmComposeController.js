@@ -736,7 +736,7 @@ function() {
 	if (this._composeView) { return; }
 
 	if (!this.isHidden) {
-		this._composeView = new ZmComposeView(this._container, this, this._composeMode);
+		this._composeView = new ZmComposeView(this._container, this, this._composeMode, this._action);
 		var callbacks = {};
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE]		= this._preHideCallback.bind(this);
 		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD]	= this._preUnloadCallback.bind(this);

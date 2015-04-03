@@ -301,6 +301,7 @@ ZmDocsEditView.prototype._initialize = function() {
 		parentElement: data.mainId,
 		content: '',
 		initCallback: this._controlListener.bind(this),
+		autoFocus: true,
 		mode: Dwt.HTML
         });
 	editor.addOnContentInitializedListener(this.onLoadContent.bind(this));

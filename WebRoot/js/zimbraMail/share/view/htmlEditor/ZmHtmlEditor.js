@@ -509,10 +509,10 @@ function(params) {
         window.tinyMCE_GZ = {};
         window.tinyMCE_GZ.loaded = true;
 
-		var callback = new AjxCallback(this, this.initEditorManager, [id, params.content]);
+		var callback = this.initEditorManager.bind(this, id, params.autoFocus);
         AjxDispatcher.require(["TinyMCE"], true, callback);
 	} else {
-		this.initEditorManager(id, params.mode, params.content);
+		this.initEditorManager(id, params.autoFocus);
 	}
 };
 
@@ -640,7 +640,7 @@ function(hasFocus, isTextModeFocus) {
 };
 
 ZmHtmlEditor.prototype.initEditorManager =
-function(id, content) {
+function(id, autoFocus) {
 
 	var obj = this;
 
@@ -710,10 +710,14 @@ function(id, content) {
 		}
 	}
 
+	if (!autoFocus) {
+		// if !true, Set to false in case undefined
+		autoFocus = false;
+	}
     var tinyMCEInitObj = {
         // General options
 		mode :  (this._mode == Dwt.HTML)? "exact" : "none",
-		auto_focus: true,
+		auto_focus: autoFocus,
 		elements:  id,
         plugins : plugins.join(' '),
 		toolbar: toolbarbuttons.join(' '),
