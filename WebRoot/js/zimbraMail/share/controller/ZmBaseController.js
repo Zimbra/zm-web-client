@@ -1262,7 +1262,7 @@ ZmBaseController.prototype._bubbleActionListener = function(ev, addr) {
 		menu.enable(
 			[
 				ZmOperation.CONTACT,
-				ZmOperation.ADD_FILTER_RULE_ADDRESS
+				ZmOperation.ADD_TO_FILTER_RULE
 			],
 			!appCtxt.isWebClientOffline()
 		);
@@ -1292,6 +1292,10 @@ ZmBaseController.prototype._getBubbleActionMenu = function() {
 		this._setSearchMenu(menu, false);
 	}
 
+	if (appCtxt.get(ZmSetting.FILTERS_ENABLED) && this._setAddToFilterMenu) {
+		this._setAddToFilterMenu(menu);
+	}
+
 	menu.addPopdownListener(this._bubbleMenuPopdownListener.bind(this));
 
 	for (var i = 0; i < menuItems.length; i++) {
@@ -1319,14 +1323,14 @@ ZmBaseController.prototype._getBubbleActionMenuOps = function() {
 	if (AjxClipboard.isSupported()) {
 		// we use Zero Clipboard (a Flash hack) to copy address
 		ops.push(ZmOperation.COPY);
-	};
+	}
 	ops.push(ZmOperation.SEARCH_MENU);
 	ops.push(ZmOperation.NEW_MESSAGE);
 	ops.push(ZmOperation.CONTACT);
 	ops.push(ZmOperation.GO_TO_URL);
 
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED) && this._filterListener) {
-		ops.push(ZmOperation.ADD_FILTER_RULE_ADDRESS);
+		ops.push(ZmOperation.ADD_TO_FILTER_RULE);
 	}
 
 	return ops;
