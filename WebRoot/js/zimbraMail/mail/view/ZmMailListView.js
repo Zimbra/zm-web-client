@@ -935,7 +935,7 @@ function(params) {
 			tooltip = bp && ZmInviteMsgView.truncateBodyContent(bp.getContent(), true);
 			tooltip = AjxStringUtil.stripTags(tooltip);
 		}
-		else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
+		else {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
         }
         // Strip surrounding whitespace from the tooltip

@@ -162,12 +162,8 @@ function(htmlArr, idx, msg, field, colIdx, params, classes) {
 		htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + ">";
 		if (this._mode == ZmId.VIEW_CONV || this._mode == ZmId.VIEW_CONVLIST) {
 			// msg within a conv shows just the fragment
-			if (!this._isMultiColumn) {
-				htmlArr[idx++] = "<span class='ZmConvListFragment' id='" + this._getFieldId(msg, ZmItem.F_FRAGMENT) + "'>";
-			}
-			else {
-				htmlArr[idx++] = "<span>"; //need a span so I can target it via CSS rule, so the margin is within the column content, and doesn't push the other columns
-			}
+			//originally bug 97510 -  need a span so I can target it via CSS rule, so the margin is within the column content, and doesn't push the other columns
+			htmlArr[idx++] = "<span " + (this._isMultiColumn ? "" : "class='ZmConvListFragment'") + " id='" + this._getFieldId(msg, ZmItem.F_FRAGMENT) + "'>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
 			htmlArr[idx++] = "</span>";
 		} else {
@@ -274,7 +270,7 @@ function(params) {
 		if (invite && (item.needsRsvp() || !invite.isEmpty())) {
 			tooltip = ZmMailListView.prototype._getToolTip.apply(this, arguments);
 		}
-		else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
+		else {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
 			var folderTip = null;
 			var folder = appCtxt.getById(item.folderId);
