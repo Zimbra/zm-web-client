@@ -757,7 +757,11 @@ ZmSignaturesPage.prototype._addNewSignature =
 function(skipControls, autoAdded) {
 	// add new signature
 	var signature = this._getNewSignature();
-	signature._autoAdded = autoAdded;
+    var sigEditor = this._sigEditor;
+    if (sigEditor) {
+        sigEditor.setContent('');
+    }
+    signature._autoAdded = autoAdded;
 	signature = this._addSignature(signature, skipControls);
 	setTimeout(this._sigName.focus.bind(this._sigName), 100);
 
