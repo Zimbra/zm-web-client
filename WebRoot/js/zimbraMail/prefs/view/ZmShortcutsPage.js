@@ -129,6 +129,9 @@ function() {
 ZmShortcutList = function(params) {
 
 	this._style = params.style;
+    if (!ZmShortcutList.modifierKeys) {
+        ZmShortcutList.modifierKeys = this._getModifierKeys();
+    }
 	this._content = this._renderShortcuts(params.cols);
 };
 
@@ -152,6 +155,25 @@ ZmShortcutList.COL_SYS.maps = ["button", "menu", "list", "tree", "dialog", "tool
 ZmShortcutList.prototype.getContent =
 function() {
 	return this._content;
+};
+
+// Set up map for interpolating modifier keys
+ZmShortcutList.prototype._getModifierKeys = function() {
+
+    var modifierKeys = {},
+        regex = /^keys\.\w+\.display$/,
+        keys = AjxUtil.filter(AjxUtil.keys(AjxKeys), function(key) {
+            return regex.test(key);
+        });
+
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i],
+            parts = key.split('.');
+
+            modifierKeys[parts[1]] = AjxKeys[key];
+    }
+
+    return modifierKeys;
 };
 
 /**
@@ -253,7 +275,7 @@ ZmShortcutList.prototype._getKeysHtml = function(params, html, i) {
 			actions.sort(sortFunc);
 			for (var k = 0; k < actions.length; k++) {
 				var action = actions[k];
-				var ks = keys[[action, "display"].join(".")];
+				var ks = ZmShortcutList._formatDisplay(keys[[action, "display"].join(".")]);
 				var desc = keys[[action, "description"].join(".")];
 				var keySeq = ks.split(/\s*;\s*/);
 				var keySeq1 = [];
@@ -268,6 +290,15 @@ ZmShortcutList.prototype._getKeysHtml = function(params, html, i) {
 
 	return i;
 };
+
+// Replace {mod} with the proper localized and/or platform-specific version, eg
+// replace {meta} with Cmd, or, in German, {ctrl} with Strg.
+ZmShortcutList._formatDisplay = function(keySeq) {
+    return keySeq.replace(/\{(\w+)\}/g, function(match, p1) {
+        return ZmShortcutList.modifierKeys[p1];
+    });
+};
+
 
 // Translates a key sequence into a friendlier, more readable version
 ZmShortcutList._formatKeySequence =
