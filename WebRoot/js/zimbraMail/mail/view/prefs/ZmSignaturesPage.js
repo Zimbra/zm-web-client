@@ -975,9 +975,13 @@ function(signature, skipNotify) {
 
 ZmSignaturesPage.prototype._handleDeleteButton =
 function(evt) {
+    var sigEditor = this._sigEditor;
 	this._deleteSignature();
 	this._selSignature = null;
 
+    if (sigEditor) {
+        sigEditor.setContent('');
+    }
 	if (this._sigList.size() > 0) {
 		var sel = this._sigList.getList().get(0);
 		if (sel) {
