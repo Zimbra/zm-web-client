@@ -873,6 +873,7 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
     obj._editorInitialized = true;
 
     this._resetSize();
+	this._setupTabGroup();
 
 	var iframe = Dwt.getElement(this._iFrameId);
 	if (iframe) {
@@ -2287,52 +2288,44 @@ function(ev) {
     dom.setStyle(dom.select("p", ev.node), "margin", "0");
 };
 
-ZmHtmlEditor.prototype.getTabGroupMember = function() {
+ZmHtmlEditor.prototype._getTabGroup = function() {
 	if (!this.__tabGroup) {
 		this.__tabGroup = new DwtTabGroup(this.toString());
 	}
-
-	this._setupTabGroup(this.__tabGroup);
-
 	return this.__tabGroup;
+};
+
+ZmHtmlEditor.prototype.getTabGroupMember = function() {
+	var tabGroup = this._getTabGroup();
+	this._setupTabGroup(tabGroup);
+
+	return tabGroup;
 };
 
 /**
  * Set up the editor tab group. This is done by having a separate tab group for each compose mode: one for HTML, one
- * for TEXT. The current one will be attached to the main tab group. We rebuild the tab group each time for TEXT, though it
- * shouldn't strictly be necessary. For some reason, it works better that way.
+ * for TEXT. The current one will be attached to the main tab group. We rebuild the tab group each time to avoid all kinds of issues
  *
  * @private
  */
 ZmHtmlEditor.prototype._setupTabGroup = function(mainTabGroup) {
 
 	var mode = this.getMode();
-	mainTabGroup = mainTabGroup || this.__tabGroup;
+	mainTabGroup = mainTabGroup || this._getTabGroup();
 
 	mainTabGroup.removeAllMembers();
+	var modeTabGroup = new DwtTabGroup(this.toString() + '-' + mode);
 	if (mode === Dwt.HTML) {
 		// tab group for HTML has first toolbar button and IFRAME
-		var htmlTabGroup = this._htmlModeTabGroup;
-		if (!htmlTabGroup) {
-			htmlTabGroup = this._htmlModeTabGroup = new DwtTabGroup(this.toString() + '-' + mode);
-			var firstbutton = this.__getEditorControl('listbox', 'Font Family');
-			if (firstbutton) {
-				htmlTabGroup.addMember(firstbutton.getEl());
-			}
-			htmlTabGroup.addMember(this);
+		var firstbutton = this.__getEditorControl('listbox', 'Font Family');
+		if (firstbutton) {
+			modeTabGroup.addMember(firstbutton.getEl());
 		}
-		mainTabGroup.addMember(htmlTabGroup);
+		modeTabGroup.addMember(this);
 	}
 	else {
 		// tab group for TEXT has the TEXTAREA
-		var textTabGroup = this._textModeTabGroup;
-		if (textTabGroup) {
-			textTabGroup.removeAllMembers();
-		}
-		else {
-			textTabGroup = this._textModeTabGroup = new DwtTabGroup(this.toString() + '-' + mode);
-		}
-		textTabGroup.addMember(this.getContentField());
-		mainTabGroup.addMember(textTabGroup);
+		modeTabGroup.addMember(this.getContentField());
 	}
+	mainTabGroup.addMember(modeTabGroup);
 };
