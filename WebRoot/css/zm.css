@@ -915,18 +915,12 @@ INPUT[type="text"].search_input-expanded {
 }
 
 .Conv2Header .expandIcon {
-	left:0px;
-	padding:.5em 0px 0px 5px;
-	position:absolute;
-	top:0px;
+	padding:.5em 5px;
 	@ActiveCursor@
 }
 
 .Conv2Header .subject {
 	@FontSize-bigger@
-	left:22px;
-	position:absolute;
-	top:.18em;
 	white-space:nowrap;
 }
 

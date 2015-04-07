@@ -47,7 +47,6 @@ ZmConvView2 = function(params) {
 
 	this.addControlListener(this._scheduleResize.bind(this));
 	this._setAllowSelection();
-	this._setAllowSelection();
 	this._setEventHdlrs([DwtEvent.ONMOUSEOUT, DwtEvent.ONMOUSEOVER, DwtEvent.ONMOUSEENTER, DwtEvent.ONMOUSELEAVE]); // needed by object manager
 	this._objectManager = true;
 };
@@ -893,7 +892,9 @@ ZmConvView2Header = function(params) {
 	DwtComposite.call(this, params);
 
 	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEUP, DwtEvent.ONDBLCLICK]);
-	
+	//the following allows selection. See also comment in DwtComposite.prototype._mouseDownListener
+	this.setEventPropagation(true, [DwtEvent.ONMOUSEDOWN, DwtEvent.ONSELECTSTART, DwtEvent.ONMOUSEUP, DwtEvent.ONMOUSEMOVE]);
+
 	this._convView = this.parent;
 	this._conv = this.parent._item;
 	this._controller = this.parent._controller;
