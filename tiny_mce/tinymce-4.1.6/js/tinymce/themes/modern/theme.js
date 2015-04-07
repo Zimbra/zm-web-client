@@ -175,7 +175,8 @@ tinymce.ThemeManager.add('modern', function(editor) {
 				classes: "toolbar-grp",
 				ariaRoot: true,
 				ariaRemember: true,
-				items: toolbars
+				items: toolbars,
+				ignoreTab: true
 			};
 		}
 	}
