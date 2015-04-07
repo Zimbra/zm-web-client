@@ -2209,10 +2209,8 @@ function(state, force) {
 
 	this._dateCellId = id + "_dateCell";
 	var date = msg.sentDate || msg.date;
-	var dateString = AjxDateUtil.computeDateStr(this._convView._now || new Date(), date);
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
-	this._fullDateString = dateFormatter.format(new Date(date));
-	var dateTooltip = this._browserToolTip ? this._fullDateString : "";
+	var dateString = dateFormatter.format(new Date(date));
 
 	this._readIconId = id + "_read";
 	this._readCellId = id + "_readCell";
@@ -2223,7 +2221,6 @@ function(state, force) {
 		readCellId:		this._readCellId,
 		date:			dateString,
 		dateCellId:		this._dateCellId,
-		dateTooltip:	dateTooltip
 	};
 
 	var imageSize = isExpanded ? 48 : 32,
@@ -2290,19 +2287,14 @@ function(ev) {
 	if (el && el.id) {
 		var id = el.id;
 		if (!id) { return ""; }
-		if (id == this._dateCellId) {
-			return this._fullDateString;
-		}
-		else {
-			var addr = this._idToAddr[id];
-			if (addr) {
-				var ttParams = {address:addr, ev:ev, noRightClick:true};
-				var ttCallback = new AjxCallback(this,
-					function(callback) {
-						appCtxt.getToolTipMgr().getToolTip(ZmToolTipMgr.PERSON, ttParams, callback);
-					});
-				return {callback:ttCallback};
-			}
+		var addr = this._idToAddr[id];
+		if (addr) {
+			var ttParams = {address:addr, ev:ev, noRightClick:true};
+			var ttCallback = new AjxCallback(this,
+				function(callback) {
+					appCtxt.getToolTipMgr().getToolTip(ZmToolTipMgr.PERSON, ttParams, callback);
+				});
+			return {callback:ttCallback};
 		}
 	}
 };
