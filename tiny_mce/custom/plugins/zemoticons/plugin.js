@@ -76,9 +76,11 @@ tinymce.PluginManager.add('zemoticons', function(editor, url) {
             html: getHtml,
             onclick: function(e) {
                 var linkElm = editor.dom.getParent(e.target, 'a');
-
                 if (linkElm) {
+					var orig = editor.settings.paste_data_images;
+					editor.settings.paste_data_images = true;
                     editor.insertContent('<img src="' + linkElm.getAttribute('data-mce-url') + '" />');
+					editor.settings.paste_data_images = orig;
                     this.hide();
                 }
             }
