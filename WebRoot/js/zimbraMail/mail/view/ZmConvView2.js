@@ -920,7 +920,6 @@ ZmConvView2Header.prototype.set =
 function(conv) {
 
 	this._item = conv;
-	this._setExpandIcon()
 	this._setSubject();
 	this._setInfo();
 	this.setVisible(true);
@@ -1274,8 +1273,9 @@ ZmMailMsgCapsuleView = function(params) {
 
 	this._convView = this.parent;
 	this._controller = params.controller;
-	this._forceExpand = params.forceExpand;
-	this._forceCollapse = params.forceCollapse;
+	//the Boolean is to make sure undefined changes to false as otherwise this leaks down (_expanded becomes undefined) and causes problems (undefined != false in ZmConvView2.prototype.getExpanded)
+	this._forceExpand = Boolean(params.forceExpand);
+	this._forceCollapse = Boolean(params.forceCollapse);
 	this._forceOriginal = params.forceOriginal && !(DBG && DBG.getDebugLevel() == "orig");
 	this._isDraft = params.isDraft;
 	this._index = params.index;
