@@ -457,20 +457,25 @@ function() {
 ZmHtmlEditor.prototype.clear =
 function() {
 	var editor = this.getEditor();
-	if (editor) {
-		if (this._editorInitialized) {
-			editor.undoManager && editor.undoManager.clear();
-			this.clearDirty();
-		}
-		var field = this.getContentField();
-		if(field) {
-			var textEl = field.cloneNode(false);
-			field.parentNode.replaceChild(textEl, field);//To clear undo/redo queue of textarea
-			//cloning and replacing node will remove event handlers and hence adding it once again
-			Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
-			Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
-		}
+	if (editor && this._editorInitialized) {
+		editor.undoManager && editor.undoManager.clear();
+		this.clearDirty();
 	}
+	var textField = this.getContentField();
+	if (!textField) {
+		return;
+	}
+
+	//If HTML editor is not initialized and the current mode is HTML, then HTML editor is currently getting initialized. Text area should not be replaced at this time, as this will make the TinyMCE JavaScript reference empty for the text area.
+	if (!this.isHtmlModeInited() && this.getMode() === Dwt.HTML) {
+		return;
+	}
+	var textEl = textField.cloneNode(false);
+	textField.parentNode.replaceChild(textEl, textField);//To clear undo/redo queue of textarea
+	//cloning and replacing node will remove event handlers and hence adding it once again
+	Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
+	Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
+
 };
 
 ZmHtmlEditor.prototype.initTinyMCEEditor =
