@@ -625,11 +625,11 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 
     if (appCtxt.getCurrentApp().getName() === ZmId.APP_BRIEFCASE) {
         this._rolesGroup.setVisible(isUserShare || isGuestShare);
-        guestRadioLabelEl.innerText = ZmMsg.shareWithExternalGuest;
+        guestRadioLabelEl.textContent = ZmMsg.shareWithExternalGuest;
     }
     else {
 	    this._rolesGroup.setVisible(isUserShare);
-        guestRadioLabelEl.innerText = ZmMsg.shareWithGuest;
+        guestRadioLabelEl.textContent = ZmMsg.shareWithGuest;
     }
 	this._messageGroup.setVisible(!isPublicShare);
 	this._privatePermission.setVisible(this._privatePermissionEnabled && !isPublicShare);
