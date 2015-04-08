@@ -99,6 +99,28 @@
     }">   <%-- This condition is for not to list the contact/resource which has been already added --%>
     
     <c:if test="${not empty hit.contactHit.displayEmail or hit.contactHit.isGroup}">
+        <fmt:message var="noNameStr" key="noName"/>
+        <c:set var="noName" value="${noNameStr} ${not empty hit.contactHit.email ? hit.contactHit.email : hit.contactHit.email2 }" />
+        <c:choose>
+            <c:when test="${not empty hit.contactHit.fileAsStr}">
+                <c:set var="contactFileAsText">
+                <app:contactFileAs
+                   fileAs="${hit.contactHit.fileAs}"
+                   firstName="${hit.contactHit.firstName}" lastName="${hit.contactHit.lastName}"
+                   company="${hit.contactHit.company}" fullName="${hit.contactHit.fullName}"
+                   nickname="${hit.contactHit.nickname}"
+                />
+              </c:set>
+              <c:set var="contactUrlText" value="${fn:escapeXml(contactFileAsText)}"/>
+            </c:when>
+            <c:when test="${empty hit.contactHit.fileAsStr and (context.isGALSearch or hit.contactHit.isGroup)}">
+                <c:set var="contactUrlText" value="${fn:escapeXml(hit.contactHit.fullName)}" />
+            </c:when>
+            <c:otherwise>
+                <c:set var="contactUrlText" value="${fn:escapeXml(noName)}" />
+            </c:otherwise>
+        </c:choose>
+
         <tr>
             <td width=1%>&nbsp;</td>
             <c:choose>
@@ -110,10 +132,31 @@
                     </td>
                 </c:when>
                 <c:otherwise>
-                    <c:set var="addresses" value="${fn:escapeXml(hit.contactHit.fullAddress)}"/>
+                    <c:set var="addresses" value='&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.email)}&gt;' />
                     <c:if test="${hit.contactHit.isGroup}">
                         <zm:getContact var="contactGroup" id="${hit.contactHit.id}"/>
-                        <c:set var="addresses" value="${fn:escapeXml(contactGroup.memberAddresses)}"/>
+                        <c:set var="addresses" value=""/>
+                        <c:forEach items="${contactGroup.groupMemberList}" var="gmember" varStatus="status">
+                            <c:set var="contactFileAsText">
+                                <app:contactFileAs
+                                     fileAs="${gmember.fileAs}"
+                                     firstName="${gmember.firstName}"
+                                     lastName="${gmember.lastName}"
+                                     company="${gmember.company}"
+	                             fullName="${gmember.fullName}"
+                                     nickname="${gmember.nickname}"
+                                />
+                            </c:set>
+                            <c:set var="addr" value="&#034;${fn:escapeXml(contactFileAsText)}&#034; &lt;${fn:escapeXml(gmember.email)}&gt;"/>
+                            <c:choose>
+                                <c:when test="${status.index > 0}">
+                                    <c:set var="addresses" value="${addresses},${addr}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:set var="addresses" value="${addr}"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:forEach>
                     </c:if>
                     <td width=2% nowrap><input type=checkbox  name="addTo" value="${addresses}"></td>
                     <td width=2% nowrap><input type=checkbox name="addCc" value="${addresses}"></td>
@@ -124,7 +167,7 @@
             <td width=1%><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
             <td width=1%>&nbsp;</td>
             <td width=20%>
-                    ${fn:escapeXml(empty hit.contactHit.fullName ? '' : hit.contactHit.fullName)}
+                    ${contactUrlText}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.displayEmail)}</td>
             <c:if test="${zm:boolean(attendeeMode)}">
@@ -174,16 +217,16 @@
                     <td width=2% nowrap><input type=checkbox  name="addToGroup" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.email2)}&gt;"></td>
                 </c:when>
                 <c:otherwise>
-                    <td width=2% nowrap><input type=checkbox  name="addTo" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.email2)}&gt;"></td>
-                    <td width=2% nowrap><input type=checkbox name="addCc" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.email2)}&gt;"></td>
-                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.email2)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addTo" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.email2)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox name="addCc" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.email2)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.email2)}&gt;"></td>
                 </c:otherwise>
             </c:choose>
             <td width=1%><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
             <td width=1%><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
             <td width=1%>&nbsp;</td>
             <td width=20%>
-                    ${fn:escapeXml(empty hit.contactHit.fullName ? '' : hit.contactHit.fullName)}
+                    ${contactUrlText}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.email2)}</td>
             <c:if test="${zm:boolean(attendeeMode)}">
@@ -233,16 +276,16 @@
                     <td width=2% nowrap><input type=checkbox  name="addToGroup" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.email3)}&gt;"></td>
                 </c:when>
                 <c:otherwise>
-                    <td width=2% nowrap><input type=checkbox  name="addTo" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.email3)}&gt;"></td>
-                    <td width=2% nowrap><input type=checkbox name="addCc" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.email3)}&gt;"></td>
-                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.email3)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addTo" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.email3)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox name="addCc" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.email3)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.email3)}&gt;"></td>
                 </c:otherwise>
             </c:choose>
             <td width=1%><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
             <td width=1%><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
             <td width=1%>&nbsp;</td>
             <td width=20%>
-                    ${fn:escapeXml(empty hit.contactHit.fullName ? '' : hit.contactHit.fullName)}
+                    ${contactUrlText}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.email3)}</td>
             <c:if test="${zm:boolean(attendeeMode)}">
@@ -292,16 +335,16 @@
                     <td width=2% nowrap><input type=checkbox  name="addToGroup" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail1)}&gt;"></td>
                 </c:when>
                 <c:otherwise>
-                    <td width=2% nowrap><input type=checkbox  name="addTo" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail1)}&gt;"></td>
-                    <td width=2% nowrap><input type=checkbox name="addCc" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail1)}&gt;"></td>
-                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail1)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addTo" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail1)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox name="addCc" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail1)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail1)}&gt;"></td>
                 </c:otherwise>
             </c:choose>
             <td width=1%><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
             <td width=1%><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
             <td width=1%>&nbsp;</td>
             <td width=20%>
-                    ${fn:escapeXml(empty hit.contactHit.fullName ? '' : hit.contactHit.fullName)}
+                    ${contactUrlText}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail1)}</td>
             <c:if test="${zm:boolean(attendeeMode)}">
@@ -351,16 +394,16 @@
                     <td width=2% nowrap><input type=checkbox  name="addToGroup" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail2)}&gt;"></td>
                 </c:when>
                 <c:otherwise>
-                    <td width=2% nowrap><input type=checkbox  name="addTo" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail2)}&gt;"></td>
-                    <td width=2% nowrap><input type=checkbox name="addCc" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail2)}&gt;"></td>
-                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail2)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addTo" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail2)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox name="addCc" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail2)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail2)}&gt;"></td>
                 </c:otherwise>
             </c:choose>
             <td width=1%><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
             <td width=1%><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
             <td width=1%>&nbsp;</td>
             <td width=20%>
-                    ${fn:escapeXml(empty hit.contactHit.fullName ? '' : hit.contactHit.fullName)}
+                    ${contactUrlText}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail2)}</td>
             <c:if test="${zm:boolean(attendeeMode)}">
@@ -410,16 +453,16 @@
                     <td width=2% nowrap><input type=checkbox  name="addToGroup" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail3)}&gt;"></td>
                 </c:when>
                 <c:otherwise>
-                    <td width=2% nowrap><input type=checkbox  name="addTo" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail3)}&gt;"></td>
-                    <td width=2% nowrap><input type=checkbox name="addCc" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail3)}&gt;"></td>
-                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="&#034;${fn:escapeXml(hit.contactHit.fullName)}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail3)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addTo" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail3)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox name="addCc" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail3)}&gt;"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addBcc" value="&#034;${contactUrlText}&#034; &lt;${fn:escapeXml(hit.contactHit.workEmail3)}&gt;"></td>
                 </c:otherwise>
             </c:choose>
             <td width=1%><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
             <td width=1%><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
             <td width=1%>&nbsp;</td>
             <td width=20%>
-                    ${fn:escapeXml(empty hit.contactHit.fullName ? '' : hit.contactHit.fullName)}
+                    ${contactUrlText}
             </td>
             <td >&nbsp;${fn:escapeXml(hit.contactHit.workEmail3)}</td>
             <c:if test="${zm:boolean(attendeeMode)}">
