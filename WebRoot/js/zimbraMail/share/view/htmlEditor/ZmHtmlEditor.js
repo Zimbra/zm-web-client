@@ -1967,7 +1967,9 @@ function(ev) {
 	var retVal = true;
 
 	var self = this;
-	if (this._spellCheck && ev.srcElement && ev.srcElement.id in this._spellCheck.spanIds) {
+
+	var target = ev.srcElement || ev.target; //in FF we get ev.target and not ev.srcElement.
+	if (this._spellCheck && target && target.id in this._spellCheck.spanIds) {
 		var dw;
 		// This probably sucks.
 		if (/mouse|context|click|select/i.test(ev.type)) {
