@@ -2086,6 +2086,10 @@ function(action, msg, extraBodyText, noEditorUpdate, keepAttachments) {
 	this._msgAttId = null;
 
 	if (extraBodyText) {
+        // convert text if composing as HTML (check for opening < to see if content is already HTML, should work most of the time)
+        if (htmlMode && extraBodyText.charAt(0) !== '<') {
+            extraBodyText = AjxStringUtil.convertToHtml(extraBodyText);
+        }
 		this.setComponent(ZmComposeView.BC_TEXT_PRE, this._normalizeText(extraBodyText, htmlMode));
 	}
 
