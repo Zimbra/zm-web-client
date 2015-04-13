@@ -287,7 +287,7 @@ ZmController.prototype.createErrorMessage = function(type, respCode, extraMsg) {
 };
 
 ZmController.handleScriptError =
-function(ex) {
+function(ex, debugWindowOnly) {
 
 	var text = [];
 	var eol = "<br/>";
@@ -303,8 +303,15 @@ function(ex) {
 		if (ex.stack)		{ text.push("Stack: " + ex.stack.replace("\n", eol, "g")); }
 	}
 	var content = text.join(eol);
-	AjxDebug.println(AjxDebug.EXCEPTION, [msg, content].join(eol + eol));
-	appCtxt.getAppController().popupErrorDialog(msg, content, null, false, true);
+	var errorMsg = [msg, content].join(eol + eol);
+	if (debugWindowOnly) {
+		// Display the error in the debug window
+		DBG.println(AjxDebug.DBG1, errorMsg);
+	} else {
+		// Record the error in a log buffer and display a script error popup
+		AjxDebug.println(AjxDebug.EXCEPTION, errorMsg);
+		appCtxt.getAppController().popupErrorDialog(msg, content, null, false, true);
+	}
 };
 
 /**

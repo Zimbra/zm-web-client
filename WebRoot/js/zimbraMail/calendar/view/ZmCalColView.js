@@ -358,7 +358,6 @@ function(resetLeft) {
 	if (ZmCalColView._inSyncScroll) { return; }
 
 	ZmCalColView._inSyncScroll = true;
-
 	try {
 		var bodyElement = document.getElementById(this._bodyDivId),
 		    hourElement = document.getElementById(this._hoursScrollDivId),
@@ -376,7 +375,8 @@ function(resetLeft) {
         bodyElement.scrollLeft = allDayHeadingDivId.scrollLeft;
 		if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
         this._checkForOffscreenAppt(bodyElement);
-
+	} catch (ex) {
+		 ZmController.handleScriptError(ex, true);
 	} finally {
 		 ZmCalColView._inSyncScroll = false;
 	}
