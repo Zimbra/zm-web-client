@@ -804,7 +804,7 @@ function() {
 	html[i++] = this._monthlyDefaultId;
 	html[i++] = "'></td>";
 	html[i++] = "<td>";
-	html[i++] = "<table><tr>";
+	html[i++] = "<table class='ZPropertySheet' cellspacing='6'><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsDate);
 	var segments = formatter.getSegments();
 	for (var s = 0; s < segments.length; s++) {
