@@ -622,7 +622,7 @@ function(draftType, msg, callback, result) {
         this.sendMsgCallback.run(result);
     }
 
-	appCtxt.notifyZimlets("onSendMsgSuccess", [this, msg]);//notify Zimlets on success
+	appCtxt.notifyZimlets("onSendMsgSuccess", [this, msg, draftType]);//notify Zimlets on success
 
 	if (needToPop) {
 		this._dontSavePreHide = true;
