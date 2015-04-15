@@ -301,7 +301,7 @@ and the container element is replaced with that control.
 
 				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 					<$ if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
-						<$ if (data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
+						<$ if (appCtxt.get(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
 							<tr>
 								<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
 								<td class='ZOptionsField'><$=ZmMsg.forwardCopyTo$></td>
