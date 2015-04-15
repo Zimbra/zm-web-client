@@ -87,6 +87,8 @@ ZmMimeTable.TEXT_CSV				= "text/csv";
 ZmMimeTable.VIDEO					= "video";
 ZmMimeTable.VIDEO_WMV				= "video/x-ms-wmv";
 ZmMimeTable.XML_ZIMBRA_SHARE		= "xml/x-zimbra-share";
+ZmMimeTable.SWF						= "application/x-shockwave-flash";
+ZmMimeTable.VCF						= "text/vcard";
 
 // Formats for text/plain
 ZmMimeTable.FORMAT_FLOWED			= "flowed";
@@ -144,6 +146,9 @@ ZmMimeTable._table[ZmMimeTable.TEXT_XML]			= {desc: ZmMsg.xmlDocument, image: "G
 ZmMimeTable._table[ZmMimeTable.TEXT_CSV]			= {desc: ZmMsg.csvDocument, image: "MSExcelDoc", imageLarge: "MSExcelDoc_48", dataUri: ZmMimeTable._icons.spreadsheet};
 ZmMimeTable._table[ZmMimeTable.VIDEO]				= {desc: ZmMsg.video, image: "VideoDoc", imageLarge: "VideoDoc_48", dataUri: ZmMimeTable._icons.video};
 ZmMimeTable._table[ZmMimeTable.VIDEO_WMV]			= {desc: ZmMsg.msWMV, image: "VideoDoc", imageLarge: "VideoDoc_48", dataUri: ZmMimeTable._icons.video};
+ZmMimeTable._table[ZmMimeTable.SWF]					= {desc: ZmMsg.swf, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
+ZmMimeTable._table[ZmMimeTable.TEXT_DIRECTORY]		= {desc: ZmMsg.vcf, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
+ZmMimeTable._table[ZmMimeTable.VCF]					= {desc: ZmMsg.vcf, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
 
 ZmMimeTable.getInfo =
 function(type, createIfUndefined) {
