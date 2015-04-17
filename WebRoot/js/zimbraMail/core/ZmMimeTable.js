@@ -36,6 +36,7 @@ ZmMimeTable = function() {
 
 // IGNORE means the client will not display these attachment types to the user
 ZmMimeTable.APP						= "application";
+ZmMimeTable.APP_FLASH				= "application/x-shockwave-flash";
 ZmMimeTable.APP_ADOBE_PDF			= "application/pdf";
 ZmMimeTable.APP_ADOBE_PS			= "application/postscript";
 ZmMimeTable.APP_APPLE_DOUBLE 		= "application/applefile";		// IGNORE
@@ -79,7 +80,8 @@ ZmMimeTable.TEXT_RTF				= "text/enriched";
 ZmMimeTable.TEXT_HTML				= "text/html";
 ZmMimeTable.TEXT_CAL				= "text/calendar"; 				// IGNORE
 ZmMimeTable.TEXT_JAVA				= "text/x-java";
-ZmMimeTable.TEXT_VCARD				= "text/x-vcard";
+ZmMimeTable.TEXT_X_VCARD			= "text/x-vcard";
+ZmMimeTable.TEXT_VCARD				= "text/vcard";
 ZmMimeTable.TEXT_DIRECTORY  	    = "text/directory";
 ZmMimeTable.TEXT_PLAIN				= "text/plain";
 ZmMimeTable.TEXT_XML				= "text/xml";
@@ -87,8 +89,6 @@ ZmMimeTable.TEXT_CSV				= "text/csv";
 ZmMimeTable.VIDEO					= "video";
 ZmMimeTable.VIDEO_WMV				= "video/x-ms-wmv";
 ZmMimeTable.XML_ZIMBRA_SHARE		= "xml/x-zimbra-share";
-ZmMimeTable.SWF						= "application/x-shockwave-flash";
-ZmMimeTable.VCF						= "text/vcard";
 
 // Formats for text/plain
 ZmMimeTable.FORMAT_FLOWED			= "flowed";
@@ -110,6 +110,7 @@ ZmMimeTable._table = {};
 
 // only add types which are NOT ignored by the client	
 ZmMimeTable._table[ZmMimeTable.APP]					= {desc: ZmMsg.application, image: "ExeDoc", imageLarge: "ExeDoc_48", dataUri: ZmMimeTable._icons.exe, query: "application/*"};
+ZmMimeTable._table[ZmMimeTable.APP_FLASH]			= {desc: ZmMsg.swf, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
 ZmMimeTable._table[ZmMimeTable.APP_ADOBE_PDF]		= {desc: ZmMsg.adobePdfDocument, image: "Doc", imageLarge: "Doc_48", dataUri: ZmMimeTable._icons.doc};
 ZmMimeTable._table[ZmMimeTable.APP_ADOBE_PS]		= {desc: ZmMsg.adobePsDocument, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
 ZmMimeTable._table[ZmMimeTable.APP_EXE]				= {desc: ZmMsg.application, image: "ExeDoc", imageLarge: "ExeDoc_48", dataUri: ZmMimeTable._icons.exe};
@@ -146,9 +147,9 @@ ZmMimeTable._table[ZmMimeTable.TEXT_XML]			= {desc: ZmMsg.xmlDocument, image: "G
 ZmMimeTable._table[ZmMimeTable.TEXT_CSV]			= {desc: ZmMsg.csvDocument, image: "MSExcelDoc", imageLarge: "MSExcelDoc_48", dataUri: ZmMimeTable._icons.spreadsheet};
 ZmMimeTable._table[ZmMimeTable.VIDEO]				= {desc: ZmMsg.video, image: "VideoDoc", imageLarge: "VideoDoc_48", dataUri: ZmMimeTable._icons.video};
 ZmMimeTable._table[ZmMimeTable.VIDEO_WMV]			= {desc: ZmMsg.msWMV, image: "VideoDoc", imageLarge: "VideoDoc_48", dataUri: ZmMimeTable._icons.video};
-ZmMimeTable._table[ZmMimeTable.SWF]					= {desc: ZmMsg.swf, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
-ZmMimeTable._table[ZmMimeTable.TEXT_DIRECTORY]		= {desc: ZmMsg.vcf, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
-ZmMimeTable._table[ZmMimeTable.VCF]					= {desc: ZmMsg.vcf, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
+ZmMimeTable._table[ZmMimeTable.TEXT_DIRECTORY]		= {desc: ZmMsg.vCard, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
+ZmMimeTable._table[ZmMimeTable.TEXT_VCARD]			= {desc: ZmMsg.vCard, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
+ZmMimeTable._table[ZmMimeTable.TEXT_X_VCARD]		= {desc: ZmMsg.vCard, image: "GenericDoc", imageLarge: "GenericDoc_48", dataUri: ZmMimeTable._icons.generic};
 
 ZmMimeTable.getInfo =
 function(type, createIfUndefined) {
@@ -246,4 +247,17 @@ function(type){
 ZmMimeTable.isWebDoc =
 function(type) {
     return (type == ZmMimeTable.APP_ZIMBRA_DOC);
+};
+
+/**
+ * Checks if the type is a vCard.
+ * 
+ * @param	{constant}	type		the type
+ * @return	{Boolean}	<code>true</code> if the type is a vCard
+ */
+ZmMimeTable.isVcard =
+function(type) {
+    return (type === ZmMimeTable.TEXT_DIRECTORY || 
+    		type === ZmMimeTable.TEXT_X_VCARD || 
+    		type === ZmMimeTable.TEXT_VCARD);
 };

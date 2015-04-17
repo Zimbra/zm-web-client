@@ -2221,7 +2221,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 				if (!useCL) {
 					// check for vcard *first* since we dont care to view it in HTML
-					if (attach.contentType == ZmMimeTable.TEXT_VCARD || attach.contentType == ZmMimeTable.TEXT_DIRECTORY) {
+					if (ZmMimeTable.isVcard(attach.contentType)) {
 						props.links.vcard = true;
 					}
 					else if (ZmMimeTable.hasHtmlVersion(attach.contentType) && appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {

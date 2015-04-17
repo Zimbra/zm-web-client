@@ -1494,8 +1494,7 @@ function(oldSignatureId, newSignatureId) {
 					sigContact = item;
 				}
 				for (var i = 0; i < atts.length && !vcardPart; i++) {
-					if (atts[i].contentType === ZmMimeTable.TEXT_VCARD
-					|| atts[i].contentType === ZmMimeTable.TEXT_DIRECTORY) {
+					if (ZmMimeTable.isVcard(atts[i].contentType)) {
 						//we may have multiple vcards, determine which one to remove based on signature in cache
 						if (sigContact) {
 							//remove the file extension from fileName
