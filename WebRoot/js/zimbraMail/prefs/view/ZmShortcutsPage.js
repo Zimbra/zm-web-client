@@ -397,7 +397,7 @@ ZmShortcutsPanel.prototype.handleKeyEvent =
 function(ev) {
 	if (ev && ev.charCode === 27) {
 		ZmShortcutsPanel.closeCallback();
-		return false;
+		return true;
 	}
 };
 
