@@ -1122,7 +1122,7 @@ function(ev) {
 		appCtxt.getAppController().setPollInterval();
 	}
 	else if (id === ZmSetting.SKIN_NAME) {
-		this._showConfirmDialog(ZmMsg.skinChangeRestart, this._refreshBrowserCallback.bind(this, { skin: value }));
+		this._showConfirmDialog(ZmMsg.skinChangeRestart, this._refreshBrowserCallback.bind(this));
 	}
 	else if (id === ZmSetting.SHOW_SELECTION_CHECKBOX) {
 		this._showConfirmDialog(value ? ZmMsg.checkboxChangeRestartShow : ZmMsg.checkboxChangeRestartHide, this._refreshBrowserCallback.bind(this));
