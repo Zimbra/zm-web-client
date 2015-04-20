@@ -651,6 +651,7 @@ function() {
 ZmCalItemComposeController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
+	this._action = ZmCalItemComposeController.SAVE_CLOSE;
 	if (this._doSave()) {
 		appCtxt.getAppViewMgr().showPendingView(true);
 	}
