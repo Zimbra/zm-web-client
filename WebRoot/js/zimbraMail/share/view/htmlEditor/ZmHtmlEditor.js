@@ -681,7 +681,7 @@ function(id, autoFocus) {
 	// NB: contextmenu plugin deliberately omitted; it's confusing
 	var plugins = [
 		"zemoticons",
-		"table", "paste", "directionality", "textcolor", "lists", "advlist",
+		"table", "directionality", "textcolor", "lists", "advlist",
 		"link", "hr", "charmap", "code", "image"
 	];
 
@@ -785,6 +785,8 @@ ZmHtmlEditor.prototype.onPaste = function(ev) {
 	}
 
 	if (file) {
+		ev.stopPropagation();
+		ev.preventDefault();
 		var headers = {
 			"Cache-Control": "no-cache",
 			"X-Requested-With": "XMLHttpRequest",
@@ -805,7 +807,66 @@ ZmHtmlEditor.prototype.onPaste = function(ev) {
 		} else {
 			fn();
 		}
-    }
+    }  else  {
+		var clipboardContent = this.getClipboardContent(ev);
+		if (this.hasContentType(clipboardContent, 'text/html')) {
+			var content = clipboardContent['text/html'];
+			if (content) {
+				this.pasteHtml(content);
+				ev.stopPropagation();
+				ev.preventDefault();
+			}
+		}
+	}
+};
+
+ZmHtmlEditor.prototype.getDataTransferItems = function(dataTransfer) {
+	var data = {};
+
+	if (dataTransfer) {
+		// Use old WebKit/IE API
+		if (dataTransfer.getData) {
+			var legacyText = dataTransfer.getData('Text');
+			if (legacyText && legacyText.length > 0) {
+				data['text/plain'] = legacyText;
+			}
+		}
+
+		if (dataTransfer.types) {
+			for (var i = 0; i < dataTransfer.types.length; i++) {
+				var contentType = dataTransfer.types[i];
+				data[contentType] = dataTransfer.getData(contentType);
+			}
+		}
+	}
+
+	return data;
+};
+
+
+ZmHtmlEditor.prototype.hasContentType = function(clipboardContent, mimeType) {
+	return mimeType in clipboardContent && clipboardContent[mimeType].length > 0;
+};
+
+ZmHtmlEditor.prototype.getClipboardContent = function(clipboardEvent) {
+	return this.getDataTransferItems(clipboardEvent.clipboardData || this.getEditor().getDoc().dataTransfer);
+};
+
+
+ZmHtmlEditor.prototype.pasteHtml = function(html) {
+	var ed = this.getEditor();
+	var args, dom = ed.dom;
+
+	// We need to attach the element to the DOM so Sizzle selectors work on the contents
+	var tempBody = dom.add(ed.getBody(), 'div', {style: 'display:none'}, html);
+	args = ed.fire('PastePostProcess', {node: tempBody});
+	dom.remove(tempBody);
+	html = args.node.innerHTML;
+
+	if (!args.isDefaultPrevented()) {
+		ed.insertContent(html, {merge: ed.settings.paste_merge_formats !== false});
+	}
+
 };
 
 ZmHtmlEditor.prototype._handlePasteUpload = function(r) {
