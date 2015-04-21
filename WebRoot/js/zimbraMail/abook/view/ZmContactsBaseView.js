@@ -566,12 +566,10 @@ function(ev) {
 	var startLetter = null, endLetter = null;
 
 	if (idx > 0) {
-		startLetter = alphabet[idx].substr(0, 1);
-		startLetter = this.startSortMap[startLetter] || startLetter;
+		startLetter = this.startSortMap[alphabet[idx]] || alphabet[idx].substr(0, 1);
 
 		if (idx < alphabet.length - 1) {
-			endLetter = alphabet[idx + 1].substr(0, 1);
-			endLetter = this.endSortMap[endLetter] || endLetter;
+			endLetter = this.endSortMap[alphabet[idx + 1]] || alphabet[idx + 1].substr(0, 1);
 		}
 	}
 
