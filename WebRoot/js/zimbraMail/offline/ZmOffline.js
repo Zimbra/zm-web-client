@@ -190,7 +190,8 @@ ZmOffline.prototype._initStaticResources =
 function() {
 	ZmOffline.refreshStatusIcon(true);
 	var staticURLs = [];
-	staticURLs.push({url : "/css/msgview.css", storeInLocalStorage : true});
+	var cssUrl = ["/css/msgview.css?v=", cacheKillerVersion, "&locale=", window.appRequestLocaleId, "&skin=", window.appCurrentSkin].join("");
+	staticURLs.push({url : cssUrl, storeInLocalStorage : true, appendCacheKillerVersion : false});
 	staticURLs.push({url : "/img/large.png"});
 	staticURLs.push({url : "/img/large/ImgPerson_48.png"});
 	staticURLs.push({url : "/img/arrows/ImgSashArrowsUp.png"});
