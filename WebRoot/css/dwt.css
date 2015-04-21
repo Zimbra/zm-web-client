@@ -1137,17 +1137,18 @@ UL.DwtListView-Rows {
 #IFDEF WEBKIT
 .DwtInputField TEXTAREA::-webkit-input-placeholder,
 #ENDIF
-#IFDEF WEBKIT
+#IFDEF GECKO
 .DwtInputField TEXTAREA:-moz-placeholder,
-#ENDIF
-#IFDEF WEBKIT
 .DwtInputField TEXTAREA::-moz-placeholder,
 #ENDIF
-#IFDEF WEBKIT
+#IFDEF MSIE_10
+.DwtInputField TEXTAREA:-ms-input-placeholder,
+#ENDIF
+#IFDEF MODERN_IE
 .DwtInputField TEXTAREA:-ms-input-placeholder,
 #ENDIF
 .DwtInputField-hint TEXTAREA {
-	@Text-light@
+	@Text-hint@
 }
 
 .DwtInputField-errorhint INPUT[type="text"],
