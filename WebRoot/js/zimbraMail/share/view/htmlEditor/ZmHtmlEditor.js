@@ -531,7 +531,7 @@ function(ev) {
 	var ed = this.getEditor();
 	var retVal = true;
 
-    if (DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
+    if (ev.keyCode === DwtKeyMapMgr.TAB_KEYCODE || DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
         // pass to keyboard mgr for kb nav
         retVal = DwtKeyboardMgr.__keyDownHdlr(ev);
     }
