@@ -101,21 +101,21 @@ ZmEditContactView.prototype.getFormItems = function() {
 	//			{ id: "DEBUG", type: "DwtText", ignore:true },
 			// header pseudo-items
 			{ id: "FULLNAME", type: "DwtText", className: "contactHeader",
-				getter: this._getFullName, notab: true, ignore: true },
+				getter: this._getFullName, ignore: true },
 			// contact attribute fields
 			{ id: "IMAGE", type: "ZmEditContactViewImage" },
 			{ id: "ZIMLET_IMAGE", type: "DwtText" },
-			{ id: "PREFIX", type: "DwtInputField", width: 38,  hint: ZmMsg.AB_FIELD_prefix, visible: "get('SHOW_PREFIX')" },
-			{ id: "FIRST", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_firstName, visible: "get('SHOW_FIRST')", onblur: "this._controller.updateTabTitle()" },
-			{ id: "MIDDLE", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_middleName, visible: "get('SHOW_MIDDLE')" },
-			{ id: "MAIDEN", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_maidenName, visible: "get('SHOW_MAIDEN')" },
-			{ id: "LAST", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_lastName, visible: "get('SHOW_LAST')" , onblur: "this._controller.updateTabTitle()"},
-			{ id: "SUFFIX", type: "DwtInputField", width: 38, hint: ZmMsg.AB_FIELD_suffix, visible: "get('SHOW_SUFFIX')" },
+			{ id: "PREFIX", type: "DwtInputField", width: 38, tooltip: ZmMsg.namePrefix, hint: ZmMsg.AB_FIELD_prefix, visible: "get('SHOW_PREFIX')" },
+			{ id: "FIRST", type: "DwtInputField", width: 95, tooltip: ZmMsg.firstName, hint: ZmMsg.AB_FIELD_firstName, visible: "get('SHOW_FIRST')", onblur: "this._controller.updateTabTitle()" },
+			{ id: "MIDDLE", type: "DwtInputField", width: 95, tooltip: ZmMsg.middleName, hint: ZmMsg.AB_FIELD_middleName, visible: "get('SHOW_MIDDLE')" },
+			{ id: "MAIDEN", type: "DwtInputField", width: 95, tooltip: ZmMsg.maidenName, hint: ZmMsg.AB_FIELD_maidenName, visible: "get('SHOW_MAIDEN')" },
+			{ id: "LAST", type: "DwtInputField", width: 95, tooltip: ZmMsg.lastName, hint: ZmMsg.AB_FIELD_lastName, visible: "get('SHOW_LAST')" , onblur: "this._controller.updateTabTitle()"},
+			{ id: "SUFFIX", type: "DwtInputField", width: 38, tooltip: ZmMsg.nameSuffix, hint: ZmMsg.AB_FIELD_suffix, visible: "get('SHOW_SUFFIX')" },
 			{ id: "NICKNAME", type: "DwtInputField", width: 66, hint: ZmMsg.AB_FIELD_nickname, visible: "get('SHOW_NICKNAME')" },
 			{ id: "COMPANY", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_company, visible: "get('SHOW_COMPANY')", onblur: "this._controller.updateTabTitle()" },
 			{ id: "TITLE", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_jobTitle, visible: "get('SHOW_TITLE')" },
 			{ id: "DEPARTMENT", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_department, visible: "get('SHOW_DEPARTMENT')" },
-			{ id: "NOTES", type: "DwtInputField", width: "47em", rows:4 },
+			{ id: "NOTES", type: "DwtInputField", tooltip: ZmMsg.notes, hint: ZmMsg.emptyNotes, width: "47em", rows:4 },
             // phonetic name fields
             { id: "PHONETIC_PREFIX", visible: "this.isVisible('PREFIX')", ignore:true },
             { id: "PHONETIC_FIRST", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_phoneticFirstName, visible: "this.isVisible('FIRST')" },
@@ -127,17 +127,17 @@ ZmEditContactView.prototype.getFormItems = function() {
 			// contact list fields
 			{ id: "EMAIL", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
-					inputWidth: 352, hint: ZmMsg.emailAddrHint, options: this.getEmailOptions()
+					inputWidth: 352, tooltip: ZmMsg.email, hint: ZmMsg.emailAddrHint, options: this.getEmailOptions()
 				}
 			}, validator: ZmEditContactView.emailValidator },
 			{ id: "PHONE", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
-					inputWidth: 351, hint: ZmMsg.phoneNumberHint, options: this.getPhoneOptions()
+					inputWidth: 351, tooltip: ZmMsg.phone, hint: ZmMsg.phoneNumberHint, options: this.getPhoneOptions()
 				}
 			} },
 			{ id: "IM", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewIM", equals: ZmEditContactViewIM.equals, params: {
-					inputWidth: 351, hint: ZmMsg.imScreenNameHint, options: this.getIMOptions()
+					inputWidth: 351, tooltip: ZmMsg.imShort, hint: ZmMsg.imScreenNameHint, options: this.getIMOptions()
 				}
 			} },
 			{ id: "ADDRESS", type: "ZmEditContactViewInputSelectRows",
@@ -153,17 +153,23 @@ ZmEditContactView.prototype.getFormItems = function() {
 			} },
 			{ id: "OTHER", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewOther", equals:ZmEditContactViewInputSelect.equals, params: {
-					inputWidth: 300, selectInputWidth: 112, hint: ZmMsg.genericTextHint, options: this.getOtherOptions()
+					inputWidth: 300,
+					selectInputWidth: 112,
+					hint: ZmMsg.date,
+					options: this.getOtherOptions()
 				}
 			}, validator: ZmEditContactViewOther.validator },
 			// other controls
-			{ id: "DETAILS", type: "DwtButton", label: "\u00BB", ignore:true,  // &raquo;
+			{ id: "DETAILS", type: "DwtButton",
+				label: "\u00BB", // &raquo;
+				tooltip: ZmMsg.chooseFields,
+				ignore:true,
 				className: "ZmEditContactViewDetailsButton",
 				template: "abook.Contacts#ZmEditContactViewDetailsButton",
 				onblur: "this._controller.updateTabTitle()"
 			},
-			{ id: "FILE_AS", type: "DwtSelect", onchange: this._handleFileAsChange, items: this.getFileAsOptions() },
-			{ id: "FOLDER", type: "DwtButton", image: "ContactsFolder",
+			{ id: "FILE_AS", type: "DwtSelect", onchange: this._handleFileAsChange, items: this.getFileAsOptions(), tooltip: ZmMsg.fileAs },
+			{ id: "FOLDER", type: "DwtButton", image: "ContactsFolder", imageAltText: ZmMsg.location, tooltip: ZmMsg.location,
 				enabled: "this._contact && !this._contact.isReadOnly()",
 				onclick: this._handleFolderButton
 			},
@@ -776,7 +782,7 @@ ZmEditContactView.prototype._setFolder = function(organizerOrId) {
 	var organizer = organizerOrId instanceof ZmOrganizer ? organizerOrId : appCtxt.getById(organizerOrId);
 	this.setLabel("FOLDER", organizer.getName());
 	this.setValue("FOLDER", organizer.id);
-	this.setImage("FOLDER", organizer.getIconWithColor());
+	this.setImage("FOLDER", organizer.getIconWithColor(), ZmMsg.locationLabel);
 	if (appCtxt.multiAccounts) {
 		this.setValue("ACCOUNT", organizer.getAccount().getDisplayName());
 	}
@@ -1083,6 +1089,7 @@ ZmEditContactViewImage = function(params) {
 };
 ZmEditContactViewImage.prototype = new DwtControl;
 ZmEditContactViewImage.prototype.constructor = ZmEditContactViewImage;
+ZmEditContactViewImage.prototype.isFocusable = true;
 
 /**
  * Returns a string representation of the object.
@@ -1117,12 +1124,14 @@ ZmEditContactViewImage.prototype.setValue = function(value, promptOnError) {
 	if (!value) {
 		this._imgEl.src = ZmZimbraMail.DEFAULT_CONTACT_ICON;
 		this._badgeEl.className = "ImgAdd";
-
+		this.setToolTipContent(ZmMsg.addImg);
+		this._imgEl.alt = ZmMsg.addImg;
 	}
 	else {
 		this._imgEl.src = value;
 		this._badgeEl.className = "ImgEditBadge";
-        this.setToolTipContent(ZmMsg.editImg);
+		this.setToolTipContent(ZmMsg.editImg);
+		this._imgEl.alt = ZmMsg.editImg;
 	}
 	this.parent.setDirty("IMAGE", true);
     this._imgEl.onerror = this._handleCorruptImageError.bind(this, promptOnError);
@@ -1642,6 +1651,11 @@ ZmEditContactViewInputSelect.prototype.enableOptions = function(enabled) {
 };
 
 // Protected methods
+
+ZmEditContactViewInputSelect.prototype._focus =
+function() {
+	this._input.focus();
+};
 
 ZmEditContactViewInputSelect.prototype._setControlIds = function(rowId, index) {
 	var id = this.getHTMLElId();
@@ -2341,7 +2355,7 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 	if (pickerEl) {
 		var id = [this.getHTMLElId(),"picker"].join("_");
 		this._picker = new DwtButton({parent:this,id:id});
-		this._picker.setImage("CalendarApp");
+		this._picker.setImage("CalendarApp", null, ZmMsg.chooseDate);
         this._picker.popup = ZmEditContactViewOther.__DwtButton_popup; // HACK
 
         var menu = new DwtMenu({parent:this._picker,style:DwtMenu.GENERIC_WIDGET_STYLE});

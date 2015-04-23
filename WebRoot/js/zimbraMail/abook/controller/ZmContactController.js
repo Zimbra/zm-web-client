@@ -291,28 +291,6 @@ function() {
 /**
  * @private
  */
-ZmContactController.prototype._createTabGroup = function() {
-	var viewId = this._currentViewId;
-	return this._tabGroups[viewId] = new DwtTabGroup(this.toString() + "_" + viewId);
-};
-
-/**
- * @private
- */
-ZmContactController.prototype._initializeTabGroup =
-function(viewId) {
-	if (this._tabGroups[viewId]) return;
-	ZmListController.prototype._initializeTabGroup.apply(this, arguments);
-	var toolbar = this._toolbar[viewId];
-	if (toolbar) {
-		this._tabGroups[viewId].addMember(toolbar, 0);
-	}
-	this._tabGroup = this._tabGroups[viewId];
-};
-
-/**
- * @private
- */
 ZmContactController.prototype._paginate =
 function(view, bPageForward) {
 	// TODO? - page to next/previous contact

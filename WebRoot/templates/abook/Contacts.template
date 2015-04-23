@@ -181,7 +181,8 @@
 </template>
 
 <template id='abook.Contacts#ZmEditContactViewDetailsButton'>
-	<span id='${id}_title' class='ZButtonBorder ZWidgetTitle'></span>
+	<span class='ScreenReaderOnly'><$= ZmMsg.chooseFields $></span>
+	<span aria-hidden='true' id='${id}_title' class='ZButtonBorder ZWidgetTitle'></span>
 </template>
 
 <template id='abook.Contacts#ZmEditContactViewInputSelect'>
