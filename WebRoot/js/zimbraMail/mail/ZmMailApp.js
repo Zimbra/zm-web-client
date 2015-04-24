@@ -381,7 +381,7 @@ function() {
 	});
 
 	ZmPref.registerPref("USE_SEND_MSG_SHORTCUT", {
-		displayName:		AjxMessageFormat.format(ZmMsg.useSendMsgShortcut,[ZmKeys["compose.Send.display"]]),
+		displayFunc:        this.formatKeySeq.bind(this, AjxMessageFormat.format(ZmMsg.useSendMsgShortcut,[ZmKeys["compose.Send.display"]])),
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
@@ -739,6 +739,12 @@ function() {
 		});
 	}
 };
+
+ZmMailApp.prototype.formatKeySeq = function(keySeq) {
+	// Make sure the modifierKey list is created.  This will create the modifierKeys and cache them, but not display them
+	new ZmShortcutList({cols:[]});
+	return ZmShortcutList._formatDisplay(keySeq);
+}
 
 /**
  * @private
