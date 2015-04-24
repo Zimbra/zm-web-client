@@ -156,7 +156,7 @@ function() {
 	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_ATTACHMENT] = {
 		text: 		ZmMsg.filterAttachments,
 		handler:	"ZmAttachmentSearchFilter",
-		searchOp:	"type",
+		searchOp:	"attachment",
 		apps:		[ZmApp.MAIL, ZmApp.CALENDAR, ZmApp.TASKS]
 	};
 	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_SIZE] = {

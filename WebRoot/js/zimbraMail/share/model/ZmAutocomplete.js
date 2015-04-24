@@ -705,6 +705,7 @@ ZmSearchAutocomplete = function() {
 	};
 	this._registerHandler("has", params);
 
+	this._loadFunc[ZmId.ITEM_ATT] = this._loadTypes;
 	params = {listType:		ZmId.ITEM_ATT,
 		text:			function(o) {
 			return o.desc;
@@ -717,8 +718,19 @@ ZmSearchAutocomplete = function() {
 		},
 		quoteMatch:	true
 	};
-	this._loadFunc[ZmId.ITEM_ATT] = this._loadTypes;
 	this._registerHandler("type", params);
+	params = {listType:		ZmId.ITEM_ATT,
+		text:			function(o) {
+			return o.desc;
+		},
+		icon:			function(o) {
+			return o.image;
+		},
+		matchText:	function(o) {
+			return "attachment:" + (o.query || o.type);
+		},
+		quoteMatch:	true
+	};
 	this._registerHandler("attachment", params);
 
 	params = {
