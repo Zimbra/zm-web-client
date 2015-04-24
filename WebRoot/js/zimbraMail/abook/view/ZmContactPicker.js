@@ -61,9 +61,6 @@ ZmContactPicker = function(buttonInfo) {
 ZmContactPicker.prototype = new DwtDialog;
 ZmContactPicker.prototype.constructor = ZmContactPicker;
 
-ZmContactPicker.prototype.isZmContactPicker = true;
-ZmContactPicker.prototype.toString = function() { return "ZmContactPicker"; };
-
 // Consts
 
 ZmContactPicker.DIALOG_HEIGHT = 460;
@@ -76,10 +73,18 @@ ZmContactPicker.SEARCH_PHONETIC = "phonetic";
 
 ZmContactPicker.SHOW_ON_GAL = [ZmContactPicker.SEARCH_BASIC, ZmContactPicker.SEARCH_NAME, ZmContactPicker.SEARCH_EMAIL, ZmContactPicker.SEARCH_DEPT];
 ZmContactPicker.SHOW_ON_NONGAL = [ZmContactPicker.SEARCH_BASIC, ZmContactPicker.SEARCH_NAME, ZmContactPicker.SEARCH_PHONETIC, ZmContactPicker.SEARCH_EMAIL];
-ZmContactPicker.ALL = [ ZmContactPicker.SEARCH_BASIC, ZmContactPicker.SEARCH_NAME, ZmContactPicker.SEARCH_PHONETIC, ZmContactPicker.SEARCH_EMAIL, ZmContactPicker.SEARCH_DEPT ];
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmContactPicker.prototype.toString =
+function() {
+	return "ZmContactPicker";
+};
 
 /**
 * Displays the contact picker dialog. The source list is populated with
@@ -518,7 +523,7 @@ function(account) {
 
 	this._searchRow = {};
 	for (var rowId in rowMap) {
-		var row = Dwt.byId(rowMap[rowId]);
+		row = Dwt.byId(rowMap[rowId]);
 		if (row) {
 			this._searchRow[rowId] = row;
 		}
@@ -530,12 +535,7 @@ function(account) {
 	//add tabgroups for keyboard navigation
 	this._tabGroup = new DwtTabGroup(this.toString());
 	this._tabGroup.removeAllMembers();
-	for (var i = 0; i < ZmContactPicker.ALL.length; i++) {
-		field = Dwt.byId(fieldMap[ZmContactPicker.ALL[i]]);
-		if (Dwt.getVisible(field)) {
-			this._tabGroup.addMember(field);
-		}
-	}
+	this._tabGroup.addMember(this._searchField[ZmContactPicker.SEARCH_BASIC] || this._searchField[ZmContactPicker.SEARCH_NAME]);
 	this._tabGroup.addMember(this._searchButton);
 	this._tabGroup.addMember(this._searchInSelect);
 	this._tabGroup.addMember(this._chooser.getTabGroupMember());

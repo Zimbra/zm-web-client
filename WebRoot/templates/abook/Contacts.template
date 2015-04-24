@@ -991,28 +991,28 @@
 					<table role="presentation" class='ZPropertySheet' cellspacing='6' id='${id}_searchTable'>
 						<$ if (data.detailed) { $>
 						<tr id='${id}_searchNameRow'>
-							<td align='right'><span id='${id}_searchNameFieldLbl'><$= ZmMsg.nameLabel $></span></td>
-							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchNameField' aria-labelledby='${id}_searchNameFieldLbl'></td>
+							<td align='right'><$= ZmMsg.nameLabel $></td>
+							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchNameField'></td>
 							<td id='${id}_searchButton' rowspan='3' valign='top'></td>
 							<td width='20' valign='middle'><div id='${id}_searchIcon' class='ImgSearch'></div></td>
 						</tr>
 						<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
 						<tr id='${id}_searchPhoneticRow'>
-							<td align='right'><span id='${id}_searchPhoneticNameFieldLbl'><$= ZmMsg.phoneticNameLabel $></span></td>
-							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchPhoneticField' aria-labelledby='${id}_searchPhoneticNameFieldLbl'></td>
+							<td align='right'><$= ZmMsg.phoneticNameLabel $></td>
+							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchPhoneticField'></td>
 						</tr>
 						<$ } $>
 						<tr id='${id}_searchEmailRow'>
-							<td align='right'><span id='${id}_searchEmailFieldLbl'><$= ZmMsg.emailAddrLabel $></span></td>
-							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchEmailField' aria-labelledby='${id}_searchEmailFieldLbl'></td>
+							<td align='right'><$= ZmMsg.emailAddrLabel $></td>
+							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchEmailField'></td>
 						</tr>
 						<tr id='${id}_searchDepartmentRow'>
-							<td align='right'><span id='${id}_searchDepartmentFieldLbl'><$= ZmMsg.departmentLabel $></span></td>
-							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchDepartmentField' aria-labelledby='${id}_searchDepartmentFieldLbl'></td>
+							<td align='right'><$= ZmMsg.departmentLabel $></td>
+							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchDepartmentField'></td>
 						</tr>
 						<$ } else { $>
 						<tr id='${id}_searchRow'>
-							<td><input type='text' placeholder="<$= ZmMsg.contactPickerHint $>" autocomplete='off' nowrap id='${id}_searchField' style='width:25em;' aria-label='<$=ZmMsg.search$>'></td>
+							<td><input type='text' placeholder="<$= ZmMsg.contactPickerHint $>" autocomplete='off' nowrap id='${id}_searchField' style='width:25em;'></td>
 							<td id='${id}_searchButton'></td>
 							<td width='20' valign='middle'><div id='${id}_searchIcon' class='ImgSearch'></div></td>
 						</tr>
