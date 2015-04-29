@@ -2309,6 +2309,9 @@ ZmEditContactViewOther.validator = function(item) {
 			}
 			return dateStr;
 		}
+		if (/\d+$/.test(item.type)) {
+			throw AjxMessageFormat.format(ZmMsg.errorInvalidContactOtherFieldName, item.type);
+		}
 		return item.value;
 	}
 };
