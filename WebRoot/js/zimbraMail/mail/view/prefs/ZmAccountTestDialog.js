@@ -110,7 +110,8 @@ function(testCallback, index, result) {
 
 			var detailsEl = document.getElementById(account.id+"_test_details");
 			var errorEl = document.getElementById(account.id+"_test_error");
-			errorEl.innerHTML = AjxStringUtil.htmlEncode(error);
+			error = AjxStringUtil.htmlEncode(error);
+			errorEl.innerHTML = error.replace(/(\bhttps?:[^\s<]*)/igm, '<a href="$1" target="_blank">$1</a>');
 			Dwt.setVisible(detailsEl, true);
 		}
 
