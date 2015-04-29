@@ -29,7 +29,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-<fmt:setBundle basename="/msgs/ZhMsg" scope='request' />
+<fmt:setBundle basename="/messages/ZhMsg" scope='request' />
 <div class="CompOrigAtt tbl">
     <div class="tr ${! empty index and index gt 0 ? 'nr' : ''}">
         <c:set var="pname" value="${displayName}"/>
