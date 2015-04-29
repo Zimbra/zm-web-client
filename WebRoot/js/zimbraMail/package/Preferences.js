@@ -64,8 +64,6 @@ AjxPackage.require("zimbraMail.mail.view.prefs.ZmMailPrefsPage");
 AjxPackage.require("zimbraMail.mail.view.prefs.ZmSignaturesPage");
 AjxPackage.require("zimbraMail.mail.view.prefs.ZmTrustedPage");
 
-AjxPackage.require("zimbraMail.im.view.prefs.ZmImGatewayControl");
-
 AjxPackage.require("zimbraMail.prefs.controller.ZmPrefController");
 AjxPackage.require("zimbraMail.prefs.controller.ZmFilterController");
 AjxPackage.require("zimbraMail.prefs.controller.ZmFilterRulesController");

@@ -56,7 +56,6 @@
  *  <li>top toolbar: a view-specific toolbar</li>
  *  <li>app content: used to present data to the user</li>
  *  <li>sash: a thin moveable vertical bar for resizing tree width</li>
- *  <li>taskbar: mainly for IM app</li>
  * </ul>
  *
  * <br/>
@@ -164,7 +163,6 @@ ZmAppViewMgr.C_SASH						= "sash";
 // components that are hidden by default
 ZmAppViewMgr.C_TREE_FOOTER				= "treeFooter";
 ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR	= "searchResultsToolbar";
-ZmAppViewMgr.C_TASKBAR					= "taskbar";
 
 // Components that make up the left nav, which we may want to hide
 ZmAppViewMgr.LEFT_NAV = [ ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_SASH ];
@@ -218,7 +216,6 @@ function() {
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_NEW_BUTTON]				= ZmId.SKIN_APP_NEW_BUTTON;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT]			= ZmId.SKIN_APP_MAIN;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SASH]					= ZmId.SKIN_SASH;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TASKBAR]				= ZmId.SKIN_TASKBAR;
 
 	ZmAppViewMgr.ALL_COMPONENTS = AjxUtil.keys(ZmAppViewMgr.CONT_ID_KEY);
 };
@@ -1024,14 +1021,6 @@ function(cidList, isIeTimerHack) {
 
 	for (var i = 0; i < cidList.length; i++) {
 		var cid = cidList[i];
-		if (!isIeTimerHack && AjxEnv.isIE && (cid == ZmAppViewMgr.C_TASKBAR)) {
-			// Hack for bug 36924: ie bar is in the middle of the screen when resizing ie.
-			if (!this._ieHackAction) {
-				this._ieHackAction = new AjxTimedAction(this, this._fitToContainer, [[ZmAppViewMgr.C_TASKBAR], true]);
-			}
-			AjxTimedAction.scheduleAction(this._ieHackAction, 1);
-		}
-
 		DBG.println(AjxDebug.DBG3, "fitting to container: " + cid);
 		var cont = this.getContainer(cid);
 		if (cont) {

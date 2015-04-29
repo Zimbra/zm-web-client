@@ -48,7 +48,6 @@ AjxPackage.require("zimbraMail.share.model.ZmList");
 AjxPackage.require("zimbraMail.share.model.ZmAccountList");
 AjxPackage.require("zimbraMail.share.model.ZmAccount");
 AjxPackage.require("zimbraMail.share.model.ZmZimbraAccount");
-AjxPackage.require("zimbraMail.share.model.ZmImAddress");
 AjxPackage.require("zimbraMail.share.model.ZmAccessControlList");
 AjxPackage.require("zimbraMail.share.model.ZmDomainList");
 AjxPackage.require("zimbraMail.share.model.ZmAttachmentTypeList");
@@ -90,11 +89,6 @@ AjxPackage.require("zimbraMail.share.controller.ZmSearchController");
 AjxPackage.require("zimbraMail.share.controller.ZmSearchResultsController");
 AjxPackage.require("zimbraMail.share.controller.ZmActionController");
 
-AjxPackage.require("zimbraMail.im.model.ZmRoster");
-AjxPackage.require("zimbraMail.im.view.ZmImOverview");
-AjxPackage.require("zimbraMail.im.view.ZmTaskbar");
-AjxPackage.require("zimbraMail.im.controller.ZmTaskbarController");
-
 AjxPackage.require("zimbraMail.core.ZmAppViewMgr");
 AjxPackage.require("zimbraMail.core.ZmRequestMgr");
 AjxPackage.require("zimbraMail.core.ZmZimbraMail");
@@ -109,6 +103,5 @@ AjxPackage.require("zimbraMail.mail.ZmMailApp");
 AjxPackage.require("zimbraMail.calendar.ZmCalendarApp");
 AjxPackage.require("zimbraMail.tasks.ZmTasksApp");
 AjxPackage.require("zimbraMail.abook.ZmContactsApp");
-AjxPackage.require("zimbraMail.im.ZmImApp");
 AjxPackage.require("zimbraMail.briefcase.ZmBriefcaseApp");
 AjxPackage.require("zimbraMail.voicemail.ZmVoiceApp");

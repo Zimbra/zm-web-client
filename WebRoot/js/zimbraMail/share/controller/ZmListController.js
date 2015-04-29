@@ -302,10 +302,6 @@ function() {
 		ops.push(ZmOperation.NEW_MESSAGE);
 	}
 
-	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-		ops.push(ZmOperation.IM);
-	}
-
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		ops.push(ZmOperation.CONTACT);
 	}

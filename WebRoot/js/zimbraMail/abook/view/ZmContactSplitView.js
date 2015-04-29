@@ -475,8 +475,6 @@ function(contact, isGal, oldContact, expandDL, isBack) {
 		subs.isGal = isGal;
 		subs.findObjects = this._objectManager.findObjects.bind(this._objectManager);
 		subs.attrs = contact.getNormalizedAttrs();
-		subs.encode = {};
-		subs.encode.IM = AjxCallback.simpleClosure(this._encodeIM, this);
 		subs.expandDL = expandDL;
 
 		if (contact.isDL && contact.canExpand) {
@@ -897,18 +895,6 @@ function(subs, result) {
 	}
 };
 
-ZmContactSplitView.IM_RE_VALUE = /^(.*?):\/\/(.*)$/;
-ZmContactSplitView.prototype._encodeIM =
-function(data) {
-	var result = ZmContactSplitView.IM_RE_VALUE.exec(data);
-	if (result) {
-		var params = [result[1], result[2]]; //, ZmMsg["AB_FIELD_", result[1]]];  <-- this 3rd param looks like syntax error and ZmMsg.AB_DISPLAY_IM only accepts 2 params anyway.
-		return AjxMessageFormat.format(ZmMsg.AB_DISPLAY_IM, params);
-	} else {
-		return data;
-	}
-};
-
 /**
  * @private
  */
@@ -1162,22 +1148,6 @@ ZmContactSimpleView.prototype._modifyContact =
 function(ev) {
 	ZmContactsBaseView.prototype._modifyContact.call(this, ev);
 
-	if (appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
-		// display presence information for contacts linked to buddy list
-		var a = ev.getDetails().items, i = 0, c;
-		while (c = a[i++]) {
-			if (c instanceof ZmContact) {
-				var presence = c.getImPresence();
-				if (presence) {
-					var el = this._getFieldId(c, ZmItem.F_PRESENCE);
-					el = document.getElementById(el);
-					if (el)
-						AjxImg.setImage(el, presence.getIcon(), true);
-				}
-			}
-		}
-	}
-
 	if (ev.getDetail("fileAsChanged")) {
 		var selected = this.getSelection()[0];
 		this._layout();
@@ -1270,12 +1240,6 @@ function(contact, params, asHtml, count) {
 			// otherwise, show tag if there is one
 			idx = this._getImageHtml(htmlArr, idx, contact.getTagImageInfo(), this._getFieldId(contact, ZmItem.F_TAG), ["Tag"]);
 		}
-	}
-
-	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-		var presence = contact.getImPresence();
-		var img = presence ? presence.getIcon() : "Blank_16";
-		idx = this._getImageHtml(htmlArr, idx, img, this._getFieldId(contact, ZmItem.F_PRESENCE), ["Presence"]);
 	}
 
 	htmlArr[idx++] = "</div></div></li>";

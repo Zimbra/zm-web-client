@@ -434,13 +434,6 @@ ZmZimletBase.prototype.appendExtraSignature = function(bufferArray) {};
  */
 ZmZimletBase.prototype.onMailConfirm = function(confirmView, msg) {};
 
-/**
- * This method is called by the Zimlet framework when a new chat widget is initialized.
- * 
- * @param	{ZmChatWidget}		widget		the chat widget
- */
-ZmZimletBase.prototype.onNewChatWidget = function(widget) {};
-
 /*
  * 
  * Portlet methods

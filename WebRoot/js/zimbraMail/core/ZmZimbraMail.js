@@ -1058,7 +1058,7 @@ function(online) {
 
 	this._networkStatusIcon.setToolTipContent(online ? ZmMsg.networkStatusOffline : ZmMsg.networkStatusOnline, true);
 	this._networkStatusIcon.getHtmlElement().innerHTML = AjxImg.getImageHtml(online ? "Connect" : "Disconnect");
-	var netStatus = online ? ZmMsg.imStatusOnline : ZmMsg.imStatusOffline;
+	var netStatus = online ? ZmMsg.netStatusOnline : ZmMsg.netStatusOffline;
 	this._networkStatusText.getHtmlElement().innerHTML = netStatus.substr(0, 1).toUpperCase() + netStatus.substr(1);
 };
 

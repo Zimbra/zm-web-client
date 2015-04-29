@@ -47,7 +47,6 @@ ZmContactsApp = function(container, parentController) {
 
 	// contact lookup caches
 	this._byEmail	= {};
-	this._byIM		= {};
 	this._byPhone	= {};
 
 	// cache fetched distribution lists
@@ -895,19 +894,6 @@ function(contact, addr) {
 };
 
 /**
- * Gets the contact by IM address.
- * 
- * @param	{String}	addr	the IM address
- * @return	{ZmContact}	the contact
- */
-ZmContactsApp.prototype.getContactByIMAddress =
-function(addr) {
-	if (!addr) { return null; }
-	var contact = this._byIM[addr.toLowerCase()];
-	return this._realizeContact(contact);
-};
-
-/**
  * Gets information about the contact with the given phone number, if any.
  * Canonical list only.
  *
@@ -944,9 +930,6 @@ function(contact, doAdd) {
 	this._updateHash(contact, doAdd, ZmContact.EMAIL_FIELDS, this._byEmail);
 	if (appCtxt.get(ZmSetting.VOICE_ENABLED)) {
 		this._updateHash(contact, doAdd, ZmContact.PHONE_FIELDS, this._byPhone, true, true);
-	}
-	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-		this._updateHash(contact, doAdd, ZmContact.IM_FIELDS, this._byIM);
 	}
 };
 

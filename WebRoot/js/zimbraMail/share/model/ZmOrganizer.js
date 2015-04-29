@@ -145,8 +145,6 @@ ZmOrganizer.ID_NOTIFICATION_MP	= 250;
 ZmOrganizer.ID_SYNC_FAILURES	= 252;		// offline only
 ZmOrganizer.ID_OUTBOX    		= 254;		// offline only
 ZmOrganizer.ID_ZIMLET			= -1000;	// zimlets need a range.  start from -1000 incrementing up.
-ZmOrganizer.ID_ROSTER_LIST		= -11;
-ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 ZmOrganizer.ID_ATTACHMENTS		= -17;		// Attachments View
 ZmOrganizer.ID_DLS				= -18;
 

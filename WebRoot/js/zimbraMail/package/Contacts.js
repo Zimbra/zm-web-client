@@ -29,8 +29,6 @@
  * 	- If the user adds a participant or email address to their address book
  */
 
-AjxPackage.require("zimbraMail.share.view.ZmImAddressEntry");
-
 AjxPackage.require("zimbraMail.abook.view.ZmEditContactView");
 AjxPackage.require("zimbraMail.abook.view.ZmGroupView");
 AjxPackage.require("zimbraMail.abook.view.ZmContactsBaseView");

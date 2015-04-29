@@ -57,11 +57,10 @@ ZmContactList = function(search, isGal, type) {
 
 	this._app = appCtxt.getApp(ZmApp.CONTACTS);
 	if (!this._app) { 
-		this._emailToContact = this._imAddressToContact = this._phoneToContact = {};
+		this._emailToContact = this._phoneToContact = {};
 		return;
 	}
 	this._emailToContact = this._app._byEmail;
-	this._imAddressToContact = this._app._byIM;
 	this._phoneToContact = this._app._byPhone;
 
 	this._alwaysUpdateHashes = true; // Should we update the phone & IM fast-lookup hashes even when account features don't require it? (bug #60411)
@@ -454,18 +453,6 @@ function(address) {
 };
 
 /**
- * Gets the contact.
- * 
- * @param	{String}	addr		the IM address
- * @return	{ZmContact}	the contact or <code>null</code> if not found
- */
-ZmContactList.prototype.getContactByIMAddress =
-function(addr) {
-	var contact = this._imAddressToContact[addr.toLowerCase()];
-	return contact ? this._realizeContact(contact) : null;
-};
-
-/**
  * Gets information about the contact with the given phone number, if any (canonical list only).
  *
  * @param {String}	phone	the phone number
@@ -840,23 +827,6 @@ function(contact, doAdd) {
 					} else {
 						delete this._phoneToContact[avalue];
 					}
-				}
-			}
-		}
-	}
-
-	// Update IM hash.
-	if (appCtxt.get(ZmSetting.IM_ENABLED) || this._alwaysUpdateHashes) {
-		for (var index = 0; index < ZmContact.IM_FIELDS.length; index++) {
-			var field = ZmContact.IM_FIELDS[index];
-			for (var i = 1; true; i++) {
-				var aname = ZmContact.getAttributeName(field, i);
-				var avalue = ZmContact.getAttr(contact, aname);
-				if (!avalue) break;
-				if (doAdd) {
-					this._imAddressToContact[avalue.toLowerCase()] = contact;
-				} else {
-					delete this._imAddressToContact[avalue.toLowerCase()];
 				}
 			}
 		}

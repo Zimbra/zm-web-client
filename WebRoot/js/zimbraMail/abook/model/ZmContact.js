@@ -1904,11 +1904,6 @@ function(obj, batchMode) {
 	}
 
 	this._notify(ZmEvent.E_MODIFY, obj);
-
-	var buddy = this.getBuddy();
-	if (buddy) {
-		buddy._notifySetName(buddy.name);	// trigger a refresh
-	}
 };
 
 /**
@@ -2009,47 +2004,6 @@ function(asObj) {
     }
 
 	return  email;
-};
-
-/**
- * Gets the IM address.
- *
- * @return	the IM address
- */
-ZmContact.prototype.getIMAddress =
-function() {
-	return this.getAttr(ZmContact.F_imAddress1) ||
-		   this.getAttr(ZmContact.F_imAddress2) ||
-		   this.getAttr(ZmContact.F_imAddress3);
-};
-
-/**
- * Gets the IM buddy.
- * 
- * @return	the IM buddy
- */
-ZmContact.prototype.getBuddy =
-function() {
-	var buddy;
-	if (appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
-		var roster = AjxDispatcher.run("GetRoster");
-		buddy = roster.getRosterItem(this.getAttr(ZmContact.F_email), false)  ||
-				roster.getRosterItem(this.getAttr(ZmContact.F_email2), false) ||
-				roster.getRosterItem(this.getAttr(ZmContact.F_email3), false) ||
-				roster.getRosterItem(this.getIMAddress(), true);
-	}
-	return buddy;
-};
-
-/**
- * Gets the IM presence.
- * 
- * @return	{Object}	the presence
- */
-ZmContact.prototype.getImPresence =
-function() {
-	var buddy = this.getBuddy();
-	return (buddy) ? buddy.getPresence() : null;
 };
 
 /**
@@ -2179,8 +2133,7 @@ function(email, isGal, hint) {
 	var subs = {
 		contact: this,
 		entryTitle: this.getFileAs(),
-		hint: hint,
-		buddy: this.getBuddy()
+		hint: hint
 	};
 
 	return (AjxTemplate.expand("abook.Contacts#Tooltip", subs));
@@ -2209,20 +2162,12 @@ function(lower) {
 /**
  * Gets the filing string for this contact, from the email address (used in case no name exists).
  * todo - maybe return this from getFileAs, but there are a lot of callers to getFileAs, and not sure
- * of the implications on all the user-cases.
+ * of the implications on all the use-cases.
  *
  * @return	{String}	the file as string
  */
-ZmContact.prototype.getFileAsNoName =
-function() {
-	var val = this.getEmail();
-	if (!val || !val.length) {
-		var imAddr = ZmImAddress.parse(this.getIMAddress());
-		if (imAddr) {
-			val = imAddr.screenName;
-		}
-	}
-	return [ZmMsg.noName, val].join(" ");
+ZmContact.prototype.getFileAsNoName = function() {
+	return [ZmMsg.noName, this.getEmail()].join(" ");
 };
 
 /**

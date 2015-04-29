@@ -317,13 +317,7 @@ function(settings, account) {
  * @param {ZmZimbraAccount}	account		the account
  * @return	{Object}		the setting value
  */
-ZmAppCtxt.prototype.get =
-function(id, key, account) {
-
-	//todo - when we re-enable IM, remove the following lines:
-	if (id == ZmSetting.IM_ENABLED) {
-		return false;
-	}
+ZmAppCtxt.prototype.get = function(id, key, account) {
 
     //use parentAppCtxt in case of new window
     var context = this.isChildWindow ? parentAppCtxt : this;

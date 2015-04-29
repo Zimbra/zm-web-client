@@ -356,10 +356,6 @@ function() {
 		list.push(ZmOperation.NEW_MESSAGE);
 	}
 
-	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-		list.push(ZmOperation.IM);
-	}
-
 	list.push(ZmOperation.SEP, ZmOperation.CONTACTGROUP_MENU);
 //    list.push(ZmOperation.QUICK_COMMANDS);
 
@@ -773,10 +769,6 @@ function(parent, num) {
 
 	if (parent instanceof ZmPopupMenu) {
 		this._setContactText(contact);
-		if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-			var imItem = parent.getOp(ZmOperation.IM);
-			ZmImApp.updateImMenuItemByContact(imItem, contact);
-		}
 
 		var tagMenu = parent.getMenuItem(ZmOperation.TAG_MENU);
 		if (tagMenu) {

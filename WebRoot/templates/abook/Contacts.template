@@ -895,19 +895,6 @@
 			<$	} $>
 		<$	} $>
 
-		<$ if (data.buddy) { $>
-			<tr>
-				<td colspan='2'>
-					<table role="presentation" align='center'>
-						<tr>
-							<td><$= AjxImg.getImageHtml(data.buddy.getPresence().getIcon()) $></td>
-							<td><$= AjxStringUtil.htmlEncode(data.buddy.getPresence().getShowText()) $></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		<$ } $>
-
 		<$ if (data.hint) { $>
 			<tr>
 				<td colspan='2'>

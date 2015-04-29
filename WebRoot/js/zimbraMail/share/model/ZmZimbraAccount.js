@@ -411,8 +411,8 @@ function() {
 
 	switch (this.status) {
 //		case ZmZimbraAccount.STATUS_UNKNOWN:	return ZmMsg.unknown;
-		case ZmZimbraAccount.STATUS_OFFLINE:	return ZmMsg.imStatusOffline;
-		case ZmZimbraAccount.STATUS_ONLINE:		return ZmMsg.imStatusOnline;
+		case ZmZimbraAccount.STATUS_OFFLINE:	return ZmMsg.netStatusOffline;
+		case ZmZimbraAccount.STATUS_ONLINE:		return ZmMsg.netStatusOnline;
 		case ZmZimbraAccount.STATUS_RUNNING:	return ZmMsg.running;
 		case ZmZimbraAccount.STATUS_AUTHFAIL:	return this.code ? this.getZdMsg(this.code) : AjxMessageFormat.format(ZmMsg.authFailure, this.getEmail());
 		case ZmZimbraAccount.STATUS_ERROR:		return this.code ? this.getZdMsg(this.code) : ZmMsg.error;
@@ -625,7 +625,6 @@ function(appName) {
 		case ZmApp.BRIEFCASE: 	return appCtxt.get(ZmSetting.BRIEFCASE_ENABLED, null, this);
 		case ZmApp.CALENDAR:	return appCtxt.get(ZmSetting.CALENDAR_ENABLED, 	null, this);
 		case ZmApp.CONTACTS:	return appCtxt.get(ZmSetting.CONTACTS_ENABLED, 	null, this);
-		case ZmApp.IM:			return appCtxt.get(ZmSetting.IM_ENABLED, 		null, this);
 		case ZmApp.MAIL:		return appCtxt.get(ZmSetting.MAIL_ENABLED, 		null, this);
 		case ZmApp.PREFERENCES:	return appCtxt.get(ZmSetting.OPTIONS_ENABLED, 	null, this);
 		case ZmApp.TASKS:		return appCtxt.get(ZmSetting.TASKS_ENABLED, 	null, this);
