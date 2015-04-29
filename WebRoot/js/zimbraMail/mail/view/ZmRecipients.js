@@ -114,7 +114,7 @@ function(parent, viewId, htmlElId, fieldNames) {
 		this._divId[type] = ids.row;
 		this._buttonTdId[type] = ids.picker;
 		var inputId = this._fieldId[type] = ids.control;
-		var label = ZmMsg[AjxEmailAddress.TYPE_STRING[this._fieldNames[i]]];
+		var label = AjxMessageFormat.format(ZmMsg.addressFieldLabel, ZmMsg[AjxEmailAddress.TYPE_STRING[this._fieldNames[i]]]);
 
 		// save field elements
 		this._divEl[type] = document.getElementById(this._divId[type]);
