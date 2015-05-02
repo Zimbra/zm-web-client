@@ -463,13 +463,6 @@ and the container element is replaced with that control.
 					</td>
 				</tr>
 
-				<tr>
-					<td>&nbsp;</td>
-					<td class='ZOptionsField'>
-						<div id='${id}_AUTO_READ_RECEIPT_ENABLED' tabindex=0 />
-					</td>
-				</tr>
-
 				<$ if (isHtmlCompose) { $>
 					<tr>
 						<td>&nbsp;</td>
@@ -478,6 +471,7 @@ and the container element is replaced with that control.
 						</td>
 					</tr>
 				<$ } $>
+
 				<$ var isNewWindow = data.isEnabled(ZmSetting.NEW_WINDOW_COMPOSE); $>
 				<$ if (isNewWindow) { $>
 					<tr>
@@ -486,15 +480,6 @@ and the container element is replaced with that control.
 							<div id='${id}_NEW_WINDOW_COMPOSE' tabindex=0 />
 						</td>
 					</tr>
-				<$ } $>
-
-				<$ if (appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED)) { $>
-				<tr>
-					<td>&nbsp;</td>
-					<td class='ZOptionsField'>
-						<div id='${id}_MAIL_MANDATORY_SPELLCHECK' tabindex=0 />
-					</td>
-				</tr>
 				<$ } $>
 
 				<$ if (data.isEnabled(ZmSetting.SAVE_TO_SENT)) { $>
@@ -506,6 +491,22 @@ and the container element is replaced with that control.
 					</tr>
 				<$ } $>
 
+				<tr>
+					<td>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<div id='${id}_AUTO_READ_RECEIPT_ENABLED' tabindex=0 />
+					</td>
+				</tr>
+
+				<$ if (appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED)) { $>
+				<tr>
+					<td>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<div id='${id}_MAIL_MANDATORY_SPELLCHECK' tabindex=0 />
+					</td>
+				</tr>
+				<$ } $>
+
 				<$ if (data.isEnabled(ZmSetting.USE_SEND_MSG_SHORTCUT)) { $>
 					<tr>
 						<td>&nbsp;</td>
@@ -514,6 +515,13 @@ and the container element is replaced with that control.
 						</td>
 					</tr>
 				<$ } $>
+
+				<tr>
+					<td>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<div id='${id}_TAB_IN_EDITOR' tabindex=0 />
+					</td>
+				</tr>
 
 				<$ if (data.isEnabled(ZmSetting.MAIL_ENABLED) || data.isEnabled(ZmSetting.ADMIN_DELEGATED)) { $>
 					<$ if (isHtmlCompose || isNewWindow ) { $>

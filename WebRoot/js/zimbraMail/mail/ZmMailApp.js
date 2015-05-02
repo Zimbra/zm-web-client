@@ -153,7 +153,9 @@ ZmMailApp.prototype._registerSettings =
 function(settings) {
 	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("ALLOW_ANY_FROM_ADDRESS",			{name:"zimbraAllowAnyFromAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+    settings.registerSetting("AUTO_READ_RECEIPT_ENABLED",		{name:"zimbraPrefMailRequestReadReceipts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("AUTO_SAVE_DRAFT_INTERVAL",		{name:"zimbraPrefAutoSaveDraftInterval", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LDAP_TIME, defaultValue:ZmMailApp.DEFAULT_AUTO_SAVE_DRAFT_INTERVAL, isGlobal:true});
+    settings.registerSetting("COLLAPSE_IMAP_TREES",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("COLOR_MESSAGES",					{name:"zimbraPrefColorMessagesEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
 	settings.registerSetting("COMPOSE_SAME_FORMAT",				{name:"zimbraPrefForwardReplyInOriginalFormat", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("CONVERSATIONS_ENABLED",			{name:"zimbraFeatureConversationsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -237,8 +239,8 @@ function(settings) {
 	settings.registerSetting("REPLY_TO_ENABLED",				{name:"zimbraPrefReplyToEnabled", type:ZmSetting.T_PREF}); // XXX: Is this a list or single?
 	settings.registerSetting("REPLY_USE_PREFIX",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("SAVE_DRAFT_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+    settings.registerSetting("SAVE_TO_IMAP_SENT",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SAVE_TO_SENT",					{name:"zimbraPrefSaveToSent", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
-	settings.registerSetting("USE_SEND_MSG_SHORTCUT",			{name:"zimbraPrefUseSendMsgShortcut", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
 	settings.registerSetting("SAVE_TO_SENT_DELEGATED_TARGET",	{name: "zimbraPrefDelegatedSendSaveTarget", type: ZmSetting.T_PREF, defaultValue: "owner", isGlobal: true});
 	settings.registerSetting("SELECT_AFTER_DELETE",				{name:"zimbraPrefMailSelectAfterDelete", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DELETE_SELECT_NEXT, isGlobal:true});
 	settings.registerSetting("SENT_FOLDER_NAME",				{name:"zimbraPrefSentMailFolder", type:ZmSetting.T_PREF, defaultValue:"sent"});
@@ -250,9 +252,11 @@ function(settings) {
 	settings.registerSetting("SIGNATURE_ENABLED",				{name:"zimbraPrefMailSignatureEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SIGNATURE_STYLE",					{name:"zimbraPrefMailSignatureStyle", type:ZmSetting.T_PREF, defaultValue:ZmSetting.SIG_OUTLOOK});
 	settings.registerSetting("START_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+    settings.registerSetting("TAB_IN_EDITOR",			        {name:"zimbraPrefTabInEditorEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+    settings.registerSetting("USE_SEND_MSG_SHORTCUT",			{name:"zimbraPrefUseSendMsgShortcut", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
+    settings.registerSetting("USER_FOLDERS_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
     settings.registerSetting("VACATION_DURATION_ENABLED",		{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
     settings.registerSetting("VACATION_DURATION_ALL_DAY",		{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	settings.registerSetting("USER_FOLDERS_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("VACATION_FROM",					{name:"zimbraPrefOutOfOfficeFromDate", type:ZmSetting.T_PREF, defaultValue:""});
     settings.registerSetting("VACATION_FROM_TIME",				{type:ZmSetting.T_PREF, defaultValue:""});
 	settings.registerSetting("VACATION_MSG",					{name:"zimbraPrefOutOfOfficeReply", type:ZmSetting.T_PREF, defaultValue:""});
@@ -268,9 +272,6 @@ function(settings) {
 	settings.registerSetting("VACATION_MSG_FEATURE_ENABLED",	{name:"zimbraFeatureOutOfOfficeReplyEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("VACATION_UNTIL",					{name:"zimbraPrefOutOfOfficeUntilDate", type:ZmSetting.T_PREF, defaultValue:""});
     settings.registerSetting("VACATION_UNTIL_TIME",				{type:ZmSetting.T_PREF, defaultValue:""});
-	settings.registerSetting("COLLAPSE_IMAP_TREES",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("SAVE_TO_IMAP_SENT",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-    settings.registerSetting("AUTO_READ_RECEIPT_ENABLED",		{name:"zimbraPrefMailRequestReadReceipts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
 	ZmMailApp._setGroupByMaps();
 };
@@ -349,6 +350,7 @@ function() {
 				ZmSetting.REPLY_INCLUDE_HEADERS,
 				ZmSetting.REPLY_PREFIX,
 				ZmSetting.SAVE_TO_SENT,
+				ZmSetting.TAB_IN_EDITOR,
 				ZmSetting.USE_SEND_MSG_SHORTCUT,
                 ZmSetting.COMPOSE_SAME_FORMAT,
                 ZmSetting.MAIL_MANDATORY_SPELLCHECK
@@ -638,6 +640,11 @@ function() {
 		displayName:		ZmMsg.startOn,
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
 	});
+
+    ZmPref.registerPref("TAB_IN_EDITOR", {
+        displayName:        ZmMsg.tabInEditor,
+        displayContainer:	ZmPref.TYPE_CHECKBOX
+    });
 
     ZmPref.registerPref("VACATION_DURATION_ENABLED", {
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
