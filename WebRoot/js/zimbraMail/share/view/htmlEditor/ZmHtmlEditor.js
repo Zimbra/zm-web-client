@@ -472,11 +472,11 @@ function() {
 	//cloning and replacing node will remove event handlers and hence adding it once again
 	Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
 	Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
-
+    Dwt.setHandler(textEl, DwtEvent.ONKEYDOWN, this._handleTextareaKeyEvent.bind(this));
 };
 
-ZmHtmlEditor.prototype.initTinyMCEEditor =
-function(params) {
+ZmHtmlEditor.prototype.initTinyMCEEditor = function(params) {
+
 	var htmlEl = this.getHtmlElement();
 	//textarea on which html editor is constructed
 	var id = this._bodyTextAreaId;
@@ -500,6 +500,7 @@ function(params) {
 
     Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
     Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
+    Dwt.setHandler(textEl, DwtEvent.ONKEYDOWN, this._handleTextareaKeyEvent.bind(this));
 
 	if (!window.tinyMCE) {
         window.tinyMCEPreInit = {};
@@ -526,12 +527,12 @@ function() {
 	this._onContentInitializeCallback = null;
 };
 
-ZmHtmlEditor.prototype._handleEditorKeyEvent =
-function(ev) {
+ZmHtmlEditor.prototype._handleEditorKeyEvent = function(ev) {
+
 	var ed = this.getEditor();
 	var retVal = true;
 
-    if (ev.keyCode === DwtKeyMapMgr.TAB_KEYCODE || DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
+    if ((!appCtxt.get(ZmSetting.TAB_IN_EDITOR) && ev.keyCode === DwtKeyMapMgr.TAB_KEYCODE) || DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
         // pass to keyboard mgr for kb nav
         retVal = DwtKeyboardMgr.__keyDownHdlr(ev);
     }
@@ -601,8 +602,14 @@ function(ev) {
         catch (e) {
         }
     }
+    else if (ev.keyCode === 9 && !ev.shiftKey && !ev.altKey && !ev.ctrlKey) {
+        ed.execCommand('mceInsertContent', false, '&emsp;');
+        DwtUiEvent.setBehaviour(ev, true, false);
+        return false;
+    }
 
-	if (window.DwtIdleTimer) {
+
+    if (window.DwtIdleTimer) {
 		DwtIdleTimer.resetIdle();
 	}
 
@@ -611,6 +618,17 @@ function(ev) {
 	}
 	
 	return retVal;
+};
+
+// Text mode key event handler
+ZmHtmlEditor.prototype._handleTextareaKeyEvent = function(ev) {
+
+    if (appCtxt.get(ZmSetting.TAB_IN_EDITOR) && ev.keyCode === 9 && !ev.shiftKey && !ev.altKey && !ev.ctrlKey) {
+        Dwt.insertText(this.getContentField(), '\t');
+        DwtUiEvent.setBehaviour(ev, true, false);
+        return false;
+    }
+    return true;
 };
 
 //Notifies mousedown event in tinymce editor to ZCS
