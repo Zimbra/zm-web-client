@@ -399,7 +399,6 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 	}
 	else {
 		var visibleMsgCount = this._getDisplayedMsgCount(item);
-		var unreadMsgCount = item.numUnread;
 		if (field === ZmItem.F_STATUS) {
 			if (item.type == ZmItem.CONV && item.numMsgs == 1 && item.isScheduled) {
 				idx = this._getImageHtml(htmlArr, idx, "SendLater", this._getFieldId(item, field), classes);
@@ -411,7 +410,9 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
 			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
 			if (item.type === ZmItem.CONV && (visibleMsgCount > 1) && !this.isMultiColumn()) {
-				idx = this._getMsgCountHtml(htmlArr, idx, visibleMsgCount, unreadMsgCount);
+				htmlArr[idx++] = " - <span class='ZmConvListNumMsgs'>";
+				htmlArr[idx++] = visibleMsgCount;
+				htmlArr[idx++] = "</span>";
 			}
 			htmlArr[idx++] = "</div>";
 		}
@@ -446,7 +447,9 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 				htmlArr[idx++] = AjxUtil.formatSize(item.size);
 			}
 			else {
-				idx = this._getMsgCountHtml(htmlArr, idx, visibleMsgCount, unreadMsgCount);
+				htmlArr[idx++] = "(";
+				htmlArr[idx++] = visibleMsgCount;
+				htmlArr[idx++] = ")";
 			}
 			htmlArr[idx++] = "</div>";
 		}
@@ -458,15 +461,6 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 		}
 	}
 	
-	return idx;
-};
-
-ZmConvListView.prototype._getMsgCountHtml =
-function(htmlArr, idx, visibleMsgCount, unreadMsgCount) {
-	htmlArr[idx++] = this.isMultiColumn() ? "" : " - ";
-	htmlArr[idx++] = "<span class='ZmConvListNumMsgs'>";
-	htmlArr[idx++] = unreadMsgCount > 0 ? AjxMessageFormat.format(ZmMsg.newCount, unreadMsgCount) : visibleMsgCount;
-	htmlArr[idx++] = "</span>";
 	return idx;
 };
 
