@@ -2191,7 +2191,10 @@ function() {
 					for (var handlerId in contentHandlers) {
 						handlerFunc = contentHandlers[handlerId];
 						if (handlerFunc) {
-							htmlArr[idx++] = " | " + handlerFunc.call(this, att);
+							var customHandlerLinkHTML = handlerFunc.call(this, att);
+							if (customHandlerLinkHTML) {
+								htmlArr[idx++] = " | " + customHandlerLinkHTML;
+							}
 						}
 					}
 				}
