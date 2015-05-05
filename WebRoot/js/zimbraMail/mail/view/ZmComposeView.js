@@ -3113,7 +3113,6 @@ function(templateId, data) {
 	this._attcBtn = document.getElementById(data.attBtnId);
 
 	this._setEventHandler(data.subjectInputId, "onKeyUp");
-	this._setEventHandler(data.subjectInputId, "onBlur");
 	this._setEventHandler(data.subjectInputId, "onFocus");
 
 	if (appCtxt.multiAccounts) {
@@ -4080,41 +4079,32 @@ function() {
 
 // Static methods
 
-ZmComposeView._onKeyUp =
-function(ev) {
+ZmComposeView._onKeyUp = function(ev) {
 
 	ev = DwtUiEvent.getEvent(ev);
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) { return true; }
-	var cv = DwtControl.fromElementId(element._composeViewId);
+	if (!element) {
+        return true;
+    }
+    var cv = DwtControl.fromElementId(element._composeViewId);
+    cv.updateTabTitle();
 
 	return true;
 };
 
 // set focus within tab group to element so tabbing works
-ZmComposeView._onFocus =
-function(ev) {
+ZmComposeView._onFocus = function(ev) {
 
 	ev = DwtUiEvent.getEvent(ev);
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) { return true; }
+	if (!element) {
+        return true;
+    }
 
 	var kbMgr = appCtxt.getKeyboardMgr();
 	if (kbMgr.__currTabGroup) {
 		kbMgr.__currTabGroup.setFocusMember(element);
 	}
-};
-
-ZmComposeView._onBlur =
-function(ev) {
-
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) { return true; }
-	var cv = DwtControl.fromElementId(element._composeViewId);
-
-	cv.updateTabTitle();
-
-	return true;
 };
 
 // for com.zimbra.dnd zimlet

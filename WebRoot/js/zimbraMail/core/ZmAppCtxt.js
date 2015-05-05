@@ -2260,3 +2260,22 @@ ZmAppCtxt.prototype.checkPrecondition = function(precondition, listAny) {
 
 	return true;
 };
+
+/**
+ * Displays an error message in  dialog.
+ *
+ * @param {string}  errMsg      error message
+ * @param {string}  details     (optional) additional info to show using Details button
+ * @param {string}  style       (optional) style constant DwtMessageDialog.*_STYLE
+ * @param {string}  title       (optional) title for dialog (other than one for the style)
+ * @apram {boolean} noReport    do not add a Report button/function to the dialog (defaults to true)
+ */
+ZmAppCtxt.prototype.showError = function(params) {
+
+    params = params || {};
+    var errMsg = params.errMsg || params;
+    var dlg = this.getErrorDialog();
+    dlg.reset();
+    dlg.setMessage(errMsg, params.details, params.style || DwtMessageDialog.WARNING_STYLE, params.title);
+    dlg.popup(null, params.noReport !== false);
+};

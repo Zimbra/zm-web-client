@@ -907,7 +907,7 @@ function(actionCode) {
 			if (!appCtxt.get(ZmSetting.USE_SEND_MSG_SHORTCUT) || this._uploadingProgress) {
 				break;
 			}
-			this._send();
+			this._sendListener();
 			break;
 
 		case ZmKeyMap.ATTACHMENT:
@@ -1716,8 +1716,9 @@ function(draftType, msg, resp) {
 // Send button was pressed
 ZmComposeController.prototype._sendListener =
 function(ev) {
-	appCtxt.notifyZimlets("onSendButtonClicked", [this, this._msg]);
-	this._send();
+	if (!appCtxt.notifyZimlets("onSendButtonClicked", [this, this._msg])) {
+	    this._send();
+    }
 };
 
 ZmComposeController.prototype._send =
