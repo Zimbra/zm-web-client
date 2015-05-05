@@ -694,14 +694,13 @@ function(callback) {
  * @param	{string}	data	the error message details
  * @param	{string}	title	the error message dialog title
  */
-ZmZimletBase.prototype.displayErrorMessage =
-function(msg, data, title) {
-	if (title == null)
-		title = this.xmlObj("description") + " error";
-	var dlg = appCtxt.getErrorDialog();
-	dlg.reset();
-	dlg.setMessage(msg, data, DwtMessageDialog.WARNING_STYLE, title);
-	dlg.popup(null, true);
+ZmZimletBase.prototype.displayErrorMessage = function(msg, data, title) {
+
+    appCtxt.showError({
+        errMsg:     msg,
+        details:    data,
+        title:      title || AjxMessageFormat.format(ZmMsg.zimletErrorTitle, this.xmlObj().label)
+    });
 };
 
 /**
