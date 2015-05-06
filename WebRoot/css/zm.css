@@ -927,12 +927,14 @@ INPUT[type="text"].search_input-expanded {
 .Conv2Header .subject {
 	@FontSize-bigger@
 	white-space:nowrap;
+	display: inline-block;
+	width: 10%;
 }
 
 .Conv2Header .info {
 	/* background-color MUST be the same as Conv2Header */
 	background-color:@lighten(AppC,25)@;
-	padding:.5em 5px 0em;
+	padding:.25em 5px .25em;
 	position:absolute;
 	right:0px;
 	top:0px;
