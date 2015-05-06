@@ -677,9 +677,6 @@ ZmContactSplitView.showContactIMs =
 function(data) {
 
 	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.imLabel);
-	if (AjxUtil.isFunction(data.encode.IM)) {
-		itemListData.encode = data.encode.IM;
-	}
 	return ZmContactSplitView._showContactList(itemListData, ZmEditContactView.LISTS.IM.attrs);
 };
 
