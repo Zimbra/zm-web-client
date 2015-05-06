@@ -152,13 +152,11 @@ ZmDragAndDrop.prototype._onDrop = function(ev, isEditorDND) {
     }
 
     files = dt.files;
-    if (!files) {
+    if (!files || !files.length) {
         return;
     }
 
-    if (files.length) {
-        ZmDragAndDrop._stopEvent(ev);
-    }
+    ZmDragAndDrop._stopEvent(ev);
 
 	//just re-use code from the my computer option as it should be exactly the same case from now on.
 	this._view._submitMyComputerAttachments(files, null, isEditorDND, ev);
