@@ -192,13 +192,17 @@ ZmComposeController.prototype.getDefaultViewType = ZmComposeController.getDefaul
 ZmComposeController.prototype.dispose =
 function() {
 	var settings = appCtxt.getSettings();
-	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
-		settings.getSetting(ZmComposeController.SETTINGS[i]).removeChangeListener(this._settingChangeListener);
+	if (ZmComposeController.SETTINGS) { //no SETTINGS in child window
+		for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
+			settings.getSetting(ZmComposeController.SETTINGS[i]).removeChangeListener(this._settingChangeListener);
+		}
 	}
 	this._composeView.dispose();
 
 	var app = this.getApp();
 	app.disposeTreeControllers();
+	appCtxt.notifyZimlets("onDisposeComposeController", [this]);
+
 };
 
 /**
