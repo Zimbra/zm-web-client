@@ -157,7 +157,7 @@ function() {
 	var list = new ZmMailList(ZmItem.CONV);
 	list.search = msg.list.search;
 	var conv = ZmConv.createFromMsg(msg, {list: list});
-	AjxDispatcher.run("GetConvController").show(conv, null, null, null, msg);
+	AjxDispatcher.run("GetConvController").show(conv, this, null, null, msg);
 };
 
 // Callbacks
