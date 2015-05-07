@@ -417,7 +417,7 @@ ZmConvController.prototype._resetSelection = function() {};
 ZmConvController.prototype._selectNextItemInParentListView =
 function() {
 	var controller = this._getConvListController();
-	if (controller) {
+	if (controller && controller._listView[controller._currentViewId]) {
 		controller._listView[controller._currentViewId]._itemToSelect = controller._getNextItemToSelect();
 	}
 };
@@ -488,7 +488,11 @@ function(num) {
 ZmConvController.prototype.popShield =
 function(viewId, callback, newViewId) {
 	var ctlr = this._getConvListController();
-	return ctlr && ctlr.popShield.apply(this, arguments);
+	if (ctlr && ctlr.popShield) {
+		return ctlr.popShield.apply(this, arguments);
+	}  else {
+		return true;
+	}
 };
 
 ZmConvController.prototype._popShieldYesCallback =
