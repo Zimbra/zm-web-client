@@ -62,6 +62,7 @@ ZmHtmlEditor = function() {
 	this._onContentInitializeCallbacks = []
 	this.initTinyMCEEditor(params);
     this._ignoreWords = {};
+	this._classCount = 0;
 
     if (params.initCallback)
         this._initCallbacks.push(params.initCallback);
@@ -105,6 +106,8 @@ ZmHtmlEditor.TINY_MCE_PATH = "/js/ajax/3rdparty/tinymce";
 ZmHtmlEditor.VALUE = "value";
 
 ZmHtmlEditor._INITDELAY = 50;
+
+ZmHtmlEditor._containerDivId = "zimbraEditorContainer";
 
 ZmHtmlEditor.prototype.getEditor =
 function() {
@@ -240,7 +243,7 @@ ZmHtmlEditor.prototype._focus = function() {
  * @param {boolean}		onlyInnerContent	if true, do not surround with HTML and BODY
  */
 ZmHtmlEditor.prototype.getContent =
-function(insertFontStyle, onlyInnerContent) {
+function(addDivContainer, onlyInnerContent) {
 
     this.discardMisspelledWords();
     
@@ -257,7 +260,7 @@ function(insertFontStyle, onlyInnerContent) {
             content1 = field.value || "";
         }
         if (content1 && (/\S+/.test(AjxStringUtil.convertHtml2Text(content1)) || content1.match(/<img/i)) ) {
-			content = this._embedHtmlContent(content1, insertFontStyle, onlyInnerContent);
+			content = this._embedHtmlContent(content1, addDivContainer, onlyInnerContent, this._classCount);
 		}
 	}
 	else {
@@ -270,25 +273,42 @@ function(insertFontStyle, onlyInnerContent) {
 };
 
 ZmHtmlEditor.prototype._embedHtmlContent =
-function(html, insertFontStyle, onlyInnerContent) {
+function(html, addDivContainer, onlyInnerContent, classCount) {
 
 	html = html || "";
-	if (insertFontStyle) {
-		html = ZmHtmlEditor._getFontStyle(html);
+	if (addDivContainer) {
+		if (classCount) {
+			var editor = this.getEditor();
+			var document = editor.getDoc();
+			var containerEl = document.getElementById(ZmHtmlEditor._containerDivId);
+			if (containerEl) {
+				// Leave the previous container in place and update its
+				// class (used for classCount)
+				containerEl.setAttribute("class", classCount.toString());
+				// Set to zero, so an additional classCount is not added in the new container
+				classCount = 0;
+			}
+		}
+		html = ZmHtmlEditor._addDivContainer(html, classCount);
 	}
 	return onlyInnerContent ? html : [ "<html><body>", html, "</body></html>" ].join("");
 };
 ZmHtmlEditor._embedHtmlContent = ZmHtmlEditor.prototype._embedHtmlContent;
 
-ZmHtmlEditor._getFontStyle =
-function(html) {
-	return ZmHtmlEditor._getFontStylePrefix() + html + ZmHtmlEditor._getFontStyleSuffix();
+ZmHtmlEditor._addDivContainer =
+function(html, classCount) {
+	return ZmHtmlEditor._getDivContainerPrefix(classCount) + html + ZmHtmlEditor._getDivContainerSuffix();
 };
 
-ZmHtmlEditor._getFontStylePrefix =
-function() {
+ZmHtmlEditor._getDivContainerPrefix =
+function(classCount) {
+	var recordClassCount = !!classCount;
 	var a = [], i = 0;
-	a[i++] = '<div style="font-family: ';
+	a[i++] = '<div ';
+	if (recordClassCount) {
+		a[i++] = 'id="' + ZmHtmlEditor._containerDivId + '" ';
+	}
+	a[i++] = 'style="font-family: ';
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
 	a[i++] = '; font-size: ';
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
@@ -298,11 +318,16 @@ function() {
     if (appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL) {
         a[i++] = ' dir="' + ZmSetting.RTL + '"';
     }
+	// Cheat; Store the classCount (used for mapping excel classes to unique ids) in a class attribute.
+	// Otherwise, if stored in a non-standard attribute, it gets stripped by the server defanger.
+	if (recordClassCount) {
+		a[i++] = ' class=' + classCount.toString() + ' '
+	}
     a[i++] = ">";
 	return a.join("");
 };
 
-ZmHtmlEditor._getFontStyleSuffix =
+ZmHtmlEditor._getDivContainerSuffix =
 function() {
 	return "</div>";
 };
@@ -312,12 +337,45 @@ function() {
  */
 ZmHtmlEditor.prototype.setContent = function (content) {
     if (this._mode === Dwt.HTML && this._editorInitialized) {
-        this.getEditor().setContent(content, {format:'raw'});
+		var ed = this.getEditor();
+        ed.setContent(content, {format:'raw'});
+		this._setContentStyles(ed);
     } else {
         this.getContentField().value = content;
     }
     this._ignoreWords = {};
 };
+
+ZmHtmlEditor.prototype._setContentStyles = function(ed) {
+    var document = ed.getDoc();
+
+	// First, get the number of classes already added via paste; Only exists if this was retrieved from the server
+	// (otherwise, use the in-memory this._classCount).  This is used to create unique class names for styles
+	// imported on an Excel paste
+	var containerDiv = document.getElementById(ZmHtmlEditor._containerDivId);
+	if (containerDiv && containerDiv.hasAttribute("class")) {
+		// Cheated - stored classCount in class, since non-standard attributes will be stripped by the
+		// server html defanger.
+		this._classCount = parseInt(containerDiv.getAttribute("class"));
+		if (isNaN(this._classCount)) {
+			this._classCount = 0;
+		}
+	}
+
+	// Next, move all style nodes to be children of the body, otherwise when adding a style to the body, any subnode
+	// style nodes will be deleted!
+	var dom      = ed.dom;
+	var body     = document.body;
+	var styles   = dom.select("style", body);
+	var parentNode;
+	for (var i = 0; i < styles.length; i++) {
+		parentNode = styles[i].parentNode;
+		if (parentNode.tagName.toLowerCase() != 'body') {
+			parentNode.removeChild(styles[i]);
+			body.insertBefore(styles[i], body.childNodes[0]);
+		}
+	}
+}
 
 ZmHtmlEditor.prototype.reEnableDesignMode =
 function() {
@@ -875,17 +933,79 @@ ZmHtmlEditor.prototype.pasteHtml = function(html) {
 	var ed = this.getEditor();
 	var args, dom = ed.dom;
 
+	var document = ed.getDoc();
+	var numOriginalStyleSheets = document.styleSheets ? document.styleSheets.length : 0;
+	var styleSheets    = document.styleSheets;
+
 	// We need to attach the element to the DOM so Sizzle selectors work on the contents
 	var tempBody = dom.add(ed.getBody(), 'div', {style: 'display:none'}, html);
 	args = ed.fire('PastePostProcess', {node: tempBody});
-	dom.remove(tempBody);
 	html = args.node.innerHTML;
 
+	var styleNodes = [];
 	if (!args.isDefaultPrevented()) {
-		ed.insertContent(html, {merge: ed.settings.paste_merge_formats !== false});
+		var re;
+		for (var i = numOriginalStyleSheets; i < styleSheets.length; i++) {
+			// Access and update the stylesheet class names, to insure no collisions
+			var stylesheet = styleSheets[i];
+			var updates = this._getPastedClassUpdates(stylesheet);
+			var styleHtml = stylesheet.ownerNode.innerHTML;
+			for (var selectorText in updates) {
+				// Replace the non-unique Excel class names with unique new ones in style html and pasted content html.
+				var newSelectorText = updates[selectorText];
+				re = new RegExp(selectorText.substring(1), 'g');
+				html = html.replace(re, newSelectorText.substring(1));
+				styleHtml = styleHtml.replace(selectorText, newSelectorText);
+			}
+			// Excel .5pt line doesn't display in Chrome - use a 1pt line
+			re = new RegExp(".5pt", 'g');
+			styleHtml = styleHtml.replace(re, "1pt");
+			// Microsoft special, just use 'black'
+			re = new RegExp("windowtext", 'g');
+			styleHtml = styleHtml.replace(re, "black");
+
+			// Create a new style node and record it; it will be added below to the body with the new content
+			var styleNode = document.createElement('style');
+			styleNode.type = "text/css";
+			var scoped = document.createAttribute("scoped");
+			styleNode.setAttributeNode(scoped);
+			styleNode.innerHTML = styleHtml;
+			styleNodes.push(styleNode);
+		}
 	}
 
+	dom.remove(tempBody);
+
+	if (!args.isDefaultPrevented()) {
+		var body = document.body;
+		for (var i = 0; i < styleNodes.length; i++) {
+			// Insert the styles into the body.  Modern browsers support this (even though its not strictly valid), and
+			// the 'scoped' attribute added above means that future browsers should treat it as valid.
+			body.insertBefore(styleNodes[i], body.childNodes[0]);
+		}
+		ed.insertContent(html, {merge: ed.settings.paste_merge_formats !== false});
+	}
 };
+
+ZmHtmlEditor.prototype._getPastedClassUpdates = function(styleSheet) {
+    var cssRules = styleSheet.cssRules;
+	var updates = {};
+	if (cssRules) {
+		for (var i = 0; i < cssRules.length; i++) {
+			var selectorText = cssRules[i].selectorText;
+			// Excel class definitions (for now) start with ".xl", but this tries to be a little less specific (and fragile).
+			// Convert the Excel class names (which may be duplicated with each paste) to unique class names, so that
+			// later paste formatting doesn't step on previous formatting.
+			if (selectorText.indexOf(".") == 0) {
+				// Create a new unique class name that will be used instead
+				var newSelectorText = ".zimbra" + (++this._classCount).toString();
+				updates[selectorText] = newSelectorText;
+			}
+		}
+	}
+	// Return a map of { oldClassName : newClassName }
+	return updates;
+}
 
 ZmHtmlEditor.prototype._handlePasteUpload = function(r) {
 	if (r && r.success) {
@@ -957,7 +1077,14 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
 
     obj._editorInitialized = true;
 
-    this._resetSize();
+	// Access the content stored in the textArea (if any)
+	var contentField = this.getContentField();
+	var content =  contentField.value;
+	contentField.value = "";
+	// Use our setContent to set up the content using the 'raw' format, which preserves styling
+	this.setContent(content);
+
+	this._resetSize();
 	this._setupTabGroup();
 
 	var iframe = Dwt.getElement(this._iFrameId);
