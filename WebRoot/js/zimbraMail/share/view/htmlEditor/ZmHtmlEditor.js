@@ -957,9 +957,10 @@ ZmHtmlEditor.prototype.pasteHtml = function(html) {
 				html = html.replace(re, newSelectorText.substring(1));
 				styleHtml = styleHtml.replace(selectorText, newSelectorText);
 			}
-			// Excel .5pt line doesn't display in Chrome - use a 1pt line
-			re = new RegExp(".5pt", 'g');
-			styleHtml = styleHtml.replace(re, "1pt");
+			// Excel .5pt line doesn't display in Chrome - use a 1pt line.  Somewhat fragile (Assuming width is the
+			// first attribute for border, following the ':'), but need to do so that we only replace a standalone .5pt
+			re = new RegExp(":.5pt", 'g');
+			styleHtml = styleHtml.replace(re, ":1pt");
 			// Microsoft special, just use 'black'
 			re = new RegExp("windowtext", 'g');
 			styleHtml = styleHtml.replace(re, "black");
