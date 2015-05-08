@@ -1812,7 +1812,10 @@ function(urlQueryStr){
 
 	urlQueryStr = urlQueryStr || '';
 	urlQueryStr.replace(/^mailto:/i, "");
-	
+
+	//Decode the whole query string. Components will be decoded as well, but that's okay since it should do no harm and the query string may have been double-encoded as well (once by user to trick crawlers, then again by the browser in constructing the mailto URL).
+	urlQueryStr = AjxStringUtil.urlComponentDecode(urlQueryStr);
+
 	var match = urlQueryStr.match(/\bto=([^&]+)/i);
 	var to = match ? AjxStringUtil.urlComponentDecode(match[1].replace(/\+/g, " ")) : null;
 	to = to && AjxEmailAddress.isValid(to) ? AjxStringUtil.urlComponentDecode(to) : AjxStringUtil.htmlEncode(to);
