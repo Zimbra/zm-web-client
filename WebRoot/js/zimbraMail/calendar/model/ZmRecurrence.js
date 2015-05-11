@@ -398,8 +398,14 @@ function() {
 	}
 
 	// join all three together
+	if (every.length > 0) {
+		every.push(".  ");
+	}
+	if (end.length > 0) {
+		end.push(".  ");
+	}
 	formatter = new AjxMessageFormat(ZmMsg.recurBlurb);
-	return formatter.format([ every.join(""), start.join(""), end.join("") ]);
+	return formatter.format([ every.join(""), end.join(""), start.join("") ]);
 };
 
 ZmRecurrence.prototype.parse =
