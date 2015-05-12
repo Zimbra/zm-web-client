@@ -1189,7 +1189,7 @@ ZmAppCtxt.prototype.isSpellCheckerAvailable = function () {
 
 	var myLanguage = myLocale.split('_')[0];
 
-	var dictLocales = ZmAppCtxt.AVAILABLE_DICTIONARY_LOCALE;
+	var dictLocales = ZmAppCtxt.AVAILABLE_DICTIONARY_LOCALES;
 	var ln = dictLocales.length;
 
 	for (var i = 0; i < ln; i++) {
