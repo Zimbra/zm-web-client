@@ -375,7 +375,7 @@ function() {
 		buttons.push(ZmOperation.PRINT);
 	}
 
-	if (!appCtxt.isOffline) {
+	if (appCtxt.isSpellCheckerAvailable()) {
 		buttons.push(ZmOperation.SPELL_CHECK);
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_OPTIONS);

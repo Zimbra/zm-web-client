@@ -1211,7 +1211,7 @@ function() {
 
 	buttons.push(ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
 
-	if (!appCtxt.isOffline) {
+	if (appCtxt.isSpellCheckerAvailable()) {
 		buttons.push(ZmOperation.SEP, ZmOperation.SPELL_CHECK);
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);

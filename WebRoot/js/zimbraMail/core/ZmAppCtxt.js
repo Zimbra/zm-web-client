@@ -1160,6 +1160,51 @@ function() {
 	return this.get(ZmSetting.IS_EXTERNAL);
 };
 
+/*
+ * This is a list of Aspell (Ver. 0.61) support locale from the result of the following command:
+ *   /opt/zimbra/aspell/bin/aspell dump dicts
+ *      (use only the items whose format is "<Primary-tag> *( "_" <Subtag> )")
+ * When Aspell is upgraded and more locales are added, please update this list too.
+ */
+ZmAppCtxt.AVAILABLE_DICTIONARY_LOCALES = ["ar", "da", "de", "de_AT", "de_CH", "de_DE", "en", "en_CA", "en_GB", "en_US", "es", "fr", "fr_CH", "fr_FR", "hi", "hu", "it", "nl", "pl", "pt_BR", "ru", "sv"];
+
+/**
+ * Gets the availability of the spell check feature based on the current locale and user's configuration
+ *
+ * @return     {Boolean}       <code>true</code> if the spell checker is available.
+ */
+ZmAppCtxt.prototype.isSpellCheckerAvailable = function () {
+
+	if (!appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED)) {
+		return false;
+	}
+
+	if (typeof this._spellCheckAvailable !== 'undefined') {
+		return this._spellCheckAvailable;
+	}
+
+	this._spellCheckAvailable = false;
+	var myLocale = appCtxt.get(ZmSetting.LOCALE_NAME);
+	var myDefaultDictionaryName = appCtxt.get(ZmSetting.SPELL_DICTIONARY);
+
+	var myLanguage = myLocale.split('_')[0];
+
+	var dictLocales = ZmAppCtxt.AVAILABLE_DICTIONARY_LOCALE;
+	var ln = dictLocales.length;
+
+	for (var i = 0; i < ln; i++) {
+		var dictLocale = dictLocales[i];
+		if (dictLocale === myLocale ||
+		    dictLocale === myLanguage ||
+		    dictLocale === myDefaultDictionaryName) {
+			this._spellCheckAvailable = true;
+			break;
+		}
+	}
+
+	return this._spellCheckAvailable;
+}
+
 /**
  * Gets the identity collection.
  * 
