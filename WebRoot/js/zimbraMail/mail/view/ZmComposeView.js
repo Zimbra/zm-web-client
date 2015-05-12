@@ -1673,6 +1673,16 @@ function(incAddrs, incSubject) {
 	return (curFormValue !== this._origFormValue) || htmlEditorDirty;
 };
 
+ZmComposeView.removeAttachedFile = function(ev, cvId, spanId, partId) {
+
+	var composeView = DwtControl.fromElementId(cvId);
+	if (composeView) {
+		if (ev.type === 'click' || (ev.type === 'keypress' && DwtKeyEvent.getCharCode(ev) === 13)) {
+			composeView._removeAttachedFile(spanId, partId);
+		}
+	}
+};
+
 ZmComposeView.prototype._removeAttachedFile  =
 function(spanId, attachmentPart) {
 
@@ -3616,6 +3626,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 		}
 
 		if (attInfo.length > 0 && !(action === ZmOperation.FORWARD_INLINE && appCtxt.isWebClientOffline())) {
+			var rowId = this._htmlElId + '_attach';
 			for (var i = 0; i < attInfo.length; i++) {
 				var att = attInfo[i];
 				var params = {
@@ -3633,6 +3644,8 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 					}
 					this._originalAttachments[att.label][att.sizeInBytes] = true;
 				}
+				att.spanId = Dwt.getNextId(rowId);
+				att.closeHandler = "ZmComposeView.removeAttachedFile(event, '" + [ this._htmlElId, att.spanId, att.part ].join("', '") + "');";
 			}
 			attIncludeOrigLinkId = Dwt.getNextId(ZmId.getViewId(this._view, ZmId.CMP_ATT_INCL_ORIG_LINK));
 
@@ -3651,7 +3664,8 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 				hideOriginalAttachments:	this._hideOriginalAttachments,
 				attIncludeOrigLinkId:		attIncludeOrigLinkId,
 				originalAttachments: 		this._originalAttachments,
-				fwdFieldName:				(ZmComposeView.FORWARD_ATT_NAME + this._sessionId)
+				fwdFieldName:				(ZmComposeView.FORWARD_ATT_NAME + this._sessionId),
+				rowId:                      rowId
 			};
 			html = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
 			this._attachCount = attInfo.length;
@@ -3676,17 +3690,21 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 	}
 
 	this._attcTabGroup.removeAllMembers();
-	var links = Dwt.byClassName('AttLink', this._attcDiv);
+	var links = Dwt.byClassName('AttLink', this._attcDiv),
+		closeButtons = Dwt.byClassName('AttachmentClose', this._attcDiv);
 	for (var i = 0; i < links.length; i++) {
+		var link = links[i],
+			closeButton = closeButtons[i];
 		// MailMsg attachments are not displayed via the href, but rather using onClick.
-		var onClick = links[i].onclick;
-		this._makeFocusable(links[i]);
+		var onClick = link.onclick;
+		this._makeFocusable(link);
 		if (onClick) {
-			Dwt.clearHandler(links[i], DwtEvent.ONCLICK);
-			Dwt.setHandler(links[i], DwtEvent.ONCLICK, onClick);
+			Dwt.clearHandler(link, DwtEvent.ONCLICK);
+			Dwt.setHandler(link, DwtEvent.ONCLICK, onClick);
 		}
+		this._attcTabGroup.addMember(link);
+		this._attcTabGroup.addMember(closeButton);
 	}
-	this._attcTabGroup.addMember(links);
 };
 
 ZmComposeView.prototype._includeOriginalAttachments =

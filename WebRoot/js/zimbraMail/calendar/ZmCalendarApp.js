@@ -124,6 +124,7 @@ ZmCalendarApp.DEFAULT_APPT_DURATION         = "60"; //60minutes
 
 ZmCalendarApp.reminderTimeWarningDisplayMsgs = [
 	ZmMsg.apptRemindNever,
+    ZmMsg.apptRemindAtEventTime,
 	ZmMsg.apptRemindNMinutesBefore,
 	ZmMsg.apptRemindNMinutesBefore,
 	ZmMsg.apptRemindNMinutesBefore,
@@ -144,8 +145,8 @@ ZmCalendarApp.reminderTimeWarningDisplayMsgs = [
 	ZmMsg.apptRemindNWeeksBefore
 ];
 
-ZmCalendarApp.reminderTimeWarningValues = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080, 1440, 2880, 4320, 5760, 10080, 20160];
-ZmCalendarApp.reminderTimeWarningLabels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
+ZmCalendarApp.reminderTimeWarningValues = [-1, 0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080, 1440, 2880, 4320, 5760, 10080, 20160];
+ZmCalendarApp.reminderTimeWarningLabels = [-1, 0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
 
 // Construction
 
@@ -1128,7 +1129,8 @@ function(reminderMinutes) {
 	var daysConvertable  = ((reminderMinutes%(60*24)) == 0);
 	var weeksConvertable = ((reminderMinutes%(60*24*7)) == 0);
 
-	if (reminderMinutes == 0)	{ return ZmMsg.apptRemindNever; }
+    if (reminderMinutes === -1)	{ return ZmMsg.apptRemindNever; }
+    if (reminderMinutes === 0)	{ return ZmMsg.apptRemindAtEventTime; }
 	if (weeksConvertable)		{ return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNWeeksBefore, reminderMinutes/(60*24*7)); }
 	if (daysConvertable)		{ return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNDaysBefore, reminderMinutes/(60*24)); }
 	if (hoursConvertable)		{ return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNHoursBefore, reminderMinutes/60); }
@@ -1216,6 +1218,12 @@ function(reminderString) {
 	var formattedString = reminderString;
 	var reminderValue = formattedString.replace(/\D/g, "");
 	reminderValue = AjxStringUtil.trim(reminderValue);
+    if (reminderString === ZmMsg.apptRemindAtEventTime) {
+        return {
+            reminderValue: 0,
+            reminderUnits: ZmCalItem.REMINDER_UNIT_MINUTES
+        }
+    }
 
 	// junk content returns empty reminder (None)
 	if (reminderValue == "") {
