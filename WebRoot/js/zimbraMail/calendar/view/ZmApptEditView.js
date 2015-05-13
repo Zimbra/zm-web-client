@@ -2180,17 +2180,16 @@ function() {
 					   this._locationInputField, this._forwardToField, this._resourceInputField];
 	for (var i = 0; i < inputFields.length; i++) {
         if(!inputFields[i]) continue;
-		var inputEl = inputFields[i].getInputElement();
+		var inputField = inputFields[i];
+		var inputEl = inputField.getInputElement();
         inputEl._editViewId = edvId;
-		inputEl.onfocus = AjxCallback.simpleClosure(this._handleOnFocus, this, inputEl);
-		inputEl.onblur = AjxCallback.simpleClosure(this._handleOnBlur, this, inputEl);
+		inputField.addListener(DwtEvent.ONFOCUS, this._handleOnFocus.bind(this, inputEl));
+		inputField.addListener(DwtEvent.ONBLUR, this._handleOnBlur.bind(this, inputEl));
         inputEl.onkeyup = AjxCallback.simpleClosure(this._onAttendeesChange, this);
 	}
 
     if (this._subjectField) {
-        var inputEl = this._subjectField.getInputElement();
-		inputEl.onblur = AjxCallback.simpleClosure(this._handleSubjectOnBlur, this, inputEl);
-		inputEl.onfocus = AjxCallback.simpleClosure(this._handleSubjectOnFocus, this, inputEl);
+        this._subjectField.addListener(DwtEvent.ONBLUR, this._handleSubjectOnBlur.bind(this));
     }
 };
 
@@ -2846,17 +2845,12 @@ function(inputEl) {
 };
 
 ZmApptEditView.prototype._handleSubjectOnBlur =
-function(inputEl) {
+function() {
 	var subject = AjxStringUtil.trim(this._subjectField.getValue());
     if(subject) {
         var buttonText = subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT);
         appCtxt.getAppViewMgr().setTabTitle(this._controller.getCurrentViewId(), buttonText);
     }
-};
-
-ZmApptEditView.prototype._handleSubjectOnFocus =
-function(inputEl) {
-   this.setFocusMember(inputEl); 
 };
 
 ZmApptEditView.prototype._resetKnownLocation =
