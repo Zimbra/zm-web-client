@@ -2005,8 +2005,11 @@ function(notes, isHtml) {
                 // If HTML content is generated from text content \n are replaced with br
                 // Remove the leading <br> added
                 notes = notes.replace(/^<br><br>/i, "");
-                notes = notes.replace(/^<\/div><br>/i, "");
-            }
+				notes = notes.replace(/^<\/div><br>/i, "");
+				// Removes </body></html> if that is all that is left.  Reduces the html to "" in that case,
+				// so that later checks don't detect HTML notes.
+				notes = notes.replace(/^<\/body><\/html>/i, "");
+			}
             else {
                 notes = notes.replace(/^\n\n/i, "");
             }
