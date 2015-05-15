@@ -2954,7 +2954,7 @@ function() {
 	// window closes immediately after the request is sent, the object would be 
 	// garbage-collected by the browser (or otherwise become invalid).
 	// Therefore, we need to pass an object that is native to the parent window
-	if (appCtxt.isChildWindow && AjxEnv.isIE) {
+	if (appCtxt.isChildWindow && (AjxEnv.isIE || AjxEnv.isModernIE)) {
 		var cp = function(from){
 			var to = window.opener.Object();
 			for (var key in from) {
