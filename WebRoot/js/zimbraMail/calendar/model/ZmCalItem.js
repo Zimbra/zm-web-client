@@ -792,20 +792,16 @@ ZmCalItem.prototype.parseAlarm =
 function(tmp) {
 	if (!tmp) { return; }
 
-	var s, m, h, d, w;
+	var m, h, d, w;
 	var trigger = tmp.trigger;
 	var rel = (trigger && (trigger.length > 0)) ? trigger[0].rel : null;
-    s = (rel && (rel.length > 0)) ? rel[0].s : null;
 	m = (rel && (rel.length > 0)) ? rel[0].m : null;
 	d = (rel && (rel.length > 0)) ? rel[0].d : null;
 	h = (rel && (rel.length > 0)) ? rel[0].h : null;
 	w = (rel && (rel.length > 0)) ? rel[0].w : null;
 
-    this._reminderMinutes = -1;
+	this._reminderMinutes = 0;
 	if (tmp.action == ZmCalItem.ALARM_DISPLAY) {
-        if (s == 0) { // at time of event
-            this._reminderMinutes = 0;
-        }
 		if (m != null) {
 			this._reminderMinutes = m;
             this._origReminderUnits = ZmCalItem.REMINDER_UNIT_MINUTES;
@@ -1296,7 +1292,7 @@ function(message) {
 
 ZmCalItem.prototype._setAlarmFromMessage =
 function(message) {
-    this._reminderMinutes = -1;
+	this._reminderMinutes = 0;
 	var alarm = message.invite.getAlarm();
 	if (alarm) {
 		for (var i = 0; i < alarm.length; i++) {
@@ -1530,7 +1526,7 @@ function(comp) {
 	var useAbs = this._useAbsoluteReminder,
         time = useAbs ? this._reminderAbs : this._reminderMinutes;
 
-    if (time === -1) {
+    if (!time) {
         return;
     }
 

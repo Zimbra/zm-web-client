@@ -488,7 +488,7 @@ function(calItem) {
 		//calItem.setReminderMinutes(this._reminderSelect.getValue());
         var reminderString = this._reminderSelectInput && this._reminderSelectInput.getValue();
         if (!reminderString || reminderString == ZmMsg.apptRemindNever) {
-            calItem.setReminderMinutes(-1);
+            calItem.setReminderMinutes(0);                        
         } else {
             var reminderInfo = ZmCalendarApp.parseReminderString(reminderString);
             var reminders = [
@@ -690,7 +690,7 @@ function(width) {
 		validationStyle: DwtInputField.CONTINUAL_VALIDATION
 	};
 	this._subjectField = new DwtInputField(params);
-	this._subjectField.setRequired(true);
+	this._subjectField.setRequired();
 	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
 
 	// CalItem folder DwtSelect

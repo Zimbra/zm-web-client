@@ -262,7 +262,7 @@ function() {
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.CONTINUAL_VALIDATION,
 											parentElement:(this._htmlElId + "_subject")});
-	this._subjectField.setRequired(true);
+	this._subjectField.setRequired();
 	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
 
 
@@ -319,7 +319,6 @@ function() {
 	//reminder DwtSelect
     var	displayOptions = [
 		ZmMsg.apptRemindNever,
-        ZmMsg.apptRemindAtEventTime,
 		ZmMsg.apptRemindNMinutesBefore,
 		ZmMsg.apptRemindNMinutesBefore,
 		ZmMsg.apptRemindNMinutesBefore,
@@ -340,8 +339,8 @@ function() {
 		ZmMsg.apptRemindNWeeksBefore
 	];
 
-    var	options = [-1, 0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080, 1440, 2880, 4320, 5760, 10080, 20160];
-    var	labels =  [-1, 0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
+	var	options = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080, 1440, 2880, 4320, 5760, 10080, 20160];
+	var	labels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18, 1, 2, 3, 4, 1, 2];
 	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
 
     this._hasReminderSupport = Dwt.byId(this._htmlElId + "_reminderSelect") != null;
