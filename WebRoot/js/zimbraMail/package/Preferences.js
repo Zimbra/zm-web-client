@@ -70,3 +70,4 @@ AjxPackage.require("zimbraMail.prefs.controller.ZmFilterRulesController");
 AjxPackage.require("zimbraMail.prefs.controller.ZmMobileDevicesController");
 
 AjxPackage.require("zimbraMail.share.controller.ZmProgressController");
+AjxPackage.require("zimbraMail.share.view.dialog.ZmTwoFactorSetupDialog");

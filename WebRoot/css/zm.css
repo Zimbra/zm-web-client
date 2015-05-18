@@ -5901,3 +5901,35 @@ RBC, RTC {
 .mce-container.mce-menu {
 	@MenuContainer@
 }
+
+/* TinyMCE customizations end */
+
+/* Two-Factor Setup dialog start*/
+.ZmTwoFactorSetup {
+	width:475px;
+	height:180px;
+}
+
+.ZmTwoFactorSetupContainer {
+	margin:20px;
+	text-align:center;
+}
+
+.ZmTwoFactorSetupContainer label {
+	display:inline-block;
+	margin:10px;
+}
+
+.ZmTwoFactorSetupContainer SPAN.email-key {
+	padding:10px;
+	font-weight:bold;
+	background-color:#FFE599;
+	letter-spacing: 3px;
+	display:inline-block;
+	margin:10px
+}
+
+.ZmTwoFactorSetupError {
+	color:#990000;
+}
+/* Two-Factor Setup dialog end*/
