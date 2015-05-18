@@ -993,6 +993,34 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField' valign='middle'><$=ZmMsg.manageSignatures$></td>
 					</tr>
 					<tr><td colspan=2><hr></td></tr>
+					<tr valign=top>
+						<td class='ZOptionsLabel'><$=ZmMsg.twoStepAccountSecurity$></td>
+						<td class='ZOptionsField' valign='middle'><$=ZmMsg.twoStepStandardAuth$>
+							<a style="margin:20px;" href="#" id='${id}_TWO_STEP_AUTH_LINK'>
+								<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) { $>
+									<$=ZmMsg.twoStepAuthDisableLink$>
+								<$ } $>
+								<$ else { $>
+									<$=ZmMsg.twoStepAuthSetupLink$>
+								<$ } $>
+							</a>
+						</td>
+					</tr>
+					<tr valign=top
+						<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) { $>
+							style="display:none;"
+						<$ } $>
+					>
+						<td colspan=2>
+							<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+								<tr>
+									<td class='ZOptionsLabel'><$=ZmMsg.twoStepAuthOneTimeCodes$></td>
+									<td class='ZOptionsField' valign='middle'><a href="#" id='${id}_TWO_STEP_AUTH_CODES_LINK'><$=ZmMsg.twoStepAuthOneTimeCodesLink$></a></td>
+								</tr>
+							</table>
+						 </td>
+					</tr>
+					<tr><td colspan=2><hr></td></tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.delegatesLabel$></td>
 						<td style='text-align:left'><$=ZmMsg.delegateRightsPrompt$></td></tr>

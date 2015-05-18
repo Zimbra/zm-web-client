@@ -673,3 +673,51 @@
         </tr>
     </table>
 </template>
+
+<template id='share.Dialogs#ZmTwoFactorSetup'>
+	<div class="ZmTwoFactorSetup">
+		<div id='${id}_description'><p><$=ZmMsg.twoStepAuthDescription$></p></div>
+		<div id='${id}_password'>
+			<h4 id='${id}_password_heading'><$=ZmMsg.twoStepAuthPassword$></h4>
+			<h4 id='${id}_password_error' style="display:none;" class="ZmTwoFactorSetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></h4>
+			<p><$=ZmMsg.twoStepAuthPasswordDescription$> "<span>${username}</span>".</p>
+			<div class="ZmTwoFactorSetupContainer">
+				<label for="${id}_password_input"><$=ZmMsg.passwordLabel$></label>
+				<input type="password" id="${id}_password_input" autocomplete="off"/>
+			</div>
+		</div>
+		<div id='${id}_authentication'>
+			<h4><$=ZmMsg.twoStepAuthApp$></h4>
+			<div><$=ZmMsg.twoStepAuthAppDescription$></div>
+			<div style="margin:15px;">
+				<a href="<$=ZmMsg.twoStepAuthAppURL$>" target="_blank" title="<$=ZmMsg.twoStepAuthAppURL$>"><$=ZmMsg.twoStepAuthAppURL$></a>
+			</div>
+			<div><$=ZmMsg.twoStepAuthAppFooter$></div>
+		</div>
+		<div id='${id}_email'>
+			<h4><$=ZmMsg.twoStepAuthEmail$></h4>
+			<p><$=ZmMsg.twoStepAuthEmailDescription$></p>
+			<div class="ZmTwoFactorSetupContainer">
+				<span id="${id}_email_key" class="email-key"></span>
+			</div>
+		</div>
+		<div id='${id}_code'>
+			<div id='${id}_code_description'>
+				<h4><$=ZmMsg.twoStepAuthCode$></h4>
+				<p><$=ZmMsg.twoStepAuthCodeDescription$></p>
+			</div>
+			<div id='${id}_code_error' style="display:none;">
+				<h4 class="ZmTwoFactorSetupError"><$=ZmMsg.twoStepAuthCodeError$></h4>
+				<p><$=ZmMsg.twoStepAuthCodeErrorDescription$></p>
+			</div>
+			<div class="ZmTwoFactorSetupContainer">
+				<label for="${id}_code_input"><$=ZmMsg.code$> : </label>
+				<input type="text" id="${id}_code_input" autocomplete="off"/>
+			</div>
+		</div>
+		<div id='${id}_success'>
+			<h4><$=ZmMsg.twoStepAuthSuccess$></h4>
+			<p><$=ZmMsg.twoStepAuthSuccessDescription$></p>
+		</div>
+	</div>
+</template>

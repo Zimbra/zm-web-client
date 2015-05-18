@@ -292,6 +292,30 @@ ZmAccountsPage.IDENTITY_PROPS = {
 	"WHEN_IN_FOLDER_LIST":	"whenInFolderIds"
 };
 
+ZmAccountsPage.prototype._handleTwoStepAuthLink =
+function(twoStepAuthLink) {
+	if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) {
+		var dialog = appCtxt.getYesNoMsgDialog();
+		dialog.setMessage(ZmMsg.twoStepAuthDisableConfirm, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.twoStepAuthDisable);
+		dialog.registerCallback(DwtDialog.YES_BUTTON, ZmTwoFactorSetupDialog.disableTwoFactorAuth.bind(window, twoStepAuthLink, dialog));
+	}
+	else {
+		if (!this._twoFactorSetupDialog) {
+			this._twoFactorSetupDialog = new ZmTwoFactorSetupDialog({twoStepAuthLink : twoStepAuthLink});
+		}
+		var dialog = this._twoFactorSetupDialog;
+	}
+	dialog.popup();
+};
+
+ZmAccountsPage.prototype._handleTwoStepAuthCodesLink =
+function(twoStepAuthCodesLink) {
+	if (!this._oneTimeCodesDialog) {
+		this._oneTimeCodesDialog = new ZmOneTimeCodesDialog({twoStepAuthCodesLink : twoStepAuthCodesLink});
+	}
+	this._oneTimeCodesDialog.popup();
+};
+
 ZmAccountsPage.prototype.getGrantRightsDlg =
 function(callback) {
 
@@ -528,6 +552,18 @@ function(opt) {
     this.removeDelegateButton.setEnabled(opt);
 }
 
+ZmAccountsPage.prototype.setAccountSecurity =
+function() {
+	var twoStepAuthLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_LINK");
+	if (twoStepAuthLink) {
+		Dwt.setHandler(twoStepAuthLink, DwtEvent.ONCLICK, this._handleTwoStepAuthLink.bind(this, twoStepAuthLink));
+	}
+	var twoStepAuthCodesLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_CODES_LINK");
+	if (twoStepAuthCodesLink) {
+		Dwt.setHandler(twoStepAuthCodesLink, DwtEvent.ONCLICK, this._handleTwoStepAuthCodesLink.bind(this, twoStepAuthCodesLink));
+	}
+};
+
 ZmAccountsPage.prototype.setAccountDelegates =
 function() {
     var delegatesEl =   document.getElementById(this._htmlElId+"_DELEGATE_RIGHTS");
@@ -741,6 +777,7 @@ function(useDefaults) {
 	var account = this._accounts.get(0);
 	this._resetAccountListView(account);
 	this.setAccount(account);
+	this.setAccountSecurity();
     this.setAccountDelegates();
 };
 
