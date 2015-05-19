@@ -262,7 +262,7 @@ function() {
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.CONTINUAL_VALIDATION,
 											parentElement:(this._htmlElId + "_subject")});
-	this._subjectField.setRequired();
+	this._subjectField.setRequired(true);
 	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
 
 
