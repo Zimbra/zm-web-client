@@ -1530,11 +1530,11 @@ function(comp) {
 	var useAbs = this._useAbsoluteReminder,
         time = useAbs ? this._reminderAbs : this._reminderMinutes;
 
-    if (time === -1) {
+    if (time == null || time === -1) {
         return;
     }
 
-	for (var i = 0, len = this.alarmActions.size(); i < len; i++) {
+    for (var i = 0, len = this.alarmActions.size(); i < len; i++) {
 		var email = null;
 		var action = this.alarmActions.get(i);
 		if (action == ZmCalItem.ALARM_EMAIL) {
