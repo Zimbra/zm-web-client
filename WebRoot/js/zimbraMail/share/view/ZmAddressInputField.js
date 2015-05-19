@@ -529,6 +529,33 @@ function(ev) {
 	}
 };
 
+ZmAddressInputField.onFocus =
+function(ev) {
+	var dwtEv = new DwtUiEvent();
+	var addrInput = ZmAddressInputField._getAddrInputFromEvent(ev);
+	dwtEv.setFromDhtmlEvent(ev, addrInput);
+
+	if (addrInput) {
+		addrInput._hasFocus = true;
+		addrInput.setDisplayState(DwtControl.FOCUSED);
+		addrInput.notifyListeners(DwtEvent.FOCUS, dwtEv);
+	}
+};
+
+ZmAddressInputField.onBlur =
+function(ev) {
+	var dwtEv = new DwtUiEvent();
+	var addrInput = ZmAddressInputField._getAddrInputFromEvent(ev);
+	dwtEv.setFromDhtmlEvent(ev, addrInput);
+
+	if (addrInput) {
+		addrInput._hasFocus = false;
+		addrInput.setDisplayState(DwtControl.NORMAL);
+		addrInput.notifyListeners(DwtEvent.BLUR, dwtEv);
+	}
+};
+
+
 /**
  * Handle arrow up, arrow down for bubble holder
  *
@@ -643,6 +670,9 @@ function(params) {
 	Dwt.setHandler(this._input, DwtEvent.ONCUT, ZmAddressInputField.onCut);
 	Dwt.setHandler(this._input, DwtEvent.ONPASTE, ZmAddressInputField.onPaste);
     Dwt.setHandler(this._holder, DwtEvent.ONKEYDOWN, ZmAddressInputField.onHolderKeyClick);
+
+    Dwt.setHandler(this._input, DwtEvent.ONFOCUS, ZmAddressInputField.onFocus);
+    Dwt.setHandler(this._input, DwtEvent.ONBLUR, ZmAddressInputField.onBlur);
 
     var args = {container:this._holder, threshold:10, amount:15, interval:5, id:this._holderId};
     this._dndScrollCallback = DwtControl._dndScrollCallback.bind(null, [args]);

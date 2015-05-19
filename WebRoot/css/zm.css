@@ -1257,6 +1257,10 @@ INPUT[type="text"].search_input-expanded {
 */
 }
 
+.ZmComposeView .subjectField:focus {
+	@FocusBorder@
+}
+
 /* to/cc/bcc textareas */
 .ZmComposeView .addresses {
 	@FullWidth@
@@ -1426,6 +1430,11 @@ INPUT[type="text"].search_input-expanded {
 	background-color:white;
 	min-height:24px;
 	min-height:2rem;
+}
+
+.attBubbleContainer.ZFocused,
+.addrBubbleContainer.ZFocused {
+	@FocusBorder@
 }
 
 .attPlaceholderHint {
@@ -5511,6 +5520,10 @@ DIV .SuggestBtn {
 	width:100%;
 }
 
+.ReminderInput-focused {
+	@FocusBorder@
+}
+
 .SuggestionPrefTitle {
 	@Text@
 	border-bottom:1px solid @TxtC@;
@@ -5797,6 +5810,10 @@ DIV.ZmSuggestLink {
 .ZmDateFieldInput {
 	height:22px;
 	height:1.8rem;
+}
+
+.ZmDateFieldInput:focus {
+	@FocusBorder@
 }
 
 /* for displaying a msg without using an iframe (bug 66466) */
