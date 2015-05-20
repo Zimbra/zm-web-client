@@ -2229,7 +2229,20 @@ function(continueCallback) {
 				var folder = root.getByName(name, true);
 				if (folder) {
 					var folderId = folder.id;
-					if (folderId != ZmOrganizer.ID_INBOX && Number(folderId) < 256) {
+					if (folder.type !== ZmId.ORG_FOLDER) {
+						if (folder.parent.id == ZmOrganizer.ID_ROOT) {
+							//e.g. calendar that's child of root - wouldn't be able to create the folder for the account with that same name. (despite it being mail). So bail.
+							var params = {
+								msg: AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [AjxStringUtil.htmlEncode(name), ZmMsg[folder.type.toLowerCase()]]),
+								level: ZmStatusView.LEVEL_CRITICAL
+							};
+							appCtxt.setStatusMsg(params);
+							continueCallback.run(false);
+							return;
+						}
+						//otherwise this continues on with creating the folder since this folder is not interfering (it's not a root child folder)
+					}
+					else if (folderId != ZmOrganizer.ID_INBOX && Number(folderId) < 256) {
 						var params = {
 							msg: AjxMessageFormat.format(ZmMsg.accountNameReserved, [AjxStringUtil.htmlEncode(name)]),
 							level: ZmStatusView.LEVEL_CRITICAL
