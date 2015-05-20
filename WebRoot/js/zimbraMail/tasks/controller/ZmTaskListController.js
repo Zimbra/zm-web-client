@@ -1101,8 +1101,9 @@ function(folder) {
 ZmTaskListController.prototype._showOrigListener =
 function(ev) {
 	var tasks = this._listView[this._currentViewId].getSelection();
-	if (tasks && tasks.length > 0)
-		setTimeout(AjxCallback.simpleClosure(this._showTaskSource, this, tasks[0]), 1); // Other listeners are focusing the main window, so delay the window opening for just a bit
+	if (tasks && tasks.length > 0) {
+		setTimeout(this._showTaskSource.bind(this, tasks[0]), 100); // Other listeners are focusing the main window, so delay the window opening for just a bit
+	}
 };
 
 ZmTaskListController.prototype._showTaskSource =

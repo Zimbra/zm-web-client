@@ -4313,8 +4313,9 @@ ZmCalViewController.prototype._showOrigListener =
 function(ev) {
 	var actionMenu = this.getActionMenu();
 	var appt = actionMenu && actionMenu.__appt;
-	if (appt)
-		this._showApptSource(appt);
+	if (appt) {
+		setTimeout(this._showApptSource.bind(this, appt), 100); // Other listeners are focusing the main window, so delay the window opening for just a bit
+	}
 };
 
 ZmCalViewController.prototype._showApptSource =
