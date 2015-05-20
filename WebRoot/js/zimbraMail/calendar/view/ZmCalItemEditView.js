@@ -686,6 +686,7 @@ function(width) {
 		parentElement: (this._htmlElId + "_subject"),
 		inputId: this._htmlElId + "_subject_input",
 		type: DwtInputField.STRING,
+		label: ZmMsg.subject,
 		errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 		validationStyle: DwtInputField.CONTINUAL_VALIDATION
 	};
@@ -695,12 +696,14 @@ function(width) {
 
 	// CalItem folder DwtSelect
 	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
+	this._folderSelect.setAttribute('aria-label', ZmMsg.folder);
 
     this._hasRepeatSupport = Boolean(Dwt.byId(this._htmlElId + "_repeatSelect") != null);
 
     if(this._hasRepeatSupport) {
         // recurrence DwtSelect
         this._repeatSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_repeatSelect")});
+		this._repeatSelect.setAttribute('aria-label', ZmMsg.repeat);
         this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
         for (var i = 0; i < ZmApptViewHelper.REPEAT_OPTIONS.length; i++) {
             var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
@@ -715,15 +718,19 @@ function(width) {
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
 	// start/end date DwtCalendar's
-	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_startMiniCalBtn", dateButtonListener, dateCalSelectionListener);
-	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_endMiniCalBtn", dateButtonListener, dateCalSelectionListener);
+	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_startMiniCalBtn", dateButtonListener, dateCalSelectionListener, ZmMsg.startDate);
+	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_endMiniCalBtn", dateButtonListener, dateCalSelectionListener, ZmMsg.endDate);
 	this._startDateButton.setSize("20");
+	this._startDateButton.setAttribute('aria-label', ZmMsg.startDate);
 	this._endDateButton.setSize("20");
+	this._endDateButton.setAttribute('aria-label', ZmMsg.endDate);
+
 	if (this._hasReminderSupport) {
 		var params = {
 			parent: this,
 			parentElement: (this._htmlElId + "_reminderSelectInput"),
 			type: DwtInputField.STRING,
+			label: ZmMsg.reminder,
 			errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 			validationStyle: DwtInputField.CONTINUAL_VALIDATION,
 			className: "DwtInputField ReminderInput"
@@ -738,6 +745,7 @@ function(width) {
 		var reminderSelectionListener = new AjxListener(this, this._reminderSelectionListener);
 		this._reminderButton = ZmCalendarApp.createReminderButton(this, this._htmlElId + "_reminderSelect", reminderButtonListener, reminderSelectionListener);
 		this._reminderButton.setSize("20");
+		this._reminderButton.setAttribute('aria-label', ZmMsg.reminder);
         this._reminderEmailCheckbox = new DwtCheckbox({parent: this});
         this._reminderEmailCheckbox.replaceElement(document.getElementById(this._htmlElId + "_reminderEmailCheckbox"));
         this._reminderEmailCheckbox.setText(ZmMsg.email);
