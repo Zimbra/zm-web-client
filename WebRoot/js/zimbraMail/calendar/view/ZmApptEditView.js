@@ -700,29 +700,46 @@ function() {
 
 ZmApptEditView.prototype._addTabGroupMembers =
 function(tabGroup) {
-	tabGroup.addMember(this._subjectField.getInputElement());
+    tabGroup.addMember(this._subjectField);
     if(this.GROUP_CALENDAR_ENABLED) {
-        tabGroup.addMember(this._attInputField[ZmCalBaseItem.PERSON].getInputElement());
-        tabGroup.addMember(this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON].getInputElement());
+        tabGroup.addMember([this._pickerButton[ZmCalBaseItem.PERSON],
+                            this._attInputField[ZmCalBaseItem.PERSON],
+                            this._showOptional,
+                            this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON],
+                            this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON]]);
     }    
-	tabGroup.addMember(this._attInputField[ZmCalBaseItem.LOCATION].getInputElement());
+    tabGroup.addMember([this._suggestTime,
+                        this._pickerButton[ZmCalBaseItem.LOCATION],
+                        this._attInputField[ZmCalBaseItem.LOCATION]]);
     if(this.GROUP_CALENDAR_ENABLED && appCtxt.get(ZmSetting.GAL_ENABLED)) {
-	    tabGroup.addMember(this._attInputField[ZmCalBaseItem.EQUIPMENT].getInputElement());
+        tabGroup.addMember([this._pickerButton[ZmCalBaseItem.EQUIPMENT],
+                            this._attInputField[ZmCalBaseItem.EQUIPMENT],
+                            this._showResources,
+                            this._suggestLocation]);
     }
-    tabGroup.addMember(this._startDateField);
-	tabGroup.addMember(this._startTimeSelect.getInputField());
-	tabGroup.addMember(this._endDateField);
-	tabGroup.addMember(this._endTimeSelect.getInputField());
-    tabGroup.addMember(this._allDayCheckbox);
-    tabGroup.addMember(this._showAsSelect);
-    tabGroup.addMember(this._folderSelect);
+    tabGroup.addMember([this._startDateField,
+                        this._startDateButton,
+                        this._startTimeSelect.getTabGroupMember(),
+                        this._endDateField,
+                        this._endDateButton,
+                        this._endTimeSelect.getTabGroupMember(),
+                        this._allDayCheckbox,
 
-    if(this._repeatSelect) tabGroup.addMember(this._repeatSelect);
-    tabGroup.addMember(this._reminderSelectInput);
+                        this._repeatSelect,
+                        this._reminderSelectInput,
+                        this._reminderButton,
+                        this._reminderConfigure,
 
+                        this._showAsSelect,
+                        this._folderSelect,
+                        this._privateCheckbox,
 
-	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
-	tabGroup.addMember(document.getElementById(bodyFieldId));
+                        this._schButton,
+                        this._scheduleView,
+                        this.getHtmlEditor(),
+
+                        this._suggestTime,
+                        this._suggestLocation]);
 };
 
 ZmApptEditView.prototype._finishReset =
@@ -1193,16 +1210,21 @@ function(width) {
 
 	if (this.GROUP_CALENDAR_ENABLED) {
 		this._attendeesInputField = this._createInputField("_person", ZmCalBaseItem.PERSON, {
+		            label: ZmMsg.attendees,
 		            bubbleAddedCallback: new AjxCallback(this, this._handleAddedAttendees, [ZmCalBaseItem.PERSON]),
 		            bubbleRemovedCallback: new AjxCallback(this, this._handleRemovedAttendees, [ZmCalBaseItem.PERSON])
 		        });
 		this._optAttendeesInputField = this._createInputField("_optional", ZmCalBaseItem.OPTIONAL_PERSON, {
+				            label: ZmMsg.optionalAttendees,
 				            bubbleAddedCallback: new AjxCallback(this, this._handleAddedAttendees, [ZmCalBaseItem.OPTIONAL_PERSON]),
 				            bubbleRemovedCallback: new AjxCallback(this, this._handleRemovedAttendees, [ZmCalBaseItem.OPTIONAL_PERSON])
 				        });
         //add Resources Field
         if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-            this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT, {strictMode:false});
+            this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT, {
+                strictMode:false,
+                label: ZmMsg.equipmentAttendee
+			});
         }
 	}
 
@@ -1211,7 +1233,8 @@ function(width) {
 		strictMode:            false,
 		noAddrBubbles:         !appCtxt.get(ZmSetting.GAL_ENABLED),
 		bubbleAddedCallback:   this._handleAddedAttendees.bind(this, ZmCalBaseItem.LOCATION),
-		bubbleRemovedCallback: this._handleRemovedAttendees.bind(this, ZmCalBaseItem.LOCATION)
+		bubbleRemovedCallback: this._handleRemovedAttendees.bind(this, ZmCalBaseItem.LOCATION),
+		label: ZmMsg.location
 	});
 
     this._mainId = this._htmlElId + "_main";
@@ -1232,6 +1255,8 @@ function(width) {
     this._schButton._editViewId = edvId;
     this._schImage = document.getElementById(this._htmlElId + "_scheduleImage");
     this._schImage._editViewId = edvId;
+    this._makeFocusable(this._schButton);
+    this._makeFocusable(this._schImage);
     Dwt.setHandler(this._schButton, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
     Dwt.setHandler(this._schImage, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 
@@ -1266,6 +1291,7 @@ function(width) {
 
 	// show-as DwtSelect
 	this._showAsSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_showAsSelect")});
+	this._showAsSelect.setAttribute('aria-label', ZmMsg.showAs);
 	for (var i = 0; i < ZmApptViewHelper.SHOWAS_OPTIONS.length; i++) {
 		var option = ZmApptViewHelper.SHOWAS_OPTIONS[i];
 		this._showAsSelect.addOption(option.label, option.selected, option.value, "ShowAs" + option.value);
@@ -1273,6 +1299,7 @@ function(width) {
 
 	this._showAsSelect.addChangeListener(new AjxListener(this, this.setShowAsFlag, [true]));
 	this._folderSelect.addChangeListener(new AjxListener(this, this._folderListener));
+	this._showAsSelect.setAttribute('aria-label', ZmMsg.showAs);
 
     this._privateCheckbox = document.getElementById(this._htmlElId + "_privateCheckbox");
 
@@ -1371,6 +1398,7 @@ function(idTag, attType, params) {
 	var input;
 	if (!params.noAddrBubbles) {
 		var aifParams = {
+			label:					params.label,
 			autocompleteListView:	this._acAddrSelectList,
 			inputId:				inputId,
             bubbleAddedCallback:	params.bubbleAddedCallback,
@@ -1384,6 +1412,7 @@ function(idTag, attType, params) {
 		var params = {
 			parent:			this,
 			parentElement:	cellId,
+			label:			params.label,
 			inputId:		inputId
 		};
         if (idTag == '_person' ||
@@ -2152,8 +2181,14 @@ function() {
 	// add event listeners where necessary
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
-	if(this._showOptional) Dwt.setHandler(this._showOptional, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
-    if(this._showResources) Dwt.setHandler(this._showResources, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+	if (this._showOptional) {
+		this._makeFocusable(this._showOptional);
+		Dwt.setHandler(this._showOptional, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+	}
+	if (this._showResources) {
+		this._makeFocusable(this._showResources);
+		Dwt.setHandler(this._showResources, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+	}
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmCalItemEditView._onMouseOver);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);
 	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
@@ -2161,9 +2196,12 @@ function() {
 	Dwt.setHandler(this._startDateField, DwtEvent.ONFOCUS, ZmCalItemEditView._onFocus);
 	Dwt.setHandler(this._endDateField, DwtEvent.ONFOCUS, ZmCalItemEditView._onFocus);
     if (this.GROUP_CALENDAR_ENABLED) {
+        this._makeFocusable(this._suggestTime);
         Dwt.setHandler(this._suggestTime, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
     }
+    this._makeFocusable(this._suggestLocation);
     Dwt.setHandler(this._suggestLocation, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+    this._makeFocusable(this._locationStatusAction);
     Dwt.setHandler(this._locationStatusAction, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 
 	this._allDayCheckbox._editViewId = this._repeatDescField._editViewId = edvId;

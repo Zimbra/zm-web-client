@@ -144,6 +144,10 @@ INPUT[type="checkbox"] {
 	@ActiveCursor@
 }
 
+INPUT[type="checkbox"]:focus {
+	@FocusOutline@
+}
+
 #IFDEF MSIE
 	INPUT {cursor: expression(this.type=="checkbox"?'pointer':''); }
 #ENDIF
@@ -707,6 +711,10 @@ LI.RowDouble, LI.Row {list-style: none;}
 
 .FakeAnchor:active, A:active {
 	@Anchor-active@
+}
+
+.FakeAnchor:focus, A:focus {
+	@Anchor-focused@
 }
 
 .FakeAnchor.ZDisabled,

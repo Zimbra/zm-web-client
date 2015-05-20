@@ -212,17 +212,13 @@ function(loc) {
 	if (!this._tabGroupComplete) {
 		// tab group filled in here rather than in the constructor b/c we need
 		// all the content fields to have been created
-		var members = [this._subjectField, this._locationField, this._showAsSelect, this._privacySelect];
-		if (this._folderSelect.size() > 1) {
-			members.push(this._folderSelect);
-		}
-		// XXX: DwtTimeInput doesn't handle focus yet
-		members = members.concat([this._startDateField, this._startDateButton, this._startTimeSelect.getInputField(),
-								  this._endDateField, this._endDateButton,  this._endTimeSelect.getInputField(),
-								  this._repeatSelect]);
-		for (var i = 0; i < members.length; i++) {
-			this._tabGroup.addMember(members[i], i);
-		}
+		this._tabGroup.addMember([
+			this._subjectField, this._locationField, this._showAsSelect,
+			this._privacySelect, this._folderSelect,
+			this._startDateField, this._startDateButton, this._startTimeSelect.getTabGroupMember(),
+			this._endDateField, this._endDateButton, this._endTimeSelect.getTabGroupMember(),
+			this._repeatSelect, this._reminderSelect
+		]);
 		this._tabGroupComplete = true;
 	}
     //bug:68208 Focus must be in the Subject of QuickAdd Appointment dialog after double-click in calendar
@@ -261,7 +257,9 @@ function() {
 											initialValue:null, size:null, maxLen:null,
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.CONTINUAL_VALIDATION,
+											hint: ZmMsg.subject,
 											parentElement:(this._htmlElId + "_subject")});
+	this._subjectField.getInputElement().setAttribute('aria-labelledby', this._htmlElId + "_subject_label");
 	this._subjectField.setRequired(true);
 	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
 
@@ -270,24 +268,29 @@ function() {
 											initialValue:null, size:null, maxLen:null,
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION,
+											label: ZmMsg.location, hint: ZmMsg.location,
 											parentElement:(this._htmlElId + "_location")});
+	this._locationField.getInputElement().setAttribute('aria-labelledby', this._htmlElId + "_location_label");
 	Dwt.setSize(this._locationField.getInputElement(), "100%", "2rem");
 
     // create DwtSelects
 	this._showAsSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_showAs")});
+	this._showAsSelect.setAttribute('aria-labelledby', this._htmlElId + '_showAs_label');
 	for (var i = 0; i < ZmApptViewHelper.SHOWAS_OPTIONS.length; i++) {
 		var option = ZmApptViewHelper.SHOWAS_OPTIONS[i];
 		this._showAsSelect.addOption(option.label, option.selected, option.value, "ShowAs" + option.value);
 	}
 
 	this._privacySelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_privacy")});
+	this._privacySelect.setAttribute('aria-labelledby', this._htmlElId + "_privacy_label");
 	for (var j = 0; j < ZmApptEditView.PRIVACY_OPTIONS.length; j++) {
 		var option = ZmApptEditView.PRIVACY_OPTIONS[j];
 		this._privacySelect.addOption(option.label, option.selected, option.value);
 	}
 	this._privacySelect.addChangeListener(new AjxListener(this, this._privacyListener));
 
-	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_calendar")});
+	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_calendar"), label: ZmMsg.calendar});
+	this._folderSelect.setAttribute('aria-labelledby', this._htmlElId + "_calendar_label");
 	this._folderSelect.addChangeListener(new AjxListener(this, this._privacyListener));
 
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
@@ -309,7 +312,7 @@ function() {
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 	this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_endTime");
 
-	this._repeatSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_repeat")});
+	this._repeatSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_repeat"), label: ZmMsg.repeat});
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
 	for (var i = 0; i < ZmApptViewHelper.REPEAT_OPTIONS.length-1; i++) {
 		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
@@ -346,7 +349,7 @@ function() {
     this._hasReminderSupport = Dwt.byId(this._htmlElId + "_reminderSelect") != null;
 
     if (this._hasReminderSupport) {
-        this._reminderSelect = new DwtSelect({parent:this});
+        this._reminderSelect = new DwtSelect({parent:this, label: ZmMsg.reminder});
         this._reminderSelect.addChangeListener(new AjxListener(this, this._setEmailReminderControls));
         for (var j = 0; j < options.length; j++) {
             var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], labels[j]);
