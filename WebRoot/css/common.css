@@ -92,6 +92,12 @@ INPUT {
 
 HTML {
 	@FullSize@
+
+#IFDEF MSIE_LOWER_THAN_9
+	/* IE8 incorrectly reports a visibility of 'inherit' when no ancestor
+	   provides it */
+	visibility: visible;
+#ENDIF
 }
 
 BODY {
