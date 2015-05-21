@@ -976,6 +976,11 @@ function() {
 	var msg = this.getMsg();
 	if (!msg) { return; }
 
+	setTimeout(this._showMsgSource.bind(this, msg), 100); // Other listeners are focusing the main window, so delay the window opening for just a bit
+};
+
+ZmMailListController.prototype._showMsgSource =
+function(msg) {
 	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&view=text&id=" + msg.id + (msg.partId ? "&part=" + msg.partId : "");
 
 	// create a new window w/ generated msg based on msg id
