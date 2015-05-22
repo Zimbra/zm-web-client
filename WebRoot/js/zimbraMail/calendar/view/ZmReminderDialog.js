@@ -242,8 +242,8 @@ function() {
 
 ZmReminderDialog.DEFAULT_SNOOZE = -5;
 ZmReminderDialog.SNOOZE_MINUTES =
-// Snooze period in minutes (negative is 'minutes before appt', zero is 'At time of event', 'separator' is for seperator icon.
-    [-30, -15, -5, -1, 0, 'seperator',
+// Snooze period in minutes (negative is 'minutes before appt', zero is separator:
+    [-30, -15, -5, -1, 0,
        1, 5, 10, 15, 30, 45, 60, 120, 240, 480,  1440, 2880,  4320,   5760, 10080, 20160];
 //                          1hr  2hr  4hr  8hr  1day  2days  3days  4days  1week  2weeks
 
@@ -290,20 +290,20 @@ function(snoozeSelectButton, snoozeSelectInput, menuSelectionListener, apptList)
     snoozeFormatter[3] = new AjxMessageFormat(ZmMsg.reminderSnoozeWeeks);         // Week   Formatter
     var iFormatter = 0;
     var formatter = null;
-    var snoozeDisplayValue = -1;
+    var snoozeDisplayValue = 0;
     var scale = 1;
     var defaultSet = false;
     var firstMenuItem = null;
     var addSeparator = false;
     var anyAdded = false;
     for (var i = 0; i < ZmReminderDialog.SNOOZE_MINUTES.length; i++) {
-        if (ZmReminderDialog.SNOOZE_MSEC[i] > maxStartDelta) { // only those values will come in snooze reminder, which are valid i.e avoid 'before minutes' in menu , when appointment has started . Donot include 0, when the event has started, value of maxStartDelta is 0,(see min) and we donot want 0 i.e 'at time of event' to be included in the menu , when the event has started .
+        if (ZmReminderDialog.SNOOZE_MSEC[i] >= maxStartDelta) {
             // Found a snooze period to display
             snoozeDisplayValue = ZmReminderDialog.SNOOZE_MINUTES[i];
-            if (snoozeDisplayValue == 'seperator') {
+            if (snoozeDisplayValue == 0) {
                 // Set up to add a separator if any 'before' time were added; do the
                 // actual add if any fixed times are added
-                 addSeparator = anyAdded;
+                addSeparator = anyAdded;
             }
             else {
                 if (addSeparator) {
@@ -311,15 +311,11 @@ function(snoozeSelectButton, snoozeSelectInput, menuSelectionListener, apptList)
                     addSeparator = false;
                 }
                 anyAdded = true;
-                if (snoozeDisplayValue < 0) {
+                if (snoozeDisplayValue <= 0) {
                     snoozeDisplayValue = -snoozeDisplayValue;
                     formatter = snoozeFormatterBefore;
                     scale = 1;
-
 				}
-                else if (snoozeDisplayValue == 0){
-                    label = ZmMsg.apptRemindAtEventTime;
-                }
 				else {
                     if (snoozeDisplayValue >= ZmReminderDialog.SCALE_MINUTES[iFormatter+1]) {
                         iFormatter++;
@@ -327,9 +323,7 @@ function(snoozeSelectButton, snoozeSelectInput, menuSelectionListener, apptList)
                     scale = ZmReminderDialog.SCALE_MINUTES[iFormatter];
                     formatter = snoozeFormatter[iFormatter];
                 }
-                if (snoozeDisplayValue != 0) {
-                    var label = formatter.format(snoozeDisplayValue / scale);
-                }
+                var label = formatter.format(snoozeDisplayValue/scale);
                 var mi = new DwtMenuItem({parent: snoozeMenu, style: DwtMenuItem.NO_STYLE});
                 mi.setText(label);
                 mi.setData("value", snoozeDisplayValue);
@@ -695,7 +689,6 @@ function(snoozeString) {
     snoozeUnitStrings[5] = AjxMsg.hours;
     snoozeUnitStrings[6] = AjxMsg.days;
     snoozeUnitStrings[7] = AjxMsg.weeks;
-    snoozeUnitStrings[8] = AjxMsg.atEventTime;
 
     snoozeString = snoozeString.toLowerCase();
     var found = false;
@@ -773,9 +766,7 @@ function(appt) {
 };
 
 ZmReminderDialog.formatDeltaString = function(deltaMSec, isAllDay) {
-    if (deltaMSec > 0 && deltaMSec < 60000) { // less than 1 minute i.e 60 seconds
-        return ZmMsg.reminderNow;
-    }
+
 	var prefix = deltaMSec < 0 ? "In" : "OverdueBy";
 	deltaMSec = Math.abs(deltaMSec);
 
@@ -853,9 +844,6 @@ ZmReminderDialog.formatDeltaString = function(deltaMSec, isAllDay) {
 	// format message
 	var key = ["reminder", prefix, amount].join("");
 	var args = [deltaMSec, years, months, days, hours, mins, secs];
-    if (amount == "Minutes" && mins == 0) { // In 0 minutes
-        return ZmMsg.reminderNow;
-    }
 	return AjxMessageFormat.format(ZmMsg[key], args);
 };
 

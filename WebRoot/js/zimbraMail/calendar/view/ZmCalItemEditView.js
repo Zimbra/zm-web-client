@@ -488,7 +488,7 @@ function(calItem) {
 		//calItem.setReminderMinutes(this._reminderSelect.getValue());
         var reminderString = this._reminderSelectInput && this._reminderSelectInput.getValue();
         if (!reminderString || reminderString == ZmMsg.apptRemindNever) {
-            calItem.setReminderMinutes(-1);
+            calItem.setReminderMinutes(0);                        
         } else {
             var reminderInfo = ZmCalendarApp.parseReminderString(reminderString);
             var reminders = [

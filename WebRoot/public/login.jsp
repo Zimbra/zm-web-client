@@ -16,7 +16,7 @@
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,zlastserver,client"/>
+<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,zlastserver,client"/>
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -25,23 +25,12 @@
                                                         || (ua.isOsBlackBerry)
                                                         || (ua.isOsAndroid && not ua.isAndroid4_0up)
                                                         || (ua.isIos && not ua.isIos6_0up))}"/>
-<c:set var="totpAuthRequired" value="false"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
+
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
 <c:if test="${not empty param.username and not empty param.virtualacctdomain}">
 	<%--External login email address are mapped to internal virtual account--%>
 	<c:set var="trimmedUserName" value="${fn:replace(param.username,'@' ,'.')}@${param.virtualacctdomain}"/>
-</c:if>
-
-<c:if test="${not empty trimmedUserName}">
-    <c:choose>
-        <c:when test="${(fn:indexOf(trimmedUserName,'@') == -1) and !(empty param.customerDomain)}">
-            <c:set var="fullUserName" value="${trimmedUserName}@${param.customerDomain}"/>
-        </c:when>
-        <c:otherwise>
-            <c:set var="fullUserName" value="${trimmedUserName}"/>
-        </c:otherwise>
-    </c:choose>
 </c:if>
 
 <c:if test="${param.loginOp eq 'relogin' and empty loginException}">
@@ -107,10 +96,18 @@
                 </c:otherwise>
             </c:choose>
 		</c:when>
-		<c:when test="${(param.loginOp eq 'login') && !(empty fullUserName) && !(empty param.password) && (pageContext.request.method eq 'POST')}">
+		<c:when test="${(param.loginOp eq 'login') && !(empty trimmedUserName) && !(empty param.password) && (pageContext.request.method eq 'POST')}">
+			<c:choose>
+				<c:when test="${(fn:indexOf(trimmedUserName,'@') == -1) and !(empty param.customerDomain)}">
+					<c:set var="fullUserName" value="${trimmedUserName}@${param.customerDomain}"/>
+				</c:when>
+				<c:otherwise>
+					<c:set var="fullUserName" value="${trimmedUserName}"/>
+				</c:otherwise>
+			</c:choose>
 			<c:choose>
 				<c:when test="${!empty cookie.ZM_TEST}">
-					<zm:login username="${fullUserName}" password="${param.password}" twoFactorCode="${not empty param.totpcode ? param.totpcode : ''}" varRedirectUrl="postLoginUrl"
+					<zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
 							varAuthResult="authResult"
 							newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
 							requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"/>
@@ -122,7 +119,7 @@
 				</c:otherwise>
 			</c:choose>
 		</c:when>
-        <c:otherwise>
+		<c:otherwise>
 			<%-- try and use existing cookie if possible --%>
 			<c:set var="authtoken" value="${not empty param.zauthtoken ? param.zauthtoken : cookie.ZM_AUTH_TOKEN.value}"/>
 			<c:if test="${not empty authtoken}">
@@ -274,16 +271,8 @@
 	<c:if test="${errorCode eq 'account.AUTH_FAILED' and not empty param.virtualacctdomain}">
 		<fmt:message bundle="${zhmsg}" var="errorMessage" key="account.EXTERNAL_AUTH_FAILED"/>
 	</c:if>
-    <c:if test="${errorCode eq 'account.TWO_FACTOR_SETUP_REQUIRED'}">
-        <%--Redirect the user to the initial two factor authentication set up page--%>
-        <jsp:forward page="/public/TwoFactorSetup.jsp">
-            <jsp:param name="userName" value="${fullUserName}"/>
-        </jsp:forward>
-    </c:if>
-    <c:if test="${errorCode eq 'account.TWO_FACTOR_AUTH_REQUIRED'}">
-        <c:set var="totpAuthRequired" value="true"/>
-    </c:if>
 </c:if>
+
 <%
 if (application.getInitParameter("offlineMode") != null) {
 	request.getRequestDispatcher("/").forward(request, response);
@@ -436,7 +425,7 @@ if (application.getInitParameter("offlineMode") != null) {
 								<input type="hidden" name="loginOp" value="login"/>
 					</c:otherwise>
 				</c:choose>
-				<c:if test="${errorCode != null && errorCode != 'account.TWO_FACTOR_AUTH_REQUIRED'}">
+				<c:if test="${errorCode != null}">
 					<div id="ZLoginErrorPanel">
 						<table><tr>
 							<td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
@@ -444,7 +433,7 @@ if (application.getInitParameter("offlineMode") != null) {
 						</tr></table>
 					</div>
 				</c:if>
-				<table class="form" id="loginTable">
+				<table class="form">
 					<c:choose>
 						<c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
 										<tr>
@@ -474,9 +463,9 @@ if (application.getInitParameter("offlineMode") != null) {
 										</c:choose>
 										<tr>
 											<td><label for="password"><fmt:message key="password"/>:</label></td>
-											<td><input id="password" autocomplete="off" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+											<td><input id="password" autocomplete="off" class="zLoginField" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
 										</tr>
-							<c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
+							<c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
 										<tr>
 											<td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
 											<td><input id="loginNewPassword" autocomplete="off" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
@@ -541,22 +530,7 @@ if (application.getInitParameter("offlineMode") != null) {
 							</td>
 						</tr>
 					</c:if>
-			    </table>
-                <table class="form" id="totpTable" style="margin-top:72px;width:350px">
-                    <tbody>
-                    <tr>
-                        <td><label for="totpcode"><fmt:message key="twoFactorAuthCodeLabel"/>:</label></td>
-                        <td><input id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" style="margin-right:20px"></td>
-                        <td class="submitTD"><input type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton"></td>
-                    </tr>
-                    <%--<tr>--%>
-                        <%--<td>&nbsp;</td>--%>
-                        <%--<td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">--%>
-                            <%--<label for="trustedDevice"><fmt:message key="twoFactorAuthRememberDevice"/></label>--%>
-                        <%--</td>--%>
-                    <%--</tr>--%>
-                    </tbody>
-                </table>
+					</table>
 			</form>
 			</div>
 			<div class="decor1"></div>
@@ -618,10 +592,6 @@ function showWhatsThis() {
 
 function onLoad() {
 	var loginForm = document.loginForm;
-    if (${errorCode != null && errorCode != 'account.TWO_FACTOR_AUTH_REQUIRED'}) {
-        //clear the user password in case of any error except two factor auth required (we need the password in that case)
-        loginForm.password.value = "";
-    }
 	if (loginForm.username) {
 		if (loginForm.username.value != "") {
 			loginForm.password.focus(); //if username set, focus on password
@@ -643,24 +613,8 @@ function onLoad() {
             }
         };
     }
-
-    //Hide the Totp code section on load
-    if (${totpAuthRequired})
-    {
-        var totpTable = document.getElementById("totpTable");
-        totpTable.style.display = "block";
-        var loginTable = document.getElementById("loginTable");
-        loginTable.style.display = "none";
-        if (loginForm.totpcode) {
-            loginForm.totpcode.focus();
-        }
-    }
-    else
-    {
-        var totpTable = document.getElementById("totpTable");
-        totpTable.style.display = "none";
-    }
 }
+
 </script>
 </body>
 </html>
