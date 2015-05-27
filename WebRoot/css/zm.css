@@ -4914,6 +4914,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZToastText {
 	max-width:510px;
 	@ToastText@
+	word-wrap: break-word;
 }
 
 .ZToastText a.undo {
