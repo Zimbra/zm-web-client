@@ -444,7 +444,7 @@ if (application.getInitParameter("offlineMode") != null) {
 						</tr></table>
 					</div>
 				</c:if>
-				<table class="form" id="loginTable">
+				<table class="form" <c:if test="${totpAuthRequired}"> style="display:none;"</c:if>>
 					<c:choose>
 						<c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
 										<tr>
@@ -542,8 +542,8 @@ if (application.getInitParameter("offlineMode") != null) {
 						</tr>
 					</c:if>
 			    </table>
-                <table class="form" id="totpTable" style="margin-top:72px;width:350px">
-                    <tbody>
+				<table class="form" id="totpTable" style="height:140px;width:350px;${totpAuthRequired ? '' : 'display:none;'}">
+					<tbody>
                     <tr>
                         <td><label for="totpcode"><fmt:message key="twoFactorAuthCodeLabel"/>:</label></td>
                         <td><input id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" style="margin-right:20px"></td>
@@ -643,23 +643,10 @@ function onLoad() {
             }
         };
     }
-
-    //Hide the Totp code section on load
-    if (${totpAuthRequired})
-    {
-        var totpTable = document.getElementById("totpTable");
-        totpTable.style.display = "block";
-        var loginTable = document.getElementById("loginTable");
-        loginTable.style.display = "none";
-        if (loginForm.totpcode) {
-            loginForm.totpcode.focus();
-        }
-    }
-    else
-    {
-        var totpTable = document.getElementById("totpTable");
-        totpTable.style.display = "none";
-    }
+	var totpCodeInput = loginForm.totpcode;
+	if (${totpAuthRequired} && totpCodeInput) {
+		totpCodeInput.focus();
+	}
 }
 </script>
 </body>
