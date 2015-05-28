@@ -428,9 +428,9 @@ ZmPrefView.prototype._checkSection = function(section, viewPage, dirtyCheck, noV
                     comparableValue = !comparableOrigValue;
          so that it enters the inner "_prefChanged" function and from there we add pref to list, depending upon which
          option is selected and it maps to which pref.  Both comparableValue and comparableOrigValue are local variables
-         to this function, so no issues .
+         to this function, so no issues.
      */
-        if (id === "VACATION_EXTERNAL_SUPPRESS") {
+        if (id === "VACATION_EXTERNAL_SUPPRESS" && (dirtyCheck || isSaveCommand)) {
             comparableValue = !comparableOrigValue;
         }
 
