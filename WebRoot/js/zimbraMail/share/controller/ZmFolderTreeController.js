@@ -68,20 +68,7 @@ ZmFolderTreeController.prototype.toString = function() { return "ZmFolderTreeCon
  */
 ZmFolderTreeController.prototype.show =
 function(params) {
-	var omit = params.omit || {};
-	for (var id in ZmFolder.HIDE_ID) {
-		omit[id] = true;
-	}
-	var dataTree = this.type != ZmOrganizer.VOICE && this.getDataTree(params.account);
-	if (dataTree) {
-	    for (var name in ZmFolder.HIDE_NAME) {
-			var folder = dataTree.getByName(name);
-			if (folder) {
-				omit[folder.id] = true;
-			}
-		}
-	}
-	params.omit = omit;
+
 	return ZmTreeController.prototype.show.call(this, params);
 };
 
