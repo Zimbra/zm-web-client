@@ -530,9 +530,13 @@ function(apptArray, snoozeMinutes, beforeAppt) {
     } else {
         // using a fixed untilTime for all appts
         added = apptList.size() > 0;
+        // untilTime determines next alarm time, based on the option user has chosen in snooze reminder pop up .
         var untilTime = (new Date()).getTime() + chosenSnoozeMilliseconds;
         for (var i = 0; i < apptList.size(); i++) {
             var appt = apptList.get(i);
+            if (chosenSnoozeMilliseconds === 0) { // at time of event, making it to appt start time .
+                untilTime = appt.getStartTime();
+            }
             var apptInfo = { id: appt.id, until: untilTime};
             appts.push(apptInfo)
         }
