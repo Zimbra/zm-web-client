@@ -28,7 +28,10 @@
  * @extends	DwtDialog
  */
 ZmTwoFactorSetupDialog = function(params) {
-	params = params || {};
+	this.username = typeof appCtxt !== "undefined" ? appCtxt.getLoggedInUsername() : params.userName;
+	this.twoStepAuthLink = params.twoStepAuthLink;
+	// this.loginPage will be true if ZmTwoFactorSetupDialog is created from TwoFactorSetup.jsp, which is forwarded from login.jsp file.
+	this.loginPage = params.loginPage;
 	var previousButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, ZmMsg.previous, DwtDialog.ALIGN_RIGHT, this._previousButtonListener.bind(this));
 	var beginSetupButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.BEGIN_SETUP_BUTTON, ZmMsg.twoStepAuthBeginSetup, DwtDialog.ALIGN_RIGHT, this._beginSetupButtonListener.bind(this));
 	var nextButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.NEXT_BUTTON, ZmMsg.next, DwtDialog.ALIGN_RIGHT, this._nextButtonListener.bind(this));
@@ -81,7 +84,6 @@ function() {
 	this._codeErrorDivId = id + "_code_error";
 	this._successDivId = id + "_success";
 	this._divIdArray = [this._descriptionDivId, this._passwordDivId, this._authenticationDivId, this._emailDivId, this._codeDivId, this._successDivId];
-	this.username = typeof appCtxt !== "undefined" ? appCtxt.getLoggedInUsername() : "";
 	return AjxTemplate.expand("share.Dialogs#ZmTwoFactorSetup", {id : id, username : this.username});
 };
 
@@ -191,15 +193,27 @@ function() {
 
 ZmTwoFactorSetupDialog.prototype._finishButtonListener =
 function() {
-	this.popdown();
-	if (this.twoStepAuthLink) {
-		Dwt.setInnerHtml(this.twoStepAuthLink, ZmMsg.twoStepAuthDisableLink);
+	//If the user clicks finish button, redirect to the login page
+	if (this.loginPage) {
+		location.replace(location.href);
+	}
+	else {
+		this.popdown();
+		if (this.twoStepAuthLink) {
+			Dwt.setInnerHtml(this.twoStepAuthLink, ZmMsg.twoStepAuthDisableLink);
+		}
 	}
 };
 
 ZmTwoFactorSetupDialog.prototype._cancelButtonListener =
 function() {
-	this.popdown();
+	//If the user clicks cancel button, redirect to the login page
+	if (this.loginPage) {
+		location.replace(location.href);
+	}
+	else {
+		this.popdown();
+	}
 };
 
 ZmTwoFactorSetupDialog.prototype._handleKeyUp =
@@ -248,12 +262,13 @@ function(currentDivId, result) {
 			return;
 		}
 		else if (scratchCodes && scratchCodes[0] && scratchCodes[0].scratchCode) {
-			//Only the server will set ZmSetting.TWO_FACTOR_AUTH_ENABLED. Don’t try to save the setting from the UI.
-			appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_ENABLED, true, false, false, true);
-			var scratchCode = AjxUtil.map(scratchCodes[0].scratchCode, function(obj) {return obj._content});
-			appCtxt.cacheSet(ZmTwoFactorSetupDialog.ONE_TIME_CODES, scratchCode);
+			if (typeof appCtxt !== "undefined") {
+				//Only the server will set ZmSetting.TWO_FACTOR_AUTH_ENABLED. Don’t try to save the setting from the UI.
+				appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_ENABLED, true, false, false, true);
+				var scratchCode = AjxUtil.map(scratchCodes[0].scratchCode, function(obj) {return obj._content});
+				appCtxt.cacheSet(ZmTwoFactorSetupDialog.ONE_TIME_CODES, scratchCode);
+			}
 			this._handleTwoFactorAuthSuccess(currentDivId);
-			this.authenticate();
 			return;
 		}
 		this._handleTwoFactorAuthError(currentDivId);
