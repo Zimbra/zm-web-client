@@ -292,6 +292,10 @@ function(organizer, skipNotify, noFocus) {
  */
 ZmTreeView.prototype._render =
 function(params) {
+
+	params.omit = params.omit || {};
+	this._setOmit(params.omit, params.dataTree);
+
 	var org = params.organizer;
 	var children = org.children.getArray();
 	if (org.isDataSource(ZmAccount.TYPE_IMAP)) {
@@ -398,6 +402,25 @@ function(params) {
 		}
 		this._addNew(parentNode, child, null, params.noTooltips, params.omit);
 		numItems++;
+	}
+};
+
+ZmTreeView.prototype._setOmit =
+function(omit, dataTree) {
+	for (var id in ZmFolder.HIDE_ID) {
+		omit[id] = true;
+	}
+	//note - the dataTree thing was in the previous code so I keep it, but seems all the ZmFolder.HIDE_NAME code is commented out, so
+	//not sure it's still needed.
+	dataTree = this.type !== ZmOrganizer.VOICE && dataTree;
+	if (!dataTree) {
+		return;
+	}
+	for (var name in ZmFolder.HIDE_NAME) {
+		var folder = dataTree.getByName(name);
+		if (folder) {
+			omit[folder.id] = true;
+		}
 	}
 };
 
