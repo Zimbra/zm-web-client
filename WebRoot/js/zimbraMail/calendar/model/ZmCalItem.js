@@ -1213,13 +1213,13 @@ function(notes) {
  */
 ZmCalItem.prototype._setTimeFromMessage =
 function(message, viewMode) {
-	// if instance of recurring appointment, start date is generated from unique
+	// For instance of recurring appointment, start date is generated from unique
 	// start time sent in appointment summaries. Associated message will contain
 	// only the original start time.
 	var start = message.invite.getServerStartTime();
 	var end = message.invite.getServerEndTime();
 	if (viewMode === ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || viewMode === ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE
-			|| viewMode === ZmCalItem.MODE_COPY_SINGLE_INSTANCE) {
+			|| viewMode === ZmCalItem.MODE_COPY_SINGLE_INSTANCE || viewMode === ZmCalItem.MODE_EDIT_SERIES) {
 		var usd = this.getUniqueStartDate();
 		if (usd) {
 			this.setStartDate(usd);
@@ -1248,7 +1248,7 @@ function(message, viewMode) {
 
 	// record timezone
     var timezone;
-	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || viewMode == ZmCalItem.MODE_DELETE_INSTANCE || viewMode == ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE) {
+	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || viewMode == ZmCalItem.MODE_DELETE_INSTANCE || viewMode == ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE || viewMode === ZmCalItem.MODE_EDIT_SERIES) {
         timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 		this.setTimezone(timezone);
 		this.setEndTimezone(timezone);
