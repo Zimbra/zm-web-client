@@ -132,14 +132,23 @@ function(emailStrArray) {
 
 ZmPref.downloadSinceDisplay =
 function(dateStr) {
-	if (dateStr == "") return 0;
-	if (dateStr == appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE)) return 2;
-	return 1;
+	if (!dateStr) { //usually it's "" in this case, but !dateStr would take care of 0 too (which is ZmMailApp.POP_DOWNLOAD_SINCE_ALL too) so changed it to !dateStr
+		return ZmMailApp.POP_DOWNLOAD_SINCE_ALL;
+	}
+	if (dateStr === appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE)) {
+		return ZmMailApp.POP_DOWNLOAD_SINCE_NO_CHANGE;
+	}
+	return ZmMailApp.POP_DOWNLOAD_SINCE_FROM_NOW;
 };
 ZmPref.downloadSinceValue =
 function(value) {
-	if (value == 0) return "";
-	if (value == 1) return appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE);
+	// == instead of === since the value is a string ("0") instead of a number (0) for some reason.
+	if (value == ZmMailApp.POP_DOWNLOAD_SINCE_ALL) {
+		return "";
+	}
+	if (value == ZmMailApp.POP_DOWNLOAD_SINCE_NO_CHANGE) {
+		return appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE);
+	}
 	var date = new Date();
 	date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
 	return AjxDateFormat.format("yyyyMMddHHmmss'Z'", date);
