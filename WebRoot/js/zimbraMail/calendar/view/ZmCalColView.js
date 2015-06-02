@@ -930,7 +930,7 @@ function(abook) {
 	// div holding all day appts
 	html.append("<div id='", this._allDayApptScrollDivId, "' class='calendar_allday_appt' style='position:absolute'>");
 	html.append("<div id='", this._allDayDivId, "' style='position:absolute'>");
-	html.append("<div id='", this._newAllDayApptDivId, "' class='appt-Selected' style='position:absolute; display:none;'></div>");
+	html.append("<div id='", this._newAllDayApptDivId, "' class='appt-selected' style='position:absolute; display:none;'></div>");
 	html.append("</div>");
 	html.append("</div>");
 
@@ -958,7 +958,7 @@ function(abook) {
 	html.append("<div id='", this._bodyDivId, "' class=calendar_body style='position:absolute'>");
     html.append("<div id='", this._apptBodyDivId, "' class='ImgCalendarDayGrid' style='width:100%; height:1008px; position:absolute;background-color:#E3E3DC;'>");
 	html.append("<div id='", this._timeSelectionDivId, "' class='calendar_time_selection' style='position:absolute; display:none;z-index:10;'></div>");
-	html.append("<div id='", this._newApptDivId, "' class='appt-Selected' style='position:absolute; display:none;'></div>");
+	html.append("<div id='", this._newApptDivId, "' class='appt-selected' style='position:absolute; display:none;'></div>");
 	if (!this._scheduleMode) {
 		for (var i =0; i < this.numDays; i++) {
 		  html.append("<div id='", this._columns[i].daySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");

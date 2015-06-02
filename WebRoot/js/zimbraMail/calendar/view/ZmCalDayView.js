@@ -249,7 +249,7 @@ function(abook) {
 	// div holding all day appts
 	html.append("<div id='", this._allDayApptScrollDivId, "' name='_allDayApptScrollDivId' class='calendar_allday_appt' style='position:absolute'>");
 	html.append("<div id='", this._allDayDivId, "' name='_allDayDivId' style='position:absolute'>");
-	html.append("<div id='", this._newAllDayApptDivId, "' name='_newAllDayApptDivId' class='appt-Selected' style='position:absolute; display:none;'></div>");
+	html.append("<div id='", this._newAllDayApptDivId, "' name='_newAllDayApptDivId' class='appt-selected' style='position:absolute; display:none;'></div>");
 	html.append("</div>");
 	html.append("</div>");
     // end of div holding all day appts
@@ -280,7 +280,7 @@ function(abook) {
 	html.append("<div id='", this._bodyDivId, "' name='_bodyDivId' class=calendar_body style='position:absolute; overflow-x:hidden;'>");
     html.append("<div id='", this._apptBodyDivId, "' name='_apptBodyDivId' class='ImgCalendarDayGrid' style='width:100%; height:1008px; position:absolute;background-color:#E3E3DC;'>");
 	html.append("<div id='", this._timeSelectionDivId, "' name='_timeSelectionDivId' class='calendar_time_selection' style='position:absolute; display:none;z-index:10;'></div>");
-	html.append("<div id='", this._newApptDivId, "' name='_newApptDivId' class='appt-Selected' style='position:absolute; display:none;'></div>");
+	html.append("<div id='", this._newApptDivId, "' name='_newApptDivId' class='appt-selected' style='position:absolute; display:none;'></div>");
 
     html.append("<div id='", this._workingHrsFirstDivId, "' style='position:absolute;background-color:#FFFFFF;'><div class='ImgCalendarDayGrid' id='", this._workingHrsFirstChildDivId, "' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
     html.append("<div id='", this._workingHrsSecondDivId, "' style='position:absolute;background-color:#FFFFFF;'><div class='ImgCalendarDayGrid' id='", this._workingHrsSecondChildDivId, "' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
