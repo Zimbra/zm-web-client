@@ -5932,5 +5932,6 @@ RBC, RTC {
 
 .ZmTwoFactorSetupError {
 	color:#990000;
+	font-weight:bold;
 }
 /* Two-Factor Setup dialog end*/

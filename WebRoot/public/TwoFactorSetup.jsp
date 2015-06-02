@@ -74,7 +74,7 @@
 		}
 		var params = {
 			userName : "<%=userName%>",
-			loginPage : true
+			isFromLoginPage : true
 		};
 		new ZmTwoFactorSetupDialog(params).popup();
 	</script>

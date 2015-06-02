@@ -678,10 +678,10 @@
 	<div class="ZmTwoFactorSetup">
 		<div id='${id}_description'><p><$=ZmMsg.twoStepAuthDescription$></p></div>
 		<div id='${id}_password'>
-			<h4 id='${id}_password_heading'><$=ZmMsg.twoStepAuthPassword$></h4>
-			<h4 id='${id}_password_error' style="display:none;" class="ZmTwoFactorSetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></h4>
+			<h4><$=ZmMsg.twoStepAuthPassword$></h4>
 			<p><$=ZmMsg.twoStepAuthPasswordDescription$> "<span>${username}</span>".</p>
 			<div class="ZmTwoFactorSetupContainer">
+				<div id='${id}_password_error' style="display:none;margin-left:163px;" class="ZmTwoFactorSetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></div>
 				<label for="${id}_password_input"><$=ZmMsg.passwordLabel$></label>
 				<input type="password" id="${id}_password_input" autocomplete="off"/>
 			</div>

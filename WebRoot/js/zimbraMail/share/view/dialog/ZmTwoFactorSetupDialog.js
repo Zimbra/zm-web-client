@@ -30,8 +30,8 @@
 ZmTwoFactorSetupDialog = function(params) {
 	this.username = typeof appCtxt !== "undefined" ? appCtxt.getLoggedInUsername() : params.userName;
 	this.twoStepAuthLink = params.twoStepAuthLink;
-	// this.loginPage will be true if ZmTwoFactorSetupDialog is created from TwoFactorSetup.jsp, which is forwarded from login.jsp file.
-	this.loginPage = params.loginPage;
+	// this.isFromLoginPage will be true if ZmTwoFactorSetupDialog is created from TwoFactorSetup.jsp, which is forwarded from login.jsp file.
+	this.isFromLoginPage = params.isFromLoginPage;
 	var previousButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, ZmMsg.previous, DwtDialog.ALIGN_RIGHT, this._previousButtonListener.bind(this));
 	var beginSetupButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.BEGIN_SETUP_BUTTON, ZmMsg.twoStepAuthBeginSetup, DwtDialog.ALIGN_RIGHT, this._beginSetupButtonListener.bind(this));
 	var nextButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.NEXT_BUTTON, ZmMsg.next, DwtDialog.ALIGN_RIGHT, this._nextButtonListener.bind(this));
@@ -75,7 +75,6 @@ function() {
 	var id = this._htmlElId;
 	this._descriptionDivId = id + "_description";
 	this._passwordDivId = id + "_password";
-	this._passwordHeadingDivId = id + "_password_heading";
 	this._passwordErrorDivId = id + "_password_error";
 	this._authenticationDivId = id + "_authentication";
 	this._emailDivId = id + "_email";
@@ -154,7 +153,6 @@ function() {
 	var currentDivId = this._divIdArray[this._divIdArrayIndex];
 	if (currentDivId === this._passwordDivId) {
 		Dwt.hide(this._passwordErrorDivId);
-		Dwt.show(this._passwordHeadingDivId);
 		this.setButtonVisible(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, false);
 		this.setButtonVisible(ZmTwoFactorSetupDialog.NEXT_BUTTON, false);
 		this.setButtonVisible(ZmTwoFactorSetupDialog.BEGIN_SETUP_BUTTON, true);
@@ -194,7 +192,7 @@ function() {
 ZmTwoFactorSetupDialog.prototype._finishButtonListener =
 function() {
 	//If the user clicks finish button, redirect to the login page
-	if (this.loginPage) {
+	if (this.isFromLoginPage) {
 		location.replace(location.href);
 	}
 	else {
@@ -208,7 +206,7 @@ function() {
 ZmTwoFactorSetupDialog.prototype._cancelButtonListener =
 function() {
 	//If the user clicks cancel button, redirect to the login page
-	if (this.loginPage) {
+	if (this.isFromLoginPage) {
 		location.replace(location.href);
 	}
 	else {
@@ -281,7 +279,6 @@ function(currentDivId) {
 		Dwt.hide(this._passwordDivId);
 		Dwt.show(this._authenticationDivId);
 		Dwt.hide(this._passwordErrorDivId);
-		Dwt.show(this._passwordHeadingDivId);
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, true);
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, true);
 		if (this._divIdArrayIndex < this._divIdArray.length) {
@@ -303,7 +300,6 @@ function(currentDivId, exception) {
 	if (currentDivId === this._passwordDivId) {
 		if (exception && exception.code === ZmCsfeException.ACCT_AUTH_FAILED) {
 			Dwt.show(this._passwordErrorDivId);
-			Dwt.hide(this._passwordHeadingDivId);
 		}
 		var passwordInput = this._passwordInput;
 		passwordInput.removeAttribute("disabled");
