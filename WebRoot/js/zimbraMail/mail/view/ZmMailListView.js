@@ -1118,15 +1118,6 @@ function() {
 	return ZmMailListView.SINGLE_COLUMN_SORT;
 };
 
-ZmMailListView.prototype._colHeaderActionListener =
-function(ev) {
-	if (!this.isMultiColumn()) {
-		this._sortMenuListener(ev);
-	}
-	else {
-		ZmListView.prototype._colHeaderActionListener.apply(this, arguments);
-	}
-};
 
 ZmMailListView.prototype._setupSortMenu = function(parent, includeGroupByMenu) {
 
@@ -1377,7 +1368,7 @@ function(columnItem) {
 	return columnItem._sortable == ZmItem.F_READ;
 };
 
-ZmMailListView.prototype._getDefaultSortbyForCol =
+ZmMailListView.prototype._isDefaultSortAscending =
 function(colHeader) {
 	// if date, flag, attachment or size fields, sort desc by default - otherwise ascending.
 	var sortable = colHeader._sortable;
@@ -1385,7 +1376,7 @@ function(colHeader) {
 			|| sortable === ZmItem.F_FLAG
 			|| sortable === ZmItem.F_ATTACHMENT
 			|| sortable === ZmItem.F_SIZE;
-	return !desc; //this method returns whether it's ascending (despite the confusing name which we might want to change).
+	return !desc;
 };
 
 //GROUP SUPPORT

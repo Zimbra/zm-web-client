@@ -980,7 +980,7 @@ ZmListView.prototype._getSortMenu = function (sortFields, defaultSortField, pare
 
 	// create an action menu for the header list
 	var menu = new ZmPopupMenu(parent || this, null, Dwt.getNextId("SORT_MENU_"));
-	var actionListener = this._colHeaderActionListener.bind(this);
+	var actionListener = this._sortMenuListener.bind(this);
 
 	for (var i = 0; i < sortFields.length; i++) {
 		var column = sortFields[i];
@@ -1004,14 +1004,21 @@ listener used by views that provide a right-click sort by menu in single-column 
  */
 ZmListView.prototype._sortMenuListener =
 function(ev) {
-	var column = this._headerHash[ZmItem.F_SORTED_BY];
-	var cell = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, column._field));
-	if (cell) {
-        var text = ev.item.getText();
-        cell.innerHTML = text && text.replace(ZmMsg.sortBy, ZmMsg.sortedBy);
+	var column;
+	if (this.isMultiColumn()) { //this can happen when called from the view menu, that now, for accessibility reasons, includes the sort, for both reading pane on right and at the bottom.
+		var sortField = ev && ev.item && ev.item.getData(ZmOperation.MENUITEM_ID);
+		column = this._headerHash[sortField];
 	}
-	column._sortable = ev.item.getData(ZmListView.KEY_ID);
-	this._bSortAsc = (column._sortable === this._currentSortColId) ? !this._bSortAsc : this._getDefaultSortbyForCol(column);
+	else {
+		column = this._headerHash[ZmItem.F_SORTED_BY];
+		var cell = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, column._field));
+		if (cell) {
+	        var text = ev.item.getText();
+	        cell.innerHTML = text && text.replace(ZmMsg.sortBy, ZmMsg.sortedBy);
+		}
+		column._sortable = ev.item.getData(ZmListView.KEY_ID);
+	}
+	this._bSortAsc = (column._sortable === this._currentSortColId) ? !this._bSortAsc : this._isDefaultSortAscending(column);
 	this._sortColumn(column, this._bSortAsc);
 };
 
