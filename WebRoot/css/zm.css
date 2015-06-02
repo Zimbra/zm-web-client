@@ -543,7 +543,7 @@ INPUT[type="text"].search_input-expanded {
 /* message fragment text */
 .Row .ZmConvListFragment,
 .Conv2MsgHeader .ZmConvListFragment,
-.Row .Row-Selected .ZmConvListFragment,
+.Row .Row-selected .ZmConvListFragment,
 .SubjectDoubleRow .ZmConvListFragment {
 	color:black;
 	opacity:0.4;
@@ -2480,8 +2480,7 @@ INPUT[type="text"].search_input-expanded {
 	text-align:center;
 }
 
-/* ??? -Selected -> -selected */
-.calendar_month_cells_td-Selected {
+.calendar_month_cells_td-selected {
 	@SelectedBg@
 	@SeparatorBorder@
 	@NoWrap@
@@ -2496,7 +2495,7 @@ INPUT[type="text"].search_input-expanded {
 	width:10px;
 }
 
-.calendar_month_cells_td-Selected .calendar_month_day_item_continues {
+.calendar_month_cells_td-selected .calendar_month_day_item_continues {
 	@SelectedBg@
 }
 
@@ -2551,16 +2550,16 @@ INPUT[type="text"].search_input-expanded {
 /* row for one particular appt in the month view in various states */
 .calendar_month_day_item_row {}
 
-.calendar_month_day_item_row-Selected {
+.calendar_month_day_item_row-selected {
 	@SelectedBg@
 }
 
-.calendar_month_day_item_row-Selected TD {
+.calendar_month_day_item_row-selected TD {
 	font-weight:bold;
 }
 
 /* ??? USE?  text color comes from OrangeC, RedC, etc... */
-.calendar_month_day_item_row-Selected .calendar_month_day_item {
+.calendar_month_day_item_row-selected .calendar_month_day_item {
 	color:white;
 }
 
