@@ -439,9 +439,7 @@ define("tinymce/pasteplugin/Clipboard", [
 					}
 
 					removePasteBin();
-					if (Env.ie || (Object.keys(clipboardContent).length !== 0)) {
-						createPasteBin();
-					}
+					createPasteBin();
 
 					// Remove pastebin if we get a keyup and no paste event
 					// For example pasting a file in IE 11 will not produce a paste event
