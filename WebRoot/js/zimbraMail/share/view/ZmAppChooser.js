@@ -352,9 +352,6 @@ function(id) {
 		button.dispose();
 		this._buttons[id] = null;
 		delete this._buttons[id];
-		if (index != null) {
-			this._removeItem(this._items[index]);
-		}
         if (this._moreTabsBtn &&
             this._moreTabsBtn.getMenu() &&
             this._moreTabsBtn.getMenu().getItemCount() > 0){
