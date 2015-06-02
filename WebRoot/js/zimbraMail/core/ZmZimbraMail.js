@@ -2303,6 +2303,7 @@ function(parent, parentElement, adminUrl) {
 	button.setAttribute('aria-label', ZmMsg.userActions);
 	var menu = new ZmPopupMenu(button);
 
+	var supportedHelps = appCtxt.get(ZmSetting.SUPPORTED_HELPS);
 	var helpListener = new AjxListener(this, this._helpListener);
 	button.addSelectionListener(helpListener);
 
@@ -2317,15 +2318,21 @@ function(parent, parentElement, adminUrl) {
 
 	menu.createSeparator();
 
-    mi = menu.createMenuItem("documentation", {text: ZmMsg.productHelp});
-	mi.addSelectionListener(helpListener);
+	if (supportedHelps.indexOf("productHelp") !== -1) {
+		mi = menu.createMenuItem("documentation", {text: ZmMsg.productHelp});
+		mi.addSelectionListener(helpListener);
+	}
 
-	mi = menu.createMenuItem("onlinehelp", {text: ZmMsg.onlineHelp});
-	mi.addSelectionListener(new AjxListener(this, this._onlineHelpListener));
+	if (supportedHelps.indexOf("onlineHelp") !== -1) {
+		mi = menu.createMenuItem("onlinehelp", {text: ZmMsg.onlineHelp});
+		mi.addSelectionListener(new AjxListener(this, this._onlineHelpListener));
+	}
 
 
-	mi = menu.createMenuItem("newFeatures", {text: ZmMsg.newFeatures});
-	mi.addSelectionListener(new AjxListener(this, this._newFeaturesListener));
+	if (supportedHelps.indexOf("newFeatures") !== -1) {
+		mi = menu.createMenuItem("newFeatures", {text: ZmMsg.newFeatures});
+		mi.addSelectionListener(new AjxListener(this, this._newFeaturesListener));
+	}
 
 	mi = menu.createMenuItem("showCurrentShortcuts", {text: ZmMsg.shortcuts});
 	mi.addSelectionListener(this._showCurrentShortcuts.bind(this));
