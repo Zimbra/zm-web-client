@@ -153,12 +153,9 @@ function(id) {
     var newButton = id ? this._buttons[id] : null;
     if (oldButton) {
         oldButton.setSelected(false);
-        oldButton._noFocus = false;
     }
     if (newButton) {
         newButton.setSelected(true);
-        newButton._noFocus = true;
-
         this._selectedId = id;
     }
 };
@@ -317,21 +314,6 @@ function() {
         style.overflow = "hidden";
     }
 }
-/**
- * @private
- */
-ZmToolBar.prototype._addItem =
-function(type, element, index) {
-	DwtToolBar.prototype._addItem.apply(this, arguments);
-};
-
-/**
- * @private
- */
-ZmToolBar.prototype._removeItem =
-function(type, element, index) {
-	DwtToolBar.prototype._removeItem.apply(this, arguments);
-};
 
 /**
  * Adds a button to the element with the given ID. Designed to handle non-ZmToolBar toolbars.

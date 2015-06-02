@@ -1063,9 +1063,19 @@ function(viewId) {
 	toolbar.enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
 	toolbar.enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW], true);
 
-	//toolbar.addFiller();
+	// We have style sheets in place to position the navigation toolbar at the
+	// center of the main toolbar. The filler is usually at that location, so
+	// to ensure that the semantic order matches the visual order as close as
+	// possible, we position the navigation toolbar after it.
+	var pos = AjxUtil.indexOf(this._getToolBarOps(), ZmOperation.FILLER) + 1;
 
-	var tb = new ZmNavToolBar({parent:toolbar, className:"ZmNavToolbar ZmCalendarNavToolbar", context:ZmId.VIEW_CAL, posStyle:Dwt.ABSOLUTE_STYLE});
+	var tb = new ZmNavToolBar({
+		parent: toolbar,
+		index: pos,
+		className: "ZmNavToolbar ZmCalendarNavToolbar",
+		context: ZmId.VIEW_CAL,
+		posStyle: Dwt.ABSOLUTE_STYLE
+	});
 	this._setNavToolBar(tb, ZmId.VIEW_CAL);
 
 	var printButton = toolbar.getButton(ZmOperation.PRINT_CALENDAR);
