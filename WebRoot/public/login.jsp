@@ -21,7 +21,7 @@
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
 <c:set var="touchSupported" value="${ua.isIos6_0up or ua.isAndroid4_0up}"/>
-<c:set var="mobileSupported" value="${ua.isMobile && (ua.isOsWindows || ua.isOsBlackBerry
+<c:set var="mobileSupported" value="${ua.isMobile && (ua.isWindowsPhone || not ua.isWindowsNT || ua.isOsBlackBerry
                                         || not ua.isAndroid4_0up || not ua.isIos6_0up)}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
