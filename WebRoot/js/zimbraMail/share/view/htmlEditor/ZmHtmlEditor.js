@@ -843,7 +843,7 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
     obj.setFocusStatus(false);
 
     tinymceEvent.bind(win, 'focus', function(e) {
-        appCtxt.getKeyboardMgr().inputGotFocus(obj);
+		appCtxt.getKeyboardMgr().grabFocus(obj._getIframeDoc().body);
         obj.setFocusStatus(true);
     });
     tinymceEvent.bind(win, 'blur', function(e) {
@@ -2344,7 +2344,10 @@ ZmHtmlEditor.prototype._setupTabGroup = function(mainTabGroup) {
 		if (firstbutton) {
 			modeTabGroup.addMember(firstbutton.getEl());
 		}
-		modeTabGroup.addMember(this);
+		var iframe = this._getIframeDoc();
+		if (iframe) { //iframe not avail first time this is called. But it's fixed subsequently
+			modeTabGroup.addMember(iframe.body);
+		}
 	}
 	else {
 		// tab group for TEXT has the TEXTAREA
