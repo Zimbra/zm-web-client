@@ -21,8 +21,10 @@
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
 <c:set var="touchSupported" value="${ua.isIos6_0up or ua.isAndroid4_0up}"/>
-<c:set var="mobileSupported" value="${ua.isMobile && (ua.isWindowsPhone || not ua.isWindowsNT || ua.isOsBlackBerry
-                                        || not ua.isAndroid4_0up || not ua.isIos6_0up)}"/>
+<c:set var="mobileSupported" value="${ua.isMobile && ((ua.isOsWindows && (ua.isWindowsPhone || not ua.isWindowsNT))
+                                                        || (ua.isOsBlackBerry)
+                                                        || (ua.isOsAndroid && not ua.isAndroid4_0up)
+                                                        || (ua.isIos && not ua.isIos6_0up))}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
@@ -102,7 +104,7 @@
 				<c:otherwise>
 					<c:set var="fullUserName" value="${trimmedUserName}"/>
 				</c:otherwise>
-			</c:choose>		
+			</c:choose>
 			<c:choose>
 				<c:when test="${!empty cookie.ZM_TEST}">
 					<zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
@@ -347,11 +349,11 @@ if (application.getInitParameter("offlineMode") != null) {
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software Foundation,
  * version 2 of the License.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
@@ -394,15 +396,15 @@ if (application.getInitParameter("offlineMode") != null) {
 		</c:if>
 		<c:if test="${not empty param.customerDomain}">
 			<c:param name="customerDomain"	value="${param.customerDomain}" />
-		</c:if>	
+		</c:if>
 	</c:url>">
 	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 	<c:if test="${empty favIconUrl}">
 		<fmt:message key="favIconUrl" var="favIconUrl"/>
 	</c:if>
 	<link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
-	
-	
+
+
 </head>
 <c:set value="/img" var="iconPath" scope="request"/>
 <body onload="onLoad();">
