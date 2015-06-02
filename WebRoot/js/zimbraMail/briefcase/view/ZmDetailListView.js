@@ -195,15 +195,6 @@ function(force) {
 	return menu;
 };
 
-ZmDetailListView.prototype._colHeaderActionListener =
-function(ev) {
-	if (!this.isMultiColumn()) {
-		this._sortMenuListener(ev);
-	}
-	else {
-		ZmListView.prototype._colHeaderActionListener.apply(this, arguments);
-	}
-};
 
 
 ZmDetailListView.prototype._isExpandable =
