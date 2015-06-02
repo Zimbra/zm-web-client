@@ -1107,6 +1107,7 @@ function(dlg) {
 	return {
 		overviewId:		dlg.getOverviewId([this.toString(), this._resultsApp].join("_")),
 		treeIds:		[ZmApp.ORGANIZER[this._resultsApp]],
+		noRootSelect: 	true,
 		treeStyle:		DwtTree.SINGLE_STYLE
 	};
 };
