@@ -264,6 +264,9 @@
 <c:if test="${loginException != null}">
 	<zm:getException var="error" exception="${loginException}"/>
 	<c:set var="errorCode" value="${error.code}"/>
+    <c:if test="${errorCode eq 'account.AUTH_FAILED' and not empty param.totpcode}">
+        <c:set var="errorCode" value="account.TWO_FACTOR_AUTH_FAILED"/>
+    </c:if>
 	<fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
 	<c:forEach var="arg" items="${error.arguments}">
 		<fmt:message bundle="${zhmsg}" var="errorMessage" key="${errorCode}.${arg.name}">
@@ -275,18 +278,18 @@
 		<fmt:message bundle="${zhmsg}" var="errorMessage" key="account.EXTERNAL_AUTH_FAILED"/>
 	</c:if>
     <c:if test="${errorCode eq 'account.TWO_FACTOR_SETUP_REQUIRED'}">
-		<c:url value="/public/TwoFactorSetup.jsp" var="twoFactorSetupURL">
-			<c:param name="userName" value="${fullUserName}"/>
-			<c:param name="skin" value="${skin}"/>
-			<c:param name="version" value="${version}"/>
-			<c:if test="${not empty param.debug || not empty param.dev}">
-				<c:param name="isDebug" value="true" />
-			</c:if>
-			<c:if test="${not empty param.customerDomain}">
-				<c:param name="customerDomain"	value="${param.customerDomain}" />
-			</c:if>
-		</c:url>
-		<%--Forward the user to the initial two factor authentication set up page--%>
+        <c:url value="/public/TwoFactorSetup.jsp" var="twoFactorSetupURL">
+            <c:param name="userName" value="${fullUserName}"/>
+            <c:param name="skin" value="${skin}"/>
+            <c:param name="version" value="${version}"/>
+            <c:if test="${not empty param.debug || not empty param.dev}">
+                <c:param name="isDebug" value="true" />
+            </c:if>
+            <c:if test="${not empty param.customerDomain}">
+                <c:param name="customerDomain"	value="${param.customerDomain}" />
+            </c:if>
+        </c:url>
+        <%--Forward the user to the initial two factor authentication set up page--%>
         <jsp:forward page="/public/TwoFactorSetup.jsp">
             <jsp:param name="userName" value="${fullUserName}"/>
         </jsp:forward>
