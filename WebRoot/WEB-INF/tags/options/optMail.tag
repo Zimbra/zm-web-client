@@ -14,7 +14,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 --%>
-<%@ tag body-content="empty" import="java.util.Date,java.text.*,com.zimbra.common.util.DateUtil" %>
+<%@ tag body-content="empty" import="java.util.Date,java.text.*,com.zimbra.cs.ldap.LdapDateUtil" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -368,14 +368,14 @@
 
         // NOTE: We need to adjust to UTC for formatting purposes
 		Date dateObj = new Date();
-		String now = DateUtil.toGeneralizedTime(dateObj);
+		String now = LdapDateUtil.toGeneralizedTime(dateObj);
 		pageContext.setAttribute("now", now, PageContext.PAGE_SCOPE);
 
 		// NOTE: We need to adjust from UTC for formatting purposes
 		Date current = null;
 		String pop3DownloadSince = (String)pageContext.findAttribute("pop3DownloadSince");
 		if (pop3DownloadSince != null && pop3DownloadSince.length() > 0) {
-		    current = DateUtil.parseGeneralizedTime(pop3DownloadSince);
+		    current = LdapDateUtil.parseGeneralizedTime(pop3DownloadSince);
 		}
 		pageContext.setAttribute("current", current, PageContext.PAGE_SCOPE);
 	%>
