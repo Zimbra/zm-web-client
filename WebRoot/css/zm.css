@@ -2883,7 +2883,13 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmCalendarNavToolbar {
 	position:absolute;
 	top:0px;
-	left:42%;
+	left:50%;
+}
+
+.ZmCalendarNavToolbar > TABLE {
+	position:relative;
+	top:0px;
+	left:-50%;
 }
 
 .ZCalToggleBtn TABLE {
