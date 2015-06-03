@@ -556,21 +556,23 @@ if (application.getInitParameter("offlineMode") != null) {
 						</tr>
 					</c:if>
 			    </table>
-				<table class="form" id="totpTable" style="height:140px;width:350px;${totpAuthRequired ? '' : 'display:none;'}">
-					<tbody>
-                    <tr>
-                        <td><label for="totpcode"><fmt:message key="twoFactorAuthCodeLabel"/>:</label></td>
-                        <td><input id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" style="margin-right:20px"></td>
-                        <td class="submitTD"><input type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton"></td>
-                    </tr>
-                    <%--<tr>--%>
-                        <%--<td>&nbsp;</td>--%>
-                        <%--<td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">--%>
-                            <%--<label for="trustedDevice"><fmt:message key="twoFactorAuthRememberDevice"/></label>--%>
-                        <%--</td>--%>
-                    <%--</tr>--%>
-                    </tbody>
-                </table>
+				<c:if test="${totpAuthRequired}">
+					<table class="form" id="totpTable" style="height:140px;width:350px;">
+						<tbody>
+							<tr>
+								<td><label for="totpcode"><fmt:message key="twoFactorAuthCodeLabel"/>:</label></td>
+								<td><input id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" style="margin-right:20px" autocomplete="off"></td>
+								<td class="submitTD"><input type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton"></td>
+							</tr>
+							<%--<tr>--%>
+								<%--<td>&nbsp;</td>--%>
+								<%--<td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">--%>
+									<%--<label for="trustedDevice"><fmt:message key="twoFactorAuthRememberDevice"/></label>--%>
+								<%--</td>--%>
+							<%--</tr>--%>
+						</tbody>
+					</table>
+				</c:if>
 			</form>
 			</div>
 			<div class="decor1"></div>
