@@ -1059,8 +1059,7 @@ function(ev) {
 };
 
 ZmMailListController.prototype._forwardConvListener = function(ev) {
-	var action = ev.item.getData(ZmOperation.KEY_ID);
-	this._doAction({ev:ev, action:ZmOperation.FORWARD_CONV, foldersToOmit:ZmMailApp.getFoldersToOmit()});
+	this._doAction({ev: ev, action: ZmOperation.FORWARD_CONV, foldersToOmit: ZmMailApp.getReplyFoldersToOmit()});
 };
 
 // This method may be called with a null ev parameter

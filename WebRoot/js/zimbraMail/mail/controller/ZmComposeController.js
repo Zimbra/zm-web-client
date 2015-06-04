@@ -280,7 +280,6 @@ function() {
 	var view = this._composeView;
 	var msg = view._msg || view._origMsg;
 	var subj = view._subjectField.value;
-	var forAttHtml = view._attcDiv.innerHTML;
 	var msgAttId = view._msgAttId; //include original as attachment
 	var body = this._getBodyContent();
 	var composeMode = view.getComposeMode();
@@ -310,7 +309,6 @@ function() {
 		addrs:			addrList,
 		subj:			subj,
 		priority:		this._getPriority(),
-		forwardHtml:	forAttHtml,
 		msgAttId:		msgAttId,
 		body:			body,
 		composeMode:	composeMode,
