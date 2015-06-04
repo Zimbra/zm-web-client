@@ -279,7 +279,7 @@ function(folder, result) {
     // bug fix #49568 - Trash is special when in Briefcase app since it
     // is a FOLDER type in BRIEFCASE tree. So reset selection if clicked
     if (folder.nId == ZmFolder.ID_TRASH) {
-        this._treeView[this._app.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
+        this._treeView[this._app.getOverviewId()].setSelected(folder, true);
     }
 };
 
