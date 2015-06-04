@@ -1063,10 +1063,7 @@ function(params) {
 	}
 	this._htmlEditor.setContent(content);
 
-	if (params.forwardHtml) {
-		this._attcDiv.innerHTML = params.forwardHtml;
-		this._msgAttId = params.msgAttId;
-	}
+	this._msgAttId = params.msgAttId;
 	if (params.identityId && this.identitySelect) {
 		var opt = this.identitySelect.getOptionAtIndex(params.identityId);
 		this.identitySelect.setSelectedOption(opt);
@@ -1997,8 +1994,6 @@ function(action, msg, extraBodyText, noEditorUpdate, keepAttachments) {
 			incOptions = {what:		ZmSetting.INC_BODY,
 						  prefix:	ac.get(ZmSetting.FORWARD_USE_PREFIX),
 						  headers:	ac.get(ZmSetting.FORWARD_INCLUDE_HEADERS)};
-		} else if (action === ZmOperation.FORWARD_ATT) {
-			incOptions = {what:		ZmSetting.INC_ATTACH};
 		} else if (action === ZmOperation.DECLINE_PROPOSAL) {
 			incOptions = {what:		ZmSetting.INC_BODY};
 		} else if (action === ZmOperation.NEW_MESSAGE) {
