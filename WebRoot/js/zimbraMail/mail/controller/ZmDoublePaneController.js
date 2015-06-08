@@ -719,12 +719,29 @@ function(items, destinationFolder, attrs, isShiftKey) {
 		var selection = lv && lv.getSelection();
 		if (selection && selection.length) {
 			dndUnselectedItem = true;
-			var id = items[0].id;
+			var moveItem = items[0];
+			var id = moveItem.id;
+			var msgIdMap = {};
+			var numSelectedInConv = 0;
+			if ((moveItem.type === ZmId.ITEM_CONV) && moveItem.msgIds) {
+				// If the moved item is a conversation, we need to check whether the selected items are all messages
+				// within the conversation.  Create a hash for more efficient testing.
+				for (var i = 0; i < moveItem.msgIds.length; i++) {
+					msgIdMap[moveItem.msgIds[i]] = true;
+				}
+			}
 			// AjxUtil.intersection doesn't work with objects, so check IDs
 			for (var i = 0; i < selection.length; i++) {
 				if (selection[i].id == id) {
 					dndUnselectedItem = false;
 				}
+				if (msgIdMap[selection[i].id]) {
+					numSelectedInConv++;
+				}
+			}
+			if (numSelectedInConv == selection.length) {
+				// All the selected items are messages within a moved conversation, use the normal getNextItemToSelect
+				dndUnselectedItem = false;
 			}
 		}
 	}		
