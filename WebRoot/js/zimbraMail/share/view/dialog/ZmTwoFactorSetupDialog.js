@@ -47,7 +47,7 @@ ZmTwoFactorSetupDialog = function(params) {
 	DwtDialog.call(this, newParams);
 	this.setContent(this._contentHtml());
 	this._createControls();
-	this.twoStepAuthLink = params.twoStepAuthLink;
+	this._setAllowSelection();
 };
 
 ZmTwoFactorSetupDialog.prototype = new DwtDialog;
