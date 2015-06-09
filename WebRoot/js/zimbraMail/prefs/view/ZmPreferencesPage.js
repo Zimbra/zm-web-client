@@ -37,6 +37,7 @@
  */
 ZmPreferencesPage = function(parent, section, controller, id) {
 	if (arguments.length == 0) return;
+
 	id = id || ("Prefs_Pages_" + section.id);
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage", null, id);
 
@@ -48,7 +49,7 @@ ZmPreferencesPage = function(parent, section, controller, id) {
 	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section.title].join(": ");
 
 	this._dwtObjects = {};
-	this._tabGroup = new DwtTabGroup(section.id);
+	this._tabGroup = new DwtTabGroup(id);
 	this._rendered = false; // used by DwtTabViewPage
 };
 
@@ -73,7 +74,6 @@ ZmPreferencesPage.IMPORT_TIMEOUT = 300;
 
 ZmPreferencesPage.prototype._replaceControlElement =
 function(elemOrId, control) {
-	this._addControlTabIndex(elemOrId, control);
 	control.replaceElement(elemOrId);
 };
 
@@ -101,22 +101,6 @@ function() {
 
 ZmPreferencesPage.prototype._addControlTabIndex =
 function(elemOrId, control) {
-	// remember control's tab index
-	var elem = Dwt.byId(elemOrId);
-	var tabIndex = elem.getAttribute("tabindex");
-	tabIndex = tabIndex != null ? tabIndex : Number.MAX_VALUE;
-
-	var controls = this._getCurrentTabScope();
-	if (!controls[tabIndex]) {
-		controls[tabIndex] = control;
-		return;
-	}
-	var entry = controls[tabIndex];
-	if (!(entry instanceof Array)) {
-		controls[tabIndex] = [entry, control];
-		return;
-	}
-	entry.push(control);
 };
 
 ZmPreferencesPage.prototype._addTabLinks =
@@ -140,6 +124,8 @@ function(elemOrId) {
  */
 ZmPreferencesPage.prototype.showMe =
 function() {
+	DwtTabViewPage.prototype.showMe.call(this);
+
 	Dwt.setTitle(this._title);
 	this._controller._resetOperations(this._controller._toolbar, this._section.id);
 
@@ -153,6 +139,54 @@ function() {
 	this._dwtObjects = {}; // always reset in case account has changed
 	this._createPageTemplate();
 	this._createControls();
+
+	// find focusable children -- i.e. links and widgets -- but in the DOM
+	// order, not in the order they were added as children
+	var selector = [
+		'[parentid="',
+		this.getHTMLElId(),
+		'"],',
+		'.ZOptionsField A'
+	].join('');
+	var elements = this.getHtmlElement().querySelectorAll(selector);
+
+	for (var i = 0; i < elements.length; i++) {
+		var element = elements[i];
+		var control = DwtControl.fromElement(element);
+
+		// add the child to our tab group
+		if (control) {
+			this._tabGroup.addMember(control.getTabGroupMember());
+		} else {
+			this._makeFocusable(element);
+			this._tabGroup.addMember(element);
+		}
+
+		// find the ZOptionsField corresponding to this item and assign it as
+		// an ARIA label
+		var ancestors = Dwt.getAncestors(element, this.getHtmlElement());
+
+		for (var j = 0; j < ancestors.length; j++) {
+			var ancestor = ancestors[j];
+			var ancestorSibling = Dwt.getPreviousElementSibling(ancestor);
+
+			// are we looking at an option field with a corresponding label?
+			// please note that labels can have multiple classes, all of them
+			// starting with ZOptionsLabel
+			if (Dwt.hasClass(ancestor, 'ZOptionsField') &&
+			    ancestorSibling &&
+			    !ancestorSibling.className.match(/\bZOptionsLabel/)) {
+
+				if (!ancestorSibling.id) {
+					ancestorSibling.id = Dwt.getNextId();
+				}
+
+				element.setAttribute('aria-labelledby', ancestorSibling.id);
+
+				break;
+			}
+		}
+	}
 };
 
 ZmPreferencesPage.prototype._createPageTemplate =
@@ -270,15 +304,12 @@ function() {
 			}
 			else if (type == ZmPref.TYPE_PASSWORD) {
 				this._addButton(elem, setup.displayName, 50, new AjxListener(this, this._changePasswordListener), "CHANGE_PASSWORD");
-				continue;
 			}
 			else if (type == ZmPref.TYPE_IMPORT) {
 				this._addImportWidgets(elem, id, setup);
-				continue;
 			}
 			else if (type == ZmPref.TYPE_EXPORT) {
 				this._addExportWidgets(elem, id, setup);
-				continue;
 			}
 
 			// add control to form
@@ -305,7 +336,6 @@ function() {
 
 		// create tab-group for all controls on the page
 		this._addControlsToTabGroup(this._tabGroup);
-	} catch (e) {
 	}
 	finally {
 		this._exitTabScope();
@@ -318,17 +348,6 @@ function() {
 
 ZmPreferencesPage.prototype._addControlsToTabGroup =
 function(tabGroup) {
-	var scope = this._getCurrentTabScope();
-	var keys = AjxUtil.keys(scope).sort(AjxUtil.byNumber);
-	for (var i = 0; i < keys.length; i++) {
-		var entry = scope[keys[i]];
-		var controls = entry instanceof Array ? entry : [entry];
-		for (var j = 0; j < controls.length; j++) {
-			var control = controls[j];
-			var member = (control.getTabGroupMember && control.getTabGroupMember()) || control;
-			tabGroup.addMember(member);
-		}
-	}
 };
 
 ZmPreferencesPage.prototype.setFormObject =
