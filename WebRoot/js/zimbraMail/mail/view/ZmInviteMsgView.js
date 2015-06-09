@@ -134,9 +134,10 @@ function(msg) {
 			inviteToolbar.setVisible(enabled);
 
 			// show on-behalf-of info?
-			this._respondOnBehalfLabel.innerHTML = msg.cif
-				? AjxMessageFormat.format(ZmMsg.onBehalfOfText, [msg.cif]) : "";
-			Dwt.setVisible(this._respondOnBehalfLabel, (!!msg.cif));
+			this._respondOnBehalfLabel.setContent(
+				msg.cif ?
+					AjxMessageFormat.format(ZmMsg.onBehalfOfText, [msg.cif]) : ""
+			);
 
 			// logic for showing calendar/folder chooser
 			var cc = AjxDispatcher.run("GetCalController");

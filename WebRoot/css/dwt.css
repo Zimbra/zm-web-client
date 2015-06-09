@@ -1979,6 +1979,7 @@ INPUT.xform_field {
 .ZToolbarSeparator			{ width:0.5em; @SeparatorBorder@ }
 .ZToolbarSpacer				{ width:0.5em; }
 .ZToolbarFiller				{ width:100%; }
+.ZToolbarFiller > *			{ display: inline-block; }
 
 
 /***************
