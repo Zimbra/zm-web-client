@@ -1001,7 +1001,9 @@ function(composeMode, initOnly) {
 	this._htmlEditor.setMode(composeMode);
 		
 	if (modeSwitch) {
-		userText = htmlMode ? AjxStringUtil.convertToHtml(userText) : AjxStringUtil.trim(this._htmlToText(userText)) + this._crlf;
+		// Wrap plain text that is converted into html with a div, so that it is detected as html in setBody1
+		// and doesn't get doubly converted.
+		userText = htmlMode ? "<div>" + AjxStringUtil.convertToHtml(userText) + "</div>" : AjxStringUtil.trim(this._htmlToText(userText)) + this._crlf;
 		var op = htmlMode ? ZmOperation.FORMAT_HTML : ZmOperation.FORMAT_TEXT;
 		this.resetBody({ extraBodyText:userText, quotedText:quotedText, op:op, keepAttachments:true });
 	}
