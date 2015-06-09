@@ -51,6 +51,7 @@ ZmPrefView = function(params) {
 	this.setVisible(false);
 	this.setScrollStyle(Dwt.CLIP);
 	this.getTabBar().setVisible(false);
+	this.getTabBar().noTab = true;
     this.addStateChangeListener(new AjxListener(this, this._stateChangeListener));
 };
 
