@@ -310,6 +310,8 @@ function() {
 		subj:			subj,
 		priority:		this._getPriority(),
 		msgAttId:		msgAttId,
+		draftType: 		this._draftType,
+		draftMsg:		this._draftMsg,
 		body:			body,
 		composeMode:	composeMode,
 		identityId:		selectedIdentityIndex,
@@ -1119,7 +1121,8 @@ function(params) {
 		}
 		cv.reEnableDesignMode();
 
-		this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
+		this._draftMsg = params.draftMsg;
+		this._draftType = params.draftType || ZmComposeController.DRAFT_TYPE_NONE;
 		if (this._msgIds || cv._msgAttId) {
 			this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);
 		}
