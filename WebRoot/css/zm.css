@@ -5495,7 +5495,7 @@ DIV .SuggestBtn {
 	@BoxPadding@
 }
 .ZmShareSearchDialog .FilterTree INPUT {
-	width:100%;
+	width:99%;
 	margin-bottom:4px;
 }
 .ZmShareSearchDialog .ZmShareTreeView {
