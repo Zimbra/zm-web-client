@@ -582,8 +582,7 @@ function(params, result) {
 		// the first item is in, so this is already better. :)
 		var item = movedItems[0];
 		for (var listId in item._list) {
-			var ac = window.parentAppCtxt || appCtxt; //always get the list in the parent window. The child might be closed or closing, causing bugs.
-			var list = ac.getById(listId);
+			var list = appCtxt.getById(listId);
 			if (!list) {
 				continue;
 			}
