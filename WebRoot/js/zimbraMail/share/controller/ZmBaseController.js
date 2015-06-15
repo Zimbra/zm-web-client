@@ -1371,7 +1371,8 @@ ZmBaseController.prototype._dlAddrSelected = function(match, ev) {
 
 ZmBaseController.prototype._loadContactForMenu = function(menu, address, ev, imItem) {
 
-	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS),
+	var ac = window.parentAppCtxt || appCtxt;
+	var contactsApp = ac.getApp(ZmApp.CONTACTS),
 		address = address.isAjxEmailAddress ? address : new AjxEmailAddress(address),
 		email = address.getAddress();
 
@@ -1555,7 +1556,8 @@ ZmBaseController.prototype._contactListener = function(ev) {
  */
 ZmBaseController.prototype._handleLoadContactListener = function() {
 
-	var cc = AjxDispatcher.run("GetContactController");
+	var cc = appCtxt.isChildWindow ? window.parentAppCtxt.getApp(ZmApp.CONTACTS).getContactController() :
+									AjxDispatcher.run("GetContactController");
 	var contact = this._actionEv.contact;
 	if (contact) {
 		if (contact.isDistributionList()) {
@@ -1572,6 +1574,9 @@ ZmBaseController.prototype._handleLoadContactListener = function() {
 	} else {
 		var contact = this._createNewContact(this._actionEv);
 		cc.show(contact, true);
+	}
+	if (appCtxt.isChildWindow) {
+		window.close();
 	}
 };
 
