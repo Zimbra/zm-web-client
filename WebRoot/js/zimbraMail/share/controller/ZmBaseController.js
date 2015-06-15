@@ -57,7 +57,8 @@ ZmBaseController = function(container, app, type, sessionId, searchResultsContro
 
 	this._tagList = appCtxt.getTagTree();
 	if (this._tagList) {
-		this._tagList.addChangeListener(this._tagChangeListener.bind(this));
+		this._boundTagChangeListener = this._tagChangeListener.bind(this);
+		this._tagList.addChangeListener(this._boundTagChangeListener);
 	}
 
 	// create a listener for each operation

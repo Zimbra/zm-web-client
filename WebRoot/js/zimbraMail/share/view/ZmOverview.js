@@ -182,6 +182,22 @@ ZmOverview.prototype.setTreeView = function(treeId, omit) {
 	this._treeHash[treeId] = treeController.show(params); // render tree view
 };
 
+ZmOverview.prototype.clearChangeListener = function(treeIds) {
+	// Added for the attachMail zimlet, operating in a child window.  This clears the listeners added to
+	// the parent window trees (which causes problems in IE when the child window closes).  See Bugs
+	// 99453 and 99913
+	for (var i = 0; i < treeIds.length; i++) {
+		var treeController = this._controller.getTreeController(treeIds[i]);
+		var changeListener = treeController._getTreeChangeListener();
+		if (changeListener) {
+			var folderTree = appCtxt.getFolderTree();
+			if (folderTree) {
+				folderTree.removeChangeListener(changeListener);
+			}
+		}
+	}
+}
+
 /**
  * Gets the tree view.
  * 

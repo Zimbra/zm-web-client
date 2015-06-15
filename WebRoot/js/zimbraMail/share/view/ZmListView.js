@@ -68,7 +68,8 @@ ZmListView = function(params) {
 	}
 	var folderTree = appCtxt.getFolderTree();
 	if (folderTree) {
-		folderTree.addChangeListener(new AjxListener(this, this._folderChangeListener));
+		this._boundFolderChangeListener =  this._folderChangeListener.bind(this);
+		folderTree.addChangeListener(this._boundFolderChangeListener);
 	}
 
 	this._handleEventType = {};
