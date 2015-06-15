@@ -5926,7 +5926,7 @@ RBC, RTC {
 	margin:10px;
 }
 
-.ZmTwoFactorSetupContainer SPAN.email-key {
+.ZmTwoFactorSetupContainer SPAN.email-key, .ZmAppPasscode {
 	padding:10px;
 	font-weight:bold;
 	background-color:#FFE599;
@@ -5940,3 +5940,8 @@ RBC, RTC {
 	font-weight:bold;
 }
 /* Two-Factor Setup dialog end*/
+
+.ZmAppNameError {
+	margin-left:157px;
+	text-align:left;
+}
