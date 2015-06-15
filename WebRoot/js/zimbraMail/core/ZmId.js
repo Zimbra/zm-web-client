@@ -844,6 +844,8 @@ ZmId.FLD_TYPE			= "ty";
 ZmId.FLD_TO             = "to";
 ZmId.FLD_VERSION        = "ver";
 ZmId.FLD_WORK_PHONE		= "wp"; // Contacts
+ZmId.FLD_CREATED        = "cr";   // Application passcode created
+ZmId.FLD_LAST_USED      = "lu";   // Application passcode last used
 
 // operations - things the user can do, usually via a button or menu item
 ZmId.OP_ACCEPT_PROPOSAL         = "ACCEPT_PROPOSAL";

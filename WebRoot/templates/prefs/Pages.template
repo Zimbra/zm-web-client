@@ -1017,6 +1017,35 @@ and the container element is replaced with that control.
 									<td class='ZOptionsLabel'><$=ZmMsg.twoStepAuthOneTimeCodes$></td>
 									<td class='ZOptionsField' valign='middle'><a href="#" id='${id}_TWO_STEP_AUTH_CODES_LINK'><$=ZmMsg.twoStepAuthOneTimeCodesLink$></a></td>
 								</tr>
+								<$ if (appCtxt.get(ZmSetting.APP_PASSWORDS_ENABLED)) { $>
+									<tr>
+										<td class='ZOptionsLabel'><$=ZmMsg.twoStepAuthApplications$></td>
+										<td class='ZOptionsField' valign='middle'><$=ZmMsg.twoStepAuthApplicationsDesc$></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+												<tr>
+													<td colspan='4'><div id='${id}_APPLICATION_CODES'></div></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td></td>
+										<td>
+											<table role="presentation" class="ZPropertySheet" cellspacing="6">
+												<tbody>
+													<tr>
+														<td><button id='${id}_ADD_APPLICATION_CODE' tabindex=0><$=ZmMsg.twoStepAuthAddAppCode$></button></td>
+														<td><button id='${id}_REVOKE_APPLICATION_CODE' tabindex=0><$=ZmMsg.twoStepAuthRevokeCode$></button></td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+								<$ } $>
 							</table>
 						 </td>
 					</tr>
@@ -2328,4 +2357,24 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<div style='width:475px;'>
 		<div><$=ZmMsg.socialfoxSettingsDescription$></div>
 	</div>
+</template>
+
+<template id='prefs.Pages#AddApplicationCode'>
+	<div style='width:450px;'>
+		<div id='${id}_app_name'>
+			<p><$=ZmMsg.twoStepAuthAppCodeDesc1$></p>
+			<div style="text-align:center; margin:20px;">
+				<div id='${id}_app_name_error' class="ZmAppNameError ZmTwoFactorSetupError"></div>
+				<label style="margin:10px;" for="${id}_app_name_input"><$=ZmMsg.twoStepAuthAppName$></label>
+				<input type="text" id="${id}_app_name_input" autocomplete="off" size="30"/>
+			</div>
+		</div>
+		<div id='${id}_app_passcode'>
+			<p><$=ZmMsg.twoStepAuthAppCodeDesc2$></p>
+			<div style="text-align:center; margin:20px;">
+				<$=ZmMsg.twoStepAuthAppPasscode$>
+				<span id="${id}_app_passcode_value" class="ZmAppPasscode"></span>
+			</div>
+		</div>
+    </div>
 </template>

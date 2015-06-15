@@ -562,6 +562,34 @@ function() {
 	if (twoStepAuthCodesLink) {
 		Dwt.setHandler(twoStepAuthCodesLink, DwtEvent.ONCLICK, this._handleTwoStepAuthCodesLink.bind(this, twoStepAuthCodesLink));
 	}
+	//Whether app-specific passwords are enabled when two-factor auth is enabled
+	if (appCtxt.get(ZmSetting.APP_PASSWORDS_ENABLED)) {
+		var applicationCodesElement = document.getElementById(this._htmlElId + "_APPLICATION_CODES");
+		if (!applicationCodesElement) {
+			return;
+		}
+		this._getAppSpecificPasswords(applicationCodesElement);
+
+		var addApplicationCodeButton = document.getElementById(this._htmlElId + "_ADD_APPLICATION_CODE");
+		if (addApplicationCodeButton) {
+			var button = new DwtButton({parent:this, id:"addApplicationCodeBtn"});
+			button.setText(ZmMsg.twoStepAuthAddAppCode);
+			button.setEnabled(true);
+			button.addSelectionListener(new AjxListener(this, this._handleAddApplicationCode));
+			button.replaceElement(addApplicationCodeButton);
+			this.addApplicationCodeButton = button;
+		}
+
+		var revokeApplicationCodeButton = document.getElementById(this._htmlElId+"_REVOKE_APPLICATION_CODE");
+		if (revokeApplicationCodeButton) {
+			var button = new DwtButton({parent:this, id:"revokeApplicationCodeBtn"});
+			button.setText(ZmMsg.twoStepAuthRevokeCode);
+			button.setEnabled(false);
+			button.addSelectionListener(new AjxListener(this, this._revokeApplicationCode));
+			button.replaceElement(revokeApplicationCodeButton);
+			this.revokeApplicationCodeButton = button;
+		}
+	}
 };
 
 ZmAccountsPage.prototype.setAccountDelegates =
@@ -2410,6 +2438,78 @@ function() {
 	}
 };
 
+ZmAccountsPage.prototype._handleAddApplicationCode =
+function() {
+	if (!this._addApplicationCodeDlg) {
+		var appPasscodeCallback = this._getAppSpecificPasswords.bind(this);
+		this._addApplicationCodeDlg = new ZmApplicationCodeDialog(appPasscodeCallback);
+	}
+	this._addApplicationCodeDlg.popup();
+};
+
+ZmAccountsPage.prototype._revokeApplicationCode =
+function() {
+	var item = this.appPasscodeList.getSelection()[0];
+	if (item) {
+		var jsonObj = {RevokeAppSpecificPasswordRequest : {_jsns : "urn:zimbraAccount", appName : item.appName}};
+		var respCallback = this._handleRevokeApplicationCode.bind(this);
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+	}
+};
+
+ZmAccountsPage.prototype._handleRevokeApplicationCode =
+function() {
+	this._getAppSpecificPasswords();
+};
+
+ZmAccountsPage.prototype._getAppSpecificPasswords =
+function() {
+	var jsonObj = {GetAppSpecificPasswordsRequest : {_jsns : "urn:zimbraAccount"}};
+	var respCallback = this._getAppSpecificPasswordsCallback.bind(this);
+	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+};
+
+ZmAccountsPage.prototype._getAppSpecificPasswordsCallback =
+function(appSpecificPasswords) {
+	var applicationCodesElement = document.getElementById(this._htmlElId + "_APPLICATION_CODES") || (this.appPasscodeList && this.appPasscodeList.getHtmlElement());
+	var appSpecificPasswordsList = this._setAppSpecificPasswords(appSpecificPasswords);
+	if (!appSpecificPasswordsList) {
+		appSpecificPasswordsList = new AjxVector();
+	}
+	var appPasscodeList = new ZmAccountAppPasscodeListView(this);
+	this.appPasscodeList = appPasscodeList;
+	appPasscodeList.replaceElement(applicationCodesElement);
+	appPasscodeList.set(appSpecificPasswordsList);
+	appPasscodeList.addSelectionListener(this._appPasscodeSelectionListener.bind(this));
+	this.revokeApplicationCodeButton.setEnabled(false);
+};
+
+ZmAccountsPage.prototype._setAppSpecificPasswords =
+function(appSpecificPasswords) {
+	var response = appSpecificPasswords.getResponse();
+	if (!response || !response.GetAppSpecificPasswordsResponse) {
+		return;
+	}
+	var appSpecificPasswordsResponse = response.GetAppSpecificPasswordsResponse;
+	var passwordData =  appSpecificPasswordsResponse && appSpecificPasswordsResponse.appSpecificPasswords && appSpecificPasswordsResponse.appSpecificPasswords.passwordData;
+	if (!passwordData) {
+		return;
+	}
+	var vector = AjxVector.fromArray(passwordData);
+	vector.sort(this._compareAppPasscodes);
+	return vector;
+};
+
+ZmAccountsPage.prototype._compareAppPasscodes =
+function(a, b) {
+	return a.appName < b.appName ? -1 : (a.appName > b.appName ? 1 : 0);
+};
+
+ZmAccountsPage.prototype._appPasscodeSelectionListener =
+function() {
+	this.revokeApplicationCodeButton.setEnabled(!!this.appPasscodeList.getSelectionCount());
+};
+
 //
 // Private functions
 //
@@ -2641,6 +2741,66 @@ ZmAccountDelegatesListView.prototype._doubleClickAction =
 function(){
    this.parent._editDelegateButton();
 }
+
+ZmAccountAppPasscodeListView = function(parent, className, posStyle, noMaximize) {
+	className = className || "DwtListView";
+	className += " ZOptionsItemsListView";
+	DwtListView.call(this, {parent:parent, className:className, posStyle:posStyle, headerList:this._getHeaderList(), noMaximize:noMaximize});
+	this.setMultiSelect(false);
+};
+ZmAccountAppPasscodeListView.prototype = new DwtListView;
+ZmAccountAppPasscodeListView.prototype.constructor = ZmAccountAppPasscodeListView;
+
+ZmAccountAppPasscodeListView.prototype.toString =
+function() {
+	return "ZmAccountAppPasscodeListView";
+};
+
+ZmAccountAppPasscodeListView.prototype._getHeaderList =
+function() {
+	return [
+		new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg.name, margin:"5px", width:ZmMsg.COLUMN_WIDTH_NAME_APPLICATION}),
+		new DwtListHeaderItem({field:ZmItem.F_APP_PASSCODE_CREATED, text:ZmMsg.created, width:ZmMsg.COLUMN_WIDTH_NAME_APPLICATION}),
+		new DwtListHeaderItem({field:ZmItem.F_APP_PASSCODE_LAST_USED, text:ZmMsg.lastUsed, width:ZmMsg.COLUMN_WIDTH_NAME_APPLICATION})
+	];
+};
+
+ZmAccountAppPasscodeListView.prototype._getCellContents =
+function(buffer, i, item, field, col, params) {
+	if (field == ZmItem.F_NAME) {
+		var cellId = this._getCellId(item, field);
+		buffer[i++] = "<div id='";
+		buffer[i++] = cellId;
+		buffer[i++] = "_name' style='margin:0 5px; overflow:hidden;'>";
+		buffer[i++] = AjxStringUtil.htmlEncode(item.appName);
+		buffer[i++] = "</div>";
+		return i;
+	}
+	else if (field == ZmItem.F_APP_PASSCODE_CREATED) {
+		var cellId = this._getCellId(item, field);
+		buffer[i++] = "<div id='";
+		buffer[i++] = cellId;
+		buffer[i++] = "_type' style='margin:0 5px;'>";
+		buffer[i++] = AjxDateFormat.format(AjxDateFormat.SHORT, new Date(item.created));
+		buffer[i++] = "</div>";
+		return i;
+	}
+	else if (field == ZmItem.F_APP_PASSCODE_LAST_USED) {
+		var cellId = this._getCellId(item, field);
+		buffer[i++] = "<div id='";
+		buffer[i++] = cellId;
+		buffer[i++] = "_type' style='margin:0 5px;'>";
+		if (item.lastUsed) {
+			buffer[i++] = AjxDateFormat.format(AjxDateFormat.SHORT, new Date(item.lastUsed));
+		}
+		else {
+			buffer[i++] = "-";
+		}
+		buffer[i++] = "</div>";
+		return i;
+	}
+	return DwtListView.prototype._getCellContents.apply(this, arguments);
+};
 
 
 //

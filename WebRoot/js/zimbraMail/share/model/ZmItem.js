@@ -132,6 +132,8 @@ ZmItem.F_VERSION        = ZmId.FLD_VERSION;
 ZmItem.F_WORK_PHONE		= ZmId.FLD_WORK_PHONE;
 ZmItem.F_LOCK           = ZmId.FLD_LOCK;
 ZmItem.F_MSG_PRIORITY   = ZmId.FLD_MSG_PRIORITY;
+ZmItem.F_APP_PASSCODE_CREATED = ZmId.FLD_CREATED;
+ZmItem.F_APP_PASSCODE_LAST_USED = ZmId.FLD_LAST_USED;
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};
