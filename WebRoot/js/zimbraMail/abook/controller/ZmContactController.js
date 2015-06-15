@@ -333,22 +333,23 @@ function(ev, bIsPopCallback) {
 		view.validate();
 	if (!view.isValid()) {
 		var invalidItems = view.getInvalidItems();
+		// This flag will be set to false when the view.validate() detects some invalid fields (other than EMAIL) which does not have an error message.  If the EMAIL field is the only invalid one, ignore the error and move on.
+		var onlyEmailInvalid = true;
 		for (var i=0; i<invalidItems.length; i++) {
 			msg = view.getErrorMessage(invalidItems[i]);
-			if (AjxUtil.isString(msg)) {
-				//var msg = ZmMsg.errorSaving + (ex ? (":<p>" + ex) : ".");
+			var isInvalidEmailAddr = (invalidItems[i].indexOf("EMAIL") != -1);
+			if (AjxUtil.isString(msg) && !isInvalidEmailAddr) {
 				msg = msg ? AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, msg) : ZmMsg.errorSaving;
-				var ed = appCtxt.getMsgDialog();
-				if (ed) {
-					ed.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-					ed.popup();
-				} else {
-					appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
-				}
+				var msgDlg = appCtxt.getMsgDialog();
+				msgDlg.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+				msgDlg.popup();
 				return;
 			}
+			onlyEmailInvalid = onlyEmailInvalid & isInvalidEmailAddr;
 		}
-		return;
+		if (!onlyEmailInvalid) {
+			return;
+		}
 	}
 
 	var mods = view.getModifiedAttrs();
