@@ -987,6 +987,7 @@ function() {
 
 	//SETTINGS SET AT DOMAIN LEVEL
 	this.registerSetting("EMAIL_VALIDATION_REGEX",			{name:"zimbraMailAddressValidationRegex", type:ZmSetting.T_DOMAIN, dataType:ZmSetting.D_LIST});
+	this.registerSetting("SUPPORTED_HELPS",					{name:"zimbraWebClientSupportedHelps", type:ZmSetting.T_DOMAIN, dataType:ZmSetting.D_LIST});
 
 	// USER PREFERENCES (mutable)
 
