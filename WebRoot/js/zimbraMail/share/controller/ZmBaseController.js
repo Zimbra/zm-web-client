@@ -1572,7 +1572,7 @@ ZmBaseController.prototype._handleLoadContactListener = function() {
 			contact.load(callback);
 		}
 	} else {
-		var contact = this._createNewContact(this._actionEv);
+		var contact = cc._createNewContact(this._actionEv);
 		cc.show(contact, true);
 	}
 	if (appCtxt.isChildWindow) {
