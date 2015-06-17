@@ -1879,6 +1879,7 @@ function(callback, queryStr) {
 		bccOverride: composeParams.bcc,
 		subjOverride: composeParams.subject,
 		extraBodyText: composeParams.body,
+		extraBodyTextIsExternal: Boolean(composeParams.body),
 		callback: callback
 	};
 
