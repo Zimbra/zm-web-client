@@ -227,14 +227,8 @@ ZmAutocompleteListView.CALLBACKS = [
 ];
 
 // map of characters that are completion characters
-ZmAutocompleteListView.DELIMS = [',', ';', '\n', '\r'];	// used when list is not showing
-ZmAutocompleteListView.DELIM_CODES = [                  // used when list is showing
-    DwtKeyEvent.KEY_COMMA,
-    DwtKeyEvent.KEY_SEMICOLON,
-    DwtKeyEvent.KEY_SEMICOLON_1,
-    DwtKeyEvent.KEY_END_OF_TEXT,
-    DwtKeyEvent.KEY_RETURN
-];
+ZmAutocompleteListView.DELIMS			= [',', ';', '\n', '\r'];	// used when list is not showing
+ZmAutocompleteListView.DELIM_CODES		= [188, 59, 186, 3, 13];		// used when list is showing
 
 ZmAutocompleteListView.WAIT_ID = "wait";
 
@@ -364,7 +358,7 @@ function(ev) {
 	ev.inputChanged = (value != aclv._inputValue[elId]);
 
 	// reset timer on any address field key activity
-	if (aclv._acActionId[elId] !== -1 && !DwtKeyMap.IS_MODIFIER[key] && key !== DwtKeyEvent.KEY_TAB) {
+	if (aclv._acActionId[elId] != -1 && !DwtKeyMap.IS_MODIFIER[key] && key != 9) {
 		DBG.println("ac", "canceling autocomplete");
 		AjxTimedAction.cancelAction(aclv._acActionId[elId]);
 		aclv._acActionId[elId] = -1;
@@ -382,7 +376,7 @@ function(ev) {
 	}
 
 	// a Return following an address turns it into a bubble
-	if (DwtKeyEvent.IS_RETURN[key] && aclv._complete(element)) {
+	if ((key == 13 || key == 3) && aclv._complete(element)) {
 		return false;
 	}
 
@@ -712,14 +706,14 @@ function(element) {
  * 
  * @private
  */
-ZmAutocompleteListView.prototype.handleAction = function(key, isDelim, element) {
+ZmAutocompleteListView.prototype.handleAction =
+function(key, isDelim, element) {
 
 	DBG.println("ac", "autocomplete handleAction for key " + key + " / " + isDelim);
 
 	if (isDelim) {
 		this._update();
-	}
-    else if (key === DwtKeyEvent.KEY_ARROW_RIGHT) {
+	} else if (key == 39) {
 		// right arrow
 		var dwttext = this._expandText && this._expandText[this._selected];
 
@@ -732,32 +726,27 @@ ZmAutocompleteListView.prototype.handleAction = function(key, isDelim, element) 
 		// fake a click
 		dwttext.notifyListeners(DwtEvent.ONMOUSEDOWN);
 
-	}
-    else if (key === DwtKeyEvent.KEY_ARROW_UP || key === DwtKeyEvent.KEY_ARROW_DOWN) {
+	} else if (key == 38 || key == 40) {
 		// handle up and down arrow keys
 		if (this.size() < 1) {
 			return;
 		}
-		if (key === DwtKeyEvent.KEY_ARROW_DOWN) {
+		if (key == 40) {
 			this._setSelected(ZmAutocompleteListView.NEXT);
-		}
-        else if (key === DwtKeyEvent.KEY_ARROW_UP) {
+		} else if (key == 38) {
 			this._setSelected(ZmAutocompleteListView.PREV);
 		}
-	}
-    else if (key === DwtKeyEvent.KEY_ESCAPE) {
+	} else if (key == 27) {
 		if (this.getVisible()) {
 			this.reset(element); // ESC hides the list
 		}
 		else if (!this._cancelPendingRequests(element)) {
 			return false;
 		}
-	}
-    else if (key === DwtKeyEvent.KEY_TAB) {
+	} else if (key == 9) {
 		this._popdown();
 		return false;
-	}
-    else {
+	} else {
 		return false;
 	}
 	return true;

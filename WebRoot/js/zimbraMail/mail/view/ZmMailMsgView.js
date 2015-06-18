@@ -2559,6 +2559,8 @@ function() {
 	this._settingFocus = true;
 	this.getHtmlElement().focus();
 	this._settingFocus = false;
+	//bug 96620 - if we focus on the message view, lose keyboard focus (from the list view likely) so we can paginate/scroll the message body
+	DwtKeyboardMgr._clearFocusObj();
 };
 
 ZmMailMsgView.prototype._blur =

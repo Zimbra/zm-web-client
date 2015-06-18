@@ -590,7 +590,7 @@ ZmHtmlEditor.prototype._handleEditorKeyEvent = function(ev) {
 	var ed = this.getEditor();
 	var retVal = true;
 
-    if ((!appCtxt.get(ZmSetting.TAB_IN_EDITOR) && ev.keyCode === DwtKeyEvent.KEY_TAB) || DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
+    if ((!appCtxt.get(ZmSetting.TAB_IN_EDITOR) && ev.keyCode === DwtKeyMapMgr.TAB_KEYCODE) || DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
         // pass to keyboard mgr for kb nav
         retVal = DwtKeyboardMgr.__keyDownHdlr(ev);
     }

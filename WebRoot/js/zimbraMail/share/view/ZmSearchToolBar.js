@@ -35,14 +35,16 @@ ZmSearchToolBar = function(params) {
 	if (arguments.length == 0) { return; }
 
 	params.className = params.className || "ZmSearchToolbar";
+	DwtComposite.apply(this, arguments);
+	
 	this._button = {};
-	DwtToolBar.apply(this, arguments);
-
 	this._origin = ZmId.SEARCH;
 	this._searchMenu = null;
+	
+	this._createHtml();
 };
 
-ZmSearchToolBar.prototype = new DwtToolBar;
+ZmSearchToolBar.prototype = new DwtComposite;
 ZmSearchToolBar.prototype.constructor = ZmSearchToolBar;
 
 ZmSearchToolBar.prototype.isZmSearchToolBar = true;
@@ -168,13 +170,9 @@ function() {
 	return AjxUtil.values(this._button);
 };
 
-ZmSearchToolBar.prototype.focus = function(item) {
-
-    if (item) {
-        // focus is being moved via a shortcut (arrow key)
-        DwtToolBar.prototype.focus.apply(this, arguments);
-    }
-	else if (this._searchField) {
+ZmSearchToolBar.prototype.focus =
+function() {
+	if (this._searchField) {
 		this._searchField.focus();
 		this._searchField.moveCursorToEnd();
 	}
@@ -196,6 +194,7 @@ function(enable) {
 		this._button[buttonId].setEnabled(enable);
 	}
 };
+
 ZmSearchToolBar.prototype.setSearchFieldValue =
 function(value) {
 	if (this._searchField && value != this.getSearchFieldValue()) {
@@ -212,10 +211,13 @@ function() {
 
 // Private methods
 
+ZmSearchToolBar.prototype._createHtml = function() {};
+
+
 ZmSearchToolBar.prototype._handleKeyDown =
 function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
-	if (DwtKeyEvent.IS_RETURN[key]) {
+	if (key == 3 || key == 13) {
 		return this._handleEnterKeyPress(ev);
 	}
 	return true;
@@ -294,9 +296,8 @@ ZmMainSearchToolBar = function(params) {
 
 	if (arguments.length == 0) { return; }
 
-	ZmSearchToolBar.apply(this, arguments);
 
-    this._initialize();
+	ZmSearchToolBar.apply(this, arguments);
 
 	// setup "include shared" menu item
 	var miParams = {
@@ -326,60 +327,84 @@ ZmMainSearchToolBar.prototype.constructor = ZmMainSearchToolBar;
 ZmMainSearchToolBar.prototype.isZmMainSearchToolBar = true;
 ZmMainSearchToolBar.prototype.toString = function() { return "ZmMainSearchToolBar"; };
 
+
+ZmMainSearchToolBar.prototype.TEMPLATE = "share.Widgets#ZmSearchToolBar";
+
 ZmMainSearchToolBar.CUSTOM_ITEM_ID		= "CustomSearchItem";	// custom search menu item key
 ZmMainSearchToolBar.CUSTOM_BUTTON 		= "CUSTOM";				// button ID
 
-ZmMainSearchToolBar.prototype._initialize = function() {
+ZmMainSearchToolBar.prototype._createHtml =
+function() {
+    var isExternalAccount = appCtxt.isExternalAccount()
+	this.getHtmlElement().innerHTML = AjxTemplate.expand(this.TEMPLATE, {id:this._htmlElId});
 
-    var isExternalAccount = appCtxt.isExternalAccount();
+	// add search input field
+	var inputFieldId = this._htmlElId + "_inputField";
+	var inputField = document.getElementById(inputFieldId);
+	if (inputField) {
+		this._searchField = new DwtInputField({
+			parent:     this,
+			hint:       ZmMsg.searchInput,
+			label:      ZmMsg.searchInput,
+			inputId:    ZmId.SEARCH_INPUTFIELD
+		});
+		var inputEl = this._searchField.getInputElement();
+		inputEl.className = "search_input";
+		this._searchField.reparentHtmlElement(inputFieldId);
+		this._searchField._showHint();
+		this._searchField.addListener(DwtEvent.ONFOCUS, this._onInputFocus.bind(this));
+		this._searchField.addListener(DwtEvent.ONBLUR, this._onInputBlur.bind(this));
+        if(isExternalAccount) {
+            this._searchField.setEnabled(false);
+        }
+	}
 
 	// add "search types" menu
-    var firstItem = ZmSearchToolBar.MENU_ITEMS[0];
-    var buttonId = ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_MENU);
-    var button = this._button[ZmSearchToolBar.TYPES_BUTTON] = new DwtButton({
-        parent:		this,
-        index:		0,
-        id:         buttonId
-    });
-    button.setImage(ZmSearchToolBar.ICON[firstItem]);
-    button.setToolTipContent(ZmMsg[ZmSearchToolBar.TT_MSG_KEY[firstItem]], true);
-
-    var menu = new AjxCallback(this, this._createSearchMenu);
-    button.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
-    if (isExternalAccount) {
-        button.setEnabled(false);
-    }
-
-    // add search box
-    var searchBox = this._searchField = new DwtInputField({
-        parent:     this,
-        hint:       ZmMsg.searchInput,
-        label:      ZmMsg.searchInput,
-        inputId:    ZmId.SEARCH_INPUTFIELD
-    });
-    var inputEl = searchBox.getInputElement();
-    inputEl.className = "search_input";
-    this._searchField._showHint();
-    this._searchField.addListener(DwtEvent.ONFOCUS, this._onInputFocus.bind(this));
-    this._searchField.addListener(DwtEvent.ONBLUR, this._onInputBlur.bind(this));
-    if (isExternalAccount) {
-        this._searchField.setEnabled(false);
-    }
-
-    // add search button
-    button = this._button[ZmSearchToolBar.SEARCH_BUTTON] = new DwtButton({
-        parent:		this,
-        className: 	"ZmSearchButton",
-        id:         ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_SEARCH)
-    });
-    button.setImage("Search2");
-    button.setToolTipContent(ZmMsg.searchTooltip, true);
-
-    // add save search button if saved-searches enabled
-    if (isExternalAccount) {
-        if (this._button[ZmSearchToolBar.SEARCH_BUTTON]) {
-            this._button[ZmSearchToolBar.SEARCH_BUTTON].setEnabled(false);
+	var searchMenuBtnId = this._htmlElId + "_searchMenuButton";
+	var searchMenuBtn = document.getElementById(searchMenuBtnId);
+	if (searchMenuBtn) {
+		var firstItem = ZmSearchToolBar.MENU_ITEMS[0];
+		var button = this._button[ZmSearchToolBar.TYPES_BUTTON] = ZmToolBar.addButton({
+					parent:		this, 
+					index:		0,
+					tdId:		"_searchMenuButton",
+					buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_MENU),
+					tooltip:	ZmMsg[ZmSearchToolBar.TT_MSG_KEY[firstItem]],
+					icon:		ZmSearchToolBar.ICON[firstItem]
+				});
+		var menu = new AjxCallback(this, this._createSearchMenu);
+		button.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
+		button.reparentHtmlElement(searchMenuBtnId);
+        if(isExternalAccount) {
+            button.setEnabled(false);
         }
+	}
+
+	// add search button
+	this._button[ZmSearchToolBar.SEARCH_BUTTON] = ZmToolBar.addButton({
+				parent:		this, 
+				tdId:		"_searchButton",
+				buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_SEARCH),
+				lbl:		"",
+				icon:		"Search2",
+				template: 	"dwt.Widgets#ZImageOnlyButton",
+				className: 	"ZImageOnlyButton",
+				tooltip:	ZmMsg.searchTooltip
+			});
+
+	// add save search button if saved-searches enabled
+	this._button[ZmSearchToolBar.SAVE_BUTTON] = ZmToolBar.addButton({
+				parent:		this, 
+				setting:	ZmSetting.SAVED_SEARCHES_ENABLED,
+				tdId:		"_saveButton",
+				buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_SAVE),
+				lbl:		ZmMsg.save,
+				icon:		"Save",
+				type:		"toolbar",
+				tooltip:	ZmMsg.saveSearchTooltip });
+    if(isExternalAccount) {
+        if(this._button[ZmSearchToolBar.SEARCH_BUTTON]) this._button[ZmSearchToolBar.SEARCH_BUTTON].setEnabled(false);
+        if(this._button[ZmSearchToolBar.SAVE_BUTTON]) this._button[ZmSearchToolBar.SAVE_BUTTON].setEnabled(false);
     }
 };
 
@@ -594,8 +619,8 @@ function(ev) {
 };
 
 // Expand INPUT when it gets focus
-ZmMainSearchToolBar.prototype._onInputFocus = function(ev) {
-
+ZmMainSearchToolBar.prototype._onInputFocus =
+function(ev) {
 	this._setInputExpanded(true);
 };
 

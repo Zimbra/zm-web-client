@@ -55,11 +55,7 @@
 */
 
 *:focus {
-	@FocusOutline@
-}
-INPUT[type="text"]:focus, INPUT[type="password"]:focus {
-    outline:none;
-    background-color: yellow !important;
+	outline:none;
 }
 
 
@@ -373,6 +369,9 @@ INPUT[type="text"].search_input-expanded {
 }
 
 .ZmSearchToolbarDiv INPUT {
+	border:none;
+	border-color:transparent;
+	outline:none;
 	@transition@:width .25s ease;
 }
 
@@ -565,7 +564,7 @@ INPUT[type="text"].search_input-expanded {
 }
 
 .Unread .ZmConvListNumMsgs {
-	background-color:@darken(AppC,40)@;
+	background-color:@UnreadColor@;
 }
 
 .ZmConvExpanded,
@@ -1361,6 +1360,7 @@ INPUT[type="text"].search_input-expanded {
     -webkit-box-sizing: content-box;
 	font-size:1rem;
 	height:1.6rem;
+	outline:none !important;
 	margin-left:3px;
 	margin-bottom:3px;
 }
@@ -1471,6 +1471,7 @@ INPUT[type="text"].search_input-expanded {
 	border-width:0px !important;
 	font-size:1rem;
 	height:1.4rem;
+	outline:none !important;
 	margin:2px 0px 3px 3px;
 }
 
@@ -4884,10 +4885,6 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZSelected.ZAppTab							{	@AppTabSelected@						}
 .ZSelected .ZAppTabBorder					{	@grad(AppTabColor,AppC,linear-vertical)@ 	}
-
-.ZAppTab.ZButton:focus {
-    outline:none;
-}
 
 .SearchTabButton .ZAppTabBorder .ZLeftIcon DIV {
 	display:block;

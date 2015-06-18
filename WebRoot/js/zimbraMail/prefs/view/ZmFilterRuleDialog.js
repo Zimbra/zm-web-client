@@ -1054,7 +1054,7 @@ function(ev) {
 			table.tBodies[0].insertBefore(row, (newIndex != null) ? table.rows[newIndex] : null);
 			this._addDwtObjects(row.id);
 			this._resetOperations(isCondition);
-			tabGroup.removeMember(DwtTabGroup.getByName(rowId));
+			tabGroup.removeMember(tabGroup.getTabGroupMemberByName(rowId));
 			tabGroup.addMember(this._getCurrentTabScope());
 		}
 	}

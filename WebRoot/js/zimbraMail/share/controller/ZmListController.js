@@ -349,6 +349,8 @@ function(view) {
 	if (navToolBar) {
 		this._tabGroups[view].addMember(navToolBar.getTabGroupMember());
 	}
+
+	this._tabGroups[view].addMember(this._view[view]);
 };
 
 /**
