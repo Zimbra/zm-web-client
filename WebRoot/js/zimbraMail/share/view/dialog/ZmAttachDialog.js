@@ -589,7 +589,7 @@ function(table) {
 ZmMyComputerTabViewPage.prototype._handleKeys =
 function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
-	return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
+	return !DwtKeyEvent.IS_RETURN[key];
 };
 
 ZmMyComputerTabViewPage.prototype._validateFileSize =

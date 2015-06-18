@@ -2969,7 +2969,7 @@ function(ev) {
     if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) ){
         ZmAutocompleteListView.onKeyUp(ev);
     }
-    if (key == 32 || key == 59 || key == 186) {
+    if (key === DwtKeyEvent.KEY_SPACE || key === DwtKeyEvent.KEY_SEMICOLON || key === DwtKeyEvent.KEY_SEMICOLON_1) {
 		this._activeInputField = el._attType;
         this.handleAttendeeChange();
     }else {

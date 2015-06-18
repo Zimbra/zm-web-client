@@ -71,7 +71,6 @@ BODY									{	margin:0px; 	}
 #skin_container_search .ZmSearchToolbar {	@SkinSearchToolbar@ 		}
 #skin_container_search .ZButton			{	height:auto;	}
 #skin_container_search .ZButtonBorder	{	border:0px; background-color:transparent; background-image:none; @NoShadow@ @NoRoundCorners@ }
-#skin_container_search .ZLeftIcon DIV 	{	margin:0px 0px 0px 10px; 	}
 #skin_container_search .ZWidgetTitle 	{	display:none; 	}
 /** combined username/quota **/
 #skin_spacing_tree_top					{	text-align:center;		}

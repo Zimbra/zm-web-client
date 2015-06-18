@@ -400,7 +400,6 @@ function(id) {
 	if (this._selectedId && oldBtn) {
         this.__markPrevNext(this._selectedId, false);
 		oldBtn.setSelected(false);
-		oldBtn._noFocus = false;
     }
 
 	var newBtn = this._buttons[id];
@@ -420,8 +419,6 @@ function(id) {
 			newBtn.setText(newBtn._toggleText);
 			newBtn._toggleText = null;
 		}
-
-		newBtn._noFocus = true;
 	}
 
 	this._selectedId = id;

@@ -471,10 +471,6 @@ TD.vSpace {
 	padding-top:3px;
 }
 
-.Row, .RowDouble {
-	@TransparentBorder@
-}
-
 .Row TABLE, .RowDouble TABLE {
 	table-layout:fixed;
 }

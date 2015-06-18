@@ -388,15 +388,16 @@ ZmBaseController.prototype._initializeListView = ZmBaseController.prototype._ini
  * 
  * @private
  */
-ZmBaseController.prototype._initializeTabGroup =
-function(view) {
+ZmBaseController.prototype._initializeTabGroup = function(view) {
 
-	if (this._tabGroups[view]) { return; }
+	if (this._tabGroups[view]) {
+        return;
+    }
 
 	this._tabGroups[view] = this._createTabGroup();
 	this._tabGroups[view].newParent(appCtxt.getRootTabGroup());
-	this._tabGroups[view].addMember(this._toolbar[view]);
-	this._tabGroups[view].addMember(this._view[view].getTabGroupMember());
+	this._tabGroups[view].addMember(this._toolbar[view].getTabGroupMember());
+    this._tabGroups[view].addMember(this._view[view].getTabGroupMember());
 };
 
 /**

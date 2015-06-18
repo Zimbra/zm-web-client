@@ -112,17 +112,12 @@ ZmOverview = function(params, controller) {
 
 ZmOverview.prototype = new DwtComposite;
 ZmOverview.prototype.constructor = ZmOverview;
+
+ZmOverview.prototype.isZmOverview = true;
+ZmOverview.prototype.toString = function() { return "ZmOverview"; };
+
 ZmOverview.prototype.role = "navigation";
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmOverview.prototype.toString =
-function() {
-	return "ZmOverview";
-};
 
 /**
  * Gets the parent element for the given tree id.

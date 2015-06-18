@@ -1392,7 +1392,7 @@ function(ev) {
 	if (el.id.indexOf("_att_") != -1) {
 		// ignore enter key press in IE otherwise it tries to send the attachment!
 		var key = DwtKeyEvent.getCharCode(ev);
-		return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
+		return !DwtKeyEvent.IS_RETURN[key];
 	}
 };
 
