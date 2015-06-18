@@ -1831,7 +1831,7 @@ function() {
 	DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
 	var rootTg = appCtxt.getRootTabGroup();
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-		rootTg.addMember(appCtxt.getSearchController().getTabGroup());
+		rootTg.addMember(appCtxt.getSearchController().getSearchToolbar().getTabGroupMember());
 	}
 
 	rootTg.addMember(this._userNameField);

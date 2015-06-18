@@ -81,11 +81,13 @@
 		<tr>
 			<td class='ZmSearchResultText'><div id='${id}_icon' class='ImgWarning_12' style='display:none; margin-right:5px;'></div><span id='${id}_label'></span></td>
 			<td>
-			    <table role="presentation"><tr>
-			        <td id='${id}_inputFieldCell' class='ZmSearchResultInputField'></td>
-			        <td id='${id}_searchButton'   class='ZmSearchResultButton'></td>
-			        <td id='${id}_saveButton'     class='ZmSearchResultButton'></td>
-			    </tr></table>
+			    <table role="presentation">
+			        <tr id='${id}_items'>
+                        <td id='${id}_inputFieldCell' class='ZmSearchResultInputField'></td>
+                        <td id='${id}_searchButton'   class='ZmSearchResultButton'></td>
+                        <td id='${id}_saveButton'     class='ZmSearchResultButton'></td>
+			        </tr>
+			    </table>
 			</td>
 		</tr>
 	</table>

@@ -1319,7 +1319,7 @@ function() {
 	if (this._itemToSelect) {
 		var item = this._getItemToSelect();
 		if (item) {
-			DBG.println("focus", "ZmMailListView._setNextSelection: select item with ID: " + item.id);
+			DBG.println(AjxDebug.DBG1, "ZmMailListView._setNextSelection: select item with ID: " + item.id);
 			this.setSelection(item, false);
 			this._itemToSelect = null;
 		}

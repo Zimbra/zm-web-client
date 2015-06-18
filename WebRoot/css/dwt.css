@@ -174,7 +174,6 @@
 /* container (div) for each item in the tree */
 .DwtTreeItem {
 	@TreeItem@
-	@TransparentBorderWithMargin@
 }
 
 /* text style for name of a normal tree item */

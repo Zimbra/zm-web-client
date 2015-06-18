@@ -232,6 +232,11 @@ function(part, appName) {
 	return appCtxt.getOverviewId([this.toString(), part, appName], null);
 };
 
+ZmChooseFolderDialog.prototype.getOverviewId = function(appName) {
+
+	return appCtxt.getOverviewId([this.toString(), appName], null);
+};
+
 ZmChooseFolderDialog.prototype._resetTree =
 function(treeIds, overview) {
 
@@ -403,7 +408,7 @@ function(ev) {
 
 ZmChooseFolderDialog.prototype._getTabGroupMembers =
 function() {
-	return [this._inputField, this._overview[this._curOverviewId]];
+	return AjxUtil.collapseList([this._inputField, this._overview[this._curOverviewId]]);
 };
 
 ZmChooseFolderDialog.prototype._loadFolders =
@@ -456,9 +461,10 @@ function(ev) {
 	}
 
 	var key = DwtKeyEvent.getCharCode(ev);
-	if (key == 9) {
+	if (key === DwtKeyEvent.KEY_TAB) {
 		return;
-	} else if (key == 40) {
+	}
+    else if (key === DwtKeyEvent.KEY_ARROW_DOWN) {
 		this._overview[this._curOverviewId].focus();
 		return;
 	}

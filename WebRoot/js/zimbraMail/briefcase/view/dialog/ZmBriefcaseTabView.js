@@ -166,7 +166,7 @@ function(folderId, results) {
 ZmBriefcaseTabView.prototype._handleKeys =
 function(ev){
     var key = DwtKeyEvent.getCharCode(ev);
-    return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
+    return !DwtKeyEvent.IS_RETURN[key];
 };
 
 ZmBriefcaseTabView.prototype.gotAttachments =
