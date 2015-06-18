@@ -351,7 +351,7 @@ function(text, el, match) {
 ZmFreeBusySchedulerView.prototype._autocompleteKeyUpCallback =
 function(ev, aclv, result) {
 	var key = DwtKeyEvent.getCharCode(ev);
-	if ((key == 3 || key == 13) && !aclv.getVisible()) {
+	if (DwtKeyEvent.IS_RETURN[key] && !aclv.getVisible()) {
 		var el = DwtUiEvent.getTargetWithProp(ev, "id");
         if(el._acHandlerInProgress) { return; }
         el._acHandlerInProgress = true;

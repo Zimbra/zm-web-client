@@ -131,7 +131,7 @@ ZmPasswordUpdateDialog.prototype._handleKeyUp =
 function(ev) {
 
     var key = DwtKeyEvent.getCharCode(ev);
-	if (key == 9) {
+	if (key === DwtKeyEvent.KEY_TAB) {
 		return;
 	}
     var el = DwtUiEvent.getTarget(ev);

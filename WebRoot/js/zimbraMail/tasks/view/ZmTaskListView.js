@@ -926,14 +926,14 @@ function(ev) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
 
-	if (key == DwtKeyEvent.KEY_ENTER) {
+	if (key === DwtKeyEvent.KEY_ENTER) {
 		tlv.saveNewTask(true);
 	}
 	else {
 		// bug fix #31778 - down arrow and left paren. have same key code!
 		var isDownArrow = (!AjxEnv.isIE)
 			? (ev.charCode == 0 && ev.keyCode == 40) : false;
-		if (key == DwtKeyEvent.KEY_ESCAPE || isDownArrow) {
+		if (key === DwtKeyEvent.KEY_ESCAPE || isDownArrow) {
 			tlv.discardNewTask();
 		}
 	}

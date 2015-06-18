@@ -565,12 +565,12 @@ ZmAddressInputField.onHolderKeyClick =
 function(ev) {
     ev = DwtUiEvent.getEvent(ev);
     var key = DwtKeyEvent.getCharCode(ev);
-    if (key == 38) {
+    if (key === DwtKeyEvent.KEY_ARROW_UP) {
         if (this.clientHeight >= this.scrollHeight) { return; }
 	    this.scrollTop = Math.max(this.scrollTop - this.clientHeight, 0);
         DBG.println("aif", "this.scrollTop  = " + this.scrollTop);
     }
-    else if (key == 40) {
+    else if (key === DwtKeyEvent.KEY_ARROW_DOWN) {
          if (this.clientHeight >= this.scrollHeight) { return; }
 	     this.scrollTop = Math.min(this.scrollTop + this.clientHeight, this.scrollHeight - this.clientHeight);
          DBG.println("aif", "this.scrollTop  = " + this.scrollTop);
@@ -741,21 +741,21 @@ function(ev, aclv) {
 	}
 
 	// Esc in edit mode restores the original address to the bubble
-	if (key == 27 && this._editMode) {
+	if (key === DwtKeyEvent.KEY_ESCAPE && this._editMode) {
 		DBG.println("aif", "_keyDownCallback found ESC key in edit mode");
 		this._leaveEditMode(true);
 		propagate = false;	// eat the event - eg don't let compose view catch Esc and pop the view
 		clearInput = true;
 	}
 	// Del removes selected bubbles, or selects last bubble if there is no input
-	else if (key == 8) {
+	else if (key === DwtKeyEvent.KEY_BACKSPACE) {
 		DBG.println("aif", "_keyDownCallback found DEL key");
 		if (this.handleDelete(true)) {
 			propagate = false;
 		}
 	}
 	// Left arrow selects last bubble if there is no input
-	else if (key == 37) {
+	else if (key === DwtKeyEvent.KEY_ARROW_LEFT) {
 		DBG.println("aif", "_keyDownCallback found left arrow");
 		if (this._selectBubbleBeforeInput()) {
 			propagate = false;
@@ -763,7 +763,7 @@ function(ev, aclv) {
 	}
 	// Handle case where user is leaving edit while we're not in strict mode
 	// (in strict mode, aclv will call addrFoundCallback if it gets a Return)
-	else if (!this._strictMode && (key == 3 || key == 13)) {
+	else if (!this._strictMode && DwtKeyEvent.IS_RETURN[key]) {
 		DBG.println("aif", "_keyDownCallback found RETURN");
 		var bubble = this._editMode && this._editModeBubble;
 		if (bubble && !bubble.addrObj) {

@@ -500,7 +500,7 @@ function(id) {
 ZmSharingView.prototype._enterCallback =
 function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
-	if (key == 3 || key == 13) {
+	if (DwtKeyEvent.IS_RETURN[key]) {
 		this._onClick.call(this._shareForm, ZmSharingView.ID_FIND_BUTTON);
 		return false;
 	}

@@ -181,9 +181,10 @@ ZmPickTagDialog.prototype._handleKeyUp =
 function(ev) {
 
 	var key = DwtKeyEvent.getCharCode(ev);
-	if (key == 9) {
+	if (key === DwtKeyEvent.KEY_TAB) {
 		return;
-	} else if (key == 40) {
+	}
+    else if (key === DwtKeyEvent.KEY_ARROW_DOWN) {
 		this._overview[this._curOverviewId].focus();
 		return;
 	}
