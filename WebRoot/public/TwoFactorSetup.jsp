@@ -31,7 +31,7 @@
 	}
 %>
 <!DOCTYPE html>
-<html class="user_font_size_normal">
+<html class="user_font_size_normal" data-istwofactorsetuppage="true">
 <head>
 	<title><fmt:message key="twoStepAuthSetup"/></title>
 

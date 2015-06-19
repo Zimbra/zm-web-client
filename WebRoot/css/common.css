@@ -441,7 +441,11 @@ TD.vSpace {
 	@VeilColor@
 }
 
-
+/*Applies only for two factor setup page redirected from login page.*/
+html[data-istwofactorsetuppage] .VeilOverlay TABLE {
+	@VeilOverlayGrad@
+	opacity:1;
+}
 
 
 
