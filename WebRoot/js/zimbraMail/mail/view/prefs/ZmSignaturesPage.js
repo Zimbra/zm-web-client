@@ -434,7 +434,7 @@ function(container) {
 	var params = {
 		parent:             this,
 		type:               DwtInputField.STRING,
-		required:           true,
+		required:           false,
 		validationStyle:    DwtInputField.CONTINUAL_VALIDATION,
 		validator:          this._updateName.bind(this)
 	};
@@ -863,7 +863,7 @@ function(signature, clear) {
 	}
 
 	this._sigList.setSelection(signature, true);
-	this._sigName.setValue(signature.name);
+	this._sigName.setValue(signature.name, true);
 	if (this._sigFormat) {
 		this._sigFormat.setSelectedValue(signature.getContentType() === ZmMimeTable.TEXT_PLAIN);
 	}
