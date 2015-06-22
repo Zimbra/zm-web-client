@@ -1426,3 +1426,14 @@ function(contacts) {
 	}
 	return groups;
 };
+
+/**
+ * @private
+ */
+ZmContactListController.prototype._paginate =
+function(view, forward, loadIndex, limit) {
+	if (this._list.isGal && !this._list.isGalPAgingSupported) {
+		return;
+	}
+	ZmListController.prototype._paginate.call(this, view, forward, loadIndex, limit);
+};
