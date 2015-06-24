@@ -35,7 +35,6 @@ ZmCalBaseView = function(parent, className, posStyle, controller, view, readonly
 	this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener.bind(this));
 	this.addListener(DwtEvent.ONMOUSEUP, this._mouseUpListener.bind(this));
 	this.addListener(DwtEvent.ONMOUSEMOVE, this._mouseMoveListener.bind(this));
-	this.addListener(DwtEvent.ONFOCUS, this._focusListener.bind(this));
 
 	this._controller = controller;
 	this.view = view;	
