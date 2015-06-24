@@ -30,18 +30,12 @@ ZmCalBaseView = function(parent, className, posStyle, controller, view, readonly
 	this._setMouseEventHdlrs();
 	this.setCursor("default");
 
-	this._listenerMouseOver = new AjxListener(this, ZmCalBaseView.prototype._mouseOverListener);
-	this._listenerMouseOut = new AjxListener(this, ZmCalBaseView.prototype._mouseOutListener);
-	this._listenerDoubleClick = new AjxListener(this, ZmCalBaseView.prototype._doubleClickListener);
-	this._listenerMouseDown = new AjxListener(this, ZmCalBaseView.prototype._mouseDownListener);
-	this._listenerMouseUp = new AjxListener(this, ZmCalBaseView.prototype._mouseUpListener);
-	this._listenerMouseMove = new AjxListener(this, ZmCalBaseView.prototype._mouseMoveListener);
-	this.addListener(DwtEvent.ONMOUSEOVER, this._listenerMouseOver);
-	this.addListener(DwtEvent.ONMOUSEOUT, this._listenerMouseOut);
-	this.addListener(DwtEvent.ONDBLCLICK, this._listenerDoubleClick);
-	this.addListener(DwtEvent.ONMOUSEDOWN, this._listenerMouseDown);
-	this.addListener(DwtEvent.ONMOUSEUP, this._listenerMouseUp);
-	this.addListener(DwtEvent.ONMOUSEMOVE, this._listenerMouseMove);
+	this.addListener(DwtEvent.ONMOUSEOUT, this._mouseOutListener.bind(this));
+	this.addListener(DwtEvent.ONDBLCLICK, this._doubleClickListener.bind(this));
+	this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener.bind(this));
+	this.addListener(DwtEvent.ONMOUSEUP, this._mouseUpListener.bind(this));
+	this.addListener(DwtEvent.ONMOUSEMOVE, this._mouseMoveListener.bind(this));
+	this.addListener(DwtEvent.ONFOCUS, this._focusListener.bind(this));
 
 	this._controller = controller;
 	this.view = view;	
@@ -62,7 +56,7 @@ ZmCalBaseView = function(parent, className, posStyle, controller, view, readonly
 		
 	this._timeRangeStart = 0;
 	this._timeRangeEnd = 0;
-	this.addControlListener(new AjxListener(this, this._controlListener));	
+	this.addControlListener(this._controlListener.bind(this));
 	this._createHtml();
 	this._needsRefresh = true;
 };
