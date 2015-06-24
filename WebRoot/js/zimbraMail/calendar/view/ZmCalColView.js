@@ -349,6 +349,19 @@ function() {
 	}
 	this._layout();
 	this._scrollToTime(8);
+
+	if(this._list && this._list.size() > 0) {
+		AjxDebug.println(AjxDebug.CALENDAR, " ---------------- ZmCalColView::set - calendar is blank");
+		AjxDebug.println(AjxDebug.CALENDAR, " list size :" + this._list.size());
+		AjxDebug.dumpObj(AjxDebug.CALENDAR, this._layouts);
+	}
+
+	if(this._fbBarEnabled){
+		this._layoutFBBar();
+	}
+
+	this._checkForOffscreenAppt();
+	Dwt.setLoadedTime("ZmCalItemView");
 };
 
 ZmCalColView._inSyncScroll = false;
@@ -2672,51 +2685,6 @@ function(data) {
 	}
 	this.deselectAll();
 	return true;
-};
-
-ZmCalColView.prototype.set =
-function(list, skipMiniCalUpdate) {
-	this._preSet();
-	this._selectedItems.removeAll();
-	var newList = list;
-	if (list && (list == this._list)) {
-		newList = list.clone();
-	}
-	this._resetList();
-	this._list = newList;
-    this._apptCount = 0;
-	var timeRange = this.getTimeRange();
-	if (list) {
-		var size = list.size();
-		DBG.println(AjxDebug.DBG2,"list.size:"+size);
-		if (size != 0) {
-			var showDeclined = appCtxt.get(ZmSetting.CAL_SHOW_DECLINED_MEETINGS);
-			this._computeApptLayout();
-			for (var i=0; i < size; i++) {
-				var ao = list.get(i);
-				if (ao && ao.isInRange(timeRange.start, timeRange.end) &&
-					(showDeclined || (ao.ptst != ZmCalBaseItem.PSTATUS_DECLINED))) {
-                    this.addAppt(ao);
-                    this._apptCount ++;
-				}
-			}
-			this._computeAllDayApptLayout();
-		}
-	}
-	this._layout();
-
-    if(list && list.size() > 0 && this._apptCount == 0) {
-        AjxDebug.println(AjxDebug.CALENDAR, " ---------------- ZmCalColView::set - calendar is blank");
-        AjxDebug.println(AjxDebug.CALENDAR, " list size :" + list.size());
-        AjxDebug.dumpObj(AjxDebug.CALENDAR, this._layouts);
-    }
-
-    if(this._fbBarEnabled){
-        this._layoutFBBar();
-    }
-
-    this._checkForOffscreenAppt();
-	Dwt.setLoadedTime("ZmCalItemView");
 };
 
 /*

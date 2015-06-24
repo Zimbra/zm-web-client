@@ -387,12 +387,7 @@ function(id, field, value) {
 
 ZmCalBaseView.prototype.deselectAll =
 function() {
-	var a = this._selectedItems.getArray();
-	var sz = this._selectedItems.size();
-	for (var i = 0; i < sz; i++) {
-		a[i].className = this._getStyle(this._getItemData(a[i], "type"));
-	}
-	this._selectedItems.removeAll();
+    this.deselectAppt();
 };
 
 /**
@@ -810,13 +805,10 @@ function(appt,div) {
 ZmCalBaseView.prototype.set = 
 function(list) {
 	this._preSet();
-	this._selectedItems.removeAll();
-	var newList = list;
-	if(list && (list == this._list)) {
-		newList = list.clone();
-	}
+	this.deselectAppt();
+	list = list.filter(this.isInView.bind(this));
 	this._resetList();
-	this._list = newList;	
+	this._list = list;
     var showDeclined = appCtxt.get(ZmSetting.CAL_SHOW_DECLINED_MEETINGS);
     if (list) {
 		var size = list.size();
@@ -829,6 +821,7 @@ function(list) {
 			}
 		}
 	}
+
 	this._postSet(list);
 };
 
