@@ -2900,7 +2900,6 @@ ZmContact._AB_FIELD = {
 	fullName:				ZmMsg.AB_FIELD_fullName,
 	jobTitle:				ZmMsg.AB_FIELD_jobTitle,
 	company:				ZmMsg.AB_FIELD_company,
-	department:				ZmMsg.AB_FIELD_department,
 	email:					ZmMsg.AB_FIELD_email,			// email addresses
 	email2:					ZmMsg.AB_FIELD_email2,
 	email3:					ZmMsg.AB_FIELD_email3,
