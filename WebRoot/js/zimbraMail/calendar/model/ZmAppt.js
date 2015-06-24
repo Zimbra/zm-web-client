@@ -235,7 +235,7 @@ function(controller) {
 	var appt = this.apptClone || this._orig || this;
 	var needDetails = (!appt._toolTip || (appt.otherAttendees && !appt.ptstHashMap));
 	if (needDetails) {
-        return {callback:new AjxCallback(appt, appt._getToolTip, [controller]), loading:false};
+        return {callback:appt._getToolTip.bind(appt, controller), loading:false};
 	} else {
 		return appt._toolTip || appt._getToolTip(controller);
 	}
@@ -246,7 +246,7 @@ function(controller, callback) {
 
 	// getDetails() of original appt will reset the start date/time and will break the ui layout
 	this.apptClone = ZmAppt.quickClone(this);
-	var respCallback = new AjxCallback(this.apptClone, this._handleResponseGetToolTip, [controller, callback]); //run the callback on the clone - otherwise we lost data such as freeBusy
+	var respCallback = this._handleResponseGetToolTip.bind(this.apptClone, controller, callback); //run the callback on the clone - otherwise we lost data such as freeBusy
 	this.apptClone.getDetails(null, respCallback);
 };
 
