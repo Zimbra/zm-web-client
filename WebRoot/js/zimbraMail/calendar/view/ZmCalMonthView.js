@@ -849,7 +849,7 @@ function(date, list, controller, noheader) {
 			//if (!ao._fanoutLast) bs += "border-right:none;";
 			//var bodyStyle = bs != "" ? ("style='" + bs + "'") : "";
 			html[idx++] = "<tr><td><div class='appt'>";
-			html[idx++] = ZmApptViewHelper._allDayItemHtml(ao, Dwt.getNextId(),
+			html[idx++] = ZmApptViewHelper._allDayItemHtml(ao, this._getItemId(ao),
                 controller, true, true);
 			html[idx++] = "</div></td></tr>";
 		}
