@@ -126,7 +126,7 @@
 			<%-- try and use existing cookie if possible --%>
 			<c:set var="authtoken" value="${not empty param.zauthtoken ? param.zauthtoken : cookie.ZM_AUTH_TOKEN.value}"/>
 			<c:if test="${not empty authtoken}">
-				<zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
+				<zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}" twoFactorCode="${not empty param.totpcode ? param.totpcode : ''}"
 						varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 						rememberme="${param.zrememberme == '1'}"
 						requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}"
@@ -138,65 +138,94 @@
 </c:catch>
 
 <c:if test="${not empty authResult}">
-        <c:set var="refer" value="${authResult.refer}"/>
-        <c:set var="serverName" value="${pageContext.request.serverName}"/>
         <c:choose>
-            <c:when test="${not empty postLoginUrl}">
-                <c:choose>
-                    <c:when test="${not empty refer and not zm:equalsIgnoreCase(refer, serverName)}">
-                        <%--
-                        bug 63258: Need to redirect to a different server, avoid browser redirect to the post login URL.
-                        Do a JSP redirect which will do a onload form submit with ZAuthToken as a hidden param.
-                        In case of JS-disabled browser, make the user do a manual submit.
-                        --%>
-                        <jsp:forward page="/h/postLoginRedirect">
-                            <jsp:param name="postLoginUrl" value="${postLoginUrl}"/>
-                            <jsp:param name="zauthtoken" value="${authResult.authToken.value}"/>
-                            <jsp:param name="client" value="${param.client}"/>
-                        </jsp:forward>
-                    </c:when>
-                    <c:otherwise>
-                        <c:choose>
-                            <c:when test="${not empty param.client}">
-                                <c:redirect url="${postLoginUrl}">
-                                    <c:param name="client" value="${param.client}"/>
-                                </c:redirect>
-                            </c:when>
-                            <c:otherwise>
-                                <c:redirect url="${postLoginUrl}"/>
-                            </c:otherwise>
-                        </c:choose>
-                    </c:otherwise>
-                </c:choose>
+            <c:when test="${authResult.twoFactorAuthRequired eq true}">
+                <c:set var="totpAuthRequired" value="true"/>
             </c:when>
             <c:otherwise>
-                <c:set var="client" value="${param.client}"/>
-                <c:if test="${empty client and touchSupported}">
-                    <c:set var="client" value="${touchLoginPageExists ? 'touch' : 'mobile'}"/>
-                </c:if>
-                <c:if test="${empty client and mobileSupported}">
-                    <c:set var="client" value="mobile"/>
-                </c:if>
-                <c:if test="${empty client or client eq 'preferred'}">
-                    <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
-                </c:if>
+                <c:set var="refer" value="${authResult.refer}"/>
+                <c:set var="serverName" value="${pageContext.request.serverName}"/>
                 <c:choose>
-                    <c:when test="${client eq 'socialfox'}">
-                            <c:set var="sbURL" value="/public/launchSidebar.jsp"/>
-                            <c:redirect url="${sbURL}">
-                                <c:forEach var="p" items="${paramValues}">
-                                    <c:forEach var='value' items='${p.value}'>
-                                        <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
-                                            <c:param name="${p.key}" value='${value}'/>
-                                        </c:if>
-                                    </c:forEach>
-                                </c:forEach>
-                        </c:redirect>
-                    </c:when>
-                    <c:when test="${client eq 'advanced'}">
+                    <c:when test="${not empty postLoginUrl}">
                         <c:choose>
-                            <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
-                                <c:redirect url="/">
+                            <c:when test="${not empty refer and not zm:equalsIgnoreCase(refer, serverName)}">
+                                <%--
+                                bug 63258: Need to redirect to a different server, avoid browser redirect to the post login URL.
+                                Do a JSP redirect which will do a onload form submit with ZAuthToken as a hidden param.
+                                In case of JS-disabled browser, make the user do a manual submit.
+                                --%>
+                                <jsp:forward page="/h/postLoginRedirect">
+                                    <jsp:param name="postLoginUrl" value="${postLoginUrl}"/>
+                                    <jsp:param name="zauthtoken" value="${authResult.authToken.value}"/>
+                                    <jsp:param name="client" value="${param.client}"/>
+                                </jsp:forward>
+                            </c:when>
+                            <c:otherwise>
+                                <c:choose>
+                                    <c:when test="${not empty param.client}">
+                                        <c:redirect url="${postLoginUrl}">
+                                            <c:param name="client" value="${param.client}"/>
+                                        </c:redirect>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:redirect url="${postLoginUrl}"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="client" value="${param.client}"/>
+                        <c:if test="${empty client and touchSupported}">
+                            <c:set var="client" value="${touchLoginPageExists ? 'touch' : 'mobile'}"/>
+                        </c:if>
+                        <c:if test="${empty client and mobileSupported}">
+                            <c:set var="client" value="mobile"/>
+                        </c:if>
+                        <c:if test="${empty client or client eq 'preferred'}">
+                            <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
+                        </c:if>
+                        <c:choose>
+                            <c:when test="${client eq 'socialfox'}">
+                                    <c:set var="sbURL" value="/public/launchSidebar.jsp"/>
+                                    <c:redirect url="${sbURL}">
+                                        <c:forEach var="p" items="${paramValues}">
+                                            <c:forEach var='value' items='${p.value}'>
+                                                <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                                    <c:param name="${p.key}" value='${value}'/>
+                                                </c:if>
+                                            </c:forEach>
+                                        </c:forEach>
+                                </c:redirect>
+                            </c:when>
+                            <c:when test="${client eq 'advanced'}">
+                                <c:choose>
+                                    <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
+                                        <c:redirect url="/">
+                                            <c:forEach var="p" items="${paramValues}">
+                                                <c:forEach var='value' items='${p.value}'>
+                                                    <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                                        <c:param name="${p.key}" value='${value}'/>
+                                                    </c:if>
+                                                </c:forEach>
+                                            </c:forEach>
+                                            <c:if test="${param.client eq 'advanced'}">
+                                                <c:param name='client' value='advanced'/>
+                                            </c:if>
+                                        </c:redirect>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <jsp:forward page="/public/launchZCS.jsp"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:when>
+                            <c:when test="${client eq 'standard'}">
+                                <c:redirect url="/h/search">
+                                    <c:param name="mesg" value='welcome'/>
+                                    <c:param name="init" value='true'/>
+                                    <c:if test="${not empty param.app}">
+                                        <c:param name="app" value='${param.app}'/>
+                                    </c:if>
                                     <c:forEach var="p" items="${paramValues}">
                                         <c:forEach var='value' items='${p.value}'>
                                             <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
@@ -204,69 +233,44 @@
                                             </c:if>
                                         </c:forEach>
                                     </c:forEach>
-                                    <c:if test="${param.client eq 'advanced'}">
-                                        <c:param name='client' value='advanced'/>
-                                    </c:if>
+                                </c:redirect>
+                            </c:when>
+                            <c:when test="${client eq 'mobile'}">
+                                    <c:set var="mobURL" value="/m/zmain"/>
+                                    <c:redirect url="${mobURL}">
+                                        <c:forEach var="p" items="${paramValues}">
+                                            <c:forEach var='value' items='${p.value}'>
+                                                <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                                    <c:param name="${p.key}" value='${value}'/>
+                                                </c:if>
+                                            </c:forEach>
+                                        </c:forEach>
+                                </c:redirect>
+                            </c:when>
+                            <c:when test="${client eq 'touch'}">
+                                <c:redirect url="${param.dev eq '1' ? '/tdebug' : '/t'}">
+                                    <c:forEach var="p" items="${paramValues}">
+                                        <c:forEach var='value' items='${p.value}'>
+                                            <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                                <c:param name="${p.key}" value='${value}'/>
+                                            </c:if>
+                                        </c:forEach>
+                                    </c:forEach>
                                 </c:redirect>
                             </c:when>
                             <c:otherwise>
                                 <jsp:forward page="/public/launchZCS.jsp"/>
                             </c:otherwise>
                         </c:choose>
-                    </c:when>
-                    <c:when test="${client eq 'standard'}">
-                        <c:redirect url="/h/search">
-                            <c:param name="mesg" value='welcome'/>
-                            <c:param name="init" value='true'/>
-                            <c:if test="${not empty param.app}">
-                                <c:param name="app" value='${param.app}'/>
-                            </c:if>
-                            <c:forEach var="p" items="${paramValues}">
-                                <c:forEach var='value' items='${p.value}'>
-                                    <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
-                                        <c:param name="${p.key}" value='${value}'/>
-                                    </c:if>
-                                </c:forEach>
-                            </c:forEach>
-                        </c:redirect>
-                    </c:when>
-                    <c:when test="${client eq 'mobile'}">
-                            <c:set var="mobURL" value="/m/zmain"/>
-                            <c:redirect url="${mobURL}">
-                                <c:forEach var="p" items="${paramValues}">
-                                    <c:forEach var='value' items='${p.value}'>
-                                        <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
-                                            <c:param name="${p.key}" value='${value}'/>
-                                        </c:if>
-                                    </c:forEach>
-                                </c:forEach>
-                        </c:redirect>
-                    </c:when>
-                    <c:when test="${client eq 'touch'}">
-                        <c:redirect url="${param.dev eq '1' ? '/tdebug' : '/t'}">
-                            <c:forEach var="p" items="${paramValues}">
-                                <c:forEach var='value' items='${p.value}'>
-                                    <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
-                                        <c:param name="${p.key}" value='${value}'/>
-                                    </c:if>
-                                </c:forEach>
-                            </c:forEach>
-                        </c:redirect>
-                    </c:when>
-                    <c:otherwise>
-                        <jsp:forward page="/public/launchZCS.jsp"/>
                     </c:otherwise>
                 </c:choose>
             </c:otherwise>
         </c:choose>
-    </c:if>
+</c:if>
 
 <c:if test="${loginException != null}">
 	<zm:getException var="error" exception="${loginException}"/>
 	<c:set var="errorCode" value="${error.code}"/>
-    <c:if test="${errorCode eq 'account.AUTH_FAILED' and not empty param.totpcode}">
-        <c:set var="errorCode" value="account.TWO_FACTOR_AUTH_FAILED"/>
-    </c:if>
 	<fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
 	<c:forEach var="arg" items="${error.arguments}">
 		<fmt:message bundle="${zhmsg}" var="errorMessage" key="${errorCode}.${arg.name}">
@@ -290,12 +294,7 @@
             </c:if>
         </c:url>
         <%--Forward the user to the initial two factor authentication set up page--%>
-        <jsp:forward page="/public/TwoFactorSetup.jsp">
-            <jsp:param name="userName" value="${fullUserName}"/>
-        </jsp:forward>
-    </c:if>
-    <c:if test="${errorCode eq 'account.TWO_FACTOR_AUTH_REQUIRED'}">
-        <c:set var="totpAuthRequired" value="true"/>
+        <jsp:forward page="${twoFactorSetupURL}" />
     </c:if>
 </c:if>
 <%
@@ -450,7 +449,7 @@ if (application.getInitParameter("offlineMode") != null) {
 								<input type="hidden" name="loginOp" value="login"/>
 					</c:otherwise>
 				</c:choose>
-				<c:if test="${errorCode != null && errorCode != 'account.TWO_FACTOR_AUTH_REQUIRED'}">
+				<c:if test="${errorCode != null}">
 					<div id="ZLoginErrorPanel">
 						<table><tr>
 							<td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
@@ -458,121 +457,125 @@ if (application.getInitParameter("offlineMode") != null) {
 						</tr></table>
 					</div>
 				</c:if>
-				<table class="form" <c:if test="${totpAuthRequired}"> style="display:none;"</c:if>>
-					<c:choose>
-						<c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
-										<tr>
-											<td colspan="2">
-												<div class="LaunchButton">
-													<input type="submit" value="<fmt:message key="launch"/>" >
-												</div>
-											</td>
-										</tr>
-						</c:when>
-						<c:otherwise>
-										<c:choose>
-											<c:when test="${not empty virtualacctdomain or not empty param.virtualacctdomain}">
-												<%--External/Guest user login - *email* & password input fields--%>
-												<tr>
-													<td><label for="username"><fmt:message key="email"/>:</label></td>
-													<td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-												</tr>
-											</c:when>
-											<c:otherwise>
-												<%--Internal user login - username & password input fields--%>
-												<tr>
-													<td><label for="username"><fmt:message key="username"/>:</label></td>
-													<td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocapitalize="off" autocorrect="off"/></td>
-												</tr>
-											</c:otherwise>
-										</c:choose>
-										<tr>
-											<td><label for="password"><fmt:message key="password"/>:</label></td>
-											<td><input id="password" autocomplete="off" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-										</tr>
-							<c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
-										<tr>
-											<td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
-											<td><input id="loginNewPassword" autocomplete="off" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-										</tr>
-										<tr>
-											<td><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
-											<td><input id="confirmNew" autocomplete="off" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-										</tr>
-							</c:if>
-										<tr>
-											<td>&nbsp;</td>
-											<td class="submitTD">
-                                                <c:set var="isSignedInDisabled" value="${domainInfo.attrs.zimbraWebClientStaySignedInDisabled}"/>
-                                                <c:if test="${isSignedInDisabled eq false}">
-                                                    <input id="remember" value="1" type="checkbox" name="zrememberme" />
-                                                    <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label>
-                                                </c:if>
-												<input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
-											</td>
-										</tr>
-						</c:otherwise>
-					</c:choose>
-					<c:if test="${empty param.virtualacctdomain}">
-					<tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
-						<td colspan="2"><hr/></td>
-					</tr>
-					<tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
-						<td>
-							<label for="client"><fmt:message key="versionLabel"/></label>
-						</td>
-						<td>
-							<div class="positioning">
-								<c:choose>
-									<c:when test="${client eq 'socialfox'}">
-										<input type="hidden" name="client" value="socialfox"/>
-									</c:when>
-									<c:otherwise>
-										<select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
-											<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
-											<option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
-											<option value="standard" <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
-											<option value="mobile" <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
-                                            <c:if test="${touchLoginPageExists}">
-    											<option value="touch" <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
-                                            </c:if>
-										</select>
-									</c:otherwise>
-								</c:choose>
-    							<script TYPE="text/javascript">
-    								document.write("<a href='#' onclick='showWhatsThis();' id='ZLoginWhatsThisAnchor' aria-controls='ZLoginWhatsThis' aria-expanded='false'><fmt:message key='whatsThis'/></a>");
-    							</script>
+                <c:choose>
+                    <c:when test="${totpAuthRequired || errorCode eq 'account.TWO_FACTOR_AUTH_FAILED'}">
+                        <table class="form" id="totpTable" style="height:140px;width:350px;">
+                            <tbody>
+                                <tr>
+                                    <td><label for="totpcode"><fmt:message key="twoFactorAuthCodeLabel"/>:</label></td>
+                                    <td><input id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" style="margin-right:20px" autocomplete="off"></td>
+                                    <td class="submitTD"><input type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton"></td>
+                                </tr>
+                                <%--<tr>--%>
+                                    <%--<td>&nbsp;</td>--%>
+                                    <%--<td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">--%>
+                                    <%--<label for="trustedDevice"><fmt:message key="twoFactorAuthRememberDevice"/></label>--%>
+                                    <%--</td>--%>
+                                <%--</tr>--%>
+                            </tbody>
+                        </table>
+                    </c:when>
+                    <c:otherwise>
+                        <table class="form">
+                        <c:choose>
+                            <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
+                                <tr>
+                                <td colspan="2">
+                                <div class="LaunchButton">
+                                <input type="submit" value="<fmt:message key="launch"/>" >
+                                </div>
+                                </td>
+                                </tr>
+                            </c:when>
+                            <c:otherwise>
                                 <c:choose>
-                                    <c:when test="${touchLoginPageExists}">
-                                        <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessage"/></div>
+                                    <c:when test="${not empty virtualacctdomain or not empty param.virtualacctdomain}">
+                                        <%--External/Guest user login - *email* & password input fields--%>
+                                        <tr>
+                                        <td><label for="username"><fmt:message key="email"/>:</label></td>
+                                        <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                        </tr>
                                     </c:when>
                                     <c:otherwise>
-                                        <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessageWithoutTablet"/></div>
-                                    </c:otherwise>
+                                        <%--Internal user login - username & password input fields--%>
+                                        <tr>
+                                        <td><label for="username"><fmt:message key="username"/>:</label></td>
+                                        <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocapitalize="off" autocorrect="off"/></td>
+                                        </tr>
+                                        </c:otherwise>
                                 </c:choose>
-								<div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
-								</div>
-							</td>
-						</tr>
-					</c:if>
-			    </table>
-				<c:if test="${totpAuthRequired}">
-					<table class="form" id="totpTable" style="height:140px;width:350px;">
-						<tbody>
-							<tr>
-								<td><label for="totpcode"><fmt:message key="twoFactorAuthCodeLabel"/>:</label></td>
-								<td><input id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" style="margin-right:20px" autocomplete="off"></td>
-								<td class="submitTD"><input type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton"></td>
-							</tr>
-							<%--<tr>--%>
-								<%--<td>&nbsp;</td>--%>
-								<%--<td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">--%>
-									<%--<label for="trustedDevice"><fmt:message key="twoFactorAuthRememberDevice"/></label>--%>
-								<%--</td>--%>
-							<%--</tr>--%>
-						</tbody>
-					</table>
-				</c:if>
+                                <tr>
+                                <td><label for="password"><fmt:message key="password"/>:</label></td>
+                                <td><input id="password" autocomplete="off" class="zLoginField" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                </tr>
+                                <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
+                                    <tr>
+                                    <td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
+                                    <td><input id="loginNewPassword" autocomplete="off" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                    </tr>
+                                    <tr>
+                                    <td><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
+                                    <td><input id="confirmNew" autocomplete="off" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                    </tr>
+                                </c:if>
+                                <tr>
+                                <td>&nbsp;</td>
+                                <td class="submitTD">
+                                <c:set var="isSignedInDisabled" value="${domainInfo.attrs.zimbraWebClientStaySignedInDisabled}"/>
+                                <c:if test="${isSignedInDisabled eq false}">
+                                    <input id="remember" value="1" type="checkbox" name="zrememberme" />
+                                    <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label>
+                                </c:if>
+                                <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
+                                </td>
+                                </tr>
+                            </c:otherwise>
+                        </c:choose>
+                        <c:if test="${empty param.virtualacctdomain}">
+                            <tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
+                            <td colspan="2"><hr/></td>
+                            </tr>
+                            <tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
+                            <td>
+                            <label for="client"><fmt:message key="versionLabel"/></label>
+                            </td>
+                            <td>
+                            <div class="positioning">
+                            <c:choose>
+                                <c:when test="${client eq 'socialfox'}">
+                                    <input type="hidden" name="client" value="socialfox"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
+                                    <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
+                                    <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
+                                    <option value="standard" <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
+                                    <option value="mobile" <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
+                                    <c:if test="${touchLoginPageExists}">
+                                        <option value="touch" <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
+                                    </c:if>
+                                    </select>
+                                </c:otherwise>
+                            </c:choose>
+                        <script TYPE="text/javascript">
+                        document.write("<a href='#' onclick='showWhatsThis();' id='ZLoginWhatsThisAnchor' aria-controls='ZLoginWhatsThis' aria-expanded='false'><fmt:message key='whatsThis'/></a>");
+                        </script>
+                        <c:choose>
+                        <c:when test="${touchLoginPageExists}">
+                            <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessage"/></div>
+                        </c:when>
+                        <c:otherwise>
+                            <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessageWithoutTablet"/></div>
+                        </c:otherwise>
+                        </c:choose>
+                        <div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
+                        </div>
+                        </td>
+                        </tr>
+                        </c:if>
+                        </table>
+                    </c:otherwise>
+                </c:choose>
 			</form>
 			</div>
 			<div class="decor1"></div>
@@ -634,10 +637,6 @@ function showWhatsThis() {
 
 function onLoad() {
 	var loginForm = document.loginForm;
-    if (${errorCode != null && errorCode != 'account.TWO_FACTOR_AUTH_REQUIRED'}) {
-        //clear the user password in case of any error except two factor auth required (we need the password in that case)
-        loginForm.password.value = "";
-    }
 	if (loginForm.username) {
 		if (loginForm.username.value != "") {
 			loginForm.password.focus(); //if username set, focus on password
@@ -659,9 +658,8 @@ function onLoad() {
             }
         };
     }
-	var totpCodeInput = loginForm.totpcode;
-	if (${totpAuthRequired} && totpCodeInput) {
-		totpCodeInput.focus();
+	if (${totpAuthRequired} && loginForm.totpcode) {
+        loginForm.totpcode.focus();
 	}
 }
 </script>

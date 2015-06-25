@@ -184,7 +184,7 @@
 <meta http-equiv="Pragma" content="no-cache"/>
 <fmt:setLocale value='${locale}' scope='request' />
 <c:if test="${not isLocaleId}">
-<zm:getValidLocale locale='${locale}' var='validLocale' csrftoken="${csrfToken}"/>
+<zm:getValidLocale locale='${locale}' var='validLocale' authtoken="${requestScope.authResult.authToken}" csrftoken="${csrfToken}"/>
   <c:if test="${not validLocale}">
     <% pageContext.setAttribute("locale", Locale.US); //unsupported locale being set default to US%>
    </c:if>
