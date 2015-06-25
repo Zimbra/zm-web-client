@@ -61,9 +61,6 @@ ZmContactPicker = function(buttonInfo) {
 ZmContactPicker.prototype = new DwtDialog;
 ZmContactPicker.prototype.constructor = ZmContactPicker;
 
-ZmContactPicker.prototype.isZmContactPicker = true;
-ZmContactPicker.prototype.toString = function() { return "ZmContactPicker"; };
-
 // Consts
 
 ZmContactPicker.DIALOG_HEIGHT = 460;
@@ -76,10 +73,18 @@ ZmContactPicker.SEARCH_PHONETIC = "phonetic";
 
 ZmContactPicker.SHOW_ON_GAL = [ZmContactPicker.SEARCH_BASIC, ZmContactPicker.SEARCH_NAME, ZmContactPicker.SEARCH_EMAIL, ZmContactPicker.SEARCH_DEPT];
 ZmContactPicker.SHOW_ON_NONGAL = [ZmContactPicker.SEARCH_BASIC, ZmContactPicker.SEARCH_NAME, ZmContactPicker.SEARCH_PHONETIC, ZmContactPicker.SEARCH_EMAIL];
-ZmContactPicker.ALL = [ ZmContactPicker.SEARCH_BASIC, ZmContactPicker.SEARCH_NAME, ZmContactPicker.SEARCH_PHONETIC, ZmContactPicker.SEARCH_EMAIL, ZmContactPicker.SEARCH_DEPT ];
 
 // Public methods
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmContactPicker.prototype.toString =
+function() {
+	return "ZmContactPicker";
+};
 
 /**
 * Displays the contact picker dialog. The source list is populated with
@@ -200,8 +205,7 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 	var query;
 	var queryHint = [];
 	var emailQueryTerm = "";
-	var phoneticQueryTerms = [];
-	var nameQueryTerms = [];
+	var phoneticQueryTerms = [];  // Should be ORed with nameQuery if both are present
 	var conds = [];
 	if (this._detailedSearch) {
 		var nameQuery = this.getSearchFieldValue(ZmContactPicker.SEARCH_NAME);
@@ -209,19 +213,7 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 		var deptQuery = this.getSearchFieldValue(ZmContactPicker.SEARCH_DEPT);
 		var phoneticQuery = this.getSearchFieldValue(ZmContactPicker.SEARCH_PHONETIC);
 		var isGal = this._searchInSelect && (this._searchInSelect.getValue() == ZmContactsApp.SEARCHFOR_GAL);
-		if (nameQuery && !isGal) {
-			var nameQueryPieces = nameQuery.split(/\s+/);
-			for (var i = 0; i < nameQueryPieces.length; i++) {
-				var nameQueryPiece = nameQueryPieces[i];
-				nameQueryTerms.push("#"+ZmContact.F_firstName + ":" + nameQueryPiece);
-				nameQueryTerms.push("#"+ZmContact.F_lastName + ":" + nameQueryPiece);
-				nameQueryTerms.push("#"+ZmContact.F_middleName + ":" + nameQueryPiece);
-				nameQueryTerms.push("#"+ZmContact.F_nickname + ":" + nameQueryPiece);
-			}
-			query = "(" + nameQueryTerms.join(" OR ") + ")";
-		} else {
-			query = nameQuery || "";
-		}
+		query = nameQuery || "";
 		if (emailQuery) {
 			if (isGal) {
 				conds.push([{attr:ZmContact.F_email, op:"has", value: emailQuery},
@@ -283,12 +275,16 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 		}
 	}
 
-	if (this._contactSource == ZmItem.CONTACT && query != "" && !query.startsWith ("(")) {
-		query = query.replace(/\"/g, '\\"');
-		query = "\"" + query + "\"";
-	}
+    if (this._contactSource == ZmItem.CONTACT && query != "") {
+        query = query.replace(/\"/g, '\\"');
+        query = "\"" + query + "\"";
+    }
 	if (phoneticQueryTerms.length) {
-		query = query + " (" + phoneticQueryTerms.join(" OR ") + ")";
+		// OR any phonetic query terms with the main (name) query
+		if (query.length) {
+			phoneticQueryTerms.unshift(query);
+		}
+		query = "(" + phoneticQueryTerms.join(" OR ") + ")";
 	}
 	if (emailQueryTerm.length) {
 		query = query + " " + emailQueryTerm;  // MUST match email term, hence AND rather than OR
@@ -527,7 +523,7 @@ function(account) {
 
 	this._searchRow = {};
 	for (var rowId in rowMap) {
-		var row = Dwt.byId(rowMap[rowId]);
+		row = Dwt.byId(rowMap[rowId]);
 		if (row) {
 			this._searchRow[rowId] = row;
 		}
@@ -539,12 +535,7 @@ function(account) {
 	//add tabgroups for keyboard navigation
 	this._tabGroup = new DwtTabGroup(this.toString());
 	this._tabGroup.removeAllMembers();
-	for (var i = 0; i < ZmContactPicker.ALL.length; i++) {
-		field = Dwt.byId(fieldMap[ZmContactPicker.ALL[i]]);
-		if (Dwt.getVisible(field)) {
-			this._tabGroup.addMember(field);
-		}
-	}
+	this._tabGroup.addMember(this._searchField[ZmContactPicker.SEARCH_BASIC] || this._searchField[ZmContactPicker.SEARCH_NAME]);
 	this._tabGroup.addMember(this._searchButton);
 	this._tabGroup.addMember(this._searchInSelect);
 	this._tabGroup.addMember(this._chooser.getTabGroupMember());
