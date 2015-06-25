@@ -436,9 +436,9 @@ function(container) {
 		type:               DwtInputField.STRING,
 		required:           false,
 		validationStyle:    DwtInputField.CONTINUAL_VALIDATION,
-		validator:          this._updateName.bind(this)
 	};
 	var input = this._sigName = new DwtInputField(params);
+	input.setValidationCallback(this._updateName.bind(this));
 	this._replaceControlElement(nameEl, input);
 
 	// Signature FORMAT
@@ -1064,38 +1064,20 @@ function(ev) {
 // validation
 
 ZmSignaturesPage.prototype._updateName =
-function(value) {
+function(field, isValid) {
 
 	var signature = this._selSignature;
 	if (!signature) {
 		return;
 	}
 
-	if (signature.name !== value) {
-		signature.name = value;
+	if (signature.name !== field.getValue()) {
+		signature.name = field.getValue();
 		this._sigList.redrawItem(signature);
 		this._sigList.setSelection(signature, true);
 		this._resetOperations();
 		this._updateUsageSelects(signature, ZmEvent.E_MODIFY);
 	}
-};
-
-ZmSignaturesPage.prototype._validateName =
-function(value) {
-	if (value.replace(/\s*/g, "") === "") {
-		throw ZmMsg.errorMissingRequired;
-	}
-
-	var signature = this._selSignature;
-	if (!signature) {
-		return;
-	}
-
-	signature.name = value;
-	this._sigList.redrawItem(signature);
-	this._updateUsageSelects(signature, ZmEvent.E_MODIFY);
-
-	return value;
 };
 
 ZmSignaturesPage.prototype._hasChanged =
