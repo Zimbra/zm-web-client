@@ -206,6 +206,9 @@ function(viewId, startDate, skipMaintenance) {
 		this._setup(viewId);
 	}
 
+	var previousView = this._viewMgr.getCurrentView();
+	var hadFocus = previousView && previousView.hasFocus();
+
 	this._viewMgr.setView(viewId);
 	DBG.timePt("setup and set view");
 
@@ -218,7 +221,7 @@ function(viewId, startDate, skipMaintenance) {
     this._currentViewId = this._currentViewType = this._viewMgr.getCurrentViewName();
 
     this.setCurrentListView(null);
-	this._listView[this._currentViewId] = this._viewMgr.getCurrentView();
+    var currentView = this._listView[this._currentViewId] = this._viewMgr.getCurrentView();
 	this._resetToolbarOperations(viewId);
 
 
@@ -255,10 +258,9 @@ function(viewId, startDate, skipMaintenance) {
 	} else {
         if(viewId!=ZmId.VIEW_CAL_MONTH){this._viewMgr.getView(viewId).initializeTimeScroll();}
 		this._navToolBar[ZmId.VIEW_CAL].setVisible(true);
-		var cv = this._viewMgr.getCurrentView();
 		var navText = viewId == ZmId.VIEW_CAL_MONTH
-			? cv.getShortCalTitle()
-			: cv.getCalTitle();
+			? currentView.getShortCalTitle()
+			: currentView.getCalTitle();
 		this._navToolBar[ZmId.VIEW_CAL].setText(navText);
 		DBG.println(AjxDebug.DBG1, "ZmCalViewController.show, skipMaintenance = " + skipMaintenance);
 		if (!skipMaintenance) {
@@ -274,6 +276,10 @@ function(viewId, startDate, skipMaintenance) {
             this.updateTimeIndicator(viewId);
         }
 		DBG.timePt("scheduling maintenance");
+	}
+
+	if (hadFocus) {
+		currentView.focus();
 	}
 
 	// do this last
