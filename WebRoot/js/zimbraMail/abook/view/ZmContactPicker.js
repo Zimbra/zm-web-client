@@ -200,7 +200,8 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 	var query;
 	var queryHint = [];
 	var emailQueryTerm = "";
-	var phoneticQueryTerms = [];  // Should be ORed with nameQuery if both are present
+	var phoneticQueryTerms = [];
+	var nameQueryTerms = [];
 	var conds = [];
 	if (this._detailedSearch) {
 		var nameQuery = this.getSearchFieldValue(ZmContactPicker.SEARCH_NAME);
@@ -208,7 +209,19 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 		var deptQuery = this.getSearchFieldValue(ZmContactPicker.SEARCH_DEPT);
 		var phoneticQuery = this.getSearchFieldValue(ZmContactPicker.SEARCH_PHONETIC);
 		var isGal = this._searchInSelect && (this._searchInSelect.getValue() == ZmContactsApp.SEARCHFOR_GAL);
-		query = nameQuery || "";
+		if (nameQuery && !isGal) {
+			var nameQueryPieces = nameQuery.split(/\s+/);
+			for (var i = 0; i < nameQueryPieces.length; i++) {
+				var nameQueryPiece = nameQueryPieces[i];
+				nameQueryTerms.push("#"+ZmContact.F_firstName + ":" + nameQueryPiece);
+				nameQueryTerms.push("#"+ZmContact.F_lastName + ":" + nameQueryPiece);
+				nameQueryTerms.push("#"+ZmContact.F_middleName + ":" + nameQueryPiece);
+				nameQueryTerms.push("#"+ZmContact.F_nickname + ":" + nameQueryPiece);
+			}
+			query = "(" + nameQueryTerms.join(" OR ") + ")";
+		} else {
+			query = nameQuery || "";
+		}
 		if (emailQuery) {
 			if (isGal) {
 				conds.push([{attr:ZmContact.F_email, op:"has", value: emailQuery},
@@ -270,16 +283,12 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 		}
 	}
 
-    if (this._contactSource == ZmItem.CONTACT && query != "") {
-        query = query.replace(/\"/g, '\\"');
-        query = "\"" + query + "\"";
-    }
+	if (this._contactSource == ZmItem.CONTACT && query != "" && !query.startsWith ("(")) {
+		query = query.replace(/\"/g, '\\"');
+		query = "\"" + query + "\"";
+	}
 	if (phoneticQueryTerms.length) {
-		// OR any phonetic query terms with the main (name) query
-		if (query.length) {
-			phoneticQueryTerms.unshift(query);
-		}
-		query = "(" + phoneticQueryTerms.join(" OR ") + ")";
+		query = query + " (" + phoneticQueryTerms.join(" OR ") + ")";
 	}
 	if (emailQueryTerm.length) {
 		query = query + " " + emailQueryTerm;  // MUST match email term, hence AND rather than OR
