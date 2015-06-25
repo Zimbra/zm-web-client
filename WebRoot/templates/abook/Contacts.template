@@ -878,9 +878,15 @@
 		} else {
 		$>
 			<$= AjxTemplate.expand("abook.Contacts#AddTooltipEntry", {data:data, field:"fullName"}) $>
-			<$= AjxTemplate.expand("abook.Contacts#AddTooltipEntry", {data:data, field:"jobTitle"}) $>
-			<$= AjxTemplate.expand("abook.Contacts#AddTooltipEntry", {data:data, field:"department"}) $>
-			<$= AjxTemplate.expand("abook.Contacts#AddTooltipEntry", {data:data, field:"company"}) $>
+			<$ var fields = I18nMsg.contactTooltipWorkInfoOrder.split(",");
+			   var num = fields.length;
+			   var i;
+			   for (i = 0; i < num; i++) {
+			$>
+				<$= AjxTemplate.expand("abook.Contacts#AddTooltipEntry", {data:data, field:fields[i]}) $>
+			<$
+			   }
+			$>
 			<$= AjxTemplate.expand("abook.Contacts#AddTooltipEntry", {data:data, field:"mobilePhone"}) $>
 			<$= AjxTemplate.expand("abook.Contacts#AddTooltipEntry", {data:data, field:"workPhone"}) $>
 			<$= AjxTemplate.expand("abook.Contacts#AddTooltipEntry", {data:data, field:"homePhone"}) $>
