@@ -35,13 +35,15 @@ ZmCalBaseView = function(parent, className, posStyle, controller, view, readonly
 	this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener.bind(this));
 	this.addListener(DwtEvent.ONMOUSEUP, this._mouseUpListener.bind(this));
 	this.addListener(DwtEvent.ONMOUSEMOVE, this._mouseMoveListener.bind(this));
+	this.addListener(DwtEvent.ONFOCUS, this._focusListener.bind(this));
 
 	this._controller = controller;
 	this.view = view;	
 	this._evtMgr = new AjxEventMgr();	 
 	this._selectedItems = new AjxVector();
 	this._selEv = new DwtSelectionEvent(true);
-	this._actionEv = new DwtListViewActionEvent(true);	
+	this._actionEv = new DwtListViewActionEvent(true);
+	this._focusFirstAppt = true;
 
 	this._normalClass = "appt";
 	this._selectedClass = [this._normalClass, DwtCssStyle.SELECTED].join('-');
@@ -118,7 +120,7 @@ ZmCalBaseView._getColors = function(color) {
  */
 ZmCalBaseView.prototype.getKeyMapName =
     function() {
-        return DwtKeyMap.MAP_MENU;
+        return ZmKeyMap.MAP_CALENDAR;
     };
 
 /**
@@ -130,19 +132,103 @@ ZmCalBaseView.prototype.getKeyMapName =
  * @see		ZmKeyMap
  * @see     DwtControl
  */
-ZmCalBaseView.prototype.handleKeyAction =
-    function(actionCode, ev) {
-        switch (actionCode) {
-            //Gets the Esc key handle
-            case DwtKeyMap.CANCEL:
-                this.deselectAppt();
-                return true;
-
-            default:
-                return false;
-        }
+ZmCalBaseView.prototype.handleKeyAction = function(actionCode, ev) {
+    switch (actionCode) {
+    // the next/prev appointment just iterate over all appointments in
+    // view in a chronological order
+    case ZmKeyMap.NEXT_APPT:
+    case ZmKeyMap.PREV_APPT:
+        this._iterateSelection(actionCode === ZmKeyMap.NEXT_APPT);
         return true;
-    };
+
+    // the next/prev appointment whose start day differs from the
+    // current selection
+    case ZmKeyMap.NEXT_DAY:
+    case ZmKeyMap.PREV_DAY:
+        this._iterateSelection(actionCode === ZmKeyMap.NEXT_DAY, function(appt) {
+            return appt.startDate.toDateString();
+        });
+        return true;
+
+    // pagination
+    case ZmKeyMap.PREV_PAGE:
+    case ZmKeyMap.NEXT_PAGE:
+        this._paginate(actionCode === ZmKeyMap.NEXT_PAGE);
+        return true;
+
+    //Gets the Esc key handle
+    case DwtKeyMap.CANCEL:
+        this.deselectAll();
+        return true;
+
+    case DwtKeyMap.SELECT:
+        return this._doubleClickListener(ev);
+
+    case DwtKeyMap.SUBMENU:
+        // notify action listeners so we pop up a context menu --
+        // however, 'ev' is a keyboard event and has no position, so
+        // we create one for positioning the menu over the appointment
+        var rect = this.getTargetItemDiv(ev).getBoundingClientRect();
+        ev.item = this.getTargetItem(ev);
+        ev.docX = rect.left + rect.width / 2;
+        ev.docY = rect.top + rect.height / 2;
+
+        this._evtMgr.notifyListeners(DwtEvent.ACTION, ev);
+
+        return true;
+    }
+
+    return DwtComposite.prototype.handleKeyAction.apply(this, arguments);
+};
+
+ZmCalBaseView.prototype._paginate = function(forward) {
+    this._focusFirstAppt = forward;
+    this._controller._paginate(this.view, forward);
+};
+
+/**
+ * Iterate the selection over appoinments; if no next/previous
+ * appointment found, switch pages.
+ *
+ * @param forward	[Boolean]*		whether to iterate forwards or backwards
+ *
+ * @param keyFunc	[Function]		function to map appointments to values;
+ *									select the first appointnment with a value
+ *									different from the current selection
+ *
+ * @private
+ */
+ZmCalBaseView.prototype._iterateSelection = function(forward, keyFunc) {
+    var list = this.getList();
+
+    if (!list.size()) {
+        this._paginate(forward);
+        return;
+    }
+
+    if (this.getSelectionCount() == 0) {
+        this.setSelection(forward ? list.get(0) : list.getLast());
+    }
+
+    if (!keyFunc) {
+        keyFunc = function(x) { return x; }
+    }
+
+    var selappt = this.getSelection()[0]
+    var selIdx = list.indexOf(selappt);
+    var selKey = keyFunc(selappt);
+
+    for (var i = selIdx; i < list.size() && i >= 0; i += (forward ? 1 : -1)) {
+        var appt = list.get(i);
+
+        if (keyFunc(appt) != selKey) {
+            this.setSelection(appt);
+            return;
+        }
+    }
+
+    this._paginate(forward);
+};
 
 ZmCalBaseView._toColorsCss =
 function(object) {
@@ -369,6 +455,16 @@ function(ev)  {
 	return this.findItemDiv(DwtUiEvent.getTarget(ev));
 };
 
+ZmCalBaseView.prototype.getTargetItem =
+function(ev)  {
+	return this.findItem(DwtUiEvent.getTarget(ev));
+};
+
+ZmCalBaseView.prototype.findItem =
+function(el) {
+	return DwtListView.prototype.findItem.apply(this, arguments);
+};
+
 ZmCalBaseView.prototype.findItemDiv =
 function(el) {
 	return DwtListView.prototype.findItemDiv.apply(this, arguments);
@@ -386,7 +482,7 @@ function(id, field, value) {
 
 ZmCalBaseView.prototype.deselectAll =
 function() {
-    this.deselectAppt();
+    this.deselectAppt(this._selectedItems);
 };
 
 /**
@@ -461,6 +557,15 @@ function(ev) {
 	// do nothing
 };
 
+ZmCalBaseView.prototype._focusListener =
+function(ev) {
+    var item = this.getTargetItem(ev);
+
+    if (item) {
+        this.setSelection(item);
+    }
+};
+
 // XXX: why not use Dwt.findAncestor?
 ZmCalBaseView.prototype._findAncestor =
 function(elem, attr) {
@@ -529,34 +634,15 @@ function(ev) {
 ZmCalBaseView.prototype._itemClicked =
 function(clickedEl, ev) {
 	var i;
-	var a = this._selectedItems.getArray();
-	var numSelectedItems = this._selectedItems.size();
-	// is this element currently in the selected items list?
-    var clickedElSet = this._getItemClickedSet(clickedEl);
-    // If one of a click set is contained, all should be.  Handles sliced up multi-day appts
-	var bContained = this._selectedItems.contains(clickedElSet[0]);
+	var selected = this._selectedItems.contains(clickedEl);
+	var item = this.getItemFromElement(clickedEl);
+	var type = this._getItemData(clickedEl, "type");
 
-	DwtUiEvent.copy(this._selEv, ev);
-	var item = this._selEv.item = this.getItemFromElement(clickedElSet[0]);
-	var type = this._getItemData(clickedElSet[0], "type");
-
-	if (ev.shiftKey && bContained) {
+	if (ev.shiftKey && selected) {
         //Deselect the current selected appointment
-        this.deselectAppt(clickedElSet);
-	} else if (!bContained) {
-		// clear out old left click selection(s)
-		for (i = 0; i < numSelectedItems; i++) {
-			a[i].className = this._getStyle(type);
-		}
-		this._selectedItems.removeAll();
-
-		// save new left click selection
-        for (var i = 0; i < clickedElSet.length; i++) {
-            this._selectedItems.add(clickedElSet[i]);
-		    clickedElSet[i].className = this._getStyle(type, true, !this.getEnabled(), item);
-        }
-        this._selEv.detail = DwtListView.ITEM_SELECTED;
-		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
+        this.deselectAppt([clickedEl]);
+	} else if (!selected) {
+		this.setSelection(item);
 	}
 
 	if (ev.button == DwtMouseEvent.RIGHT) {
@@ -566,12 +652,6 @@ function(clickedEl, ev) {
 	}
 };
 
-
-ZmCalBaseView.prototype._getItemClickedSet =
-function(clickedEl) {
-    return [clickedEl];
-}
-
 // YUCK: ZmListView overloads b/c ZmListController thinks its always dealing w/ ZmListView's
 ZmCalBaseView.prototype.setSelectionCbox = function(obj, bContained) {};
 ZmCalBaseView.prototype.setSelectionHdrCbox = function(check) {};
@@ -579,6 +659,7 @@ ZmCalBaseView.prototype.setSelectionHdrCbox = function(check) {};
 ZmCalBaseView.prototype.setSelection =
 function(item, skipNotify) {
 	var el = this._getElFromItem(item);
+
 	if (el) {
 		var i;
 		var a = this._selectedItems.getArray();
@@ -588,7 +669,12 @@ function(item, skipNotify) {
 		}
 		this._selectedItems.removeAll();
 		this._selectedItems.add(el);
+
 		el.className = this._getStyle(this._getItemData(el, "type"), true, !this.getEnabled(), item);
+
+		this.setFocusElement(el);
+		Dwt.clearHandler(el, DwtEvent.ONCLICK);
+
 		if (!skipNotify && this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
 			var selEv = new DwtSelectionEvent(true);
 			selEv.button = DwtMouseEvent.LEFT;
@@ -804,7 +890,7 @@ function(appt,div) {
 ZmCalBaseView.prototype.set = 
 function(list) {
 	this._preSet();
-	this.deselectAppt();
+	this.deselectAll();
 	list = list.filter(this.isInView.bind(this));
 	this._resetList();
 	this._list = list;
@@ -822,6 +908,15 @@ function(list) {
 	}
 
 	this._postSet(list);
+
+	// the calendar itself may have focus; this re-focuses any items
+	// within it
+	var selappt = this._focusFirstAppt ? this._list.get(0) : this._list.getLast();
+	this._focusFirstAppt = true;
+
+	if (selappt) {
+		this.setSelection(selappt);
+	}
 };
 
 // override
@@ -882,6 +977,8 @@ function() {
 	var list = this.getList();
 	var size = list ? list.size() : 0;
 	if (size == 0) return;
+
+	this.setFocusElement(this.getHtmlElement());
 
 	for (var i=0; i < size; i++) {
 		var ao = list.get(i);
@@ -1360,20 +1457,30 @@ ZmCalBaseView.prototype.updateTimeIndicator=function() { };
 /**
  * De-selects a selected appointment
  *
- * @param   {array}  clickedAppts an array of appointments
+ * @param   {array}  appts an array of appointments
  */
 ZmCalBaseView.prototype.deselectAppt =
-function (clickedAppts) {
-    clickedAppts = clickedAppts || this._selectedItems.getArray();
+function (appts) {
+    appts = AjxUtil.toArray(appts);
 
-    if(clickedAppts.length > 0) {
-        var type = this._getItemData(this._getItemClickedSet(clickedAppts), "type");
+    var type = this._getItemData(appts, "type");
 
-        for(var i = 0; i < clickedAppts.length; i++) {
-            clickedAppts[i].className = this._getStyle(type);
-            this._selectedItems.remove(clickedAppts[i]);
+    for(var i = 0; i < appts.length; i++) {
+        var selIdx = this._selectedItems.indexOf(appts[i]);
+
+        if (selIdx < 0) {
+            continue;
         }
+
+        // despite their code and general architecture, calendar
+        // views never have more than one selected item, so just
+        // switch to focus to the view itself
+        this.setFocusElement(this.getHtmlElement());
+
+        appts[i].className = this._getStyle(type);
+        this._selectedItems.remove(appts[i]);
         this._selEv.detail = DwtListView.ITEM_DESELECTED;
+        this._selEv.item = appts[i];
         this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
     }
 };

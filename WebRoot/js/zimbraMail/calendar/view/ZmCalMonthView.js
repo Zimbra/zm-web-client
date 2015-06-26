@@ -286,6 +286,11 @@ function() {
             }
             first = false;
             last = false;
+
+            if (day) {
+                var date = DwtCalendar.getDateFormatter().format(day.date);
+                allDayDiv.setAttribute('aria-label', date + ' ' + appt.getName());
+            }
         }
     }
 
@@ -970,6 +975,7 @@ function(dayInfo) {
 
     view.setDate(date, 0, true);
     view.setSize(size.x-10, size.y-12);
+    view._syncScroll();
 
     var loc = Dwt.toWindow(tdCell, 0, 0, this.getHtmlElement(), true);
     view.setLocation(loc.x+5, loc.y+5);

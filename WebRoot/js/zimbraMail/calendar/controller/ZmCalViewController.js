@@ -4057,10 +4057,9 @@ function(work, view, list, skipMiniCalUpdate, query) {
 		this._list = new ZmApptList();
 		this._list.getVector().addList(list);
 		var sel = view.getSelection();
-		view.set(list, skipMiniCalUpdate);
+		view.set(list);
 
 		// For bug 27221, reset toolbar after refresh
-		view.deselectAll();
 		if (sel && sel.length > 0) {
 			var id = sel[0].id;
 			for (var i = 0; i < this._list.size(); i++) {
@@ -4525,14 +4524,19 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) 
  * @param {ZmListView} view	the view
  */
 ZmCalViewController.prototype.setCurrentListView = function(view) {
+    if (!view) {
+        return;
+    }
+
     if (this._currentListView != view) {
-        // if changing views, de-select items in current view so user doesn't get confused
-        if (this._currentListView) {
-            this._currentListView.deselectAll();
-            this._currentListView.blur();
-        }
+        var hadFocus = this._currentListView && this._currentListView.hasFocus();
+
         this._currentListView = view;
         this._resetToolbarOperations();
+
+        if (hadFocus) {
+            this._currentListView.focus();
+        }
     }
 };
 
