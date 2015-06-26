@@ -388,7 +388,7 @@
 				<c:set var="dragFolderid" value="${fn:substring(dragTargetFolder, 2, -1)}"/>
 				<c:set var="movedFolderName" value="${zm:getFolderName(pageContext, dragFolderid)}"/>
 				<zm:checkCrumb crumb="${param.crumb}"/>
-				<zm:moveMessage folderid="${dragFolderid}"var="result" id="${ids}"/>
+				<zm:moveMessage folderid="${dragFolderid}" var="result" id="${ids}"/>
 				<app:status>
 					<fmt:message  key="actionMessageMoved">
 						<fmt:param value="${result.idCount}"/>
@@ -400,7 +400,7 @@
 				<c:set var="folderid" value="${fn:substring(folderId, 2, -1)}"/>
 				<c:set var="movedFolderName" value="${zm:getFolderName(pageContext, folderid)}"/>
 				<zm:checkCrumb crumb="${param.crumb}"/>
-				<zm:moveMessage folderid="${folderid}"var="result" id="${ids}"/>
+				<zm:moveMessage folderid="${folderid}" var="result" id="${ids}"/>
 				<app:status>
 					<fmt:message  key="actionMessageMoved">
 						<fmt:param value="${result.idCount}"/>

@@ -1510,7 +1510,7 @@ if (ext == null) ext = "";
     <path id='jspc.class.path'>
         <pathelement  path="${build.classes.dir}" />
         <pathelement path="${server.dist.dir}/jetty/resources" />
-        <fileset dir="${lib.dir}/jsp-2.3" includes="*.jar"/>
+    	<fileset dir="${lib.dir}/apache-jsp" includes="*.jar"/>
         <fileset file="${taglib.jarfile}"/>
         <fileset file="${client.jarfile}"/>
         <fileset file="${common.jarfile}"/>
@@ -1519,16 +1519,10 @@ if (ext == null) ext = "";
     </path>
 
     <target name="jspc">
-        <java classname="org.apache.jasper.JspC" fork="true" classpathref="jspc.class.path">
-            <arg value="-l" />
-            <arg value="-s" />
-            <arg value="-trimSpaces" />
-            <arg value="-d" />
-            <arg value="${jspc.build.dir}" />
-            <arg value="-uriroot" />
-            <arg value="${jspc.src.dir}" />
-            <arg line="${param.jspfiles}" />
-        </java>
+    	<taskdef name="jasper" classname="org.apache.jasper.JspC" classpathref="jspc.class.path"/>
+    	<jasper listerrors="true" trimspaces="true" outputdir="${jspc.build.dir}"
+    		uriroot="${jspc.src.dir}" jspfiles="${param.jspfiles}" classpath="jspc.class.path"
+        />
     </target>
 
     <target name="jspc.precompile">
@@ -1538,7 +1532,7 @@ if (ext == null) ext = "";
             <fileset dir='${web.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp,WEB-INF/**"/>
         </copy>
         <fileset id='jspc.fileset1' dir='${jspc.src.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp"/>
-        <pathconvert property='jspc.files1' refid='jspc.fileset1' pathsep=' ' />
+        <pathconvert property='jspc.files1' refid='jspc.fileset1' pathsep=',' />
         <antcall target="jspc">
             <param name="param.jspfiles" value="${jspc.files1}" />
         </antcall>

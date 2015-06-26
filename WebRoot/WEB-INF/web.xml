@@ -398,7 +398,7 @@
 
   <servlet>
     <servlet-name>jsp</servlet-name>
-    <servlet-class>com.zimbra.webClient.servlet.JspServlet</servlet-class>
+    <servlet-class>org.eclipse.jetty.jsp.JettyJspServlet</servlet-class>
     <async-supported>true</async-supported>
     <init-param>
       <param-name>logVerbosityLevel</param-name>
