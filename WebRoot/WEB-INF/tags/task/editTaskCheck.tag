@@ -59,7 +59,7 @@
                             <c:otherwise>
                                 <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
                                 <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
-                                <zm:tagItem tagid="${tagid}"var="result" id="${id}" tag="${tag}"/>
+                                <zm:tagItem tagid="${tagid}" var="result" id="${id}" tag="${tag}"/>
                                 <app:status>
                                     <fmt:message key="${tag ? 'actionTaskTag' : 'actionTaskUntag'}">
                                         <fmt:param value="${result.idCount}"/>

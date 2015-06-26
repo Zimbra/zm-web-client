@@ -64,7 +64,7 @@
                     <c:otherwise>
                         <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
                         <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
-                        <zm:tagItem tagid="${tagid}"var="result" id="${ids}" tag="${tag}"/>
+                        <zm:tagItem tagid="${tagid}" var="result" id="${ids}" tag="${tag}"/>
                         <app:status>
                             <fmt:message key="${tag ? 'actionTaskTag' : 'actionTaskUntag'}">
                                 <fmt:param value="${result.idCount}"/>
@@ -77,7 +77,7 @@
             <c:when test="${fn:startsWith(folderId, 'm:')}">
                 <zm:checkCrumb crumb="${param.crumb}"/>
                 <c:set var="folderid" value="${fn:substring(folderId, 2, -1)}"/>
-                <zm:moveItem folderid="${folderid}"var="result" id="${ids}"/>
+                <zm:moveItem folderid="${folderid}" var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionTaskMoved">
                         <fmt:param value="${result.idCount}"/>

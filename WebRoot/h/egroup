@@ -126,7 +126,7 @@
     <table width=100%>
     <tr>
         <td class='TbTop' colspan="2">
-            <app:editContactToolbar create="${isCreate}"context="${context}" keys="true"/>
+            <app:editContactToolbar create="${isCreate}" context="${context}" keys="true"/>
         </td>
     </tr>
     <tr>

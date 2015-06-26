@@ -138,7 +138,7 @@
             <span class='td label'><label for="fromField"><fmt:message key="fromLabel"/></label></span>
             <span class="td value">
                 <select id="fromField" name="from" style="width:98% !important;">
-                <c:forEach var="identity" items="${mailbox.accountInfo.identities}"><option <c:if test="${identity.default}">selected='true'</c:if> value="${fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted)}">${zm:truncateFixed(fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted),50,true)}</option></c:forEach>
+                <c:forEach var="identity" items="${mailbox.accountInfo.identities}"><option <c:if test="${identity.isDefault}">selected='true'</c:if> value="${fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted)}">${zm:truncateFixed(fn:escapeXml(identity.fromEmailAddress.fullAddressQuoted),50,true)}</option></c:forEach>
                 </select>
             </span>
     

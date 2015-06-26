@@ -229,7 +229,7 @@
                     <c:otherwise>
                 <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
                 <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
-                <zm:tagContact tagid="${tagid}"var="result" id="${ids}" tag="${tag}"/>
+                <zm:tagContact tagid="${tagid}" var="result" id="${ids}" tag="${tag}"/>
                 <app:status>
                     <fmt:message key="${tag ? 'actionContactTag' : 'actionContactUntag'}">
                         <fmt:param value="${result.idCount}"/>
@@ -248,7 +248,7 @@
                     </c:when>
                     <c:otherwise>
                         <c:set var="folderid" value="${fn:substring(folderId, 2, -1)}"/>
-                        <zm:moveContact folderid="${folderid}"var="result" id="${ids}"/>
+                        <zm:moveContact folderid="${folderid}" var="result" id="${ids}"/>
                         <app:status>
                             <fmt:message key="actionContactMoved">
                                 <fmt:param value="${result.idCount}"/>
