@@ -878,7 +878,7 @@
 		} else {
 		$>
 			<$= AjxTemplate.expand("abook.Contacts#AddTooltipEntry", {data:data, field:"fullName"}) $>
-			<$ var fields = I18nMsg.contactTooltipWorkInfoOrder.split(",");
+			<$ var fields = ZmMsg.contactTooltipWorkInfoOrder.split(",");
 			   var i;
 			   for (i = 0; i < fields.length; i++) {
 			$>
