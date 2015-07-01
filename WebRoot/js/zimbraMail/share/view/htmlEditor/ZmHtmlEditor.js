@@ -587,14 +587,14 @@ function() {
 
 ZmHtmlEditor.prototype._handleEditorKeyEvent = function(ev) {
 
-	var ed = this.getEditor();
-	var retVal = true;
+	var ed = this.getEditor(),
+	    retVal = true;
 
-    if ((!appCtxt.get(ZmSetting.TAB_IN_EDITOR) && ev.keyCode === DwtKeyEvent.KEY_TAB) || DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
+    if (DwtKeyboardMgr.isPossibleInputShortcut(ev) || (ev.keyCode === DwtKeyEvent.KEY_TAB && ev.shiftKey)) {
         // pass to keyboard mgr for kb nav
         retVal = DwtKeyboardMgr.__keyDownHdlr(ev);
     }
-    else if (ev.keyCode === 13) { // enter key
+    else if (DwtKeyEvent.IS_RETURN[ev.keyCode]) { // enter key
         var parent,
             selection,
             startContainer,
@@ -660,7 +660,7 @@ ZmHtmlEditor.prototype._handleEditorKeyEvent = function(ev) {
         catch (e) {
         }
     }
-    else if (ev.keyCode === 9 && !ev.shiftKey && !ev.altKey && !ev.ctrlKey) {
+    else if (ZmHtmlEditor.isEditorTab(ev)) {
         ed.execCommand('mceInsertContent', false, '&emsp;');
         DwtUiEvent.setBehaviour(ev, true, false);
         return false;
@@ -681,7 +681,7 @@ ZmHtmlEditor.prototype._handleEditorKeyEvent = function(ev) {
 // Text mode key event handler
 ZmHtmlEditor.prototype._handleTextareaKeyEvent = function(ev) {
 
-    if (appCtxt.get(ZmSetting.TAB_IN_EDITOR) && ev.keyCode === 9 && !ev.shiftKey && !ev.altKey && !ev.ctrlKey) {
+    if (ZmHtmlEditor.isEditorTab()) {
         Dwt.insertText(this.getContentField(), '\t');
         DwtUiEvent.setBehaviour(ev, true, false);
         return false;
@@ -1612,13 +1612,13 @@ ZmHtmlEditor.prototype._editWordHandler2 = function(fixall, spanEl, ev) {
 	var input = DwtUiEvent.getTarget(ev);
 	var keyEvent = /key/.test(evType);
 	var removeInput = true;
-	if (/blur/.test(evType) || (keyEvent && evKeyCode == 13)) {
+	if (/blur/.test(evType) || (keyEvent && DwtKeyEvent.IS_RETURN[evKeyCode])) {
 		if (evCtrlKey)
 			fixall =! fixall;
 		var orig = AjxUtil.getInnerText(spanEl);
 		var spanEls = fixall ? this._spellCheck.wordIds[orig] : spanEl;
 		this._editWordFix(spanEls, input.value);
-	} else if (keyEvent && evKeyCode == 27 /* ESC */) {
+	} else if (keyEvent && evKeyCode === DwtKeyEvent.KEY_ESCAPE) {
 		this._editWordFix(spanEl, AjxUtil.getInnerText(spanEl));
 	} else {
 		removeInput = false;
@@ -2598,4 +2598,10 @@ ZmHtmlEditor.prototype._overrideTinyMCEMethods = function() {
 			}
 		}
 	}
+};
+
+// Returns true if the user is inserting a Tab into the editor (rather than moving focus)
+ZmHtmlEditor.isEditorTab = function(ev) {
+
+    return appCtxt.get(ZmSetting.TAB_IN_EDITOR) && ev.keyCode === DwtKeyEvent.KEY_TAB && !ev.shiftKey && !DwtKeyMapMgr.hasModifier(ev);
 };
