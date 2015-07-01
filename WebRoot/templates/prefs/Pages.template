@@ -995,7 +995,15 @@ and the container element is replaced with that control.
 					<tr><td colspan=2><hr></td></tr>
 					<tr valign=top>
 						<td class='ZOptionsLabel'><$=ZmMsg.twoStepAccountSecurity$></td>
-						<td class='ZOptionsField' valign='middle'><$=ZmMsg.twoStepStandardAuth$>
+						<td class='ZOptionsField' valign='middle'>
+							<span id='${id}_TWO_STEP_AUTH'>
+								<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) { $>
+									<$=ZmMsg.twoStepAuth$>
+								<$ } $>
+								<$ else { $>
+									<$=ZmMsg.twoStepStandardAuth$>
+								<$ } $>
+							</span>
 							<a style="margin:20px;" href="#" id='${id}_TWO_STEP_AUTH_LINK'>
 								<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) { $>
 									<$=ZmMsg.twoStepAuthDisableLink$>
@@ -1006,16 +1014,20 @@ and the container element is replaced with that control.
 							</a>
 						</td>
 					</tr>
-					<tr valign=top
-						<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) { $>
-							style="display:none;"
-						<$ } $>
-					>
+					<tr valign=top>
 						<td colspan=2>
 							<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 								<tr>
 									<td class='ZOptionsLabel'><$=ZmMsg.twoStepAuthOneTimeCodes$></td>
 									<td class='ZOptionsField' valign='middle'><a href="#" id='${id}_TWO_STEP_AUTH_CODES_LINK'><$=ZmMsg.twoStepAuthOneTimeCodesLink$></a></td>
+								</tr>
+								<tr>
+									<td class='ZOptionsLabel'><$=ZmMsg.trustedDevices$></td>
+									<td class='ZOptionsField' valign='middle'>
+										<span id='${id}_TRUSTED_DEVICES_COUNT'></span>
+										<a href="#" class="ZmLinkDisabled" style="margin:10px;" id='${id}_TRUSTED_DEVICE_REVOKE_LINK'><$=ZmMsg.trustedDevicesRevoke$></a>
+										<a href="#" class="ZmLinkDisabled" style="margin:10px;" id='${id}_TRUSTED_DEVICES_REVOKE_ALL_LINK'><$=ZmMsg.trustedDevicesRevokeAll$></a>
+									</td>
 								</tr>
 								<$ if (appCtxt.get(ZmSetting.APP_PASSWORDS_ENABLED)) { $>
 									<tr>

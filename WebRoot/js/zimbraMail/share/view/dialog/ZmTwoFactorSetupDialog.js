@@ -29,6 +29,7 @@
  */
 ZmTwoFactorSetupDialog = function(params) {
 	this.username = typeof appCtxt !== "undefined" ? appCtxt.getLoggedInUsername() : params.userName;
+	this.twoStepAuthSpan = params.twoStepAuthSpan;
 	this.twoStepAuthLink = params.twoStepAuthLink;
 	// this.isFromLoginPage will be true if ZmTwoFactorSetupDialog is created from TwoFactorSetup.jsp, which is forwarded from login.jsp file.
 	this.isFromLoginPage = params.isFromLoginPage;
@@ -197,6 +198,9 @@ function() {
 	}
 	else {
 		this.popdown();
+		if (this.twoStepAuthSpan) {
+			Dwt.setInnerHtml(this.twoStepAuthSpan, ZmMsg.twoStepAuth);
+		}
 		if (this.twoStepAuthLink) {
 			Dwt.setInnerHtml(this.twoStepAuthLink, ZmMsg.twoStepAuthDisableLink);
 		}
@@ -319,16 +323,17 @@ function(currentDivId, exception) {
 };
 
 ZmTwoFactorSetupDialog.disableTwoFactorAuth =
-function(twoStepAuthLink, dialog) {
+function(twoStepAuthLink, twoStepAuthSpan, dialog) {
 	var command = new ZmCsfeCommand();
 	var jsonObj = {DisableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount"}};
-	var callback = ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback.bind(window, twoStepAuthLink, dialog);
+	var callback = ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback.bind(window, twoStepAuthLink, twoStepAuthSpan, dialog);
 	command.invoke({jsonObj: jsonObj, noAuthToken: true, asyncMode: true, callback: callback, serverUri:"/service/soap/"});
 };
 
 ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback =
-function(twoStepAuthLink, dialog) {
+function(twoStepAuthLink, twoStepAuthSpan, dialog) {
 	dialog.popdown();
+	Dwt.setInnerHtml(twoStepAuthSpan, ZmMsg.twoStepStandardAuth);
 	Dwt.setInnerHtml(twoStepAuthLink, ZmMsg.twoStepAuthSetupLink);
 	appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_ENABLED, false, false, false, true);
 };

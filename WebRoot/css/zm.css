@@ -5948,3 +5948,9 @@ RBC, RTC {
 	margin-left:157px;
 	text-align:left;
 }
+
+a.ZmLinkDisabled {
+	pointer-events:none;
+	cursor:not-allowed;
+	@Text-disabled@
+}
