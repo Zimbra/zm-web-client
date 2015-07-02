@@ -985,23 +985,23 @@
 						<$ if (data.detailed) { $>
 						<tr id='${id}_searchNameRow'>
 							<td align='right'><$= ZmMsg.nameLabel $></td>
-							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchNameField'></td>
+							<td><input type='text' placeholder="<$= ZmMsg.contactPickerHint $>" autocomplete='off' size='30' nowrap id='${id}_searchNameField'></td>
 							<td id='${id}_searchButton' rowspan='3' valign='top'></td>
 							<td width='20' valign='middle'><div id='${id}_searchIcon' class='ImgSearch'></div></td>
 						</tr>
 						<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
 						<tr id='${id}_searchPhoneticRow'>
 							<td align='right'><$= ZmMsg.phoneticNameLabel $></td>
-							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchPhoneticField'></td>
+							<td><input type='text' placeholder="<$= ZmMsg.contactPickerPhoneticHint $>" autocomplete='off' size='30' nowrap id='${id}_searchPhoneticField'></td>
 						</tr>
 						<$ } $>
 						<tr id='${id}_searchEmailRow'>
 							<td align='right'><$= ZmMsg.emailAddrLabel $></td>
-							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchEmailField'></td>
+							<td><input type='text' placeholder="<$= ZmMsg.contactPickerEmailHint $>" autocomplete='off' size='30' nowrap id='${id}_searchEmailField'></td>
 						</tr>
 						<tr id='${id}_searchDepartmentRow'>
 							<td align='right'><$= ZmMsg.departmentLabel $></td>
-							<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchDepartmentField'></td>
+							<td><input type='text' placeholder="<$= ZmMsg.contactPickerDepartmentHint $>" autocomplete='off' size='30' nowrap id='${id}_searchDepartmentField'></td>
 						</tr>
 						<$ } else { $>
 						<tr id='${id}_searchRow'>
