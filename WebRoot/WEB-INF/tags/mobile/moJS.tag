@@ -698,6 +698,8 @@ var parseResponse = function (request, container,url) {
                     }
                 }
             }          
+        } else if (request.status == 0) {
+            showLoadingMsg('<fmt:message key="MO_networkError"/>', true, 'Critical');
         } else {
             showLoadingMsg('<fmt:message key="error"/> : ' + request.status, true, 'Critical');
         }
