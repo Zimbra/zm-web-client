@@ -225,7 +225,15 @@ function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
 			}
 			query = "(" + nameQueryTerms.join(" OR ") + ")";
 		} else {
-			query = nameQuery || "";
+			if (nameQuery && isGal) {
+				conds.push([{attr:ZmContact.F_firstName, op:"has", value: nameQuery},
+				            {attr:ZmContact.F_lastName,  op:"has", value: nameQuery},
+				            {attr:ZmContact.F_middleName, op:"has", value: nameQuery},
+				            {attr:ZmContact.F_nickname,  op:"has", value: nameQuery},
+				            {attr:ZmContact.F_phoneticFirstName, op:"has", value: nameQuery},
+				            {attr:ZmContact.F_phoneticLastName,  op:"has", value: nameQuery}]);
+			}
+			query = "";
 		}
 		if (emailQuery) {
 			if (isGal) {
