@@ -61,37 +61,37 @@
 <%-- NOTE: Keep in sync with ZmContact.js --%>
 <c:choose>
     <%--FIRST_LAST--%>
-    <c:when test="${fileAs eq 2}">
+    <c:when test="${fileAs eq '2'}">
         <% set("text", fileAsFirstLast(firstName, lastName, fullName, nickname)); %>
         ${text}
     </c:when>
     <%--COMPANY--%>
-    <c:when test="${fileAs eq 3}">
+    <c:when test="${fileAs eq '3'}">
         <c:choose>
             <c:when test="${not empty company}">${company}</c:when>
             <c:when test="${not empty fullName}">${fullName}</c:when>
         </c:choose>
     </c:when>
     <%--LAST_C_FIRST_COMPANY--%>
-    <c:when test="${fileAs eq 4}">
+    <c:when test="${fileAs eq '4'}">
         <% String name = fileAsLastFirst(firstName, lastName, fullName, nickname); %>
         <% set("text", fileAsNameCompany(name, company)); %>
         ${text}
     </c:when>
     <%--FIRST_LAST_COMPANY--%>
-    <c:when test="${fileAs eq 5}">
+    <c:when test="${fileAs eq '5'}">
         <% String name = fileAsFirstLast(firstName, lastName, fullName, nickname); %>
         <% set("text", fileAsNameCompany(name, company)); %>
         ${text}
     </c:when>
     <%--COMPANY_FIRST_C_LAST--%>
-    <c:when test="${fileAs eq 6}">
+    <c:when test="${fileAs eq '6'}">
         <% String name = fileAsLastFirst(firstName, lastName, fullName, nickname); %>
         <% set("text", fileAsCompanyName(name, company)); %>
         ${text}
     </c:when>
     <%--COMPANY_FIRST_LAST--%>
-    <c:when test="${fileAs eq 7}">
+    <c:when test="${fileAs eq '7'}">
         <% String name = fileAsFirstLast(firstName, lastName, fullName, nickname); %>
         <% set("text", fileAsCompanyName(name, company)); %>
         ${text}
