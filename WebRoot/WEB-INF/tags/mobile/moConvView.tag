@@ -121,11 +121,11 @@
             <c:set var="folders" value="${zm:getFolder(pageContext,mhit.folderId)}"/>
             <div class="tbl convView">
                 <div id="conv${mhit.id}" pconv="${convSummary.id}" class="tr conv_v_list_row list-row${mhit.isUnread ? '-unread' : ''}" style="${folders.isTrash ? 'text-decoration:line-through;' : ''}">
-                   <c:set value="ImgEnvelope${mhit.isUnread ? '' : 'Gray'}" var="class"/>
+                   <c:set value="ImgEnvelope${mhit.isUnread ? '' : 'Gray'}" var="viewclass"/>
                    <span class="td f" <c:if test="${ua.isiPad == true}" > style='width:10%;' onclick='return zCheckUnCheck(this);'</c:if>>
                        <c:set value=",${mhit.id}," var="stringToCheck"/>
                        <input class="chk" type="checkbox" ${fn:contains(requestScope._selectedIds,stringToCheck)?'checked="checked"':''} name="id" value="${mhit.id}" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>/>
-                       <c:if test="${ua.isiPad eq false}" ><span class="Img ${class}">&nbsp;</span> </c:if>
+                       <c:if test="${ua.isiPad eq false}" ><span class="Img ${viewclass}">&nbsp;</span> </c:if>
                    </span>
                    <span class="td m" onclick='return zClickLink("a${mhit.id}");'>
                        <div class="from-span">

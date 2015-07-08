@@ -43,25 +43,25 @@
             <c:set value=",${hit.id}," var="stringToCheck"/>
             <c:choose>
                 <c:when test="${zm:contains(bchit.document.contentType,'image')}">
-                    <c:set var="class" value="ImgImageDoc"/>
+                    <c:set var="imgclass" value="ImgImageDoc"/>
                 </c:when>
                 <c:when test="${zm:contains(bchit.document.contentType,'video')}">
-                    <c:set var="class" value="ImgVideoDoc"/>
+                    <c:set var="imgclass" value="ImgVideoDoc"/>
                 </c:when>
                 <c:when test="${zm:contains(bchit.document.contentType,'pdf')}">
-                    <c:set var="class" value="ImgPDFDoc"/>
+                    <c:set var="imgclass" value="ImgPDFDoc"/>
                 </c:when>
                 <c:when test="${zm:contains(bchit.document.contentType,'zip')}">
-                    <c:set var="class" value="ImgZipDoc"/>
+                    <c:set var="imgclass" value="ImgZipDoc"/>
                 </c:when>
                 <c:otherwise>
-                    <c:set var="class" value="ImgUnknownDoc"/>
+                    <c:set var="imgclass" value="ImgUnknownDoc"/>
                 </c:otherwise>
             </c:choose>
             <span class="td f">
                     <input class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
                            name="id" value="${bchit.id}"/>
-            <span class="Img ${class}">&nbsp;</span>
+            <span class="Img ${imgclass}">&nbsp;</span>
             </span>
             <span class="td m" onclick='return zClickLink("a${bchit.id}")'>
             <a id="a${bchit.id}"

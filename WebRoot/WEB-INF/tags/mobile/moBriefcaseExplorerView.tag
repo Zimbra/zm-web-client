@@ -45,7 +45,7 @@
                     <c:set var="ctype" value="${fn:split(bchit.document.contentType,';')}"/>
                     <c:choose>
                         <c:when test="${ctype[0] eq 'application'}">
-                            <c:set var="class" value="ImgExeDoc" scope="request"/>
+                            <c:set var="imgclass" value="ImgExeDoc" scope="request"/>
 
                         </c:when>
                         <c:when test="${ctype[0] eq 'application/pdf'}">
