@@ -480,15 +480,17 @@ function() {
 	var subs = {
 		id: 			this._htmlElId,
 		alphabet: 		alphabet,
-		numLetters: 	alphabet.length,
+		numLetters: 	alphabet.length
 	};
 
 	var element = this.getHtmlElement();
 	element.innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
 	this.setAttribute('aria-label', ZmMsg.alphabetLabel);
 
-	AjxUtil.foreach(Dwt.byClassName('AlphabetBarCell', element),
-	                this._makeFocusable.bind(this));
+	AjxUtil.foreach(Dwt.byClassName('AlphabetBarCell', element), (function(cell) {
+        this._makeFocusable(cell, true);
+        this._setEventHdlrs([ DwtEvent.ONCLICK ], false, cell);
+    }).bind(this));
 };
 
 ZmContactAlphabetBar.prototype.getInputElement =
