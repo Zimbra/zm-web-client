@@ -1,0 +1,176 @@
+###############################################
+  Status of Internet Explorer support in AJAX
+###############################################
+
+This document describes the status of Internet Explorer support in the
+AJAX client. Unlike other browsers, the distinction of standards mode
+vs. quirks mode makes a major difference in Internet Explorer. Under
+standards mode, you get the best browser Microsoft could come up with;
+in IE10 and later versions performance and standards compliance is
+generally on par with competing browsers. Quirks mode, however, yields
+a browser engine tuned for compatibility above anything else; its
+performance and standards compliance is downright awful.
+
+(The difference between Standards Mode and Quirks Mode in other
+browsers are outside the scope of this document, but they mainly
+pertain to specific rendering issues, such as case-sensitivity and
+borders. They use the same layout engine for both modes, and have
+little or no performance penalty for running in Quirks Mode.)
+
+:Date: $Date$
+:Version: $Id$
+:Author: Dan V. P. Christiansen <dchristiansen@zimbra.com>
+
+==================
+ Version overview
+==================
+
+First, we'll go over the individual versions and modes supported by
+IE.
+
+Compatibility mode
+------------------
+
+Compatibility mode in IE means that it fakes IE7 quirks
+mode. Generally speaking, this is a slightly worse quirks mode, but
+detected as IE7.
+
+IE8
+---
+
+IE8 isn't a terribly good browser, even in standards mode. Legacy CSS
+filters remain a crucial technology.
+
+IE9
+---
+
+IE9 is the first version which you could consider reasonably modern.
+
+- Even in Standards Mode, IE9 doesn't support CSS3 gradients, but we
+  can use background SVG images instead.
+- Frames in IE9 and later *always* render in the same mode as the
+  containing frame. As a result, all messages and other subframes
+  render in the same mode as Zimbra.
+
+IE10
+----
+
+You could say that this is the first version where Microsoft began
+catching up with the competition. It supports CSS3 gradients and the
+HTML5 File API, for example.
+
+IE11
+----
+
+This is where things start to get interesting. Microsoft changed the
+user agent so that it no longer triggers traditional IE checks. The
+intent is that developers should serve IE11 the same content as other
+standards-compliant browsers, rather than the usual quirky IE-specific
+code. Provided you do so in Standards Mode, everything works quite
+well.
+
+Quirks mode in IE11 is slightly worse than in earlier versions; quirks
+mode is now effectively the same as compatibility mode. As a result,
+IE11 isn't detected as “later” than e.g. IE8. As an interesting edge
+case, the when requesting the main page, IE11 always uses the new,
+non-IE user agent; if the page then triggers Quirks Mode, it uses the
+IE7-derived Compatibility Mode user agent for any nested resources.
+
+Enterprise Mode for IE11
+------------------------
+
+In Spring 2014, Microsoft released an `Enterprise Mode for IE11`__. No
+effort to support it has been made, although it might be useful for
+Iron Maiden.
+
+.. __: http://blogs.msdn.com/b/ie/archive/2014/04/02/\
+       stay-up-to-date-with-enterprise-mode-for-internet-explorer-11.aspx
+
+Trident
+-------
+
+Although not a rendering mode, the layout engine used by IE, Trident,
+is relevant to this discussion. Like WebKit (and Gecko prior to version
+4) it has its own `version number`__:
+
+   ====   =======
+    IE    Trident
+   ====   =======
+   7      3.1
+   8      4.0
+   9      5.0
+   10     6.0
+   11     7.0
+   ====   =======
+
+.. __: https://en.wikipedia.org/wiki/Trident_(layout_engine)#Versions
+
+=========================
+ Iron Maiden and earlier
+=========================
+
+Iron Maiden and earlier render in Quirks Mode. This means you get a
+layout engine that lives up to the horrible reputation of Internet
+Explorer. We render a paired down UI in all versions of IE, without
+visual effects such as shadows and most gradients.
+
+Variables
+---------
+
+- ``AjxEnv.tridentVersion`` is the layout engine version; it's
+  specified in all IE versions we support.
+- ``AjxEnv.isIE`` is true in all versions of Internet Explorer.
+- ``AjxEnv.isIE8`` and so on work mostly as expected.
+- ``AjxEnv.isIE7`` is true in compatibility mode.
+
+Due to IE11 equating Quirks Mode with Compatibility Mode, it's
+detected is IE7. In other words, ``AjxEnv.isIE7`` is true, and the only
+means for detecting IE11 (or later) is triggering on ``AjxEnv.tridentVersion``::
+
+  AjxEnv.tridentVersion >= 7.0
+
+========================
+ Judas Priest and later
+========================
+
+Judas Priest and later render in Standards Mode and fail to load in
+Quirks Mode. As a result, Compatibility Mode is wholly unsupported,
+and Zimbra will fail to load.
+
+IE8 continues to require IE filters for effects such as gradients, and
+the UI is largely unchanged since Iron Maiden. In all later versions,
+however, we can achieve the same appearance as in other browsers,
+including drop shadows and gradients.
+
+The main difference between IE and other browsers is their
+interpretation of percentage widths, such as ``width=100%``. IE takes
+the somewhat silly approach that percentages dimensions are relative
+to the closest ancestor with a fixed dimension. This is almost never
+what we want, as it breaks in the face of margins, paddings and
+borders. (In an ironic twist of fate, however, this is strictly valid
+according to the standards.) To address this, we switched controls to
+use JavaScript logic for calculating their dimensions. In this regard,
+``DwtControl::boundsForChild()`` is a particularly useful method.
+
+Variables
+---------
+
+- ``AjxEnv.isIE`` is true in all versions of Internet Explorer up to
+  and including IE10.
+- ``AjxEnv.isIE8`` and so on work mostly as expected.
+- ``AjxEnv.isIE8up`` mean IE8 until IE10. They do _not_ trigger on
+  IE11.
+- ``AjxEnv.isModernIE`` is true in IE11, and probably any later
+  versions.
+- If we ever need to detect IE11 or later specifically, the correct
+  nomenclature would be ``AjxEnv.isModernIE11``.
+
+Please note however, that triggering on specific browser versions is
+avoidable in most cases; a much more reliable approach is feature
+checks — for instance, using modernizr — or markup and scripts that
+work in all browsers and platforms.
+
+.. Local Variables:
+.. mode: rst
+.. compile-command: "rst2pdf internet-explorer.txt"
+.. End:
