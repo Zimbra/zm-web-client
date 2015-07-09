@@ -259,7 +259,7 @@ AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(pageContext.request.locale)}";
        }
 
        // 	for Internet Explorer. readyState will not be achieved on init call
-       if (!AjxEnv || (AjxEnv.isIE && AjxEnv.isWindows)) {
+       if (document.attachEvent) {
            document.attachEvent("onreadystatechange", function(e) {
                if (document.readyState == "complete") {
                    launch();
