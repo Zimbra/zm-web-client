@@ -203,6 +203,20 @@ function(callback) {
 	if (this._workHoursControl) {
 		this._workHoursControl.reloadWorkHours(this._workHoursControl.getValue());
 	}
+
+    /**
+     * Post save, restore the value of pref zimbraPrefCalendarApptReminderWarningTimevalue
+     * for 'never' and 'at time of event'. In function ZmCalendarApp.setDefaultReminderTimePrefValueOnSave,
+     * if the user has chosen 'never' or 'at time of event' option in default reminder select option,
+     * then on save we make value of never to 0 and 'at time of event' to -1, we are undoing that change here.
+     **/
+
+    var defaultWarningTime = settings.getSetting(ZmSetting.CAL_REMINDER_WARNING_TIME).getValue();
+    if (defaultWarningTime === -1 || defaultWarningTime === 0) { // never or 'at time of event' was chosen in defaultreminderpref dropdown
+        defaultWarningTime === -1 ? (defaultWarningTime = 0) : (defaultWarningTime = -1);
+        settings.getSetting(ZmSetting.CAL_REMINDER_WARNING_TIME).setValue(defaultWarningTime);
+        appCtxt.getSettings().getSetting('CAL_REMINDER_WARNING_TIME').origValue = defaultWarningTime;
+    }
     if (callback instanceof AjxCallback) {
 		callback.run();
 	}

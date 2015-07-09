@@ -326,7 +326,9 @@ function() {
 		displayName:		ZmMsg.numberOfMinutes,
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		ZmCalendarApp.getReminderTimeWarningDisplayOptions(),
-		options:            ZmCalendarApp.reminderTimeWarningValues
+		options:            ZmCalendarApp.reminderTimeWarningValues,
+        setFunction:        ZmCalendarApp.setDefaultReminderTimePrefValueOnSave,
+        loadFunction:       ZmCalendarApp.postLoadSetDefaultReminderValue
 	});
 
 	ZmPref.registerPref("CAL_SHOW_DECLINED_MEETINGS", {
@@ -749,7 +751,7 @@ function(params, callback) {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		this.initResources();
 	}
-
+    ZmCalendarApp.postLoadSetDefaultReminderValue();
 	cc.show(view, sd);
 	this._setLoadedTime(this.toString(), new Date());
 	if (callback) {
@@ -1479,6 +1481,7 @@ function(ex) {
 
 /**
  * Returns the reminder warning time display options formatted for preferences
+ * we create preferences reminder button here .
  */
 ZmCalendarApp.getReminderTimeWarningDisplayOptions = 
 function() {
@@ -1488,4 +1491,50 @@ function() {
 		
 	}
 	return returnArr;
+};
+
+/**
+ * On doing save, we modify the request and map zimbraPrefCalendarApptReminderWarningTimevalue
+ * so that the value of never, 0, is not changed at server.
+ * If never is selected in reminder dropdown, we map never value -1 to previous value, 0
+ * and if 'at time of event' is chosen, we map 0 to -1 while constructing request.
+ **/
+
+ZmCalendarApp.setDefaultReminderTimePrefValueOnSave =
+function(pref, value, list) {
+    value === 0 ? (value = -1) : (value  === -1 ? value =0 : '');
+    pref.setValue(value);
+    list.push(pref);
+};
+
+/**
+ *  Client side mapping of never is -1 and 'at time of event' is 0.
+ * If never is chosen in default reminder dropdown, user saves his preferences. We then modify the request
+ * and set the pref zimbraPrefCalendarApptReminderWarningTimevalue value to 0, to make the behaviour
+ * backward compatible, as earlier never was mapped to 0. Now, after reload, the value of pref zimbraPrefCalendarApptReminderWarningTimevalue
+ * in client side i.e ZmSetting.CAL_REMINDER_WARNING_TIME, is 0 as the server returns me this value.
+ * This was causing issue in the view of reminder option in pref section and while composing a new appt.
+ * So, here we map default reminder pref to its client side mapping.
+ * Same thing with 'at time of event'.
+ */
+
+ZmCalendarApp.postLoadSetDefaultReminderValue = function() {
+    /**
+     * This function is called when after reload, when you click on calendar tab or click on calendar icon
+     * in preferences. And, after reload, we want to set the value of default reminder pref only one time when
+     * the calendar tab is clicked or calendar pref is clicked. So, we have used global variable postLoadSetReminderCalled
+     * as a check for that. Other option for doing that would be to call this function from ZmApp.prototype._postLoad
+     * and then no need for doing check based on variable postLoadSetReminderCalled, but that be
+     * something calling during the initial page's load, so I avoided that .
+     */
+
+    if (ZmCalendarApp.postLoadSetReminderCalled) {
+        return;
+    }
+    var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
+    if (defaultWarningTime === -1 || defaultWarningTime === 0) { // never or 'at time of event' was chosen in defaultreminderpref dropdown before load
+        defaultWarningTime === -1 ? (defaultWarningTime = 0) : (defaultWarningTime = -1);
+        appCtxt.set(ZmSetting.CAL_REMINDER_WARNING_TIME,defaultWarningTime);
+    }
+    ZmCalendarApp.postLoadSetReminderCalled = true;
 };
