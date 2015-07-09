@@ -943,12 +943,14 @@ function() {
 	return ops;
 };
 
-ZmAddressInputField.prototype._handleResponseGetContact =
-function(ev, contact) {
+ZmAddressInputField.prototype._handleResponseGetContact = function(ev, contact) {
+
 	ZmAddressInputField.menuContext.contact = contact;
 	this._setContactText(contact);
-	this.getActionMenu().popup(0, ev.docX || ev.item.getXW(),
-	                           ev.docY || ev.item.getYH());
+    var x = ev.docX > 0 ? ev.docX : ev.item.getXW(),
+        y = ev.docY > 0 ? ev.docY : ev.item.getYH();
+
+	this.getActionMenu().popup(0, x, y);
 };
 
 ZmAddressInputField.prototype._setContactText =
@@ -1172,7 +1174,7 @@ ZmAddressInputField.prototype.handleKeyAction =
 function(actionCode, ev) {
 
 	var selCount = this.getSelectionCount();
-	if (selCount == 0) {
+	if (!selCount || this._editMode) {
 		return true;
 	}
 	DBG.println("aif", "handle shortcut: " + actionCode);
@@ -1648,8 +1650,12 @@ function() {
  * @return	{boolean}		<code>true</code> if the event is handled; <code>false</code> otherwise
  * @see		DwtKeyMap
  */
-ZmAddressBubble.prototype.handleKeyAction =
-function(actionCode, ev) {
+ZmAddressBubble.prototype.handleKeyAction = function(actionCode, ev) {
+
+    if (!this.list || (this.addrInput && this.addrInput._editMode)) {
+        return true;
+    }
+
 	switch (actionCode) {
 		case DwtKeyMap.SELECT:
 		case DwtKeyMap.SUBMENU:
