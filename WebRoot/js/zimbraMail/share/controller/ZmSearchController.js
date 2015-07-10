@@ -375,9 +375,11 @@ ZmSearchController.prototype.getTypeFromSearchFor =
 function(searchFor, userInitiated) {
 
 	var type = searchFor;
+
 	if (searchFor === ZmId.SEARCH_MAIL) {
-		var app = appCtxt.getApp(userInitiated ? ZmApp.SEARCH : ZmApp.MAIL);
-		type = app.getGroupMailBy();
+        var ac = window.parentAppCtxt || window.appCtxt,
+            app = ac.getApp(userInitiated ? ZmApp.SEARCH : ZmApp.MAIL);
+		type = app ? app.getGroupMailBy() : ZmItem.MSG;
 	}
 
 	return type;
@@ -660,18 +662,19 @@ function(results, search, noUpdateOverview) {
 
 	DBG.timePt("handle search results");
 
-	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
+    var ac = window.parentAppCtxt || window.appCtxt;
+	if (ac.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		var saveBtn = this._searchToolBar && this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON);
 		if (saveBtn) {
 			saveBtn.setEnabled(this._contactSource != ZmId.SEARCH_GAL);
 		}
 	}
 
-	var app = search.calController ? appCtxt.getApp(ZmApp.CALENDAR) : appCtxt.getApp(ZmItem.APP[results.type]) || appCtxt.getCurrentApp();
+	var app = search.calController ? ac.getApp(ZmApp.CALENDAR) : ac.getApp(ZmItem.APP[results.type]) || ac.getCurrentApp();
 	var appName = app.getName();
 	if (search.userInitiated && ZmApp.SEARCH_RESULTS_TAB[appName]) {
 		var ctlr = (search.calController && search.calController.searchResultsController) ||
-					appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController(search.sessionId, appName);
+					ac.getApp(ZmApp.SEARCH).getSearchResultsController(search.sessionId, appName);
 		DBG.println("sr", "New search results controller: " + ctlr.viewId);
 		ctlr.show(results, search.calController);
 		this._searchToolBar.setSearchFieldValue("");

@@ -122,13 +122,9 @@ AjxUtil.foreach(ZmMailApp.INC_MAP, function(v, i) {
 	ZmMailApp.INC_MAP_REV[key] = i;
 });
 
-ZmMailApp._setGroupByMaps =
-function() {
-	// convert between server values for "group mail by" and item types
-	ZmMailApp.GROUP_MAIL_BY_ITEM	= {};
-	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_CONV]		= ZmItem.CONV;
-	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_MESSAGE]	= ZmItem.MSG;
-};
+ZmMailApp.GROUP_MAIL_BY_ITEM	= {};
+ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_CONV]		= ZmItem.CONV;
+ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_MESSAGE]	= ZmItem.MSG;
 
 // Construction
 
@@ -272,8 +268,6 @@ function(settings) {
 	settings.registerSetting("VACATION_MSG_FEATURE_ENABLED",	{name:"zimbraFeatureOutOfOfficeReplyEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("VACATION_UNTIL",					{name:"zimbraPrefOutOfOfficeUntilDate", type:ZmSetting.T_PREF, defaultValue:""});
     settings.registerSetting("VACATION_UNTIL_TIME",				{type:ZmSetting.T_PREF, defaultValue:""});
-
-	ZmMailApp._setGroupByMaps();
 };
 
 ZmMailApp.prototype._registerPrefs =

@@ -142,6 +142,7 @@ AjxPackage.require("zimbraMail.mail.ZmMailApp");
 AjxPackage.require("zimbraMail.calendar.ZmCalendarApp");
 AjxPackage.require("zimbraMail.tasks.ZmTasksApp");
 AjxPackage.require("zimbraMail.abook.ZmContactsApp");
+AjxPackage.require("zimbraMail.share.ZmSearchApp");
 AjxPackage.require("zimbraMail.abook.model.ZmContact");
 AjxPackage.require("zimbraMail.abook.model.ZmContactList");
 AjxPackage.require("zimbraMail.briefcase.ZmBriefcaseApp");

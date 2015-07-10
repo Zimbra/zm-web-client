@@ -1513,7 +1513,8 @@ ZmBaseController.prototype._searchListener = function(addrType, isToolbar, ev) {
 	}
 
 	if (name) {
-		var srchCtlr = appCtxt.getSearchController();
+        var ac = window.parentAppCtxt || window.appCtxt;
+		var srchCtlr = ac.getSearchController();
 		if (addrType === AjxEmailAddress.FROM) {
 			srchCtlr.fromSearch(name);
 		}
