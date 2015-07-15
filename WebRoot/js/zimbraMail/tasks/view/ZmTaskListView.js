@@ -926,7 +926,7 @@ function(ev) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
 
-	if (key === DwtKeyEvent.KEY_ENTER) {
+	if (DwtKeyEvent.IS_RETURN[key]) {
 		tlv.saveNewTask(true);
 	}
 	else {
