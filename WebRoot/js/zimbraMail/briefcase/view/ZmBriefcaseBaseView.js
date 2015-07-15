@@ -326,7 +326,7 @@ function(ev) {
     var allowDefault = true;
 	var key = DwtKeyEvent.getCharCode(ev);
     var item = this._fileItem;
-    if(key === DwtKeyEvent.KEY_ENTER){
+    if (DwtKeyEvent.IS_RETURN[key]) {
         this._doRename(item);
         allowDefault = false;
     }
