@@ -150,7 +150,7 @@ ZmShortcutList.COL_SYS.title = ZmMsg.shortcutsSys;
 ZmShortcutList.COL_SYS.type = ZmShortcutList.TYPE_SYS;
 ZmShortcutList.COL_SYS.sort = true;
 ZmShortcutList.COL_SYS.maps = ["button", "menu", "list", "tree", "dialog", "toolbarHorizontal",
-							   "toolbarVertical", "editor", "tabView"];
+							   "editor", "tabView"];
 
 ZmShortcutList.prototype.getContent =
 function() {
