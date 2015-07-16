@@ -5954,3 +5954,27 @@ a.ZmLinkDisabled {
 	cursor:not-allowed;
 	@Text-disabled@
 }
+
+/* One-times Codes dialog start */
+.ZmOneTimeCodes {
+	width:450px;
+	min-height:240px;
+	max-height:300px;
+	overflow:auto;
+}
+
+.ZmOneTimeCodes OL {
+	list-style-type: none;
+}
+
+.ZmOneTimeCodes LI {
+	margin: 15px 15px 15px 45px;
+	width: 120px;
+	float: left;
+}
+
+.ZmOneTimeCodes LI SPAN {
+	letter-spacing: 3px;
+	font-weight: bold;
+}
+/* One-times Codes dialog end */

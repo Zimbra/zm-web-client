@@ -308,10 +308,10 @@ function(twoStepAuthLink, twoStepAuthSpan) {
 	dialog.popup();
 };
 
-ZmAccountsPage.prototype._handleTwoStepAuthCodesLink =
-function(twoStepAuthCodesLink) {
+ZmAccountsPage.prototype._handleTwoStepAuthCodesViewLink =
+function(params) {
 	if (!this._oneTimeCodesDialog) {
-		this._oneTimeCodesDialog = new ZmOneTimeCodesDialog({twoStepAuthCodesLink : twoStepAuthCodesLink});
+		this._oneTimeCodesDialog = new ZmOneTimeCodesDialog(params);
 	}
 	this._oneTimeCodesDialog.popup();
 };
@@ -532,6 +532,52 @@ function(granter, grantee, sendAs,sendObo,isGrant) {
     msg.send();
 };
 
+ZmAccountsPage.getScratchCodes =
+function(isNew, params, callback) {
+	if (isNew) {
+		var jsonObj = {GenerateScratchCodesRequest : {_jsns:"urn:zimbraAccount"}};
+	}
+	else {
+		var jsonObj = {GetScratchCodesRequest: {_jsns: "urn:zimbraAccount"}};
+	}
+	var getScratchCodesCallback = ZmAccountsPage._getScratchCodesCallback.bind(window, isNew, params, callback);
+	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:getScratchCodesCallback});
+};
+
+ZmAccountsPage._getScratchCodesCallback =
+function(isNew, params, callback, result) {
+	if (!result || result.isException()) {
+		return;
+	}
+	var response = result.getResponse();
+	var scratchCodesResponse = response && (response.GetScratchCodesResponse || response.GenerateScratchCodesResponse);
+	if (!scratchCodesResponse) {
+		return;
+	}
+	var scratchCode = scratchCodesResponse.scratchCodes && scratchCodesResponse.scratchCodes.scratchCode;
+	if (scratchCode) {
+		var scratchCodeArray = [];
+		for (var i = 0; i < scratchCode.length; i++) {
+			if (scratchCode[i]._content) {
+				scratchCodeArray.push(scratchCode[i]._content);
+			}
+		}
+		if (scratchCodeArray.length === 0) {
+			Dwt.setInnerHtml(params.twoStepAuthCodesSpan, ZmMsg.twoStepAuthOneTimeCodesEmpty);
+			Dwt.setDisplay(params.twoStepAuthCodesViewLink, Dwt.DISPLAY_NONE);
+			Dwt.setDisplay(params.twoStepAuthCodesGenerateLink, "");
+		}
+		else {
+			Dwt.setInnerHtml(params.twoStepAuthCodesSpan, AjxMessageFormat.format(ZmMsg.twoStepAuthOneTimeCodesCount, scratchCodeArray.length));
+			Dwt.setDisplay(params.twoStepAuthCodesViewLink, "");
+			Dwt.setDisplay(params.twoStepAuthCodesGenerateLink, Dwt.DISPLAY_NONE);
+		}
+		if (callback) {
+			callback(scratchCodeArray);
+		}
+	}
+};
+
 ZmAccountsPage.prototype._getTrustedDevicesCount =
 function(trustedDevicesCountSpan) {
 	var jsonObj = {GetTrustedDevicesRequest : {_jsns : "urn:zimbraAccount"}};
@@ -641,11 +687,24 @@ function() {
 		var twoStepAuthSpan = Dwt.getElement(this._htmlElId + "_TWO_STEP_AUTH");
 		Dwt.setHandler(twoStepAuthLink, DwtEvent.ONCLICK, this._handleTwoStepAuthLink.bind(this, twoStepAuthLink, twoStepAuthSpan));
 	}
-	var twoStepAuthCodesLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_CODES_LINK");
-	if (twoStepAuthCodesLink) {
-		Dwt.setHandler(twoStepAuthCodesLink, DwtEvent.ONCLICK, this._handleTwoStepAuthCodesLink.bind(this, twoStepAuthCodesLink));
-	}
 	if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) {
+		var twoStepAuthCodesSpan = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_CODES");
+		if (twoStepAuthCodesSpan) {
+			var twoStepAuthCodesViewLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_CODES_VIEW_LINK");
+			var twoStepAuthCodesGenerateLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_CODES_GENERATE_LINK");
+			var params = {
+				twoStepAuthCodesSpan : twoStepAuthCodesSpan,
+				twoStepAuthCodesViewLink : twoStepAuthCodesViewLink,
+				twoStepAuthCodesGenerateLink : twoStepAuthCodesGenerateLink
+			};
+			if (twoStepAuthCodesViewLink) {
+				Dwt.setHandler(twoStepAuthCodesViewLink, DwtEvent.ONCLICK, this._handleTwoStepAuthCodesViewLink.bind(this, params));
+			}
+			if (twoStepAuthCodesGenerateLink) {
+				Dwt.setHandler(twoStepAuthCodesGenerateLink, DwtEvent.ONCLICK, ZmAccountsPage.getScratchCodes.bind(window, true, params, false));
+			}
+			ZmAccountsPage.getScratchCodes(false, params, false);
+		}
 		var trustedDevicesCountSpan = document.getElementById(this._htmlElId + "_TRUSTED_DEVICES_COUNT");
 		if (trustedDevicesCountSpan) {
 			this._getTrustedDevicesCount(trustedDevicesCountSpan);

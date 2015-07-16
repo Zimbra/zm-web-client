@@ -1014,12 +1014,20 @@ and the container element is replaced with that control.
 							</a>
 						</td>
 					</tr>
-					<tr valign=top>
+					<tr valign=top
+						<$ if (!appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) { $>
+							style="display:none;"
+						<$ } $>
+					>
 						<td colspan=2>
 							<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 								<tr>
 									<td class='ZOptionsLabel'><$=ZmMsg.twoStepAuthOneTimeCodes$></td>
-									<td class='ZOptionsField' valign='middle'><a href="#" id='${id}_TWO_STEP_AUTH_CODES_LINK'><$=ZmMsg.twoStepAuthOneTimeCodesLink$></a></td>
+									<td class='ZOptionsField' valign='middle'>
+										<span id='${id}_TWO_STEP_AUTH_CODES'></span>
+										<a href="#" id='${id}_TWO_STEP_AUTH_CODES_VIEW_LINK' style="margin:10px;display:none;"><$=ZmMsg.view$></a>
+										<a href="#" id='${id}_TWO_STEP_AUTH_CODES_GENERATE_LINK' style="margin:10px;display:none;"><$=ZmMsg.twoStepAuthOneTimeCodesGenerate$></a>
+									</td>
 								</tr>
 								<tr>
 									<td class='ZOptionsLabel'><$=ZmMsg.trustedDevices$></td>
@@ -2368,6 +2376,57 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<div style='width:475px;'>
 		<div><$=ZmMsg.socialfoxSettingsDescription$></div>
 	</div>
+</template>
+
+<template id='prefs.Pages#OneTimeCodes'>
+	<div class='ZmOneTimeCodes'>
+		<$ if (data.oneTimeCodes) {$>
+			<ol>
+				<$ for (var i = 0; i < data.oneTimeCodes.length; i++) {$>
+					<li>
+						<span><$=data.oneTimeCodes[i]$></span>
+					</li>
+				<$ } $>
+			</ol>
+		<$ } $>
+	</div>
+</template>
+
+<template id='prefs.Pages#OneTimeCodesPrint'>
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<title><$=ZmMsg.twoStepAuthOneTimeCodesPrintTitle$></title>
+			<style>
+				.ZmOneTimeCodes {
+					width:450px;
+				}
+
+				.ZmOneTimeCodes LI {
+					margin: 15px 15px 15px 45px;
+					width: 120px;
+					float: left;
+				}
+
+				.ZmOneTimeCodes LI SPAN {
+					letter-spacing: 3px;
+					font-weight: bold;
+				}
+
+				P {
+					color:#999999;
+					clear:both;
+					width:405px;
+					text-align:center;
+				}
+			</style>
+			<link rel="SHORTCUT ICON" href="/img/logo/favicon.ico">
+		</head>
+		<body>
+			<$=data.content$>
+			<p><$=ZmMsg.twoStepAuthOneTimeCodesTip$></p>
+		</body>
+	</html>
 </template>
 
 <template id='prefs.Pages#AddApplicationCode'>
