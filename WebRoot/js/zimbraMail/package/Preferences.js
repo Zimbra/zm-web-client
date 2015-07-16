@@ -55,6 +55,7 @@ AjxPackage.require("zimbraMail.prefs.view.ZmFilterPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmNotificationsPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmActivityStreamPromptDialog");
 AjxPackage.require("zimbraMail.prefs.view.ZmActivityToInboxPromptDialog");
+AjxPackage.require("zimbraMail.prefs.view.ZmOneTimeCodesDialog");
 AjxPackage.require("zimbraMail.prefs.view.ZmApplicationCodeDialog");
 
 AjxPackage.require("zimbraMail.calendar.view.ZmCalendarPrefsPage");
