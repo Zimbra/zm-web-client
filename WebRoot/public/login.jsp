@@ -16,7 +16,7 @@
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,zlastserver,client"/>
+<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client"/>
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -110,9 +110,10 @@
 		<c:when test="${(param.loginOp eq 'login') && !(empty fullUserName) && !(empty param.password) && (pageContext.request.method eq 'POST')}">
 			<c:choose>
 				<c:when test="${!empty cookie.ZM_TEST}">
-					<zm:login username="${fullUserName}" password="${param.password}" twoFactorCode="${not empty param.totpcode ? param.totpcode : ''}" varRedirectUrl="postLoginUrl"
+                    <zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
 							varAuthResult="authResult"
 							newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
+                            trustedDeviceToken="${cookie.ZM_TRUST_TOKEN.value}"
 							requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"/>
 					<%-- continue on at not empty authResult test --%>
 				</c:when>
@@ -123,12 +124,12 @@
 			</c:choose>
 		</c:when>
         <c:otherwise>
-			<%-- try and use existing cookie if possible --%>
+            <%-- try and use existing cookie if possible --%>
 			<c:set var="authtoken" value="${not empty param.zauthtoken ? param.zauthtoken : cookie.ZM_AUTH_TOKEN.value}"/>
 			<c:if test="${not empty authtoken}">
 				<zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}" twoFactorCode="${not empty param.totpcode ? param.totpcode : ''}"
 						varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-						rememberme="${param.zrememberme == '1'}"
+						rememberme="${param.zrememberme == '1'}" trustedDevice="${param.ztrusteddevice == 1}"
 						requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}"
                         importData="true" csrfTokenSecured="true"/>
 				<%-- continue on at not empty authResult test --%>
@@ -466,12 +467,12 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <td><input id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" style="margin-right:20px" autocomplete="off"></td>
                                     <td class="submitTD"><input type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton"></td>
                                 </tr>
-                                <%--<tr>--%>
-                                    <%--<td>&nbsp;</td>--%>
-                                    <%--<td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">--%>
-                                    <%--<label for="trustedDevice"><fmt:message key="twoFactorAuthRememberDevice"/></label>--%>
-                                    <%--</td>--%>
-                                <%--</tr>--%>
+                                <tr style="vertical-align:top">
+                                    <td/>
+                                    <td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">
+                                    <label for="trustedDevice"><fmt:message key="twoFactorAuthRememberDevice"/></label>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </c:when>
