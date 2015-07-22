@@ -27,10 +27,10 @@
 <c:set var="truncatedLabel" value="${zm:getTruncatedFolderPath(pageContext, folder.id, 20, true)}"/>
 <c:choose>
     <c:when test="${ua.isiPad == true}">
-        <c:set var="baseUrl" value="zipad"/>
+        <c:set var="baseUrl" value="/m/zipad"/>
     </c:when>
     <c:otherwise>
-        <c:set var="baseUrl" value="zmain"/>
+        <c:set var="baseUrl" value="/m/zmain"/>
     </c:otherwise>
 </c:choose>
 <c:url var="url" value="${empty base ? baseUrl  : base}">

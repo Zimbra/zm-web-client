@@ -25,7 +25,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
 <c:set var="types" value="${not empty types ? types : not empty param.st ? param.st : ''}"/>
 <div onclick='return zClickLink("TAG${tag.id}")' class='Folders ${param.tid eq tag.id ? 'StatusWarning' : ''} list-row${tag.hasUnread ? '-unread' : ''}'>
     <div class="tbl">
