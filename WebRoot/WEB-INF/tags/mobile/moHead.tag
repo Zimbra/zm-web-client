@@ -55,7 +55,7 @@
     </script>--%>
 </head>
 <c:if test="${uiv == '1'}">
-    <c:set var="baseURL" value="mainx" scope="request"/>
+    <c:set var="baseURL" value="/m/mainx" scope="request"/>
 </c:if>
 <c:if test="${uiv != '1'}">
     <c:remove scope="request" var="baseURL"/>    

@@ -37,7 +37,7 @@
 <c:if test="${param.loginOp=='logout'}"><c:remove var="mapp" scope="session"/><c:redirect url="/"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:redirect></c:if>
 <%--<c:if test="${not empty param.ajax}">--%>
     <c:url var="prevUrl" scope="session" value="${zm:cook(sessionScope.currentUrl)}"/>
-    <c:url var="currentUrl" scope="session" value="/zmain">
+    <c:url var="currentUrl" scope="session" value="/m/zmain">
         <c:forEach items="${param}" var="p"><c:param name="${p.key}" value="${p.value}"/></c:forEach>
     </c:url>
 <%--</c:if>--%>
