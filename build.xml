@@ -1500,16 +1500,17 @@ if (ext == null) ext = "";
     </path>
 
     <target name="jspc">
-    	<taskdef name="jasper" classname="org.apache.jasper.JspC" classpathref="jspc.class.path"/>
-    	<jasper listerrors="true" trimspaces="true" outputdir="${jspc.build.dir}"
-    		uriroot="${jspc.src.dir}" jspfiles="${param.jspfiles}" classpath="jspc.class.path"
+        <taskdef name="jasper" classname="org.apache.jasper.JspC" classpathref="jspc.class.path"/>
+        <jasper listerrors="true" trimspaces="true" outputdir="${jspc.build.dir}"
+            uriroot="${jspc.src.dir}" jspfiles="${param.jspfiles}" classpath="jspc.class.path"
+            compile="true"
         />
     </target>
 
-    <target name="jspc.precompile">
+    <target name="jspc.compile">
         <mkdir dir="${jspc.build.dir}"/>
         <mkdir dir="${jspc.src.dir}"/>
-        <copy todir="${jspc.src.dir}">
+        <copy todir="${jspc.src.dir}" preservelastmodified="true">
             <fileset dir='${web.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp,WEB-INF/**"/>
         </copy>
         <fileset id='jspc.fileset1' dir='${jspc.src.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp"/>
@@ -1519,23 +1520,11 @@ if (ext == null) ext = "";
         </antcall>
     </target>
 
-    <target name="jspc.compile">
-        <javac destdir="${jspc.build.dir}" optimize="off" debug="on" srcdir="${jspc.build.dir}" classpathref="jspc.class.path" target="${javac.target}">
-            <include name="**" />
-        </javac>
-    </target>
-
-    <target name="jspc.optcompile">
-        <javac destdir="${jspc.build.dir}" optimize="on" debug="off" srcdir="${jspc.build.dir}" classpathref="jspc.class.path" target="${javac.target}">
-            <include name="**" />
-        </javac>
-    </target>
-
-    <target name="jspc.build" depends="jspc.precompile,jspc.compile"/>
+    <target name="jspc.build" depends="jspc.compile"/>
 
     <target name="jspc.deploy" depends="jspc.build">
         <mkdir dir="/opt/zimbra/jetty/work/zimbra/jsp"/>
-        <copy todir="/opt/zimbra/jetty/work/zimbra/jsp" overwrite="true">
+        <copy todir="/opt/zimbra/jetty/work/zimbra/jsp" overwrite="true" preservelastmodified="true">
             <fileset dir="${jspc.build.dir}"/>
         </copy>
     </target>
