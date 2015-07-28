@@ -346,6 +346,10 @@ if (application.getInitParameter("offlineMode") != null) {
 			<c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
 				<c:param name="${p.key}" value='${value}'/>
 			</c:if>
+            <c:if test="${totpAuthRequired && (p.key eq 'client')}">
+                <%--Remember the client to redirect to after successful two-factor auth--%>
+                <c:param name="${p.key}" value='${value}'/>
+            </c:if>
 		</c:forEach>
 	</c:forEach>
 </c:url>
