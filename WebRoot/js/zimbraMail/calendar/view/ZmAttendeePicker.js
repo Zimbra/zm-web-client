@@ -38,7 +38,11 @@
  */
 ZmAttendeePicker = function(editView, attendees, controller, type, dateInfo) {
 
-    DwtDialog.call(this, {parent:appCtxt.getShell(), title: ZmAttendeePicker.TOP_LEGEND[type]});
+    DwtDialog.call(this, {
+        parent: appCtxt.getShell(),
+        title:  ZmAttendeePicker.TOP_LEGEND[type],
+        id:     [ 'ZmAttendeePicker', type ].join('_')
+    });
 
 	this._attendees = attendees;
 	this._controller = controller;
