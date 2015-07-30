@@ -21,9 +21,18 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
-<c:catch var="actionException">
+<zm:zcatch var="actionException">
     <jsp:doBody/>
-</c:catch>
+</zm:zcatch>
+<c:if test="${!empty actionException}">
+<h1>WTF error</h1>
+    <zm:getException var="error" exception="${actionException}"/>
+<h1>WTF error2</h1>
+    <c:set var="lastErrorCode" value="${error.code}" scope="request"/>
+<h1>WTF error3</h1>
+    <h1><c:out value="${error.code}"/></h1>
+    <h1><c:out value="${lastErrorCode}"/></h1>
+</c:if>
 <c:if test="${!empty actionException}">
     <zm:getException var="error" exception="${actionException}"/>
     <c:set var="lastErrorCode" value="${error.code}" scope="request"/>
