@@ -907,6 +907,7 @@ function() {
 	this.registerSetting("DISPLAY_NAME",					{name:"displayName", type:ZmSetting.T_COS});
 	this.registerSetting("DUMPSTER_ENABLED",				{name:"zimbraDumpsterEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("ERROR_REPORT_URL",				{name:"zimbraErrorReportUrl", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
+	this.registerSetting("EXPORT_MAX_DAYS",					{name:"zimbraExportMaxDays", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:0});
 	this.registerSetting("FILTER_BATCH_SIZE",               {name:"zimbraFilterBatchSize", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue: 10000});
     this.registerSetting("FLAGGING_ENABLED",				{name:"zimbraFeatureFlaggingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("FOLDERS_EXPANDED",				{name:"zimbraPrefFoldersExpanded", type:ZmSetting.T_METADATA, dataType: ZmSetting.D_HASH, isImplicit:true, section:ZmSetting.M_IMPLICIT});

@@ -28,6 +28,8 @@
  */
 ZmExportView = function(params) {
 	if (arguments.length == 0) { return; }
+	var today = AjxDateUtil.simpleComputeDateStr(new Date());
+	var isExportPeriodLimited = (appCtxt.get(ZmSetting.EXPORT_MAX_DAYS) > 0);
 	// setup form
 	params.form = {
 		items: [
@@ -48,7 +50,9 @@ ZmExportView = function(params) {
 				onclick: this._folderButton_onclick
 			},
 			{ id: "ADVANCED", type: "DwtCheckbox", label: ZmMsg.advancedSettings,
-				visible: "get('TYPE') == ZmImportExportController.TYPE_TGZ"
+				visible: "get('TYPE') == ZmImportExportController.TYPE_TGZ",
+				checked: isExportPeriodLimited,
+				enabled: !isExportPeriodLimited
 			},
 			// advanced
 			{ id: "DATA_TYPES", type: "ZmImportExportDataTypes",
@@ -59,12 +63,14 @@ ZmExportView = function(params) {
 			},
 			{ id: "DATE_row", visible: "get('ADVANCED')"
 			},
-			{ id: "startDateField", type: "DwtInputField", visible: "get('ADVANCED')", onblur: AjxCallback.simpleClosure(this._dateFieldChangeListener, this, true)
+			{ id: "startDateField", type: "DwtInputField", visible: "get('ADVANCED')", onblur: AjxCallback.simpleClosure(this._dateFieldChangeListener, this, true),
+				value: isExportPeriodLimited ? today : null
 			},
 			{ id :"startMiniCalBtn", type: "DwtButton", visible: "get('ADVANCED')",
 				menu: {type: "DwtCalendar", id: "startMiniCal", onselect: new AjxListener(this, this._dateCalSelectionListener, [true])}
 			},
-			{ id: "endDateField", type: "DwtInputField", visible: "get('ADVANCED')", onblur: AjxCallback.simpleClosure(this._dateFieldChangeListener, this, false)
+			{ id: "endDateField", type: "DwtInputField", visible: "get('ADVANCED')", onblur: AjxCallback.simpleClosure(this._dateFieldChangeListener, this, false),
+				value: isExportPeriodLimited ? today : null
 			},
 			{ id :"endMiniCalBtn", type: "DwtButton", visible: "get('ADVANCED')",
 				menu: {type: "DwtCalendar", id: "endMiniCal", onselect: new AjxListener(this, this._dateCalSelectionListener, [false])}
@@ -151,6 +157,8 @@ ZmExportView.prototype.update = function() {
 		advanced.setEnabled(isTGZ);
 		if (!isTGZ) {
 			this.setValue("ADVANCED", false);
+		} else if(appCtxt.get(ZmSetting.EXPORT_MAX_DAYS) > 0) {
+			this.setValue("ADVANCED", true);
 		}
 	}
 	ZmImportExportBaseView.prototype.update.apply(this, arguments);

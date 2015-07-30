@@ -106,7 +106,8 @@ ZmImportExportController.__FAULT_ARGS_MAPPING = {
 	"formatter.MISSING_BLOB": [ "path" ],
 	"formatter.MISSING_META": [ "path" ],
 	"formatter.MISSING_VCARD_FIELDS": [ "path" ],
-	"formatter.UNKNOWN_ERROR": [ "path", "message" ]
+	"formatter.UNKNOWN_ERROR": [ "path", "message" ],
+	"mail.EXPORT_PERIOD_TOO_LONG": [ "limit" ]
 };
 
 
@@ -460,6 +461,10 @@ function() {
  */
 ZmImportExportController.prototype._doExportData =
 function(params) {
+	// create custom error callback function for this export request
+	var funcName = "exportErrorCallback__" + Dwt.getNextId("export");
+	ZmImportExportController[funcName] = this._handleExportErrorResponse.bind(this, funcName, params);
+
 	var type = params.type;
 	var isTGZ = type == ZmImportExportController.TYPE_TGZ;
 	var isCSV = type == ZmImportExportController.TYPE_CSV;
@@ -499,15 +504,16 @@ function(params) {
 	if (params.filename) { formParams["filename"] = params.filename; }
 	formParams.emptyname = ZmMsg.exportEmptyName;
 	formParams["charset"] = appCtxt.getCharset();
+	formParams["callback"] = "ZmImportExportController." + funcName;
 
 	// initialize form
 	var form = ZmImportExportController.__createForm(url, formParams);
 
 	// destination form
-	var onload = AjxCallback.simpleClosure(this._exportSuccess, this, params.callback);
-	var onerror = AjxCallback.simpleClosure(this._exportError, this, params.errorCallback);
-	var iframe = ZmImportExportController.__createIframe(form, onload, onerror);
-
+	var onload = null;
+	var onerror = this._exportError.bind(this, params.errorCallback);
+	params.iframe = ZmImportExportController.__createIframe(form, onload, onerror);
+	params.form = form;
 	// export
 	form.submit();
 };
@@ -568,24 +574,63 @@ function(errorCallback, message) {
 /**
  * @private
  */
-ZmImportExportController.prototype._exportSuccess =
-function(callback) {
-	if (callback) {
-		callback.run(true);
+ZmImportExportController.prototype._handleExportErrorResponse =
+function(funcName, params, type, fault1 /* , ... , faultN */) {
+	// gather error messages
+	var messages = [];
+	if (fault1) {
+		for (var j = 3; j < arguments.length; j++) {
+			var fault = arguments[j];
+			var code = fault.Detail.Error.Code;
+			var message = fault.Reason.Text;
+			var args = ZmImportExportController.__faultArgs(fault.Detail.Error.a);
+			if (code == "mail.EXPORT_PERIOD_NOT_SPECIFIED" || code == "mail.EXPORT_PERIOD_TOO_LONG") {
+				message = "";
+			} else if (code == "formatter.UNKNOWN_ERROR") {
+				args.path = args.path || ["(",ZmMsg.unknown,")"].join("");
+				args.message = message;
+			}
+			var mappings = ZmImportExportController.__FAULT_ARGS_MAPPING[code];
+			var formatArgs = new Array(mappings ? mappings.length : 0);
+			for (var i = 0; i < formatArgs.length; i++) {
+				formatArgs[i] = args[mappings[i]];
+			}
+			var errorMsg = ZMsg[code] ? AjxMessageFormat.format(ZMsg[code], formatArgs) : "";
+			if (type == "fail") {
+				errorMsg = message ? errorMsg + '<br><br>' + AjxStringUtil.htmlEncode(message) : errorMsg;
+			}
+			messages.push(errorMsg);
+		}
 	}
-	ZmImportExportController.__showMessage(ZmMsg.exportSuccess, DwtMessageDialog.INFO_STYLE);
-	return true;
+	if (type == "fail") {
+		this._exportError(params.errorCallback, messages[0]);
+	}
+	// cleanup
+	try {
+		delete ZmImportExportController[funcName]; // IE fails on this one (bug #57952)
+	} catch (e) {
+		if (ZmImportExportController[funcName]) {
+			ZmImportExportController[funcName] = undefined;
+		}
+	}
+	var iframe = params.iframe;
+	var form = params.form;
+	setTimeout(function() { // Right now we are actually in the iframe's onload handler, so we defer killing the iframe until we're out of it
+		iframe.parentNode.removeChild(iframe);
+		form.parentNode.removeChild(form);
+	}, 0);
 };
 
 /**
  * @private
  */
 ZmImportExportController.prototype._exportError =
-function(errorCallback) {
+function(errorCallback, message) {
 	if (errorCallback) {
 		errorCallback.run(false);
 	}
-	ZmImportExportController.__showMessage(ZmMsg.exportFailed, DwtMessageDialog.CRITICAL_STYLE);
+	var msg = message || ZmMsg.exportFailed;
+	ZmImportExportController.__showMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	return true;
 };
 
