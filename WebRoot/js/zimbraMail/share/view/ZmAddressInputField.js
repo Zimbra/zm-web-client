@@ -651,8 +651,7 @@ function(params) {
 	this._label = params.label;
 	this._dragInsertionBarId = Dwt.getNextId();
 	var data = {
-		inputTagName:		AjxEnv.isIE || AjxEnv.isModernIE ?
-								'textarea' : 'input',
+		inputTagName:		AjxEnv.isIE || AjxEnv.isModernIE ? 'textarea' : 'input type="text" ',
 		holderId:			this._holderId,
 		inputId:			this._inputId,
 		label:				this._label,

@@ -57,9 +57,9 @@
 *:focus {
 	@FocusOutline@
 }
+
 INPUT[type="text"]:focus, INPUT[type="password"]:focus {
-    outline:none;
-    background-color: yellow !important;
+    @InputField-focused@
 }
 
 
@@ -1236,10 +1236,6 @@ INPUT[type="text"].search_input-expanded {
 	@Text@
 }
 
-.ZmComposeView INPUT,
-.ZmComposeView TEXTAREA {
-}
-
 /* ??? USE? */
 .ZmComposeView .composerTable {
 	table-layout:fixed;
@@ -1256,10 +1252,6 @@ INPUT[type="text"].search_input-expanded {
 	border:1px solid rgb(206,209,201);
 	padding:3px 6px 0px;
 */
-}
-
-.ZmComposeView .subjectField:focus {
-	@FocusBorder@
 }
 
 /* to/cc/bcc textareas */
@@ -1434,7 +1426,15 @@ INPUT[type="text"].search_input-expanded {
 
 .attBubbleContainer.ZFocused,
 .addrBubbleContainer.ZFocused {
-	@FocusBorder@
+    @InputField-focused@
+}
+
+/* Don't style the INPUT since it is smaller than the control */
+.attBubbleContainer.ZFocused INPUT[type="text"]:focus,
+.addrBubbleContainer.ZFocused INPUT[type="text"]:focus,
+.attBubbleContainer.ZFocused TEXTAREA:focus,
+.addrBubbleContainer.ZFocused TEXTAREA:focus {
+    outline:none;
 }
 
 .attPlaceholderHint {
@@ -5204,6 +5204,10 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .ZmEditContactView .inputElement {
 	padding-right:.25em;
+}
+
+.ZmEditContactView TEXTAREA:focus {
+	@InputField-focused@
 }
 
 .ZmEditContactViewAddress {

@@ -453,7 +453,7 @@
 				<table role="presentation" width='100%'>
 				<tr>
 					<td style='padding-right:4px;'>
-						<input id='${subjectInputId}' class='subjectField' autocomplete=off aria-label='<$=ZmMsg.subject$>'>
+						<input type='text' id='${subjectInputId}' class='subjectField' autocomplete=off aria-label='<$=ZmMsg.subject$>'>
 					</td>
 				</tr>
 				</table>
