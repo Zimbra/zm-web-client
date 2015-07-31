@@ -919,23 +919,14 @@ function(next, addSelect, kbNavEvent) {
 	DwtListView.prototype._selectItem.call(this,next,addSelect,kbNavEvent);
 };
 
-ZmTaskListView._handleKeyPress =
-function(ev) {
-	var key = DwtKeyEvent.getCharCode(ev);
+ZmTaskListView._handleKeyPress = function(ev) {
 
+	var key = DwtKeyEvent.getCharCode(ev);
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
 
 	if (DwtKeyEvent.IS_RETURN[key]) {
 		tlv.saveNewTask(true);
-	}
-	else {
-		// bug fix #31778 - down arrow and left paren. have same key code!
-		var isDownArrow = (!AjxEnv.isIE)
-			? (ev.charCode == 0 && ev.keyCode == 40) : false;
-		if (key === DwtKeyEvent.KEY_ESCAPE || isDownArrow) {
-			tlv.discardNewTask();
-		}
 	}
 };
 
