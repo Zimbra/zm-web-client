@@ -4874,6 +4874,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZActive	.ZAppTabBorder					{					@AppTabBorder-active@	}
 .ZSelected	.ZAppTabBorder					{					@AppTabBorder-selected@	}
 .ZAlert		.ZAppTabBorder					{					@AppTabBorder-alert@	}
+.ZSelected.ZFocused	.ZAppTabBorder			{					@AppTabBorder-selected-focused@	}
 
 			.ZAppTabTable .ZWidgetTitle		{	@AppTabText@ 	@AppTabText-normal@		}
 .ZHover		.ZAppTabTable .ZWidgetTitle		{					@AppTabText-hover@		}
@@ -4881,13 +4882,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZFocused	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-focused@	}
 .ZActive	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-active@		}
 .ZSelected	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-selected@	}
-
-.ZSelected.ZAppTab							{	@AppTabSelected@						}
-.ZSelected .ZAppTabBorder					{	@grad(AppTabColor,AppC,linear-vertical)@ 	}
-
-.ZAppTab.ZButton:focus {
-    outline:none;
-}
 
 .SearchTabButton .ZAppTabBorder .ZLeftIcon DIV {
 	display:block;
