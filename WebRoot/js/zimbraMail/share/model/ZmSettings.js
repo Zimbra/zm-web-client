@@ -115,6 +115,8 @@ function() {
 	this.getSetting(ZmSetting.SHORTCUTS).addChangeListener(listener);
 	this.getSetting(ZmSetting.CHILD_ACCTS_VISIBLE).addChangeListener(listener);
 	this.getSetting(ZmSetting.ATTACHMENTS_BLOCKED).addChangeListener(listener);
+	this.getSetting(ZmSetting.CHAT_PLAY_SOUND).addChangeListener(listener);
+	this.getSetting(ZmSetting.CHAT_ENABLED).addChangeListener(listener);
 
 
 	if (appCtxt.isOffline) {
@@ -907,7 +909,6 @@ function() {
 	this.registerSetting("DISPLAY_NAME",					{name:"displayName", type:ZmSetting.T_COS});
 	this.registerSetting("DUMPSTER_ENABLED",				{name:"zimbraDumpsterEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("ERROR_REPORT_URL",				{name:"zimbraErrorReportUrl", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
-	this.registerSetting("EXPORT_MAX_DAYS",					{name:"zimbraExportMaxDays", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:0});
 	this.registerSetting("FILTER_BATCH_SIZE",               {name:"zimbraFilterBatchSize", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue: 10000});
     this.registerSetting("FLAGGING_ENABLED",				{name:"zimbraFeatureFlaggingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("FOLDERS_EXPANDED",				{name:"zimbraPrefFoldersExpanded", type:ZmSetting.T_METADATA, dataType: ZmSetting.D_HASH, isImplicit:true, section:ZmSetting.M_IMPLICIT});
@@ -1052,6 +1053,10 @@ function() {
 	// zimbraFeatureAdminPreferencesEnabled set to FALSE.
 	this.registerSetting("MAIL_PREFERENCES_ENABLED",	    {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 
+	//chat settings
+	this.registerSetting("CHAT_PLAY_SOUND",					{name:"zimbraPrefChatPlaySound", type: ZmSetting.T_METADATA, dataType: ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true, section:ZmSetting.M_IMPLICIT});
+	this.registerSetting("CHAT_ENABLED",				{name:"zimbraFeatureChatEnabled", type: ZmSetting.T_METADATA, dataType: ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true, section:ZmSetting.M_IMPLICIT});
+
 	ZmApp.runAppFunction("registerSettings", this);
 };
 
@@ -1159,6 +1164,10 @@ function(ev) {
 	}
 	else if (appCtxt.isOffline && id === ZmSetting.OFFLINE_UPDATE_NOTIFY) {
 		appCtxt.getAppController()._offlineUpdateChannelPref(ev.source.getValue());
+	} else if (id === ZmSetting.CHAT_PLAY_SOUND) {
+		appCtxt.getAppController().getApp(ZmApp.CHAT).setPlaySoundSetting(ev.source.getValue());
+	} else if (id === ZmSetting.CHAT_ENABLED) {
+		this._showConfirmDialog(ZmMsg.chatFeatureChangeRestart, this._refreshBrowserCallback.bind(this));
 	}
 };
 
