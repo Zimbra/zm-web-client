@@ -2906,7 +2906,7 @@ function(bStartTimer) {
 
 		DwtEventManager.addListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		this._shell.setHandler(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
-		if (AjxEnv.isIE)  {
+		if (document.attachEvent)  {
 			document.attachEvent("onkeydown", ZmZimbraMail._userEventHdlr);
 		}
 		window.onkeydown = ZmZimbraMail._userEventHdlr;		
@@ -2919,7 +2919,7 @@ function(bStartTimer) {
 
 		DwtEventManager.removeListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		this._shell.clearHandler(DwtEvent.ONMOUSEUP);
-		if (AjxEnv.isIE) {
+		if (document.detachEvent) {
 			document.detachEvent("onkeydown", ZmZimbraMail._userEventHdlr);
 		}	
 		window.onkeydown = null;

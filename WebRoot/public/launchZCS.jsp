@@ -493,7 +493,7 @@ delete text;
     }
 
     // 	for Internet Explorer. readyState will not be achieved on init call
-    if (AjxEnv.isIE && AjxEnv.isWindows) {
+    if (document.attachEvent) {
         document.attachEvent("onreadystatechange", function(e) {
             if (document.readyState == "complete") {
                 launch();

@@ -1957,20 +1957,22 @@ function(path) {
 	}
 };
 
-ZmHtmlEditor.prototype._registerEditorEventHandler =
-function(iFrameDoc, name) {
-	if (AjxEnv.isIE) {
+ZmHtmlEditor.prototype._registerEditorEventHandler = function(iFrameDoc, name) {
+
+	if (iFrameDoc.attachEvent) {
 		iFrameDoc.attachEvent("on" + name, this.__eventClosure);
-	} else {
+	}
+    else if (iFrameDoc.addEventListener) {
 		iFrameDoc.addEventListener(name, this.__eventClosure, true);
 	}
 };
 
-ZmHtmlEditor.prototype._unregisterEditorEventHandler =
-function(iFrameDoc, name) {
-	if (AjxEnv.isIE) {
+ZmHtmlEditor.prototype._unregisterEditorEventHandler = function(iFrameDoc, name) {
+
+	if (iFrameDoc.detachEvent) {
 		iFrameDoc.detachEvent("on" + name, this.__eventClosure);
-	} else {
+	}
+    else if (iFrameDoc.removeEventListener) {
 		iFrameDoc.removeEventListener(name, this.__eventClosure, true);
 	}
 };
