@@ -293,15 +293,15 @@ ZmAccountsPage.IDENTITY_PROPS = {
 };
 
 ZmAccountsPage.prototype._handleTwoStepAuthLink =
-function(twoStepAuthLink, twoStepAuthSpan) {
+function(params) {
 	if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) {
 		var dialog = appCtxt.getYesNoMsgDialog();
 		dialog.setMessage(ZmMsg.twoStepAuthDisableConfirm, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.twoStepAuthDisable);
-		dialog.registerCallback(DwtDialog.YES_BUTTON, ZmTwoFactorSetupDialog.disableTwoFactorAuth.bind(window, twoStepAuthLink, twoStepAuthSpan, dialog));
+		dialog.registerCallback(DwtDialog.YES_BUTTON, ZmTwoFactorSetupDialog.disableTwoFactorAuth.bind(window, params, dialog));
 	}
 	else {
 		if (!this._twoFactorSetupDialog) {
-			this._twoFactorSetupDialog = new ZmTwoFactorSetupDialog({twoStepAuthLink : twoStepAuthLink, twoStepAuthSpan : twoStepAuthSpan});
+			this._twoFactorSetupDialog = new ZmTwoFactorSetupDialog(params);
 		}
 		var dialog = this._twoFactorSetupDialog;
 	}
@@ -682,10 +682,22 @@ function(opt) {
 
 ZmAccountsPage.prototype.setAccountSecurity =
 function() {
-	var twoStepAuthLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_LINK");
-	if (twoStepAuthLink) {
-		var twoStepAuthSpan = Dwt.getElement(this._htmlElId + "_TWO_STEP_AUTH");
-		Dwt.setHandler(twoStepAuthLink, DwtEvent.ONCLICK, this._handleTwoStepAuthLink.bind(this, twoStepAuthLink, twoStepAuthSpan));
+	//If two-factor authentication feature is not available just return.
+	if (!appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE)) {
+		return;
+	}
+	//If two-factor authentication is required user cannot see the Enable/Disable two-step authentication link.
+	if (!appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_REQUIRED)) {
+		var twoStepAuthLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_LINK");
+		if (twoStepAuthLink) {
+			var paramsObj = {
+				twoStepAuthLink : twoStepAuthLink,
+				twoStepAuthSpan : Dwt.getElement(this._htmlElId + "_TWO_STEP_AUTH"),
+				twoStepAuthCodesContainer : Dwt.getElement(this._htmlElId + "_TWO_STEP_AUTH_CODES_CONTAINER"),
+				twoStepAuthEnabledCallback : this.setAccountSecurity.bind(this)
+			};
+			Dwt.setHandler(twoStepAuthLink, DwtEvent.ONCLICK, this._handleTwoStepAuthLink.bind(this, paramsObj));
+		}
 	}
 	if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) {
 		var twoStepAuthCodesSpan = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_CODES");

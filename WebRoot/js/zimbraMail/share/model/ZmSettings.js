@@ -953,6 +953,8 @@ function() {
 	this.registerSetting("FORCE_CLEAR_COOKIES",				{name:"zimbraForceClearCookies", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("WEBCLIENT_OFFLINE_ENABLED",		{name:"zimbraFeatureWebClientOfflineAccessEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("SPELL_DICTIONARY",                                {name:"zimbraPrefSpellDictionary", type:ZmSetting.T_COS, defaultValue:""});
+	this.registerSetting("TWO_FACTOR_AUTH_AVAILABLE",	    {name:"zimbraFeatureTwoFactorAuthAvailable", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("TWO_FACTOR_AUTH_REQUIRED",	    {name:"zimbraFeatureTwoFactorAuthRequired", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("APP_PASSWORDS_ENABLED",	        {name:"zimbraFeatureAppSpecificPasswordsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
 	// user metadata (included with COS since the user can't change them)

@@ -31,6 +31,8 @@ ZmTwoFactorSetupDialog = function(params) {
 	this.username = typeof appCtxt !== "undefined" ? appCtxt.getLoggedInUsername() : params.userName;
 	this.twoStepAuthSpan = params.twoStepAuthSpan;
 	this.twoStepAuthLink = params.twoStepAuthLink;
+	this.twoStepAuthCodesContainer = params.twoStepAuthCodesContainer;
+	this.twoStepAuthEnabledCallback = params.twoStepAuthEnabledCallback;
 	// this.isFromLoginPage will be true if ZmTwoFactorSetupDialog is created from TwoFactorSetup.jsp, which is forwarded from login.jsp file.
 	this.isFromLoginPage = params.isFromLoginPage;
 	var previousButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, ZmMsg.previous, DwtDialog.ALIGN_RIGHT, this._previousButtonListener.bind(this));
@@ -204,6 +206,12 @@ function() {
 		if (this.twoStepAuthLink) {
 			Dwt.setInnerHtml(this.twoStepAuthLink, ZmMsg.twoStepAuthDisableLink);
 		}
+		if (this.twoStepAuthCodesContainer) {
+			Dwt.setDisplay(this.twoStepAuthCodesContainer, "");
+		}
+		if (this.twoStepAuthEnabledCallback) {
+			this.twoStepAuthEnabledCallback();
+		}
 	}
 };
 
@@ -323,17 +331,18 @@ function(currentDivId, exception) {
 };
 
 ZmTwoFactorSetupDialog.disableTwoFactorAuth =
-function(twoStepAuthLink, twoStepAuthSpan, dialog) {
+function(params, dialog) {
 	var command = new ZmCsfeCommand();
 	var jsonObj = {DisableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount"}};
-	var callback = ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback.bind(window, twoStepAuthLink, twoStepAuthSpan, dialog);
+	var callback = ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback.bind(window, params, dialog);
 	command.invoke({jsonObj: jsonObj, noAuthToken: true, asyncMode: true, callback: callback, serverUri:"/service/soap/"});
 };
 
 ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback =
-function(twoStepAuthLink, twoStepAuthSpan, dialog) {
+function(params, dialog) {
 	dialog.popdown();
-	Dwt.setInnerHtml(twoStepAuthSpan, ZmMsg.twoStepStandardAuth);
-	Dwt.setInnerHtml(twoStepAuthLink, ZmMsg.twoStepAuthSetupLink);
+	Dwt.setInnerHtml(params.twoStepAuthSpan, ZmMsg.twoStepStandardAuth);
+	Dwt.setInnerHtml(params.twoStepAuthLink, ZmMsg.twoStepAuthSetupLink);
+	Dwt.setDisplay(params.twoStepAuthCodesContainer, Dwt.DISPLAY_NONE);
 	appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_ENABLED, false, false, false, true);
 };
