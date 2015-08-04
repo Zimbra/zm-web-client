@@ -566,7 +566,7 @@ function(ev) {
 		startLetter = this.startSortMap[alphabet[idx]] || alphabet[idx].substr(0, 1);
 
 		if (idx < alphabet.length - 1) {
-			endLetter = this.endSortMap[alphabet[idx + 1]] || alphabet[idx + 1].substr(0, 1);
+			endLetter = this.endSortMap[alphabet[idx]] || alphabet[idx + 1].substr(0, 1);
 		}
 	}
 
