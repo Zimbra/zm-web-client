@@ -2082,6 +2082,20 @@ function(html){
     else if (maiden) {
         pattern = ZmMsg.fullnameMaiden;
     }
+    if (appCtxt.get(ZmSetting.LOCALE_NAME) === "ja") {
+        var fileAsId = this.getAttr(ZmContact.F_fileAs);
+        if (!AjxUtil.isEmpty(fileAsId) && fileAsId !== "1" && fileAsId !== "4" && fileAsId !== "6") {
+            /* When Japanese locale is selected, in the most every case, the name should be
+             * displayed as "Last First" which is set by the default pattern (ZmMsg_ja.fullname).
+             * But if the contact entry's fileAs field explicitly specifies the display
+             * format as "First Last", we should override the pattern to lay it out so.
+             * For other locales, it is not necessary to override the pattern: The default pattern is
+             * already set as "First Last", and even the FileAs specifies as "Last, First", the display
+             * name is always expected to be displayed as "First Last".
+             */
+            pattern = "{0} {1} {2} {4}";
+        }
+    }
     var formatter = new AjxMessageFormat(pattern);
     var args = [prefix,first,middle,maiden,last,suffix];
     if (!html){
