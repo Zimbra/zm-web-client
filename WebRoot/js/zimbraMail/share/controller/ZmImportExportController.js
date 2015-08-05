@@ -503,7 +503,7 @@ function(params) {
 	if (params.skipMeta) { formParams["meta"] = "0"; }
 	if (params.filename) { formParams["filename"] = params.filename; }
 	formParams.emptyname = ZmMsg.exportEmptyName;
-	formParams["charset"] = appCtxt.getCharset();
+    formParams["charset"] = (subType === "windows-live-mail-csv" || subType === "thunderbird-csv") ? "UTF-8" : appCtxt.getCharset();
 	formParams["callback"] = "ZmImportExportController." + funcName;
 
 	// initialize form
