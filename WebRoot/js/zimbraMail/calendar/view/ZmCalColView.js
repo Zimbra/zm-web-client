@@ -353,7 +353,6 @@ function() {
 	if(this._list && this._list.size() > 0) {
 		AjxDebug.println(AjxDebug.CALENDAR, " ---------------- ZmCalColView::set - calendar is blank");
 		AjxDebug.println(AjxDebug.CALENDAR, " list size :" + this._list.size());
-		AjxDebug.dumpObj(AjxDebug.CALENDAR, this._layouts);
 	}
 
 	if(this._fbBarEnabled){
