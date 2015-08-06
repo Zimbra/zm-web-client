@@ -1259,7 +1259,10 @@ and the container element is replaced with that control.
 					</tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-						<td class='ZOptionsField' valign='middle'><$=ZmMsg.manageSignatures$></td>
+						<td class='ZOptionsField' valign='middle'>
+						    <a id ='${id}_External_Signatures_Link' href='#Prefs.Signatures'><$=ZmMsg.manageSignaturesForExternalAccount$></a>
+						    <span id ='${id}_External_Signatures_Text'><$=ZmMsg.manageSignaturesForExternalAccount$></span>
+                        </td>
 					</tr>
 				</table>
 			</td>

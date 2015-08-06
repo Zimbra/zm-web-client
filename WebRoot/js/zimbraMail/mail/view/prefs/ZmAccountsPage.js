@@ -813,6 +813,9 @@ function(account, skipUpdate, ignoreProvider) {
 		var isEnabled = (appCtxt.isOffline)
 			? (account && account.type == ZmAccount.TYPE_PERSONA)
 			: (account && account.type != ZmAccount.TYPE_ZIMBRA);
+        if (account.smtpEnabled) {
+            isEnabled = false;
+        }
 		this._deleteButton.setEnabled(isEnabled);
 	}
 
@@ -959,7 +962,8 @@ function(useDefaults) {
 		var persona = new ZmPersona(identity);
 		this._accounts.add(ZmAccountsPage.__createProxy(persona), null, true);
 	}
-
+    var signatureLinkElement = Dwt.getElement(this._htmlElId + "_External_Signatures_Link");
+    Dwt.setHandler(signatureLinkElement, DwtEvent.ONCLICK, function(){skin.gotoPrefs("SIGNATURES")});
 	// initialize list view
 	this._accounts.sort(ZmAccountsPage.__ACCOUNT_COMPARATOR);
 	var account = this._accounts.get(0);
@@ -1207,6 +1211,7 @@ function(account, section) {
 	var isSsl = account.connectionType == ZmDataSource.CONNECT_SSL;
 	var isInbox = account.folderId == ZmOrganizer.ID_INBOX;
 	var isPortChanged = account.port != account.getDefaultPort();
+    var isSmtpEnabled = account.smtpEnabled;
 
 	this._setControlValue("ACCOUNT_TYPE", section, account.type);
 	this._setControlEnabled("ACCOUNT_TYPE", section, account._new);
@@ -1224,6 +1229,7 @@ function(account, section) {
 	var provider = account.getProvider();
 	this._setControlValue("PROVIDER", section, provider ? provider.id : "");
 	this._setControlVisible("PROVIDER", section, AjxUtil.keys(ZmDataSource.getProviders()).length > 0);
+    this._setExternalSectionControlsView(section, !isSmtpEnabled);
 };
 
 ZmAccountsPage.prototype._setDownloadToFolder =
@@ -1515,6 +1521,39 @@ function(id, section, enabled) {
 	if (!control || !setup) return;
 
 	control.setEnabled(enabled);
+};
+
+/**
+ * If selected datasource has attr smtpEnabled to true, make the external controls
+ * readOnly else editable.
+ */
+
+ZmAccountsPage.prototype._setExternalSectionControlsView =
+function(section, toEnable) {
+    var prefs,
+        prefsLen,
+        i,
+        pref,
+        signatureLinkElement,
+        signatureTextSpan;
+
+    prefs = section.prefs; // external sections prefs.
+    prefsLen = prefs.length;
+    signatureLinkElement = Dwt.getElement(this._htmlElId + "_External_Signatures_Link");
+    signatureTextSpan    = Dwt.getElement(this._htmlElId + "_External_Signatures_Text");
+
+    for (i = 0; i < prefsLen; i++) {
+        pref = prefs[i];
+        this._setControlEnabled(pref, section, toEnable); // Disable/enable external section pref, depending on the boolean value of attr smtpEnabled in selected Data Source.
+    }
+    if (toEnable) {
+        Dwt.setVisible(signatureLinkElement,true);
+        Dwt.setVisible(signatureTextSpan,false);
+    }
+    else {
+        Dwt.setVisible(signatureLinkElement,false);
+        Dwt.setVisible(signatureTextSpan,true);
+    }
 };
 
 ZmAccountsPage.prototype._setAccountFields =

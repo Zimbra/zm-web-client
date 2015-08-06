@@ -73,6 +73,7 @@ ZmDataSource.DATASOURCE_ATTRS = {
 	"l":				"folderId",
 	"connectionType":	"connectionType",
 	"pollingInterval":	"pollingInterval",
+    "smtpEnabled":      "smtpEnabled",
 	"leaveOnServer":	"leaveOnServer" // POP only
 };
 
