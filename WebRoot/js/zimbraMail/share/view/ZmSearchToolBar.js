@@ -608,8 +608,13 @@ function(ev) {
 	}
 };
 
-ZmMainSearchToolBar.prototype._setInputExpanded =
-function(expanded) {
+ZmMainSearchToolBar.prototype._setInputExpanded = function(expanded) {
+
+    // Don't collapse input if user just popped up menu (which causes blur on input)
+    if (!expanded && this._searchMenu && this._searchMenu.isPoppedUp()) {
+        return;
+    }
+
 	var input = this._searchField.getInputElement();
 	var cls = expanded ? "search_input-expanded" : "search_input";
 
