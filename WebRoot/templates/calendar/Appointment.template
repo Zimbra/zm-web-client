@@ -1255,23 +1255,6 @@
     </div>
 </template>
 
-<template id="calendar.Appointment#ChangesDialogOrganizer">
-	<table role="presentation" width='300'>
-		<tr>
-			<td><$=ZmMsg.apptSignificantChanges $></td>
-		</tr>
-		<tr>
-			<td style='padding:20px 30px;'>
-				<input type='radio' name="saveappt" id='${id}_send' checked/>&nbsp;<label for='${id}_send'><$=ZmMsg.apptSaveChanges $></label>
-				<br/>
-				<input type='radio' name="saveappt" id='${id}_cancel'/>&nbsp;<label for='${id}_cancel'><$=ZmMsg.apptSaveCancel $></label>
-				<br/>
-				<input type='radio' name="saveappt" id='${id}_discard'/>&nbsp;<label for='${id}_discard'><$=ZmMsg.apptSaveDiscard $></label>
-			</td>
-		</tr>
-	</table>
-</template>
-
 <template id="calendar.Appointment#ChangesDialogAttendee">
 	<table role="presentation" width='300'>
 		<tr>
