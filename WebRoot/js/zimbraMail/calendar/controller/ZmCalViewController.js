@@ -2376,8 +2376,8 @@ function(appt, mode) {
 	if (this._typeDialog == null) {
 		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 		this._typeDialog = new ZmCalItemTypeDialog(this._shell);
-		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener));
-		this._typeDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._typeCancelListener));
+		this._typeDialog.registerCallback(DwtDialog.OK_BUTTON, this._typeOkListener, this);
+		this._typeDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._typeCancelListener, this);
 	}
 	this._typeDialog.initialize(appt, mode, ZmItem.APPT);
 	this._typeDialog.popup();
@@ -2657,6 +2657,10 @@ function(appt) {
 
 ZmCalViewController.prototype._typeOkListener =
 function(ev) {
+	if (this._typeDialog) {
+		this._typeDialog.popdown();
+	}
+
 	if (this._typeDialog.mode == ZmCalItem.MODE_DELETE)
 		this._promptDeleteAppt(this._typeDialog.calItem, this._typeDialog.isInstance() ? ZmCalItem.MODE_DELETE_INSTANCE : ZmCalItem.MODE_DELETE_SERIES);
 	else
@@ -2704,6 +2708,8 @@ function(ev) {
 		// we cancel the drag/sash, refresh view
 		this._refreshAction(true);
 	}
+
+	this._typeDialog.popdown();
 };
 
 ZmCalViewController.prototype._quickAddOkListener =
