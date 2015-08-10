@@ -94,6 +94,7 @@ AjxPackage.require("ajax.dwt.widgets.DwtInputField");
 AjxPackage.require("ajax.dwt.widgets.DwtBaseDialog");
 AjxPackage.require("ajax.dwt.widgets.DwtDialog");
 AjxPackage.require("ajax.dwt.widgets.DwtMessageDialog");
+AjxPackage.require("ajax.dwt.widgets.DwtOptionDialog");
 AjxPackage.require("ajax.dwt.widgets.DwtToolBar");
 AjxPackage.require("ajax.dwt.widgets.DwtToolTip");
 AjxPackage.require("ajax.dwt.widgets.DwtText");
