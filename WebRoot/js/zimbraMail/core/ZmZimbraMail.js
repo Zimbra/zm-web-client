@@ -235,7 +235,6 @@ function() {
 	ZmZimbraMail.setExitTimer(false);
 	ZmZimbraMail.sessionTimerInvoked = false;
 	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
-	delete _zimbraMail;
 };
 
 ZmZimbraMail.closeChildWindows =
