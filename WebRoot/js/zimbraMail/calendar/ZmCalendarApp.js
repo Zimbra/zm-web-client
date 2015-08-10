@@ -1405,9 +1405,9 @@ function(date) {
 };
 
 ZmCalendarApp.prototype.getDateToolTip =
-function(date) {
+function(date, getSimpleToolTip) {
 	var cc = AjxDispatcher.run("GetCalController");
-	return cc.getDayToolTipText(date, null, null, true);
+	return cc.getDayToolTipText(date, null, null, true, getSimpleToolTip);
 };
 
 ZmCalendarApp.prototype.importAppointment =

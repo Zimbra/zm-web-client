@@ -2974,9 +2974,11 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
  * @param	{Date}		date		the date
  * @param	{Boolean}	noheader	if <code>true</code>, do not include tool tip header
  * @param	{AjxCallback}	callback		the callback
+ * @param	{Boolean}	getSimpleToolTip	 if <code>true</code>,show only plain text in tooltip for all day events.
+ * Multi day "appts/allday events" would be shown by just one entry showing final start/end date&time.
  */
 ZmCalViewController.prototype.getDayToolTipText =
-function(date, noheader, callback, isMinical) {
+function(date, noheader, callback, isMinical, getSimpleToolTip) {
 	try {
 		var start = new Date(date.getTime());
 		start.setHours(0, 0, 0, 0);
@@ -2988,7 +2990,7 @@ function(date, noheader, callback, isMinical) {
 			this.getApptSummaries(params);
 		} else {
 			var result = this.getApptSummaries(params);
-			return ZmApptViewHelper.getDayToolTipText(start, result, this, noheader, null, isMinical);
+			return ZmApptViewHelper.getDayToolTipText(start, result, this, noheader, null, isMinical, getSimpleToolTip);
 		}
 	} catch (ex) {
 		DBG.println(ex);

@@ -203,9 +203,9 @@ function(origAppt, controller) {
 
 
 ZmApptViewHelper.getDayToolTipText =
-function(date, list, controller, noheader, emptyMsg, isMinical) {
+function(date, list, controller, noheader, emptyMsg, isMinical, getSimpleToolTip) {
 	
-	if(!emptyMsg){
+	if (!emptyMsg) {
 		emptyMsg = ZmMsg.noAppts;
 	}
 
@@ -227,53 +227,65 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
 	var dateTime = date.getTime();
 	for (var i = 0; i < size; i++) {
 		var ao = list.get(i);
-
-		if (ao.isAllDayEvent()) {
-            // Multi-day all day appts will be broken up into one sub-appt per day, so only show
-       		// the one that matches the selected date
-            var apptDate = new Date(ao.startDate.getTime());
-            apptDate.setHours(0,0,0,0);
-            if (apptDate.getTime() != dateTime) continue;
-
-			useEmptyMsg = false;
-            if(!isMinical && ao.toString() == "ZmAppt") {
-                html.append("<tr><td><div class=appt>");
-                html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
-                html.append("</div></td></tr>");
-            }
-            else {
-                //DBG.println("AO    "+ao);
-                var widthField = AjxEnv.isIE ? "width:500px;" : "min-width:300px;";
-                html.append("<tr><td><div style='" + widthField + "' class=appt>");
-                html.append(ZmApptViewHelper._allDayItemHtml(ao, Dwt.getNextId(), controller, true, true));
-                html.append("</div></td></tr>");
-            }
+		var isAllDay = ao.isAllDayEvent();
+		if (isAllDay || getSimpleToolTip) {
+			// Multi-day "appts/all day events" will be broken up into one sub-appt per day, so only show
+			// the one that matches the selected date
+			var apptDate = new Date(ao.startDate.getTime());
+			apptDate.setHours(0,0,0,0);
+			if (apptDate.getTime() != dateTime) continue;
 		}
-	    else {
+
+		if (isAllDay && !getSimpleToolTip) {
 			useEmptyMsg = false;
-		    if(!isMinical && ao.toString() == "ZmAppt") {
-                html.append("<tr><td><div class=appt>");
-                html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
-                html.append("</div></td></tr>");
-            }
-            else {
-                var color = ZmCalendarApp.COLORS[controller.getCalendarColor(ao.folderId)];
-                var isNew = ao.status == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
-    
-                html.append("<tr><td class='calendar_month_day_item'><div class='", color, isNew ? "DarkC" : "C", "'>");
-                if (isNew) html.append("<b>");
-                //html.append("&bull;&nbsp;");
-                //var dur = ao.getShortStartHour();
-                var dur = ao.getDurationText(false, false);
-                html.append(dur);
-                if (dur != "") {
-                    html.append("&nbsp;");
-                }
-                html.append(AjxStringUtil.htmlEncode(ao.getName()));
-                if (isNew) html.append("</b>");
-                html.append("</div>");
-                html.append("</td></tr>");
-            }
+			if(!isMinical && ao.toString() == "ZmAppt") {
+				html.append("<tr><td><div class=appt>");
+				html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
+				html.append("</div></td></tr>");
+			}
+			else {
+				//DBG.println("AO    "+ao);
+				var widthField = AjxEnv.isIE ? "width:500px;" : "min-width:300px;";
+				html.append("<tr><td><div style='" + widthField + "' class=appt>");
+				html.append(ZmApptViewHelper._allDayItemHtml(ao, Dwt.getNextId(), controller, true, true));
+				html.append("</div></td></tr>");
+			}
+		}
+		else {
+			useEmptyMsg = false;
+			if (!isMinical && ao.toString() == "ZmAppt") {
+				html.append("<tr><td><div class=appt>");
+				html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
+				html.append("</div></td></tr>");
+			}
+			else {
+				var color = ZmCalendarApp.COLORS[controller.getCalendarColor(ao.folderId)];
+				var isNew = ao.status == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
+				html.append("<tr><td class='calendar_month_day_item'><div class='", color, isNew ? "DarkC" : "C", "'>");
+				if (isNew) html.append("<b>");
+				
+				var dur; 
+				if (isAllDay) {
+					dur = ao._orig.getDurationText(false, false, true)
+				} 
+				else {
+					//html.append("&bull;&nbsp;");
+					//var dur = ao.getShortStartHour();
+					dur = getSimpleToolTip ? ao._orig.getDurationText(false,false,true) : ao.getDurationText(false,false);
+				}
+				html.append(dur);
+				if (dur != "") {
+					html.append("&nbsp;");
+					if (isAllDay) { 
+						html.append("-&nbsp"); 
+					}
+				}   
+				html.append(AjxStringUtil.htmlEncode(ao.getName()));
+				
+				if (isNew) html.append("</b>");
+				html.append("</div>");
+				html.append("</td></tr>");
+			}
 		}
 	}
 	if (useEmptyMsg) {
