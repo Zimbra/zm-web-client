@@ -24,29 +24,37 @@
  * @constructor
  * @class
  *
- * @author Parag Shah
+ * @author Dan Villiom Podlaski Christiansen
  * @param parent			the element that created this view
  * 
- * @extends		DwtDialog
+ * @extends		DwtOptionDialog
  * 
  * @private
  */
-ZmCalItemTypeDialog = function(parent) {
+ZmCalItemTypeDialog = function() {
+	var params = Dwt.getParams(arguments, ZmCalItemTypeDialog.PARAMS);
 
-	DwtDialog.call(this, {parent:parent, id: "CAL_ITEM_TYPE_DIALOG"});
-
-	var content = AjxTemplate.expand("calendar.Calendar#TypeDialog", {id:this._htmlElId});
-	this.setContent(content);
-
-	// cache fields
-	this._defaultRadio = document.getElementById(this._htmlElId + "_defaultRadio");
-	this._questionCell = document.getElementById(this._htmlElId + "_question");
-	this._instanceMsg = document.getElementById(this._htmlElId + "_instanceMsg");
-	this._seriesMsg = document.getElementById(this._htmlElId + "_seriesMsg");
+	params.options = [
+		{
+			name: ZmCalItemTypeDialog.INSTANCE
+		},
+		{
+			name: ZmCalItemTypeDialog.SERIES
+		}
+	];
+	DwtOptionDialog.call(this, params);
 };
 
-ZmCalItemTypeDialog.prototype = new DwtDialog;
+ZmCalItemTypeDialog.PARAMS = ["parent"];
+
+ZmCalItemTypeDialog.prototype = new DwtOptionDialog;
 ZmCalItemTypeDialog.prototype.constructor = ZmCalItemTypeDialog;
+ZmCalItemTypeDialog.prototype.isZmCalItemTypeDialog = true;
+
+ZmCalItemTypeDialog.prototype.role = 'alertdialog';
+
+ZmCalItemTypeDialog.INSTANCE = 'INSTANCE';
+ZmCalItemTypeDialog.SERIES = 'SERIES';
 
 // Public methods
 
@@ -59,7 +67,6 @@ ZmCalItemTypeDialog.prototype.initialize =
 function(calItem, mode, type) {
 	this.calItem = calItem;
 	this.mode = mode;
-	this._defaultRadio.checked = true;
 
 	var m;
 	if (type == ZmItem.APPT) {
@@ -69,52 +76,40 @@ function(calItem, mode, type) {
 	} else {
 		m = AjxMessageFormat.format(ZmMsg.isRecurringTask, [AjxStringUtil.htmlEncode(calItem.getName())]);
 	}
-	if (mode == ZmCalItem.MODE_EDIT) {
-		this.setTitle(ZmMsg.openRecurringItem);
-		this._questionCell.innerHTML = m + " " + ZmMsg.editApptQuestion;
-		this._instanceMsg.innerHTML = ZmMsg.openInstance;
-		this._seriesMsg.innerHTML = ZmMsg.openSeries;
-	} else if (mode == ZmAppt.MODE_DRAG_OR_SASH) {
-		this.setTitle(ZmMsg.modifyRecurringItem);
-		this._questionCell.innerHTML = m + " " + ZmMsg.modifyApptQuestion;
-		this._instanceMsg.innerHTML = ZmMsg.modifyInstance;
-		this._seriesMsg.innerHTML = ZmMsg.modifySeries;
-	} else {
-		this.setTitle(ZmMsg.deleteRecurringItem);
-		if (calItem instanceof Array) {
-			this._questionCell.innerHTML = m + " " + ZmMsg.deleteApptListQuestion;
-			this._instanceMsg.innerHTML = ZmMsg.deleteInstances;
-		} else {
-			this._questionCell.innerHTML = m + " " + ZmMsg.deleteApptQuestion;
-			this._instanceMsg.innerHTML = ZmMsg.deleteInstance;
-		}
-		this._seriesMsg.innerHTML = ZmMsg.deleteSeries;
-	}
-};
 
-ZmCalItemTypeDialog.prototype.addSelectionListener =
-function(buttonId, listener) {
-	this._button[buttonId].addSelectionListener(listener);
+	var title, question, seriesMsg, instanceMsg;
+
+	if (mode == ZmCalItem.MODE_EDIT) {
+		title = ZmMsg.openRecurringItem;
+		question = m + " " + ZmMsg.editApptQuestion;
+		instanceMsg = ZmMsg.openInstance;
+		seriesMsg = ZmMsg.openSeries;
+	} else if (mode == ZmAppt.MODE_DRAG_OR_SASH) {
+		title = ZmMsg.modifyRecurringItem;
+		question = m + " " + ZmMsg.modifyApptQuestion;
+		instanceMsg = ZmMsg.modifyInstance;
+		seriesMsg = ZmMsg.modifySeries;
+	} else {
+		title = ZmMsg.deleteRecurringItem;
+		seriesMsg = ZmMsg.deleteSeries;
+		if (calItem instanceof Array) {
+			question = m + " " + ZmMsg.deleteApptListQuestion;
+			instanceMsg = ZmMsg.deleteInstances;
+		} else {
+			question = m + " " + ZmMsg.deleteApptQuestion;
+			instanceMsg = ZmMsg.deleteInstance;
+		}
+	}
+
+	this.setMessage(question, null, title);
+
+	this.getButton(ZmCalItemTypeDialog.INSTANCE).setText(instanceMsg);
+	this.getButton(ZmCalItemTypeDialog.SERIES).setText(seriesMsg);
+
+	this.setSelection(ZmCalItemTypeDialog.INSTANCE);
 };
 
 ZmCalItemTypeDialog.prototype.isInstance =
 function() {
-	return this._defaultRadio.checked;
-};
-
-// Override since we need to do more than popdown().
-ZmCalItemTypeDialog.prototype.handleKeyAction =
-function(actionCode, ev) {
-	switch (actionCode) {
-		case DwtKeyMap.CANCEL:
-			this.popdown();
-			var ctlr = appCtxt.getCurrentController();
-			if (ctlr && ctlr._typeCancelListener) {
-				ctlr._typeCancelListener();
-			}
-			break;
-		default:
-			return DwtDialog.prototype.handleKeyAction.apply(this, arguments);
-	}
-	return true;
+	return this.getSelection() === ZmCalItemTypeDialog.INSTANCE;
 };

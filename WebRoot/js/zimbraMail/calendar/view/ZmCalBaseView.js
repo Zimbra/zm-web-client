@@ -616,7 +616,9 @@ ZmCalBaseView.prototype._doubleClickListener =
 function(ev) {
 	var div = this.getTargetItemDiv(ev);
 	if (!div) { return;	}
-		
+
+	var handled = false;
+
 	if (this._getItemData(div, "type") == ZmCalBaseView.TYPE_APPT) {
 		if (this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
 			DwtUiEvent.copy(this._selEv, ev);
@@ -626,9 +628,11 @@ function(ev) {
 			this._selEv.item = item;
 			this._selEv.detail = DwtListView.ITEM_DBL_CLICKED;
 			this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
+
+			handled = true;
 		}
 	}
-	return this._doubleClickAction(ev, div);
+	return this._doubleClickAction(ev, div) || handled;
 };
 
 ZmCalBaseView.prototype._itemClicked =
