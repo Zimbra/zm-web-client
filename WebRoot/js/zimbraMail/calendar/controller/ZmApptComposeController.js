@@ -52,6 +52,12 @@ ZmApptComposeController.prototype.toString = function() { return "ZmApptComposeC
 
 ZmApptComposeController._VALUE = "value";
 
+ZmApptComposeController._DIALOG_OPTIONS = {
+	SEND: 'SEND',
+	CANCEL: 'CANCEL',
+	DISCARD: 'DISCARD'
+};
+
 // Public methods
 
 ZmApptComposeController.getDefaultViewType =
@@ -138,11 +144,28 @@ function(){
     if(isOrganizer) {
         dlg = this._changesDialog;
         if (!dlg) {
-           dlg = this._changesDialog = new DwtDialog({parent:appCtxt.getShell(), id:Dwt.getNextId("CHNG_DLG_ORG_")});
-           id = this._changesDialogId = Dwt.getNextId();
-           dlg.setContent(AjxTemplate.expand("calendar.Appointment#ChangesDialogOrganizer", {id: id}));
-           dlg.setTitle(ZmMsg.apptSave);
-           dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._changesDialogListener, id));
+			dlg = this._changesDialog = new DwtOptionDialog({
+				parent: appCtxt.getShell(),
+				id: Dwt.getNextId("CHNG_DLG_ORG_"),
+				title: ZmMsg.apptSave,
+				message: ZmMsg.apptSignificantChanges,
+				options: [
+					{
+						name: ZmApptComposeController._DIALOG_OPTIONS.SEND,
+						text: ZmMsg.apptSaveChanges
+					},
+					{
+						name: ZmApptComposeController._DIALOG_OPTIONS.CANCEL,
+						text: ZmMsg.apptSaveCancel
+					},
+					{
+						name: ZmApptComposeController._DIALOG_OPTIONS.DISCARD,
+						text: ZmMsg.apptSaveDiscard
+					}
+				]
+			});
+			dlg.registerCallback(DwtDialog.OK_BUTTON,
+			                     this._changesDialogListener.bind(this));
         }
     }
     else {
@@ -159,18 +182,25 @@ function(){
 };
 
 ZmApptComposeController.prototype._changesDialogListener =
-function(id){
+function(){
 
-    var sendAppt = document.getElementById(id+"_send");
-    var discardAppt = document.getElementById(id+"_discard");
     this.clearInvalidAttendees();
     delete this._invalidAttendees;
-    if (sendAppt.checked) {
+
+	switch (this._changesDialog.getSelection()) {
+	case ZmApptComposeController._DIALOG_OPTIONS.SEND:
         this._sendListener();
-    } else if (discardAppt.checked) {
+		break;
+
+	case ZmApptComposeController._DIALOG_OPTIONS.CANCEL:
+		break;
+
+	case ZmApptComposeController._DIALOG_OPTIONS.DISCARD:
         this.closeView();
-    }
-    this._changesDialog.popdown();
+		break;
+	}
+
+	this._changesDialog.popdown();
 };
 
 ZmApptComposeController.prototype._attendeeChangesDialogListener =
