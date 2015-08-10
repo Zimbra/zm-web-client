@@ -28,23 +28,7 @@
 				<label id='${id}_text_left' for='${id}_input' class='Text' style='text-align:right'></label>
 			</td>
 			<td>
-				<input id='${id}_input' name='${name}' value='${value}' type='checkbox' ${checked}>
-			</td>
-			<td>
-				<label id='${id}_text_right' for='${id}_input' class='Text' style='text-align:left'></label>
-			</td>
-		</tr>
-	</table>
-</template>
-
-<template id='dwt.Widgets#DwtRadioButton'>
-	<table role="presentation" class='ZRadioButtonTable'>
-		<tr>
-			<td>
-				<label id='${id}_text_left' for='${id}_input' class='Text' style='text-align:right'></label>
-			</td>
-			<td>
-				<input id='${id}_input' name='${name}' value='${value}' type='radio' ${checked}>
+				<input id='${id}_input' name='${name}' value='${value}' type='${type}' aria-labelledby='${id}_text_left ${id}_text_right'>
 			</td>
 			<td>
 				<label id='${id}_text_right' for='${id}_input' class='Text' style='text-align:left'></label>
