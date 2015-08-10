@@ -283,19 +283,36 @@ function() {
  * 
  * @param	{Boolean}	emptyAllDay		if <code>true</code>, return empty string if all day event
  * @param	{Boolean}	startOnly		if <code>true</code>, use start date only
+ * @param   {Boolean}   getSimpleText   if <code>true</code>, use the modified representation for duration where:
+ * 1. For one day all day event we show only "All day" before event name and omit the Date information
+ * 2. For multiday all day event we just show  final start/end date and omit time information and other words.
+ * 3. For appt that entirely falls in one day we omit day and just show time.
+ * 4. For multiday appt we show final start/end date&time
  * @return	{String}	the duration text
  */
 ZmCalBaseItem.prototype.getDurationText =
-function(emptyAllDay,startOnly) {
+function(emptyAllDay, startOnly, getSimpleText) {
 	var isAllDay = this.isAllDayEvent();
 	var isMultiDay = this.isMultiDay();
+	var pattern;
+	
 	if (isAllDay) {
 		if (emptyAllDay) return "";
 
 		var start = this.startDate;
-		var end = new Date(this.endDate.getTime() - (isMultiDay ? 2 * AjxDateUtil.MSEC_PER_HOUR : 0));
+		var end = new Date(this.endDate.getTime() - (isMultiDay ? 2 * AjxDateUtil.MSEC_PER_HOUR : 0));	
 
-		var pattern = isMultiDay ? ZmMsg.apptTimeAllDayMulti : ZmMsg.apptTimeAllDay;
+		if (getSimpleText) {
+			if (isMultiDay) {
+				pattern = ZmMsg.apptTimeAllDayMultiCondensed;
+			}
+			else {
+				return ZmMsg.allDay;
+			}
+		}
+		else {
+			pattern = isMultiDay ? ZmMsg.apptTimeAllDayMulti : ZmMsg.apptTimeAllDay;
+		}
 		return AjxMessageFormat.format(pattern, [start, end]);
 	}
 
@@ -303,7 +320,13 @@ function(emptyAllDay,startOnly) {
 		return ZmCalBaseItem._getTTHour(this.startDate);
 	}
 
-	var pattern = isMultiDay ? ZmMsg.apptTimeInstanceMulti : ZmMsg.apptTimeInstance;
+	if (getSimpleText) {
+		pattern = isMultiDay ? ZmMsg.apptTimeInstanceMultiCondensed : ZmMsg.apptTimeInstanceCondensed;
+	}
+	else {
+		pattern = isMultiDay ? ZmMsg.apptTimeInstanceMulti : ZmMsg.apptTimeInstance;
+	}
+	
 	return AjxMessageFormat.format(pattern, [this.getDateInLocalTimezone(this.startDate), this.getDateInLocalTimezone(this.endDate), ""]);
 };
 
