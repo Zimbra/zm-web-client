@@ -568,6 +568,8 @@ html[data-istwofactorsetuppage] .VeilOverlay TABLE {
 .RowOdd .ZmMsgListDate,
 .RowOdd .ZmListFlagsWrapper		{	background-color:@ListItemBgColor-alt@;	}
 
+.RowEven .ZmMsgListDate			{	background-color:@PanelColor@; }
+
 LI.RowDouble, LI.Row {list-style: none;}
 
 .selected TD,	/* TODO: used? */
