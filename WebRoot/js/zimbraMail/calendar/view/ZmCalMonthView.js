@@ -40,8 +40,8 @@ ZmCalMonthView.NUM_DAYS_IN_WORKWEEK = 5;// hard code to 5 days until we get real
 
 ZmCalMonthView.EXPANDED_HEIGHT_PERCENT = 70;
 ZmCalMonthView.EXPANDED_WIDTH_PERCENT = 50;
-ZmCalMonthView.ANIMATE_NO_OF_FRAMES = 5;
-ZmCalMonthView.ANIMATE_DURATION = 300;
+ZmCalMonthView.ANIMATE_INTERVAL = 1000 / 30;
+ZmCalMonthView.ANIMATE_DURATION = 250;
 
 ZmCalMonthView.OUT_OF_BOUNDS_SNAP = -1000;
 
@@ -955,10 +955,11 @@ function(ev, div, dblclick) {
 
 ZmCalMonthView.prototype.setDayView =
 function(dayInfo) {
-    var date = new Date(dayInfo.date.getTime());
     var tdCell = document.getElementById(dayInfo.tdId);
     var size = Dwt.getSize(tdCell);
     var view = this._dayView ;
+    var isDirty = !view || !view.getVisible() || !view.getDate() || view.getDate().getTime() !== dayInfo.date.getTime();
+
     if(!view) {
         view = this._dayView = new ZmCalDayView(this, DwtControl.ABSOLUTE_STYLE, this._controller, this._dropTgt);
         view.setCompactMode(true);
@@ -973,34 +974,37 @@ function(dayInfo) {
         view.setVisible(true);
     }
 
-    view.setDate(date, 0, true);
-    view.setSize(size.x-10, size.y-12);
+    if (isDirty) {
+        view.setDate(dayInfo.date, 0, true);
+
+        var subList = new AjxVector();
+        var appts = dayInfo.appts;
+
+        if(appts) {
+            for(var i = 0; i < appts.length; i++) {
+                subList.add(appts[i]);
+            }
+        }
+
+        var allDayAppts = dayInfo.allDayAppts;
+
+        if(allDayAppts) {
+            for(var i = 0; i < allDayAppts.length; i++) {
+                subList.add(allDayAppts[i])
+            }
+        }
+
+        view._preSet();
+        view.set(subList, true);
+    }
+
+    view.setSize(size.x - 10, size.y - 12);
     view._syncScroll();
 
     var loc = Dwt.toWindow(tdCell, 0, 0, this.getHtmlElement(), true);
     view.setLocation(loc.x+5, loc.y+5);
 
-    view._preSet();
     view._layout(true);
-
-    var subList = new AjxVector();
-    var appts = dayInfo.appts;
-
-    if(appts) {
-        for(var i = 0; i < appts.length; i++) {
-            subList.add(appts[i]);
-        }
-    }
-
-    var allDayAppts = dayInfo.allDayAppts;
-
-    if(allDayAppts) {
-        for(var i = 0; i < allDayAppts.length; i++) {
-            subList.add(allDayAppts[i])
-        }
-    }
-
-    view.set(subList, true);
 };
 
 ZmCalMonthView.prototype.expandDay =
@@ -1040,6 +1044,7 @@ function(markApptDays) {
             if(day && day.titleId) {
                 var te = document.getElementById(day.titleId);
                 te.className = day.dayClassName?day.dayClassName : '';
+                Dwt.setOpacity(te, 100);
                 if(markApptDays) {
                     var apptAvailable = (day.appts && day.appts.length > 0) || (day.allDayAppts && day.allDayAppts.length > 0);
                     te.className = te.className + (apptAvailable ? ' calendar_month_day_label_bold' : '');
@@ -1230,24 +1235,16 @@ function(dayInfo) {
     var expandedWidth = size.x*ZmCalMonthView.EXPANDED_WIDTH_PERCENT/100;
     var avgHeight = (size.y-expandedHeight)/5;
     var avgWidth = (size.x-expandedWidth)/6;
-    var diffWidth = expandedWidth - avgWidth;
-    var diffHeight = expandedHeight - avgHeight;
-    var deltaWidth = diffWidth/ZmCalMonthView.ANIMATE_NO_OF_FRAMES;
-    var deltaHeight = diffHeight/ZmCalMonthView.ANIMATE_NO_OF_FRAMES;
 
     var param = {
         dayInfo: dayInfo,
         avgWidth: avgWidth,
         avgHeight: avgHeight,
-        expandedWidth: avgWidth,
-        expandedHeight: avgHeight,
         maxWidth: expandedWidth,
         maxHeight: expandedHeight,
-        deltaHeight: deltaHeight,
-        deltaWidth: deltaWidth,
         changeCol: true,
         changeRow: true,
-        frameNo: ZmCalMonthView.ANIMATE_NO_OF_FRAMES
+        startTime: new Date().getTime()
     };
 
     //old expanded day needs to be collapsed
@@ -1256,16 +1253,12 @@ function(dayInfo) {
 
         param.collapseRowId = oldDayInfo.week;
         param.collapseColId = oldDayInfo.dow;
-        param.collapsedWidth = expandedWidth;
-        param.collapsedHeight = expandedHeight;
 
         if(oldDayInfo.week == dayInfo.week) {
             param.changeRow = false;
-            param.expandedHeight = expandedHeight;
         }
         if(oldDayInfo.dow == dayInfo.dow) {
             param.changeCol = false;
-            param.expandedWidth = expandedWidth;
         }
     }
 
@@ -1273,41 +1266,62 @@ function(dayInfo) {
         this._dayView.setVisible(false);
     }
 
+    clearInterval(this._animationInterval);
+    this._animationFrames = 0;
+    this._animationInterval =
+        setInterval(this.animateExpansion.bind(this, param),
+                    ZmCalMonthView.ANIMATE_INTERVAL);
+
     this.animateExpansion(param);
 };
 
 
 ZmCalMonthView.prototype.animateExpansion =
 function(param) {
+    var diffWidth = param.maxWidth - param.avgWidth;
+    var diffHeight = param.maxHeight - param.avgHeight;
 
-    if(param.frameNo <= 0) {
-        this._expandDayGrid(param);
-        this.setDayView(param.dayInfo);
-        var dayInfo = param.dayInfo;
-        this._expandedDayInfo = {week: dayInfo.week, dow: dayInfo.dow, date: dayInfo.date};
-        return;
-    }
-
-    this._expandDayGrid(param);
-
-    var interval = ZmCalMonthView.ANIMATE_DURATION/ZmCalMonthView.ANIMATE_NO_OF_FRAMES;
+    var passed = new Date().getTime() - param.startTime;
+    var progressFraction =
+        Math.min(passed / ZmCalMonthView.ANIMATE_DURATION, 1);
+    var opacity = 100 * progressFraction;
 
     if(param.changeCol) {
-        param.expandedWidth = (param.expandedWidth!=null)? param.expandedWidth + param.deltaWidth : null;
-        param.collapsedWidth = (param.collapsedWidth)? param.collapsedWidth - param.deltaWidth : null;
+        param.expandedWidth = param.avgWidth + diffWidth * progressFraction;
+        param.collapsedWidth = param.maxWidth - diffWidth * progressFraction;
     }else {
         param.expandedWidth = param.collapsedWidth = param.maxWidth;
     }
 
     if(param.changeRow) {
-        param.expandedHeight = (param.expandedHeight!=null)? param.expandedHeight + param.deltaHeight : null;
-        param.collapsedHeight = (param.collapsedHeight!=null)? param.collapsedHeight - param.deltaHeight : null;
+        param.expandedHeight = param.avgHeight + diffHeight * progressFraction;
+        param.collapsedHeight = param.maxHeight - diffHeight * progressFraction;
     }else {
         param.expandedHeight = param.collapsedHeight = param.maxHeight;
     }
 
-    param.frameNo = param.frameNo - 1;
-    AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.animateExpansion, [param]), interval);
+    this._expandDayGrid(param);
+    this.setDayView(param.dayInfo);
+
+    this._dayView.setOpacity(opacity);
+    Dwt.setOpacity(Dwt.byId(param.dayInfo.titleId), 100 - opacity);
+
+    this._animationFrames += 1;
+
+    // are we done?
+    if (progressFraction === 1) {
+        clearInterval(this._animationInterval);
+
+        var dayInfo = param.dayInfo;
+        this._expandedDayInfo = {
+            week: dayInfo.week,
+            dow: dayInfo.dow,
+            date: dayInfo.date
+        };
+
+        var fps = Math.round(this._animationFrames / passed * 1000);
+        DBG.println(AjxDebug.DBG1, "fisheye animation speed: " + fps + "FPS");
+    }
 };
 
 ZmCalMonthView.prototype._expandDayGrid =
