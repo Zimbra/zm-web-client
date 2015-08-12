@@ -91,6 +91,9 @@ ZmAddressInputField = function(params) {
 	dragBox.addDragListener(this._dragBoxListener.bind(this));
 	this.setDragBox(dragBox);
 
+    // Let this be a single tab stop, then manage focus among bubbles (if any) and the input using arrow keys
+    this.tabGroupMember = this;
+
     this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener);
 	this._reset();
 };
@@ -481,23 +484,6 @@ function(targetEl) {
 	return !(this._bubble[targetEl.id] || this.__isInputEl(targetEl));
 };
 
-ZmAddressInputField.prototype.getTabGroupMember =
-function() {
-	if (!this._tabGroup) {
-		var tg = this._tabGroup = new DwtTabGroup('ZmAddressInputField');
-
-		// the composite tab group includes regular children of the control; in
-		// this instance the address bubbles -- we want that, and our raw input
-		var ctg = DwtComposite.prototype.getTabGroupMember.call(this);
-
-		tg.addMember(ctg);
-		tg.addMember(this.getInputElement());
-	}
-
-	return this._tabGroup;
-};
-
-
 /**
  * Makes bubbles out of addresses in pasted text.
  *
@@ -528,33 +514,6 @@ function(ev) {
 		addrInput._resizeInput();
 	}
 };
-
-ZmAddressInputField.onFocus =
-function(ev) {
-	var dwtEv = new DwtUiEvent();
-	var addrInput = ZmAddressInputField._getAddrInputFromEvent(ev);
-	dwtEv.setFromDhtmlEvent(ev, addrInput);
-
-	if (addrInput) {
-		addrInput._hasFocus = true;
-		addrInput.setDisplayState(DwtControl.FOCUSED);
-		addrInput.notifyListeners(DwtEvent.FOCUS, dwtEv);
-	}
-};
-
-ZmAddressInputField.onBlur =
-function(ev) {
-	var dwtEv = new DwtUiEvent();
-	var addrInput = ZmAddressInputField._getAddrInputFromEvent(ev);
-	dwtEv.setFromDhtmlEvent(ev, addrInput);
-
-	if (addrInput) {
-		addrInput._hasFocus = false;
-		addrInput.setDisplayState(DwtControl.NORMAL);
-		addrInput.notifyListeners(DwtEvent.BLUR, dwtEv);
-	}
-};
-
 
 /**
  * Handle arrow up, arrow down for bubble holder
@@ -627,6 +586,14 @@ function() {
 	return this._input;
 };
 
+ZmAddressInputField.prototype._focus = function() {
+    this.setDisplayState(DwtControl.FOCUSED);
+};
+
+ZmAddressInputField.prototype._blur = function() {
+    this.setDisplayState(DwtControl.NORMAL);
+};
+
 ZmAddressInputField.prototype.setEnabled =
 function(enabled) {
 	DwtControl.prototype.setEnabled.call(this, enabled);
@@ -673,6 +640,8 @@ function(params) {
     Dwt.setHandler(this._input, DwtEvent.ONFOCUS, ZmAddressInputField.onFocus);
     Dwt.setHandler(this._input, DwtEvent.ONBLUR, ZmAddressInputField.onBlur);
 
+    this.setFocusElement(); // now that INPUT has been created
+
     var args = {container:this._holder, threshold:10, amount:15, interval:5, id:this._holderId};
     this._dndScrollCallback = DwtControl._dndScrollCallback.bind(null, [args]);
     this._dndScrollId = this._holderId;
@@ -695,24 +664,6 @@ function() {
 
 	this._holder.className = "addrBubbleHolder-empty";
 	this._setInputValue("");
-};
-
-/**
- * Sets focus to the INPUT.
- */
-ZmAddressInputField.prototype.focus =
-function() {
-	if (this.getEnabled()) {
-		appCtxt.getKeyboardMgr().grabFocus(this._input);
-	}
-};
-
-/**
- * Blurs this control.
- */
-ZmAddressInputField.prototype.blur =
-function() {
-	this._input.blur();
 };
 
 ZmAddressInputField.prototype.moveCursorToEnd =
