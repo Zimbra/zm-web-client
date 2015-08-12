@@ -2191,7 +2191,7 @@ function() {
 		this._action == ZmOperation.FORWARD_INLINE ||
 		this._action == ZmOperation.FORWARD_ATT)
 	{
-		return this._composeView.getRecipientField(AjxEmailAddress.TO);
+		return this._composeView.getAddrInputField(AjxEmailAddress.TO);
 	}
 
 	return (this._composeView.getComposeMode() == Dwt.TEXT)

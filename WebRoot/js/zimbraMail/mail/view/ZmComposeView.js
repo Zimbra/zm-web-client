@@ -233,7 +233,7 @@ function(params) {
 	}
 	// Force focus on the TO field
 	if (!ZmComposeController.IS_REPLY[action]) {
-		appCtxt.getKeyboardMgr().grabFocus(this._recipients.getField(AjxEmailAddress.TO));
+		appCtxt.getKeyboardMgr().grabFocus(this._recipients.getAddrInputField(AjxEmailAddress.TO));
 	}
 };
 
