@@ -1,4 +1,6 @@
 <project name="ZimbraWebClient" default="war">
+    <import file="../ant-global.xml" />
+
     <!-- Properties -->
     <dirname property="this.zwc.basedir" file="${ant.file.ZimbraWebClient}" />
 
@@ -130,14 +132,6 @@
     <property name='converse.css.dir' value='${converse.root.dir}/converse.js-${converse.version}/css' />
     <property name='converse.fonticons.dir' value='${converse.root.dir}/converse.js-${converse.version}/fonticons' />
     <property name="converse.dir" value="${js.dir}/ajax/3rdparty/converse"/>
-
-    <!-- Tasks -->
-
-    <taskdef resource="net/sf/antcontrib/antlib.xml">
-        <classpath>
-            <fileset dir='${lib.dir}' includes='**/ant-contrib-*.jar'/>
-        </classpath>
-    </taskdef>
 	
 	<!-- customize admin skin -->
 	<if>
@@ -303,8 +297,7 @@
             <webinf refid="overlay.webinf.fileset" />
             <webinf refid="webinf.fileset" />
 
-            <classes dir='${build.classes.dir}' excludes='**/kabuki/tools/i18n/**,**/build/**'/>
-			<classes dir='${build.classes.dir}' includes='**/kabuki/util/**,**/kabuki/tools/**' />
+            <classes dir='${build.classes.dir}' excludes='**/build/**'/>
             <classes refid="overlay.src.props.fileset" />
             <classes refid="src.props.fileset" />
             <classes refid="overlay.messages.fileset" />
@@ -362,7 +355,7 @@
             <fileset refid="overlay.src.props.fileset" />
             <fileset refid="messages.fileset" />
             <fileset refid="overlay.messages.fileset" />
-            <fileset dir='${build.classes.dir}'/>
+            <fileset dir='${build.classes.dir}' excludes='**/build/**'/>
         </copy>
 
         <copy todir="${webapp.dir}/WEB-INF/lib" verbose="${sync.verbose}">
@@ -410,14 +403,14 @@
             <fileset refid="overlay.skins.fileset" />
         </jscopy>
 
-		<jscopy todir='${webapp.dir}/help'>
+		<copy todir='${webapp.dir}/help'>
 			<fileset refid='help.fileset' />
 			<fileset refid='network.help.fileset' />
-		</jscopy>
+		</copy>
 
         <!-- files from build tree -->
         <jscopy todir='${webapp.dir}' verbose='${sync.verbose}'>
-            <fileset dir='${build.web.dir}' excludes='js/*${depends.ext}'/>
+            <fileset dir='${build.web.dir}' excludes='${build.web.excludes}'/>
         </jscopy>
 
         <!-- replace web.xml tokens -->
@@ -1172,7 +1165,10 @@ if (ext == null) ext = "";
             <sequential>
                 <dependset>
                     <srcfilelist dir='.' files='@{var}'/>
-                    <targetfilelist dir='.' files='@{var}${compress.ext}'/>
+                    <targetfilelist dir='.'>
+                        <file name='@{var}${jsmin.ext}'/>
+                        <file name='@{var}${compress.ext}'/>
+                    </targetfilelist>
                 </dependset>
                 <if>
                     <not>
