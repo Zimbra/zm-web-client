@@ -45,10 +45,15 @@ ZmReminderDialog = function(parent, reminderController, calController, apptType)
     } else {
         this.setTitle(ZmMsg.apptReminders);
     }
+
+    // we want all children in the tab order, so just reuse the
+    // composite tab group
+	this.getTabGroupMember().addMember(this._compositeTabGroup);
 };
 
 ZmReminderDialog.prototype = new DwtDialog;
 ZmReminderDialog.prototype.constructor = ZmReminderDialog;
+ZmReminderDialog.prototype.role = 'alertdialog';
 
 
 // Consts
@@ -102,6 +107,7 @@ function() {
         }
     }
 
+	this._snoozeSelectInputs[this.ALL_APPTS].focus();
 };
 
 ZmReminderDialog.prototype.initialize =
@@ -174,30 +180,28 @@ function(list) {
 
 };
 
-
 ZmReminderDialog.prototype._createButtons =
 function(uid, id, dismissListener, openListener, snoozeListener, snoozeSelectButtonListener, snoozeSelectMenuListener) {
 	//id should probably not be used, and only uid should - but I'm afraid it would confuse seleniun. This was added for bug 62376
 
 	var data = this._apptData[uid];
+	var appt = data.appt;
+
+	if (uid !== this.ALL_APPTS) {
+		// open button
+		var openBtn = this._openButtons[uid] = new DwtLinkButton({id: "openBtn_" + id, parent: this, parentElement: data.openLinkId, noDropDown: true});
+		openBtn.setText(AjxStringUtil.htmlEncode(appt.getReminderName()));
+		openBtn.addSelectionListener(openListener);
+		openBtn.setAttribute('aria-labelledby', [
+			openBtn._textEl.id, data.reminderDescContainerId, data.deltaId
+		].join(' '));
+		openBtn.apptUid = uid;
+		this.getTabGroupMember().addMember(openBtn);
+	}
 
 	var className = uid === this.ALL_APPTS ? "ZButton" : "DwtToolbarButton";
-	// dismiss button
-	var dismissBtn = this._dismissButtons[uid] = new DwtButton({id: "dismissBtn_" + id, parent: this, className: className, parentElement: data.dismissBtnId});
-	dismissBtn.setText(ZmMsg.dismiss);
-	dismissBtn.addSelectionListener(dismissListener);
-	dismissBtn.apptUid = uid;
 
-	// snoooze button
-	var snoozeSelectBtn = this._snoozeSelectButtons[uid] = new DwtButton({id: "snoozeSelectBtn_" + id, parent: this, className: "DwtToolbarButton", parentElement: data.snoozeSelectBtnId});
-	snoozeSelectBtn.apptUid = uid;
-	snoozeSelectBtn.addDropDownSelectionListener(snoozeSelectButtonListener);
-
-    var snoozeBtn = this._snoozeButtons[uid] = new DwtButton({id: "snoozeBtn_" + id, parent: this, className: className, parentElement: data.snoozeBtnId});
-	snoozeBtn.setText(ZmMsg.snooze);
-	snoozeBtn.addSelectionListener(snoozeListener);
-	snoozeBtn.apptUid = uid;
-
+	// snooze input field
 	var params = {
 		parent: this,
 		parentElement: data.snoozeSelectInputId,
@@ -209,19 +213,26 @@ function(uid, id, dismissListener, openListener, snoozeListener, snoozeSelectBut
 	var snoozeSelectInput = this._snoozeSelectInputs[uid] = new DwtInputField(params);
 	var snoozeSelectInputEl = snoozeSelectInput.getInputElement();
 	Dwt.setSize(snoozeSelectInputEl, "120px", "2rem");
+	snoozeSelectInputEl.setAttribute('aria-labelledby',
+	                                 data.snoozeAllLabelId || '');
 
-	var appt = data.appt;
+	// snoooze button
+	var snoozeSelectBtn = this._snoozeSelectButtons[uid] = new DwtButton({id: "snoozeSelectBtn_" + id, parent: this, className: "DwtToolbarButton", parentElement: data.snoozeSelectBtnId});
+	snoozeSelectBtn.apptUid = uid;
+	snoozeSelectBtn.addDropDownSelectionListener(snoozeSelectButtonListener);
+
+    var snoozeBtn = this._snoozeButtons[uid] = new DwtButton({id: "snoozeBtn_" + id, parent: this, className: className, parentElement: data.snoozeBtnId});
+	snoozeBtn.setText(ZmMsg.snooze);
+	snoozeBtn.addSelectionListener(snoozeListener);
+	snoozeBtn.apptUid = uid;
+
+	// dismiss button
+	var dismissBtn = this._dismissButtons[uid] = new DwtButton({id: "dismissBtn_" + id, parent: this, className: className, parentElement: data.dismissBtnId});
+	dismissBtn.setText(ZmMsg.dismiss);
+	dismissBtn.addSelectionListener(dismissListener);
+	dismissBtn.apptUid = uid;
+
 	this._createSnoozeMenu(snoozeSelectBtn, snoozeSelectInput, snoozeSelectMenuListener, uid === this.ALL_APPTS ? this._list : appt);
-
-	if (uid === this.ALL_APPTS) {
-		return;
-	}
-
-	// open button
-	var openBtn = this._openButtons[uid] = new DwtLinkButton({id: "openBtn_" + id, parent: this, parentElement: data.openLinkId, noDropDown: true});
-	openBtn.setText(AjxStringUtil.htmlEncode(appt.getReminderName()));
-	openBtn.addSelectionListener(openListener);
-	openBtn.apptUid = uid;
 };
 
 ZmReminderDialog.prototype._cleanupButtons =
