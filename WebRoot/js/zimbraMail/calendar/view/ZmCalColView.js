@@ -1727,6 +1727,7 @@ function(refreshApptLayout) {
 
 	if (this._scheduleMode || refreshApptLayout) {
 		this._layoutAppts();
+		this._checkForOffscreenAppt(document.getElementById(this._bodyDivId));
 		if (this._scheduleMode) {
 			this._layoutUnionData();
 		}
