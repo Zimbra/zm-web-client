@@ -134,9 +134,10 @@ function(buttonId, addrs, str, account) {
 
 	this.search(null, true, true);
 
+    DwtDialog.prototype.popup.call(this);
+
 	this._resizeChooser();
 
-	DwtDialog.prototype.popup.call(this);
     if ((this.getLocation().x < 0 ||  this.getLocation().y < 0) ){
                 // parent window size is smaller than Dialog size
                 this.setLocation(0,30);
