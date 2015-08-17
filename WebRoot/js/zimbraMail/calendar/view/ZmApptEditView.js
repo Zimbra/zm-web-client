@@ -1223,7 +1223,9 @@ function(width) {
         if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
             this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT, {
                 strictMode:false,
-                label: ZmMsg.equipmentAttendee
+                label: ZmMsg.equipmentAttendee,
+                bubbleAddedCallback: this._handleAddedAttendees.bind(this, ZmCalBaseItem.EQUIPMENT),
+                bubbleRemovedCallback: this._handleRemovedAttendees.bind(this, ZmCalBaseItem.EQUIPMENT)
 			});
         }
 	}
