@@ -58,6 +58,9 @@ ZmRequestMgr = function(controller) {
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);
 };
 
+ZmRequestMgr.prototype.isZmRequestMgr = true;
+ZmRequestMgr.prototype.toString = function() { return "ZmRequestMgr"; };
+
 // request states
 ZmRequestMgr._SENT		= 1;
 ZmRequestMgr._RESPONSE	= 2;
@@ -73,17 +76,11 @@ ZmRequestMgr._nextReqId = 1;
 
 ZmRequestMgr.OFFLINE_HEAP_DUMP          = "heapdump_upload";
 ZmRequestMgr.OFFLINE_MUST_RESYNC        = "resync";
-ZmRequestMgr.OFFLINE_MUST_GAL_RESYNC        = "gal_resync";
+ZmRequestMgr.OFFLINE_MUST_GAL_RESYNC    = "gal_resync";
 ZmRequestMgr.OFFLINE_FOLDER_MOVE_FAILED = "foldermove_failed";
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmRequestMgr.prototype.toString =
-function() {
-	return "ZmRequestMgr";
-};
+
+// ms to delay after a response to make sure focus is in sync
+ZmRequestMgr.FOCUS_CHECK_DELAY = 500;
 
 /**
  * Sends a request to the CSFE and processes the response. Notifications and
@@ -342,6 +339,10 @@ function(params, result) {
 		ctlr._evt.request = methodName;
 		ctlr.notify(ZmAppEvent.RESPONSE);
 	}
+
+    setTimeout(function() {
+        appCtxt.getKeyboardMgr().checkFocus();
+    }, ZmRequestMgr.FOCUS_CHECK_DELAY);
 };
 
 /**
