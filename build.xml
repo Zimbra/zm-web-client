@@ -1265,9 +1265,6 @@ if (ext == null) ext = "";
 	</target>
 
     <target name='deploy' depends='war'>
-        <!-- check if we have an SSH identity, needed for the admin console -->
-        <ant dir="${soap.dir}" target="zimbra-identity" inheritAll="false"/>
-
         <ant dir="${server.dir}" target="stop-jetty" inheritAll="false"/>
 
         <echo>Deploy ${build.war.file} to ${deploy.dir}</echo>
@@ -1281,6 +1278,9 @@ if (ext == null) ext = "";
         <antcall target='webxml-deploy-replace'/>
 
         <ant dir="${server.dir}" target="start-jetty" inheritAll="false"/>
+
+        <!-- check if we have an SSH identity, needed for the admin console -->
+        <ant dir="${soap.dir}" target="zimbra-identity" inheritAll="false"/>
     </target>
 
     <target name='webxml-package-replace' depends='init'>
