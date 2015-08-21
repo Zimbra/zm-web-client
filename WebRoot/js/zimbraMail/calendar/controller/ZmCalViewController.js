@@ -1097,6 +1097,23 @@ function(viewId) {
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, toolbar, this, viewId], {waitUntilLoaded:true});
 };
 
+ZmCalViewController.prototype._initializeTabGroup = function(viewId) {
+	if (this._tabGroups[viewId]) {
+		return;
+	}
+
+	ZmListController.prototype._initializeTabGroup.apply(this, arguments);
+
+	// this is kind of horrible, but since list views don't normally have
+	// children, we can't do this the right way by having a tab group in
+	// ZmCalListView
+	if (viewId === ZmId.VIEW_CAL_LIST) {
+		var view = this._view[viewId];
+		var topTabGroup = view._getSearchBarTabGroup();
+
+		this._tabGroups[viewId].addMemberBefore(topTabGroup, view);
+	}
+}
 
 ZmCalViewController.prototype.runRefresh =
 function() {

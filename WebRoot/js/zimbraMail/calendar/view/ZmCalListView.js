@@ -110,8 +110,8 @@ function(date, duration, roll) {
 	// update widgets
 	var startDate = new Date(this._timeRangeStart);
 	var endDate = new Date(this._timeRangeEnd);
-	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(startDate);
-	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(endDate);
+	this._startDateField.setValue(AjxDateUtil.simpleComputeDateStr(startDate));
+	this._endDateField.setValue(AjxDateUtil.simpleComputeDateStr(endDate));
 
 	this._updateDateRange(startDate, endDate);
 
@@ -264,42 +264,60 @@ ZmCalListView.prototype._createSearchBar = function(parent) {
     var searchBar = new DwtComposite({parent:parent, className:"ZmCalListViewSearchBar", posStyle:DwtControl.ABSOLUTE_STYLE});
     searchBar.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Calendar#ListViewSearchBar",id);
 
-    var controls = new DwtMessageComposite(searchBar);
-    var message = ZmMsg.showApptsFromThrough;
-    var callback = new AjxCallback(this, this._createSearchBarComponent);
-    var hintsCallback = null;
-    controls.setFormat(message, callback, hintsCallback);
-    controls.reparentHtmlElement(document.getElementById(id+"_searchBarControls"));
+    var controls = new DwtMessageComposite({
+        parent: searchBar,
+        parentElement: Dwt.byId(id+"_searchBarControls"),
+        format: ZmMsg.showApptsFromThrough,
+        controlCallback: this._createSearchBarComponent.bind(this),
+    });
 
     this._dateRangeField = document.getElementById(id+"_searchBarDate");
+    this._makeFocusable(this._dateRangeField);
 
     return searchBar;
 };
+
+ZmCalListView.prototype._getSearchBarTabGroup = function() {
+	if (!this._dateSearchBarTabGroup) {
+		var tg = this._dateSearchBarTabGroup =
+			new DwtTabGroup('ZmCalListView search');
+
+		tg.addMember([
+			this._dateSearchBar.getChild(0).getTabGroupMember(),
+			this._dateRangeField
+		]);
+	}
+
+	return this._dateSearchBarTabGroup;
+}
 
 ZmCalListView.prototype._createSearchBarComponent = function(searchBar, segment, i) {
     var isStart = segment.getIndex() == 0;
     var id = this._htmlElId;
     var prefix = isStart ? "_start" : "_end";
 
-    var component = new DwtComposite({parent:searchBar});
-    var templateId = "calendar.Calendar#ListViewSearchBarInput";
-    component.getHtmlElement().innerHTML = AjxTemplate.expand(templateId, id+prefix);
+    var component = new DwtToolBar({parent:searchBar});
 
     var inputId = [id,prefix,"DateInput"].join("");
-    var inputEl = document.getElementById(inputId);
-    inputEl.onchange = AjxCallback.simpleClosure(this._onDatesChange, this, [isStart]);
+    var input = new DwtInputField({id: inputId, parent: component});
+    Dwt.setHandler(input.getInputElement(), DwtEvent.ONCHANGE,
+                   this._onDatesChange.bind(this, isStart));
 
     var dateButtonListener = new AjxListener(this, this._dateButtonListener);
     var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
     var buttonId = [id,prefix,"MiniCal"].join("");
-    var button = ZmCalendarApp.createMiniCalButton(searchBar, buttonId, dateButtonListener, dateCalSelectionListener);
+    var button = ZmCalendarApp.createMiniCalButton(component, buttonId, dateButtonListener, dateCalSelectionListener, false);
+
+    // this.getTabGroupMember().addMember([inputEl, button]);
 
     if (isStart) {
-        this._startDateField = inputEl;
+        this._startDateField = input;
+        this._startDateField.setToolTipContent(ZmMsg.startDate);
         this._startDateButton = button;
     }
     else {
-        this._endDateField = inputEl;
+        this._endDateField = input;
+        this._endDateField.setToolTipContent(ZmMsg.endDate);
         this._endDateButton = button;
     }
 
@@ -316,15 +334,15 @@ ZmCalListView.prototype._createSearchBarComponent = function(searchBar, segment,
 ZmCalListView.prototype._dateButtonListener =
 function(ev) {
 	var calDate = ev.item == this._startDateButton
-		? AjxDateUtil.simpleParseDateStr(this._startDateField.value)
-		: AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+		? AjxDateUtil.simpleParseDateStr(this._startDateField.getValue())
+		: AjxDateUtil.simpleParseDateStr(this._endDateField.getValue());
 
 	// if date was input by user and its foobar, reset to today's date
 	if (isNaN(calDate)) {
 		calDate = new Date();
 		var field = ev.item == this._startDateButton
 			? this._startDateField : this._endDateField;
-		field.value = AjxDateUtil.simpleComputeDateStr(calDate);
+		field.setValue(AjxDateUtil.simpleComputeDateStr(calDate));
 	}
 
 	// always reset the date to current field's date
@@ -355,7 +373,7 @@ function(ev) {
 	// update the appropriate field w/ the chosen date
 	var field = (parentButton == this._startDateButton)
 		? this._startDateField : this._endDateField;
-	field.value = AjxDateUtil.simpleComputeDateStr(ev.detail);
+	field.setValue(AjxDateUtil.simpleComputeDateStr(ev.detail));
 
 	// change the start/end date if they mismatch
 	this._handleDateChange(parentButton == this._startDateButton);
@@ -371,8 +389,8 @@ function(ev) {
  */
 ZmCalListView.prototype._handleDateChange =
 function(isStartDate) {
-	var start = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-	var end = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+	var start = AjxDateUtil.simpleParseDateStr(this._startDateField.getValue());
+	var end = AjxDateUtil.simpleParseDateStr(this._endDateField.getValue());
 
 	var startTime = start.getTime();
 	var endTime = end.getTime() + AjxDateUtil.MSEC_PER_DAY;
@@ -381,12 +399,12 @@ function(isStartDate) {
 	if (isStartDate && startTime >= endTime) {
 		endTime = startTime + AjxDateUtil.MSEC_PER_DAY;
 		end = new Date(endTime);
-		this._endDateField.value = AjxDateUtil.simpleComputeDateStr(end);
+		this._endDateField.setValue(AjxDateUtil.simpleComputeDateStr(end));
 	}
 	else if (endTime <= startTime) {
 		startTime = end.getTime() - AjxDateUtil.MSEC_PER_DAY;
 		start = new Date(startTime);
-		this._startDateField.value = AjxDateUtil.simpleComputeDateStr(start);
+		this._startDateField.setValue(AjxDateUtil.simpleComputeDateStr(start));
 	}
 
 	this._timeRangeStart = startTime;
