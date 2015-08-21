@@ -169,7 +169,7 @@ function(actionCode, ev) {
 
 	switch (actionCode) {
 		case DwtKeyMap.SELECT_ALL:
-			DwtListView.prototype.handleKeyAction.apply(this, arguments);
+			ZmListView.prototype.handleKeyAction.apply(this, arguments);
 			var ctlr = this._controller;
 			ctlr._resetOperations(ctlr.getCurrentToolbar(), this.getSelectionCount());
 			return true;
@@ -183,7 +183,7 @@ function(actionCode, ev) {
 			this._controller.lastListAction = actionCode;
 		
 		default:
-			return DwtListView.prototype.handleKeyAction.apply(this, arguments);
+			return ZmListView.prototype.handleKeyAction.apply(this, arguments);
 	}
 };
 
