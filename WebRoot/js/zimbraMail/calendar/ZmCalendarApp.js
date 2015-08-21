@@ -1037,9 +1037,13 @@ function(id) {
  * @param	{AjxListener}	dateCalSelectionListener	the listener to call when date is selected in {@link DwtCalendar}
  */
 ZmCalendarApp.createMiniCalButton =
-function(parent, buttonId, dateButtonListener, dateCalSelectionListener) {
+function(parent, buttonId, dateButtonListener, dateCalSelectionListener, reparent) {
 	// create button
-	var dateButton = new DwtButton({parent:parent});
+	var params = {parent:parent};
+	if (reparent === false) {
+		params.id = buttonId;
+	}
+	var dateButton = new DwtButton(params);
 	dateButton.addDropDownSelectionListener(dateButtonListener);
 	//make sure to listen to the tiny left-edge(thats not part of drop-down menu)
 	dateButton.addSelectionListener(dateButtonListener);
@@ -1071,9 +1075,9 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener) {
 		fdowSetting.addChangeListener(listener);
 	}
 
-	// reparent and cleanup
-	dateButton.reparentHtmlElement(buttonId);
-	delete buttonId;
+	if (reparent !== false) {
+		dateButton.reparentHtmlElement(buttonId);
+	}
 
 	return dateButton;
 };
