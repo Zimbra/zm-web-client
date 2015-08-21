@@ -385,8 +385,8 @@
 	@TransparentBorder@
 }
 
-.DwtText.ZFocused {
-	@FocusBorder@
+.DwtText.ZFocused, .DwtText:focus {
+	@FocusOutline@
 }
 
 /*
