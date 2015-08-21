@@ -261,6 +261,54 @@ ZmApptListView.prototype._getCellContents = function(htmlArr, idx, appt, field, 
 	return idx;
 };
 
+ZmApptListView.prototype._getLabelForField =
+function(appt, field) {
+    switch (field) {
+    case ZmItem.F_RECURRENCE:
+        if (appt.isException) {
+            return ZmMsg.recurrenceException;
+        } else if (appt.isRecurring()) {
+            return ZmMsg.recurrence;
+        } else {
+            return '';
+        }
+
+    case ZmItem.F_SUBJECT:
+        return appt.getName() || ZmMsg.noSubject;
+
+    case ZmItem.F_LOCATION:
+        return appt.location || ZmMsg.noLocation;
+
+    case ZmItem.F_STATUS:
+        return appt.otherAttendees && appt.getParticipantStatusStr();
+
+    case ZmItem.F_FOLDER:
+        return appt.getFolder().getName();
+
+    case ZmItem.F_ATTACHMENT:
+        return appt.hasAttach && ZmMsg.hasAttachment;
+
+    case ZmItem.F_TAG:
+        if (appt.tags.length > 0) {
+            var tags = appt.tags.join(' & ');
+            return AjxMessageFormat.format(ZmMsg.taggedAs, [tags]);
+        }
+
+        break;
+
+    case ZmItem.F_DATE:
+        if (appt.isAllDayEvent()) {
+            return AjxMessageFormat.format(ZmMsg.apptDateTimeAllDay,
+                                           [appt.startDate]);
+        } else {
+            return AjxMessageFormat.format(ZmMsg.apptDateTime,
+                                           [appt.startDate, appt.startDate]);
+        }
+    }
+
+    return ZmListView.prototype._getLabelForField.apply(this, arguments);
+};
+
 //
 // Private methods
 //
