@@ -214,11 +214,14 @@ function(viewId, startDate, skipMaintenance) {
 
 	var elements = this.getViewElements(ZmId.VIEW_CAL, this._viewMgr);
 
+	// we need to mark the current view _before_ actually setting the view,
+	// otherwise we won't get the tab group added if the view already exists
+	this._currentViewId = this._currentViewType = this._viewMgr.getCurrentViewName();
+
     this._setView({ view:		ZmId.VIEW_CAL,
 					viewType:	this._currentViewType,
 					elements:	elements,
 					isAppView:	true});
-    this._currentViewId = this._currentViewType = this._viewMgr.getCurrentViewName();
 
     this.setCurrentListView(null);
     var currentView = this._listView[this._currentViewId] = this._viewMgr.getCurrentView();

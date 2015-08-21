@@ -352,6 +352,16 @@ function(view) {
 };
 
 /**
+ * Gets the tab group.
+ * 
+ * @return	{Object}	the tab group
+ */
+ZmListController.prototype.getTabGroup =
+function() {
+	return this._tabGroups[this._currentViewId];
+};
+
+/**
  * @private
  */
 ZmListController.prototype._addMenuListeners =
