@@ -296,7 +296,6 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 				ZmSetting.SEARCH_INCLUDES_TRASH,
 				ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES,
 				ZmSetting.SHOW_SEARCH_STRING,
-				ZmSetting.PAGE_SIZE,
 				ZmSetting.SHOW_SELECTION_CHECKBOX,
 				ZmSetting.SKIN_NAME,
 				ZmSetting.CLIENT_TYPE,
