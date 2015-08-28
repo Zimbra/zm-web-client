@@ -592,72 +592,79 @@ function(trustedDevicesCountSpan, result) {
 	if (!response || !getTrustedDevicesResponse) {
 		return;
 	}
-	Dwt.setInnerHtml(trustedDevicesCountSpan, AjxMessageFormat.format(ZmMsg.trustedDevicesCount, getTrustedDevicesResponse.nOtherDevices));
+	var trustedDevicesCount = 0;
 	if (getTrustedDevicesResponse.thisDeviceTrusted) {
 		var trustedDeviceRevokeLink = document.getElementById(this._htmlElId + "_TRUSTED_DEVICE_REVOKE_LINK");
-		if (trustedDeviceRevokeLink) {
-			Dwt.setHandler(trustedDeviceRevokeLink, DwtEvent.ONCLICK, this._handleTrustedDeviceRevokeLink.bind(this, trustedDeviceRevokeLink));
+		if (trustedDeviceRevokeLink && !trustedDeviceRevokeLink.hasAttribute("data-onclick")) {
+			Dwt.setHandler(trustedDeviceRevokeLink, DwtEvent.ONCLICK, this._handleTrustedDeviceRevokeLink.bind(this, trustedDevicesCountSpan, trustedDeviceRevokeLink));
 			Dwt.delClass(trustedDeviceRevokeLink, "ZmLinkDisabled");
+			trustedDeviceRevokeLink.setAttribute("data-onclick", true);
 		}
+		trustedDevicesCount = 1;
 	}
 	if (getTrustedDevicesResponse.nOtherDevices) {
 		var trustedDevicesRevokeAllLink = document.getElementById(this._htmlElId + "_TRUSTED_DEVICES_REVOKE_ALL_LINK");
-		if (trustedDevicesRevokeAllLink) {
-			Dwt.setHandler(trustedDevicesRevokeAllLink, DwtEvent.ONCLICK, this._handleTrustedDevicesRevokeAllLink.bind(this, trustedDevicesRevokeAllLink));
-			Dwt.delClass(trustedDeviceRevokeLink, "ZmLinkDisabled");
+		if (trustedDevicesRevokeAllLink && !trustedDevicesRevokeAllLink.hasAttribute("data-onclick")) {
+			Dwt.setHandler(trustedDevicesRevokeAllLink, DwtEvent.ONCLICK, this._handleTrustedDevicesRevokeAllLink.bind(this, trustedDevicesCountSpan, trustedDevicesRevokeAllLink));
+			Dwt.delClass(trustedDevicesRevokeAllLink, "ZmLinkDisabled");
+			trustedDevicesRevokeAllLink.setAttribute("data-onclick", true);
 		}
+		trustedDevicesCount = trustedDevicesCount + parseInt(getTrustedDevicesResponse.nOtherDevices);
 	}
+	Dwt.setInnerHtml(trustedDevicesCountSpan, AjxMessageFormat.format(ZmMsg.trustedDevicesCount, trustedDevicesCount));
 };
 
 ZmAccountsPage.prototype._handleTrustedDeviceRevokeLink =
-function(trustedDeviceRevokeLink) {
+function(trustedDevicesCountSpan, trustedDeviceRevokeLink) {
 	//link is currently disabled by CSS pointer-event which will prevent onclick event. For older browsers just check for ZmLinkDisabled class
 	if (Dwt.hasClass(trustedDeviceRevokeLink, "ZmLinkDisabled")) {
 		return false;
 	}
 	var msgDialog = appCtxt.getOkCancelMsgDialog();
 	msgDialog.setMessage(ZmMsg.revokeTrustedDeviceMsg, DwtMessageDialog.WARNING_STYLE, ZmMsg.revokeTrustedDevice);
-	msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._revokeTrustedDevice.bind(this, trustedDeviceRevokeLink, msgDialog));
+	msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._revokeTrustedDevice.bind(this, trustedDevicesCountSpan, trustedDeviceRevokeLink, msgDialog));
 	msgDialog.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.revoke);
 	msgDialog.popup();
 };
 
 ZmAccountsPage.prototype._revokeTrustedDevice =
-function(trustedDeviceRevokeLink, msgDialog) {
+function(trustedDevicesCountSpan, trustedDeviceRevokeLink, msgDialog) {
 	msgDialog.popdown();
 	var jsonObj = {RevokeTrustedDeviceRequest : {_jsns : "urn:zimbraAccount"}};
-	var respCallback = this._revokeTrustedDeviceCallback.bind(this, trustedDeviceRevokeLink);
+	var respCallback = this._revokeTrustedDeviceCallback.bind(this, trustedDevicesCountSpan, trustedDeviceRevokeLink);
 	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
 
 ZmAccountsPage.prototype._revokeTrustedDeviceCallback =
-function(trustedDeviceRevokeLink) {
+function(trustedDevicesCountSpan, trustedDeviceRevokeLink) {
 	Dwt.addClass(trustedDeviceRevokeLink, "ZmLinkDisabled");
+	this._getTrustedDevicesCount(trustedDevicesCountSpan);
 };
 
 ZmAccountsPage.prototype._handleTrustedDevicesRevokeAllLink =
-function(trustedDevicesRevokeAllLink) {
+function(trustedDevicesCountSpan, trustedDevicesRevokeAllLink) {
 	if (Dwt.hasClass(trustedDevicesRevokeAllLink, "ZmLinkDisabled")) {
 		return false;
 	}
 	var msgDialog = appCtxt.getOkCancelMsgDialog();
 	msgDialog.setMessage(ZmMsg.revokeAllTrustedDevicesMsg, DwtMessageDialog.WARNING_STYLE, ZmMsg.revokeAllTrustedDevices);
-	msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._revokeOtherTrustedDevices.bind(this, trustedDevicesRevokeAllLink, msgDialog));
+	msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._revokeOtherTrustedDevices.bind(this, trustedDevicesCountSpan, trustedDevicesRevokeAllLink, msgDialog));
 	msgDialog.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.revokeAll);
 	msgDialog.popup();
 };
 
 ZmAccountsPage.prototype._revokeOtherTrustedDevices =
-function(trustedDevicesRevokeAllLink, msgDialog) {
+function(trustedDevicesCountSpan, trustedDevicesRevokeAllLink, msgDialog) {
 	msgDialog.popdown();
 	var jsonObj = {RevokeOtherTrustedDevicesRequest : {_jsns : "urn:zimbraAccount"}};
-	var respCallback = this._revokeOtherTrustedDevicesCallback.bind(this, trustedDevicesRevokeAllLink);
+	var respCallback = this._revokeOtherTrustedDevicesCallback.bind(this, trustedDevicesCountSpan, trustedDevicesRevokeAllLink);
 	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
 
 ZmAccountsPage.prototype._revokeOtherTrustedDevicesCallback =
-function(trustedDevicesRevokeAllLink) {
+function(trustedDevicesCountSpan, trustedDevicesRevokeAllLink) {
 	Dwt.addClass(trustedDevicesRevokeAllLink, "ZmLinkDisabled");
+	this._getTrustedDevicesCount(trustedDevicesCountSpan);
 };
 
 ZmAccountsPage.prototype._getGrants =
@@ -699,29 +706,36 @@ function() {
 			Dwt.setHandler(twoStepAuthLink, DwtEvent.ONCLICK, this._handleTwoStepAuthLink.bind(this, paramsObj));
 		}
 	}
-	if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) {
-		var twoStepAuthCodesSpan = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_CODES");
-		if (twoStepAuthCodesSpan) {
-			var twoStepAuthCodesViewLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_CODES_VIEW_LINK");
-			var twoStepAuthCodesGenerateLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_CODES_GENERATE_LINK");
-			var params = {
-				twoStepAuthCodesSpan : twoStepAuthCodesSpan,
-				twoStepAuthCodesViewLink : twoStepAuthCodesViewLink,
-				twoStepAuthCodesGenerateLink : twoStepAuthCodesGenerateLink
-			};
-			if (twoStepAuthCodesViewLink) {
-				Dwt.setHandler(twoStepAuthCodesViewLink, DwtEvent.ONCLICK, this._handleTwoStepAuthCodesViewLink.bind(this, params));
-			}
-			if (twoStepAuthCodesGenerateLink) {
-				Dwt.setHandler(twoStepAuthCodesGenerateLink, DwtEvent.ONCLICK, ZmAccountsPage.getScratchCodes.bind(window, true, params, false));
-			}
-			ZmAccountsPage.getScratchCodes(false, params, false);
+	//If two-factor authentication is not enabled just return.
+	if (!appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) {
+		return;
+	}
+
+	var twoStepAuthCodesSpan = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_CODES");
+	if (twoStepAuthCodesSpan) {
+		var twoStepAuthCodesViewLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_CODES_VIEW_LINK");
+		var twoStepAuthCodesGenerateLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_CODES_GENERATE_LINK");
+		var params = {
+			twoStepAuthCodesSpan : twoStepAuthCodesSpan,
+			twoStepAuthCodesViewLink : twoStepAuthCodesViewLink,
+			twoStepAuthCodesGenerateLink : twoStepAuthCodesGenerateLink
+		};
+		if (twoStepAuthCodesViewLink) {
+			Dwt.setHandler(twoStepAuthCodesViewLink, DwtEvent.ONCLICK, this._handleTwoStepAuthCodesViewLink.bind(this, params));
 		}
+		if (twoStepAuthCodesGenerateLink) {
+			Dwt.setHandler(twoStepAuthCodesGenerateLink, DwtEvent.ONCLICK, ZmAccountsPage.getScratchCodes.bind(window, true, params, false));
+		}
+		ZmAccountsPage.getScratchCodes(false, params, false);
+	}
+
+	if (appCtxt.get(ZmSetting.TRUSTED_DEVICES_ENABLED)) {
 		var trustedDevicesCountSpan = document.getElementById(this._htmlElId + "_TRUSTED_DEVICES_COUNT");
 		if (trustedDevicesCountSpan) {
 			this._getTrustedDevicesCount(trustedDevicesCountSpan);
 		}
 	}
+
 	//Whether app-specific passwords are enabled when two-factor auth is enabled
 	if (appCtxt.get(ZmSetting.APP_PASSWORDS_ENABLED)) {
 		var applicationCodesElement = document.getElementById(this._htmlElId + "_APPLICATION_CODES");
