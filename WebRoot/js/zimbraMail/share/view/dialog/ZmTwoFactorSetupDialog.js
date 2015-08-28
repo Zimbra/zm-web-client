@@ -330,6 +330,14 @@ function(currentDivId, exception) {
 	this.setButtonEnabled(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, true);
 };
 
+/**
+ * Determines whether to prevent the browser from displaying its context menu.
+ */
+ZmTwoFactorSetupDialog.prototype.preventContextMenu =
+function() {
+	return false;
+};
+
 ZmTwoFactorSetupDialog.disableTwoFactorAuth =
 function(params, dialog) {
 	var command = new ZmCsfeCommand();
