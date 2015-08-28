@@ -1041,14 +1041,16 @@ and the container element is replaced with that control.
 											<a href="#" id='${id}_TWO_STEP_AUTH_CODES_GENERATE_LINK' style="margin:10px;display:none;"><$=ZmMsg.twoStepAuthOneTimeCodesGenerate$></a>
 										</td>
 									</tr>
-									<tr>
-										<td class='ZOptionsLabel'><$=ZmMsg.trustedDevices$></td>
-										<td class='ZOptionsField' valign='middle'>
-											<span id='${id}_TRUSTED_DEVICES_COUNT'></span>
-											<a href="#" class="ZmLinkDisabled" style="margin:10px;" id='${id}_TRUSTED_DEVICE_REVOKE_LINK'><$=ZmMsg.trustedDevicesRevoke$></a>
-											<a href="#" class="ZmLinkDisabled" style="margin:10px;" id='${id}_TRUSTED_DEVICES_REVOKE_ALL_LINK'><$=ZmMsg.trustedDevicesRevokeAll$></a>
-										</td>
-									</tr>
+									<$ if (appCtxt.get(ZmSetting.TRUSTED_DEVICES_ENABLED)) { $>
+										<tr>
+											<td class='ZOptionsLabel'><$=ZmMsg.trustedDevices$></td>
+											<td class='ZOptionsField' valign='middle'>
+												<span id='${id}_TRUSTED_DEVICES_COUNT'></span>
+												<a href="#" class="ZmLinkDisabled" style="margin:10px;" id='${id}_TRUSTED_DEVICE_REVOKE_LINK'><$=ZmMsg.trustedDevicesRevoke$></a>
+												<a href="#" class="ZmLinkDisabled" style="margin:10px;" id='${id}_TRUSTED_DEVICES_REVOKE_ALL_LINK'><$=ZmMsg.trustedDevicesRevokeAll$></a>
+											</td>
+										</tr>
+									<$ } $>
 									<$ if (appCtxt.get(ZmSetting.APP_PASSWORDS_ENABLED)) { $>
 										<tr>
 											<td class='ZOptionsLabel'><$=ZmMsg.twoStepAuthApplications$></td>
