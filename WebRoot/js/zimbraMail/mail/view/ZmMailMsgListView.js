@@ -109,14 +109,14 @@ function(item, field) {
 
 ZmMailMsgListView.prototype._getCellContents =
 function(htmlArr, idx, msg, field, colIdx, params, classes) {
-
+	var zimletStyle = this._getStyleViaZimlet(field, msg) || "";
 	if (field == ZmItem.F_READ) {
 		idx = this._getImageHtml(htmlArr, idx, msg.getReadIcon(), this._getFieldId(msg, field), classes);
 	}
 	else if (field == ZmItem.F_STATUS) {
 		idx = this._getImageHtml(htmlArr, idx, msg.getStatusIcon(), this._getFieldId(msg, field), classes);
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
-		htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + ">";
+		htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + zimletStyle + ">";
 		// setup participants list for Sent/Drafts/Outbox folders
 		if (this._isOutboundFolder()) {
 			var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
@@ -159,7 +159,7 @@ function(htmlArr, idx, msg, field, colIdx, params, classes) {
 		htmlArr[idx++] = "</div>";
 
 	} else if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + ">";
+		htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) +  zimletStyle + ">";
 		if (this._mode == ZmId.VIEW_CONV || this._mode == ZmId.VIEW_CONVLIST) {
 			// msg within a conv shows just the fragment
 			//originally bug 97510 -  need a span so I can target it via CSS rule, so the margin is within the column content, and doesn't push the other columns

@@ -331,29 +331,6 @@ function(item, params) {
 	}
 };
 
-//apply colors to from and subject cells via zimlet
-ZmConvListView.prototype._getStyleViaZimlet =
-function(field, item) {
-
-	if (field != "fr" && field != "su" && field != "st") {
-		return "";
-	}
-
-	if (appCtxt.zimletsPresent() && this._ignoreProcessingGetMailCellStyle == undefined) {
-		if (!this._zimletMgr) {
-			this._zimletMgr = appCtxt.getZimletMgr();	//cache zimletMgr
-		}
-		var style = this._zimletMgr.processARequest("getMailCellStyle", item, field);
-		if (style != undefined && style != null) {
-			return style;	//set style
-		} else if (style == null && this._zimletMgr.isLoaded()) {
-			//zimlet not available or disabled, set _ignoreProcessingGetMailCellStyle to true
-			//to ignore this entire section for this session
-			this._ignoreProcessingGetMailCellStyle = true;
-		}
-	}
-	return "";
-};
 
 ZmConvListView.prototype._getCellId =
 function(item, field) {
@@ -382,6 +359,8 @@ ZmConvListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params, classes) {
 
 	var classes = classes || [];
+	var zimletStyle = this._getStyleViaZimlet(field, item) || "";
+	
 	if (field === ZmItem.F_SELECTION) {
 		if (this.isMultiColumn()) {
 			//add the checkbox only for multicolumn layout. The checkbox for single column layout is added in _getAbridgedContent
@@ -408,7 +387,7 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 			}
 		}
 		else if (field === ZmItem.F_FROM) {
-			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
+			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) +  zimletStyle + ">";
 			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
 			if (item.type === ZmItem.CONV && (visibleMsgCount > 1) && !this.isMultiColumn()) {
 				idx = this._getMsgCountHtml(htmlArr, idx, visibleMsgCount, unreadMsgCount);
@@ -420,7 +399,7 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 			if (item.numMsgs > 1) {
 				subj = ZmMailMsg.stripSubjectPrefixes(subj);
 			}
-			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + ">";
+			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + zimletStyle + ">";
 			htmlArr[idx++] = "<span>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj, true) + "</span>";
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
