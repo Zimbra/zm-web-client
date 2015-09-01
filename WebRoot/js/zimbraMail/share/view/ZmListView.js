@@ -1071,13 +1071,18 @@ function(ev) {
  * @param	{Object}	ev		the hover event
  * @return	{String}	the tool tip content
  */
-ZmListView.prototype.getToolTipContent =
-function(ev) {
+ZmListView.prototype.getToolTipContent = function(ev) {
+
 	var div = this.getTargetItemDiv(ev);
-	if (!div) { return ""; }
-	var target = this._getEventTarget(ev);
-	var id = target && target.id || div.id;
-	if (!id) { return ""; }
+	if (!div) {
+        return "";
+    }
+	var target = Dwt.findAncestor(this._getEventTarget(ev), "id"),
+	    id = (target && target.id) || div.id;
+
+	if (!id) {
+        return "";
+    }
 
 	// check if we're hovering over a column header
 	var data = this._data[div.id];
@@ -1087,7 +1092,8 @@ function(ev) {
 		var itemIdx = data.index;
 		var field = this._headerList[itemIdx]._field;
 		tooltip = this._getHeaderToolTip(field, itemIdx);
-	} else {
+	}
+    else {
 		var match = this._parseId(id);
 		if (match && match.field) {
 			var item = this.getItemFromElement(div);
@@ -1095,6 +1101,7 @@ function(ev) {
 			tooltip = this._getToolTip(params);
 		}
 	}
+
 	return tooltip;
 };
 
