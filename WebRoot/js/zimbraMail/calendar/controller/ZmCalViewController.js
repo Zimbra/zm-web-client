@@ -2395,7 +2395,10 @@ ZmCalViewController.prototype._showTypeDialog =
 function(appt, mode) {
 	if (this._typeDialog == null) {
 		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
-		this._typeDialog = new ZmCalItemTypeDialog(this._shell);
+		this._typeDialog = new ZmCalItemTypeDialog({
+			id: 'CAL_ITEM_TYPE_DIALOG',
+			parent: this._shell
+		});
 		this._typeDialog.registerCallback(DwtDialog.OK_BUTTON, this._typeOkListener, this);
 		this._typeDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._typeCancelListener, this);
 	}
