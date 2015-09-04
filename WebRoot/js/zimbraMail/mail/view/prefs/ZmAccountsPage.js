@@ -579,92 +579,101 @@ function(isNew, params, callback, result) {
 };
 
 ZmAccountsPage.prototype._getTrustedDevicesCount =
-function(trustedDevicesCountSpan) {
+function() {
 	var jsonObj = {GetTrustedDevicesRequest : {_jsns : "urn:zimbraAccount"}};
-	var respCallback = this._getTrustedDevicesCountCallback.bind(this, trustedDevicesCountSpan);
+	var respCallback = this._getTrustedDevicesCountCallback.bind(this);
 	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
 
 ZmAccountsPage.prototype._getTrustedDevicesCountCallback =
-function(trustedDevicesCountSpan, result) {
+function(result) {
 	var response = result && result.getResponse();
 	var getTrustedDevicesResponse = response && response.GetTrustedDevicesResponse;
 	if (!response || !getTrustedDevicesResponse) {
 		return;
 	}
 	var trustedDevicesCount = 0;
+	var trustedDeviceRevokeLink = document.getElementById(this._htmlElId + "_TRUSTED_DEVICE_REVOKE_LINK");
 	if (getTrustedDevicesResponse.thisDeviceTrusted) {
-		var trustedDeviceRevokeLink = document.getElementById(this._htmlElId + "_TRUSTED_DEVICE_REVOKE_LINK");
-		if (trustedDeviceRevokeLink && !trustedDeviceRevokeLink.hasAttribute("data-onclick")) {
-			Dwt.setHandler(trustedDeviceRevokeLink, DwtEvent.ONCLICK, this._handleTrustedDeviceRevokeLink.bind(this, trustedDevicesCountSpan, trustedDeviceRevokeLink));
+		if (trustedDeviceRevokeLink) {
+			Dwt.setHandler(trustedDeviceRevokeLink, DwtEvent.ONCLICK, this._handleTrustedDeviceRevokeLink.bind(this));
 			Dwt.delClass(trustedDeviceRevokeLink, "ZmLinkDisabled");
-			trustedDeviceRevokeLink.setAttribute("data-onclick", true);
 		}
 		trustedDevicesCount = 1;
 	}
+	else {
+		if (trustedDeviceRevokeLink) {
+			Dwt.addClass(trustedDeviceRevokeLink, "ZmLinkDisabled");
+		}
+	}
+	var trustedDevicesRevokeAllLink = document.getElementById(this._htmlElId + "_TRUSTED_DEVICES_REVOKE_ALL_LINK");
 	if (getTrustedDevicesResponse.nOtherDevices) {
-		var trustedDevicesRevokeAllLink = document.getElementById(this._htmlElId + "_TRUSTED_DEVICES_REVOKE_ALL_LINK");
-		if (trustedDevicesRevokeAllLink && !trustedDevicesRevokeAllLink.hasAttribute("data-onclick")) {
-			Dwt.setHandler(trustedDevicesRevokeAllLink, DwtEvent.ONCLICK, this._handleTrustedDevicesRevokeAllLink.bind(this, trustedDevicesCountSpan, trustedDevicesRevokeAllLink));
+		if (trustedDevicesRevokeAllLink) {
+			Dwt.setHandler(trustedDevicesRevokeAllLink, DwtEvent.ONCLICK, this._handleTrustedDevicesRevokeAllLink.bind(this));
 			Dwt.delClass(trustedDevicesRevokeAllLink, "ZmLinkDisabled");
-			trustedDevicesRevokeAllLink.setAttribute("data-onclick", true);
 		}
 		trustedDevicesCount = trustedDevicesCount + parseInt(getTrustedDevicesResponse.nOtherDevices);
 	}
+	else {
+		if (trustedDevicesRevokeAllLink) {
+			Dwt.addClass(trustedDevicesRevokeAllLink, "ZmLinkDisabled");
+		}
+	}
+	var trustedDevicesCountSpan = document.getElementById(this._htmlElId + "_TRUSTED_DEVICES_COUNT");
 	Dwt.setInnerHtml(trustedDevicesCountSpan, AjxMessageFormat.format(ZmMsg.trustedDevicesCount, trustedDevicesCount));
 };
 
 ZmAccountsPage.prototype._handleTrustedDeviceRevokeLink =
-function(trustedDevicesCountSpan, trustedDeviceRevokeLink) {
+function() {
+	var trustedDeviceRevokeLink = document.getElementById(this._htmlElId + "_TRUSTED_DEVICE_REVOKE_LINK");
 	//link is currently disabled by CSS pointer-event which will prevent onclick event. For older browsers just check for ZmLinkDisabled class
 	if (Dwt.hasClass(trustedDeviceRevokeLink, "ZmLinkDisabled")) {
 		return false;
 	}
 	var msgDialog = appCtxt.getOkCancelMsgDialog();
 	msgDialog.setMessage(ZmMsg.revokeTrustedDeviceMsg, DwtMessageDialog.WARNING_STYLE, ZmMsg.revokeTrustedDevice);
-	msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._revokeTrustedDevice.bind(this, trustedDevicesCountSpan, trustedDeviceRevokeLink, msgDialog));
+	msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._revokeTrustedDevice.bind(this, msgDialog));
 	msgDialog.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.revoke);
 	msgDialog.popup();
 };
 
 ZmAccountsPage.prototype._revokeTrustedDevice =
-function(trustedDevicesCountSpan, trustedDeviceRevokeLink, msgDialog) {
+function(msgDialog) {
 	msgDialog.popdown();
 	var jsonObj = {RevokeTrustedDeviceRequest : {_jsns : "urn:zimbraAccount"}};
-	var respCallback = this._revokeTrustedDeviceCallback.bind(this, trustedDevicesCountSpan, trustedDeviceRevokeLink);
+	var respCallback = this._revokeTrustedDeviceCallback.bind(this);
 	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
 
 ZmAccountsPage.prototype._revokeTrustedDeviceCallback =
-function(trustedDevicesCountSpan, trustedDeviceRevokeLink) {
-	Dwt.addClass(trustedDeviceRevokeLink, "ZmLinkDisabled");
-	this._getTrustedDevicesCount(trustedDevicesCountSpan);
+function() {
+	this._getTrustedDevicesCount();
 };
 
 ZmAccountsPage.prototype._handleTrustedDevicesRevokeAllLink =
-function(trustedDevicesCountSpan, trustedDevicesRevokeAllLink) {
+function() {
+	var trustedDevicesRevokeAllLink = document.getElementById(this._htmlElId + "_TRUSTED_DEVICES_REVOKE_ALL_LINK");
 	if (Dwt.hasClass(trustedDevicesRevokeAllLink, "ZmLinkDisabled")) {
 		return false;
 	}
 	var msgDialog = appCtxt.getOkCancelMsgDialog();
 	msgDialog.setMessage(ZmMsg.revokeAllTrustedDevicesMsg, DwtMessageDialog.WARNING_STYLE, ZmMsg.revokeAllTrustedDevices);
-	msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._revokeOtherTrustedDevices.bind(this, trustedDevicesCountSpan, trustedDevicesRevokeAllLink, msgDialog));
+	msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._revokeOtherTrustedDevices.bind(this, msgDialog));
 	msgDialog.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.revokeAll);
 	msgDialog.popup();
 };
 
 ZmAccountsPage.prototype._revokeOtherTrustedDevices =
-function(trustedDevicesCountSpan, trustedDevicesRevokeAllLink, msgDialog) {
+function(msgDialog) {
 	msgDialog.popdown();
 	var jsonObj = {RevokeOtherTrustedDevicesRequest : {_jsns : "urn:zimbraAccount"}};
-	var respCallback = this._revokeOtherTrustedDevicesCallback.bind(this, trustedDevicesCountSpan, trustedDevicesRevokeAllLink);
+	var respCallback = this._revokeOtherTrustedDevicesCallback.bind(this);
 	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
 
 ZmAccountsPage.prototype._revokeOtherTrustedDevicesCallback =
-function(trustedDevicesCountSpan, trustedDevicesRevokeAllLink) {
-	Dwt.addClass(trustedDevicesRevokeAllLink, "ZmLinkDisabled");
-	this._getTrustedDevicesCount(trustedDevicesCountSpan);
+function() {
+	this._getTrustedDevicesCount();
 };
 
 ZmAccountsPage.prototype._getGrants =
@@ -732,7 +741,7 @@ function() {
 	if (appCtxt.get(ZmSetting.TRUSTED_DEVICES_ENABLED)) {
 		var trustedDevicesCountSpan = document.getElementById(this._htmlElId + "_TRUSTED_DEVICES_COUNT");
 		if (trustedDevicesCountSpan) {
-			this._getTrustedDevicesCount(trustedDevicesCountSpan);
+			this._getTrustedDevicesCount();
 		}
 	}
 
