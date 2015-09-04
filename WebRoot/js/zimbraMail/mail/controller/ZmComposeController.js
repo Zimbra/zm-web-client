@@ -919,7 +919,9 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.SPELLCHECK:
-			if (!appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED)) break;
+            if (!appCtxt.isSpellCheckerAvailable()) {
+                break;
+            }
 			this.toggleSpellCheckButton(true);
 			this._spellCheckListener();
 			break;
@@ -1970,18 +1972,21 @@ function(draftType, callback, result) {
 	}
 };
 
-ZmComposeController.prototype._spellCheckListener =
-function(ev) {
+ZmComposeController.prototype._spellCheckListener = function(ev) {
+
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	var htmlEditor = this._composeView.getHtmlEditor();
 
-	if (spellCheckButton.isToggled()) {
-		var callback = this.toggleSpellCheckButton.bind(this);
-		if (!htmlEditor.spellCheck(callback))
-			this.toggleSpellCheckButton(false);
-	} else {
-		htmlEditor.discardMisspelledWords();
-	}
+    if (spellCheckButton) {
+        if (spellCheckButton.isToggled()) {
+            var callback = this.toggleSpellCheckButton.bind(this);
+            if (!htmlEditor.spellCheck(callback)) {
+                this.toggleSpellCheckButton(false);
+            }
+        } else {
+            htmlEditor.discardMisspelledWords();
+        }
+    }
 };
 
 ZmComposeController.prototype.showDelayDialog =
