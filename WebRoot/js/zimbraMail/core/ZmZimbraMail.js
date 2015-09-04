@@ -3301,18 +3301,17 @@ function() {
  * Handles the key action.
  * 
  * @param	{constant}		actionCode		the action code
- * @param	{Object}	ev		the event
- * @see		ZmApp.ACTION_CODES_R
- * @see		ZmKeyMap
+ * @param	{Object}	    ev		        the event
  */
-ZmZimbraMail.prototype.handleKeyAction =
-function(actionCode, ev) {
+ZmZimbraMail.prototype.handleKeyAction = function(actionCode, ev) {
+
+    DwtMenu.closeActiveMenu();
 
 	var app = ZmApp.GOTO_ACTION_CODE_R[actionCode];
 	if (app) {
-		DwtMenu.closeActiveMenu();
-
-		if (app == this.getActiveApp()) { return false; }
+		if (app == this.getActiveApp()) {
+            return false;
+        }
 		if (appCtxt.isWebClientOffline() && !AjxUtil.arrayContains(ZmOffline.SUPPORTED_APPS, app)) {
 			return false;
 		}
@@ -3320,42 +3319,7 @@ function(actionCode, ev) {
 		return true;
 	}
 
-	// don't honor plain Enter in an input field as an app shortcut, since it often
-	// equates to button press in that situation
-	if (ev && (ev.keyCode == 13 || ev.keyCode == 3) &&
-		!(ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) &&
-		 ev.target && (ev.target.id != DwtKeyboardMgr.FOCUS_FIELD_ID)) { return false; }
-
-	DwtMenu.closeActiveMenu();
-
 	switch (actionCode) {
-		case ZmKeyMap.DBG_NONE:
-			appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.NONE);
-			DBG.setDebugLevel(AjxDebug.NONE);
-			break;
-
-		case ZmKeyMap.DBG_1:
-			appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG1);
-			DBG.setDebugLevel(AjxDebug.DBG1);
-			break;
-
-		case ZmKeyMap.DBG_2:
-			appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG2);
-			DBG.setDebugLevel(AjxDebug.DBG2);
-			break;
-
-		case ZmKeyMap.DBG_3:
-			appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG3);
-			DBG.setDebugLevel(AjxDebug.DBG3);
-			break;
-
-		case ZmKeyMap.DBG_TIMING: {
-			var on = DBG._showTiming;
-			var newState = on ? "off" : "on";
-			appCtxt.setStatusMsg("Turning Timing Info " + newState);
-			DBG.showTiming(!on);
-			break;
-		}
 
 		case ZmKeyMap.QUICK_REMINDER: {
             var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
@@ -3365,12 +3329,6 @@ function(actionCode, ev) {
                 var calMgr = appCtxt.getCalManager();
                 calMgr.showQuickReminder();
             }
-			break;
-		}
-
-		case ZmKeyMap.LOGOFF: {
-            DBG.println(AjxDebug.DBG1, "ZmZimbraMail.prototype.handleKeyAction:matched ZmKeyMap.LOGOFF, invoking logout");
-			ZmZimbraMail.logOff();
 			break;
 		}
 
@@ -3396,15 +3354,6 @@ function(actionCode, ev) {
 			break;
 		}
 
-		case ZmKeyMap.UNDO: {
-			if (!appCtxt.isChildWindow) {
-				var actionController = appCtxt.getActionController();
-				if (actionController)
-					actionController.undoCurrent();
-			}
-			break;
-		}
-
 		case ZmKeyMap.SHORTCUTS: {
 			this._showCurrentShortcuts();
 			break;
@@ -3427,12 +3376,12 @@ function(actionCode, ev) {
 		}
 
 		default: {
+            // Hand shortcut to current controller
 			var ctlr = appCtxt.getCurrentController();
-			return (ctlr && ctlr.handleKeyAction)
-				? ctlr.handleKeyAction(actionCode, ev)
-				: false;
+			return ctlr && ctlr.handleKeyAction ? ctlr.handleKeyAction(actionCode, ev) : false;
 		}
 	}
+
 	return true;
 };
 

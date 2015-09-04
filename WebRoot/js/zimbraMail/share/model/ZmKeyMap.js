@@ -47,14 +47,6 @@ ZmKeyMap = function() {
 	ZmKeyMap._setPreconditions();
 	DwtKeyMap.call(this);
 	this._load(this._map, ZmKeys);
-
-	if (appCtxt.get(ZmSetting.DEV) && this._map[ZmKeyMap.MAP_GLOBAL]) {
-		this._map[ZmKeyMap.MAP_GLOBAL]["Alt+Shift+D,0"] = ZmKeyMap.DBG_NONE;
-		this._map[ZmKeyMap.MAP_GLOBAL]["Alt+Shift+D,1"] = ZmKeyMap.DBG_1;
-		this._map[ZmKeyMap.MAP_GLOBAL]["Alt+Shift+D,2"] = ZmKeyMap.DBG_2;
-		this._map[ZmKeyMap.MAP_GLOBAL]["Alt+Shift+D,3"] = ZmKeyMap.DBG_3;
-		this._map[ZmKeyMap.MAP_GLOBAL]["Alt+Shift+D,T"] = ZmKeyMap.DBG_TIMING;
-	}
 };
 
 ZmKeyMap.prototype = new DwtKeyMap(true);
@@ -100,11 +92,6 @@ ZmKeyMap.CALL_MANAGER       	= "CallManager";
 ZmKeyMap.CANCEL					= "Cancel";
 ZmKeyMap.COLLAPSE				= "Collapse";
 ZmKeyMap.COLLAPSE_ALL			= "CollapseAll";
-ZmKeyMap.DBG_NONE				= "DebugNone";
-ZmKeyMap.DBG_1					= "DebugLevel1";
-ZmKeyMap.DBG_2					= "DebugLevel2";
-ZmKeyMap.DBG_3					= "DebugLevel3";
-ZmKeyMap.DBG_TIMING				= "ToggleDebugTiming";
 ZmKeyMap.DEL					= "Delete";
 ZmKeyMap.SHIFT_DEL				= "ShiftDelete";
 ZmKeyMap.DOWNLOAD           	= "Download";
@@ -135,7 +122,6 @@ ZmKeyMap.HTML_FORMAT			= "HtmlFormat";
 ZmKeyMap.KEEP_READING			= "KeepReading";
 ZmKeyMap.LAST_UNREAD			= "LastUnread";
 ZmKeyMap.LAST_UNREAD_MSG		= "LastUnreadMsg";
-ZmKeyMap.LOGOFF					= "LogOff";
 ZmKeyMap.MARK_COMPLETE			= "MarkComplete";
 ZmKeyMap.MARK_HEARD				= "MarkHeard";
 ZmKeyMap.MARK_READ				= "MarkRead";
@@ -198,7 +184,6 @@ ZmKeyMap.SPELLCHECK				= "Spellcheck";
 ZmKeyMap.TAG					= "Tag";
 ZmKeyMap.TODAY					= "Today";
 ZmKeyMap.TOGGLE					= "Toggle";
-ZmKeyMap.UNDO					= "Undo";
 ZmKeyMap.UNTAG					= "Untag";
 ZmKeyMap.VIEW_BY_CONV			= "ViewByConversation";
 ZmKeyMap.VIEW_BY_MSG			= "ViewByMessage";
