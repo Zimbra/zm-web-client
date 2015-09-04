@@ -530,8 +530,23 @@ function() {
  * @param	{Object}	ev		the event
  * @return	{Boolean}	<code>true</code> if the action is handled
  */
-ZmNewWindow.prototype.handleKeyAction =
-function(actionCode, ev) {
+ZmNewWindow.prototype.handleKeyAction = function(actionCode, ev) {
+
+    // Ignore global shortcuts since they don't make sense in a child window
+    if (ZmApp.GOTO_ACTION_CODE_R[actionCode]) {
+        return false;
+    }
+    switch (actionCode) {
+        case ZmKeyMap.QUICK_REMINDER:
+        case ZmKeyMap.FOCUS_SEARCH_BOX:
+        case ZmKeyMap.FOCUS_CONTENT_PANE:
+        case ZmKeyMap.FOCUS_TOOLBAR:
+        case ZmKeyMap.SHORTCUTS:
+        case ZmKeyMap.CANCEL:
+            return false;
+    }
+
+    // Hand shortcut to current controller
 	var ctlr = appCtxt.getCurrentController();
 	if (ctlr && ctlr.handleKeyAction) {
 		return ctlr.handleKeyAction(actionCode, ev);
