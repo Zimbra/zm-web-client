@@ -54,3 +54,5 @@ AjxPackage.require({name:"zimbraMail.unittest.UtGetOriginalContent", method:AjxP
 AjxPackage.require({name:"zimbraMail.unittest.UtToolBar",		    method:AjxPackage.METHOD_SCRIPT_TAG});
 
 AjxPackage.require({name:"zimbraMail.unittest.UtGeneral", method:AjxPackage.METHOD_SCRIPT_TAG});
+AjxPackage.require({name:"zimbraMail.unittest.UTSearchHighlighterZimlet", method:AjxPackage.METHOD_SCRIPT_TAG});
+
