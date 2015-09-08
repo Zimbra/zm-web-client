@@ -390,17 +390,6 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
             prefs:          [ ZmSetting.TRUSTED_ADDR_LIST ]
 		},
 
-		CHAT: {
-			title:          ZmMsg.chat,
-			icon:           "ContactsApp",
-			templateId:     "prefs.Pages#Chat",
-			priority:       65,
-			prefs: [
-				ZmSetting.CHAT_ENABLED,
-				ZmSetting.CHAT_PLAY_SOUND
-			]
-		},
-
 		SHARING: {
 			title:          ZmMsg.sharing,
 			icon:           "SharedContact",
@@ -507,6 +496,33 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 							}
 		}
     }
+
+	if (appCtxt.get(ZmSetting.CHAT_FEATURE_ENABLED)) {
+		ZmPref.registerPref("CHAT_ENABLED", {
+			displayName:		ZmMsg.chatFeatureStatus,
+			displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+			orientation:		ZmPref.ORIENT_VERTICAL,
+			displayOptions:		[ZmMsg.chatFeatureEnabled, ZmMsg.chatFeatureDisabled],
+			options:			[true, false]
+		});
+
+		ZmPref.registerPref("CHAT_PLAY_SOUND", {
+			displayName:		ZmMsg.chatPlaySound,
+			displayContainer:	ZmPref.TYPE_CHECKBOX
+		});
+
+		sections["CHAT"] = {
+			title: ZmMsg.chat,
+			icon: "Conversation",
+			templateId: "prefs.Pages#Chat",
+			priority: 65,
+			prefs: [
+				ZmSetting.CHAT_ENABLED,
+				ZmSetting.CHAT_PLAY_SOUND
+			]
+		}
+	}
+
 
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
@@ -735,19 +751,6 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 
 	ZmPref.registerPref("SHORT_ADDRESS", {
 		displayName:		ZmMsg.shortAddress,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
-	ZmPref.registerPref("CHAT_ENABLED", {
-		displayName:		ZmMsg.chatFeatureStatus,
-		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		orientation:		ZmPref.ORIENT_VERTICAL,
-		displayOptions:		[ZmMsg.chatFeatureEnabled, ZmMsg.chatFeatureDisabled],
-		options:			[true, false]
-	});
-
-	ZmPref.registerPref("CHAT_PLAY_SOUND", {
-		displayName:		ZmMsg.chatPlaySound,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 

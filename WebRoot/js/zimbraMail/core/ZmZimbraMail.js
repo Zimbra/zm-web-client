@@ -794,15 +794,19 @@ function(params, result) {
         this.addPostRenderCallback(callback, 6, 100);
     }
 
-    // Callback for Chat application
-    var callback = new AjxCallback(this, function() {
-        AjxDispatcher.require("ConverseJS");
+    // Load chat packages only if feature is enabled
+    if (appCtxt.get(ZmSetting.CHAT_FEATURE_ENABLED) && appCtxt.get(ZmSetting.CHAT_ENABLED)) {
 
-        // Activating chat app
-        this.activateApp(ZmApp.CHAT, true);
-    });
-    // Execution index set to 7 for Chat app
-    this.addPostRenderCallback(callback, 7, 100);
+        // Callback for Chat application
+        var callback = new AjxCallback(this, function() {
+            AjxDispatcher.require("ConverseJS");
+
+            // Activating chat app
+            this.activateApp(ZmApp.CHAT, true);
+        });
+        // Execution index set to 7 for Chat app
+        this.addPostRenderCallback(callback, 7, 100);
+    }
 
 	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params);
 
