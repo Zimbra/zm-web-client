@@ -575,12 +575,14 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		}
 	});
 
-	// Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile...
-	var fontSizeOptions = [AjxMessageFormat.format(ZmMsg.pt,"8"), AjxMessageFormat.format(ZmMsg.pt,"10"),
-        AjxMessageFormat.format(ZmMsg.pt,"12"), AjxMessageFormat.format(ZmMsg.pt,"14"), AjxMessageFormat.format(ZmMsg.pt,"18"),
-        AjxMessageFormat.format(ZmMsg.pt,"24"), AjxMessageFormat.format(ZmMsg.pt,"36")];
-    //Server values are stored with 'pt' to work irrespective of locale, while display options are as per the respective locale 
-    var fontSizeValueOptions = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
+    var fontSizes = [ 8, 9, 10, 11, 12, 13, 14, 16, 18, 24, 36, 48 ],   // match what TinyMCE provides
+        fontSizeOptions = AjxUtil.map(fontSizes, function(fontSize) {
+            return AjxMessageFormat.format(ZmMsg.pt, fontSize); // pref page version (localized)
+        }),
+        fontSizeValueOptions = AjxUtil.map(fontSizes, function(fontSize) {
+            return fontSize + 'pt'; // server version
+        });
+
     var getZimbraAccountList = function(){
         var visAccts = appCtxt.accountList.visibleAccounts;
         var accts = [];
