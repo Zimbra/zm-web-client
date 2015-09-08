@@ -542,7 +542,6 @@ ZmNewWindow.prototype.handleKeyAction = function(actionCode, ev) {
         case ZmKeyMap.FOCUS_CONTENT_PANE:
         case ZmKeyMap.FOCUS_TOOLBAR:
         case ZmKeyMap.SHORTCUTS:
-        case ZmKeyMap.CANCEL:
             return false;
     }
 
