@@ -109,10 +109,17 @@ function(startDate, endDate, repeatType, appt) {
 	this._yearlyWeekdaySelect.setSelected(startDay);
 	this._yearlyMonthSelectEx.setSelected(startMonth);
 
+	this._isDirty = false;
+
 	// if given appt object, means user is editing existing appointment's recur rules
 	if (appt) {
 		this._populateForEdit(appt);
 	}
+};
+
+ZmApptRecurDialog.prototype.isDirty =
+function() {
+	return this._isDirty;
 };
 
 /**
@@ -132,7 +139,7 @@ function() {
  */
 ZmApptRecurDialog.prototype.setRepeatEndValues = 
 function(appt) {
-	var recur = appt._recurrence;
+    var recur = appt._recurrence;
 	recur.repeatEndType = this._getRadioOptionValue(this._repeatEndName);
 
 	// add any details for the select option
@@ -175,7 +182,7 @@ function(appt) {
  */
 ZmApptRecurDialog.prototype.setCustomWeeklyValues =
 function(appt) {
-	var recur = appt._recurrence;
+    var recur = appt._recurrence;
 	recur.repeatWeeklyDays = []
 	recur.repeatCustom = "1";
     recur._startDate = new Date(this._origRefDate);
@@ -1496,7 +1503,6 @@ function(radioName) {
 // depending on the repeat type, populates repeat section as necessary
 ZmApptRecurDialog.prototype._populateForEdit = 
 function(appt) {
-
     var recur = appt._recurrence;
 	if (recur.repeatType == ZmRecurrence.NONE) return;
 
@@ -1665,7 +1671,6 @@ function(weekDaySelect) {
 
 ZmApptRecurDialog.prototype.getPossibleStartDate =
 function(weekDayVal, lastDate, repeatBySetPos) {
-
     //weekday select might contain normal weekdays, day, weekend values also
     if(ZmCalItem.SERVER_WEEK_DAYS[weekDayVal]) {
         return AjxDateUtil.getDateForThisDay(lastDate, weekDayVal, repeatBySetPos); //Last day of next month/year
@@ -1737,6 +1742,7 @@ function(ev) {
 ZmApptRecurDialog.prototype._okListener = 
 function() {
 	this._saveState = true;
+	this._isDirty = true;
 };
 
 ZmApptRecurDialog.prototype._cancelListener = 

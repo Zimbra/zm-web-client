@@ -171,6 +171,18 @@ function(bEnableInputs) {
 };
 
 /**
+ * Checks to see if the recurring (repeat custom - CUS) changes dialog was edited.
+ *
+ */
+ZmCalItemEditView.prototype.areRecurringChangesDirty =
+function() {
+	if (this._recurDialog)
+		return this._recurDialog.isDirty();
+	else
+		return false;
+};
+
+/**
  * Checks for dirty fields.
  * 
  * @param {Boolean}	excludeAttendees		if <code>true</code> check for dirty fields excluding the attendees field
@@ -507,7 +519,6 @@ function(calItem) {
             calItem.setReminderUnits(reminderInfo.reminderValue,  reminderInfo.reminderUnits);
         }
 	}
-
 	return calItem;
 };
 
