@@ -1697,7 +1697,6 @@ if (ext == null) ext = "";
         <copy todir="${build.web.dir}/fonticons" verbose="${sync.verbose}">
             <fileset dir="${converse.fonticons.dir}" includes="**"/>
         </copy>
-        <copy tofile="${converse.dir}/jquery_min.js" file="${converse.js.dir}/components/jquery/dist/jquery.min.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/build/dep/salsa20.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/src/bigint.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/vendor/cryptojs/core.js"/>
