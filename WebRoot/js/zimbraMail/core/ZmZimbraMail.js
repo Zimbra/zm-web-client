@@ -1861,7 +1861,7 @@ function() {
 	var curApp = appCtxt.getCurrentApp();
 	var overview = curApp && curApp.getOverview();
 	if (overview) {
-		rootTg.addMember(overview);
+		rootTg.addMember(overview.getTabGroupMember());
 		ZmController._currentOverview = overview;
 	}
 	
