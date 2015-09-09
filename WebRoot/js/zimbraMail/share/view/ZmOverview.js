@@ -88,6 +88,8 @@ ZmOverview = function(params, controller) {
 	this._treeHash			= {};
 	this._treeParents		= {};
 
+	this._tabGroup = new DwtTabGroup('ZmOverview');
+
 	// Create a parent div for each overview tree.
 	var doc = document;
 	var element = this.getHtmlElement();
@@ -258,11 +260,7 @@ function(typeOnly) {
 
 ZmOverview.prototype.getTabGroupMember =
 function() {
-	var tabGroup = new DwtTabGroup();
-	if (this.getZIndex() > Dwt.Z_HIDDEN) {
-		tabGroup.addMember(this.getSelected());
-	}
-	return tabGroup;
+	return this._tabGroup;
 };
 
 ZmOverview.prototype.deselectAllTreeViews =
@@ -324,6 +322,7 @@ function(treeItem) {
 	}
 
 	this._selectedTreeItem = treeItem;
+	this._tabGroup.setMembers(treeItem);
 };
 
 /**
@@ -345,6 +344,7 @@ ZmOverview.prototype.clearSelection =
 function() {
 	if (this._selectedTreeItem) {
 		this._selectedTreeItem._tree.deselectAll();
+		this._tabGroup.removeAllMembers();
 	}
 };
 
