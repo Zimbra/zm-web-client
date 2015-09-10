@@ -485,3 +485,7 @@ ZmApptComposeView.prototype.checkIsDirty =
 function(type, attribs){
     return this._apptEditView.checkIsDirty(type, attribs);  
 };
+
+ZmApptComposeView.prototype.areRecurringChangesDirty = function() {
+    return this._apptEditView.areRecurringChangesDirty();
+};

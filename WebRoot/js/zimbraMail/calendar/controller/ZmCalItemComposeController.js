@@ -445,9 +445,9 @@ function(errorMsg) {
     this.enableToolbar(true);
 };
 
-ZmCalItemComposeController.prototype._saveCalItemFoRealz =
-function(calItem, attId, notifyList, force) {
-    var recurringChanges = this._composeView.getApptEditView().areRecurringChangesDirty();
+ZmCalItemComposeController.prototype._saveCalItemFoRealz = function(calItem, attId, notifyList, force) {
+
+    var recurringChanges = this._composeView.areRecurringChangesDirty();
 
 	if (this._composeView.isDirty() || recurringChanges || force) {
 		// bug: 16112 - check for folder existance
