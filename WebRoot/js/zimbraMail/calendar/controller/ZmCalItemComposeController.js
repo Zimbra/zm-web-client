@@ -442,12 +442,14 @@ function(errorMsg) {
 	var msg = errorMsg ? AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, errorMsg) : ZmMsg.errorSaving;
 	dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	dialog.popup();
-    this.enableToolbar(true);    
+    this.enableToolbar(true);
 };
 
 ZmCalItemComposeController.prototype._saveCalItemFoRealz =
 function(calItem, attId, notifyList, force) {
-	if (this._composeView.isDirty() || force) {
+    var recurringChanges = this._composeView.getApptEditView().areRecurringChangesDirty();
+
+	if (this._composeView.isDirty() || recurringChanges || force) {
 		// bug: 16112 - check for folder existance
 		if (calItem.getFolder() && calItem.getFolder().noSuchFolder) {
 			var msg = AjxMessageFormat.format(ZmMsg.errorInvalidFolder, calItem.getFolder().name);
