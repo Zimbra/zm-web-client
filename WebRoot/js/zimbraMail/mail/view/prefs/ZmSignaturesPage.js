@@ -74,7 +74,7 @@ function(onlyValid) {
 	this._rehashByName();
 	for (var id in this._signatures) {
 		var signature = this._signatures[id],
-			isEmpty = signature._autoAdded && !AjxStringUtil._NON_WHITESPACE.test(signature.getValue());
+			isEmpty = signature._autoAdded && !(AjxStringUtil._NON_WHITESPACE.test(signature.getValue()) || AjxStringUtil._NON_WHITESPACE.test(signature.name));
 		if (signature._new && !isEmpty && !(onlyValid && this._isInvalidSig(signature, true))) {
 			list.push(signature);
 		}
