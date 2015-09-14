@@ -284,8 +284,9 @@ function(canvas) {
  * 
  * @param	{ZmMailMsg}		msg		the clicked message
  * @param	{ZmMailMsg}		oldMsg	the previous clicked message or <code>null</code> if this is the first message clicked
+ * @param   {ZmMailMsgView} msgView the view that displays the message
  */
-ZmZimletBase.prototype.onMsgView = function(msg, oldMsg) {};
+ZmZimletBase.prototype.onMsgView = function(msg, oldMsg, msgView) {};
 
 /**
  * This method is called by the Zimlet framework when a user clicks-on a message in either the message or conversation view).
