@@ -456,9 +456,11 @@ TD.DwtListView-ColumnActive  {
 
 /* Dialog styling */
 
+/*
 .WindowOuterContainer {
 	background-color:@AppC@;
 }
+*/
 
 .WindowInnerContainer {
 	background-color:@AppC@;
