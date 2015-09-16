@@ -126,9 +126,11 @@ ZmTwoFactorSetupDialog.prototype.reset =
 function() {
 	Dwt.show(this._descriptionDivId);
 	Dwt.hide(this._passwordDivId);
+	Dwt.hide(this._passwordErrorDivId);
 	Dwt.hide(this._authenticationDivId);
 	Dwt.hide(this._emailDivId);
 	Dwt.hide(this._codeDivId);
+	Dwt.hide(this._codeErrorDivId);
 	Dwt.hide(this._successDivId);
 	this.setButtonVisible(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, false);
 	this.setButtonVisible(ZmTwoFactorSetupDialog.BEGIN_SETUP_BUTTON, true);
@@ -187,6 +189,8 @@ function() {
 		this._divIdArrayIndex++;
 	}
 	if (currentDivId === this._emailDivId) {
+		Dwt.hide(this._codeErrorDivId);
+		Dwt.show(this._codeDescriptionDivId);
 		this._codeInput.focus();
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this._codeInput.value !== "");
 	}
@@ -233,7 +237,8 @@ function(ev) {
 };
 
 /**
- * Sends EnableTwoFactorAuthRequest with username, password and twoFactorCode
+ * Sends first EnableTwoFactorAuthRequest with username and password
+ * Sends second EnableTwoFactorAuthRequest with username, temporary authToken and twoFactorCode
 */
 ZmTwoFactorSetupDialog.prototype._enableTwoFactorAuth =
 function(currentDivId) {
@@ -242,11 +247,13 @@ function(currentDivId) {
 	this.setButtonEnabled(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, false);
 	this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, false);
 	var command = new ZmCsfeCommand();
-	var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", name:{_content : this.username}, password:{_content : passwordInput.value}}};
 	if (currentDivId === this._codeDivId) {
 		var codeInput = this._codeInput;
 		codeInput.setAttribute("disabled", true);
-		jsonObj.EnableTwoFactorAuthRequest.twoFactorCode = {_content: codeInput.value};
+		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", name:{_content : this.username}, authToken:{_content : this._authToken}, twoFactorCode:{_content : codeInput.value}}};
+	}
+	else {
+		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", name:{_content : this.username}, password:{_content : passwordInput.value}}};
 	}
 	var callback = this._enableTwoFactorAuthCallback.bind(this, currentDivId);
 	command.invoke({jsonObj:jsonObj, noAuthToken: true, asyncMode: true, callback: callback, serverUri:"/service/soap/"});
@@ -264,6 +271,8 @@ function(currentDivId, result) {
 			return;
 		}
 		var enableTwoFactorAuthResponse = response.Body.EnableTwoFactorAuthResponse;
+		var authToken = enableTwoFactorAuthResponse.authToken;
+		this._authToken = authToken && authToken[0] && authToken[0]._content;
 		var secret = enableTwoFactorAuthResponse.secret;
 		var scratchCodes = enableTwoFactorAuthResponse.scratchCodes;
 		if (secret && secret[0] && secret[0]._content) {
