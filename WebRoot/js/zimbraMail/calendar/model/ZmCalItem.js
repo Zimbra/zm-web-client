@@ -1376,7 +1376,7 @@ function(dwtIframe) {
 ZmCalItem.prototype._setNotes =
 function(message) {
 
-    if(!(message instanceof ZmMailMsg)) { return; }
+    if(!(message.isZmMailMsg)) { return; }
 	this.notesTopPart = new ZmMimePart();
 
 	var htmlContent = message.getBodyContent(ZmMimeTable.TEXT_HTML);
@@ -1403,7 +1403,7 @@ function(message) {
 			delete dwtIframe;
 		}
 
-		// create two more mp's for text and html content types
+        // create two more mp's for text and html content types
 		var textPart = new ZmMimePart();
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		textPart.setContent(textContent);
