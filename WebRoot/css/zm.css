@@ -1471,7 +1471,7 @@ INPUT[type="text"].search_input-expanded {
 	border-width:0px !important;
 	font-size:1rem;
 	height:1.4rem;
-	margin:2px 0px 3px 3px;
+	margin:2px 0px 3px 3px !important;
 }
 
 .addrBubbleHolder INPUT:first-child,
