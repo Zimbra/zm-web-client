@@ -215,7 +215,7 @@
 		</tr>
 
 		<tr><td></td>
-			<td class='ZHelpLabel'><label for='${id}_whenSentToInput'><$= ZmMsg.whenSentToHint $></label></td>
+			<td class='ZHelpLabel'><label for='${id}_whenSentToInput'><$= ZmMsg.enterEmailAddresses $></label></td>
 		</tr>
 		<tr><td><div class='ZSmallSpacer'></div></td></tr>
 

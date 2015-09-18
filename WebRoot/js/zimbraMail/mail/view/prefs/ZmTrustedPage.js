@@ -76,6 +76,8 @@ function(id, setup, value) {
 
         this._trustedListControl.loadFromJson(trustedList);
 		this._replaceControlElement(el, this._trustedListControl);
+
+		return this._trustedListControl;
 	}
 };
 

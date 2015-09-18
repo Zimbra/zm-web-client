@@ -576,7 +576,10 @@ function(focusItem, noFocus) {
 	var ovId = curApp && curApp.getOverviewId();
 	var overview = ovId && appCtxt.getOverviewController().getOverview(ovId);
 	if (rootTg && overview && (overview != ZmController._currentOverview)) {
-		rootTg.replaceMember(ZmController._currentOverview, overview, false, false, null, true);
+		var currTg = ZmController._currentOverview &&
+			ZmController._currentOverview.getTabGroupMember();
+		rootTg.replaceMember(currTg, overview.getTabGroupMember(),
+		                     false, false, null, true);
 		ZmController._currentOverview = overview;
 	}
 

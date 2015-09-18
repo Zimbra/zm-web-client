@@ -304,7 +304,8 @@ function() {
 	});
 
 	ZmPref.registerPref("CAL_FREE_BUSY_ACL_USERS", {
-		displayContainer:	ZmPref.TYPE_TEXTAREA
+		displayContainer:	ZmPref.TYPE_TEXTAREA,
+		hint: ZmMsg.enterEmailAddresses
 	});
 
 	ZmPref.registerPref("CAL_IMPORT", {
@@ -319,7 +320,8 @@ function() {
 	});
 
 	ZmPref.registerPref("CAL_INVITE_ACL_USERS", {
-		displayContainer:	ZmPref.TYPE_TEXTAREA
+		displayContainer:	ZmPref.TYPE_TEXTAREA,
+		hint: ZmMsg.enterEmailAddresses
 	});
 
 	ZmPref.registerPref("CAL_REMINDER_WARNING_TIME", {

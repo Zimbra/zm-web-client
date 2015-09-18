@@ -70,11 +70,27 @@ function(useDefaults) {
 
 ZmCalendarPrefsPage.prototype.showMe =
 function() {
+	this._acl = appCtxt.getACL();
+	if (this._acl && !this._acl._loaded) {
+		var respCallback = this._doShowMe.bind(this);
+		this._acl.load(respCallback);
+	} else {
+		this._doShowMe();
+	}
+};
+
+ZmCalendarPrefsPage.prototype._doShowMe =
+function() {
+	var settings = ZmCalendarPrefsPage.SETTINGS;
+	var rights = ZmCalendarPrefsPage.RIGHTS;
+	for (var i = 0; i < settings.length; i++) {
+		this._setACLValues(settings[i], rights[i]);
+	}
+
 	var active = appCtxt.getActiveAccount();
 	this._isAclSupported = !appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!active.isMain && active.isZimbraAccount);
-	ZmPreferencesPage.prototype.showMe.call(this);
-    //this._getWorkHoursHtml();
 
+	ZmPreferencesPage.prototype.showMe.call(this);
 };
 
 ZmCalendarPrefsPage.prototype._setupCustom = function (id, setup, value) {
@@ -102,22 +118,10 @@ function() {
 
 ZmCalendarPrefsPage.prototype._createControls =
 function() {
-	// First, load the user's ACL
-	this._acl = appCtxt.getACL();
-	var respCallback = new AjxCallback(this, this._handleResponseLoadACL);
-	if (this._acl && !this._acl._loaded) {
-		this._acl.load(respCallback);
-	}
-};
-
-ZmCalendarPrefsPage.prototype._handleResponseLoadACL =
-function() {
-	var settings = ZmCalendarPrefsPage.SETTINGS;
-	var rights = ZmCalendarPrefsPage.RIGHTS;
-	for (var i = 0; i < settings.length; i++) {
-		this._setACLValues(settings[i], rights[i]);
-	}
 	ZmPreferencesPage.prototype._createControls.apply(this, arguments);
+
+	var settings = ZmCalendarPrefsPage.SETTINGS;
+
 	for (var i = 0; i < settings.length; i++) {
 		var textarea = this.getFormObject(ZmCalendarPrefsPage.TEXTAREA[settings[i]]);
 		if (textarea && this._acList) {
@@ -475,7 +479,7 @@ function() {
  * @param templateId
  */
 ZmWorkHours = function(parent, id, value, templateId) {
-	DwtComposite.call(this, {parent:parent});
+	DwtComposite.call(this, {parent:parent, id: Dwt.getNextId(id)});
 
 
     this._workDaysCheckBox = [];
@@ -483,7 +487,6 @@ ZmWorkHours = function(parent, id, value, templateId) {
     this._endTimeSelect = null;
     this._customDlg = null;
     this._customBtn = null;
-	this._tabGroup = new DwtTabGroup(this._htmlElId);
     this.reloadWorkHours(value);
     this._radioNormal = null;
     this._radioCustom = null;
@@ -500,11 +503,6 @@ ZmWorkHours.prototype.constructor = ZmWorkHours;
 ZmWorkHours.prototype.toString =
 function() {
 	return "ZmWorkHours";
-};
-
-ZmWorkHours.prototype.getTabGroupMember =
-function() {
-	return this._tabGroup;
 };
 
 ZmWorkHours.prototype.getTabGroup = ZmWorkHours.prototype.getTabGroupMember;
@@ -746,6 +744,25 @@ function(templateId) {
     
     this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#"+templateId, {id:this._htmlElId});
     //fill the containers for the work days and work time
+    var firstDayOfWeek = appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
+    for (i = 0; i < AjxDateUtil.DAYS_PER_WEEK; i++) {
+        var dayIndex = (i + firstDayOfWeek) % AjxDateUtil.DAYS_PER_WEEK;
+
+        checkbox = new DwtCheckbox({parent:this, parentElement:(this._htmlElId + "_CAL_WORKING_DAY_" + i)});
+        checkbox.setText(AjxDateUtil.WEEKDAY_MEDIUM[dayIndex]);
+        checkbox.setToolTipContent(AjxDateUtil.WEEKDAY_LONG[dayIndex]);
+        checkbox.setSelected(workHours[dayIndex].isWorkingDay);
+        checkbox.setEnabled(!isCustom)
+        this._workDaysCheckBox.push(checkbox);
+    }
+
+    radioNormal = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_NORMAL")});
+    radioNormal.setSelected(!isCustom);
+    var radioNormalId = radioNormal.getInputElement().id;
+    radioIds[radioNormalId] = radioNormal;
+    this._radioNormal = radioNormal;
+    this._radioNormalId = radioNormalId;
+
     el = document.getElementById(this._htmlElId + "_CAL_WORKING_START_TIME");
     startTimeSelect = new DwtTimeInput(this, DwtTimeInput.START, el);
     startTimeSelect.set(this._startTime);
@@ -758,38 +775,23 @@ function(templateId) {
     endTimeSelect.setEnabled(!isCustom);
     this._endTimeSelect = endTimeSelect;
 
+    radioCustom = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_CUSTOM")});
+    radioCustom.setSelected(isCustom);
+    var radioCustomId = radioCustom.getInputElement().id;
+    radioIds[radioCustomId] = radioCustom;
+    this._radioCustom = radioCustom;
+    this._radioCustomId = radioCustomId;
+
+    radioGroup = new DwtRadioButtonGroup(radioIds, isCustom ? radioCustomId : radioNormalId);
+
+    radioGroup.addSelectionListener(new AjxListener(this, this._toggleNormalCustom));
+    this._radioGroup = radioGroup;
+
     customBtn = new DwtButton({parent:this, parentElement:(this._htmlElId + "_CAL_CUSTOM_WORK_HOURS")});
     customBtn.setText(ZmMsg.calendarCustomBtnTitle);
     customBtn.addSelectionListener(new AjxListener(this, this._openCustomizeDlg));
     customBtn.setEnabled(isCustom);
     this._customBtn = customBtn;
-
-    radioNormal = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_NORMAL")});
-    radioNormal.setSelected(!isCustom);
-	var radioNormalId = radioNormal.getInputElement().id;
-	radioIds[radioNormalId] = radioNormal;
-    
-    radioCustom = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_CUSTOM")});
-    radioCustom.setSelected(isCustom);
-	var radioCustomId = radioCustom.getInputElement().id;
-	radioIds[radioCustomId] = radioCustom;
-
-	radioGroup = new DwtRadioButtonGroup(radioIds, isCustom ? radioCustomId : radioNormalId);
-    
-    radioGroup.addSelectionListener(new AjxListener(this, this._toggleNormalCustom));
-    this._radioCustom = radioCustom;
-    this._radioNormal = radioNormal;
-	this._radioGroup = radioGroup;
-	this._radioCustomId = radioCustomId;
-	this._radioNormalId = radioNormalId;
-    for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
-        checkbox = new DwtCheckbox({parent:this, parentElement:(this._htmlElId + "_CAL_WORKING_DAY_" + i)});
-        checkbox.setText(AjxDateUtil.WEEKDAY_MEDIUM[i]);
-	    checkbox.setSelected(workHours[i].isWorkingDay);
-        checkbox.setEnabled(!isCustom)
-        this._workDaysCheckBox.push(checkbox);
-        this.parent._addControlTabIndex(el, checkbox);
-    }
 };
 
 /**

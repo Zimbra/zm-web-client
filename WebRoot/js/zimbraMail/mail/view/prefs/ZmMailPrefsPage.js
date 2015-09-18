@@ -227,31 +227,57 @@ function() {
 		}
 	}
 
-	// Following code makes child nodes as siblings to separate the event-handling 
-	// between labels and input
+	// Following code makes child nodes as siblings to separate the
+	// event-handling between labels and input
+	var inputId = DwtId.makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ);
+	var inputPlaceholder = Dwt.byId(inputId);
 
-	var input = Dwt.byId(DwtId.makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
-	if (input) {
-		var inputParent = input.parentNode;
-		var newParent = inputParent && inputParent.parentNode;
+	if (inputPlaceholder) {
+		var radioButton = DwtControl.findControl(inputPlaceholder);
+		var index = AjxUtil.indexOf(radioButton.parent.getChildren(),
+		                            radioButton);
+		var inputControl = new DwtInputField({
+			parent: radioButton.parent,
+			index: index + 1,
+			id: inputId,
+			size: 4,
+			hint: '0',
+		});
+		inputControl.replaceElement(inputPlaceholder);
+		inputControl.setDisplay(Dwt.DISPLAY_INLINE);
 
-		if (newParent){
-		    var txtNode = input.nextSibling;
-		    inputParent.removeChild(input);
-		    newParent.appendChild(input);
-
-		    var lbl = inputParent.cloneNode(false);
-		    lbl.innerHTML = txtNode.data;
-		    lbl.id = lbl.id + "_end";
-		    inputParent.removeChild(txtNode);
-		    newParent.appendChild(lbl);
-		}
+		// Toggle the setting when editing the time input; it already recieves
+		// focus on click, so this is mainly for keyboard navigation. (Except
+		// on IE8, where the 'oninput' event doesn't work.)
+		inputControl.setHandler(DwtEvent.ONINPUT, function(ev) {
+			if (inputControl.getValue()) {
+				this.setFormValue(ZmSetting.MARK_MSG_READ,
+				                  ZmSetting.MARK_READ_TIME);
+			}
+		}.bind(this));
 
 		// If pref's value is number of seconds, populate the input
 		var value = appCtxt.get(ZmSetting.MARK_MSG_READ);
 		if (value > 0) {
-		    input.value = value;
+		    inputControl.setValue(value);
 		}
+	}
+
+	var composeMore = Dwt.byId(this.getHTMLElId() + '_compose_more');
+	var links = AjxUtil.toArray(composeMore.getElementsByTagName('A'));
+
+	for (var i = 0; i < links.length; i++) {
+		var link = links[i];
+		var accountsText = new DwtText({
+			parent: this,
+			className: 'FakeAnchor'
+		});
+		accountsText.setContent(AjxUtil.getInnerText(link));
+		accountsText.setDisplay(Dwt.DISPLAY_INLINE);
+		accountsText.replaceElement(link);
+		accountsText._setEventHdlrs([DwtEvent.ONCLICK]);
+		accountsText.addListener(DwtEvent.ONCLICK,
+								 skin.gotoPrefs.bind(skin, "ACCOUNTS"));
 	}
 
 	this._setPopDownloadSinceControls();
@@ -450,17 +476,14 @@ function(id, setup, value) {
 
 ZmMailPrefsPage.prototype._setupCustom =
 function(id, setup, value) {
-	var el = document.getElementById([this._htmlElId, id].join("_"));
-	if (!el) { return; }
-
 	if (id == ZmSetting.MAIL_BLACKLIST) {
 		this._blackListControl = new ZmWhiteBlackList(this, id, "BlackList");
-		this._replaceControlElement(el, this._blackListControl);
+		return this._blackListControl;
 	}
 
 	if (id == ZmSetting.MAIL_WHITELIST) {
 		this._whiteListControl = new ZmWhiteBlackList(this, id, "WhiteList");
-		this._replaceControlElement(el, this._whiteListControl);
+		return this._whiteListControl;
 	}
 };
 
@@ -700,7 +723,6 @@ ZmWhiteBlackList = function(parent, id, templateId) {
 	DwtComposite.call(this, {parent:parent});
 
 	this._settingId = id;
-	this._tabGroup = new DwtTabGroup(this._htmlElId);
     switch(id) {
         case ZmSetting.MAIL_BLACKLIST:
             this._max = appCtxt.get(ZmSetting.MAIL_BLACKLIST_MAX_NUM_ENTRIES);
@@ -721,18 +743,12 @@ ZmWhiteBlackList = function(parent, id, templateId) {
 
 ZmWhiteBlackList.prototype = new DwtComposite;
 ZmWhiteBlackList.prototype.constructor = ZmWhiteBlackList;
+ZmWhiteBlackList.prototype.isZmWhiteBlackList = true;
 
 ZmWhiteBlackList.prototype.toString =
 function() {
 	return "ZmWhiteBlackList";
 };
-
-ZmWhiteBlackList.prototype.getTabGroupMember =
-function() {
-	return this._tabGroup;
-};
-
-ZmWhiteBlackList.prototype.getTabGroup = ZmWhiteBlackList.prototype.getTabGroupMember;
 
 ZmWhiteBlackList.prototype.reset =
 function() {
