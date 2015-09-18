@@ -223,7 +223,7 @@ and the container element is replaced with that control.
 
 						<tr>
 							<td class='ZOptionsLabel'></td>
-							<td class='ZOptionsField'><div id='${id}_OPEN_MAIL_IN_NEW_WIN' tabindex=0></div></td>
+							<td class='ZOptionsField'><div id='${id}_OPEN_MAIL_IN_NEW_WIN' tabindex=0></div></tZmd>
 						</tr>
 
 						<tr>
@@ -580,7 +580,7 @@ and the container element is replaced with that control.
 				<$ if (!appCtxt.isOffline) { $>
 					<tr><td colspan=2><hr></td></tr>
 					<tr>
-						<td colspan=2><b><$=ZmMsg.composeMoreOptions$></b></td>
+						<td id='${id}_compose_more' colspan=2><b><$=ZmMsg.composeMoreOptions$></b></td>
 					</tr>
 				<$ } $>
 
@@ -1496,8 +1496,8 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 						</tr>
 						<tr><td colspan=2><hr></td></tr>
 						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.forwardInvitesToLabel$></td>
-							<td class='ZOptionsField'><$=ZmMsg.forwardInvitesTo$> <input id='${id}_CAL_INV_FORWARDING_ADDRESS' tabindex=0></td>
+							<td class='ZOptionsLabel' id=id='${id}_CAL_INV_FORWARDING_ADDRESS_label'><$=ZmMsg.forwardInvitesToLabel$></td>
+							<td class='ZOptionsField'><$=ZmMsg.forwardInvitesTo$> <input id='${id}_CAL_INV_FORWARDING_ADDRESS' aria-labelledby='${id}_CAL_INV_FORWARDING_ADDRESS' tabindex=0></td>
 						</tr>
 						<tr><td colspan=2><hr></td></tr>
 						<tr>
