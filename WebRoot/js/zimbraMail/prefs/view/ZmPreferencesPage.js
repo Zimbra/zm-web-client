@@ -140,13 +140,63 @@ function() {
 	this._createPageTemplate();
 	this._createControls();
 
+	// find option headers and sections
+	var elements = this.getHtmlElement().children;
+
+	AjxUtil.foreach(elements, function(el) {
+		if (Dwt.hasClass(el, 'prefHeader')) {
+			var header = el;
+			header.setAttribute('role', 'heading');
+			header.setAttribute('aria-level', 1);
+			header.id = Dwt.getNextId('prefHeader')
+		} else if (Dwt.hasClass(el, 'ZOptionsSectionTable')) {
+			var sectiontable = el;
+			var header = Dwt.getPreviousElementSibling(sectiontable);
+			var sections = Dwt.byClassName('ZOptionsSectionMain', sectiontable);
+
+			if (!Dwt.hasClass(header, 'prefHeader')) {
+				DBG.println(AjxDebug.DBG1, "pref section has no prefHeader:\n" +
+				            sectiontable.outerHTML);
+				return;
+			}
+
+			// we only expect one section, but iterate over them, just in case
+			AjxUtil.foreach(sections, function(section) {
+				section.setAttribute('aria-labelledby', header.id);
+				section.setAttribute('role', 'region');
+			});
+		}
+	});
+
+	// find option fields
+	var fields = Dwt.byClassName('ZOptionsField', this.getHtmlElement());
+
+	AjxUtil.foreach(fields, function(field) {
+		field.setAttribute('role', 'group');
+
+		// find the label corresponding to this item and assign it as an ARIA
+		// label
+		var label = Dwt.getPreviousElementSibling(field);
+
+		if (!label) {
+			DBG.println(AjxDebug.DBG1, "option field has no label " + Dwt.getId(field));
+			return;
+		}
+
+		label.setAttribute('role', 'heading');
+		label.setAttribute('aria-level', 2);
+
+		field.setAttribute('aria-labelledby',
+		                   Dwt.getId(label, 'ZOptionsLabel'));
+	});
+
 	// find focusable children -- i.e. links and widgets -- but in the DOM
 	// order, not in the order they were added as children
 	var selector = [
 		'[parentid="',
 		this.getHTMLElId(),
 		'"],',
-		'.ZOptionsField A'
+		'A'
 	].join('');
 	var elements = this.getHtmlElement().querySelectorAll(selector);
 
@@ -155,9 +205,9 @@ function() {
 		var control = DwtControl.fromElement(element);
 
 		// add the child to our tab group
-		if (control) {
+		if (control && control.parent == this) {
 			this._tabGroup.addMember(control.getTabGroupMember());
-		} else {
+		} else if (DwtControl.findControl(element) === this) {
 			this._makeFocusable(element);
 			this._tabGroup.addMember(element);
 		}
@@ -165,6 +215,7 @@ function() {
 		// find the ZOptionsField corresponding to this item and assign it as
 		// an ARIA label
 		var ancestors = Dwt.getAncestors(element, this.getHtmlElement());
+		var field = null, label = null;
 
 		for (var j = 0; j < ancestors.length; j++) {
 			var ancestor = ancestors[j];
@@ -173,19 +224,31 @@ function() {
 			// are we looking at an option field with a corresponding label?
 			// please note that labels can have multiple classes, all of them
 			// starting with ZOptionsLabel
-			if (Dwt.hasClass(ancestor, 'ZOptionsField') &&
-			    ancestorSibling &&
-			    !ancestorSibling.className.match(/\bZOptionsLabel/)) {
-
-				if (!ancestorSibling.id) {
-					ancestorSibling.id = Dwt.getNextId();
-				}
-
-				element.setAttribute('aria-labelledby', ancestorSibling.id);
-
-				break;
+			if (Dwt.hasClass(ancestor, 'ZOptionsField')) {
+				field = ancestor;
 			}
 		}
+
+		if (!field) {
+			DBG.println(AjxDebug.DBG1, "no field found for:\n" +
+						element.outerHTML);
+			continue;
+		}
+
+		var label = Dwt.getPreviousElementSibling(field);
+
+		if (!label || !label.className.match(/\bZOptionsLabel/)) {
+			DBG.println(AjxDebug.DBG1, "option field has no label:\n" +
+						field.outerHTML);
+			continue;
+		}
+
+		if (!label.id) {
+			label.id = Dwt.getNextId();
+		}
+
+		label.setAttribute('role', 'heading');
+		label.setAttribute('aria-level', 2);
 	}
 };
 
@@ -312,8 +375,12 @@ function() {
 				this._addExportWidgets(elem, id, setup);
 			}
 
+			if (!control) {
+				control = this.getFormObject(id);
+			}
+
 			// add control to form
-			if (control) {
+			if (control && control.isDwtControl) {
 				this._replaceControlElement(elem, control);
 				if (setup.initFunction) {
 					setup.initFunction(control, value);
@@ -752,20 +819,7 @@ function(id, setup, value) {
 	// store radio button group
 	this.setFormObject(id, new DwtRadioButtonGroup(radioIds, selectedId));
 
-	var func = ZmPreferencesPage.__radioGroup_getTabGroupMember;
-	container.getTabGroupMember = AjxCallback.simpleClosure(func, container, radioIds);
 	return container;
-};
-
-ZmPreferencesPage.__radioGroup_getTabGroupMember =
-function(radioIds) {
-	var tg = new DwtTabGroup(this.toString());
-	if (radioIds) {
-		for (var id in radioIds) {
-			tg.addMember(document.getElementById(id));
-		}
-	}
-	return tg;
 };
 
 ZmPreferencesPage.prototype._setupCheckbox =
@@ -791,8 +845,15 @@ ZmPreferencesPage.prototype._setupInput =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 	var params = {
-		parent: this, type: setup.type ? setup.type : DwtInputField.STRING, initialValue: value, size: setup.cols || 40,
-		rows: setup.rows, wrap: setup.wrap, maxLen:setup.maxLen, hint:setup.hint,
+		parent: this,
+		type: setup.type || DwtInputField.STRING,
+		initialValue: value,
+		size: setup.cols || 40,
+		rows: setup.rows,
+		wrap: setup.wrap,
+		maxLen:setup.maxLen,
+		hint: setup.hint,
+		label: setup.label,
 		id: "Prefs_Input_" + id
 	};
 	var input = new DwtInputField(params);
