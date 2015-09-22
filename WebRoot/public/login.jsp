@@ -471,12 +471,14 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <td><input id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" style="margin-right:20px" autocomplete="off"></td>
                                     <td class="submitTD"><input type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton"></td>
                                 </tr>
-                                <tr style="vertical-align:top">
-                                    <td/>
-                                    <td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">
-                                    <label for="trustedDevice"><fmt:message key="${mobileSupported || touchSupported ? 'twoFactorAuthTrustDevice' : 'twoFactorAuthTrustComputer'}"/></label>
-                                    </td>
-                                </tr>
+                                <c:if test="${authResult.trustedDevicesEnabled eq true}">
+                                    <tr style="vertical-align:top">
+                                        <td/>
+                                        <td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">
+                                        <label for="trustedDevice"><fmt:message key="${mobileSupported || touchSupported ? 'twoFactorAuthTrustDevice' : 'twoFactorAuthTrustComputer'}"/></label>
+                                        </td>
+                                    </tr>
+                                </c:if>
                             </tbody>
                         </table>
                     </c:when>
