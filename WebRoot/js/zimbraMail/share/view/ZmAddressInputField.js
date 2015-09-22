@@ -637,9 +637,6 @@ function(params) {
 	Dwt.setHandler(this._input, DwtEvent.ONPASTE, ZmAddressInputField.onPaste);
     Dwt.setHandler(this._holder, DwtEvent.ONKEYDOWN, ZmAddressInputField.onHolderKeyClick);
 
-    Dwt.setHandler(this._input, DwtEvent.ONFOCUS, ZmAddressInputField.onFocus);
-    Dwt.setHandler(this._input, DwtEvent.ONBLUR, ZmAddressInputField.onBlur);
-
     this.setFocusElement(); // now that INPUT has been created
 
     var args = {container:this._holder, threshold:10, amount:15, interval:5, id:this._holderId};
