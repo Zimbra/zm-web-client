@@ -237,15 +237,15 @@
                                 </c:redirect>
                             </c:when>
                             <c:when test="${client eq 'mobile'}">
-                                    <c:set var="mobURL" value="/m/zmain"/>
-                                    <c:redirect url="${mobURL}">
-                                        <c:forEach var="p" items="${paramValues}">
-                                            <c:forEach var='value' items='${p.value}'>
-                                                <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
-                                                    <c:param name="${p.key}" value='${value}'/>
-                                                </c:if>
-                                            </c:forEach>
+                                <c:set var="mobURL" value="/m/zmain"/>
+                                <c:redirect url="${mobURL}">
+                                    <c:forEach var="p" items="${paramValues}">
+                                        <c:forEach var='value' items='${p.value}'>
+                                            <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                                <c:param name="${p.key}" value='${value}'/>
+                                            </c:if>
                                         </c:forEach>
+                                    </c:forEach>
                                 </c:redirect>
                             </c:when>
                             <c:when test="${client eq 'touch'}">
@@ -474,7 +474,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <tr style="vertical-align:top">
                                     <td/>
                                     <td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">
-                                    <label for="trustedDevice"><fmt:message key="twoFactorAuthRememberDevice"/></label>
+                                    <label for="trustedDevice"><fmt:message key="${mobileSupported || touchSupported ? 'twoFactorAuthTrustDevice' : 'twoFactorAuthTrustComputer'}"/></label>
                                     </td>
                                 </tr>
                             </tbody>
