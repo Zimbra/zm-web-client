@@ -1043,7 +1043,7 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
     obj.setFocusStatus(false);
 
     tinymceEvent.bind(win, 'focus', function(e) {
-		appCtxt.getKeyboardMgr().grabFocus(obj._getIframeDoc().body);
+		appCtxt.getKeyboardMgr().updateFocus(obj);
         obj.setFocusStatus(true);
     });
     tinymceEvent.bind(win, 'blur', function(e) {
