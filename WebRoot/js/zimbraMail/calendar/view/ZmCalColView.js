@@ -1049,7 +1049,7 @@ ZmCalColView.prototype.checkIndicatorNeed=function(viewId,startDate){
         var todayTime = today.getTime();
         startDate.setHours(0,0,0,0);
         var sTime = startDate.getTime();
-        var endDate = AjxDateUtil.roll(startDate,AjxDateUtil.DAY,this.numDays);
+        var endDate = AjxDateUtil.roll(startDate,AjxDateUtil.DAY,1);
         endDate.setHours(23,59,59,999);
         var endTime = endDate.getTime();
         if(!(todayTime>=sTime && todayTime<=endTime)){
