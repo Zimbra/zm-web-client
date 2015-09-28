@@ -47,6 +47,13 @@ ZmMobileDevice = function(params) {
 	this.id = params.id;
 };
 
+ZmOAuthConsumerApp = function(params) {
+    this.accessToken = params.accessToken ;
+    this.appName = params.appName;
+    this.approvedOn = params.approvedOn;
+    this.device = params.device;
+};
+
 
 // Consts
 
@@ -70,6 +77,10 @@ ZmMobileDevice.STATUS_REMOTE_WIPE_REQUESTED	= 3;
  * Defines the "remote wipe complete" status.
  */
 ZmMobileDevice.STATUS_REMOTE_WIPE_COMPLETE	= 4;
+/**
+ * Defines the "OAuth Consumer App" status.
+ */
+ZmMobileDevice.TYPE_OAUTH = 'oauth';
 
 
 // Public methods

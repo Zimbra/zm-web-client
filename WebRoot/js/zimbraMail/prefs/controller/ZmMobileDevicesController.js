@@ -77,6 +77,11 @@ function(toolbar, listView) {
 	listView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
 };
 
+ZmMobileDevicesController.prototype.initializeOAuthAppListView =
+function(oAuthAppsListView) {
+    this._oAuthAppsListView = oAuthAppsListView;
+};
+
 ZmMobileDevicesController.prototype.getToolbarButtons =
 function() {
 	return [
@@ -98,19 +103,46 @@ function() {
 
 ZmMobileDevicesController.prototype._handleResponseLoadDevices =
 function(results) {
-	// clean up
-	this._devices.removeAll();
-	this._devices = new AjxVector();
+    // clean up
+    this._devices.removeAll();
+    this._devices = new AjxVector();
 
-	var list = results.getResponse().GetDeviceStatusResponse.device;
-	if (list && list.length) {
-		for (var i = 0; i < list.length; i++) {
-			this._devices.add(new ZmMobileDevice(list[i]));
-		}
-	}
+    var list = results.getResponse().GetDeviceStatusResponse.device;
+    if (list && list.length) {
+        for (var i = 0; i < list.length; i++) {
+            this._devices.add(new ZmMobileDevice(list[i]));
+        }
+    }
 
-	this._listView.set(this._devices);
-	this._resetOperations(this._toolbar);
+    this._listView.set(this._devices);
+    this._resetOperations(this._toolbar);
+};
+
+ZmMobileDevicesController.prototype.loadOAuthConsumerAppInfo =
+function() {
+    var command = new ZmCsfeCommand();
+    var jsonObj = {GetOAuthConsumersRequest : {_jsns:"urn:zimbraAccount"}};
+    var callback = this._handleResponseLoadOAuthConsumer.bind(this);
+    command.invoke({jsonObj: jsonObj, noAuthToken: true, asyncMode: true,callback: callback, serverUri:"/service/soap/"});
+};
+
+ZmMobileDevicesController.prototype._handleResponseLoadOAuthConsumer =
+function(result){
+    if (this._oAuthConsumerApps) {
+        this._oAuthConsumerApps.removeAll();
+    }
+    this._oAuthConsumerApps = new AjxVector();
+
+    var response = result.getResponse();
+    var OAuthConsumersResponse = response.Body.GetOAuthConsumersResponse;
+    var list = OAuthConsumersResponse.OAuthConsumer;
+    var listLen = list.length;
+    if (list && listLen) {
+        for (var i = 0; i < listLen; i++) {
+            this._oAuthConsumerApps.add(new ZmOAuthConsumerApp(list[i]));
+        }
+    }
+    this._oAuthAppsListView.set(this._oAuthConsumerApps);
 };
 
 /**

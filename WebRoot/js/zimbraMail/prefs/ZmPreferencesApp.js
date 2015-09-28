@@ -417,7 +417,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		},
 
 		MOBILE: {
-			title:          ZmMsg.mobileDevices,
+			title:          ZmMsg.connectedDevicesAndApps,
 			icon:           "Mobile",
 			templateId:     "prefs.Pages#MobileDevices",
 			priority:       90,

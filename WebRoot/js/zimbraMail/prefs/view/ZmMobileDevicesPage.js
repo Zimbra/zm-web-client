@@ -65,7 +65,6 @@ function() {
 			parentElement:(this._htmlElId+"_deviceToolbar")
 		};
 		this._toolbar = new ZmButtonToolBar(params);
-
 		params = {
 			parent:this,
 			parentElement:(this._htmlElId+"_deviceList")
@@ -74,10 +73,21 @@ function() {
 		this.listView.setMultiSelect(false);
 
 		this._deviceController.initialize(this._toolbar, this.listView);
-		this._rendered = true;
-	}
 
+        var params1 = {
+            parent: this,
+            parentElement: (this._htmlElId + "_oauthconsumerapps"),
+            type: ZmMobileDevice.TYPE_OAUTH
+        };
+        this.oAuthAppsListView = new ZmMobileDeviceListView(params1);
+        this._deviceController.initializeOAuthAppListView(this.oAuthAppsListView);
+
+        var pageId = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView().getView("MOBILE").getHTMLElId();
+        this._addListView(this.oAuthAppsListView, pageId + "_oauthconsumerapps");
+        this._rendered = true;
+	}
 	this._deviceController.loadDeviceInfo();
+    this._deviceController.loadOAuthConsumerAppInfo();
 };
 
 ZmMobileDevicesPage.prototype.reset =
@@ -94,6 +104,14 @@ function() {
 	return false;
 };
 
+ZmMobileDevicesPage.prototype._addListView = function(listView, listViewDivId) {
+        var listDiv = document.getElementById(listViewDivId);
+        listDiv.appendChild(listView.getHtmlElement());
+        listView.setUI(null, true);
+        listView._initialized = true;
+};
+
+
 /**
  * Creates a mobile device list.
  * @class
@@ -108,7 +126,7 @@ function() {
  * @private
  */
 ZmMobileDeviceListView = function(params) {
-
+    this.type = params.type;
 	params.headerList = this._getHeaderList();
 	DwtListView.call(this, params);
 };
@@ -125,6 +143,11 @@ ZmMobileDeviceListView.F_ID				= "id";
 ZmMobileDeviceListView.F_PROTOCOL		= "pr";
 ZmMobileDeviceListView.F_PROVISIONABLE	= "pv";
 
+ZmMobileDeviceListView.F_APP		    = "ap";
+ZmMobileDeviceListView.F_APPDEVICE	    = "ad";
+ZmMobileDeviceListView.F_APPROVED	    = "ar";
+ZmMobileDeviceListView.F_ACTIONS	    = "ac";
+
 
 // Public methods
 
@@ -137,36 +160,60 @@ ZmMobileDeviceListView.prototype._getHeaderList =
 function() {
 
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_DEVICE, text:ZmMsg.mobileDevice}));
-	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_ID, text:ZmMsg.mobileDeviceId, width:ZmMsg.COLUMN_WIDTH_ID_MDL}));
-	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_STATUS, text:ZmMsg.status, width:ZmMsg.COLUMN_WIDTH_STATUS_MDL}));
-	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_PROTOCOL, text:ZmMsg.mobileProtocolVersion, width:ZmMsg.COLUMN_WIDTH_PROTOCOL_MDL}));
-	headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_PROVISIONABLE, text:ZmMsg.mobileProvisionable, width:ZmMsg.COLUMN_WIDTH_PROVISIONABLE_MDL}));
-
-	return headerList;
+    if (this.type === ZmMobileDevice.TYPE_OAUTH) {
+        headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_APP, text:ZmMsg.oAuthApp, width:ZmMsg.COLUMN_WIDTH_ID_MDL}));
+        headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_APPDEVICE, text:ZmMsg.oAuthAppDevice, width:ZmMsg.COLUMN_WIDTH_ID_MDL}));
+        headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_APPROVED, text:ZmMsg.oAuthAppApprovedDate, width:ZmMsg.COLUMN_WIDTH_STATUS_MDL}));
+        headerList.push(new DwtListHeaderItem({field:ZmMobileDeviceListView.F_ACTIONS, width:ZmMsg.COLUMN_WIDTH_PROTOCOL_MDL}));
+    }
+    else {
+        headerList.push(new DwtListHeaderItem({field: ZmMobileDeviceListView.F_DEVICE, text: ZmMsg.mobileDevice}));
+        headerList.push(new DwtListHeaderItem({field: ZmMobileDeviceListView.F_ID, text: ZmMsg.mobileDeviceId, width: ZmMsg.COLUMN_WIDTH_ID_MDL}));
+        headerList.push(new DwtListHeaderItem({field: ZmMobileDeviceListView.F_STATUS, text: ZmMsg.status, width: ZmMsg.COLUMN_WIDTH_STATUS_MDL}));
+        headerList.push(new DwtListHeaderItem({field: ZmMobileDeviceListView.F_PROTOCOL, text: ZmMsg.mobileProtocolVersion, width: ZmMsg.COLUMN_WIDTH_PROTOCOL_MDL}));
+        headerList.push(new DwtListHeaderItem({field: ZmMobileDeviceListView.F_PROVISIONABLE, text: ZmMsg.mobileProvisionable, width: ZmMsg.COLUMN_WIDTH_PROVISIONABLE_MDL}));
+    }
+    return headerList;
 };
 
 ZmMobileDeviceListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 
-	if (field == ZmMobileDeviceListView.F_DEVICE) {
-		html[idx++] = '<span style="white-space:nowrap">';
-		html[idx++] = item.type;
-		if (item.ua) {
-			html[idx++] = " (";
-			html[idx++] = item.ua;
-			html[idx++] = ")";
-		}
-		html[idx++] = "</span>";
-	} else if (field == ZmMobileDeviceListView.F_STATUS) {
-		html[idx++] = item.getStatusString();
-	} else if (field == ZmMobileDeviceListView.F_ID) {
-		html[idx++] = item.id;
-	} else if (field == ZmMobileDeviceListView.F_PROTOCOL) {
-		html[idx++] = item.protocol;
-	} else if (field == ZmMobileDeviceListView.F_PROVISIONABLE) {
-		html[idx++] = item.provisionable ? AjxMsg.yes : AjxMsg.no;
-	}
+        if (field == ZmMobileDeviceListView.F_DEVICE) {
+            html[idx++] = '<span style="white-space:nowrap">';
+            html[idx++] = item.type;
+            if (item.ua) {
+                html[idx++] = " (";
+                html[idx++] = item.ua;
+                html[idx++] = ")";
+            }
+            html[idx++] = "</span>";
+        } else if (field == ZmMobileDeviceListView.F_STATUS) {
+            html[idx++] = item.getStatusString();
+        } else if (field == ZmMobileDeviceListView.F_ID) {
+            html[idx++] = item.id;
+        } else if (field == ZmMobileDeviceListView.F_PROTOCOL) {
+            html[idx++] = item.protocol;
+        } else if (field == ZmMobileDeviceListView.F_PROVISIONABLE) {
+            html[idx++] = item.provisionable ? AjxMsg.yes : AjxMsg.no;
+        } else if (field == ZmMobileDeviceListView.F_APP) {
+            html[idx++] = item.appName;
+        } else if (field == ZmMobileDeviceListView.F_APPDEVICE) {
+            html[idx++] = item.device;
+        } else if (field == ZmMobileDeviceListView.F_APPROVED) {
+            var approvedOn = item.approvedOn;
+            html[idx++] = AjxDateFormat.getDateInstance(AjxDateFormat.MEDIUM).format(new Date(parseInt(approvedOn)));
+        } else if (field == ZmMobileDeviceListView.F_ACTIONS) {
+            html[idx++] = "<a href='javascript:;'  onclick='ZmMobileDeviceListView.removeOauthConsumerApp();'>" + ZmMsg.remove + "</a> ";
+        }
 
-	return idx;
+    return idx;
 };
+
+ZmMobileDeviceListView.removeOauthConsumerApp = function(){
+    /** To be Implemented , to do next, it will deal with
+     * removing the OAuth consumer apps for an user when the user clicks on remove .
+     */
+};
+
+

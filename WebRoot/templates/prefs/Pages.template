@@ -1998,6 +1998,21 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</td>
 		</tr>
 	</table>
+
+	<div class='prefHeader'><$=ZmMsg.oAuthAuthorizedApps$></div>
+    	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+    		<tr>
+    			<td class='ZOptionsSectionMain'>
+    				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+    					<tr>
+    						<td><div id='${id}_oauthconsumerapps' tabindex=0></div></td>
+    					</tr>
+    				</table>
+    			</td>
+    		</tr>
+    	</table>
+
+
 </template>
 
 <template id='prefs.Pages#MobileDeviceInfo'>
