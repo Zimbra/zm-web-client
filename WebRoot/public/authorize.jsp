@@ -48,7 +48,7 @@
         </c:when>
         <c:otherwise>
             <jsp:forward page="/public/access.jsp">
-                <jsp:param name="oauth_token" value="${param.oauth_token}"/>
+                <jsp:param name="oauth_token" value="${fn:escapeXml(param.oauth_token)}"/>
                 <jsp:param name="zauthtoken" value="${authResult.authToken.value}"/>
             </jsp:forward>
         </c:otherwise>
@@ -141,7 +141,7 @@
             </c:choose>
 
             <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
-                <input type="hidden" name="oauth_token" value="${fn:escapeXml(token)}"/>
+                <input type="hidden" name="oauth_token" value="<%= token %>"/>
                 <input type="${showVerifyCodeScreen ? 'hidden' : 'text'}" name="username" placeholder="<fmt:message key='email'/>" value="${fn:escapeXml(param.username)}"/>
                 <input type="${showVerifyCodeScreen ? 'hidden' : 'password'}" name="password" placeholder="<fmt:message key='password'/>" value=""/>
                 <input type="${showVerifyCodeScreen ? 'text' : 'hidden'}" name="totpcode" placeholder="<fmt:message key='twoFactorAuthCodeLabel'/>"/>
