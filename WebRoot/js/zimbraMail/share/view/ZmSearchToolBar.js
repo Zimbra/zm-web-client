@@ -172,11 +172,12 @@ ZmSearchToolBar.prototype.focus = function(item) {
 
     if (item) {
         // focus is being moved via a shortcut (arrow key)
-        DwtToolBar.prototype.focus.apply(this, arguments);
+        return DwtToolBar.prototype.focus.apply(this, arguments);
     }
 	else if (this._searchField) {
 		this._searchField.focus();
 		this._searchField.moveCursorToEnd();
+        return this._searchField;
 	}
 };
 

@@ -88,8 +88,6 @@ ZmOverview = function(params, controller) {
 	this._treeHash			= {};
 	this._treeParents		= {};
 
-	this._tabGroup = new DwtTabGroup('ZmOverview');
-
 	// Create a parent div for each overview tree.
 	var doc = document;
 	var element = this.getHtmlElement();
@@ -110,6 +108,9 @@ ZmOverview = function(params, controller) {
 	}
 
 	this.setAttribute('aria-label', ZmMsg.overviewLabel);
+
+    // Let overview be a single tab stop, then manage focus among items using arrow keys
+    this.tabGroupMember = this;
 };
 
 ZmOverview.prototype = new DwtComposite;
@@ -258,11 +259,6 @@ function(typeOnly) {
 	return null;
 };
 
-ZmOverview.prototype.getTabGroupMember =
-function() {
-	return this._tabGroup;
-};
-
 ZmOverview.prototype.deselectAllTreeViews =
 function() {
 	for (var i = 0; i < this._treeIds.length; i++) {
@@ -322,7 +318,6 @@ function(treeItem) {
 	}
 
 	this._selectedTreeItem = treeItem;
-	this._tabGroup.setMembers(treeItem);
 };
 
 /**
@@ -344,7 +339,6 @@ ZmOverview.prototype.clearSelection =
 function() {
 	if (this._selectedTreeItem) {
 		this._selectedTreeItem._tree.deselectAll();
-		this._tabGroup.removeAllMembers();
 	}
 };
 
@@ -360,8 +354,8 @@ function() {
 /**
  * @private
  */
-ZmOverview.prototype._focus =
-function() {
+ZmOverview.prototype.focus = function() {
+
 	var item = this._selectedTreeItem;
 	if (!item) {
 		var tree = this._treeHash[this._treeIds[0]];
@@ -373,14 +367,15 @@ function() {
     if (item) {
         item.focus();
         item._tree.setSelection(item, false, true);
+        return item;
     }
 };
 
 /**
  * @private
  */
-ZmOverview.prototype._blur =
-function() {
+ZmOverview.prototype.blur = function() {
+
 	var item = this._selectedTreeItem;
 	if (item) {
 		item._blur();
