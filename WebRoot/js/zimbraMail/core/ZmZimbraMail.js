@@ -3409,7 +3409,7 @@ ZmZimbraMail.prototype.focusToolbar =
 function() {
 	// Set focus to the toolbar that's in the content pane.
 	var ctlr = appCtxt.getCurrentController();
-	var toolbar = ctlr ? ctlr.getCurrentToolbar() : null;
+	var toolbar = ctlr && ctlr.getCurrentToolbar && ctlr.getCurrentToolbar();
 	if (toolbar) {
 		appCtxt.getKeyboardMgr().grabFocus(toolbar);
 	}

@@ -351,6 +351,15 @@ function () {
 
 };
 
+/**
+ * Returns the current tool bar (the one on the left with Save/Cancel).
+ *
+ * @return	{ZmButtonToolbar}		the toolbar
+ */
+ZmPrefController.prototype.getCurrentToolbar = function() {
+    return this._lefttoolbar;
+};
+
 ZmPrefController.prototype._getToolBarOps =
 function () {
 	return [ZmOperation.REVERT_PAGE];
