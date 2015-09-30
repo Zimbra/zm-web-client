@@ -171,6 +171,12 @@
 	@TreeContainer@	/* ??? IS THIS THE ENTIRE THING? was TreeItem	*/
 }
 
+/* The DwtTreeItem control element also contains nested tree items, so suppress
+   its focus outline. */
+.DwtTreeItem-Control:focus {
+	outline: none;
+}
+
 /* container (div) for each item in the tree */
 .DwtTreeItem {
 	@TreeItem@
