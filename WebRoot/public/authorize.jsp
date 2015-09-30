@@ -20,6 +20,9 @@
     if(token==null)
         token = request.getParameter("oauth_token");
 %>
+
+<c:set var="oauthToken" value="<%=token%>"/>
+
 <c:catch var="loginException">
     <c:choose>
         <c:when test="${!(empty userName) && !(empty param.password) && (pageContext.request.method eq 'POST')}">
@@ -141,7 +144,7 @@
             </c:choose>
 
             <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
-                <input type="hidden" name="oauth_token" value="<%= token %>"/>
+                <input type="hidden" name="oauth_token" value="${fn:escapeXml(oauthToken)}"/>
                 <input type="${showVerifyCodeScreen ? 'hidden' : 'text'}" name="username" placeholder="<fmt:message key='email'/>" value="${fn:escapeXml(param.username)}"/>
                 <input type="${showVerifyCodeScreen ? 'hidden' : 'password'}" name="password" placeholder="<fmt:message key='password'/>" value=""/>
                 <input type="${showVerifyCodeScreen ? 'text' : 'hidden'}" name="totpcode" placeholder="<fmt:message key='twoFactorAuthCodeLabel'/>"/>
