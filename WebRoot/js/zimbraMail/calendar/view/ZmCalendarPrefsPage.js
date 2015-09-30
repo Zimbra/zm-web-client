@@ -36,6 +36,7 @@
  * 
  * @private
  */
+
 ZmCalendarPrefsPage = function(parent, section, controller) {
 
 	ZmPreferencesPage.apply(this, arguments);
@@ -536,6 +537,9 @@ function() {
     }
 
 	this._radioGroup.setSelectedId(this._isCustom ? this._radioCustomId : this._radioNormalId);
+
+    // Reset the custom work hours dialog as well
+    this._customDlg.reset();
 };
 
 ZmWorkHours.prototype.isDirty =
@@ -678,13 +682,20 @@ function(value) {
     this._customDlg.popdown();
 };
 
+ZmWorkHours.prototype._closeCancelCustomDialog = function(value) {
+    if (this._customDlg.isDirty()) {
+        this._customDlg.reset();
+    }
+    this._customDlg.popdown();
+};
+
 ZmWorkHours.prototype._openCustomizeDlg =
 function() {
     if(!this._customDlg) {
         this._customDlg = new ZmCustomWorkHoursDlg(appCtxt.getShell(), "CustomWorkHoursDlg", this._workHours);
         this._customDlg.initialize(this._workHours);
         this._customDlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._closeCustomDialog, [true]));
-        this._customDlg.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._closeCustomDialog, [false]));
+        this._customDlg.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._closeCancelCustomDialog, [false]));
     }
     this._customDlg.popup();
 };
@@ -822,7 +833,7 @@ ZmCustomWorkHoursDlg.prototype.initialize = function(workHours) {
         startTimeSelect,
         endTimeSelect,
         inputTime;
-    
+
     workHours = workHours || this._workHours;
 
     for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
@@ -852,6 +863,26 @@ ZmCustomWorkHoursDlg.prototype.initialize = function(workHours) {
         this._workDaysCheckBox.push(checkbox);
     }
 };
+
+ZmCustomWorkHoursDlg.prototype.reset =
+function() {
+    var i,
+    inputTime;
+
+    for (i = 0; i < AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
+        inputTime = new Date();
+        inputTime.setHours(this._workHours[i].startTime/100, this._workHours[i].startTime%100, 0);
+        this._startTimeSelect[i].set(inputTime);
+        this._startTimeSelect[i].setEnabled(this._workHours[i].isWorkingDay);
+
+        inputTime = new Date();
+        inputTime.setHours(this._workHours[i].endTime/100, this._workHours[i].endTime%100, 0);
+        this._endTimeSelect[i].set(inputTime);
+        this._endTimeSelect[i].setEnabled(this._workHours[i].isWorkingDay);
+
+        this._workDaysCheckBox[i].setSelected(this._workHours[i].isWorkingDay);
+    }
+}
 
 ZmCustomWorkHoursDlg.prototype.reloadWorkHours =
 function(workHours) {
