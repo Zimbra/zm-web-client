@@ -325,17 +325,19 @@ function(parent, num) {
 /**
  * @private
  */
-ZmContactController.prototype._saveListener =
-function(ev, bIsPopCallback) {
+ZmContactController.prototype._saveListener = function(ev, bIsPopCallback) {
+
 	var fileAsChanged = false;
 	var view = this._contactView;
-	if (view instanceof DwtForm)
+	if (view instanceof DwtForm) {
 		view.validate();
+    }
+
 	if (!view.isValid()) {
 		var invalidItems = view.getInvalidItems();
 		// This flag will be set to false when the view.validate() detects some invalid fields (other than EMAIL) which does not have an error message.  If the EMAIL field is the only invalid one, ignore the error and move on.
 		var onlyEmailInvalid = true;
-		for (var i=0; i<invalidItems.length; i++) {
+		for (var i = 0; i < invalidItems.length; i++) {
 			msg = view.getErrorMessage(invalidItems[i]);
 			var isInvalidEmailAddr = (invalidItems[i].indexOf("EMAIL") != -1);
 			if (AjxUtil.isString(msg) && !isInvalidEmailAddr) {
@@ -345,7 +347,7 @@ function(ev, bIsPopCallback) {
 				msgDlg.popup();
 				return;
 			}
-			onlyEmailInvalid = onlyEmailInvalid & isInvalidEmailAddr;
+			onlyEmailInvalid = onlyEmailInvalid && isInvalidEmailAddr;
 		}
 		if (!onlyEmailInvalid) {
 			return;
@@ -362,9 +364,7 @@ function(ev, bIsPopCallback) {
 		// the contact since it will be created/deleted into the new folder
 		var newFolderId = mods[ZmContact.F_folderId];
 		var newFolder = newFolderId ? appCtxt.getById(newFolderId) : null;
-		if (contact.id != null && newFolderId &&
-			(contact.isShared() || (newFolder && newFolder.link)) && !contact.isGal)
-		{
+		if (contact.id != null && newFolderId && (contact.isShared() || (newFolder && newFolder.link)) && !contact.isGal) {
 			// update existing contact with new attrs
 			for (var a in mods) {
 				if (a != ZmContact.F_folderId && a != ZmContact.F_groups) {
@@ -374,8 +374,7 @@ function(ev, bIsPopCallback) {
 			// set folder will do the right thing for this shared contact
 			contact._setFolder(newFolderId);
 		}
-		else
-		{
+		else {
 			if (contact.id && (!contact.isGal || contact.isDistributionList())) {
 				if (view.isEmpty()) { //If contact empty, alert the user
 					var ed = appCtxt.getMsgDialog();
@@ -383,15 +382,19 @@ function(ev, bIsPopCallback) {
 					ed.popup();
 					view.enableInputs(true);
 					bIsPopCallback = true;
-				} else {
-					var contactFileAsBefore = ZmContact.computeFileAs(contact);
-					var contactFileAsAfter = ZmContact.computeFileAs(AjxUtil.hashUpdate(AjxUtil.hashCopy(contact.getAttrs()), mods, true));
+				}
+                else {
+					var contactFileAsBefore = ZmContact.computeFileAs(contact),
+					    contactFileAsAfter = ZmContact.computeFileAs(AjxUtil.hashUpdate(AjxUtil.hashCopy(contact.getAttrs()), mods, true)),
+                        fileAsBefore = contactFileAsBefore ? contactFileAsBefore.toLowerCase()[0] : null,
+                        fileAsAfter = contactFileAsAfter ? contactFileAsAfter.toLowerCase()[0] : null;
 					this._doModify(contact, mods);
-					if (contactFileAsBefore.toLowerCase()[0] !== contactFileAsAfter.toLowerCase()[0]) {
+					if (fileAsBefore !== fileAsAfter) {
 						fileAsChanged = true;
 					}
 				}
-			} else {
+			}
+            else {
 				var isEmpty = true;
 				for (var a in mods) {
 					if (mods[a]) {
@@ -400,9 +403,7 @@ function(ev, bIsPopCallback) {
 					}
 				}
 				if (isEmpty) {
-					var msg = this._isGroup()
-						? ZmMsg.emptyGroup
-						: ZmMsg.emptyContact;
+					var msg = this._isGroup() ? ZmMsg.emptyGroup : ZmMsg.emptyContact;
 					appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 				}
 				else {
@@ -418,7 +419,8 @@ function(ev, bIsPopCallback) {
 				}
 			}
 		}
-	} else {
+	}
+    else {
 		if (contact.isDistributionList()) {
 			//in this case, we need to pop the view since we did not call the server to modify the DL.
 			this.popView();
@@ -430,7 +432,8 @@ function(ev, bIsPopCallback) {
 				? ZmMsg.emptyGroup
 				: ZmMsg.emptyContact;
 			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
-		} else {
+		}
+        else {
 			var msg = contact.isDistributionList()
 				? ZmMsg.dlSaved
 				: this._isGroup()
