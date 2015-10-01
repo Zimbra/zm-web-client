@@ -528,7 +528,7 @@ function() {
 	var textEl = textField.cloneNode(false);
 	textField.parentNode.replaceChild(textEl, textField);//To clear undo/redo queue of textarea
 	//cloning and replacing node will remove event handlers and hence adding it once again
-	Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
+	Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this._onTextareaFocus.bind(this, true, true));
 	Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
     Dwt.setHandler(textEl, DwtEvent.ONKEYDOWN, this._handleTextareaKeyEvent.bind(this));
 };
@@ -556,7 +556,7 @@ ZmHtmlEditor.prototype.initTinyMCEEditor = function(params) {
 	htmlEl.appendChild(textEl);
 	this._textAreaId = id;
 
-    Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
+    Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this._onTextareaFocus.bind(this, true, true));
     Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
     Dwt.setHandler(textEl, DwtEvent.ONKEYDOWN, this._handleTextareaKeyEvent.bind(this));
 
@@ -713,6 +713,12 @@ function(hasFocus, isTextModeFocus) {
 		Dwt.condClass(this.getEditor().getBody(), hasFocus,
 		              'mce-active-editor', 'mce-inactive-editor');
 	}
+};
+
+ZmHtmlEditor.prototype._onTextareaFocus = function() {
+
+    this.setFocusStatus(true, true);
+    appCtxt.getKeyboardMgr().updateFocus(this.getContentField());
 };
 
 ZmHtmlEditor.prototype.initEditorManager =
@@ -1043,7 +1049,8 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
     obj.setFocusStatus(false);
 
     tinymceEvent.bind(win, 'focus', function(e) {
-		appCtxt.getKeyboardMgr().updateFocus(obj);
+        DBG.println(AjxDebug.FOCUS, "EDITOR got focus");
+		appCtxt.getKeyboardMgr().updateFocus(obj._getIframeDoc().body);
         obj.setFocusStatus(true);
     });
     tinymceEvent.bind(win, 'blur', function(e) {

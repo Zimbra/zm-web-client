@@ -339,17 +339,20 @@ function() {
 	return this._recipients.getAddrFields();
 };
 
-ZmComposeView.prototype.getTabGroupMember =
-function() {
-	var tg = new DwtTabGroup('ZmComposeView');
-	tg.addMember(this._fromSelect);
-	tg.addMember(this.identitySelect);
-	tg.addMember(this._recipients.getTabGroupMember());
-	tg.addMember(this._subjectField);
-	tg.addMember(this._attButton);
-	tg.addMember(this._attcTabGroup);
-	tg.addMember(this._htmlEditor.getTabGroupMember());
-	return tg;
+ZmComposeView.prototype.getTabGroupMember = function() {
+
+    if (!this._tabGroup) {
+        var tg = this._tabGroup = new DwtTabGroup('ZmComposeView');
+        tg.addMember(this._fromSelect);
+        tg.addMember(this.identitySelect);
+        tg.addMember(this._recipients.getTabGroupMember());
+        tg.addMember(this._subjectField);
+        tg.addMember(this._attButton);
+        tg.addMember(this._attcTabGroup);
+        tg.addMember(this._htmlEditor.getTabGroupMember());
+    }
+
+	return this._tabGroup;
 };
 
 ZmComposeView.prototype.getAddrInputField =
@@ -4092,32 +4095,31 @@ function() {
 
 // Static methods
 
+// Update tab text when content of Subject field changes
 ZmComposeView._onKeyUp = function(ev) {
 
-	ev = DwtUiEvent.getEvent(ev);
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) {
-        return true;
+    var cv = ZmComposeView._getComposeViewFromEvent(ev);
+    if (cv) {
+        cv.updateTabTitle();
     }
-    var cv = DwtControl.fromElementId(element._composeViewId);
-    cv.updateTabTitle();
 
 	return true;
 };
 
-// set focus within tab group to element so tabbing works
+// Subject field has gotten focus
 ZmComposeView._onFocus = function(ev) {
 
-	ev = DwtUiEvent.getEvent(ev);
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) {
-        return true;
+    var cv = ZmComposeView._getComposeViewFromEvent(ev);
+    if (cv) {
+        appCtxt.getKeyboardMgr().updateFocus(cv._subjectField);
     }
+};
 
-	var kbMgr = appCtxt.getKeyboardMgr();
-	if (kbMgr.__currTabGroup) {
-		kbMgr.__currTabGroup.setFocusMember(element);
-	}
+ZmComposeView._getComposeViewFromEvent = function(ev) {
+
+    ev = DwtUiEvent.getEvent(ev);
+    var element = DwtUiEvent.getTargetWithProp(ev, "id");
+    return element && DwtControl.fromElementId(element._composeViewId);
 };
 
 // for com.zimbra.dnd zimlet
