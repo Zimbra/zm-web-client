@@ -681,7 +681,7 @@ ZmHtmlEditor.prototype._handleEditorKeyEvent = function(ev) {
 // Text mode key event handler
 ZmHtmlEditor.prototype._handleTextareaKeyEvent = function(ev) {
 
-    if (ZmHtmlEditor.isEditorTab()) {
+    if (ZmHtmlEditor.isEditorTab(ev)) {
         Dwt.insertText(this.getContentField(), '\t');
         DwtUiEvent.setBehaviour(ev, true, false);
         return false;
@@ -2605,5 +2605,5 @@ ZmHtmlEditor.prototype._overrideTinyMCEMethods = function() {
 // Returns true if the user is inserting a Tab into the editor (rather than moving focus)
 ZmHtmlEditor.isEditorTab = function(ev) {
 
-    return appCtxt.get(ZmSetting.TAB_IN_EDITOR) && ev.keyCode === DwtKeyEvent.KEY_TAB && !ev.shiftKey && !DwtKeyMapMgr.hasModifier(ev);
+    return appCtxt.get(ZmSetting.TAB_IN_EDITOR) && ev && ev.keyCode === DwtKeyEvent.KEY_TAB && !ev.shiftKey && !DwtKeyMapMgr.hasModifier(ev);
 };
