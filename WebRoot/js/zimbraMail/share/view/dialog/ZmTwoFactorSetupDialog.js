@@ -97,7 +97,9 @@ function() {
 	this._keySpan = Dwt.getElement(id + "_email_key");
 	var keyupHandler = this._handleKeyUp.bind(this);
 	Dwt.setHandler(this._passwordInput, DwtEvent.ONKEYUP, keyupHandler);
+	Dwt.setHandler(this._passwordInput, DwtEvent.ONINPUT, keyupHandler);
 	Dwt.setHandler(this._codeInput, DwtEvent.ONKEYUP, keyupHandler);
+	Dwt.setHandler(this._codeInput, DwtEvent.ONINPUT, keyupHandler);
 };
 
 /**
