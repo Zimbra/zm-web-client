@@ -709,7 +709,6 @@ ZmId.APP_SEARCH			= "Search";
 ZmId.APP_SOCIAL			= "Social";
 ZmId.APP_TASKS			= "Tasks";
 ZmId.APP_VOICE			= "Voice";
-ZmId.APP_CHAT           = "Chat";
 
 // views - often used as context for ID
 ZmId.VIEW_ACCOUNT				= "ACCT";
