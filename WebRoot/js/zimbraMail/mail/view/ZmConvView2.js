@@ -1720,15 +1720,21 @@ function(msg, container) {
 	}
 	div.innerHTML = linkHtml.join("&nbsp;-&nbsp;");
 	this.getHtmlElement().appendChild(div);
-	
+
+    this._links = [];
+    var linkFound = false;
 	for (var i = 0; i < links.length; i++) {
 		var info = this._linkInfo[links[i]];
 		var link = info && document.getElementById(info.linkId);
 		if (link) {
 			this._makeFocusable(link);
-			Dwt.setHandler(link, DwtEvent.ONCLICK,
-			               this._linkClicked.bind(this, links[i], info.op));
+			Dwt.setHandler(link, DwtEvent.ONCLICK, this._linkClicked.bind(this, links[i], info.op));
 			this._footerTabGroup.addMember(link);
+            // Bit of a hack so we can treat the row of links like a toolbar and move focus
+            // between links using left/right arrow buttons.
+            link.noTab = linkFound;
+            this._links.push(link);
+            linkFound = true;
 		}
 	}
     // Attempt to display the calendar if the preference is to auto-open it
@@ -1756,6 +1762,22 @@ function(id, op, ev) {
 	if (handler) {
 		handler.apply(this, [id, info.op, ev]);
 	}
+};
+
+// Moves focus between links in the footer
+ZmMailMsgCapsuleView.prototype._focusLink = function(prev, refLink) {
+
+    var link;
+    for (var i = 0; i < this._links.length; i++) {
+        if (this._links[i] === refLink) {
+            link = this._links[prev ? i - 1 : i + 1];
+            break;
+        }
+    }
+
+    if (link) {
+        appCtxt.getKeyboardMgr().grabFocus(link);
+    }
 };
 
 ZmMailMsgCapsuleView.prototype.__onFocus =

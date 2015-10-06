@@ -339,10 +339,6 @@ function(params, result) {
 		ctlr._evt.request = methodName;
 		ctlr.notify(ZmAppEvent.RESPONSE);
 	}
-
-    setTimeout(function() {
-        appCtxt.getKeyboardMgr().checkFocus();
-    }, ZmRequestMgr.FOCUS_CHECK_DELAY);
 };
 
 /**
