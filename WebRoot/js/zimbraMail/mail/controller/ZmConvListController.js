@@ -134,10 +134,21 @@ function(actionCode, ev) {
 		case ZmKeyMap.EXPAND:
 		case ZmKeyMap.COLLAPSE:
 			if (capsuleEl) {
-				var capsule = DwtControl.fromElement(capsuleEl);
-				if ((actionCode == ZmKeyMap.EXPAND) != capsule.isExpanded()) {
-					capsule._toggleExpansion();
-				}
+                var activeEl = document.activeElement;
+                // if a footer link has focus, move among those links
+                if (activeEl && activeEl.id.indexOf(ZmId.MV_MSG_FOOTER) !== -1) {
+                    var msgView = DwtControl.findControl(activeEl);
+                    if (msgView && msgView.isZmMailMsgCapsuleView) {
+                        msgView._focusLink(actionCode === ZmKeyMap.COLLAPSE, activeEl);
+                    }
+                }
+                // otherwise expand or collapse the msg view
+                else {
+                    var capsule = DwtControl.fromElement(capsuleEl);
+                    if ((actionCode === ZmKeyMap.EXPAND) !== capsule.isExpanded()) {
+                        capsule._toggleExpansion();
+                    }
+                }
 
 				break;
 			}
