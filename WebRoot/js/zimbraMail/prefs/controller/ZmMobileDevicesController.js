@@ -120,10 +120,9 @@ function(results) {
 
 ZmMobileDevicesController.prototype.loadOAuthConsumerAppInfo =
 function() {
-    var command = new ZmCsfeCommand();
-    var jsonObj = {GetOAuthConsumersRequest : {_jsns:"urn:zimbraAccount"}};
+    var jsonObj = { GetOAuthConsumersRequest : { _jsns:"urn:zimbraAccount"}};
     var callback = this._handleResponseLoadOAuthConsumer.bind(this);
-    command.invoke({jsonObj: jsonObj, noAuthToken: true, asyncMode: true,callback: callback, serverUri:"/service/soap/"});
+    appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:callback});
 };
 
 ZmMobileDevicesController.prototype._handleResponseLoadOAuthConsumer =
@@ -134,7 +133,7 @@ function(result){
     this._oAuthConsumerApps = new AjxVector();
 
     var response = result.getResponse();
-    var OAuthConsumersResponse = response.Body.GetOAuthConsumersResponse;
+    var OAuthConsumersResponse = response.GetOAuthConsumersResponse;
     var list = OAuthConsumersResponse.OAuthConsumer;
     var listLen = list.length;
     if (list && listLen) {
@@ -267,4 +266,23 @@ function(parent, numSel) {
 	else {
 		parent.enableAll(false);
 	}
+};
+
+ZmMobileDevicesController.handleRemoveOauthConsumerApp = function(removeLinkEle, oAuthAccessToken, oAuthAppName, oAuthDevice) {
+    var dialog = appCtxt.getOkCancelMsgDialog();
+    var dialogContent = AjxMessageFormat.format(ZmMsg.oAuthAppAuthorizationRemoveConfirm, [oAuthAppName, oAuthDevice]);
+    dialog.setMessage(dialogContent, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.removeOAuthAppAuthorization);
+    dialog.registerCallback(DwtDialog.OK_BUTTON, ZmMobileDevicesController.removeOauthConsumerApp.bind(null, removeLinkEle, dialog, oAuthAccessToken, oAuthAppName, oAuthDevice));
+    dialog.popup();
+};
+
+ZmMobileDevicesController.removeOauthConsumerApp = function(removeLinkEle, dialog, oAuthAccessToken, oAuthAppName, oAuthDevice) {
+     var jsonObj = { RevokeOAuthConsumerRequest : { _jsns:"urn:zimbraAccount", accessToken:{ _content : oAuthAccessToken}}};
+     var callback = ZmMobileDevicesController.removeOauthConsumerAppCallback.bind(null, removeLinkEle, dialog);
+     appCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:callback});
+};
+
+ZmMobileDevicesController.removeOauthConsumerAppCallback = function(removeLinkEle, dialog) {
+    dialog.popdown();
+    Dwt.setVisible(removeLinkEle, false);
 };

@@ -90,13 +90,14 @@ function() {
     this._deviceController.loadOAuthConsumerAppInfo();
 };
 
-ZmMobileDevicesPage.prototype.reset =
-function(useDefaults) {
-	ZmPreferencesPage.prototype.reset.apply(this, arguments);
+ZmMobileDevicesPage.prototype.reset = function(useDefaults) {
+    var deviceController = this._deviceController;
+    ZmPreferencesPage.prototype.reset.apply(this, arguments);
 
-	if (this._controller.getTabView().getActiveView() == this) {
-		this._deviceController.loadDeviceInfo();
-	}
+    if (this._controller.getTabView().getActiveView() == this) {
+        deviceController.loadDeviceInfo();
+        deviceController.loadOAuthConsumerAppInfo();
+    }
 };
 
 ZmMobileDevicesPage.prototype.hasResetButton =
@@ -204,16 +205,8 @@ function(html, idx, item, field, colIdx, params) {
             var approvedOn = item.approvedOn;
             html[idx++] = AjxDateFormat.getDateInstance(AjxDateFormat.MEDIUM).format(new Date(parseInt(approvedOn)));
         } else if (field == ZmMobileDeviceListView.F_ACTIONS) {
-            html[idx++] = "<a href='javascript:;'  onclick='ZmMobileDeviceListView.removeOauthConsumerApp();'>" + ZmMsg.remove + "</a> ";
+            html[idx++] = "<a href = 'javascript:;' onclick = 'ZmMobileDevicesController.handleRemoveOauthConsumerApp(this, " + '"' + item.accessToken + '", "' + item.appName + '", "' + item.device + '" ' + " );'>" + ZmMsg.remove + "</a> ";
         }
 
     return idx;
 };
-
-ZmMobileDeviceListView.removeOauthConsumerApp = function(){
-    /** To be Implemented , to do next, it will deal with
-     * removing the OAuth consumer apps for an user when the user clicks on remove .
-     */
-};
-
-
