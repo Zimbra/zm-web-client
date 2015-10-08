@@ -1673,7 +1673,7 @@ function(parent) {
 	}
 
 	var menuItem = parent.getOp(ZmOperation.ADD_TO_FILTER_RULE);
-	this._filterMenu = new ZmPopupMenu(parent);
+	this._filterMenu = new ZmPopupMenu(menuItem);
 	menuItem.setMenu(this._filterMenu);
 
 	this._rules = AjxDispatcher.run("GetFilterRules");
