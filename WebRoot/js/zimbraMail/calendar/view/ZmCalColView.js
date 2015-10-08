@@ -375,16 +375,13 @@ function(resetLeft) {
 		    hourElement = document.getElementById(this._hoursScrollDivId),
 		    alldayElement = document.getElementById(this._allDayScrollDivId),
 		    unionGridScrollElement = document.getElementById(this._unionGridScrollDivId),
-		    alldayApptElement = document.getElementById(this._allDayApptScrollDivId),
-            allDayHeadingDivId = document.getElementById(this._tabsContainerDivId); // Fix for bug: 66603. Assign this a scroll handler
+			alldayApptElement = document.getElementById(this._allDayApptScrollDivId);
 
 		hourElement.scrollTop = bodyElement.scrollTop;
 		hourElement.scrollLeft = bodyElement.scrollLeft;
 		if (resetLeft) bodyElement.scrollLeft = 0;
 		alldayElement.scrollLeft = bodyElement.scrollLeft;
 		alldayApptElement.scrollLeft = bodyElement.scrollLeft;
-        // Fix for bug: 66603. Assign this a scroll handler
-        bodyElement.scrollLeft = allDayHeadingDivId.scrollLeft;
 		if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
         this._checkForOffscreenAppt(bodyElement);
 	} catch (ex) {
