@@ -135,7 +135,7 @@ function() {
  */
 ZmObjectManager.prototype.getHandlers =
 function() {
-	if (!this.initialized && appCtxt.zimletsPresent()) {
+	if (!this.initialized) {
 		var zimletMgr = appCtxt.getZimletMgr();
 		if (zimletMgr.isLoaded()) {
 			this.initialized = true;
@@ -216,11 +216,8 @@ function() {
 		obj = c[i];
 		var	handler = obj;
 		var type = obj.TYPE;
-		// TODO: adding internal handler should not rely on having zimlets (here and elsewhere)
-		if (appCtxt.zimletsPresent()) {
-			if (!(obj.isZmObjectHandler)) {
-				handler = new obj();
-			}
+		if (!(obj.isZmObjectHandler)) {
+			handler = new obj();
 		}
 		if (obj.useType) {
 			type = obj.useType;
