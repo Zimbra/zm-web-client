@@ -264,20 +264,22 @@ function() {
 	}
 
 	var composeMore = Dwt.byId(this.getHTMLElId() + '_compose_more');
-	var links = AjxUtil.toArray(composeMore.getElementsByTagName('A'));
+	if (composeMore) {
+		var links = AjxUtil.toArray(composeMore.getElementsByTagName('A'));
 
-	for (var i = 0; i < links.length; i++) {
-		var link = links[i];
-		var accountsText = new DwtText({
-			parent: this,
-			className: 'FakeAnchor'
-		});
-		accountsText.setContent(AjxUtil.getInnerText(link));
-		accountsText.setDisplay(Dwt.DISPLAY_INLINE);
-		accountsText.replaceElement(link);
-		accountsText._setEventHdlrs([DwtEvent.ONCLICK]);
-		accountsText.addListener(DwtEvent.ONCLICK,
-								 skin.gotoPrefs.bind(skin, "ACCOUNTS"));
+		for (var i = 0; i < links.length; i++) {
+			var link = links[i];
+			var accountsText = new DwtText({
+				parent: this,
+				className: 'FakeAnchor'
+			});
+			accountsText.setContent(AjxUtil.getInnerText(link));
+			accountsText.setDisplay(Dwt.DISPLAY_INLINE);
+			accountsText.replaceElement(link);
+			accountsText._setEventHdlrs([DwtEvent.ONCLICK]);
+			accountsText.addListener(DwtEvent.ONCLICK,
+									 skin.gotoPrefs.bind(skin, "ACCOUNTS"));
+		}
 	}
 
 	this._setPopDownloadSinceControls();
