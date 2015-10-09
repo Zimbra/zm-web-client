@@ -16,12 +16,18 @@
 <c:set var="userName" value="${fn:trim(param.username)}"/>
 
 <%
-    String token = (String)request.getAttribute("TOKEN");
-    if(token==null)
+    String appName = (String) request.getAttribute("CONS_APP_NAME");
+    if (appName == null) {
+        appName = request.getParameter("appName");
+    }
+
+    String token = (String) request.getAttribute("TOKEN");
+    if(token == null)
         token = request.getParameter("oauth_token");
 %>
 
 <c:set var="oauthToken" value="<%=token%>"/>
+<c:set var="consumerAppName" value="<%=appName%>"/>
 
 <c:catch var="loginException">
     <c:choose>
@@ -53,6 +59,7 @@
             <jsp:forward page="/public/access.jsp">
                 <jsp:param name="oauth_token" value="${fn:escapeXml(param.oauth_token)}"/>
                 <jsp:param name="zauthtoken" value="${authResult.authToken.value}"/>
+                <jsp:param name="appName" value="${fn:escapeXml(consumerAppName)}"/>
             </jsp:forward>
         </c:otherwise>
     </c:choose>
@@ -145,6 +152,7 @@
 
             <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
                 <input type="hidden" name="oauth_token" value="${fn:escapeXml(oauthToken)}"/>
+                <input type="hidden" name="appName" value="${fn:escapeXml(consumerAppName)}"/>
                 <input type="${showVerifyCodeScreen ? 'hidden' : 'text'}" name="username" placeholder="<fmt:message key='email'/>" value="${fn:escapeXml(param.username)}"/>
                 <input type="${showVerifyCodeScreen ? 'hidden' : 'password'}" name="password" placeholder="<fmt:message key='password'/>" value=""/>
                 <input type="${showVerifyCodeScreen ? 'text' : 'hidden'}" name="totpcode" placeholder="<fmt:message key='twoFactorAuthCodeLabel'/>"/>

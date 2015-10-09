@@ -8,6 +8,8 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
+<c:set var="consumerAppName" value="${fn:escapeXml(param.appName)}"/>
+
 <c:if test="${not empty param.authorizeOp}">
 <%
     java.lang.String oAuthToken = request.getParameter("oauth_token");
@@ -53,7 +55,9 @@
                 <div class="ImgLoginBanner"></div>
             </h1>
             <h2>
-                <fmt:message key="messagesLabel"/>
+                <fmt:message key="messagesLabel">
+                    <fmt:param value="${consumerAppName}"/>
+                </fmt:message>
             </h2>
             <ul class="list-unstyled list-bordered">
                 <li class="icon-email"><fmt:message key="manageEmail"/></li>
