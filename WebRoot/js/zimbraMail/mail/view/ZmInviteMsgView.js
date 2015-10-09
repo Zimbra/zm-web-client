@@ -619,10 +619,12 @@ function(subs, sentBy, sentByAddr, obo) {
 	var inviteTz = this._invite.getServerStartTimeTz();
 	var defaultTz = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 
-    var sd = AjxTimezone.convertTimezone(this._invite.getServerStartDate(null, true), AjxTimezone.getClientId(inviteTz), AjxTimezone.DEFAULT);
-	var ed = AjxTimezone.convertTimezone(this._invite.getServerEndDate(null, true), AjxTimezone.getClientId(inviteTz), AjxTimezone.DEFAULT);
+    if (inviteTz) {
+        var sd = AjxTimezone.convertTimezone(this._invite.getServerStartDate(null, true), AjxTimezone.getClientId(inviteTz), AjxTimezone.DEFAULT);
+        var ed = AjxTimezone.convertTimezone(this._invite.getServerEndDate(null, true), AjxTimezone.getClientId(inviteTz), AjxTimezone.DEFAULT);
 
-	subs.timezone = AjxTimezone.getMediumName(defaultTz);
+        subs.timezone = AjxTimezone.getMediumName(defaultTz);
+    }
 
 	// duration text
 	var durText = this._invite.getDurationText(null, null, null, true, sd, ed);
