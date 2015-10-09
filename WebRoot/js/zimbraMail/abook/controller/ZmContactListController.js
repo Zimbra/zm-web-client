@@ -1437,3 +1437,11 @@ function(view, forward, loadIndex, limit) {
 	}
 	ZmListController.prototype._paginate.call(this, view, forward, loadIndex, limit);
 };
+
+/**
+ * @private
+ */
+ZmContactListController.prototype._getDefaultFocusItem =
+function() {
+	return this.getCurrentView().getListView();
+};

@@ -1040,11 +1040,6 @@ ZmContactSimpleView = function(params) {
 
 	this._normalClass = DwtListView.ROW_CLASS + " SimpleContact";
 	this._selectedClass = [DwtListView.ROW_CLASS, DwtCssStyle.SELECTED].join("-");
-
-	this._tabGroup = new DwtTabGroup('ZmContactSimpleView');
-
-	// don't focus the contact view directly; only its children
-	this.noTab = true;
 };
 
 ZmContactSimpleView.prototype = new ZmContactsBaseView;
@@ -1088,11 +1083,6 @@ function(item, skipNotify) {
 	}
 
 	ZmContactsBaseView.prototype.setSelection.call(this, item, skipNotify);
-};
-
-ZmContactSimpleView.prototype.getTabGroupMember =
-function() {
-	return this._tabGroup;
 };
 
 /**
