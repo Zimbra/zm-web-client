@@ -891,18 +891,24 @@ function(item) {
 	}
 };
 
-ZmConvListView.prototype._expandAll =
-function(expand) {
-    if (!this._list)
+ZmConvListView.prototype._expandAll = function(expand) {
+
+    if (!this._list) {
         return;
+    }
 
 	var a = this._list.getArray();
 	for (var i = 0, count = a.length; i < count; i++) {
 		var conv = a[i];
-		if (!this._isExpandable(conv)) { continue; }
+		if (!this._isExpandable(conv) || expand === this.isExpanded(conv)) {
+            continue;
+        }
 		if (expand)	{
-			this._expandItem(conv);
-		} else {
+            if (conv._loaded) {
+			    this._expandItem(conv);
+            }
+		}
+        else if (!expand) {
 			this._collapse(conv);
 		}
 	}

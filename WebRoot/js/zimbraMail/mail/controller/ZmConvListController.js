@@ -152,9 +152,11 @@ function(actionCode, ev) {
 
 				break;
 			}
-			if (mlv.getSelectionCount() != 1) { return false; }
+//			if (mlv.getSelectionCount() != 1) { return false; }
 			var item = mlv.getItemFromElement(mlv._kbAnchor);
-			if (!item) { return false; }
+			if (!item) {
+                return false;
+            }
 			if ((actionCode == ZmKeyMap.EXPAND) != mlv.isExpanded(item)) {
 				mlv._expandItem(item);
 			}
@@ -165,7 +167,7 @@ function(actionCode, ev) {
 				DwtControl.fromElement(capsuleEl)._toggleExpansion();
 				break;
 			}
-			if (mlv.getSelectionCount() != 1) { return false; }
+//			if (mlv.getSelectionCount() != 1) { return false; }
 			var item = mlv.getItemFromElement(mlv._kbAnchor);
 			if (!item) { return false; }
 			if (mlv._isExpandable(item)) {
@@ -175,10 +177,11 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.EXPAND_ALL:
 		case ZmKeyMap.COLLAPSE_ALL:
-			var expand = (actionCode == ZmKeyMap.EXPAND_ALL)
+			var expand = (actionCode == ZmKeyMap.EXPAND_ALL);
 			if (capsuleEl) {
 				DwtControl.fromElement(capsuleEl).parent.setExpanded(expand);
-			} else {
+			}
+            else {
 				mlv._expandAll(expand);
 			}
 			break;
