@@ -1,7 +1,7 @@
-From 4f157684f1a91520d4fbdc33504425322cf36333 Mon Sep 17 00:00:00 2001
+From 6aa4be8e27e12b12f50596f1685188a6c63420f0 Mon Sep 17 00:00:00 2001
 From: Dan Villiom Podlaski Christiansen <dchristiansen@zimbra.com>
 Date: Tue, 20 Jan 2015 15:11:51 +0100
-Subject: [PATCH] Accessible labels for form comboboxes
+Subject: [PATCH] Making the labels of the
 
 The label for attribute values for the border color and background
 color edit fields (Table Properties - Advanced tab) did not match the
@@ -15,7 +15,7 @@ comboboxes for pointing to their INPUT element.
  1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/js/tinymce/classes/ui/Form.js b/js/tinymce/classes/ui/Form.js
-index 53be651..b04a222 100644
+index 8348cda..0ffcbc8 100644
 --- a/js/tinymce/classes/ui/Form.js
 +++ b/js/tinymce/classes/ui/Form.js
 @@ -67,16 +67,24 @@ define("tinymce/ui/Form", [

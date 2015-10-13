@@ -1,4 +1,4 @@
-From bb3ff2a099e999f99020961febb7a9d1c9aed518 Mon Sep 17 00:00:00 2001
+From b387dae42a6d8b69b3cee025731a766b6016cc88 Mon Sep 17 00:00:00 2001
 From: Dan Villiom Podlaski Christiansen <dchristiansen@zimbra.com>
 Date: Tue, 20 Jan 2015 14:11:21 +0100
 Subject: [PATCH] Don't propagate escape when dismissing menus and windows.
@@ -10,10 +10,10 @@ Subject: [PATCH] Don't propagate escape when dismissing menus and windows.
  3 files changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/js/tinymce/classes/ui/KeyboardNavigation.js b/js/tinymce/classes/ui/KeyboardNavigation.js
-index 9077b36..bd9e0d2 100644
+index 26fd045..354756b 100644
 --- a/js/tinymce/classes/ui/KeyboardNavigation.js
 +++ b/js/tinymce/classes/ui/KeyboardNavigation.js
-@@ -329,7 +329,7 @@ define("tinymce/ui/KeyboardNavigation", [
+@@ -321,7 +321,7 @@ define("tinymce/ui/KeyboardNavigation", [
  		 * @private
  		 */
  		function cancel() {
@@ -22,7 +22,7 @@ index 9077b36..bd9e0d2 100644
  		}
  
  		/**
-@@ -377,7 +377,13 @@ define("tinymce/ui/KeyboardNavigation", [
+@@ -369,7 +369,13 @@ define("tinymce/ui/KeyboardNavigation", [
  					break;
  
  				case 27: // DOM_VK_ESCAPE
@@ -38,10 +38,10 @@ index 9077b36..bd9e0d2 100644
  
  				case 14: // DOM_VK_ENTER
 diff --git a/js/tinymce/classes/ui/MenuButton.js b/js/tinymce/classes/ui/MenuButton.js
-index ea4b3f2..f976249 100644
+index 610afec..4f99206 100644
 --- a/js/tinymce/classes/ui/MenuButton.js
 +++ b/js/tinymce/classes/ui/MenuButton.js
-@@ -97,6 +97,7 @@ define("tinymce/ui/MenuButton", [
+@@ -89,6 +89,7 @@ define("tinymce/ui/MenuButton", [
  				self.menu.on('cancel', function(e) {
  					if (e.control.parent() === self.menu) {
  						e.stopPropagation();
@@ -50,10 +50,10 @@ index ea4b3f2..f976249 100644
  						self.hideMenu();
  					}
 diff --git a/js/tinymce/classes/ui/Window.js b/js/tinymce/classes/ui/Window.js
-index 6c5a066..3738ad6 100644
+index 51205d2..e5abe1f 100644
 --- a/js/tinymce/classes/ui/Window.js
 +++ b/js/tinymce/classes/ui/Window.js
-@@ -160,7 +160,9 @@ define("tinymce/ui/Window", [
+@@ -85,7 +85,9 @@ define("tinymce/ui/Window", [
  				}
  			});
  

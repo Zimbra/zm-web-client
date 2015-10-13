@@ -1,15 +1,15 @@
-From bf45371dbcba5bd2709d1b9dafe395f75f95d7af Mon Sep 17 00:00:00 2001
+From 3366074471b6a4b373f35afec6861f7292c3d848 Mon Sep 17 00:00:00 2001
 From: Dan Villiom Podlaski Christiansen <dchristiansen@zimbra.com>
 Date: Wed, 21 Jan 2015 13:21:01 +0100
 Subject: [PATCH] Use the combobox role for menu buttons located elsewhere than
  menus.
 
 ---
- js/tinymce/classes/ui/MenuButton.js | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ js/tinymce/classes/ui/MenuButton.js | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/js/tinymce/classes/ui/MenuButton.js b/js/tinymce/classes/ui/MenuButton.js
-index c5dbc38..fdece50 100644
+index ed6ca35..8c348ab 100644
 --- a/js/tinymce/classes/ui/MenuButton.js
 +++ b/js/tinymce/classes/ui/MenuButton.js
 @@ -17,9 +17,8 @@
@@ -24,7 +24,7 @@ index c5dbc38..fdece50 100644
  	"use strict";
  
  	// TODO: Maybe add as some global function
-@@ -176,7 +175,12 @@ define("tinymce/ui/MenuButton", [
+@@ -168,7 +167,12 @@ define("tinymce/ui/MenuButton", [
  
  			icon = self.settings.icon ? prefix + 'ico ' + prefix + 'i-' + icon : '';
  
@@ -37,4 +37,11 @@ index c5dbc38..fdece50 100644
 +			self.aria('role', parentrolemap[self.parent().type] || 'combobox');
  
  			return (
- 				'<div id="' + id + '" class="' + self.classes + '" tabindex="-1">' +
+ 				'<div id="' + id + '" class="' + self.classes() + '" tabindex="-1">' +
+@@ -258,4 +262,4 @@ define("tinymce/ui/MenuButton", [
+ 	});
+ 
+ 	return MenuButton;
+-});
+\ No newline at end of file
++});
