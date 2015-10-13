@@ -1,4 +1,4 @@
-From 31ce132c028a4cf22488caaf1914d826e35354eb Mon Sep 17 00:00:00 2001
+From af777b609cf41fa6fec2f5dbc17d23afe6f252f2 Mon Sep 17 00:00:00 2001
 From: Dan Villiom Podlaski Christiansen <dchristiansen@zimbra.com>
 Date: Tue, 20 Jan 2015 14:11:32 +0100
 Subject: [PATCH] Remove spurious aria-labelledby attributes.
@@ -7,32 +7,39 @@ Having aria-labelledby point to the element itself just doesn't make
 sense.
 ---
  js/tinymce/classes/ui/Button.js     | 2 +-
- js/tinymce/classes/ui/MenuButton.js | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ js/tinymce/classes/ui/MenuButton.js | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/js/tinymce/classes/ui/Button.js b/js/tinymce/classes/ui/Button.js
-index c33070c..7ac18fa 100644
+index c580e7d..c45608c 100644
 --- a/js/tinymce/classes/ui/Button.js
 +++ b/js/tinymce/classes/ui/Button.js
-@@ -158,7 +158,7 @@ define("tinymce/ui/Button", [
+@@ -137,7 +137,7 @@ define("tinymce/ui/Button", [
  			icon = self.settings.icon ? prefix + 'ico ' + prefix + 'i-' + icon : '';
  
  			return (
--				'<div id="' + id + '" class="' + self.classes() + '" tabindex="-1" aria-labelledby="' + id + '">' +
-+				'<div id="' + id + '" class="' + self.classes() + '" tabindex="-1">' +
+-				'<div id="' + id + '" class="' + self.classes + '" tabindex="-1" aria-labelledby="' + id + '">' +
++				'<div id="' + id + '" class="' + self.classes + '" tabindex="-1">' +
  					'<button role="presentation" type="button" tabindex="-1">' +
  						(icon ? '<i class="' + icon + '"' + image + '></i>' : '') +
- 						(self._text ? (icon ? '\u00a0' : '') + self.encode(self._text) : '') +
+ 						(text ? self.encode(text) : '') +
 diff --git a/js/tinymce/classes/ui/MenuButton.js b/js/tinymce/classes/ui/MenuButton.js
-index 4f99206..ed6ca35 100644
+index f976249..c5dbc38 100644
 --- a/js/tinymce/classes/ui/MenuButton.js
 +++ b/js/tinymce/classes/ui/MenuButton.js
-@@ -171,7 +171,7 @@ define("tinymce/ui/MenuButton", [
+@@ -179,7 +179,7 @@ define("tinymce/ui/MenuButton", [
  			self.aria('role', self.parent() instanceof MenuBar ? 'menuitem' : 'button');
  
  			return (
--				'<div id="' + id + '" class="' + self.classes() + '" tabindex="-1" aria-labelledby="' + id + '">' +
-+				'<div id="' + id + '" class="' + self.classes() + '" tabindex="-1">' +
+-				'<div id="' + id + '" class="' + self.classes + '" tabindex="-1" aria-labelledby="' + id + '">' +
++				'<div id="' + id + '" class="' + self.classes + '" tabindex="-1">' +
  					'<button id="' + id + '-open" role="presentation" type="button" tabindex="-1">' +
  						(icon ? '<i class="' + icon + '"' + image + '></i>' : '') +
- 						'<span>' + (self._text ? (icon ? '\u00a0' : '') + self.encode(self._text) : '') + '</span>' +
+ 						(text ? (icon ? '\u00a0' : '') + self.encode(text) : '') +
+@@ -260,4 +260,4 @@ define("tinymce/ui/MenuButton", [
+ 	});
+ 
+ 	return MenuButton;
+-});
+\ No newline at end of file
++});
