@@ -16,7 +16,7 @@
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client"/>
+<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,"/>
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -192,7 +192,8 @@
                                     <c:redirect url="${sbURL}">
                                         <c:forEach var="p" items="${paramValues}">
                                             <c:forEach var='value' items='${p.value}'>
-                                                <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                                <c:set var="testKey" value=",${p.key},"/>
+                                                <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
                                                     <c:param name="${p.key}" value='${value}'/>
                                                 </c:if>
                                             </c:forEach>
@@ -205,7 +206,8 @@
                                         <c:redirect url="/">
                                             <c:forEach var="p" items="${paramValues}">
                                                 <c:forEach var='value' items='${p.value}'>
-                                                    <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                                    <c:set var="testKey" value=",${p.key},"/>
+                                                    <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
                                                         <c:param name="${p.key}" value='${value}'/>
                                                     </c:if>
                                                 </c:forEach>
@@ -229,7 +231,8 @@
                                     </c:if>
                                     <c:forEach var="p" items="${paramValues}">
                                         <c:forEach var='value' items='${p.value}'>
-                                            <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                        <c:set var="testKey" value=",${p.key},"/>
+                                        <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
                                                 <c:param name="${p.key}" value='${value}'/>
                                             </c:if>
                                         </c:forEach>
@@ -241,7 +244,8 @@
                                 <c:redirect url="${mobURL}">
                                     <c:forEach var="p" items="${paramValues}">
                                         <c:forEach var='value' items='${p.value}'>
-                                            <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                        <c:set var="testKey" value=",${p.key},"/>
+                                        <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
                                                 <c:param name="${p.key}" value='${value}'/>
                                             </c:if>
                                         </c:forEach>
@@ -252,7 +256,8 @@
                                 <c:redirect url="${param.dev eq '1' ? '/tdebug' : '/t'}">
                                     <c:forEach var="p" items="${paramValues}">
                                         <c:forEach var='value' items='${p.value}'>
-                                            <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                            <c:set var="testKey" value=",${p.key},"/>
+                                            <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
                                                 <c:param name="${p.key}" value='${value}'/>
                                             </c:if>
                                         </c:forEach>
@@ -309,7 +314,8 @@ if (application.getInitParameter("offlineMode") != null) {
 	<c:redirect url="${loginRedirectUrl}">
 		<c:forEach var="p" items="${paramValues}">
 			<c:forEach var='value' items='${p.value}'>
-				<c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                <c:set var="testKey" value=",${p.key},"/>
+                <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
 					<c:param name="${p.key}" value='${value}'/>
 				</c:if>
 			</c:forEach>
@@ -328,7 +334,8 @@ if (application.getInitParameter("offlineMode") != null) {
 	<c:redirect url="${domainLoginRedirectUrl}">
 		<c:forEach var="p" items="${paramValues}">
 			<c:forEach var='value' items='${p.value}'>
-				<c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                <c:set var="testKey" value=",${p.key},"/>
+                <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
 					<c:param name="${p.key}" value='${value}'/>
 				</c:if>
 			</c:forEach>
@@ -343,7 +350,8 @@ if (application.getInitParameter("offlineMode") != null) {
 <c:url var="formActionUrl" value="/">
 	<c:forEach var="p" items="${paramValues}">
 		<c:forEach var='value' items='${p.value}'>
-			<c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+            <c:set var="testKey" value=",${p.key},"/>
+            <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
 				<c:param name="${p.key}" value='${value}'/>
 			</c:if>
             <c:if test="${totpAuthRequired && (p.key eq 'client')}">
