@@ -46,6 +46,9 @@
                 <zm:getException var="error" exception="${loginException}"/>
                 <c:set var="errorCode" value="${error.code}"/>
                 <fmt:message var="errorMessage" key="${errorCode}"/>
+                <c:if test="${errorCode eq 'account.AUTH_FAILED'}">
+                    <fmt:message var="errorMessage" key="account.AUTH_FAILED_passwordChangeFailed"/>
+                </c:if>
                 <c:set var="messageImage" value="dwt/ImgCritical_32.png"/>
                 <c:forEach var="arg" items="${error.arguments}">
                     <fmt:message var="errorMessage" key="${errorCode}.${arg.name}">
