@@ -63,6 +63,11 @@ ZmChatApp.prototype._init = function() {
 };
 
 ZmChatApp.prototype.initChatUI = function(response) {
+
+    if (!response || response.isZmCsfeException) {
+        return;
+    }
+
     //TODO - find a better way to append it to z_shell
     var newDiv = document.getElementById("z_shell").appendChild(document.createElement('div'));
     newDiv.style.display = "block";

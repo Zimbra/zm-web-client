@@ -647,8 +647,7 @@ function(ex, continuation) {
  * 
  * @private
  */
-ZmController.prototype._handleException =
-function(ex, continuation) {
+ZmController.prototype._handleException = function(ex, continuation) {
 	
 	if (ex.code == AjxSoapException.INVALID_PDU) {
 		ex.code = ZmCsfeException.SVC_FAILURE;
@@ -656,10 +655,7 @@ function(ex, continuation) {
 		ex.msg = "Service failure";
 	}
 	
-	if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED || 
-		ex.code == ZmCsfeException.SVC_AUTH_REQUIRED || 
-		ex.code == ZmCsfeException.NO_AUTH_TOKEN)
-	{
+	if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED || ex.code == ZmCsfeException.SVC_AUTH_REQUIRED || ex.code == ZmCsfeException.NO_AUTH_TOKEN) {
 		ZmCsfeCommand.noAuth = true;
         DBG.println(AjxDebug.DBG1, "ZmController.prototype._handleException ex.code : " + ex.code + ". Invoking logout.");
 		ZmZimbraMail.logOff(null, true);
@@ -681,20 +677,27 @@ function(ex, continuation) {
 	}
 
 	// silently ignore polling exceptions
-	if (ex.method != "NoOpRequest") {
+	if (ex.method !== "NoOpRequest") {
 		var args;
-		if (ex.code == ZmCsfeException.MAIL_NO_SUCH_ITEM) {
+		if (ex.code === ZmCsfeException.MAIL_NO_SUCH_ITEM) {
 			args = ex.data.itemId;
-		} else if (ex.code == ZmCsfeException.MAIL_SEND_FAILURE) {
+		}
+        else if (ex.code === ZmCsfeException.MAIL_SEND_FAILURE) {
 			args = ex.code; // bug fix #5603 - error msg for mail.SEND_FAILURE takes an argument
-		} else if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
+		}
+        else if (ex.code === ZmCsfeException.MAIL_INVALID_NAME) {
 			args = ex.data.name;
 		}
+        else if (ex.code === ZmCsfeException.SVC_UNKNOWN_DOCUMENT) {
+            args = ex.msg.split(': ')[1];
+        }
+
 		if (ex.lineNumber && !ex.detail) {
 			// JS error that was caught before our JS-specific handler got it
 			ZmController.handleScriptError(ex);
-		} else {
-			var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
+		}
+        else {
+			var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg || ex.message;
 			this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
 		}
 	}
