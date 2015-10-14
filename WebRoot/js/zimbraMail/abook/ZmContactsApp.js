@@ -301,7 +301,7 @@ function() {
 ZmContactsApp.prototype._setupSearchToolbar =
 function() {
 	ZmSearchToolBar.addMenuItem(ZmItem.CONTACT,
-								{msgKey:		"contacts",
+								{msgKey:		"searchContacts",
 								 tooltipKey:	"searchPersonalContacts",
 								 icon:			"Contact",
 								 shareIcon:		"SharedContactsFolder",
@@ -309,7 +309,7 @@ function() {
 								});
 
 	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_GAL,
-								{msgKey:		"GAL",
+								{msgKey:		"searchGALContacts",
 								 tooltipKey:	"searchGALContacts",
 								 icon:			"GAL",
 								 setting:		ZmSetting.GAL_ENABLED,

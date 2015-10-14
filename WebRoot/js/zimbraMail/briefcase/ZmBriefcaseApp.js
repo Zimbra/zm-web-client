@@ -164,7 +164,7 @@ ZmBriefcaseApp.prototype._setupSearchToolbar =
 function() {
 	//TODO:search for page alone
 	ZmSearchToolBar.addMenuItem(ZmItem.BRIEFCASE_ITEM,
-								{msgKey:		"files",
+								{msgKey:		"searchBriefcase",
 								 tooltipKey:	"searchForFiles",
 								 icon:			"Doc",
 								 shareIcon:		null, // the following doesn't work now, so keep the regular icon. doesn't really matter in my opinion --> "SharedBriefcase",

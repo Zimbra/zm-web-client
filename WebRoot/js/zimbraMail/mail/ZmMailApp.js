@@ -973,7 +973,7 @@ ZmMailApp.prototype._setupSearchToolbar =
 function() {
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		ZmSearchToolBar.addMenuItem(ZmId.SEARCH_MAIL,
-									{msgKey:		"mail",
+									{msgKey:		"searchMail",
 									 tooltipKey:	"searchMail",
 									 icon:			"Message",
 									 shareIcon:		"SharedMailFolder",

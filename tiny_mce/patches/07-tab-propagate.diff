@@ -1,4 +1,4 @@
-From f819688c6f1d9b37c111971bdcf3e6ea31d789fd Mon Sep 17 00:00:00 2001
+From 359f42734c823fd529b62be9b957aa8cc9154bbd Mon Sep 17 00:00:00 2001
 From: Dan Villiom Podlaski Christiansen <dchristiansen@zimbra.com>
 Date: Thu, 22 Jan 2015 14:27:33 +0100
 Subject: [PATCH] Prevent handled tab events from propagating outside the
@@ -23,10 +23,10 @@ all float panels.
  3 files changed, 19 insertions(+), 2 deletions(-)
 
 diff --git a/js/tinymce/classes/ui/FloatPanel.js b/js/tinymce/classes/ui/FloatPanel.js
-index ad278df..53d0f7e 100644
+index e8efaca..cfd4283 100644
 --- a/js/tinymce/classes/ui/FloatPanel.js
 +++ b/js/tinymce/classes/ui/FloatPanel.js
-@@ -192,6 +192,9 @@ define("tinymce/ui/FloatPanel", [
+@@ -185,6 +185,9 @@ define("tinymce/ui/FloatPanel", [
  
  	var FloatPanel = Panel.extend({
  		Mixins: [Movable, Resizable],
@@ -36,7 +36,7 @@ index ad278df..53d0f7e 100644
  
  		/**
  		 * Constructs a new control instance with the specified settings.
-@@ -405,4 +408,4 @@ define("tinymce/ui/FloatPanel", [
+@@ -397,4 +400,4 @@ define("tinymce/ui/FloatPanel", [
  	}
  
  	return FloatPanel;
@@ -44,10 +44,10 @@ index ad278df..53d0f7e 100644
 \ No newline at end of file
 +});
 diff --git a/js/tinymce/classes/ui/KeyboardNavigation.js b/js/tinymce/classes/ui/KeyboardNavigation.js
-index bd9e0d2..eda0b0a 100644
+index 354756b..698895a 100644
 --- a/js/tinymce/classes/ui/KeyboardNavigation.js
 +++ b/js/tinymce/classes/ui/KeyboardNavigation.js
-@@ -227,6 +227,8 @@ define("tinymce/ui/KeyboardNavigation", [
+@@ -219,6 +219,8 @@ define("tinymce/ui/KeyboardNavigation", [
  		 * @private
  		 * @param {Number} dir Direction to move in positive means forward, negative means backwards.
  		 * @param {Array} elements Optional array of elements to move within defaults to the current navigation roots elements.
@@ -56,7 +56,7 @@ index bd9e0d2..eda0b0a 100644
  		 */
  		function moveFocus(dir, elements) {
  			var idx = -1, navigationRoot = getNavigationRoot();
-@@ -240,7 +242,14 @@ define("tinymce/ui/KeyboardNavigation", [
+@@ -232,7 +234,14 @@ define("tinymce/ui/KeyboardNavigation", [
  			}
  
  			idx += dir;
@@ -71,7 +71,7 @@ index bd9e0d2..eda0b0a 100644
  		}
  
  		/**
-@@ -318,8 +327,10 @@ define("tinymce/ui/KeyboardNavigation", [
+@@ -310,8 +319,10 @@ define("tinymce/ui/KeyboardNavigation", [
  				if (elm) {
  					elm.focus();
  				}
@@ -83,7 +83,7 @@ index bd9e0d2..eda0b0a 100644
  			}
  		}
  
-@@ -380,6 +391,7 @@ define("tinymce/ui/KeyboardNavigation", [
+@@ -372,6 +383,7 @@ define("tinymce/ui/KeyboardNavigation", [
  					var cancelEv = cancel();
  					if (cancelEv.isDefaultPrevented()) {
  						e.preventDefault();
@@ -91,7 +91,7 @@ index bd9e0d2..eda0b0a 100644
  					}
  					if (cancelEv.isPropagationStopped()) {
  						e.stopPropagation();
-@@ -395,6 +407,7 @@ define("tinymce/ui/KeyboardNavigation", [
+@@ -387,6 +399,7 @@ define("tinymce/ui/KeyboardNavigation", [
  				case 9: // DOM_VK_TAB
  					if (tab(e) !== false) {
  						e.preventDefault();
@@ -100,10 +100,10 @@ index bd9e0d2..eda0b0a 100644
  					break;
  			}
 diff --git a/js/tinymce/classes/ui/Window.js b/js/tinymce/classes/ui/Window.js
-index 9856f77..e7f72a5 100644
+index a779431..3ac0c5d 100644
 --- a/js/tinymce/classes/ui/Window.js
 +++ b/js/tinymce/classes/ui/Window.js
-@@ -105,6 +105,7 @@ define("tinymce/ui/Window", [
+@@ -31,6 +31,7 @@ define("tinymce/ui/Window", [
  			layout: 'flex',
  			containerCls: 'panel',
  			role: 'dialog',
