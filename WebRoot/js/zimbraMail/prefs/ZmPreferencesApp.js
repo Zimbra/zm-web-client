@@ -497,33 +497,6 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		}
     }
 
-	if (appCtxt.get(ZmSetting.CHAT_FEATURE_ENABLED)) {
-		ZmPref.registerPref("CHAT_ENABLED", {
-			displayName:		ZmMsg.chatFeatureStatus,
-			displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-			orientation:		ZmPref.ORIENT_VERTICAL,
-			displayOptions:		[ZmMsg.chatFeatureEnabled, ZmMsg.chatFeatureDisabled],
-			options:			[true, false]
-		});
-
-		ZmPref.registerPref("CHAT_PLAY_SOUND", {
-			displayName:		ZmMsg.chatPlaySound,
-			displayContainer:	ZmPref.TYPE_CHECKBOX
-		});
-
-		sections["CHAT"] = {
-			title: ZmMsg.chat,
-			icon: "Conversation",
-			templateId: "prefs.Pages#Chat",
-			priority: 65,
-			prefs: [
-				ZmSetting.CHAT_ENABLED,
-				ZmSetting.CHAT_PLAY_SOUND
-			]
-		}
-	}
-
-
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
 	}
@@ -755,7 +728,6 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		displayName:		ZmMsg.shortAddress,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
-
 	
 	if (appCtxt.isOffline) {
 		ZmPref.registerPref("OFFLINE_IS_MAILTO_HANDLER", {
