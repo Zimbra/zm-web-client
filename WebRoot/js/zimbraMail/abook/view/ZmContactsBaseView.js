@@ -402,6 +402,7 @@ function(cell, selected) {
 	cell.setAttribute('aria-selected', selected);
 	if (selected) {
 		this.getHtmlElement().setAttribute('aria-activedescendant', cell.id);
+		this.setFocusElement(cell);
 	}
 };
 
@@ -491,6 +492,12 @@ function() {
         this._makeFocusable(cell, true);
         this._setEventHdlrs([ DwtEvent.ONCLICK ], false, cell);
     }).bind(this));
+
+    // IE8 doesn't support :last-child selector
+    if (AjxEnv.isIE8) {
+        var lastCell = Dwt.byClassName('AlphabetBarCell', element).pop();
+        Dwt.addClass(lastChild, 'AlphabetBarLastCell');
+    }
 };
 
 ZmContactAlphabetBar.prototype.getInputElement =
@@ -512,14 +519,14 @@ function(actionCode, ev) {
 	case DwtKeyMap.PREV:
 		var previous = Dwt.getPreviousElementSibling(target);
 		if (previous) {
-			previous.focus();
+			this.setFocusElement(previous);
 		}
 		return true;
 
 	case DwtKeyMap.NEXT:
 		var next = Dwt.getNextElementSibling(target);
 		if (next) {
-			next.focus();
+			this.setFocusElement(next);
 		}
 		return true;
 

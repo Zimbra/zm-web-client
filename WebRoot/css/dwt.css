@@ -1835,7 +1835,18 @@ INPUT.xform_field {
 	@DisplayInlineBlock@
 }
 
+.DwtCheckbox.ZFocused, .DwtRadioButton.ZFocused {
+	@FocusOutline@
+}
 
+.ZButton:focus,
+.ZSelectAutoSizingContainer:focus,
+.ZToolbarButton:focus,
+.ZSelect:focus,
+.ZFocused.DwtCheckbox INPUT:focus,
+.ZFocused.DwtRadioButton INPUT:focus {
+	outline: none;
+}
 
 
 /* Portlet panel:  sizes are hard-coded */
@@ -2426,10 +2437,17 @@ INPUT.xform_field {
 #ENDIF
 }
 
-.DwtFormRowAdd .ZButtonTable, .DwtFormRowRemove .ZButtonTable {
+.DwtFormRowAdd .ZButtonBorder,
+.DwtFormRowRemove .ZButtonBorder {
 	background-color:transparent;
 	background-image:none;
-	border:none;
+	/* just make it transparent, so we retain the spacing for a focus border */
+	border-color: transparent;
 	@cssShadow@:0px 0px 0px transparent;
 	@roundCorners(0px)@
+}
+
+.DwtFormRowAdd.ZFocused .ZButtonBorder,
+.DwtFormRowRemove.ZFocused .ZButtonBorder {
+	@FocusBorder@
 }
