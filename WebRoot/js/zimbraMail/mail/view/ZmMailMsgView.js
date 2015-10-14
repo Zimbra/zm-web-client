@@ -618,9 +618,10 @@ function() {
 	DBG.timePt("-- END _processHtmlDoc");
 };
 
-ZmMailMsgView.prototype.lazyFindMailMsgObjects =
-function(interval) {
-	if (this._objectManager && !this._disposed) {
+ZmMailMsgView.prototype.lazyFindMailMsgObjects = function(interval) {
+
+    var isSpam = (this._msg && this._msg.folderId == ZmOrganizer.ID_SPAM);
+    if (this._objectManager && !this._disposed && !isSpam) {
 		this._lazyCreateObjectManager();
 		this._objectsAction = new AjxTimedAction(this, this._findMailMsgObjects);
 		AjxTimedAction.scheduleAction(this._objectsAction, ( interval || 500 ));
