@@ -567,13 +567,6 @@ SELECT						{	@FieldBorder@	}
 
 .ZAppTabBorder .ZLeftIcon DIV		{ display:none; }
 
-.AlphabetBarTable .DwtButton, 
-.AlphabetBarTable .DwtButton-hover,
-.AlphabetBarTable .DwtButton-active	{ @NoRoundCorners@ @NoShadow@ border-color:@ButtonBorderColor@;	}
-.AlphabetBarTable TD:first-child 	{ @ButtonRoundingLeft@				}
-.AlphabetBarTable TD:last-child		{ @ButtonRoundingRight@				}
-
-
 /*Temporary overrides that need to move to skin properties*/
 /*.DwtListView-ColHeader			{ height:1.8rem; height:19px;					}*/
 .DwtListView-Column					{ background-color:@lighten(AppC,33)@; 		}
@@ -631,9 +624,6 @@ SELECT						{	@FieldBorder@	}
 .ZmMsgListColSubject { }
 */
 .ZToolbarTable .vertSep				{ border-color:@ToolbarSeparatorColor@;		}
-#IFDEF MSIE
-.ZmSearchToolbar .DwtInputField-hint INPUT { border-width:0px; padding:0px; margin:3px 0px -3px; 	}
-#ENDIF
 
 .appt_new_time .ImgBlank_16,
 .appt_time .ImgBlank_16				{ display:none; 	}

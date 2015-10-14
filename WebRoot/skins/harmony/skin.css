@@ -116,6 +116,7 @@
 	border-color:rgb(0,135,195);
 }
 
+.ZNewButton.ZFocused .ZToolbarButtonBorder,
 .ZNewButton.ZHover .ZToolbarButtonBorder,
 .ZNewButton.ZActive .ZToolbarButtonBorder {
 	background-color:#00AAF6;
@@ -388,6 +389,11 @@ TD.DwtListView-ColumnActive  {
 .ZmTaskEditView .miniTimeButton .ZButtonBorder,
 .ZmTaskEditView .ZmCompletionSelector .ZButtonBorder {
 	margin-top:0px;
+}
+
+#skin_dropMenu *:focus,
+#skin_userAndQuota *:focus {
+	outline-color: @AppC@;
 }
 
 /* Briefcase styling */

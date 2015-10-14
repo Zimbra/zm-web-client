@@ -342,10 +342,31 @@ TD.DDSepInvisible DIV {
 	width:400px;
 }
 
-INPUT[type="text"].search_input,
-INPUT[type="text"].search_input-expanded {
+.DwtInputField INPUT[type="text"].search_input,
+.DwtInputField INPUT[type="text"].search_input-expanded {
+	@transition@:width .25s ease;
 	border:0px !important;
-	height:100% !important;
+
+#IFDEF WEBKIT
+	/* exclude padding from height calculation */
+	box-sizing: content-box !important;
+	padding-top: 2px;
+	padding-bottom: 2px;
+#ENDIF
+
+#IFDEF MSIE_LOWER_THAN_9
+	padding-top: 2px;
+#ELSE
+	/* ensure minimum height for small UI font sizes */
+	min-height:@SmallIconHeight@;
+	/* grow with larger font sizes */
+	height:1.3rem;
+#ENDIF
+}
+
+INPUT[type="text"].search_input:focus,
+INPUT[type="text"].search_input-expanded:focus {
+	@FocusOutline@
 }
 
 /* the entire search toolbar */
@@ -353,27 +374,9 @@ INPUT[type="text"].search_input-expanded {
 	@FullSize@
 }
 
-.ZmSearchToolbarTable {
+.ZmSearchToolbar .ZToolbarTable {
 	height:100%;
 	width:100%;
-}
-
-/* cell surrounding a cell with contents in the search toolbar */
-.ZmSearchToolbarCell {
-	padding:0px;
-}
-
-.ZmSearchToolbarDiv {
-	height:1.4rem;
-	position:relative;
-}
-
-.ZmSearchInput {
-	margin-right:20px
-}
-
-.ZmSearchToolbarDiv INPUT {
-	@transition@:width .25s ease;
 }
 
 .ZmSearchButton {
@@ -1527,6 +1530,14 @@ INPUT[type="text"].search_input-expanded {
 	color:black;
 }
 
+.ZmHtmlEditor.ZFocused .ZmHtmlEditorIFrame {
+	@FocusOutline@
+}
+
+.ZmHtmlEditor .mce-btn:focus {
+	@FocusBorder@
+}
+
 /* NOTE:used in different places like documents, briefcase */
 .ZmHtmlEditorFooter {
 	width:100%;
@@ -1678,22 +1689,54 @@ INPUT[type="text"].search_input-expanded {
 	table-layout:fixed;
 }
 
-.AlphabetBarCell:focus, .AlphabetBarCell:hover {
+/* We cannot use collapsed borders for the AlphabetBarTable, as it suppresses
+   the _leading_ border, and we have no easy means for selecting the element
+   preceding the focused element. Instead, we suppress the _trailing_ border in
+   CSS -- for all but the last cell, obviously -- and color it using the
+   adjacent sibling selector. */
+.AlphabetBarTable .AlphabetBarCell:focus + .AlphabetBarCell {
+	border-left-color: @SelOutsetLeftBorderColor@;
+}
+
+#IFNDEF MSIE_LOWER_THAN_9
+.AlphabetBarCell:not(:last-child) {
+	border-right-width: 0px;
+}
+#ELSE
+/* IE8 doesn't support :last-child, so use AlphabetBarLastCell, which we only add there */
+.AlphabetBarCell {
+	border-right-width: 0px;
+}
+
+.AlphabetBarCell.AlphabetBarLastCell {
+	border-right-width: 1px;
+}
+#ENDIF
+
+.AlphabetBarTable .AlphabetBarCell:first-child 	{ @ButtonRoundingLeft@	}
+.AlphabetBarTable .AlphabetBarCell:last-child	{ @ButtonRoundingRight@	}
+
+.AlphabetBarTable .AlphabetBarCell.DwtButton-active,
+.AlphabetBarTable .AlphabetBarCell:hover {
+	border-color: @ButtonBorderColor@;
+}
+
+.AlphabetBarTable .AlphabetBarCell:hover {
 	@ButtonBorder-hover@
+	@NoShadow@
+}
+
+.AlphabetBarTable .AlphabetBarCell:focus {
+	@ButtonBorder-focused@
+	@NoShadow@
+	outline: none;
 }
 
 .AlphabetBarCell {
 	@ActiveCursor@
+	@NoRoundCorners@
+	@NoShadow@
 	text-align:center;
-	border-left-width: 0px;
-}
-
-.AlphabetBarCell:first-child {
-	border-left-width: 1px;
-}
-
-.AlphabetBarCell SPAN {
-	width:100%	
 }
 
 .AlphabetBarDisabled {
@@ -5186,6 +5229,11 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	border:none;
 }
 
+.ZmEditContactViewDetailsButton:focus {
+	outline: none;
+	@FocusBorder@
+}
+
 .ZmEditContactViewImage {
 	border:1px solid @darken(AppC,40)@;
 	width:48px;
@@ -5198,10 +5246,6 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .ZmEditContactView .inputElement {
 	padding-right:.25em;
-}
-
-.ZmEditContactView TEXTAREA:focus {
-	@InputField-focused@
 }
 
 .ZmEditContactViewAddress {
@@ -5222,13 +5266,21 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmEditContactViewAddress .DwtInputField TEXTAREA,
-.ZmEditContactViewAddress .DwtInputField INPUT,
-.ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
-.ZmEditContactViewAddress .DwtInputField-hint INPUT{
+.ZmEditContactViewAddress .DwtInputField INPUT[type="text"] {
 	@FontSize-normal@
-	border:none !important;
+#IFDEF MSIE_LOWER_THAN_9
+	/* restricted to IE8 as it suppresses the focus border as well */
+	border-color: transparent;
+#ENDIF
 }
-.ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
+
+#IFNDEF MSIE_LOWER_THAN_9
+.ZmEditContactViewAddress .DwtInputField TEXTAREA:not(:focus),
+.ZmEditContactViewAddress .DwtInputField INPUT[type="text"]:not(:focus) {
+	border-color: transparent !important;
+}
+#ENDIF
+
 .ZmEditContactViewAddress .DwtInputField TEXTAREA {
 	overflow-y:auto;
 }
@@ -5270,7 +5322,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
     white-space: nowrap;
 }
 
-.ZmContactSplitView *:focus {
+.ZmContactInfoView *:focus {
 	@FocusOutline@
 }
 

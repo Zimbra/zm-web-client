@@ -709,6 +709,8 @@ function(hasFocus, isTextModeFocus) {
 	var mode = isTextModeFocus ? Dwt.TEXT : Dwt.HTML;
 	this._hasFocus[mode] = hasFocus;
 
+	Dwt.condClass(this.getHtmlElement(), hasFocus, DwtControl.FOCUSED);
+
 	if (!isTextModeFocus) {
 		Dwt.condClass(this.getEditor().getBody(), hasFocus,
 		              'mce-active-editor', 'mce-inactive-editor');
@@ -1049,12 +1051,12 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
 
     obj.setFocusStatus(false);
 
-    tinymceEvent.bind(win, 'focus', function(e) {
+    ed.on('focus', function(e) {
         DBG.println(AjxDebug.FOCUS, "EDITOR got focus");
 		appCtxt.getKeyboardMgr().updateFocus(obj._getIframeDoc().body);
         obj.setFocusStatus(true);
     });
-    tinymceEvent.bind(win, 'blur', function(e) {
+    ed.on('blur', function(e) {
         obj.setFocusStatus(false);
     });
     // Sets up the a range for the current ins point or selection. This is IE only because the iFrame can
@@ -1098,6 +1100,7 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
 
 	var iframe = Dwt.getElement(this._iFrameId);
 	if (iframe) {
+		Dwt.addClass(iframe, 'ZmHtmlEditorIFrame');
 		iframe.setAttribute('title', ZmMsg.htmlEditorTitle);
 		var body = this._getIframeDoc().body;
 		if (body) {
