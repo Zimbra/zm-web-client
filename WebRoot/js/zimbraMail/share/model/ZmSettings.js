@@ -115,8 +115,6 @@ function() {
 	this.getSetting(ZmSetting.SHORTCUTS).addChangeListener(listener);
 	this.getSetting(ZmSetting.CHILD_ACCTS_VISIBLE).addChangeListener(listener);
 	this.getSetting(ZmSetting.ATTACHMENTS_BLOCKED).addChangeListener(listener);
-	this.getSetting(ZmSetting.CHAT_PLAY_SOUND).addChangeListener(listener);
-	this.getSetting(ZmSetting.CHAT_ENABLED).addChangeListener(listener);
 
 
 	if (appCtxt.isOffline) {
@@ -837,7 +835,7 @@ function() {
     this.registerSetting("ADMIN_DELEGATED",                 {type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("AC_TIMER_INTERVAL",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:300});
 	this.registerSetting("ASYNC_MODE",						{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"JUDASPRIEST"});
+	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"main"});
 
 	// next 3 are replaced during deployment
 	this.registerSetting("CLIENT_DATETIME",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildDateTime@"});
@@ -1057,11 +1055,6 @@ function() {
 	// zimbraFeatureAdminPreferencesEnabled set to FALSE.
 	this.registerSetting("MAIL_PREFERENCES_ENABLED",	    {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 
-	//chat settings
-	this.registerSetting("CHAT_PLAY_SOUND",					{name:"zimbraPrefChatPlaySound", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
-	this.registerSetting("CHAT_FEATURE_ENABLED",				{name:"zimbraFeatureChatEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
-	this.registerSetting("CHAT_ENABLED",				{name:"zimbraPrefChatEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
-
 	ZmApp.runAppFunction("registerSettings", this);
 };
 
@@ -1169,10 +1162,6 @@ function(ev) {
 	}
 	else if (appCtxt.isOffline && id === ZmSetting.OFFLINE_UPDATE_NOTIFY) {
 		appCtxt.getAppController()._offlineUpdateChannelPref(ev.source.getValue());
-	} else if (id === ZmSetting.CHAT_PLAY_SOUND) {
-		appCtxt.getAppController().getApp(ZmApp.CHAT).setPlaySoundSetting(ev.source.getValue());
-	} else if (id === ZmSetting.CHAT_ENABLED) {
-		this._showConfirmDialog(ZmMsg.chatFeatureChangeRestart, this._refreshBrowserCallback.bind(this));
 	}
 };
 
