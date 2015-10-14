@@ -63,7 +63,7 @@ ZmMailRedirectDialog = function(parent, className) {
 
 
     this._recipients.createRecipientHtml(this, this._htmlElId, this._htmlElId, this._fieldNames);
-    this._tabGroup.addMember(this._recipients.getField(AjxEmailAddress.TO));
+    this._tabGroup.addMember(this._recipients.getField(AjxEmailAddress.TO), 0);
 };
 
 ZmMailRedirectDialog.prototype = new DwtDialog;
