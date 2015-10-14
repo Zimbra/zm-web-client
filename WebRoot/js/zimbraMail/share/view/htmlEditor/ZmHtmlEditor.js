@@ -799,6 +799,7 @@ function(id, autoFocus) {
     var tinyMCEInitObj = {
         // General options
 		mode :  (this._mode == Dwt.HTML)? "exact" : "none",
+		theme: 'modern',
 		auto_focus: autoFocus,
 		elements:  id,
         plugins : plugins.join(' '),
