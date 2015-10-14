@@ -1434,7 +1434,7 @@ function(ex){
 ZmBriefcaseController.prototype.createFromAttachment =
 function(msgId, partId, name){
 
-     var dlg = this._saveAttDialog = appCtxt.getChooseFolderDialog();
+     var dlg = this._saveAttDialog = appCtxt.getChooseFolderDialog(this._app.getName());
 	 var chooseCb = new AjxCallback(this, this._chooserCallback, [msgId, partId, name]);
 	 ZmController.showDialog(dlg, chooseCb, this._getCopyParams(dlg, msgId, partId));
 
