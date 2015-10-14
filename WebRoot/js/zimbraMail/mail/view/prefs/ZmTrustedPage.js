@@ -61,9 +61,6 @@ function() {
 
 ZmTrustedPage.prototype._setupCustom =
 function(id, setup, value) {
-	var el = document.getElementById([this._htmlElId, id].join("_"));
-	if (!el) { return; }
-
 	if (id == ZmSetting.TRUSTED_ADDR_LIST) {
 		this._trustedListControl = new ZmWhiteBlackList(this, id, "TrustedList");
         var trustedList = appCtxt.get(ZmSetting.TRUSTED_ADDR_LIST);
@@ -75,7 +72,6 @@ function(id, setup, value) {
         	}
 
         this._trustedListControl.loadFromJson(trustedList);
-		this._replaceControlElement(el, this._trustedListControl);
 
 		return this._trustedListControl;
 	}
