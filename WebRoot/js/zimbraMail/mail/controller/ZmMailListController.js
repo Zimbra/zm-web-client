@@ -620,11 +620,13 @@ function() {
 	var list = [],
 		viewType = this.getCurrentViewType();
 
-	list.push(ZmOperation.REDIRECT, ZmOperation.EDIT_AS_NEW);
-	list.push(ZmOperation.SEP, ZmOperation.PRINT);
+	list.push(ZmOperation.PRINT);
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._flagOps());
 	list.push(ZmOperation.SEP);
+    list.push(ZmOperation.REDIRECT);
+    list.push(ZmOperation.EDIT_AS_NEW);
+    list.push(ZmOperation.SEP);
 	list = list.concat(this._createOps());
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._otherOps(true));
