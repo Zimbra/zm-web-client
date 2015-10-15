@@ -126,17 +126,25 @@ function(actionCode, ev) {
 
 	DBG.println(AjxDebug.DBG3, "ZmConvListController.handleKeyAction");
 	
-	var mlv = this._mailListView;
-	var capsuleEl = DwtUiEvent.getTargetWithClass(ev, 'ZmMailMsgCapsuleView');
+	var mlv = this._mailListView,
+	    capsuleEl = DwtUiEvent.getTargetWithClass(ev, 'ZmMailMsgCapsuleView'),
+        activeEl = document.activeElement,
+        isFooterActionLink = activeEl && activeEl.id.indexOf(ZmId.MV_MSG_FOOTER) !== -1;
 	
 	switch (actionCode) {
+
+        case DwtKeyMap.DBLCLICK:
+            // if link has focus, Enter should be same as click
+            if (isFooterActionLink) {
+                activeEl.click();
+            }
+            break;
 
 		case ZmKeyMap.EXPAND:
 		case ZmKeyMap.COLLAPSE:
 			if (capsuleEl) {
-                var activeEl = document.activeElement;
                 // if a footer link has focus, move among those links
-                if (activeEl && activeEl.id.indexOf(ZmId.MV_MSG_FOOTER) !== -1) {
+                if (isFooterActionLink) {
                     var msgView = DwtControl.findControl(activeEl);
                     if (msgView && msgView.isZmMailMsgCapsuleView) {
                         msgView._focusLink(actionCode === ZmKeyMap.COLLAPSE, activeEl);
