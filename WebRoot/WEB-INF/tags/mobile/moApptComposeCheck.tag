@@ -21,7 +21,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/mainx'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
 <c:set var="caction" value="${context_url}"/>
 <c:choose>
 <c:when test="${not empty param.bt}">

@@ -32,10 +32,10 @@
 </c:url>
 </c:if>
 <c:if test="${not empty param.contactId}">
-    <c:set var="caction" value="${'/m/zmain?id='}${param.contactId}${'&action=view&st=contact'}" />
+    <c:set var="caction" value="${'zmain?id='}${param.contactId}${'&action=view&st=contact'}" />
 </c:if>
 <mo:handleError>
-    <c:set var="context_url" value="${requestScope.baseURL != null ? requestScope.baseURL : '/m/zmain'}"/>
+    <c:set var="context_url" value="${requestScope.baseURL != null ? requestScope.baseURL : 'zmain'}"/>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
         <c:when test="${not empty mailbox.prefs.locale}">
