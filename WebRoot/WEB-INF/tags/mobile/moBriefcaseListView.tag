@@ -26,7 +26,7 @@
     <zm:getMailbox var="mailbox"/>
     <mo:searchTitle var="title" context="${context}"/>
 </mo:handleError>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <c:set var="title" value="${zm:truncate(context.shortBackTo,20,true)}" scope="request"/>
 <form id="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">

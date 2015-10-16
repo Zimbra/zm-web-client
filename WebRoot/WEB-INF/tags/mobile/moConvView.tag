@@ -21,7 +21,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/zmain'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <fmt:message var="emptyFragment" key="fragmentIsEmpty"/>
