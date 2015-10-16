@@ -24,7 +24,7 @@
 <c:if test="${not empty param.sq && empty param.actionSaveFolder && empty param.actionSaveSearch && empty param.actionSaveTag}">
     <c:set var="query" value="${param.sq}"/>
 </c:if>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:url var="currentUrl" value="${context_url}"><c:param name="st" value="${param.st}"/></c:url>
 <c:set value="${title}" var="title" scope="request"/>
 <div class="stb tbl">

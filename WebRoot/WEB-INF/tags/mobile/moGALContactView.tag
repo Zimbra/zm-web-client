@@ -32,7 +32,7 @@
 </c:forEach>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
-    <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
+    <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 </mo:handleError>
 <zm:currentResultUrl var="closeUrl" value="${context_url}" context="${context}"/>
 <div class="stb tbl">

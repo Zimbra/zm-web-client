@@ -25,7 +25,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/><c:set var="count" value="${0}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/><c:set var="count" value="${0}"/>
 <zm:forEachFolder var="folder" skiproot="${skiproot}" parentid="${parentid}" skipsystem="${skipsystem}"  skiptopsearch="${zm:boolean(skiptopsearch)}" skiptrash="${zm:boolean(skiptrash)}">
     <c:if test="${count lt sessionScope.F_LIMIT and folder.isContactView}">
         <mo:overviewFolder folder="${folder}" types="contact" base="${context_url}"/><c:set var="count" value="${count+1}"/>

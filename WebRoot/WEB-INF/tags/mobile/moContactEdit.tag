@@ -24,7 +24,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <c:set var="id" value="${id != null ?id : param.id}"/>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <zm:currentResultUrl var="closeUrl" value="${context_url}" context="${context}"/>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>

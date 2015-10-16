@@ -42,7 +42,7 @@
     <c:set var="apptFolder" value="${zm:getFolder(pageContext, msg.folderId)}"/>
     <c:set var="readOnly" value="${apptFolder.isMountPoint or apptFolder.isFeed}"/>
     <c:set var="isWritable" value="${not apptFolder.isMountPoint or apptFolder.isAppointmentMoveTarget}"/>
-    <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
+    <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
     <zm:currentResultUrl var="currentUrl" value="${context_url}" context="${context}"/>
 
 </mo:handleError>

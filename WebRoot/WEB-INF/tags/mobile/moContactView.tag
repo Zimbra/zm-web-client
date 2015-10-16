@@ -28,7 +28,7 @@
     <zm:getMailbox var="mailbox"/>
     <zm:getContact id="${id}" var="contact"/>
     <zm:getUserAgent var="ua" session="true"/>
-    <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
+    <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
     <zm:currentResultUrl var="closeUrl" value="${context_url}" context="${context}"/>
     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
     <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}" action="view" id="${contact.id}"/>

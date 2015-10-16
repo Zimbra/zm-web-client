@@ -21,7 +21,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/mainx'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
 <c:set var="caction" value="${context_url}"/>
 <c:choose>
 <c:when test="${not empty param.bt}">
@@ -82,7 +82,7 @@
                 <c:set var="contactId" value="${uploader.paramValues['contactId'][0]}" />
                 <%-- if there is a contact id, always redirect to that contact page --%>
                 <c:if test="${not empty contactId}">
-                    <c:set var="caction" value="${'/m/zmain?id='}${contactId}${'&action=view&st=contact'}" />
+                    <c:set var="caction" value="${'zmain?id='}${contactId}${'&action=view&st=contact'}" />
                     <c:url var="caction" value="${caction}">
                         <c:param name="noframe" value="true"/>
                     </c:url>

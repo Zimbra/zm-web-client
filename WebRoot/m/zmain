@@ -32,12 +32,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <c:if test="${(!empty param.debug || !empty param.dev)}"><c:set var="dbg" value="${true}"/></c:if>
 <c:remove var="prevUrl" scope="session"/><c:remove var="currentUrl" scope="session"/></c:if>
-<c:url var="baseURL" scope="request" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
+<c:url var="baseURL" scope="request" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:set var="context_url" value="${requestScope.baseURL}"/>
 <c:if test="${param.loginOp=='logout'}"><c:remove var="mapp" scope="session"/><c:redirect url="/"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:redirect></c:if>
 <%--<c:if test="${not empty param.ajax}">--%>
     <c:url var="prevUrl" scope="session" value="${zm:cook(sessionScope.currentUrl)}"/>
-    <c:url var="currentUrl" scope="session" value="/m/zmain">
+    <c:url var="currentUrl" scope="session" value="zmain">
         <c:forEach items="${param}" var="p"><c:param name="${p.key}" value="${p.value}"/></c:forEach>
     </c:url>
 <%--</c:if>--%>
@@ -80,7 +80,7 @@
                     <c:set var="F_LIMIT" scope="session" value="${flimit}"/>
                 </c:when>
                 <c:otherwise>
-                    <c:redirect url="/m/zmview?st=prefs&emsg=MO_MaxFoldersInvalidValueMsg"/>
+                    <c:redirect url="zmview?st=prefs&emsg=MO_MaxFoldersInvalidValueMsg"/>                    
                 </c:otherwise>
             </c:choose>
             <c:if test="${updated}">
