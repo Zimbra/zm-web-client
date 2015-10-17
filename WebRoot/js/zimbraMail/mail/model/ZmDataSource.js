@@ -198,22 +198,31 @@ function(callback, errorCallback, batchCommand) {
 	return appCtxt.getAppController().sendRequest(params);
 };
 
-ZmDataSource.prototype.save =
-function(callback, errorCallback, batchCommand) {
+ZmDataSource.prototype.save = function(callback, errorCallback, batchCommand, isIdentity) {
+
 	var soapDoc = AjxSoapDoc.create("ModifyDataSourceRequest", "urn:zimbraMail");
 	var dsrc = soapDoc.set(this.ELEMENT_NAME);
 	// NOTE: If this object is a proxy, we guarantee that the
 	//       the id attribute is *always* set.
 	dsrc.setAttribute("id", this.id);
-	for (var aname in ZmDataSource.DATASOURCE_ATTRS) {
-		var pname = ZmDataSource.DATASOURCE_ATTRS[aname];
-		if (!this.hasOwnProperty(pname)) continue;
-
-		var avalue = pname == "folderId"
-			? ZmOrganizer.normalizeId(this[pname])
-			: this[pname];
-		dsrc.setAttribute(aname, String(avalue));
-	}
+    if (!isIdentity) {
+        for (var aname in ZmDataSource.DATASOURCE_ATTRS) {
+            var pname = ZmDataSource.DATASOURCE_ATTRS[aname];
+            if (!this.hasOwnProperty(pname)) {
+                continue;
+            }
+            var avalue = this[pname];
+            if (pname === "folderId") {
+                avalue = ZmOrganizer.normalizeId(avalue);
+            }
+            // server sends us pollingInterval in ms, expects it back in seconds (!)
+            // since it is not a user-visible value, it's safer to not send it back at all
+            else if (pname === "pollingInterval") {
+                continue;
+            }
+            dsrc.setAttribute(aname, String(avalue));
+        }
+    }
 	var identity = this.getIdentity();
 	for (var aname in ZmDataSource.IDENTITY_ATTRS) {
 		var pname = ZmDataSource.IDENTITY_ATTRS[aname];
@@ -335,7 +344,10 @@ function(obj) {
 		if (aname == "isEnabled" || aname == "leaveOnServer") {
 			avalue = avalue == "1" || String(avalue).toLowerCase() == "true";
 		}
-
+        // server sends us pollingInterval in ms, expects it back in seconds (!)
+        else if (aname === "pollingInterval") {
+            avalue = avalue / 1000;
+        }
 		var pname = ZmDataSource.DATASOURCE_ATTRS[aname];
 		this[pname] = avalue;
 	}
@@ -377,8 +389,8 @@ ZmDataSource.prototype.reset = function() {
 	// saving the identity itself won't work; need to save the data source
 	var self = this;
 	identity.save = function(callback, errorCallback, batchCommand) {
-			ZmDataSource.prototype.save.apply(self, arguments);
-		};
+		ZmDataSource.prototype.save.call(self, callback, errorCallback, batchCommand, true);
+	};
 };
 
 ZmDataSource.prototype.getProvider = function() {
