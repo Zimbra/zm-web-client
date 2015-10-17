@@ -19,7 +19,7 @@
     <c:set var="limit" value="${zm:cook(param.limit)}" scope="session"/>
 </c:if>
 <script type="text/javascript">var selectedImgId = "mail_img";</script>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/mainx'}"/>
 <c:if test="${param.loginOp=='logout'}">
     <c:set var="uiv" value="1" scope="session"/>
     <c:redirect url="/?loginOp=logout&client=mobile"/>
@@ -143,7 +143,7 @@
                                     </tr>
                                     <tr>
                                         <td colspan="3" align="right">
-                                            <a href="mainx?moquery"><fmt:message key="advancedSearch"/></a>
+                                            <a href="/m/mainx?moquery"><fmt:message key="advancedSearch"/></a>
                                         </td>
                                     </tr>
                                 </table>

@@ -25,7 +25,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/mainx'}"/>
 <fmt:message key="service.AUTH_EXPIRED" var="authExp"/> 
 <c:if test="${empty ua}">
 <zm:getUserAgent var="ua" session="false"/>
