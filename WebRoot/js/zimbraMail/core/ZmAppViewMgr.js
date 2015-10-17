@@ -1025,7 +1025,7 @@ function(cidList, isIeTimerHack) {
 		var cont = this.getContainer(cid);
 		if (cont) {
 			var comp = this.getViewComponent(cid);
-			if (comp && (comp.getZIndex() != Dwt.Z_HIDDEN)) {
+			if (comp && !this.isHidden(cid, this._currentViewId)) {
 				var position = this._getComponentPosition(cid);
 				var isStatic = (position == Dwt.STATIC_STYLE);
 				
@@ -1205,9 +1205,7 @@ function(viewId, show) {
 			}
 			var comp = this.getViewComponent(cid, viewId);
 			if (comp) {
-				if (!this.isHidden(cid, viewId)) {
-					this.displayComponent(cid, true, null, comp, true);
-				}
+                this.displayComponent(cid, !this.isHidden(cid, viewId), null, comp, true);
 			}
 		}
 

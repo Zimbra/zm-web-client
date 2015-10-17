@@ -40,17 +40,10 @@ ZmDoublePaneView = function(params) {
 	params.className = null;
 	this._itemView = this._createMailItemView(params);
 
-	// create a sash for each of the two reading pane locations
-	this._vertSash = new DwtSash({parent:this, style:DwtSash.HORIZONTAL_STYLE, className:"AppSash-horiz",
-								  threshold:ZmDoublePaneView.SASH_THRESHOLD, posStyle:Dwt.ABSOLUTE_STYLE});
-	this._vertSash.registerCallback(this._sashCallback, this);
-	this._vertSash.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._sashVertRelease));
-	this._horizSash = new DwtSash({parent:this, style:DwtSash.VERTICAL_STYLE, className:"AppSash-vert",
-								   threshold:ZmDoublePaneView.SASH_THRESHOLD, posStyle:Dwt.ABSOLUTE_STYLE});
-	this._horizSash.registerCallback(this._sashCallback, this);
-	this._horizSash.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._sashHorizRelease));
-	this.addListener(DwtEvent.CONTROL, new AjxListener(this, this._controlEventListener));
-
+    var viewType = appCtxt.getViewTypeFromId(view);
+    if (viewType === ZmId.VIEW_TRAD || viewType === ZmId.VIEW_CONVLIST) {
+        this._createSashes();
+    }
 	this.setReadingPane();
 };
 
@@ -86,13 +79,19 @@ function() {
 ZmDoublePaneView.prototype.setReadingPane =
 function(noSet) {
 
-	var mlv = this._mailListView, mv = this._itemView;
+	var mlv = this._mailListView,
+        mv = this._itemView,
+        sashesPresent = this._vertSash && this._horizSash;
+
 	var readingPaneEnabled = this._controller.isReadingPaneOn();
 	if (!readingPaneEnabled) {
 		mv.setVisible(false);
-		this._vertSash.setVisible(false);
-		this._horizSash.setVisible(false);
-	} else {
+        if (sashesPresent) {
+            this._vertSash.setVisible(false);
+            this._horizSash.setVisible(false);
+        }
+	}
+    else {
 		if (!mv.getVisible()) {
 			if (mlv.getSelectionCount() == 1) {
 				this._controller._setSelectedItem();
@@ -102,10 +101,12 @@ function(noSet) {
 		}
 		var readingPaneOnRight = this._controller.isReadingPaneOnRight();
 		mv.setVisible(true, readingPaneOnRight);
-		var newSash = readingPaneOnRight ? this._vertSash : this._horizSash;
-		var oldSash = readingPaneOnRight ? this._horizSash : this._vertSash;
-		oldSash.setVisible(false);
-		newSash.setVisible(true);
+        if (sashesPresent) {
+            var newSash = readingPaneOnRight ? this._vertSash : this._horizSash;
+            var oldSash = readingPaneOnRight ? this._horizSash : this._vertSash;
+            oldSash.setVisible(false);
+            newSash.setVisible(true);
+        }
 	}
 
 	mlv.reRenderListView();
@@ -224,6 +225,29 @@ function(list) {
 ZmDoublePaneView.prototype._initHeader = function() {};
 ZmDoublePaneView.prototype._createMailListView = function(params) {};
 ZmDoublePaneView.prototype._createMailItemView = function(params) {};
+
+// create a sash for each of the two reading pane locations
+ZmDoublePaneView.prototype._createSashes = function() {
+
+    var params = {
+        parent:     this,
+        style:      DwtSash.HORIZONTAL_STYLE,
+        className:  "AppSash-horiz",
+        threshold:  ZmDoublePaneView.SASH_THRESHOLD,
+        posStyle:   Dwt.ABSOLUTE_STYLE
+    };
+
+    this._vertSash = new DwtSash(params);
+    this._vertSash.registerCallback(this._sashCallback, this);
+    this._vertSash.addListener(DwtEvent.ONMOUSEUP, this._sashVertRelease.bind(this));
+
+    params.style = DwtSash.VERTICAL_STYLE;
+    params.className = "AppSash-vert";
+    this._horizSash = new DwtSash(params);
+    this._horizSash.registerCallback(this._sashCallback, this);
+    this._horizSash.addListener(DwtEvent.ONMOUSEUP, this._sashHorizRelease.bind(this));
+    this.addListener(DwtEvent.CONTROL, this._controlEventListener.bind(this));
+};
 
 ZmDoublePaneView.prototype._resetSize = 
 function(newWidth, newHeight, force) {
