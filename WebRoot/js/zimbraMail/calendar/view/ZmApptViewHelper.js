@@ -48,7 +48,7 @@ ZmApptViewHelper.REPEAT_OPTIONS = [
 
 ZmApptViewHelper.SHOWAS_OPTIONS = [
 	{ label: ZmMsg.free, 				value: "F", 	selected: false },
-	{ label: ZmMsg.replyTentative, 		value: "T", 	selected: false },
+	{ label: ZmMsg.organizerTentative, 		value: "T", 	selected: false },
 	{ label: ZmMsg.busy, 				value: "B", 	selected: true  },
 	{ label: ZmMsg.outOfOffice,			value: "O", 	selected: false }
 ];
