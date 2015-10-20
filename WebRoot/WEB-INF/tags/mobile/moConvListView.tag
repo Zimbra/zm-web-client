@@ -30,7 +30,7 @@
     <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
     <c:set var="selectedRow" value="${param.selectedRow}"/>
 </mo:handleError>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <c:if test="${empty param.show}">
 <form id="zForm" name="zForm" action="${fn:escapeXml(actionUrl)}" method="post" onsubmit="return submitForm(this);">

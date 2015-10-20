@@ -17,7 +17,7 @@
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 </mo:handleError>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <div class="stb tbl">
     <div class="tr">
         <div class="td">

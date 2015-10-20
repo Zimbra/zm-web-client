@@ -24,7 +24,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-<c:set var="context_url" value="${requestScope.baseURL!=null ? requestScope.baseURL : '/m/zmain'}"/><c:set var="count" value="${0}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null ? requestScope.baseURL : 'zmain'}"/><c:set var="count" value="${0}"/>
 <zm:forEachFolder var="folder" skiproot="${zm:boolean(skiproot)}" parentid="${parentid}"
                   skipsystem="${zm:boolean(skipsystem)}"
                   skiptopsearch="${zm:boolean(skiptopsearch)}">

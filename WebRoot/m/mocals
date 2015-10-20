@@ -26,7 +26,7 @@
     </c:if>
 </mo:handleError>
 <c:set var="title" value="${title}" scope="request"/>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:url var="currentUrl" value="${context_url}"><c:param name="st" value="${param.st}"/></c:url>
 <input type="hidden" name="st" value="cals"/>
 <div class="tb tbl">

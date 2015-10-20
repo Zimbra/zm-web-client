@@ -19,7 +19,7 @@
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request'/>
 </mo:handleError>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:url var="currentUrl" value="${context_url}"><c:param name="st" value="${param.st}"/></c:url>
 <c:url var="caction" value="${context_url}">
     <c:param name="st" value="${mailbox.prefs.groupMailBy}"/>

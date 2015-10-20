@@ -37,7 +37,7 @@
 <mo:handleError>
     <zm:getUserAgent var="ua" session="true"/>
 </mo:handleError>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/zmain'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:if test="${(not empty value) or isaddress}">
 	<fmt:message key="${label}" var="label"/>
     <div <c:if test="${!noborder || ua.isiPad == true}">class="list-row" </c:if> >
