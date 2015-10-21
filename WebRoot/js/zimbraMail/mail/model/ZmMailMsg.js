@@ -919,7 +919,7 @@ function(contentType, callback) {
 			}
 		}
 	}
-	var bodyPart = getPart.call(this,contentType);
+	var bodyPart = getPart.call(this, contentType);
 	
 	if (this.isInvite()) {
 		if (!bodyPart) {
@@ -2070,7 +2070,7 @@ function(collection, contentPartType, contentPart) {
 	for (var i = 0; i < collection.length; i++) {
 		var attach = collection[i];
 		if (attach[contentPartType] == contentPart) {
-			return [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", this.id, "&part=", attach.part].join("");
+            return this.getUrlForPart(attach);
 		}
 	}
 	return null;
@@ -2142,7 +2142,6 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 	var attachments = (includeInlineAtts || includeInlineImages) ? [].concat(this.attachments, this._getInlineAttachments()) : this.attachments;
 	if (attachments && attachments.length > 0) {
-		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=";
 		this.findAttsFoundInMsgBody();
 
 		for (var i = 0; i < attachments.length; i++) {
@@ -2193,7 +2192,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				}
 			} else {
 				// set the anchor html for the link to this attachment on the server
-				var url = useCL ? attach.contentLocation : (hrefRoot + attach.part);
+				var url = useCL ? attach.contentLocation : this.getUrlForPart(attach);
 
 				// bug fix #6500 - append filename w/in so "Save As" wont append .html at the end
 				if (!useCL) {
@@ -2262,13 +2261,8 @@ function(findHits, includeInlineImages, includeInlineAtts) {
                 if (attach.node && attach.node.isOfflineUploaded) { //for offline upload attachments
                     props.url = attach.node.data;
                 } else {
-                    props.url = [
-                        appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI),
-                        "&loc=", AjxEnv.DEFAULT_LOCALE,
-                        "&id=", this.id,
-                        "&part=", attach.part
-                    ].join("");
-			}
+                    props.url = this.getUrlForPart(attach);
+    			}
 			}
 			if (attach.contentId || (includeInlineImages && attach.contentDisposition == "inline")) {  // bug: 28741
 				props.ci = true;
@@ -3051,4 +3045,16 @@ function(req) {
 			}
 		}
 	}
+};
+
+/**
+ * Returns a URL that can be used to fetch the given part of this message.
+ *
+ * @param   {ZmMimePart}    bodyPart        MIME part to fetch
+ *
+ * @returns {string}    URL to fetch the part
+ */
+ZmMailMsg.prototype.getUrlForPart = function(bodyPart) {
+
+    return appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=" + bodyPart.part;
 };
