@@ -53,7 +53,7 @@
 </template>
 
 <template id='share.Widgets#ZmSearchToolBar'>
-	<table role="presentation" class='ZmSearchToolbarTable'>
+	<table role="presentation" class='ZToolbarTable'>
 		<tr>
 			<td id='${id}_searchMenuButton' class='ZmSearchToolbarCell'></td>
 			<td>
@@ -77,7 +77,7 @@
 </template>
 
 <template id='share.Widgets#ZmSearchResultsToolBar'>
-	<table role="presentation" class='ZmSearchToolbarTable'>
+	<table role="presentation" class='ZToolbarTable'>
 		<tr>
 			<td class='ZmSearchResultText'><div id='${id}_icon' class='ImgWarning_12' style='display:none; margin-right:5px;'></div><span id='${id}_label'></span></td>
 			<td>
