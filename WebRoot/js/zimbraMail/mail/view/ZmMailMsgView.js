@@ -1760,189 +1760,140 @@ function(msg, container, callback, index) {
 
 	var htmlMode = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	var contentType = htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
-	msg.getBodyPart(contentType, this._renderMessageBody1.bind(this, msg, container, callback, index));
+	msg.getBodyPart(contentType, this._renderMessageBody1.bind(this, {
+        msg:        msg,
+        container:  container,
+        callback:   callback,
+        index:      index
+    }));
 };
 
-ZmMailMsgView.prototype._renderMessageBody1 =
-function(msg, container, callback, index) {
+// The second argument 'part' is added to the callback by getBodyPart() above. We ignore it
+// and just get the body parts from the loaded msg.
+ZmMailMsgView.prototype._renderMessageBody1 = function(params, part) {
 
-	var el = container || this.getHtmlElement();
-	var htmlMode = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	var contentType = htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
+	var msg = params.msg,
+	    htmlMode = appCtxt.get(ZmSetting.VIEW_AS_HTML),
+	    preferredContentType = params.forceType || (htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN),
+        hasHtmlPart = (preferredContentType === ZmMimeTable.TEXT_HTML && msg.hasContentType(ZmMimeTable.TEXT_HTML)) || msg.hasInlineImage(),
+        hasMultipleBodyParts = msg.hasMultipleBodyParts(),
+        bodyParts = hasMultipleBodyParts ? msg.getBodyParts(preferredContentType) : [ msg.getBodyPart(preferredContentType) || msg.getBodyPart() ],
+        invite = msg.invite,
+        hasInviteContent = invite && !invite.isEmpty(),
+        origText,
+        isTextMsg = !hasHtmlPart,
+        isTruncated = false,
+        hasViewableTextContent = false,
+        html = [];
 
-	// if multiple body parts, ignore prefs and just append everything
-	var origText;
-	if (msg.hasMultipleBodyParts()) {
-		var bodyParts = msg.getBodyParts(contentType);
-		var len = bodyParts.length;
-		var html = [];
-		var hasHtmlPart = (htmlMode && msg.hasContentType(ZmMimeTable.TEXT_HTML)) || msg.hasInlineImage();
-        var isTruncated = false;
-		for (var i = 0; i < len; i++) {
-			var bp = bodyParts[i];
-			if (bp.isTruncated){
-                isTruncated = this.isTruncated(bp);
+    // The server tells us which parts are worth displaying by marking them as body parts. In general,
+    // we just append them in order to the output, with some special handling for each based on its content type.
+
+    for (var i = 0; i < bodyParts.length; i++) {
+
+        var bp = bodyParts[i],
+            ct = bp.contentType,
+            content = this._getBodyContent(bp),
+            isImage = ZmMimeTable.isRenderableImage(ct),
+            isHtml = (ct === ZmMimeTable.TEXT_HTML),
+            isPlain = (ct === ZmMimeTable.TEXT_PLAIN);
+
+        if (isImage) {
+            var src = (hasMultipleBodyParts && content.length > 0) ? content : msg.getUrlForPart(bp),
+                classAttr = hasMultipleBodyParts ? "class='InlineImage' " : " ";
+
+            content = "<img " + [ "zmforced='1' " + classAttr + "src='" + src + "'>"].join("");
+        }
+
+        else if (ct === ZmMimeTable.TEXT_CAL) {
+            content = ZmMailMsg.getTextFromCalendarPart(bp);
+        }
+
+        else if (hasInviteContent && !hasMultipleBodyParts) {
+            if (!msg.getMimeHeader(ZmMailMsg.HDR_INREPLYTO)) {
+                // Hack - bug 70603 -  Do not truncate the message for forwarded invites
+                // The InReplyTo rfc822 header would be present in most of the forwarded invites
+                content = ZmInviteMsgView.truncateBodyContent(content, isHtml);
             }
-			var content = this._getBodyContent(bp);
-			if (ZmMimeTable.isRenderableImage(bp.contentType)) {
-				if (bp.contentDisposition == "inline") {
-					//ignore inline attachments here. No need to append it as it was already inline.
-					continue;
-				}
-				// Hack: (Bug:27320) Done specifically for sMime
-				var imgHtml = content
-					? ["<img zmforced='1' class='InlineImage' src='", bp.getContent(), "'>"].join("")
-					: ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
-				html.push(imgHtml);
-			} else {
-				if (i > 0) {
-					html.push("<br><br>");	// add paragraph break before textual content
-				}
-				if (bp.contentType == ZmMimeTable.TEXT_CAL) {
-				    content = ZmMailMsg.getTextFromCalendarPart(bp);
-				} else if (bp.contentType != ZmMimeTable.TEXT_HTML) {
-				    content = AjxStringUtil.convertToHtml(content);
-				}
-				if (bp.contentType == ZmMimeTable.TEXT_PLAIN) {
-					html.push(hasHtmlPart ? "<pre>" : "");
-					html.push(content);
-					html.push(hasHtmlPart ? "</pre>" : "");
-					origText = bp.getContent();
-				} else {
-					if (appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
-						html.push(content);
-					} else {
-						// bug fix #31840 - convert HTML to text
-						var div = document.createElement("div");
-						div.innerHTML = content;
-						var convert = AjxStringUtil.convertHtml2Text(div);
+            // if the notes are empty, don't bother rendering them
+            var tmp = AjxStringUtil.stripTags(content);
+            if (!AjxStringUtil._NON_WHITESPACE.test(tmp)) {
+                content = "";
+            }
+        }
 
-						html.push(hasHtmlPart ? "<pre>" : "");
-						html.push(AjxStringUtil.htmlEncode(convert));
-						html.push(hasHtmlPart ? "</pre>" : "");
-					}
-				}
-			}
-		}
-		this._displayContent({	container:		el,
-								html:			html.join(""),
-								isTextMsg:		!hasHtmlPart,
-								isTruncated:	isTruncated,
-								index:			index,
-								origText:		origText
-							});
-	} else {
-		var bodyPart = msg.getBodyPart(contentType) || msg.getBodyPart();
-		if (bodyPart) {
-			var content = this._getBodyContent(bodyPart);
-			var invite = msg.invite;
+        else if (isHtml) {
+            if (htmlMode) {
+                // fix broken inline images - take one like this: <img dfsrc="http:...part=1.2.2">
+                // and make it look like this: <img dfsrc="cid:DWT123"> by looking up the cid for that part
+                if (msg._attachments && ZmMailMsgView.IMG_FIX_RE.test(content)) {
+                    var partToCid = {};
+                    for (var j = 0; j < msg._attachments.length; j++) {
+                        var att = msg._attachments[j];
+                        if (att.contentId) {
+                            partToCid[att.part] = att.contentId.substring(1, att.contentId.length - 1);
+                        }
+                    }
+                    content = content.replace(ZmMailMsgView.IMG_FIX_RE, function(s, p1, p2, p3) {
+                        return partToCid[p2] ? [ p1, '"cid:', partToCid[p2], '"', p3 ].join("") : s;
+                    });
+                }
+            }
+            // if we got HTML and user is in text mode, no conversion needed
+        }
 
-			if (bodyPart.contentType == ZmMimeTable.TEXT_HTML && htmlMode) {
-				var hasInviteContent = (invite && !invite.isEmpty());
-				if (hasInviteContent) {
-					if (!msg.getMimeHeader(ZmMailMsg.HDR_INREPLYTO)) {
-						//Hack - bug 70603 -  Do not truncate the message for forwarded invites
-						//The InReplyTo rfc822 header would be present in most of the forwarded invites
-						content = ZmInviteMsgView.truncateBodyContent(content,true);
-					}
-					// if the notes are empty, don't bother rendering them
-					var tmp = AjxStringUtil.stripTags(content);
-					if (!AjxStringUtil._NON_WHITESPACE.test(tmp)) {
-					    // Run the remainder of the formatting to insure the invite
-					    // display is set up properly
-					    this._completeMessageBody(callback);
-					    return;
-					}
-				}
+        else if (isPlain) {
+            origText = content;
+            if (bp.format === ZmMimeTable.FORMAT_FLOWED) {
+                var wrapParams = {
+                    text:		content,
+                    isFlowed:	true
+                }
+                content = AjxStringUtil.wordWrap(wrapParams);
+            }
+            content = AjxStringUtil.convertToHtml(content);
+            if (content && hasMultipleBodyParts && hasHtmlPart) {
+                content = "<pre>" + content + "</pre>";
+            }
+        }
 
-				// fix broken inline images - take one like this: <img dfsrc="http:...part=1.2.2">
-				// and make it look like this: <img dfsrc="cid:DWT123"> by looking up the cid for that part
-				if (msg._attachments && ZmMailMsgView.IMG_FIX_RE.test(content)) {
-					var partToCid = {};
-					for (var i = 0; i < msg._attachments.length; i++) {
-						var att = msg._attachments[i];
-						if (att.contentId) {
-							partToCid[att.part] = att.contentId.substring(1, att.contentId.length - 1);
-						}
-					}
-					content = content.replace(ZmMailMsgView.IMG_FIX_RE, function(s, p1, p2, p3) {
-						return partToCid[p2] ? [p1, '"cid:', partToCid[p2], '"', p3].join("") : s;
-					});
-				}
+        else {
+            content = AjxStringUtil.convertToHtml(content);
+        }
 
-				if (msg.hasNoViewableContent()) {
-					var empty = AjxTemplate.expand("mail.Message#EmptyMessage");
-					content = content ? [empty, content].join("<br><br>") : empty;
-				}
+        if (content && content.length) {
+            if (!isImage && AjxStringUtil.trimHtml(content).length > 0) {
+                content = "<div>" + content + "</div>";
+                hasViewableTextContent = true;
+            }
+            html.push(content);
+        }
+    }
 
-				this._displayContent({	container:		el,
-										html:			content,
-										isTextMsg:		false,
-										isTruncated:	this.isTruncated(bodyPart),
-										index:			index
-									});
-			} else if (ZmMimeTable.isRenderableImage(bodyPart.contentType)) {
-				var html = [
-					"<img zmforced='1' src='",
-					appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI),
-					"&id=", msg.id,
-					"&part=", bodyPart.part, "'>"
-				].join("");
-				this._displayContent({	container:		el,
-										html:			html,
-										isTextMsg:		false,
-										isTruncated:	false,
-										index:			index
-									});
-			} else {
-				
-				if (bodyPart.contentType == ZmMimeTable.TEXT_PLAIN) {
-					var hasInviteContent = (invite && !invite.isEmpty());
-					if (hasInviteContent) {
-						if (!msg.getMimeHeader(ZmMailMsg.HDR_INREPLYTO)) {
-							//Hack - bug 70603 -  Do not truncate the message for forwarded invites
-							//The InReplyTo rfc822 header would be present in most of the forwarded invites
-							content = ZmInviteMsgView.truncateBodyContent(content, false);
-						}
-					}
+    if (!hasMultipleBodyParts && !hasViewableTextContent && msg.hasNoViewableContent()) {
+        // if we got nothing for one alternative type, try the other
+        if (msg.hasContentType(ZmMimeTable.MULTI_ALT) && !params.forceType) {
+            var otherType = (preferredContentType === ZmMimeTable.TEXT_HTML) ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML;
+            params.forceType = otherType;
+            msg.getBodyPart(otherType, this._renderMessageBody1.bind(this, params));
+            return;
+        }
+        var empty = AjxTemplate.expand("mail.Message#EmptyMessage");
+        html.push(content ? [empty, content].join("<br><br>") : empty);
+    }
 
-					var isTextMsg = true;
-					if (msg.hasNoViewableContent()) {
-						var empty = AjxTemplate.expand("mail.Message#EmptyMessage");
-						content = content ? [empty, content].join(AjxStringUtil.CRLF2) : empty;
-						isTextMsg = false; //To make sure we display html content properly
-					}
-					if (bodyPart.format === ZmMimeTable.FORMAT_FLOWED) {
-						var wrapParams = {
-							text:		content,
-							isFlowed:	true
-						}
-						content = AjxStringUtil.wordWrap(wrapParams);
-					}
-					content = isTextMsg ? AjxStringUtil.convertToHtml(content) : content;
-					this._displayContent({	container:		el,
-											html:			content,
-											isTextMsg:		isTextMsg,
-											isTruncated:	this.isTruncated(bodyPart),
-											index:			index,
-											origText:		bodyPart.getContent()
-										});
-				} else {					
-					if (content != null) {
-						content = (bodyPart.contentType != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
-						this._displayContent({	container:		el,
-												html:			content,
-												isTextMsg:		false,
-												isTruncated:	false,
-												index:			index
-											});
-					}
-				}
-			}
-		}
-	}
+    if (html.length > 0) {
+        this._displayContent({
+            container:		params.container || this.getHtmlElement(),
+            html:			html.join(""),
+            isTextMsg:		isTextMsg,
+            isTruncated:	isTruncated,
+            index:			params.index,
+            origText:		origText
+        });
+    }
 
-	this._completeMessageBody(callback);
+    this._completeMessageBody(params.callback, isTextMsg);
 };
 
 ZmMailMsgView.prototype.isTruncated =
@@ -1950,15 +1901,17 @@ function(part) {
 	return part.isTruncated;
 };
 
-ZmMailMsgView.prototype._completeMessageBody =
-function(callback) {
-	// Used in ZmConvView2._toggleExpansion : if False, create the message body (the
+ZmMailMsgView.prototype._completeMessageBody = function(callback, isTextMsg) {
+
+	// Used in ZmConvView2._setExpansion : if false, create the message body (the
 	// first time a message is expanded).
 	this._msgBodyCreated = true;
-	this._setAttachmentLinks();
+	this._setAttachmentLinks(AjxUtil.isBoolean(isTextMsg) ? isTextMsg : appCtxt.get(ZmSetting.VIEW_AS_HTML));
 
-	if (callback) { callback.run(); }
-}
+	if (callback) {
+        callback.run();
+    }
+};
 
 ZmMailMsgView.prototype._getBodyContent =
 function(bodyPart) {
@@ -2008,7 +1961,7 @@ function(table, tagCellId) {
 };
 
 
-// Types of links for eacha attachment
+// Types of links for each attachment
 ZmMailMsgView.ATT_LINK_MAIN			= "main";
 ZmMailMsgView.ATT_LINK_CALENDAR		= "calendar";
 ZmMailMsgView.ATT_LINK_DOWNLOAD		= "download";
@@ -2017,10 +1970,10 @@ ZmMailMsgView.ATT_LINK_VCARD		= "vcard";
 ZmMailMsgView.ATT_LINK_HTML			= "html";
 ZmMailMsgView.ATT_LINK_REMOVE		= "remove";
 
-ZmMailMsgView.prototype._setAttachmentLinks =
-function() {
+ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
+
     this._attachmentLinkIdToFileNameMap = null;
-	var attInfo = this._msg.getAttachmentInfo(true, !appCtxt.get(ZmSetting.VIEW_AS_HTML), true);
+	var attInfo = this._msg.getAttachmentInfo(true, false, isTextMsg);
 	var el = document.getElementById(this._attLinksId + "_container");
 	if (el) {
 		el.style.display = (attInfo.length == 0) ? "none" : "";
