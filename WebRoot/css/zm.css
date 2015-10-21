@@ -374,7 +374,8 @@ INPUT[type="text"].search_input-expanded:focus {
 	@FullSize@
 }
 
-.ZmSearchToolbar .ZToolbarTable {
+.ZmSearchToolbar .ZToolbarTable,
+.ZmSearchResultsToolBar .ZToolbarTable {
 	height:100%;
 	width:100%;
 }
