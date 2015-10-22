@@ -232,10 +232,14 @@ function(actionCode, ev) {
 	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");
 	var listView = this._view[this._currentViewId];
 	var result = false;
+    var activeEl = document.activeElement;
 
 	switch (actionCode) {
 
 		case DwtKeyMap.DBLCLICK:
+            if (activeEl && activeEl.nodeName && activeEl.nodeName.toLowerCase() === 'a') {
+                return false;
+            }
 			return listView.handleKeyAction(actionCode);
 
 		case ZmKeyMap.SHIFT_DEL:
