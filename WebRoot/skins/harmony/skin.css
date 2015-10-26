@@ -503,6 +503,7 @@ TD.DwtListView-ColumnActive  {
 
 .BriefcaseTabBox {
 	border-color:@darken(AppC,25)@;
+	border-style:solid; @roundCorners(0px)@
 }
 
 /* Labels */
