@@ -125,12 +125,13 @@
     <property name="jquery.dir" value="${build.js.dir}/ajax/3rdparty/jquery"/>
 
     <!-- ConverseJS INTEGRATION -->
-    <property name="converse.version" value="0.9.1"></property>
+    <property name="converse.version" value="0.9.4"></property>
     <property name='converse.root.dir' value='converse' />
     <property name='converse.js.dir' value='${converse.root.dir}/converse.js-${converse.version}' />
     <property name='converse.js.build.dir' value='${converse.root.dir}/converse.js-${converse.version}/builds' />
     <property name='converse.css.dir' value='${converse.root.dir}/converse.js-${converse.version}/css' />
     <property name='converse.fonticons.dir' value='${converse.root.dir}/converse.js-${converse.version}/fonticons' />
+    <property name='converse.sounds.dir' value='${converse.root.dir}/converse.js-${converse.version}/sounds' />
     <property name="converse.dir" value="${js.dir}/ajax/3rdparty/converse"/>
 	
 	<!-- customize admin skin -->
@@ -1697,6 +1698,13 @@ if (ext == null) ext = "";
         <copy todir="${build.web.dir}/fonticons" verbose="${sync.verbose}">
             <fileset dir="${converse.fonticons.dir}" includes="**"/>
         </copy>
+        <copy todir="${converse.dir}/sounds" verbose="${sync.verbose}">
+            <fileset dir="${converse.sounds.dir}" includes="**" excludes="README"/>
+        </copy>
+        <copy todir="${build.web.dir}/public/sounds" verbose="${sync.verbose}">
+            <fileset dir="${converse.dir}/sounds" includes="**"/>
+        </copy>
+        <copy tofile="${converse.dir}/jquery_min.js" file="${converse.js.dir}/components/jquery/dist/jquery.min.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/build/dep/salsa20.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/src/bigint.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/vendor/cryptojs/core.js"/>
@@ -1713,8 +1721,6 @@ if (ext == null) ext = "";
         <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/build/dep/eventemitter.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/src/otr.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/components/strophejs/strophe.js"/>
-        <copy tofile="${converse.js.dir}/src/strophe_roster.js" file="${converse.js.dir}/src/strophe.roster.js"/>
-        <move todir="${converse.dir}/" file="${converse.js.dir}/src/strophe_roster.js"/>
         <copy tofile="${converse.js.dir}/components/strophejs-plugins/vcard/strophe_vcard.js" file="${converse.js.dir}/components/strophejs-plugins/vcard/strophe.vcard.js"/>
         <move todir="${converse.dir}/" file="${converse.js.dir}/components/strophejs-plugins/vcard/strophe_vcard.js"/>
         <copy tofile="${converse.js.dir}/components/strophejs-plugins/disco/strophe_disco.js" file="${converse.js.dir}/components/strophejs-plugins/disco/strophe.disco.js"/>
@@ -1727,7 +1733,7 @@ if (ext == null) ext = "";
         <move todir="${converse.dir}/" file="${converse.js.dir}/components/backbone.browserStorage/backbone_browserStorage.js"/>
         <copy tofile="${converse.js.dir}/components/backbone.overview/backbone_overview.js" file="${converse.js.dir}/components/backbone.overview/backbone.overview.js"/>
         <move todir="${converse.dir}/" file="${converse.js.dir}/components/backbone.overview/backbone_overview.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/momentjs/min/moment-with-langs.js"/>
+        <copy todir="${converse.dir}/" file="${converse.js.dir}/src/moment-with-langs.js"/>
         <copy tofile="${converse.js.dir}/components/jquery.browser/dist/jquery_browser.js" file="${converse.js.dir}/components/jquery.browser/dist/jquery.browser.js"/>
         <move todir="${converse.dir}/" file="${converse.js.dir}/components/jquery.browser/dist/jquery_browser.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/components/typeahead.js/index.js"/>
