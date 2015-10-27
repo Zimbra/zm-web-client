@@ -138,6 +138,9 @@ function(actionCode, ev) {
             if (isFooterActionLink) {
                 activeEl.click();
             }
+            else {
+                return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
+            }
             break;
 
 		case ZmKeyMap.EXPAND:
