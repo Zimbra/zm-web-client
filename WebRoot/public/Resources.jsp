@@ -31,15 +31,12 @@ If not, see <http://www.gnu.org/licenses/>.
     boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
     boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
 
-	String userAgent = request.getHeader("User-Agent");
-	boolean isIE = userAgent == null || userAgent.indexOf("MSIE") != -1;
-
    String vers = (String)request.getAttribute("version");
    String ext = (String)request.getAttribute("fileExtension");
    if (vers == null){
       vers = "";
    }
-   if (ext == null || isIE){
+   if (ext == null){
       ext = "";
    }
 
