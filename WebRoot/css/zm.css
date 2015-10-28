@@ -1753,8 +1753,14 @@ INPUT[type="text"].search_input-expanded:focus {
 /* ??? RENAME */
 .ZmContactSimpleView {
 	@ListBg@
+	box-sizing:border-box;
 	border:1px solid @darken(AppC,50)@;
 	width:100%;
+}
+
+.ZmContactSimpleView .SimpleContact {
+	/* ensure children position themselves within this element */
+	position: relative;
 }
 
 .ZmContactSimpleView .SimpleContact-right,

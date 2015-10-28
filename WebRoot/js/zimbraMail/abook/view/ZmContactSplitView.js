@@ -933,7 +933,7 @@ ZmContactSplitView.prototype._sashCallback = function(delta) {
 	var sashWidth = this._sash.getSize().x;
 	var totalWidth = Dwt.getSize(this._splitviewCell).x;
 
-	var origListWidth = Dwt.getSize(this._listviewCell).x;
+	var origListWidth = this._listPart.getSize().width;
 	var newListWidth = origListWidth + delta;
 	var newContentPos = newListWidth + sashWidth;
 	var newContentWidth = totalWidth - newContentPos;
@@ -950,12 +950,7 @@ ZmContactSplitView.prototype._sashCallback = function(delta) {
 		
 	delta = newListWidth - origListWidth;
 	
-	if (AjxEnv.isIE) {
-		newContentPos -= 1;
-		newContentWidth += 1;
-	}
-
-	Dwt.setSize(this._listviewCell, newListWidth, Dwt.DEFAULT);
+	this._listPart.setSize(newListWidth, Dwt.DEFAULT);
 	Dwt.setBounds(this._contentCell, newContentPos, Dwt.DEFAULT, newContentWidth, Dwt.DEFAULT);
 
 	return delta;
