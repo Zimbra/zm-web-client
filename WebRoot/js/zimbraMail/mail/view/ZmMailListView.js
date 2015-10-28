@@ -202,10 +202,18 @@ function(list) {
 ZmMailListView.prototype.resetSize =
 function(newWidth, newHeight) {
 	this.setSize(newWidth, newHeight);
-	var height = (newHeight == Dwt.DEFAULT) ? newHeight : newHeight - DwtListView.HEADERITEM_HEIGHT;
-	Dwt.setSize(this._parentEl, newWidth, height);
-	//see bug 87712, but no more need to call recalculateCssStyle from here,
-	// since _restColWidth calls recalculateCssStyle, and it's called from ZmDoublePaneView.prototype._resetSize
+	var margins = this.getMargins();
+
+	if (newWidth !== Dwt.DEFAULT) {
+		newWidth -= margins.left + margins.right;
+	}
+
+	if (newHeight !== Dwt.DEFAULT) {
+		newHeight -= Dwt.getSize(this._listColDiv).y;
+		newHeight -= margins.top + margins.bottom;
+	}
+
+	Dwt.setSize(this._parentEl, newWidth, newHeight);
 };
 
 ZmMailListView.prototype.calculateMaxEntries =

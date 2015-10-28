@@ -304,7 +304,6 @@ TD.DwtListView-ColumnActive  {
 .SimpleContact .ZmListFlagsWrapper {
 	height:16px;
 	margin-top:2px;
-	right:3px; /* accounts for rounding */
 }
 
 .ZmEditGroupContact .Row {
