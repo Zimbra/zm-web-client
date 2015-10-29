@@ -192,7 +192,7 @@
 	
 <fmt:setBundle basename="/messages/ZmMsg" scope="request" force="true" />
 <title><fmt:message key="zimbraTitle"/></title>
-<link href="<c:url value="/css/images,common,dwt,msgview,login,zm,spellcheck,skin.css">
+<link href="<c:url value="/css/images,common,dwt,msgview,login,zm,spellcheck,converse,skin.css">
 	<c:param name="v" value="${vers}" />
 	<c:param name='debug' value='${isDebug}' />
 	<c:param name="skin" value="${skin}" />
