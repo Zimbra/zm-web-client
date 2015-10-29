@@ -228,7 +228,9 @@
                                 <c:if test="${zm:boolean(mailbox.features.briefcases)}"><option value="briefcase" ${st eq 'briefcase' ? 'selected=selected' : ''}><fmt:message key="files"/></option></c:if>
                             </select>
                      </span>
-                     <span class="td aright"><a href="<c:url value="${context_url}?st=query"><c:param name="s" value="${st}"/></c:url>"><fmt:message key="advancedSearch"/></a></span>
+                    <c:if test="${mailbox.features.advancedSearch}">
+                        <span class="td aright"><a href="<c:url value="${context_url}?st=query"><c:param name="s" value="${st}"/></c:url>"><fmt:message key="advancedSearch"/></a></span>
+                    </c:if>
                 </div></div>
             </form>
     </div>
