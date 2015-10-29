@@ -58,7 +58,7 @@
 	@FocusOutline@
 }
 
-INPUT[type="text"]:focus, INPUT[type="password"]:focus {
+INPUT[type="text"]:focus, INPUT[type="password"]:focus, INPUT[type="email"]:focus {
     @InputField-focused@
 }
 
@@ -6035,3 +6035,143 @@ a.ZmLinkDisabled {
 	font-weight: bold;
 }
 /* One-times Codes dialog end */
+
+/*Chat start */
+#conversejs, #conversejs *, #conversejs *:before, #conversejs *:after {
+    outline: 0;
+}
+
+.chat-head-chatbox {
+    background-color: @darken(AltC,50)@; 
+  }
+  
+.chat-head-chatroom {
+    background-color: @darken(AltC,50)@; 
+}
+
+.toggle-controlbox {
+	background-color: @darken(AltC,50)@; 
+	border: 1px solid @PanelBorderColor@ !important;
+}
+
+.controlbox-head {
+	background-color: @darken(AltC,50)@;
+}
+
+.minimized-chats-flyout, .box-flyout {
+	border: 1px solid @PanelBorderColor@ !important;
+}
+
+.chat-textarea-divider {
+	border: 1px solid @PanelBorderColor@ !important;
+}
+	
+.add-contact-flyout .flyout-heading, 
+.search-contact-flyout .flyout-heading,
+.remove-contact-flyout .flyout-heading {
+	border-bottom: 1px solid @PanelBorderColor@ !important;
+}
+
+#conversejs form.sendXMPPMessage .chat-textarea {
+    outline: 0;
+}
+
+#conversejs .chatbox .box-flyout .remove-contact-flyout {
+    color: #333333;
+}
+
+#conversejs .chatbox .box-flyout .remove-contact-flyout .flyout-heading {
+    padding: 6px;
+}
+
+#conversejs .chatbox .box-flyout .remove-contact-flyout div.button {
+    text-align: center;
+}
+
+#conversejs .chatbox .box-flyout .remove-contact-flyout div.button BUTTON {
+    width: 7rem;
+    margin-top: 25px;
+}
+
+#conversejs .chatbox .box-flyout .remove-contact-flyout div.button HR {
+    margin: 40px 0 5px 0;
+    border: none;
+    height: 1px;
+    background-color: #B2B2B2;
+}
+
+#conversejs .chatbox .box-flyout .remove-contact-flyout .remove-contact-container {
+    padding: 0.625rem;
+}
+
+#conversejs DIV.connectionSpinnerPanel {
+    position: absolute;
+    top: 40%;
+    left: 32%;
+}
+
+.add-contact-form > div {
+	position: relative;
+}
+
+#conversejs .DwtDialogButtonBar {
+	padding: 5px;
+}
+
+#conversejs .DwtToolTip {
+	padding: 6px;
+    position: absolute;
+    right: 7px;
+    left: 5px;
+    top: 100%;
+    z-index: 1;
+}
+
+#conversejs .DwtToolTipBody {
+	position: relative;
+	margin-top: 0;
+}
+ 
+#conversejs .DwtMsgArea {
+	padding: 0 5px 5px;
+	vertical-align: middle;
+}
+
+#conversejs .horizSep{
+	@PrettyBottomSeparator@
+	@AddVerticalSpace@
+	width:100%;
+}
+
+#conversejs .ZButton {
+	cursor: default;
+}
+
+#conversejs .ZButtonBorder {
+	cursor: pointer;
+}
+#conversejs .ZButtonBorder button[disabled] {
+	cursor: default;
+	cursor: not-allowed;
+}
+
+
+#conversejs .remove-contact-btn{
+	margin-right: 15px;
+}
+
+#conversejs .tooltip-btn {
+	display: inline-block;
+}
+
+#conversejs .removeContactWarningMsg {
+	margin-top: 15px;
+}
+
+#conversejs .zmchat-controlbox-toggle {
+    background:url("/img/chat/chat_icon.png?v=@jsVersion@") no-repeat scroll 0 2px transparent;
+    background-size: 15px;
+    padding: 0 0 0 25px;
+}
+
+/*Chat end */
