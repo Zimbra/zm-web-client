@@ -369,7 +369,7 @@
         </war>
     </target>
 
-    <target name='sync' depends='jquery,modernizr,tinymce,templates'>
+    <target name='sync' depends='jquery,modernizr,tinymce,templates,converse'>
         <!-- NOTE: Keep order in sync with list of war filesets. -->
         <copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
             <fileset refid="webinf.fileset" />
@@ -1033,7 +1033,7 @@
         </if>
     </target>
 
-    <target name='jam-files' depends='jquery,modernizr,tinymce,templates,timezones'>
+    <target name='jam-files' depends='jquery,modernizr,tinymce,templates,timezones,converse'>
         <property name='jam.jsp.dir' value='${build.web.dir}/public/jsp'/>
 
         <mkdir dir='${build.js.dir}'/>
@@ -1119,6 +1119,7 @@
                 <property name="jam.template.TasksCore.includes"        value="tasks/**" />
                 <property name="jam.template.Voicemail.includes"        value="voicemail/**" />
                 <property name="jam.template.Zimbra.includes"           value="zimbra/**" />
+                <property name="jam.template.Chat.includes"             value="chat/**" />
 
                 <!-- template fileset -->
                 <if><isset property="jam.template.${arg}.includes" />
@@ -1334,6 +1335,7 @@ if (ext == null) ext = "";
         <delete dir="${jquery.dir}"/>
         <delete dir="${modernizr.dir}"/>
         <delete dir="${tinymce.dir}"/>
+        <delete dir="${converse.dir}"/>
     </target>
 
 	<!-- JavaScript API Documentation Tasks -->
