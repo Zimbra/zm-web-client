@@ -728,8 +728,8 @@ function(dialog) {
 	this._doDelete(this._listView[this._currentViewId].getSelection());
 };
 
-ZmTaskListController.prototype._doDelete =
-function(tasks, mode) {
+ZmTaskListController.prototype._doDelete = function(tasks, hardDelete) {
+
 	/*
 	 * XXX: Recurrence is not yet supported by tasks
 	 *
@@ -738,13 +738,15 @@ function(tasks, mode) {
 		this._showTypeDialog(task, ZmCalItem.MODE_DELETE);
 	}
 	*/
-    if (!tasks || tasks.length == 0) return;
+    if (!tasks || tasks.length == 0) {
+        return;
+    }
 
     // check to see if this is a cancel or delete
     var nId = ZmOrganizer.normalizeId(tasks[0].folderId);
     var isTrash = nId == ZmOrganizer.ID_TRASH;
 
-    if (isTrash) {
+    if (isTrash || hardDelete) {
         this._handleDelete(tasks);
     }
     else {

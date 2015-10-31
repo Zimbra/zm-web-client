@@ -403,53 +403,55 @@ function() {
 	return ZmMsg.tagFile;
 };
 
-ZmBriefcaseController.prototype._doDelete =
-function(items) {
+ZmBriefcaseController.prototype._doDelete = function(items, hardDelete) {
 
-	if (!items) {
-		items = this._listView[this._currentViewId].getSelection();
-	}
-    var item = (items instanceof Array) ? items[0] : items;
-    if(!item) return;
+	items = items || this._listView[this._currentViewId].getSelection();
+    var item = items instanceof Array ? items[0] : items;
+    if (!item) {
+        return;
+    }
 
-	var message = ( items.length > 1 ) ?  ( item.isRevision  ? ZmMsg.confirmPermanentDeleteItemList : ZmMsg.confirmDeleteItemList ) : null;
+	var message = items.length > 1 ? item.isRevision  ? ZmMsg.confirmPermanentDeleteItemList : ZmMsg.confirmDeleteItemList : null;
 	if (!message) {
-        var delMsgFormatter = new AjxMessageFormat( (this._folderId == String(ZmOrganizer.ID_TRASH) || (item.isRevision && item.parent.version != item.version) ) ? ZmMsg.confirmPermanentDeleteItem : ZmMsg.confirmDeleteItem );
+        var delMsgFormatter = new AjxMessageFormat(hardDelete || this._folderId == String(ZmOrganizer.ID_TRASH || (item.isRevision && item.parent.version !== item.version)) ? ZmMsg.confirmPermanentDeleteItem : ZmMsg.confirmDeleteItem );
 		message = delMsgFormatter.format(AjxStringUtil.htmlEncode(item.name));
 	}
 
     var dialog = appCtxt.getConfirmationDialog();
-	dialog.popup(message, new AjxCallback(this, this._doDelete2, [items]));
+	dialog.popup(message, this._doDelete2.bind(this, items, hardDelete));
 };
 
-ZmBriefcaseController.prototype._doDelete2 =
-function(items) {
+ZmBriefcaseController.prototype._doDelete2 = function(items, hardDelete) {
 
-    var item = (items instanceof Array) ? items[0] : items;
+    var item = items instanceof Array ? items[0] : items,
+        i;
 
-    if(item.isRevision && item.parent.version != item.version){
+    if (item.isRevision && item.parent.version !== item.version) {
         var view = this._parentView[this._currentViewId];
         view.deleteVersions(items);
-    }else if(item.isFolder){
+    }
+    else if (item.isFolder) {
         //Bug fix # 80600 force the BatchCommand to use JSON, mimicking the way right click delete behaves
         var delBatchCmd = new ZmBatchCommand(true, null, true), folder;
-        for(var i=0; i< items.length; i++){
+        for (i = 0; i < items.length; i++) {
             folder = items[i].folder;
-            if(folder.isHardDelete()){
+            if (folder.isHardDelete()) {
                 delBatchCmd.add(new AjxCallback(folder, folder._delete, [delBatchCmd]));
-            }else{
+            }
+            else {
                 var trashFolder = appCtxt.getById(ZmFolder.ID_TRASH);
                 delBatchCmd.add(new AjxCallback(folder, folder.move, [trashFolder, false, null, delBatchCmd]));
             }
         }
         delBatchCmd.run();
-    }else{
-		for (var i=0; i<items.length; i++) {
+    }
+    else {
+		for (i = 0; i < items.length; i++) {
 			if (items[i].isRevision) {
 				items[i] = items[i].parent;
 			}
 		}
-        ZmListController.prototype._doDelete.call(this, items, null, null, true);
+        ZmListController.prototype._doDelete.call(this, items, hardDelete, null, true);
     }
 };
 
