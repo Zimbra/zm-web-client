@@ -135,9 +135,8 @@ function(result){
     var response = result.getResponse();
     var OAuthConsumersResponse = response.GetOAuthConsumersResponse;
     var list = OAuthConsumersResponse.OAuthConsumer;
-    var listLen = list.length;
-    if (list && listLen) {
-        for (var i = 0; i < listLen; i++) {
+    if (list && list.length) {
+        for (var i = 0; i < list.length; i++) {
             this._oAuthConsumerApps.add(new ZmOAuthConsumerApp(list[i]));
         }
     }
