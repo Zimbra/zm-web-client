@@ -1786,6 +1786,8 @@ ZmMailMsgView.prototype._renderMessageBody1 = function(params, part) {
         hasViewableTextContent = false,
         html = [];
 
+    bodyParts = AjxUtil.collapseList(bodyParts);
+
     // The server tells us which parts are worth displaying by marking them as body parts. In general,
     // we just append them in order to the output, with some special handling for each based on its content type.
 
