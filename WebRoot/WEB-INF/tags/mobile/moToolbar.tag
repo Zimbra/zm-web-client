@@ -135,7 +135,7 @@
                         <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=folders&_pv=1"><fmt:message key="foldersLabel"/></a>
                         <c:if test="${btm_fldr_select eq '0'}"> ${zm:truncateFixed(context.shortBackTo,12,true)}</c:if>
                         <c:if test="${btm_fldr_select ne '0'}"><select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}', GC());"><c:set var="count" value="${0}"/>
-                            <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${count lt sessionScope.F_LIMIT and fldr.isMailView and (not fldr.isChats or mailbox.features.IM)}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
+                            <zm:forEachFolder var="fldr" skiproot="true"><c:if test="${count lt sessionScope.F_LIMIT and (fldr.isMailView or fldr.isInTrash) and (not fldr.isChats or mailbox.features.IM)}"><option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
                         </select></c:if>
                     </c:otherwise>
                 </c:choose>
