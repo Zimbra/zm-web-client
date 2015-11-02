@@ -1887,7 +1887,7 @@ ZmMailMsgView.prototype._renderMessageBody1 = function(params, part) {
             container:		params.container || this.getHtmlElement(),
             html:			html.join(""),
             isTextMsg:		isTextMsg,
-            isTruncated:	isTruncated,
+            isTruncated:	this.isTruncated(bp),
             index:			params.index,
             origText:		origText
         });
