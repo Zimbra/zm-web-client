@@ -59,10 +59,6 @@
                     <fmt:param value="${consumerAppName}"/>
                 </fmt:message>
             </h2>
-            <ul class="list-unstyled list-bordered">
-                <li class="icon-email"><fmt:message key="manageEmail"/></li>
-                <li class="icon-contacts"><fmt:message key="manageContacts"/></li>
-            </ul>
             <p class="terms"><fmt:message key="allowAccessLabel"/></p>
             <form method="post" name="authorizeForm" action="/public/access.jsp">
                 <input type="hidden" name="authorizeOp" value="authorize"/>
