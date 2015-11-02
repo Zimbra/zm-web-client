@@ -1798,6 +1798,8 @@ ZmMailMsgView.prototype._renderMessageBody1 = function(params, part) {
             isHtml = (ct === ZmMimeTable.TEXT_HTML),
             isPlain = (ct === ZmMimeTable.TEXT_PLAIN);
 
+        isTruncated = isTruncated || this.isTruncated(bp);
+
         if (isImage) {
             var src = (hasMultipleBodyParts && content.length > 0) ? content : msg.getUrlForPart(bp),
                 classAttr = hasMultipleBodyParts ? "class='InlineImage' " : " ";
@@ -1887,7 +1889,7 @@ ZmMailMsgView.prototype._renderMessageBody1 = function(params, part) {
             container:		params.container || this.getHtmlElement(),
             html:			html.join(""),
             isTextMsg:		isTextMsg,
-            isTruncated:	this.isTruncated(bp),
+            isTruncated:	isTruncated,
             index:			params.index,
             origText:		origText
         });
