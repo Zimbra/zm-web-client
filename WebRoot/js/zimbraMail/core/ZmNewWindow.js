@@ -177,7 +177,12 @@ function() {
 		}
 	}
 
-	var cmd = window.newWindowCommand;
+    if (!this._appViewMgr) {
+        this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
+        this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
+    }
+
+    var cmd = window.newWindowCommand;
 	var params = window.newWindowParams;
 	if (cmd == "shortcuts") {
 		var apps = {};
@@ -188,11 +193,6 @@ function() {
 	}
 
 	DBG.println(AjxDebug.DBG1, " ************ Hello from new window!");
-
-	if (!this._appViewMgr) {
-		this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
-		this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
-	}
 
 	var rootTg = appCtxt.getRootTabGroup();
 
