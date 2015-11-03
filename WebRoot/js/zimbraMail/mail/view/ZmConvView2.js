@@ -1888,11 +1888,21 @@ function(id, op, ev) {
 	this._controller._doAction({action:op, msg:this._msg, extraBodyText:text});
 };
 
-ZmMailMsgCapsuleView.prototype._handleMoreActionsLink =
-function(id, op, ev) {
+ZmMailMsgCapsuleView.prototype._handleMoreActionsLink = function(id, op, ev) {
+
 	ev = DwtUiEvent.getEvent(ev);
-	ev.docX = ev.clientX;
-	ev.docY = ev.clientY;
+
+    // User can focus on link and hit Enter - create a location to pop up the menu
+    var x = ev.clientX, y = ev.clientY;
+    if (!x || !y) {
+        var loc = Dwt.getLocation(DwtUiEvent.getTarget(ev));
+        if (loc) {
+            x = loc.x;
+            y = loc.y;
+        }
+    }
+	ev.docX = x;
+	ev.docY = y;
 	this._actionListener(ev, true);
 };
 
