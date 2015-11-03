@@ -97,7 +97,7 @@
     <c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and empty param.showABCreate) or ua.isiPad eq false}">
         <zm:forEachFolder var="folder" skipsystem="${true}" skiptopsearch="${false}">
         <c:if test="${count lt sessionScope.F_LIMIT and (folder.isSearchFolder && (empty query || fn:containsIgnoreCase(folder.name,query)))}">
-        <c:if test="${folder.types eq 'conversation' || folder.types eq 'message' || empty folder.types}">
+        <c:if test="${folder.types eq 'contact' || empty folder.types}">
             <mo:overviewSearchFolder folder="${folder}" types="${folder.types}"/>
         <c:set var="count" value="${count+1}"/></c:if>
         </c:if>
