@@ -305,5 +305,10 @@ if(window != parent){
 </c:set>${dbg ? js : zm:yuiCompress(js, 'js')}</script>
 </c:if>
 <c:if test="${empty param.isinframe and empty requestScope.compAction}">
-	<script type="text/javascript">AC("toField","toContainer");AC("ccField","ccContainer");AC("bccField","bccContainer");$('${param.op eq 'reply' || param.op eq 'replyAll' ? 'bodyField' : 'toField'}').focus();</script>
+	<script type="text/javascript">AC("toField","toContainer");AC("ccField","ccContainer");AC("bccField","bccContainer");
+//  bug:99598 - workaround for an iOS8 bug, do not auto focus for iOS devices
+    if (!/iPad|iPhone|iPod/g.test(navigator.userAgent)) {
+        $('${param.op eq 'reply' || param.op eq 'replyAll' ? 'bodyField' : 'toField'}').focus();
+    }
+    </script>
 </c:if>
