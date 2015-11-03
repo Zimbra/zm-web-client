@@ -740,6 +740,92 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
 
                     converseObject.controlboxView.$formSubmitBtn.enable();
+                },
+
+                renderLoginPanel: function() {
+                    this.$el.html(converseObject.templates.controlbox(this.model.toJSON()));
+                    var cfg = {'$parent': this.$el.find('.controlbox-panes'), 'model': this};
+                    if (!this.loginpanel) {
+                        this.loginpanel = new converseObject.LoginPanel(cfg);
+                        if (converseObject.allow_registration) {
+                            this.registerpanel = new converseObject.RegisterPanel(cfg);
+                        }
+                    } else {
+                        this.loginpanel.delegateEvents().initialize(cfg);
+                        if (converseObject.allow_registration) {
+                            this.registerpanel.delegateEvents().initialize(cfg);
+                        }
+                    }
+
+                    // Model's "connected" property is set to false if connection drops
+                    if (this.model.get('connected') === false) {
+                        var spinner = this.loginpanel.$('.spinner');
+                        var connFeedback = this.loginpanel.$('.conn-feedback');
+                        var connError = this.loginpanel.$('.conn-error');
+                        var connErrorRetry = this.loginpanel.$('.conn-error-retry');
+                        var connErrorRetryBtn = this.loginpanel.$('.conn-retry');
+                        var minimizedRoster = $('#toggle-controlbox');
+                        var controlbox = $('#controlbox');
+
+                        spinner.hide();
+                        connFeedback.hide();
+                        connError.html(ZmMsg.chatConnectionError);
+                        connErrorRetryBtn.html(ZmMsg.chatRetryButton);
+                        connError.show();
+                        // TODO: Enable this as part of other bug fix.
+                        //connErrorRetry.show();
+
+                        this.loginpanel.render();
+
+                        var chatPaneHeader = $('#controlbox-tabs').find('a[href=#login-dialog]');
+                        chatPaneHeader.html(ZmMsg.chatFeatureDisconnected);
+
+                        //Append a minimize button in case of XMPP service disconnected.
+                        $('#controlbox-tabs li:first').after('<a href="#controlbox-tabs" class="conn-disconnect icon-opened"></a>');
+
+                        var thiz = this;
+
+                        $('#controlbox-tabs .conn-disconnect').on('click', function() {
+                            thiz.toggleControlBox();
+                        });
+
+                        // If the roster was minimized and connection dropped, replace it with our custom header pane and controlbox panel.
+                        if (minimizedRoster.is(':visible')) {
+                            minimizedRoster.hide();
+                            controlbox.show();
+                            //show controlbox in minimized state
+                            this.toggleControlBox();
+                        }
+                    }
+                    else {
+                        // Keep control box rendering separate in case of connected/disconnected
+                        this.loginpanel.render();
+                    }
+
+                    if (converseObject.allow_registration) {
+                        this.registerpanel.render().$el.hide();
+                    }
+                    this.initDragResize();
+
+                    return this;
+                },
+
+                toggleControlBox: function() {
+                    var boxFlyout = $('.box-flyout');
+                    var toggleControlIcon = $('#controlbox-tabs .conn-disconnect');
+                    var height = $('#controlbox-tabs').find('a[href=#login-dialog]').height();
+
+                    if (boxFlyout.height() < 40) {
+                        //converse default_box_height
+                        boxFlyout.height(400);
+                        toggleControlIcon.addClass('icon-opened');
+                        toggleControlIcon.removeClass('icon-closed');
+                    }
+                    else {
+                        boxFlyout.height(height);
+                        toggleControlIcon.removeClass('icon-opened');
+                        toggleControlIcon.addClass('icon-closed');
+                    }
                 }
             },
 
