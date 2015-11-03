@@ -100,6 +100,22 @@ ZmChatApp.prototype.initChatUI = function(response) {
     var self = this;
     var converseObject;
 
+    var contains = function (attr, query) {
+        return function (item) {
+            if (typeof attr === 'object') {
+                var value = false;
+                _.each(attr, function (a) {
+                    value = value || item.get(a).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                });
+                return value;
+            } else if (typeof attr === 'string') {
+                return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+            } else {
+                throw new Error('Wrong attribute type. Must be string or array.');
+            }
+        };
+    };
+
     converse.plugins.add('zmChatPlugin', {
         initialize: function() {
             self._registerGlobals();
@@ -611,7 +627,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     this.$tooltip.hide();
 
                     var addContactPanel = $('.add-contact-flyout'),
-                        button = addContactPanel.find('.button button')
+                        button = addContactPanel.find('.button button'),
                         formHeading = $('.flyout-heading').children().first();
 
                     this.closeAddContactForm();
@@ -659,6 +675,8 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 searchContacts: function (ev) {
                     ev.preventDefault();
 
+                    var __ = $.proxy(utils.__, converseObject);
+
                     var searchString = $(ev.target).val() || " ",
                         searchPanel = $('.search-converse-contact'),
                         searchedContactPanel = $('.search-converse-contact .zmsearch-xmpp'),
@@ -672,7 +690,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     _.each(matchedContacts, function (contactItem) {
                         searchedContactPanel.append(converseObject.templates.roster_item(
                             _.extend(contactItem.toJSON(), {
-                                'desc_status': STATUSES[contactItem.get('chat_status') || 'offline'],
+                                'desc_status': self._getChatUserStatus(contactItem.get('chat_status'), contactItem.get('user_id')),
                                 'desc_chat': __('Click to chat with this contact'),
                                 'desc_remove': __('Click to remove this contact'),
                                 'allow_contact_removal': false
@@ -995,3 +1013,17 @@ function () {
 
     return tooltip.join('');
 }
+
+ZmChatApp.prototype._getChatUserStatus =
+function(chat_status, fullname) {
+    switch (chat_status) {
+        case 'online' :
+            return AjxMessageFormat.format(ZmMsg.chatUserOnline, fullname);
+        case 'away' :
+            return AjxMessageFormat.format(ZmMsg.chatUserAway, fullname);
+        case 'dnd' :
+            return AjxMessageFormat.format(ZmMsg.chatUserBusy, fullname);
+        case 'offline' :
+            return AjxMessageFormat.format(ZmMsg.chatUserOffline, fullname);
+    }
+};
