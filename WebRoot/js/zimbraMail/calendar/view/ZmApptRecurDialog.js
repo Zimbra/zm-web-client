@@ -32,14 +32,13 @@
  * 
  * @extends		DwtDialog
  */
-ZmApptRecurDialog = function(parent, className) {
-
+ZmApptRecurDialog = function(parent, uid, className) {
 	DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.customRepeat});
 
 	// set html content once (hence, in ctor)
-	this.setContent(this._setHtml());
-	this._createRepeatSections();
-	this._createDwtObjects();
+	this.setContent(this._setHtml(uid));
+	this._createRepeatSections(uid);
+	this._createDwtObjects(uid);
 	this._cacheFields();
 	this._addEventHandlers();
 	this._createTabGroup();
@@ -75,7 +74,6 @@ ZmApptRecurDialog.prototype.getTabGroupMember = function() {
 
 ZmApptRecurDialog.prototype.initialize = 
 function(startDate, endDate, repeatType, appt) {
-
     this._startDate = new Date(startDate.getTime());
 	this._endDate = new Date(endDate.getTime());
     this._origRefDate = startDate;
@@ -445,11 +443,10 @@ function() {
 // Private / protected methods
  
 ZmApptRecurDialog.prototype._setHtml = 
-function() {
+function(uid) {
 	this._repeatSelectId = Dwt.getNextId();
 	this._repeatSectionId = Dwt.getNextId();
 	this._repeatEndDivId = Dwt.getNextId();
-
 	var html = new Array();
 	var i = 0;
 	
@@ -474,23 +471,23 @@ function() {
 	html[i++] = "><legend style='color:#555'>";
 	html[i++] = ZmMsg.end;
 	html[i++] = "</legend>";
-	html[i++] = this._getEndHtml();
+	html[i++] = this._getEndHtml(uid);
 	html[i++] = "</fieldset></div></td></tr>";
 	html[i++] = "</table>";
-	
+
 	return html.join("");
 };
 
 ZmApptRecurDialog.prototype._getEndHtml = 
-function() {
+function(uid) {
 	this._repeatEndName = Dwt.getNextId();
-	this._noEndDateRadioId = "NO_END_DATE_RADIO"; // Dwt.getNextId();
-	this._endByRadioId = "END_BY_RADIO"; // Dwt.getNextId();
-	this._endAfterRadioId = "END_AFTER_RADIO"; // Dwt.getNextId();
+	this._noEndDateRadioId = "NO_END_DATE_RADIO_" + uid; // Dwt.getNextId();
+	this._endByRadioId = "END_BY_RADIO_" + uid; // Dwt.getNextId();
+	this._endAfterRadioId = "END_AFTER_RADIO_" + uid; // Dwt.getNextId();
     // unique ids for endIntervalFieldId and endByField
-    this._endIntervalFieldId = "END_INTERVAL_FIELD"; // Dwt.getNextId();
-	this._endByFieldId = "END_BY_FIELD"; // Dwt.getNextId();
-	this._endByButtonId = "END_BY_BUTTON"; // Dwt.getNextId();
+    this._endIntervalFieldId = "END_INTERVAL_FIELD_" + uid; // Dwt.getNextId();
+	this._endByFieldId = "END_BY_FIELD_" + uid; // Dwt.getNextId();
+	this._endByButtonId = "END_BY_BUTTON_" + uid; // Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
@@ -571,51 +568,50 @@ function() {
 	html[i++] = "</td></tr>";
 	// end table
 	html[i++] = "</table>";
-
 	return html.join("");
 };
 
 ZmApptRecurDialog.prototype._createRepeatSections = 
-function() {
+function(uid) {
 	var sectionDiv = document.getElementById(this._repeatSectionId);
 	if (sectionDiv) {
 		var div = document.createElement("div");
 		div.style.position = "relative";
 		div.style.display = "none";
-		div.id = this._repeatDailyId = "REPEAT_DAILY_DIV"; //Dwt.getNextId();
-		div.innerHTML = this._createRepeatDaily();
+		div.id = this._repeatDailyId = "REPEAT_DAILY_DIV_" + uid; //Dwt.getNextId();
+		div.innerHTML = this._createRepeatDaily(uid);
 		sectionDiv.appendChild(div);
-		
+
 		var div = document.createElement("div");
 		div.style.position = "relative";
 		div.style.display = "none";
-		div.id = this._repeatWeeklyId = "REPEAT_WEEKLY_DIV"; // Dwt.getNextId();
-		div.innerHTML = this._createRepeatWeekly();;
-		sectionDiv.appendChild(div);
-	
-		var div = document.createElement("div");
-		div.style.position = "relative";
-		div.style.display = "none";
-		div.id = this._repeatMonthlyId = "REPEAT_MONTHLY_DIV"; // Dwt.getNextId();
-		div.innerHTML = this._createRepeatMonthly();
+		div.id = this._repeatWeeklyId = "REPEAT_WEEKLY_DIV_" + uid; // Dwt.getNextId();
+		div.innerHTML = this._createRepeatWeekly(uid);
 		sectionDiv.appendChild(div);
 	
 		var div = document.createElement("div");
 		div.style.position = "relative";
 		div.style.display = "none";
-		div.id = this._repeatYearlyId = "REPEAT_YEARLY_DIV"; // Dwt.getNextId();
-		div.innerHTML = this._createRepeatYearly();
+		div.id = this._repeatMonthlyId = "REPEAT_MONTHLY_DIV_" + uid; // Dwt.getNextId();
+		div.innerHTML = this._createRepeatMonthly(uid);
+		sectionDiv.appendChild(div);
+	
+		var div = document.createElement("div");
+		div.style.position = "relative";
+		div.style.display = "none";
+		div.id = this._repeatYearlyId = "REPEAT_YEARLY_DIV_" + uid; // Dwt.getNextId();
+		div.innerHTML = this._createRepeatYearly(uid);
 		sectionDiv.appendChild(div);
 	}
 };
 
 ZmApptRecurDialog.prototype._createRepeatDaily = 
-function() {
-	this._dailyRadioName = "DAILY_RADIO"; // Dwt.getNextId();
-	this._dailyDefaultId = "DAILY_DEFAULT"; // Dwt.getNextId();
-	this._dailyWeekdayId = "DAILY_WEEKDAY"; // Dwt.getNextId();
-	this._dailyFieldRadioId = "DAILY_FIELD_RADIO"; // Dwt.getNextId();
-	this._dailyFieldId = "DAILY_FIELD"; // Dwt.getNextId();
+function(uid) {
+	this._dailyRadioName = "DAILY_RADIO_" + uid; // Dwt.getNextId();
+	this._dailyDefaultId = "DAILY_DEFAULT_" + uid; // Dwt.getNextId();
+	this._dailyWeekdayId = "DAILY_WEEKDAY_" + uid; // Dwt.getNextId();
+	this._dailyFieldRadioId = "DAILY_FIELD_RADIO_" + uid; // Dwt.getNextId();
+	this._dailyFieldId = "DAILY_FIELD_" + uid; // Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
@@ -679,18 +675,17 @@ function() {
 	html[i++] = "</td></tr>";
 	// end table
 	html[i++] = "</table>";
-
 	return html.join("");
 };
 
 ZmApptRecurDialog.prototype._createRepeatWeekly = 
-function() {
-	this._weeklyRadioName = "WEEKLY_RADIO"; //Dwt.getNextId();
-	this._weeklyCheckboxName = "WEEKLY_CHECKBOX_NAME" ;//Dwt.getNextId();
-	this._weeklyDefaultId = "WEEKLY_DEFAULT" ; //Dwt.getNextId();
-	this._weeklySelectId = "WEEKLY_SELECT" ;//Dwt.getNextId();
-	this._weeklyFieldRadioId = "WEEKLY_FIELD_RADIO" //Dwt.getNextId();
-	this._weeklyFieldId = "WEEKLY_FIELD" ;//Dwt.getNextId();
+function(uid) {
+	this._weeklyRadioName = "WEEKLY_RADIO_" + uid; //Dwt.getNextId();
+	this._weeklyCheckboxName = "WEEKLY_CHECKBOX_NAME_" + uid ;//Dwt.getNextId();
+	this._weeklyDefaultId = "WEEKLY_DEFAULT_" + uid ; //Dwt.getNextId();
+	this._weeklySelectId = "WEEKLY_SELECT_" + uid ;//Dwt.getNextId();
+	this._weeklyFieldRadioId = "WEEKLY_FIELD_RADIO_" + uid //Dwt.getNextId();
+	this._weeklyFieldId = "WEEKLY_FIELD_" + uid ;//Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
@@ -789,15 +784,15 @@ function() {
 };
 
 ZmApptRecurDialog.prototype._createRepeatMonthly = 
-function() {
-	this._monthlyRadioName = "MONTHLY_RADIO" ;//Dwt.getNextId();
-	this._monthlyDefaultId = "MONTHLY_DEFAULT";// Dwt.getNextId();
-	this._monthlyDayFieldId = "MONTHLY_DAY_FIELD_ID"; // Dwt.getNextId();
-	this._monthlyMonthFieldId = "MONTHLY_MONTH_FIELD"; //Dwt.getNextId();
-	this._monthlyFieldRadioId = "MONTHLY_FIELD_RADIO"; //Dwt.getNextId();
-	this._monthlyDaySelectId = "MONTHLY_DAY_SELECT"; // Dwt.getNextId();
-	this._monthlyWeekdaySelectId = "MONTHLY_WEEKDAY_SELECT";// Dwt.getNextId();
-	this._monthlyMonthFieldExId = "MONTHLY_MONTH_FIELD_EX"; // Dwt.getNextId();
+function(uid) {
+	this._monthlyRadioName = "MONTHLY_RADIO_" + uid ;//Dwt.getNextId();
+	this._monthlyDefaultId = "MONTHLY_DEFAULT_" + uid;// Dwt.getNextId();
+	this._monthlyDayFieldId = "MONTHLY_DAY_FIELD_ID_" + uid; // Dwt.getNextId();
+	this._monthlyMonthFieldId = "MONTHLY_MONTH_FIELD_" + uid; //Dwt.getNextId();
+	this._monthlyFieldRadioId = "MONTHLY_FIELD_RADIO_" + uid; //Dwt.getNextId();
+	this._monthlyDaySelectId = "MONTHLY_DAY_SELECT_" + uid; // Dwt.getNextId();
+	this._monthlyWeekdaySelectId = "MONTHLY_WEEKDAY_SELECT_" + uid;// Dwt.getNextId();
+	this._monthlyMonthFieldExId = "MONTHLY_MONTH_FIELD_EX_" + uid; // Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
@@ -887,16 +882,16 @@ function() {
 	return html.join("");
 };
 
-ZmApptRecurDialog.prototype._createRepeatYearly = 
-function() {
-	this._yearlyDefaultId = "YEALY_DEFAULT" ; //Dwt.getNextId();
-	this._yearlyRadioName = "YEARLY_RADIO"; //Dwt.getNextId();
-	this._yearlyMonthSelectId = "YEARLY_MONTH_SELECT"; // Dwt.getNextId();
-	this._yearlyDayFieldId = "YEARLY_DAY_FIELD"; // Dwt.getNextId();
-	this._yearlyDaySelectId = "YEARLY_DAY_SELECT"; // Dwt.getNextId();
-	this._yearlyWeekdaySelectId ="YEARLY_WEEKDAY_SELECT"; //Dwt.getNextId();
-	this._yearlyMonthSelectExId ="YEARLY_MONTH_SELECT_EX"; // Dwt.getNextId();
-	this._yearlyFieldRadioId = "YEARLY_FIELD_RADIO";// Dwt.getNextId();
+ZmApptRecurDialog.prototype._createRepeatYearly =
+function(uid) {
+	this._yearlyDefaultId = "YEALY_DEFAULT_" + uid ; //Dwt.getNextId();
+	this._yearlyRadioName = "YEARLY_RADIO_" + uid; //Dwt.getNextId();
+	this._yearlyMonthSelectId = "YEARLY_MONTH_SELECT_" + uid; // Dwt.getNextId();
+	this._yearlyDayFieldId = "YEARLY_DAY_FIELD_" + uid; // Dwt.getNextId();
+	this._yearlyDaySelectId = "YEARLY_DAY_SELECT_" + uid; // Dwt.getNextId();
+	this._yearlyWeekdaySelectId ="YEARLY_WEEKDAY_SELECT_" + uid; //Dwt.getNextId();
+	this._yearlyMonthSelectExId ="YEARLY_MONTH_SELECT_EX_" + uid; // Dwt.getNextId();
+	this._yearlyFieldRadioId = "YEARLY_FIELD_RADIO_" + uid;// Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
@@ -980,12 +975,11 @@ function() {
 	html[i++] = "</td></tr>";
 	// end table
 	html[i++] = "</table>";
-	
 	return html.join("");
 };
 
-ZmApptRecurDialog.prototype._createDwtObjects = 
-function() {
+ZmApptRecurDialog.prototype._createDwtObjects =
+function(uid) {
 	// create all DwtSelect's
 	this._createSelects();
 
@@ -995,7 +989,7 @@ function() {
 	ZmCalendarApp.createMiniCalButton(this, this._endByButtonId, dateButtonListener, dateCalSelectionListener);
 
 	// create all DwtInputField's
-	this._createInputs();
+	this._createInputs(uid);
 };
 
 ZmApptRecurDialog.prototype._createSelects = 
@@ -1155,14 +1149,14 @@ function() {
 };
 
 ZmApptRecurDialog.prototype._createInputs = 
-function() {
+function(uid) {
 	// create inputs for end fields
 	this._endIntervalField = new DwtInputField({parent: this, type: DwtInputField.INTEGER,
 												initialValue: "1", size: 3, maxLen: 3,
 												errorIconStyle: DwtInputField.ERROR_ICON_NONE, 
 												validationStyle: DwtInputField.ONEXIT_VALIDATION, 
 												validator: this._positiveIntValidator, 
-												validatorCtxtObj: this, inputId:"RECUR_END_INTERVAL_FIELD"});
+												validatorCtxtObj: this, inputId:"RECUR_END_INTERVAL_FIELD_" + uid});
 	this._endIntervalField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._endIntervalField.reparentHtmlElement(this._endIntervalFieldId);
 	delete this._endIntervalFieldId;
@@ -1172,7 +1166,7 @@ function() {
 										  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 										  validationStyle: DwtInputField.ONEXIT_VALIDATION,
 										  validator: this._endByDateValidator, 
-										  validatorCtxtObj: this, inputId:"RECUR_END_BY_FIELD"});
+										  validatorCtxtObj: this, inputId:"RECUR_END_BY_FIELD_" + uid});
 	this._endByField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._endByField.reparentHtmlElement(this._endByFieldId);
 	Dwt.setSize(this._endByField.getInputElement(), Dwt.DEFAULT, "22");
@@ -1184,7 +1178,7 @@ function() {
 										  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 										  validationStyle: DwtInputField.ONEXIT_VALIDATION,
 										  validator: this._positiveIntValidator,
-										  validatorCtxtObj: this, inputId: "RECUR_DAILY_FIELD"});
+										  validatorCtxtObj: this, inputId: "RECUR_DAILY_FIELD_" + uid});
 	this._dailyField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._dailyField.reparentHtmlElement(this._dailyFieldId);
 	delete this._dailyFieldId;
@@ -1195,7 +1189,7 @@ function() {
 										   errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 										   validationStyle: DwtInputField.ONEXIT_VALIDATION,
 										   validator: this._weeklyValidator,
-										   validatorCtxtObj: this, inputId:"RECUR_WEEKLY_FIELD"});
+										   validatorCtxtObj: this, inputId:"RECUR_WEEKLY_FIELD_" + uid});
 	this._weeklyField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._weeklyField.reparentHtmlElement(this._weeklyFieldId);
 	delete this._weeklyFieldId;
@@ -1205,7 +1199,7 @@ function() {
 											   initialValue: "1", size: 2, maxLen: 2,
 											   errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 											   validationStyle: DwtInputField.ONEXIT_VALIDATION,
-											   validatorCtxtObj: this, inputId:"RECUR_MONTHLY_DAY_FIELD"});
+											   validatorCtxtObj: this, inputId:"RECUR_MONTHLY_DAY_FIELD_" + uid});
 	this._monthlyDayField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._monthlyDayField.reparentHtmlElement(this._monthlyDayFieldId);
 	this._monthlyDayField.setValidNumberRange(1, 31);
@@ -1216,7 +1210,7 @@ function() {
 											   errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 											   validationStyle: DwtInputField.ONEXIT_VALIDATION,
 											   validator: this._positiveIntValidator,
-											   validatorCtxtObj: this, inputId:"RECUR_MONTHLY_MONTH_FIELD"});
+											   validatorCtxtObj: this, inputId:"RECUR_MONTHLY_MONTH_FIELD_" + uid});
 	this._monthlyMonthField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._monthlyMonthField.reparentHtmlElement(this._monthlyMonthFieldId);
 	delete this._monthlyMonthFieldId;
@@ -1226,7 +1220,7 @@ function() {
 												   errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 												   validationStyle: DwtInputField.ONEXIT_VALIDATION,
 												   validator: this._positiveIntValidator,
-												   validatorCtxtObj: this, inputId:"RECUR_MONTHLY_MONTH_FIELD_EX"});
+												   validatorCtxtObj: this, inputId:"RECUR_MONTHLY_MONTH_FIELD_EX_" + uid});
 	this._monthlyMonthFieldEx.setDisplay(Dwt.DISPLAY_INLINE);
 	this._monthlyMonthFieldEx.reparentHtmlElement(this._monthlyMonthFieldExId);
 	delete this._monthlyMonthFieldExId;
@@ -1237,7 +1231,7 @@ function() {
 											  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 											  validationStyle: DwtInputField.ONEXIT_VALIDATION,
 											  validator: this._yearlyDayValidator,
-											  validatorCtxtObj: this, inputId:"RECUR_YEARLY_DAY_FIELD"});
+											  validatorCtxtObj: this, inputId:"RECUR_YEARLY_DAY_FIELD_" + uid});
 	this._yearlyDayField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._yearlyDayField.reparentHtmlElement(this._yearlyDayFieldId);
 	delete this._yearlyDayFieldId;
@@ -1307,7 +1301,6 @@ ZmApptRecurDialog.prototype._createTabGroup = function() {
 	daily.addMember(this._dailyWeekdayRadio); // radio: every weekday
 	daily.addMember(this._dailyFieldRadio); // radio: every {# days}
 	daily.addMember(this._dailyField); // input: # days
-
 	// section: weekly
 	var weekly = this._sectionTabGroups[ZmRecurrence.WEEKLY];
 	weekly.addMember(this._weeklyDefaultRadio); // radio: every {day}
@@ -1407,8 +1400,8 @@ ZmApptRecurDialog.prototype._setRepeatSection =
 function(repeatType) {
 	var isNone = repeatType == ZmRecurrence.NONE;
 
-	Dwt.setVisible(this._repeatSectionDiv, !isNone);
-	Dwt.setVisible(this._repeatEndDiv, !isNone);
+    Dwt.setVisible(this._repeatSectionDiv, !isNone);
+    Dwt.setVisible(this._repeatEndDiv, !isNone);
 
 	var newSection = null;
 	switch (repeatType) {
@@ -1423,14 +1416,14 @@ function(repeatType) {
 		if (this._currentSection) {
 			Dwt.setVisible(this._currentSection, false);
 		}
-		Dwt.setVisible(newSection, true);
-		this._currentSection = newSection;
+        Dwt.setVisible(newSection, true);
+        this._currentSection = newSection;
 
-		this._repeatTabGroup.removeAllMembers();
-		this._repeatTabGroup.addMember(this._sectionTabGroups[repeatType]);
+        this._repeatTabGroup.removeAllMembers();
+        this._repeatTabGroup.addMember(this._sectionTabGroups[repeatType]);
 
-		this._controlsTabGroup.addMember(this._repeatTabGroup);
-		this._controlsTabGroup.addMember(this._endTabGroup);
+        this._controlsTabGroup.addMember(this._repeatTabGroup);
+        this._controlsTabGroup.addMember(this._endTabGroup);
 
         this.resizeSelect(repeatType);
 	}
@@ -1438,7 +1431,6 @@ function(repeatType) {
 
 ZmApptRecurDialog.prototype.resizeSelect =
 function(repeatType) {
-
     if(repeatType = ZmRecurrence.MONTHLY) {
         this._resizeSelect(this._monthlyDaySelect);
         this._resizeSelect(this._monthlyWeekdaySelect);
@@ -1817,7 +1809,6 @@ function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var ard = AjxCore.objectWithId(el._recurDialogId);
 	var dwtObj = DwtControl.findControl(el);
-
 	switch (dwtObj) {
 		case ard._endIntervalField: 	ard._endAfterRadio.checked = true; break;
 		case ard._endByField: 			ard._endByRadio.checked = true; break;
