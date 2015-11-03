@@ -43,6 +43,7 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, 
 
 	DwtComposite.call(this, {parent:parent, posStyle:posStyle, className:className, id:uid});
 
+    this.uid = uid;
 	this._attendees = attendees;
 	this._controller = controller;
 	this._dateInfo = dateInfo;
@@ -929,7 +930,7 @@ function(repeatType) {
 ZmCalItemEditView.prototype._initRecurDialog =
 function(repeatType) {
 	if (!this._recurDialog) {
-		this._recurDialog = new ZmApptRecurDialog(appCtxt.getShell());
+		this._recurDialog = new ZmApptRecurDialog(appCtxt.getShell(), this.uid);
 		this._recurDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._recurOkListener));
 		this._recurDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._recurCancelListener));
 	}
