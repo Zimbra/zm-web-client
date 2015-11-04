@@ -44,12 +44,13 @@
     <span class="td left">
         <a id="TAG${tag.id}" href="${fn:escapeXml(url)}">
             <c:if test="${ua.isiPad eq false}"><span class="Img ImgTag${zm:capitalize(tag.color)}"></span></c:if>&nbsp;
-            ${fn:escapeXml(tag.name)}
+            <c:set var="tagName" value="${zm:truncate(tag.name,20,true)}"/>
+            ${fn:escapeXml(tagName)}
             <c:if test="${tag.hasUnread}"> (${tag.unreadCount}) </c:if>
         </a>
     </span>
         <span class="td right editFix" width="5%"> <a class="Img ImgEdit"
-                        href="?st=${zm:cook(param.st)}&_ajxnoca=1&showTagCreate=1&tid=${tag.id}">&nbsp;</a></span>
+                        href="?st=${zm:cook(param.st)}&showTagCreate=1&tid=${tag.id}">&nbsp;</a></span>
     </div>
     </div>        
 </div>
