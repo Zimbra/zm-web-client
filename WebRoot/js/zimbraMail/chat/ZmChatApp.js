@@ -100,22 +100,6 @@ ZmChatApp.prototype.initChatUI = function(response) {
     var self = this;
     var converseObject;
 
-    var contains = function (attr, query) {
-        return function (item) {
-            if (typeof attr === 'object') {
-                var value = false;
-                _.each(attr, function (a) {
-                    value = value || item.get(a).toLowerCase().indexOf(query.toLowerCase()) !== -1;
-                });
-                return value;
-            } else if (typeof attr === 'string') {
-                return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) !== -1;
-            } else {
-                throw new Error('Wrong attribute type. Must be string or array.');
-            }
-        };
-    };
-
     converse.plugins.add('zmChatPlugin', {
         initialize: function() {
             self._registerGlobals();
@@ -627,7 +611,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     this.$tooltip.hide();
 
                     var addContactPanel = $('.add-contact-flyout'),
-                        button = addContactPanel.find('.button button'),
+                        button = addContactPanel.find('.button button')
                         formHeading = $('.flyout-heading').children().first();
 
                     this.closeAddContactForm();
@@ -675,8 +659,6 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 searchContacts: function (ev) {
                     ev.preventDefault();
 
-                    var __ = $.proxy(utils.__, converseObject);
-
                     var searchString = $(ev.target).val() || " ",
                         searchPanel = $('.search-converse-contact'),
                         searchedContactPanel = $('.search-converse-contact .zmsearch-xmpp'),
@@ -690,7 +672,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     _.each(matchedContacts, function (contactItem) {
                         searchedContactPanel.append(converseObject.templates.roster_item(
                             _.extend(contactItem.toJSON(), {
-                                'desc_status': self._getChatUserStatus(contactItem.get('chat_status'), contactItem.get('user_id')),
+                                'desc_status': STATUSES[contactItem.get('chat_status') || 'offline'],
                                 'desc_chat': __('Click to chat with this contact'),
                                 'desc_remove': __('Click to remove this contact'),
                                 'allow_contact_removal': false
@@ -740,92 +722,6 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
 
                     converseObject.controlboxView.$formSubmitBtn.enable();
-                },
-
-                renderLoginPanel: function() {
-                    this.$el.html(converseObject.templates.controlbox(this.model.toJSON()));
-                    var cfg = {'$parent': this.$el.find('.controlbox-panes'), 'model': this};
-                    if (!this.loginpanel) {
-                        this.loginpanel = new converseObject.LoginPanel(cfg);
-                        if (converseObject.allow_registration) {
-                            this.registerpanel = new converseObject.RegisterPanel(cfg);
-                        }
-                    } else {
-                        this.loginpanel.delegateEvents().initialize(cfg);
-                        if (converseObject.allow_registration) {
-                            this.registerpanel.delegateEvents().initialize(cfg);
-                        }
-                    }
-
-                    // Model's "connected" property is set to false if connection drops
-                    if (this.model.get('connected') === false) {
-                        var spinner = this.loginpanel.$('.spinner');
-                        var connFeedback = this.loginpanel.$('.conn-feedback');
-                        var connError = this.loginpanel.$('.conn-error');
-                        var connErrorRetry = this.loginpanel.$('.conn-error-retry');
-                        var connErrorRetryBtn = this.loginpanel.$('.conn-retry');
-                        var minimizedRoster = $('#toggle-controlbox');
-                        var controlbox = $('#controlbox');
-
-                        spinner.hide();
-                        connFeedback.hide();
-                        connError.html(ZmMsg.chatConnectionError);
-                        connErrorRetryBtn.html(ZmMsg.chatRetryButton);
-                        connError.show();
-                        // TODO: Enable this as part of other bug fix.
-                        //connErrorRetry.show();
-
-                        this.loginpanel.render();
-
-                        var chatPaneHeader = $('#controlbox-tabs').find('a[href=#login-dialog]');
-                        chatPaneHeader.html(ZmMsg.chatFeatureDisconnected);
-
-                        //Append a minimize button in case of XMPP service disconnected.
-                        $('#controlbox-tabs li:first').after('<a href="#controlbox-tabs" class="conn-disconnect icon-opened"></a>');
-
-                        var thiz = this;
-
-                        $('#controlbox-tabs .conn-disconnect').on('click', function() {
-                            thiz.toggleControlBox();
-                        });
-
-                        // If the roster was minimized and connection dropped, replace it with our custom header pane and controlbox panel.
-                        if (minimizedRoster.is(':visible')) {
-                            minimizedRoster.hide();
-                            controlbox.show();
-                            //show controlbox in minimized state
-                            this.toggleControlBox();
-                        }
-                    }
-                    else {
-                        // Keep control box rendering separate in case of connected/disconnected
-                        this.loginpanel.render();
-                    }
-
-                    if (converseObject.allow_registration) {
-                        this.registerpanel.render().$el.hide();
-                    }
-                    this.initDragResize();
-
-                    return this;
-                },
-
-                toggleControlBox: function() {
-                    var boxFlyout = $('.box-flyout');
-                    var toggleControlIcon = $('#controlbox-tabs .conn-disconnect');
-                    var height = $('#controlbox-tabs').find('a[href=#login-dialog]').height();
-
-                    if (boxFlyout.height() < 40) {
-                        //converse default_box_height
-                        boxFlyout.height(400);
-                        toggleControlIcon.addClass('icon-opened');
-                        toggleControlIcon.removeClass('icon-closed');
-                    }
-                    else {
-                        boxFlyout.height(height);
-                        toggleControlIcon.removeClass('icon-opened');
-                        toggleControlIcon.addClass('icon-closed');
-                    }
                 }
             },
 
@@ -1099,17 +995,3 @@ function () {
 
     return tooltip.join('');
 }
-
-ZmChatApp.prototype._getChatUserStatus =
-function(chat_status, fullname) {
-    switch (chat_status) {
-        case 'online' :
-            return AjxMessageFormat.format(ZmMsg.chatUserOnline, fullname);
-        case 'away' :
-            return AjxMessageFormat.format(ZmMsg.chatUserAway, fullname);
-        case 'dnd' :
-            return AjxMessageFormat.format(ZmMsg.chatUserBusy, fullname);
-        case 'offline' :
-            return AjxMessageFormat.format(ZmMsg.chatUserOffline, fullname);
-    }
-};
