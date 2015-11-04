@@ -22,7 +22,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:set var="label" value="${zm:getFolderPath(pageContext, folder.id)}"/>
+<c:set var="label" value="${zm:getTruncatedFolderPath(pageContext, folder.id, 20, true)}"/>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <div <c:if test="${!ua.isIE}">onclick='return zClickLink("FLDR${folder.id}")'</c:if> class='Folders ${param.sid eq folder.id ? 'StatusWarning' : ''} list-row${folder.hasUnread ? "-unread" : ""}'>
     <div class="tbl">
