@@ -298,6 +298,12 @@ A:visited { @Text-link@ }
 	@NormalOutsetBorder@
 }
 
+.ZhDocPreviewContent {
+	border-width:1px; 
+	vertical-align: baseline; 
+	padding-left:5px;
+}
+
 .SearchBar {
 	@SkinBorderSearch@
 	padding: 5px;

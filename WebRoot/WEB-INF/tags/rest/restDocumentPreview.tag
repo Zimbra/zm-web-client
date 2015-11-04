@@ -152,7 +152,7 @@
             <table width="100%" height="100%" cellpadding="5" cellspacing="5">
                 <tbody>
                     <tr>
-                        <td class="ZhAppContent" style="border-width:1px; vertical-align: baseline">
+                        <td class="ZhAppContent ZhDocPreviewContent">
                             <div style="width:100%; height:100%;" id="zdocument">
                                 <!-- document content -->
                             </div>
