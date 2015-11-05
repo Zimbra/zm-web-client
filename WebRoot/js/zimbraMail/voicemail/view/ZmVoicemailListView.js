@@ -207,13 +207,6 @@ function(list, noResultsOk, doAdd) {
 	}
 };
 
-ZmVoicemailListView.prototype._addRow =
-function(row, index) {
-	ZmVoiceListView.prototype._addRow.call(this, row, index);
-	var voicemail = this.getItemFromElement(row);
-	this._addPlayerToRow(row, voicemail);
-};
-
 ZmVoicemailListView.prototype._addPlayerToRow =
 function(row, voicemail) {
 	var list = this.getList();
