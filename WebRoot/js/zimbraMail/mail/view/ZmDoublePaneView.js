@@ -261,17 +261,18 @@ function(newWidth, newHeight, force) {
 		var sash = this.getSash();
 		var sashSize = sash.getSize();
 		var sashThickness = readingPaneOnRight ? sashSize.x : sashSize.y;
+		var itemViewMargins = this._itemView.getMargins();
 		if (readingPaneOnRight) {
 			var listViewWidth = this.getReadingSashPosition(true) || (Number(ZmMsg.LISTVIEW_WIDTH)) || Math.floor(newWidth / 2.5);
 			this._mailListView.resetSize(listViewWidth, newHeight);
 			sash.setLocation(listViewWidth, 0);
 			this._itemView.setBounds(listViewWidth + sashThickness, 0,
-									newWidth - (listViewWidth + sashThickness), newHeight);
+									newWidth - (listViewWidth + sashThickness + itemViewMargins.left + itemViewMargins.right), newHeight);
 		} else {
 			var listViewHeight = this.getReadingSashPosition(false) || (Math.floor(newHeight / 2) - DwtListView.HEADERITEM_HEIGHT);
 			this._mailListView.resetSize(newWidth, listViewHeight);
 			sash.setLocation(0, listViewHeight);
-			this._itemView.setBounds(0, listViewHeight + sashThickness, newWidth,
+			this._itemView.setBounds(0, listViewHeight + sashThickness, newWidth - itemViewMargins.left - itemViewMargins.right,
 									newHeight - (listViewHeight + sashThickness));
 		}
 	} else {
