@@ -588,6 +588,10 @@ INPUT[type="text"].search_input-expanded:focus {
 .ZmConvView, 
 .ZmConvView2 { @ConvView@ }
 
+.ZmConvView2 * {
+	@FixBoxModel@
+}
+
 .Expand {
 	padding-left:5px;
 	width:16px;

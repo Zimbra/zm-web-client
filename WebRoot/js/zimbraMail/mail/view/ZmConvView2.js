@@ -373,11 +373,13 @@ function(scrollMsgView) {
 	if (!container || !header || !this._messagesDiv) { return; }
 	
 	var mySize = container.getSize(AjxEnv.isIE);
+	var scrollbarSizes = Dwt.getScrollbarSizes(this.getHtmlElement());
 	var myHeight = mySize ? mySize.y : 0;
 	var headerSize = header.getSize();
 	var headerHeight = headerSize ? headerSize.y : 0;
-	var messagesHeight = myHeight - headerHeight - 1;
-	Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
+	var messagesHeight = myHeight - headerHeight - 1 - scrollbarSizes.y;
+	var messagesWidth = this.getSize().x - scrollbarSizes.x;
+	Dwt.setSize(this._messagesDiv, messagesWidth, messagesHeight);
 
 	// widen msg views if needed
 	if (this._msgViewList && this._msgViewList.length) {
