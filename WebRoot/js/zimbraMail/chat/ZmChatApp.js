@@ -33,6 +33,14 @@ ZmChatApp.prototype.isChatEnabled = true;
 ZmApp.CHAT = ZmId.APP_CHAT;
 ZmApp.CLASS[ZmApp.CHAT] = "ZmChatApp";
 
+ZmChatApp.OFFLINE = 'offline';
+ZmChatApp.BUSY = 'dnd';
+ZmChatApp.INACTIVE = 'inactive';
+ZmChatApp.ACTIVE = 'active';
+ZmChatApp.COMPOSING = 'composing';
+ZmChatApp.PAUSED = 'paused';
+ZmChatApp.GONE = 'gone';
+
 ZmChatApp.prototype._defineAPI =
 function() {
     // TODO
@@ -131,21 +139,13 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
                     fullname = AjxUtil.isEmpty(fullname) ? item.get('jid'): fullname;
 					if (this.$el.is(':visible')) {
-                        if (chat_status === 'offline') {
-                            this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatUserOffline, fullname));
-                        } else if (this.$el.find('div.chat-event:contains("' + AjxMessageFormat.format(ZmMsg.chatUserOffline, fullname) +'")').length) {
+                        if (chat_status === ZmChatApp.OFFLINE || chat_status === ZmChatApp.BUSY) {
+                            var chat_status_display = (chat_status === ZmChatApp.BUSY) ? ZmMsg.chatStatusBusy : ZmMsg.chatStatusOffline;
+                            this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatMsgDeliveryRestricted, [fullname, chat_status_display]));
+                            $('.chat-textarea').prop('disabled',true);
+                        } else {
                             this.$el.find('div.chat-event').remove();
-                            switch (chat_status) {
-                                case 'online' :
-                                    this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatUserOnline, fullname));
-                                    break;
-                                case 'away' :
-                                    this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatUserAway, fullname));
-                                    break;
-                                case 'dnd' :
-                                    this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatUserBusy, fullname));
-                                    break;
-                            }
+                            $('.chat-textarea').prop('disabled', false);
                         }
                     }
 
@@ -157,15 +157,49 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     }
                 },
 
-                sendMessage: function(text) {
-                    var userChatStatus = this.model.get('chat_status');
+                onMessageAdded: function (message) {
+                    var time = message.get('time'),
+                        times = this.model.messages.pluck('time'),
+                        previous_message, idx, this_date, prev_date, text, match;
 
-                    if (userChatStatus === ZmMsg.chatStatusOffline.toLowerCase() || userChatStatus === ZmMsg.chatStatusDnD.toLowerCase()) {
-                        this.$el.find('.chat-content').append("<span class='offline-error'>" + ZmMsg.chatMsgDeliveryRestricted + "</span><br>");
-                        return;
+                    // If this message is on a different day than the one received
+                    // prior, then indicate it on the chatbox.
+                    idx = _.indexOf(times, time)-1;
+                    if (idx >= 0) {
+                        previous_message = this.model.messages.at(idx);
+                        prev_date = moment(previous_message.get('time'));
+                        if (prev_date.isBefore(time, 'day')) {
+                            this_date = moment(time);
+                            this.$el.find('.chat-content').append(converse.templates.new_day({
+                                isodate: this_date.format("YYYY-MM-DD"),
+                                datestring: this_date.format("dddd MMM Do YYYY")
+                            }));
+                        }
                     }
-
-                    this._super.sendMessage.apply(this, [text]);
+                    if (!message.get('message')) {
+                        if (message.get('chat_state') === ZmChatApp.COMPOSING) {
+                            this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatUserTyping, message.get('fullname')));
+                            return;
+                        } else if (message.get('chat_state') === ZmChatApp.PAUSED) {
+                            //this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
+                            return;
+                        } else if (_.contains([ZmChatApp.INACTIVE, ZmChatApp.ACTIVE], message.get('chat_state'))) {
+                            this.$el.find('.chat-content div.chat-event').remove();
+                            return;
+                        } else if (message.get('chat_state') === ZmChatApp.GONE) {
+                            //this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
+                            return;
+                        }
+                    } else {
+                        this.showMessage(_.clone(message.attributes));
+                    }
+                    if ((message.get('sender') != 'me') && (converseObject.windowState == 'blur')) {
+                        converseObject.incrementMsgCounter();
+                    }
+                    this.scrollDown();
+                    if (!this.model.get('minimized') && !this.$el.is(':visible')) {
+                        this.show();
+                    }
                 },
 
                 insertIntoPage: function () {
@@ -173,12 +207,14 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 },
 
                 show: function (callback) {
-                    var userChatStatus = this.model.get('chat_status');
+                    var chat_status = this.model.get('chat_status');
                     var fullname = this.model.get('fullname');
                     fullname = AjxUtil.isEmpty(fullname) ? item.get('jid'): fullname;
                     //ZCS change - Notify user about recipient being offline.
-                    if (userChatStatus === ZmMsg.chatStatusOffline.toLowerCase() || userChatStatus === ZmMsg.chatStatusDnD.toLowerCase()) {
-                        this.$el.find('.chat-content').append("<span class='offline-error'>" + AjxMessageFormat.format(ZmMsg.chatOfflineNotify, fullname) + "</span><br>");
+                    if (chat_status === ZmChatApp.OFFLINE || chat_status === ZmChatApp.BUSY) {
+                        var chat_status_display = (chat_status === ZmChatApp.BUSY) ? ZmMsg.chatStatusBusy : ZmMsg.chatStatusOffline;
+                        this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatMsgDeliveryRestricted, [fullname, chat_status_display]));
+                        $('.chat-textarea').prop('disabled',true);
                     }
                     if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
                         return this.focus();
@@ -192,6 +228,13 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     }
                     this.setChatState('active');
                     return this.focus();
+                },
+
+                toggleEmoticonMenu: function (ev) {
+                    ev.stopPropagation();
+                    if (!$('.chat-textarea').prop('disabled')) {
+                        this.$el.find('.toggle-smiley ul').slideToggle(200);
+                    }
                 }
             },
             ChatBoxViews: {
