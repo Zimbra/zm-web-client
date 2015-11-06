@@ -107,6 +107,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
     var self = this;
     var converseObject;
+    var __;
 
     var contains = function (attr, query) {
         return function (item) {
@@ -128,6 +129,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
         initialize: function() {
             self._registerGlobals();
             converseObject = this.converse;
+            __ = $.proxy(utils.__, converseObject);
         },
 
         overrides: {
@@ -779,8 +781,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                    if(val === '') {
                         converseObject.controlboxView.$formSubmitBtn.disable();
                         return;
-                   }
-
+                    }
 
                     converseObject.controlboxView.$formSubmitBtn.enable();
                 },
@@ -880,10 +881,12 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
                     // ZCS - modified roster template to add online contacts count
                     var $roster_count = $('#' + ZmMsg.chatHeaderUngrouped);
-                    if (converseObject.roster.getNumOnlineContacts() === 1) {
-                        $roster_count.text(converseObject.roster.getNumOnlineContacts() + ' contact online');
+                    if (converseObject.roster.getNumOnlineContacts() === 0) {
+                        $roster_count.text(ZmMsg.chatNoContactOnline);
+                    } else if (converseObject.roster.getNumOnlineContacts() === 1) {
+                        $roster_count.text(ZmMsg.chatContactOnline);
                     } else {
-                        $roster_count.text(converseObject.roster.getNumOnlineContacts() + ' contacts online');
+                        $roster_count.text(AjxMessageFormat.format(ZmMsg.chatMultipleContactsOnline, converseObject.roster.getNumOnlineContacts()));
                     }
                     if (!$count.is(':visible')) {
                         $count.show();
@@ -907,6 +910,54 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     spinnerContainer.html(ZmMsg.chatConnecting);
 
                     return this;
+                }
+            },
+
+            RosterGroupView: {
+                render: function () {
+                    this._super.render.apply(this);
+                    this.$headerText = this.$('[id="' + this.model.get('name') + '"]');
+                    
+                    this.model.contacts.on("add", this.updateGroupHeader, this);
+                    this.model.contacts.on("change:subscription", this.updateGroupHeader, this);
+                    this.model.contacts.on("change:requesting", this.updateGroupHeader, this);
+                    this.model.contacts.on("destroy", this.updateGroupHeader, this);
+                    this.model.contacts.on("remove", this.updateGroupHeader, this);
+                    
+                    //Store string for comparison. Compare against localised string
+                    this._PENDING_CONTACTS = __("Pending contacts");
+                    this._CONTACT_REQUESTS = __('Contact requests');
+                    return this;
+                },
+                updateGroupHeader: function () {
+                    var totalContactsInGroup = this.model.contacts.length,
+                        headerText;
+                    //Fetch appropriate group header text
+                    switch (this.model.get('name')) {
+                        case this._PENDING_CONTACTS :
+                            headerText = this._getPendingContactsHeaderText(totalContactsInGroup);
+                            break;    
+                        case this._CONTACT_REQUESTS :
+                            headerText = this._getContactRequestsHeaderText(totalContactsInGroup);
+                            break;
+                    }
+                    if(headerText) {
+                        this.$headerText.html(headerText);
+                    }
+                },
+                
+                _getPendingContactsHeaderText: function (contactsCount) {
+                    var headingText = contactsCount > 1 ? 
+                                        AjxMessageFormat.format(ZmMsg.chatMultiplePendingContacts, contactsCount) 
+                                        : ZmMsg.chatPendingContact;
+                    return headingText;
+                },
+
+                _getContactRequestsHeaderText: function (contactsCount) {
+                    var headingText = contactsCount > 1 ? 
+                                            AjxMessageFormat.format(ZmMsg.chatMultipleContactsRequest, contactsCount) 
+                                            : ZmMsg.chatContactRequest;
+                    return headingText;
                 }
             }
         }
