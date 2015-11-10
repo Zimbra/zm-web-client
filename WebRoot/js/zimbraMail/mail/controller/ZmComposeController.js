@@ -642,10 +642,9 @@ function() {
     appCtxt.setStatusMsg(ZmMsg.messageSent);
 };
 
-ZmComposeController.prototype._handleErrorSendMsg =
-function(draftType, msg, ex, params) {
-	if (draftType != ZmComposeController.DRAFT_TYPE_NONE &&
-		!AjxUtil.isUndefined(this._wasDirty)) {
+ZmComposeController.prototype._handleErrorSendMsg = function(draftType, msg, ex, params) {
+
+	if (draftType !== ZmComposeController.DRAFT_TYPE_NONE && !AjxUtil.isUndefined(this._wasDirty)) {
 		this._composeView._isDirty = this._wasDirty;
 		delete this._wasDirty;
 	}
@@ -662,21 +661,20 @@ function(draftType, msg, ex, params) {
         var errorMsg = null;
         var showMsg = false;
 		var style = null;
-        if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
+        if (ex.code === ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
             var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
-            var invalidMsg = (invalid && invalid.length)
-                ? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses, invalid.join(", ")) : null;
+            var invalidMsg = invalid && invalid.length ? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses, invalid.join(", ")) : null;
             errorMsg = ZmMsg.sendErrorAbort + "<br/>" +  AjxStringUtil.htmlEncode(invalidMsg);
             this.popupErrorDialog(errorMsg, ex, true, true, false, true);
             retVal = true;
-        } else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
+        }
+        else if (ex.code === ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
             var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
-            errorMsg = (invalid && invalid.length)
-                ? AjxMessageFormat.format(ZmMsg.sendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
-                : ZmMsg.sendErrorAbort;
+            errorMsg = invalid && invalid.length ? AjxMessageFormat.format(ZmMsg.sendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", "))) : ZmMsg.sendErrorAbort;
             showMsg = true;
-        } else if (ex.code == AjxException.CANCELED) {
-            if (draftType == ZmComposeController.DRAFT_TYPE_AUTO) {
+        }
+        else if (ex.code == AjxException.CANCELED) {
+            if (draftType === ZmComposeController.DRAFT_TYPE_AUTO) {
 				//note - this interval is not really used anymore. Only the idle timer is used. This is only used as a boolean checkbox now. I'm pretty sure.
                 if (!this._autoSaveInterval) {
                     // Request was cancelled due to a ZmRequestMgr send timeout.
@@ -696,8 +694,13 @@ function(draftType, msg, ex, params) {
             errorMsg = ZmMsg.cancelSendMsgWarning;
             this._composeView.setBackupForm();
             retVal = true;
-        } else if (ex.code == ZmCsfeException.MAIL_QUOTA_EXCEEDED) {
+        }
+        else if (ex.code === ZmCsfeException.MAIL_QUOTA_EXCEEDED) {
             errorMsg = ZmMsg.errorQuotaExceeded;
+        }
+        else if (ex.code === ZmCsfeException.MAIL_NO_SUCH_CONTACT) {
+            errorMsg = ZmMsg.vcardContactGone;
+            showMsg = true;
         }
 
         if (this._uploadingProgress){
@@ -708,7 +711,7 @@ function(draftType, msg, ex, params) {
 				style = DwtMessageDialog.WARNING_STYLE;
                 showMsg = true;
 			}
-			else if (ex.code == ZmCsfeException.MAIL_NO_SUCH_MSG) {
+			else if (ex.code === ZmCsfeException.MAIL_NO_SUCH_MSG) {
                 // The message was deleted while upload was in progress (likely a discarded draft). Ignore the error.
                 DBG.println(AjxDebug.DBG1, "Message was deleted while uploading a file; ignore the SaveDraft 'No Such Message' error." );
                 retVal  = true;
@@ -718,6 +721,7 @@ function(draftType, msg, ex, params) {
                 showMsg = true;
 			}
         }
+
         if (errorMsg && showMsg) {
 			this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, errorMsg, style || DwtMessageDialog.CRITICAL_STYLE, null, true);
             retVal = true;
