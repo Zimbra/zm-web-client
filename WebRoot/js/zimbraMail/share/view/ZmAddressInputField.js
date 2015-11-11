@@ -1122,6 +1122,9 @@ function(actionCode, ev) {
 
 	var selCount = this.getSelectionCount();
 	if (!selCount || this._editMode) {
+        // it might be nicer to allow arrowing out of the field (eg right arrow when at end of input) to move to
+        // another bubble or toolbar control, but getting the cursor position is not reliable
+        ev.forcePropagate = true;
 		return true;
 	}
 	DBG.println("aif", "handle shortcut: " + actionCode);
