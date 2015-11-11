@@ -1341,19 +1341,25 @@ function(components) {
  * 
  * @private
  */
-ZmAppViewMgr.prototype._historyChangeListener =
-function(ev) {
-	if (appCtxt.inStartup) { return; }
-	if (!(ev && ev.data)) { return; }
+ZmAppViewMgr.prototype._historyChangeListener = function(ev) {
+
+	if (appCtxt.inStartup) {
+        return;
+    }
+	if (!(ev && ev.data)) {
+        return;
+    }
 	if (this._ignoreHistoryChange) {
 		this._ignoreHistoryChange = false;
 		return;
 	}
 
-	var dlg = DwtBaseDialog.getActiveDialog();
-	if (dlg && dlg.isPoppedUp()) {
-		dlg.popdown();
-	}
+	var dlg;
+    while (dlg = DwtBaseDialog.getActiveDialog()) {
+        if (dlg && dlg.isPoppedUp()) {
+            dlg.popdown();
+        }
+    }
 
 	var hashIndex = parseInt(ev.data);
 	this._noHistory = true;
