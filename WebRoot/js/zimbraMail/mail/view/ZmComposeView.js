@@ -203,7 +203,7 @@ function(params) {
 	}
 
 	this._setSubject(action, msg || (params.selectedMessages && params.selectedMessages[0]), params.subjOverride);
-	this._setBody(action, msg, params.extraBodyText);
+	this._setBody(action, msg, params.extraBodyText, false, false, params.extraBodyTextIsExternal);
 	if (params.extraBodyText) {
 		this._isDirty = true;
 	}
@@ -995,9 +995,7 @@ function(composeMode, initOnly) {
 	this._htmlEditor.setMode(composeMode);
 		
 	if (modeSwitch) {
-		// Wrap plain text that is converted into html with a div, so that it is detected as html in setBody1
-		// and doesn't get doubly converted.
-		userText = htmlMode ? "<div>" + AjxStringUtil.convertToHtml(userText) + "</div>" : AjxStringUtil.trim(this._htmlToText(userText)) + this._crlf;
+		userText = htmlMode ? AjxStringUtil.convertToHtml(userText) : AjxStringUtil.trim(this._htmlToText(userText)) + this._crlf;
 		var op = htmlMode ? ZmOperation.FORMAT_HTML : ZmOperation.FORMAT_TEXT;
 		this.resetBody({ extraBodyText:userText, quotedText:quotedText, op:op, keepAttachments:true });
 	}
@@ -1980,7 +1978,7 @@ function(action, msg, subjOverride) {
 };
 
 ZmComposeView.prototype._setBody =
-function(action, msg, extraBodyText, noEditorUpdate, keepAttachments) {
+function(action, msg, extraBodyText, noEditorUpdate, keepAttachments, extraBodyTextIsExternal) {
 		
 	this._setReturns();
 	var htmlMode = (this._composeMode === Dwt.HTML);
@@ -2019,10 +2017,10 @@ function(action, msg, extraBodyText, noEditorUpdate, keepAttachments) {
 	// make sure we've loaded the part with the type we want to reply in, if it's available
 	if (msg && (incOptions.what === ZmSetting.INC_BODY || incOptions.what === ZmSetting.INC_SMART)) {
 		var desiredPartType = htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
-		msg.getBodyPart(desiredPartType, this._setBody1.bind(this, action, msg, extraBodyText, noEditorUpdate, keepAttachments));
+		msg.getBodyPart(desiredPartType, this._setBody1.bind(this, action, msg, extraBodyText, noEditorUpdate, keepAttachments, extraBodyTextIsExternal));
 	}
 	else {
-		this._setBody1(action, msg, extraBodyText, noEditorUpdate, keepAttachments);
+		this._setBody1(action, msg, extraBodyText, noEditorUpdate, keepAttachments, extraBodyTextIsExternal);
 	}
 };
 
@@ -2079,7 +2077,7 @@ AjxUtil.foreach(ZmComposeView.BC_ALL_COMPONENTS, function(comp, index) {
 ZmComposeView.BC_HTML_MARKER_ATTR = "data-marker";
 
 ZmComposeView.prototype._setBody1 =
-function(action, msg, extraBodyText, noEditorUpdate, keepAttachments) {
+function(action, msg, extraBodyText, noEditorUpdate, keepAttachments, extraBodyTextIsExternal) {
 		
 	var htmlMode = (this._composeMode === Dwt.HTML);
 	var isDraft = (action === ZmOperation.DRAFT);
@@ -2090,7 +2088,7 @@ function(action, msg, extraBodyText, noEditorUpdate, keepAttachments) {
 
 	if (extraBodyText) {
         // convert text if composing as HTML (check for opening < to see if content is already HTML, should work most of the time)
-        if (htmlMode && extraBodyText.charAt(0) !== '<') {
+        if (extraBodyTextIsExternal && htmlMode && extraBodyText.charAt(0) !== '<') {
             extraBodyText = AjxStringUtil.convertToHtml(extraBodyText);
         }
 		this.setComponent(ZmComposeView.BC_TEXT_PRE, this._normalizeText(extraBodyText, htmlMode));
