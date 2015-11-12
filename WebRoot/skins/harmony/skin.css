@@ -93,7 +93,15 @@
 }
 
 .overviewHeader>TABLE {
-	border-width:0px;
+	border-color:transparent;
+}
+
+.overviewHeader-selected > TABLE {
+	border-color: @SelC@;
+}
+
+.overviewHeader-selected-focused > TABLE {
+	@FocusBorder@
 }
 
 .overviewHeader TD {

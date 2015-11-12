@@ -656,29 +656,20 @@ LI.RowDouble, LI.Row {list-style: none;}
 	@TreeHeaderText@
 }
 
-.overviewHeader-selected {
-    @SelectedBg-blurred@
-}
-
-.overviewHeader-selected-focused {
-    @SelectedBg@
-}
-
 .overviewHeader .imageCell {
 	@ImagePadding@
 	white-space:nowrap;	/* ??? */
 }
 
-/* IE doesn't support backgrounds on TABLE so put bkgd on TD */
 .overviewHeader TD 		{
 	@TreeHeaderBg@
 }
 
-.overviewHeader-selected TD {
+.overviewHeader.overviewHeader-selected TD {
 	@TreeHeaderSelectedBg@
 }
 
-.overviewHeader-selected-focused TD {
+.overviewHeader.overviewHeader-selected.overviewHeader-selected-focused TD {
 	@TreeHeaderFocusedBg@
 }
 

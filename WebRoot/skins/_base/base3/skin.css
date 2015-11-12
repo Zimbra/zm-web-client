@@ -571,7 +571,7 @@ SELECT						{	@FieldBorder@	}
 /*.DwtListView-ColHeader			{ height:1.8rem; height:19px;					}*/
 .DwtListView-Column					{ background-color:@lighten(AppC,33)@; 		}
 .DwtListView-Column TD				{ color:@darken(AppC,55)@; 					}
-.overviewHeader			{ background-color:@darken(AppC,20)@; border:0px; padding:1px 0px; 	}
+.overviewHeader			{ border: 0px; padding:1px 0px; 	}
 .overviewHeader>TABLE 		{ border:1px solid white; 	}
 .overviewHeader .ZButton	{ height:auto;	}
 .FirstOverviewHeader.overviewHeader { padding-top:0px;	}
