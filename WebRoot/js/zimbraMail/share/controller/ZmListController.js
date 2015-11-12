@@ -818,9 +818,6 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 		lv._setNextSelection();
 	}
 
-	if (!appCtxt.isChildWindow) {
-		appCtxt.getAppController().focusContentPane();
-	}
 	this._searchPending = false;
 };
 
