@@ -113,7 +113,7 @@ ZmShareTreeView.prototype.removeNode = function(oldNode) {
 ZmShareTreeView.prototype._createTreeItem = function(parent, organizer, index, tooltip) {
 	var treeItemId = "ZmShareTreeItem_" + ZmShareTreeView.TREE_INDEX++;
     var treeItem = new DwtTreeItem({parent:parent, id: treeItemId, arrowDisabled: true, dynamicWidth: true});
-    treeItem.setText(organizer.name);
+    treeItem.setText(AjxStringUtil.htmlEncode(organizer.name));
     treeItem.setImage(organizer.getIcon());
     treeItem.setToolTipContent(tooltip);
     treeItem.setData(Dwt.KEY_ID, organizer.id);
