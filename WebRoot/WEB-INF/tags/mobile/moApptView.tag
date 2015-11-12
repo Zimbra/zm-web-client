@@ -49,7 +49,7 @@
 <form action="${currentUrl}" method="post" accept-charset="utf-8" onsubmit="return submitForm(this);">
     <input type="hidden" name="doApptAction" value="1"/>
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-    <input type="hidden" name="invId" value="${param.invId}"/>
+    <input type="hidden" name="invId" value="${zm:cook(param.invId)}"/>
     <c:set var="title" scope="request" value="${requestScope.title} : ${zm:truncate(msg.subject,10,true)}"/>
     <c:choose>
     <c:when test="${ua.isiPad eq true}">
