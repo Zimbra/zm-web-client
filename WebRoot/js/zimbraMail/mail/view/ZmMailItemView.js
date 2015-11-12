@@ -83,7 +83,7 @@ function() {
 
 ZmMailItemView.prototype.getTitle =
 function() {
-	return [ZmMsg.zimbraTitle, this._item.subject].join(": ");
+	return this._item ? [ZmMsg.zimbraTitle, this._item.subject].join(": ") : ZmMsg.zimbraTitle;
 };
 
 ZmMailItemView.prototype.setReadingPane =
