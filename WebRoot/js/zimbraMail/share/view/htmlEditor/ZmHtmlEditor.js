@@ -953,15 +953,15 @@ ZmHtmlEditor.prototype.onNodeChange = function(event) {
 	};
 
 	for (var i = 0; !found && i < event.parents.length; i++) {
-		var fontsize =
-			normalize(DwtCssStyle.getProperty(event.parents[i], 'font-size'));
+		var fontsize = normalize(DwtCssStyle.getProperty(event.parents[i], 'font-size'));
+		if (fontsize !== -1) {
+			for (var j = 0; !found && j < fontsizebtn._values.length; j++) {
+				var value = fontsizebtn._values[j].value;
 
-		for (var j = 0; !found && j < fontsizebtn._values.length; j++) {
-			var value = fontsizebtn._values[j].value;
-
-			if (normalize(value) === fontsize) {
-				fontsizebtn.value(value);
-				found = true;
+				if (normalize(value) === fontsize) {
+					fontsizebtn.value(value);
+					found = true;
+				}
 			}
 		}
 	}
