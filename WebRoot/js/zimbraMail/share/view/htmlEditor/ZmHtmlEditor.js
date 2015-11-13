@@ -254,7 +254,7 @@ function(addDivContainer, onlyInnerContent) {
 		var editor = this.getEditor(),
             content1 = "";
         if (editor) {
-            content1 = editor.getContent({format:"raw"});
+            content1 = editor.save({ format:"raw", set_dirty: false });
         }
         else {
             content1 = field.value || "";
