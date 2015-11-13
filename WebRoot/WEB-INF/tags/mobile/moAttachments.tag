@@ -58,13 +58,13 @@
                             </c:when>
                             <c:otherwise>
                                 <%-- bug: 72600 -- target="_blank" needed for iOS 5.1 to preserve session. Keeping this behavior consistent for all platforms --%>
-                                <a target="_blank" href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${zm:displaySize(pageContext,part.size)})
+                                <a href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${zm:displaySize(pageContext,part.size)})
                             </c:otherwise>
                             </c:choose>
                         </span>
                         <c:if test="${mailbox.features.viewInHtml and part.isViewAsHtmlTarget}">
                             <span>
-                                <a target="_blank" href="${fn:escapeXml(url)}&amp;view=html"><fmt:message key="viewAsHtml"/></a>
+                                <a href="${fn:escapeXml(url)}&amp;view=html"><fmt:message key="viewAsHtml"/></a>
                             </span>
                         </c:if>
                     </div>
