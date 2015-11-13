@@ -505,7 +505,7 @@ if (screen.width<=800) {
 						</table>
 					</td>
 				</c:if>
-					<td colspan="3" valign="top" style="width:100%">
+					<td colspan="3" valign="top">
 						<jsp:doBody/>
 					</td>
 				</tr>
