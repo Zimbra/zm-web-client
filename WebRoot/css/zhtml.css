@@ -43,7 +43,10 @@ SUBMIT,
 	@FontSize-normal@
 }
 
-
+.tbButton {
+    /* Bug:101998 - ButtonBorder property applies height:100% resulting in cropped button on Chrome/Safari, override it to auto.  */
+    height:auto;
+}
 
 .ZhAppLinks {
 	vertical-align: middle;
