@@ -648,7 +648,7 @@ function(ex, continuation) {
  * @private
  */
 ZmController.prototype._handleException = function(ex, continuation) {
-	
+
 	if (ex.code == AjxSoapException.INVALID_PDU) {
 		ex.code = ZmCsfeException.SVC_FAILURE;
 		ex.detail = ["contact your administrator (", ex.msg, ")"].join("");
@@ -697,7 +697,15 @@ ZmController.prototype._handleException = function(ex, continuation) {
 			ZmController.handleScriptError(ex);
 		}
         else {
-			var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg || ex.message;
+            var msg;
+
+            if (continuation.restUri.indexOf('zimbraim') > -1) {
+                msg = ZmMsg.chatXMPPError;
+            }
+            else {
+                msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg || ex.message;
+            }
+
 			this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
 		}
 	}

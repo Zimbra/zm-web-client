@@ -30,6 +30,12 @@ ZmChatApp.prototype.toString = function() {    return "ZmChatApp"; };
 
 ZmChatApp.prototype.isChatEnabled = true;
 
+ZmChatApp.isServiceRunning = false;
+
+ZmChatApp.disconnected = false;
+
+ZmChatApp.reconnecting = false;
+
 ZmApp.CHAT = ZmId.APP_CHAT;
 ZmApp.CLASS[ZmApp.CHAT] = "ZmChatApp";
 
@@ -60,16 +66,24 @@ function() {
     // Stub for login
 };
 
-ZmChatApp.prototype._init = function() {
-    if (appCtxt.get(ZmSetting.CHAT_FEATURE_ENABLED) && appCtxt.get(ZmSetting.CHAT_ENABLED)) {
-        //chain UI initialization to SOAP response via a callback
-        var callback = new AjxCallback(this, this.initChatUI);
-        //Call prebind
-        var soapDoc = AjxSoapDoc.create("GetAccountInfoRequest", "urn:zimbraAccount", null);
-        var accBy = soapDoc.set('account', appCtxt.getUsername());
-        accBy.setAttribute('by', 'name');
-        // TODO - Need to have different handler for errorCallback and it will fix Bug: 100887
-        appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode:true, errorCallback:callback, callback:callback});
+ZmChatApp.prototype._init = function(response) {
+    if (typeof response !== 'undefined' && response.isZmCsfeException) {
+        ZmChatApp.disconnected = true;
+        var msg = ZmMsg.chatXMPPError;
+        response.message = msg;
+        ZmController.prototype.popupErrorDialog.call(msg, response, true, false);
+    }
+    else {
+        if (appCtxt.get(ZmSetting.CHAT_FEATURE_ENABLED) && appCtxt.get(ZmSetting.CHAT_ENABLED)) {
+            //chain UI initialization to SOAP response via a callback
+            var callback = new AjxCallback(this, this.initChatUI);
+            //Call prebind
+            var soapDoc = AjxSoapDoc.create("GetAccountInfoRequest", "urn:zimbraAccount", null);
+            var accBy = soapDoc.set('account', appCtxt.getUsername());
+            accBy.setAttribute('by', 'name');
+            // TODO - Need to have different handler for errorCallback and it will fix Bug: 100887
+            appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode:true, errorCallback:callback, callback:callback});
+        }
     }
 };
 
@@ -130,9 +144,36 @@ ZmChatApp.prototype.initChatUI = function(response) {
             self._registerGlobals();
             converseObject = this.converse;
             __ = $.proxy(utils.__, converseObject);
+
+            // Poll the XMPP service every 30 seconds by default else it is configurable
+            setTimeout(_.bind(self._pollService, self), 30000);
         },
 
         overrides: {
+            onConnected: function() {
+                var converse = this._super.converse;
+                if (ZmChatApp.reconnecting) {
+                    converse.reconnect();
+                }
+                else {
+                    this._super.onConnected();
+                }
+            },
+
+            reconnect: function () {
+                this.converse.clearSession();
+                this.converse._tearDown();
+                this.converse.startNewBOSHSession();
+            },
+
+            clearSession: function() {
+                if (this.converse.roster) {
+                    this.converse.roster.browserStorage._clear();
+                }
+                this.converse.session.browserStorage._clear();
+                ZmChatApp.reconnecting = false;
+            },
+
             ChatBoxView: {
                 onChatStatusChanged: function(item) {
                     var chat_status = item.get('chat_status'),
@@ -570,7 +611,8 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     'click span.search-contact-flyout-close': 'closeSearchContactForm',
                     'keyup input#search': 'searchContacts',
                     "click .zmsearch-xmpp a.open-chat": 'openSearchedContactChat',
-                    'keyup #email':  'contentChanged'
+                    'keyup #email':  'contentChanged',
+                    'click a.conn-retry': 'reconnect'
                 },
                 initialize: function () {
                     this._super.initialize.apply(this);
@@ -816,8 +858,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         connError.html(ZmMsg.chatConnectionError);
                         connErrorRetryBtn.html(ZmMsg.chatRetryButton);
                         connError.show();
-                        // TODO: Enable this as part of other bug fix.
-                        //connErrorRetry.show();
+                        connErrorRetry.show();
 
                         this.loginpanel.render();
 
@@ -840,6 +881,9 @@ ZmChatApp.prototype.initChatUI = function(response) {
                             //show controlbox in minimized state
                             this.toggleControlBox();
                         }
+
+                        ZmChatApp.disconnected = true;
+                        ZmChatApp.reconnecting = false;
                     }
                     else {
                         // Keep control box rendering separate in case of connected/disconnected
@@ -870,6 +914,9 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         toggleControlIcon.removeClass('icon-opened');
                         toggleControlIcon.addClass('icon-closed');
                     }
+                },
+                reconnect: function() {
+                    self._checkIMExtensionSvcConn(null, new AjxCallback(self, self._reconnectCallbackHandler));
                 }
             },
 
@@ -1015,7 +1062,8 @@ function(params, callback) {
     if (callback) {
         callback.run();
     }
-    this._init();
+
+    this._checkIMExtensionSvcConn(null, new AjxCallback(this, this._init));
 };
 
 ZmChatApp.prototype.setPlaySoundSetting =
@@ -1205,5 +1253,63 @@ function(chat_status, fullname) {
             return AjxMessageFormat.format(ZmMsg.chatUserBusy, fullname);
         case 'offline' :
             return AjxMessageFormat.format(ZmMsg.chatUserOffline, fullname);
+    }
+};
+
+ZmChatApp.prototype._checkIMExtensionSvcConn =
+function(response, callbackhandler) {
+    if (response) {
+        if (response.isZmCsfeException) {
+            ZmChatApp.isServiceRunning = false;
+            return;
+        }
+        else {
+            ZmChatApp.isServiceRunning = true;
+            return;
+        }
+    }
+
+    var callback = callbackhandler || new AjxCallback(this, this._checkIMExtensionSvcConn);
+    var params = {
+        asyncMode: true,
+        noBusyOverlay: true,
+        callback: callback,
+        offlineCallback: callback,
+        errorCallback: callback
+    };
+
+    params.restUri = AjxUtil.formatUrl({
+        path: '/service/extension/zimbraim/'
+    });
+
+    appCtxt.getAppController().sendRequest(params);
+};
+
+ZmChatApp.prototype._pollService =
+function(response) {
+    if (response) {
+        if (response._isException || response instanceof ZmCsfeException) {
+            converse.disconnect();
+            ZmChatApp.disconnected = true;
+            ZmChatApp.reconnecting = false;
+        }
+        else {
+            if (ZmChatApp.disconnected) {
+                ZmChatApp.disconnected = false;
+                ZmChatApp.reconnecting = true;
+                this._init();
+            }
+        }
+    }
+
+    setTimeout(_.bind(this._checkIMExtensionSvcConn, this, null, new AjxCallback(this, this._pollService)), 30000);
+};
+
+ZmChatApp.prototype._reconnectCallbackHandler =
+function(response) {
+    if (!(response instanceof ZmCsfeException)) {
+        ZmChatApp.disconnected = false;
+        ZmChatApp.reconnecting = true;
+        this._init();
     }
 };
