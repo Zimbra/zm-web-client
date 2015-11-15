@@ -143,6 +143,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
         initialize: function() {
             self._registerGlobals();
             converseObject = this.converse;
+            converseObject.newChats = {};
             __ = $.proxy(utils.__, converseObject);
 
             // Poll the XMPP service every 30 seconds by default else it is configurable
@@ -213,7 +214,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         prev_date = moment(previous_message.get('time'));
                         if (prev_date.isBefore(time, 'day')) {
                             this_date = moment(time);
-                            this.$el.find('.chat-content').append(converse.templates.new_day({
+                            this.$el.find('.chat-content').append(converseObject.templates.new_day({
                                 isodate: this_date.format("YYYY-MM-DD"),
                                 datestring: this_date.format("dddd MMM Do YYYY")
                             }));
@@ -259,8 +260,14 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatMsgDeliveryRestricted, [fullname, chat_status_display]));
                         $('.chat-textarea').prop('disabled',true);
                     }
+                    var isNewChat = converseObject.newChats[this.model.get('jid')];
                     if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
-                        return this.focus();
+                        if (isNewChat) {
+                            delete converseObject.newChats[this.model.get('jid')];
+                            return this.focus();
+                        } else {
+                            return this;
+                        }
                     }
                     this.$el.fadeIn(callback);
                     if (converseObject.connection.connected) {
@@ -270,7 +277,12 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         this.initDragResize();
                     }
                     this.setChatState('active');
-                    return this.focus();
+                    if (isNewChat) {
+                        delete converseObject.newChats[this.model.get('jid')];
+                        return this.focus();
+                    } else {
+                        return this;
+                    }
                 },
 
                 toggleEmoticonMenu: function (ev) {
@@ -600,6 +612,11 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 showRemoveContactPanel: function(ev) {
                     this.controlboxPane.hide();
                     this.removeContactPanel.show();
+                },
+
+                openChat: function (ev) {
+                    converseObject.newChats[this.model.attributes.jid] = true;
+                    this._super.openChat.apply(this);
                 }
             },
 
