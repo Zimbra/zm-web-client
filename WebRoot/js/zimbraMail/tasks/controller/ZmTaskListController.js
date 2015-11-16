@@ -699,26 +699,8 @@ function(ev) {
     var tasks = this._listView[this._currentViewId].getSelection();
 
     if (!tasks || tasks.length == 0) return;
-
-    var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
-    if (!folderId) {
-        var showWarDlg = false;
-        for (var i=0, cnt=tasks.length; i<cnt; i++) {
-            if (tasks[i] && ZmTask.isInTrash(tasks[i])) {
-                showWarDlg = true;
-                break;
-            }
-        }
-        if(showWarDlg) {
-            var dialog = appCtxt.getOkCancelMsgDialog();
-            dialog.reset();
-            dialog.setMessage(ZmMsg.confirmItemDelete, DwtMessageDialog.WARNING_STYLE);
-            dialog.registerCallback(DwtDialog.OK_BUTTON, this._deleteCallback, this, [dialog]);
-            dialog.popup();
-        }
-    } else {
-       this._doDelete(this._listView[this._currentViewId].getSelection());
-    }
+    
+    this._doDelete(this._listView[this._currentViewId].getSelection());
 };
 
 ZmTaskListController.prototype._deleteCallback =

@@ -50,7 +50,7 @@ ZmTaskListView = function(parent, controller, dropTgt) {
     var params = {
 	    parent:     parent,
         posStyle:   Dwt.ABSOLUTE_STYLE,
-	    view:       ZmId.VIEW_TASKLIST,
+	    view:       this._controller.getCurrentViewId(),
 	    id:         ZmId.create(idParams, "The main task list view"),
 	    pageless:   false,
 		type:       ZmItem.TASK,
@@ -758,7 +758,7 @@ function(ev) {
 
 			// skip if this item does not belong in this list.
 
-			if (folderId && folderId != item.folderId) { continue; }			// does not belong to this folder
+			if (!folderId || folderId != item.folderId) { continue; }			// does not belong to this folder
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
 
 
