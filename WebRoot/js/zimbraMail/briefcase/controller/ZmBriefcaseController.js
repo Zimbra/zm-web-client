@@ -418,6 +418,9 @@ ZmBriefcaseController.prototype._doDelete = function(items, hardDelete) {
 	}
 
     var dialog = appCtxt.getConfirmationDialog();
+	if (AjxEnv.isIE) {
+		dialog.addPopupListener(ZmBriefcaseController._onDeleteDialogPopup);
+	}
 	dialog.popup(message, this._doDelete2.bind(this, items, hardDelete));
 };
 
@@ -1703,4 +1706,24 @@ function(items) {
 		}
 	}
 	return ZmListController.prototype._doRemoveAllTags.call(this, items);
+};
+
+/*
+** Using iframe provides a barrier to block any object below it
+*/
+ZmBriefcaseController._onDeleteDialogPopup = function(dialog) {
+	var veilOverlay = appCtxt.getShell()._veilOverlay;
+	if (!veilOverlay) {
+		return;
+	}
+	var iframe = document.createElement("IFRAME");
+	iframe.style.cssText = veilOverlay.style.cssText;
+	iframe.style.zIndex = veilOverlay.style.zIndex - 1;
+	document.body.appendChild(iframe);
+	var onDeleteDialogPopdown = function(dialog) {
+		iframe.parentNode.removeChild(iframe);
+		dialog.removePopupListener(ZmBriefcaseController._onDeleteDialogPopup);
+		dialog.removePopdownListener(onDeleteDialogPopdown);
+	};
+	dialog.addPopdownListener(onDeleteDialogPopdown);
 };
