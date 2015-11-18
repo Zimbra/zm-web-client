@@ -1342,9 +1342,12 @@ function(batchCmd) {
  * @param	{Boolean}	doRecursive		<code>true</code> to recursively empty the organizer
  * @param	{ZmBatchCommand}	batchCmd	the batch command
  * @param	{Object}	callback
+ * @param	{number}	timeout		the timeout(in seconds)
+ * @param	{AjxCallback}	errorCallback		the callback to run after timeout
+ * @param	{Boolean}	noBusyOverlay		if <code>true</code>, do not show busy overlay
  */
 ZmOrganizer.prototype.empty =
-function(doRecursive, batchCmd, callback) {
+function(doRecursive, batchCmd, callback, timeout, errorCallback, noBusyOverlay) {
 	doRecursive = doRecursive || false;
 
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
@@ -1356,7 +1359,14 @@ function(doRecursive, batchCmd, callback) {
 	// make sure we're not emptying a system object (unless it's SPAM/TRASH/SYNCFAILURES)
 	if (this.isSystem() && !isEmptyOp) { return; }
 
-	var params = {action: "empty", batchCmd: batchCmd, callback: callback};
+	var params = {
+		action: "empty",
+		batchCmd: batchCmd,
+		callback: callback,
+		timeout: timeout,
+		errorCallback: errorCallback,
+		noBusyOverlay: noBusyOverlay
+	};
 	params.attrs = (this.nId == ZmFolder.ID_TRASH)
 		? {recursive:true}
 		: {recursive:doRecursive};
@@ -2084,7 +2094,9 @@ function(params) {
 			asyncMode: true,
 			accountName: accountName,
 			callback: respCallback,
-			errorCallback: params.errorCallback
+			errorCallback: params.errorCallback,
+			timeout: params.timeout,
+			noBusyOverlay: params.noBusyOverlay
 		});
 	}
 };

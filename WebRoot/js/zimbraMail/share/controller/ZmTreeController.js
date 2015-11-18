@@ -95,6 +95,12 @@ ZmTreeController.TREE_SELECTION_SHORTCUT_DELAY = 750;
 // valid sources for drop target for different tree controllers
 ZmTreeController.DROP_SOURCES = {};
 
+// interval of retrying empty folder (seconds)
+ZmTreeController.EMPTY_FOLDER_RETRY_INTERVAL = 5;
+
+// the maximum number of trials of empty folder
+ZmTreeController.EMPTY_FOLDER_MAX_TRIALS = 6;
+
 // Abstract protected methods
 
 // Enables/disables operations based on the given organizer ID
@@ -747,13 +753,48 @@ function(organizer) {
 /**
  * 
  * @param {ZmOrganizer}	organizer		the organizer
+ * @param {int}	trialCounter		the number of trials of empty folder
+ * @param {AjxException}	ex		the exception
  *
  * @private
  */
 ZmTreeController.prototype._doEmpty =
-function(organizer) {
-    var recursive = false;
-    organizer.empty(recursive, null, this._doEmptyHandler.bind(this, organizer));
+function(organizer, trialCounter, ex) {
+	var recursive = false;
+	var timeout = ZmTreeController.EMPTY_FOLDER_RETRY_INTERVAL;
+	var noBusyOverlay = true;
+	if (!trialCounter) {
+		trialCounter = 1;
+	}
+	var errorCallback = this._doEmptyErrorHandler.bind(this, organizer, trialCounter);
+	organizer.empty(recursive, null, this._doEmptyHandler.bind(this, organizer), timeout, errorCallback, noBusyOverlay);
+};
+
+/**
+ *
+ * @param {ZmOrganizer}	organizer		the organizer
+ * @param {int}	trialCounter		the number of trials of empty folder
+ * @param {AjxException}	ex		the exception
+ *
+ * @private
+ */
+ZmTreeController.prototype._doEmptyErrorHandler =
+function(organizer, trialCounter, ex) {
+	if (ex) {
+		if (ex.code == ZmCsfeException.SVC_ALREADY_IN_PROGRESS) {
+			appCtxt.setStatusMsg(ZmMsg.emptyFolderAlreadyInProgress);
+			return true;
+		} else if(ex.code != AjxException.CANCELED) {
+			return false;
+		}
+	}
+
+	if (trialCounter > ZmTreeController.EMPTY_FOLDER_MAX_TRIALS -1){
+		appCtxt.setStatusMsg(ZmMsg.emptyFolderNoResponse, ZmStatusView.LEVEL_CRITICAL);
+		return true;
+	}
+	trialCounter++;
+	this._doEmpty(organizer, trialCounter);
 };
 
 ZmTreeController.prototype._doEmptyHandler =
