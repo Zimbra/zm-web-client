@@ -1636,7 +1636,7 @@ function(contact, params, matches) {
 ZmAutocompleteListView.prototype._setExpandText =
 function(textId, expanded) {
 	var textCtrl = DwtControl.fromElementId(textId);
-	if (textCtrl) {
+	if (textCtrl && textCtrl.setText) {
 		textCtrl.setText(expanded ? ZmMsg.collapse : ZmMsg.expand);
 	}
 };
