@@ -110,7 +110,7 @@ function(params, account) {
 				}
 				var ti = this._folderTreeView.getTreeItemById(folder.id);
 				if (ti) {
-					this._folderTreeView.setSelection(ti);
+					this._folderTreeView.setSelection(ti, true, null, true);
 				}
 				if (folder.nId == ZmOrganizer.ID_ROOT) {
 					var sid = ZmOrganizer.getSystemId(folder.id);
