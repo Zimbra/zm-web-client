@@ -30,22 +30,8 @@ ZmChatApp.prototype.toString = function() {    return "ZmChatApp"; };
 
 ZmChatApp.prototype.isChatEnabled = true;
 
-ZmChatApp.isServiceRunning = false;
-
-ZmChatApp.disconnected = false;
-
-ZmChatApp.reconnecting = false;
-
 ZmApp.CHAT = ZmId.APP_CHAT;
 ZmApp.CLASS[ZmApp.CHAT] = "ZmChatApp";
-
-ZmChatApp.OFFLINE = 'offline';
-ZmChatApp.BUSY = 'dnd';
-ZmChatApp.INACTIVE = 'inactive';
-ZmChatApp.ACTIVE = 'active';
-ZmChatApp.COMPOSING = 'composing';
-ZmChatApp.PAUSED = 'paused';
-ZmChatApp.GONE = 'gone';
 
 ZmChatApp.prototype._defineAPI =
 function() {
@@ -66,24 +52,16 @@ function() {
     // Stub for login
 };
 
-ZmChatApp.prototype._init = function(response) {
-    if (typeof response !== 'undefined' && response.isZmCsfeException) {
-        ZmChatApp.disconnected = true;
-        var msg = ZmMsg.chatXMPPError;
-        response.message = msg;
-        ZmController.prototype.popupErrorDialog.call(msg, response, true, false);
-    }
-    else {
-        if (appCtxt.get(ZmSetting.CHAT_FEATURE_ENABLED) && appCtxt.get(ZmSetting.CHAT_ENABLED)) {
-            //chain UI initialization to SOAP response via a callback
-            var callback = new AjxCallback(this, this.initChatUI);
-            //Call prebind
-            var soapDoc = AjxSoapDoc.create("GetAccountInfoRequest", "urn:zimbraAccount", null);
-            var accBy = soapDoc.set('account', appCtxt.getUsername());
-            accBy.setAttribute('by', 'name');
-            // TODO - Need to have different handler for errorCallback and it will fix Bug: 100887
-            appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode:true, errorCallback:callback, callback:callback});
-        }
+ZmChatApp.prototype._init = function() {
+    if (appCtxt.get(ZmSetting.CHAT_FEATURE_ENABLED) && appCtxt.get(ZmSetting.CHAT_ENABLED)) {
+        //chain UI initialization to SOAP response via a callback
+        var callback = new AjxCallback(this, this.initChatUI);
+        //Call prebind
+        var soapDoc = AjxSoapDoc.create("GetAccountInfoRequest", "urn:zimbraAccount", null);
+        var accBy = soapDoc.set('account', appCtxt.getUsername());
+        accBy.setAttribute('by', 'name');
+        // TODO - Need to have different handler for errorCallback and it will fix Bug: 100887
+        appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode:true, errorCallback:callback, callback:callback});
     }
 };
 
@@ -121,60 +99,14 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
     var self = this;
     var converseObject;
-    var __;
-
-    var contains = function (attr, query) {
-        return function (item) {
-            if (typeof attr === 'object') {
-                var value = false;
-                _.each(attr, function (a) {
-                    value = value || item.get(a).toLowerCase().indexOf(query.toLowerCase()) !== -1;
-                });
-                return value;
-            } else if (typeof attr === 'string') {
-                return item.get(attr).toLowerCase().indexOf(query.toLowerCase()) !== -1;
-            } else {
-                throw new Error('Wrong attribute type. Must be string or array.');
-            }
-        };
-    };
 
     converse.plugins.add('zmChatPlugin', {
         initialize: function() {
             self._registerGlobals();
             converseObject = this.converse;
-            converseObject.newChats = {};
-            __ = $.proxy(utils.__, converseObject);
-
-            // Poll the XMPP service every 30 seconds by default else it is configurable
-            setTimeout(_.bind(self._pollService, self), 30000);
         },
 
         overrides: {
-            onConnected: function() {
-                var converse = this._super.converse;
-                if (ZmChatApp.reconnecting) {
-                    converse.reconnect();
-                }
-                else {
-                    this._super.onConnected();
-                }
-            },
-
-            reconnect: function () {
-                this.converse.clearSession();
-                this.converse._tearDown();
-                this.converse.startNewBOSHSession();
-            },
-
-            clearSession: function() {
-                if (this.converse.roster) {
-                    this.converse.roster.browserStorage._clear();
-                }
-                this.converse.session.browserStorage._clear();
-                ZmChatApp.reconnecting = false;
-            },
-
             ChatBoxView: {
                 onChatStatusChanged: function(item) {
                     var chat_status = item.get('chat_status'),
@@ -183,13 +115,21 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
                     fullname = AjxUtil.isEmpty(fullname) ? item.get('jid'): fullname;
 					if (this.$el.is(':visible')) {
-                        if (chat_status === ZmChatApp.OFFLINE || chat_status === ZmChatApp.BUSY) {
-                            var chat_status_display = (chat_status === ZmChatApp.BUSY) ? ZmMsg.chatStatusBusy : ZmMsg.chatStatusOffline;
-                            this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatMsgDeliveryRestricted, [fullname, chat_status_display]));
-                            $('.chat-textarea').prop('disabled',true);
-                        } else {
+                        if (chat_status === 'offline') {
+                            this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatUserOffline, fullname));
+                        } else if (this.$el.find('div.chat-event:contains("' + AjxMessageFormat.format(ZmMsg.chatUserOffline, fullname) +'")').length) {
                             this.$el.find('div.chat-event').remove();
-                            $('.chat-textarea').prop('disabled', false);
+                            switch (chat_status) {
+                                case 'online' :
+                                    this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatUserOnline, fullname));
+                                    break;
+                                case 'away' :
+                                    this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatUserAway, fullname));
+                                    break;
+                                case 'dnd' :
+                                    this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatUserBusy, fullname));
+                                    break;
+                            }
                         }
                     }
 
@@ -201,49 +141,15 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     }
                 },
 
-                onMessageAdded: function (message) {
-                    var time = message.get('time'),
-                        times = this.model.messages.pluck('time'),
-                        previous_message, idx, this_date, prev_date, text, match;
+                sendMessage: function(text) {
+                    var userChatStatus = this.model.get('chat_status');
 
-                    // If this message is on a different day than the one received
-                    // prior, then indicate it on the chatbox.
-                    idx = _.indexOf(times, time)-1;
-                    if (idx >= 0) {
-                        previous_message = this.model.messages.at(idx);
-                        prev_date = moment(previous_message.get('time'));
-                        if (prev_date.isBefore(time, 'day')) {
-                            this_date = moment(time);
-                            this.$el.find('.chat-content').append(converseObject.templates.new_day({
-                                isodate: this_date.format("YYYY-MM-DD"),
-                                datestring: this_date.format("dddd MMM Do YYYY")
-                            }));
-                        }
+                    if (userChatStatus === ZmMsg.chatStatusOffline.toLowerCase() || userChatStatus === ZmMsg.chatStatusDnD.toLowerCase()) {
+                        this.$el.find('.chat-content').append("<span class='offline-error'>" + ZmMsg.chatMsgDeliveryRestricted + "</span><br>");
+                        return;
                     }
-                    if (!message.get('message')) {
-                        if (message.get('chat_state') === ZmChatApp.COMPOSING) {
-                            this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatUserTyping, message.get('fullname')));
-                            return;
-                        } else if (message.get('chat_state') === ZmChatApp.PAUSED) {
-                            //this.showStatusNotification(message.get('fullname')+' '+__('has stopped typing'));
-                            return;
-                        } else if (_.contains([ZmChatApp.INACTIVE, ZmChatApp.ACTIVE], message.get('chat_state'))) {
-                            this.$el.find('.chat-content div.chat-event').remove();
-                            return;
-                        } else if (message.get('chat_state') === ZmChatApp.GONE) {
-                            //this.showStatusNotification(message.get('fullname')+' '+__('has gone away'));
-                            return;
-                        }
-                    } else {
-                        this.showMessage(_.clone(message.attributes));
-                    }
-                    if ((message.get('sender') != 'me') && (converseObject.windowState == 'blur')) {
-                        converseObject.incrementMsgCounter();
-                    }
-                    this.scrollDown();
-                    if (!this.model.get('minimized') && !this.$el.is(':visible')) {
-                        this.show();
-                    }
+
+                    this._super.sendMessage.apply(this, [text]);
                 },
 
                 insertIntoPage: function () {
@@ -251,23 +157,15 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 },
 
                 show: function (callback) {
-                    var chat_status = this.model.get('chat_status');
+                    var userChatStatus = this.model.get('chat_status');
                     var fullname = this.model.get('fullname');
                     fullname = AjxUtil.isEmpty(fullname) ? item.get('jid'): fullname;
                     //ZCS change - Notify user about recipient being offline.
-                    if (chat_status === ZmChatApp.OFFLINE || chat_status === ZmChatApp.BUSY) {
-                        var chat_status_display = (chat_status === ZmChatApp.BUSY) ? ZmMsg.chatStatusBusy : ZmMsg.chatStatusOffline;
-                        this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatMsgDeliveryRestricted, [fullname, chat_status_display]));
-                        $('.chat-textarea').prop('disabled',true);
+                    if (userChatStatus === ZmMsg.chatStatusOffline.toLowerCase() || userChatStatus === ZmMsg.chatStatusDnD.toLowerCase()) {
+                        this.$el.find('.chat-content').append("<span class='offline-error'>" + AjxMessageFormat.format(ZmMsg.chatOfflineNotify, fullname) + "</span><br>");
                     }
-                    var isNewChat = converseObject.newChats[this.model.get('jid')];
                     if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
-                        if (isNewChat) {
-                            delete converseObject.newChats[this.model.get('jid')];
-                            return this.focus();
-                        } else {
-                            return this;
-                        }
+                        return this.focus();
                     }
                     this.$el.fadeIn(callback);
                     if (converseObject.connection.connected) {
@@ -277,19 +175,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         this.initDragResize();
                     }
                     this.setChatState('active');
-                    if (isNewChat) {
-                        delete converseObject.newChats[this.model.get('jid')];
-                        return this.focus();
-                    } else {
-                        return this;
-                    }
-                },
-
-                toggleEmoticonMenu: function (ev) {
-                    ev.stopPropagation();
-                    if (!$('.chat-textarea').prop('disabled')) {
-                        this.$el.find('.toggle-smiley ul').slideToggle(200);
-                    }
+                    return this.focus();
                 }
             },
             ChatBoxViews: {
@@ -612,11 +498,6 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 showRemoveContactPanel: function(ev) {
                     this.controlboxPane.hide();
                     this.removeContactPanel.show();
-                },
-
-                openChat: function (ev) {
-                    converseObject.newChats[this.model.attributes.jid] = true;
-                    this._super.openChat.apply(this);
                 }
             },
 
@@ -628,8 +509,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     'click span.search-contact-flyout-close': 'closeSearchContactForm',
                     'keyup input#search': 'searchContacts',
                     "click .zmsearch-xmpp a.open-chat": 'openSearchedContactChat',
-                    'keyup #email':  'contentChanged',
-                    'click a.conn-retry': 'reconnect'
+                    'keyup #email':  'contentChanged'
                 },
                 initialize: function () {
                     this._super.initialize.apply(this);
@@ -731,7 +611,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     this.$tooltip.hide();
 
                     var addContactPanel = $('.add-contact-flyout'),
-                        button = addContactPanel.find('.button button'),
+                        button = addContactPanel.find('.button button')
                         formHeading = $('.flyout-heading').children().first();
 
                     this.closeAddContactForm();
@@ -779,8 +659,6 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 searchContacts: function (ev) {
                     ev.preventDefault();
 
-                    var __ = $.proxy(utils.__, converseObject);
-
                     var searchString = $(ev.target).val() || " ",
                         searchPanel = $('.search-converse-contact'),
                         searchedContactPanel = $('.search-converse-contact .zmsearch-xmpp'),
@@ -794,7 +672,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     _.each(matchedContacts, function (contactItem) {
                         searchedContactPanel.append(converseObject.templates.roster_item(
                             _.extend(contactItem.toJSON(), {
-                                'desc_status': self._getChatUserStatus(contactItem.get('chat_status'), contactItem.get('user_id')),
+                                'desc_status': STATUSES[contactItem.get('chat_status') || 'offline'],
                                 'desc_chat': __('Click to chat with this contact'),
                                 'desc_remove': __('Click to remove this contact'),
                                 'allow_contact_removal': false
@@ -840,100 +718,10 @@ ZmChatApp.prototype.initChatUI = function(response) {
                    if(val === '') {
                         converseObject.controlboxView.$formSubmitBtn.disable();
                         return;
-                    }
+                   }
+
 
                     converseObject.controlboxView.$formSubmitBtn.enable();
-                },
-
-                renderLoginPanel: function() {
-                    this.$el.html(converseObject.templates.controlbox(this.model.toJSON()));
-                    var cfg = {'$parent': this.$el.find('.controlbox-panes'), 'model': this};
-                    if (!this.loginpanel) {
-                        this.loginpanel = new converseObject.LoginPanel(cfg);
-                        if (converseObject.allow_registration) {
-                            this.registerpanel = new converseObject.RegisterPanel(cfg);
-                        }
-                    } else {
-                        this.loginpanel.delegateEvents().initialize(cfg);
-                        if (converseObject.allow_registration) {
-                            this.registerpanel.delegateEvents().initialize(cfg);
-                        }
-                    }
-
-                    // Model's "connected" property is set to false if connection drops
-                    if (this.model.get('connected') === false) {
-                        var spinner = this.loginpanel.$('.spinner');
-                        var connFeedback = this.loginpanel.$('.conn-feedback');
-                        var connError = this.loginpanel.$('.conn-error');
-                        var connErrorRetry = this.loginpanel.$('.conn-error-retry');
-                        var connErrorRetryBtn = this.loginpanel.$('.conn-retry');
-                        var minimizedRoster = $('#toggle-controlbox');
-                        var controlbox = $('#controlbox');
-
-                        spinner.hide();
-                        connFeedback.hide();
-                        connError.html(ZmMsg.chatConnectionError);
-                        connErrorRetryBtn.html(ZmMsg.chatRetryButton);
-                        connError.show();
-                        connErrorRetry.show();
-
-                        this.loginpanel.render();
-
-                        var chatPaneHeader = $('#controlbox-tabs').find('a[href=#login-dialog]');
-                        chatPaneHeader.html(ZmMsg.chatFeatureDisconnected);
-
-                        //Append a minimize button in case of XMPP service disconnected.
-                        $('#controlbox-tabs li:first').after('<a href="#controlbox-tabs" class="conn-disconnect icon-opened"></a>');
-
-                        var thiz = this;
-
-                        $('#controlbox-tabs .conn-disconnect').on('click', function() {
-                            thiz.toggleControlBox();
-                        });
-
-                        // If the roster was minimized and connection dropped, replace it with our custom header pane and controlbox panel.
-                        if (minimizedRoster.is(':visible')) {
-                            minimizedRoster.hide();
-                            controlbox.show();
-                            //show controlbox in minimized state
-                            this.toggleControlBox();
-                        }
-
-                        ZmChatApp.disconnected = true;
-                        ZmChatApp.reconnecting = false;
-                    }
-                    else {
-                        // Keep control box rendering separate in case of connected/disconnected
-                        this.loginpanel.render();
-                    }
-
-                    if (converseObject.allow_registration) {
-                        this.registerpanel.render().$el.hide();
-                    }
-                    this.initDragResize();
-
-                    return this;
-                },
-
-                toggleControlBox: function() {
-                    var boxFlyout = $('.box-flyout');
-                    var toggleControlIcon = $('#controlbox-tabs .conn-disconnect');
-                    var height = $('#controlbox-tabs').find('a[href=#login-dialog]').height();
-
-                    if (boxFlyout.height() < 40) {
-                        //converse default_box_height
-                        boxFlyout.height(400);
-                        toggleControlIcon.addClass('icon-opened');
-                        toggleControlIcon.removeClass('icon-closed');
-                    }
-                    else {
-                        boxFlyout.height(height);
-                        toggleControlIcon.removeClass('icon-opened');
-                        toggleControlIcon.addClass('icon-closed');
-                    }
-                },
-                reconnect: function() {
-                    self._checkIMExtensionSvcConn(null, new AjxCallback(self, self._reconnectCallbackHandler));
                 }
             },
 
@@ -945,12 +733,10 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
                     // ZCS - modified roster template to add online contacts count
                     var $roster_count = $('#' + ZmMsg.chatHeaderUngrouped);
-                    if (converseObject.roster.getNumOnlineContacts() === 0) {
-                        $roster_count.text(ZmMsg.chatNoContactOnline);
-                    } else if (converseObject.roster.getNumOnlineContacts() === 1) {
-                        $roster_count.text(ZmMsg.chatContactOnline);
+                    if (converseObject.roster.getNumOnlineContacts() === 1) {
+                        $roster_count.text(converseObject.roster.getNumOnlineContacts() + ' contact online');
                     } else {
-                        $roster_count.text(AjxMessageFormat.format(ZmMsg.chatMultipleContactsOnline, converseObject.roster.getNumOnlineContacts()));
+                        $roster_count.text(converseObject.roster.getNumOnlineContacts() + ' contacts online');
                     }
                     if (!$count.is(':visible')) {
                         $count.show();
@@ -974,54 +760,6 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     spinnerContainer.html(ZmMsg.chatConnecting);
 
                     return this;
-                }
-            },
-
-            RosterGroupView: {
-                render: function () {
-                    this._super.render.apply(this);
-                    this.$headerText = this.$('[id="' + this.model.get('name') + '"]');
-                    
-                    this.model.contacts.on("add", this.updateGroupHeader, this);
-                    this.model.contacts.on("change:subscription", this.updateGroupHeader, this);
-                    this.model.contacts.on("change:requesting", this.updateGroupHeader, this);
-                    this.model.contacts.on("destroy", this.updateGroupHeader, this);
-                    this.model.contacts.on("remove", this.updateGroupHeader, this);
-                    
-                    //Store string for comparison. Compare against localised string
-                    this._PENDING_CONTACTS = __("Pending contacts");
-                    this._CONTACT_REQUESTS = __('Contact requests');
-                    return this;
-                },
-                updateGroupHeader: function () {
-                    var totalContactsInGroup = this.model.contacts.length,
-                        headerText;
-                    //Fetch appropriate group header text
-                    switch (this.model.get('name')) {
-                        case this._PENDING_CONTACTS :
-                            headerText = this._getPendingContactsHeaderText(totalContactsInGroup);
-                            break;    
-                        case this._CONTACT_REQUESTS :
-                            headerText = this._getContactRequestsHeaderText(totalContactsInGroup);
-                            break;
-                    }
-                    if(headerText) {
-                        this.$headerText.html(headerText);
-                    }
-                },
-                
-                _getPendingContactsHeaderText: function (contactsCount) {
-                    var headingText = contactsCount > 1 ? 
-                                        AjxMessageFormat.format(ZmMsg.chatMultiplePendingContacts, contactsCount) 
-                                        : ZmMsg.chatPendingContact;
-                    return headingText;
-                },
-
-                _getContactRequestsHeaderText: function (contactsCount) {
-                    var headingText = contactsCount > 1 ? 
-                                            AjxMessageFormat.format(ZmMsg.chatMultipleContactsRequest, contactsCount) 
-                                            : ZmMsg.chatContactRequest;
-                    return headingText;
                 }
             }
         }
@@ -1079,8 +817,7 @@ function(params, callback) {
     if (callback) {
         callback.run();
     }
-
-    this._checkIMExtensionSvcConn(null, new AjxCallback(this, this._init));
+    this._init();
 };
 
 ZmChatApp.prototype.setPlaySoundSetting =
@@ -1258,75 +995,3 @@ function () {
 
     return tooltip.join('');
 }
-
-ZmChatApp.prototype._getChatUserStatus =
-function(chat_status, fullname) {
-    switch (chat_status) {
-        case 'online' :
-            return AjxMessageFormat.format(ZmMsg.chatUserOnline, fullname);
-        case 'away' :
-            return AjxMessageFormat.format(ZmMsg.chatUserAway, fullname);
-        case 'dnd' :
-            return AjxMessageFormat.format(ZmMsg.chatUserBusy, fullname);
-        case 'offline' :
-            return AjxMessageFormat.format(ZmMsg.chatUserOffline, fullname);
-    }
-};
-
-ZmChatApp.prototype._checkIMExtensionSvcConn =
-function(response, callbackhandler) {
-    if (response) {
-        if (response.isZmCsfeException) {
-            ZmChatApp.isServiceRunning = false;
-            return;
-        }
-        else {
-            ZmChatApp.isServiceRunning = true;
-            return;
-        }
-    }
-
-    var callback = callbackhandler || new AjxCallback(this, this._checkIMExtensionSvcConn);
-    var params = {
-        asyncMode: true,
-        noBusyOverlay: true,
-        callback: callback,
-        offlineCallback: callback,
-        errorCallback: callback
-    };
-
-    params.restUri = AjxUtil.formatUrl({
-        path: '/service/extension/zimbraim/'
-    });
-
-    appCtxt.getAppController().sendRequest(params);
-};
-
-ZmChatApp.prototype._pollService =
-function(response) {
-    if (response) {
-        if (response._isException || response instanceof ZmCsfeException) {
-            converse.disconnect();
-            ZmChatApp.disconnected = true;
-            ZmChatApp.reconnecting = false;
-        }
-        else {
-            if (ZmChatApp.disconnected) {
-                ZmChatApp.disconnected = false;
-                ZmChatApp.reconnecting = true;
-                this._init();
-            }
-        }
-    }
-
-    setTimeout(_.bind(this._checkIMExtensionSvcConn, this, null, new AjxCallback(this, this._pollService)), 30000);
-};
-
-ZmChatApp.prototype._reconnectCallbackHandler =
-function(response) {
-    if (!(response instanceof ZmCsfeException)) {
-        ZmChatApp.disconnected = false;
-        ZmChatApp.reconnecting = true;
-        this._init();
-    }
-};
