@@ -132,7 +132,7 @@
     <property name='converse.css.dir' value='${converse.root.dir}/converse.js-${converse.version}/css' />
     <property name='converse.fonticons.dir' value='${converse.root.dir}/converse.js-${converse.version}/fonticons' />
     <property name='converse.sounds.dir' value='${converse.root.dir}/converse.js-${converse.version}/sounds' />
-    <property name="converse.dir" value="${js.dir}/ajax/3rdparty/converse"/>
+    <property name="converse.dir" value="${build.js.dir}/ajax/3rdparty/converse"/>
 	
 	<!-- customize admin skin -->
 	<if>
@@ -1721,21 +1721,15 @@ if (ext == null) ext = "";
         <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/build/dep/eventemitter.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/src/otr.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/components/strophejs/strophe.js"/>
-        <copy tofile="${converse.js.dir}/components/strophejs-plugins/vcard/strophe_vcard.js" file="${converse.js.dir}/components/strophejs-plugins/vcard/strophe.vcard.js"/>
-        <move todir="${converse.dir}/" file="${converse.js.dir}/components/strophejs-plugins/vcard/strophe_vcard.js"/>
-        <copy tofile="${converse.js.dir}/components/strophejs-plugins/disco/strophe_disco.js" file="${converse.js.dir}/components/strophejs-plugins/disco/strophe.disco.js"/>
-        <move todir="${converse.dir}/" file="${converse.js.dir}/components/strophejs-plugins/disco/strophe_disco.js"/>
-        <copy tofile="${converse.js.dir}/src/strophe_ping.js" file="${converse.js.dir}/components/strophejs-plugins/ping/strophe.ping.js"/>
-        <move todir="${converse.dir}/" file="${converse.js.dir}/src/strophe_ping.js"/>
+        <copy tofile="${converse.dir}/strophe_vcard.js" file="${converse.js.dir}/components/strophejs-plugins/vcard/strophe.vcard.js"/>
+        <copy tofile="${converse.dir}/strophe_disco.js" file="${converse.js.dir}/components/strophejs-plugins/disco/strophe.disco.js"/>
+        <copy tofile="${converse.dir}/strophe_ping.js" file="${converse.js.dir}/components/strophejs-plugins/ping/strophe.ping.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/components/underscore/underscore.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/components/backbone/backbone.js"/>
-        <copy tofile="${converse.js.dir}/components/backbone.browserStorage/backbone_browserStorage.js" file="${converse.js.dir}/components/backbone.browserStorage/backbone.browserStorage.js"/>
-        <move todir="${converse.dir}/" file="${converse.js.dir}/components/backbone.browserStorage/backbone_browserStorage.js"/>
-        <copy tofile="${converse.js.dir}/components/backbone.overview/backbone_overview.js" file="${converse.js.dir}/components/backbone.overview/backbone.overview.js"/>
-        <move todir="${converse.dir}/" file="${converse.js.dir}/components/backbone.overview/backbone_overview.js"/>
+        <copy tofile="${converse.dir}/backbone_browserStorage.js" file="${converse.js.dir}/components/backbone.browserStorage/backbone.browserStorage.js"/>
+        <copy tofile="${converse.dir}/backbone_overview.js" file="${converse.js.dir}/components/backbone.overview/backbone.overview.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/src/moment-with-langs.js"/>
-        <copy tofile="${converse.js.dir}/components/jquery.browser/dist/jquery_browser.js" file="${converse.js.dir}/components/jquery.browser/dist/jquery.browser.js"/>
-        <move todir="${converse.dir}/" file="${converse.js.dir}/components/jquery.browser/dist/jquery_browser.js"/>
+        <copy tofile="${converse.dir}/jquery_browser.js" file="${converse.js.dir}/components/jquery.browser/dist/jquery.browser.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/components/typeahead.js/index.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/components/jed/jed.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.build.dir}/locales.js"/>
