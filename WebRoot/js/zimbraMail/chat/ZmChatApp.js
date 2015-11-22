@@ -329,7 +329,11 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         oldest_chat = this.getOldestMaximizedChat();
                         if (oldest_chat && oldest_chat.get('id') !== new_id) {
                             //ZCS change - close the oldest chat instead of minimizing it.
-                            converseObject.chatboxviews.get(oldest_chat.get('id')).close();
+                            var oldest_chat_view = converseObject.chatboxviews.get(oldest_chat.get('id'));
+                            $(newchat.$el).each(function () {
+                                $(this).insertBefore($(this).prev(oldest_chat_view.$el));
+                                oldest_chat_view.close();
+                            });
                         }
                     }
                 }
