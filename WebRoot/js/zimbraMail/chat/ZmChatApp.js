@@ -318,6 +318,25 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     if (!$('.chat-textarea').prop('disabled')) {
                         this.$el.find('.toggle-smiley ul').slideToggle(200);
                     }
+                },
+
+                render: function () {
+                    var contact = converseObject.roster.get(this.model.get('jid'));
+                    this.$el.attr('id', this.model.get('box_id'))
+                        .html(converseObject.templates.chatbox(
+                            _.extend(this.model.toJSON(), {
+                                    show_toolbar: converseObject.show_toolbar,
+                                    label_personal_message: ZmMsg.chatTypeMessage,
+                                    chat_status: contact ? contact.get('chat_status') : "online"
+                                }
+                            )
+                        )
+                    );
+                    //ZCS - comment rendering of avatar.
+                    //this.renderToolbar().renderAvatar();
+                    converseObject.emit('chatBoxOpened', this);
+                    setTimeout(converseObject.refreshWebkit, 50);
+                    return this.showStatusMessage();
                 }
             },
             ChatBoxViews: {
