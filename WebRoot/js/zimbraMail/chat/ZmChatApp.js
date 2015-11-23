@@ -120,8 +120,36 @@ ZmChatApp.prototype.initChatUI = function(response) {
     var jid = resp.GetAccountInfoResponse.name;
 
     var self = this;
-    var converseObject;
     var __;
+    var converseObject,
+        headerTextGenerator = {
+        getOnlineContactsHeaderText: function (onlineContactsCount) {
+            var headerText;
+            if (onlineContactsCount === 0) {
+                headerText = ZmMsg.chatNoContactOnline;
+            } else if (onlineContactsCount === 1) {
+                headerText = ZmMsg.chatContactOnline;
+            } else {
+                headerText = AjxMessageFormat.format(ZmMsg.chatMultipleContactsOnline, converseObject.roster.getNumOnlineContacts());
+            }
+            return headerText;
+        },
+        getPendingContactsHeaderText: function (contactsCount) {
+            var headingText = contactsCount > 1 ? 
+                                AjxMessageFormat.format(ZmMsg.chatMultiplePendingContacts, contactsCount) 
+                                : ZmMsg.chatPendingContact;
+            return headingText;
+        },
+
+        getContactRequestsHeaderText: function (contactsCount) {
+            var headingText = contactsCount > 1 ? 
+                                    AjxMessageFormat.format(ZmMsg.chatMultipleContactsRequest, contactsCount) 
+                                    : ZmMsg.chatContactRequest;
+            return headingText;
+        }
+    };
+    
+        
 
     var contains = function (attr, query) {
         return function (item) {
@@ -942,20 +970,20 @@ ZmChatApp.prototype.initChatUI = function(response) {
             },
 
             RosterView: {
+                $roster_count: null,
                 update: _.debounce(function () {
                     var $count = $('#online-count');
+                    var onlineContactsCount = converseObject.roster.getNumOnlineContacts();
                     // ZCS - formats online contact count for minimized buddy list
-                    $count.text(converseObject.roster.getNumOnlineContacts());
+                    $count.text(onlineContactsCount);
 
                     // ZCS - modified roster template to add online contacts count
-                    var $roster_count = $('#' + ZmMsg.chatHeaderUngrouped);
-                    if (converseObject.roster.getNumOnlineContacts() === 0) {
-                        $roster_count.text(ZmMsg.chatNoContactOnline);
-                    } else if (converseObject.roster.getNumOnlineContacts() === 1) {
-                        $roster_count.text(ZmMsg.chatContactOnline);
-                    } else {
-                        $roster_count.text(AjxMessageFormat.format(ZmMsg.chatMultipleContactsOnline, converseObject.roster.getNumOnlineContacts()));
+                    
+                    if(!this.$roster_count || this.$roster_count.length === 0) {
+                        this.$roster_count = $('[id="' + __('My contacts') + '"]');
                     }
+                    this.$roster_count.text(headerTextGenerator.getOnlineContactsHeaderText(onlineContactsCount));
+
                     if (!$count.is(':visible')) {
                         $count.show();
                     }
@@ -995,6 +1023,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     //Store string for comparison. Compare against localised string
                     this._PENDING_CONTACTS = __("Pending contacts");
                     this._CONTACT_REQUESTS = __('Contact requests');
+                    this._MY_CONTACTS = __('My contacts');
                     return this;
                 },
                 updateGroupHeader: function () {
@@ -1002,11 +1031,14 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         headerText;
                     //Fetch appropriate group header text
                     switch (this.model.get('name')) {
+                        case this._MY_CONTACTS :
+                            headerText = headerTextGenerator.getOnlineContactsHeaderText(converseObject.roster.getNumOnlineContacts());
+                            break;    
                         case this._PENDING_CONTACTS :
-                            headerText = this._getPendingContactsHeaderText(totalContactsInGroup);
+                            headerText = headerTextGenerator.getPendingContactsHeaderText(totalContactsInGroup);
                             break;    
                         case this._CONTACT_REQUESTS :
-                            headerText = this._getContactRequestsHeaderText(totalContactsInGroup);
+                            headerText = headerTextGenerator.getContactRequestsHeaderText(totalContactsInGroup);
                             break;
                     }
                     if(headerText) {
@@ -1014,19 +1046,6 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     }
                 },
                 
-                _getPendingContactsHeaderText: function (contactsCount) {
-                    var headingText = contactsCount > 1 ? 
-                                        AjxMessageFormat.format(ZmMsg.chatMultiplePendingContacts, contactsCount) 
-                                        : ZmMsg.chatPendingContact;
-                    return headingText;
-                },
-
-                _getContactRequestsHeaderText: function (contactsCount) {
-                    var headingText = contactsCount > 1 ? 
-                                            AjxMessageFormat.format(ZmMsg.chatMultipleContactsRequest, contactsCount) 
-                                            : ZmMsg.chatContactRequest;
-                    return headingText;
-                }
             }
         }
     });
@@ -1041,7 +1060,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
         keepalive: true,
         allow_logout: false,
         show_controlbox_by_default: true,
-        roster_groups: true,
+        roster_groups: false,
         play_sounds: appCtxt.get(ZmSetting.CHAT_PLAY_SOUND),
         sounds_path: "/public/sounds/",
         jid: jid
