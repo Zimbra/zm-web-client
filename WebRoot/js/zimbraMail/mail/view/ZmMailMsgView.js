@@ -1802,18 +1802,8 @@ ZmMailMsgView.prototype._renderMessageBody1 = function(params, part) {
 
         isTruncated = isTruncated || this.isTruncated(bp);
 
-        if (isImage) {
-            var src = (hasMultipleBodyParts && content.length > 0) ? content : msg.getUrlForPart(bp),
-                classAttr = hasMultipleBodyParts ? "class='InlineImage' " : " ";
-
-            content = "<img " + [ "zmforced='1' " + classAttr + "src='" + src + "'>"].join("");
-        }
-
-        else if (ct === ZmMimeTable.TEXT_CAL) {
-            content = ZmMailMsg.getTextFromCalendarPart(bp);
-        }
-
-        else if (hasInviteContent && !hasMultipleBodyParts) {
+        // first let's check for invite notes and use those as content if present
+        if (hasInviteContent && !hasMultipleBodyParts) {
             if (!msg.getMimeHeader(ZmMailMsg.HDR_INREPLYTO)) {
                 // Hack - bug 70603 -  Do not truncate the message for forwarded invites
                 // The InReplyTo rfc822 header would be present in most of the forwarded invites
@@ -1826,6 +1816,22 @@ ZmMailMsgView.prototype._renderMessageBody1 = function(params, part) {
             }
         }
 
+        // Handle the part based on its Content-Type
+
+        // images
+        if (isImage) {
+            var src = (hasMultipleBodyParts && content.length > 0) ? content : msg.getUrlForPart(bp),
+                classAttr = hasMultipleBodyParts ? "class='InlineImage' " : " ";
+
+            content = "<img " + [ "zmforced='1' " + classAttr + "src='" + src + "'>"].join("");
+        }
+
+        // calendar part in ICS format
+        else if (ct === ZmMimeTable.TEXT_CAL) {
+            content = ZmMailMsg.getTextFromCalendarPart(bp);
+        }
+
+        // HTML
         else if (isHtml) {
             if (htmlMode) {
                 // fix broken inline images - take one like this: <img dfsrc="http:...part=1.2.2">
@@ -1846,6 +1852,7 @@ ZmMailMsgView.prototype._renderMessageBody1 = function(params, part) {
             // if we got HTML and user is in text mode, no conversion needed
         }
 
+        // plain text
         else if (isPlain) {
             origText = content;
             if (bp.format === ZmMimeTable.FORMAT_FLOWED) {
@@ -1861,10 +1868,12 @@ ZmMailMsgView.prototype._renderMessageBody1 = function(params, part) {
             }
         }
 
+        // something else
         else {
             content = AjxStringUtil.convertToHtml(content);
         }
 
+        // wrap it in a DIV to be safe
         if (content && content.length) {
             if (!isImage && AjxStringUtil.trimHtml(content).length > 0) {
                 content = "<div>" + content + "</div>";
@@ -1874,6 +1883,7 @@ ZmMailMsgView.prototype._renderMessageBody1 = function(params, part) {
         }
     }
 
+    // Handle empty messages
     if (!hasMultipleBodyParts && !hasViewableTextContent && msg.hasNoViewableContent()) {
         // if we got nothing for one alternative type, try the other
         if (msg.hasContentType(ZmMimeTable.MULTI_ALT) && !params.forceType) {
