@@ -148,8 +148,9 @@ ZmChatApp.prototype.initChatUI = function(response) {
             return headingText;
         }
     };
-    
-        
+
+    var CHAT_EVENTS = {};
+    _.extend(CHAT_EVENTS, Backbone.Events);
 
     var contains = function (attr, query) {
         return function (item) {
@@ -397,10 +398,12 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     this._super.initialize.apply(this);
                     this.$tabs = this.$el;
                     this.removeContactFlyout = $('.remove-contact-flyout');
+                    CHAT_EVENTS.bind("RemoveContact:showFlyout", this.showRemoveContactPanel, this);
                 },
 
                 render: function() {
                     var chat_status = this.model.get('status') || 'offline';
+                        _self = this;
 
                     var LABEL_ONLINE = ZmMsg.chatStatusOnline,
                         LABEL_BUSY = ZmMsg.chatStatusBusy,
@@ -416,6 +419,45 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     }));
 
                     this._super.render.apply(this);
+
+                    //Replace Remove Contact Button with a custom button
+                    this.$removeContactBtn = this.replaceButton({
+                        cssClassName: 'remove-contact-btn',
+                        btnText: 'Remove',
+                        clickHandler: function(e) {
+                            _self._contactToRemove.removeContact(e);
+                        } 
+                    }, this.removeContactFlyout.find('.removeContact'));
+                    
+                    //Replace Keep Contact Button with a custom button
+                    this.$keepContactBtn = this.replaceButton({
+                        btnText: 'Keep',
+                        clickHandler: function(e) {
+                            _self._contactToRemove.keepContact(e);
+                        } 
+                    }, this.removeContactFlyout.find('.keepContact'));
+                    
+                    return this;
+                },
+
+                replaceButton: function (options, $btnToReplace) {
+                    var $btn = new self.widgets.Button({
+                        customClass: options.cssClassName,
+                        model: { btnText: options.btnText },
+                        customEvents: {
+                            onClick: options.clickHandler
+                        }
+                    });
+                    $btnToReplace.parent().append($btn.render().el);
+                    $btnToReplace.remove();
+
+                    return $btn;
+                },
+
+                showRemoveContactPanel: function (contact) {
+                    //Store reference to the contact on which the remove opertaion has been initiated. 
+                    //Based on the option chosen by the user in the removePanel the keepContact/removeContact method will be invoked on the above stored contact.
+                    this._contactToRemove = contact;
                 },
 
                 setStatus: function (ev) {
@@ -543,34 +585,6 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     // Set contact removal warning message here since templates don't pick up ZmMsg strings
                     var msgContainer = $('.remove-contact-flyout .removeContactWarningMsg');
                     msgContainer.html(ZmMsg.chatContactRemovalWarning);
-
-
-                    this.$removeContactBtn = new self.widgets.Button({
-                        customClass: 'remove-contact-btn',
-                        model: { btnText: 'Remove' },
-                        customEvents: {
-                            onClick: function (e) {
-                                _self.removeContact(e);
-                            }
-                        }
-                    });
-                    var $currRemoveBtn = this.removeContactPanel.find('.removeContact');
-                    $currRemoveBtn.parent().append(this.$removeContactBtn.render().el);
-                    $currRemoveBtn.remove();
-
-
-                    this.$keepContactBtn = new self.widgets.Button({
-                        model: { btnText: 'Keep' },
-                        customEvents: {
-                            onClick: function (e) {
-                                _self.keepContact(e);
-                            }
-                        }
-                    });
-                    var $currKeepBtn = this.removeContactPanel.find('.keepContact');
-                    $currKeepBtn.parent().append(this.$keepContactBtn.render().el);
-                    $currKeepBtn.remove();
-                    return this;
                 },
 
                 showAlterContactMenu: function(ev) {
@@ -663,6 +677,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 showRemoveContactPanel: function(ev) {
                     this.controlboxPane.hide();
                     this.removeContactPanel.show();
+                    CHAT_EVENTS.trigger("RemoveContact:showFlyout", this);
                 },
 
                 openChat: function (ev) {
