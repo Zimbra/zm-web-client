@@ -999,7 +999,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     }
                 },
                 reconnect: function() {
-                    self._checkIMExtensionSvcConn(null, new AjxCallback(self, self._reconnectCallbackHandler));
+                    self._checkIMExtensionSvcConn(null, false, new AjxCallback(self, self._reconnectCallbackHandler));
                 }
             },
 
@@ -1137,7 +1137,7 @@ function(params, callback) {
         callback.run();
     }
 
-    this._checkIMExtensionSvcConn(null, new AjxCallback(this, this._init));
+    this._checkIMExtensionSvcConn(null, false, new AjxCallback(this, this._init));
 };
 
 ZmChatApp.prototype.setPlaySoundSetting =
@@ -1331,7 +1331,7 @@ function(chat_status, fullname) {
 };
 
 ZmChatApp.prototype._checkIMExtensionSvcConn =
-function(response, callbackhandler) {
+function(response, isPoll, callbackhandler) {
     if (response) {
         if (response.isZmCsfeException) {
             ZmChatApp.isServiceRunning = false;
@@ -1343,6 +1343,10 @@ function(response, callbackhandler) {
         }
     }
 
+    if (isPoll && !response && !ZmChatApp.disconnected) {
+        //if it is a poll and client is not disconnected than do not send the service request.
+        return;
+    }
     var callback = callbackhandler || new AjxCallback(this, this._checkIMExtensionSvcConn);
     var params = {
         asyncMode: true,
@@ -1376,7 +1380,7 @@ function(response) {
         }
     }
 
-    setTimeout(_.bind(this._checkIMExtensionSvcConn, this, null, new AjxCallback(this, this._pollService)), 30000);
+    setInterval(_.bind(this._checkIMExtensionSvcConn, this, null, true, new AjxCallback(this, this._pollService)), 30000);
 };
 
 ZmChatApp.prototype._reconnectCallbackHandler =
