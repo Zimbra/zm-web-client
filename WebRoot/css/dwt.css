@@ -1073,9 +1073,6 @@ UL.DwtListView-Rows {
 
 /*
  * DwtInputField - whiz-bang input field that Ross cooked up...
- *
- * TODO: make sure this has DwtInputField + DwtInputField-error at same time
- *
  */
 .DwtInputField INPUT[type="text"],
 .DwtInputField INPUT[type="password"],
@@ -1095,6 +1092,15 @@ UL.DwtListView-Rows {
 }
 .DwtInputField-error TEXTAREA {
 	@TextArea-error@
+}
+
+.DwtInputField-required INPUT[type="text"],
+.DwtInputField-required INPUT[type="password"],
+.DwtSimpleInput-required {
+	@InputField-required@
+}
+.DwtInputField-required TEXTAREA {
+	@TextArea-required@
 }
 
 .DwtInputField-focused INPUT[type="text"],
