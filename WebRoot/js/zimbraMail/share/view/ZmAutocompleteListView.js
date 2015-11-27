@@ -263,7 +263,7 @@ function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
 	var result = true;
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
-	DBG.println("ac", ev.type.toUpperCase() + " in " + element.id + ": " + key);
+	DBG.println("ac", ev.type.toUpperCase() + " in " + (element && element.id) + ": " + key);
 	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
 	if (aclv) {
 		// if the user types a single delimiting character with the list showing, do completion
@@ -301,7 +301,7 @@ function(ev) {
 	var result = true;
 	var key = DwtKeyEvent.getCharCode(ev);
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
-	DBG.println("ac", ev.type.toUpperCase() + " in " + element.id + ": " + key);
+	DBG.println("ac", ev.type.toUpperCase() + " in " + (element && element.id) + ": " + key);
 	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
 	if (aclv) {
 		if (aclv._actionHandled) {
@@ -326,7 +326,7 @@ function(ev) {
 	var result = true;
 	var key = DwtKeyEvent.getCharCode(ev);
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
-	DBG.println("ac", ev.type.toUpperCase() + " in " + element.id + ": " + key);
+	DBG.println("ac", ev.type.toUpperCase() + " in " + (element && element.id) + ": " + key);
 	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
 	if (aclv) {
 		if (aclv._actionHandled) {
@@ -482,7 +482,15 @@ function(element, addrInputId) {
 	Dwt.setHandler(element, DwtEvent.ONKEYPRESS, ZmAutocompleteListView.onKeyPress);
 	Dwt.setHandler(element, DwtEvent.ONKEYUP, ZmAutocompleteListView.onKeyUp);
 	if (AjxEnv.isFirefox){
-		Dwt.setHandler(element, DwtEvent.ONBLUR, ZmAutocompleteListView.clearTimer);
+		// don't override the element input handler directly, as DwtControl uses
+		// that for changing style, etc.
+		var control = DwtControl.findControl(element);
+
+		if (control && control.getInputElement && control.getInputElement() === element) {
+			control.addListener(DwtEvent.ONBLUR, ZmAutocompleteListView.clearTimer);
+		} else {
+			Dwt.setHandler(element, DwtEvent.ONBLUR, ZmAutocompleteListView.clearTimer);
+		}
 	}
 	this.isActive = true;
 };
