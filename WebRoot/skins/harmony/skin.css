@@ -36,6 +36,10 @@
 	background-color:@darken(AltC,25)@;
 }
 
+#skin_spacing_tree {
+	padding-bottom: 0px;
+}
+
 /* App tab styling */
 
 #skin_spacing_app_row {
@@ -48,15 +52,12 @@
 
 /* Major panel styling */
 
-.ZmOverview>DIV {
+.ZmOverview .overviewHeader-Text.FakeAnchor > DIV {
 	margin-right:2px;
 }
 
-#skin_container_tree,
-#skin_container_tree_footer,
-.DwtListView,
-.ZmConvView,
-.ZmConvView2 {
+#skin_spacing_tree,
+#skin_spacing_tree_footer {
 	border-width:0px;
 	margin-left:3px;
 }
@@ -217,10 +218,6 @@ TD.DwtListView-ColumnActive  {
 
 .console_inset_app_l {
 	z-index:499 !important;  /* 1 less than veil */
-}
-
-.console_inset_app_l .HSashThumb {
-	margin-left:0;
 }
 
 /* Row styling */

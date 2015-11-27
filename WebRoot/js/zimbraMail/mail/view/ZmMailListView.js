@@ -209,7 +209,7 @@ function(newWidth, newHeight) {
 	}
 
 	if (newHeight !== Dwt.DEFAULT) {
-		newHeight -= Dwt.getSize(this._listColDiv).y;
+		newHeight -= Dwt.getOuterSize(this._listColDiv).y;
 		newHeight -= margins.top + margins.bottom;
 	}
 

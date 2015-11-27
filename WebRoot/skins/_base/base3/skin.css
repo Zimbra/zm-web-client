@@ -108,7 +108,6 @@ BODY									{	margin:0px; 	}
 
 /** Tree/App Sash **/
 #skin_spacing_tree_app_sash				{}
-#skin_container_tree_app_sash			{	@SkinBorderTreeSash@		}
 /** App Chooser **/
 #skin_spacing_app_chooser				{}
 #skin_border_app_chooser				{	@SkinBorderAppChooser@ 		}
