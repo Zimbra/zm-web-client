@@ -703,7 +703,6 @@ function(width) {
 		validationStyle: DwtInputField.CONTINUAL_VALIDATION
 	};
 	this._subjectField = new DwtInputField(params);
-	this._subjectField.setRequired(true);
 	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
 
 	// CalItem folder DwtSelect
