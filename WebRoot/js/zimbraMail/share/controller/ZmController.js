@@ -699,7 +699,7 @@ ZmController.prototype._handleException = function(ex, continuation) {
         else {
             var msg;
 
-            if (continuation.restUri.indexOf('zimbraim') > -1) {
+            if (continuation && continuation.restUri && continuation.restUri.indexOf('zimbraim') !== -1) {
                 msg = ZmMsg.chatXMPPError;
             }
             else {
