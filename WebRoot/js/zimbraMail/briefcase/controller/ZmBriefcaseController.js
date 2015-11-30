@@ -418,7 +418,7 @@ ZmBriefcaseController.prototype._doDelete = function(items, hardDelete) {
 	}
 
     var dialog = appCtxt.getConfirmationDialog();
-	if (AjxEnv.isIE) {
+	if (AjxEnv.isIE || AjxEnv.isModernIE) {
 		dialog.addPopupListener(ZmBriefcaseController._onDeleteDialogPopup);
 	}
 	dialog.popup(message, this._doDelete2.bind(this, items, hardDelete));
