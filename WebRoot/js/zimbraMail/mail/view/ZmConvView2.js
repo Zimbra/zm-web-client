@@ -386,8 +386,11 @@ function(scrollMsgView) {
 		for (var i = 0; i < this._msgViewList.length; i++) {
 			var msgView = this._msgViews[this._msgViewList[i]];
 			if (msgView) {
+				ZmMailMsgView._resetIframeHeight(msgView);
+
 				var iframe = msgView._usingIframe && msgView.getIframe();
-				var width = iframe ? Dwt.getSize(iframe).x : msgView._contentWidth;
+				var width = iframe ? Dwt.getOuterSize(iframe).x : msgView._contentWidth;
+				width += msgView.getInsets().left + msgView.getInsets().right;
 				if (width && width > Dwt.getSize(this._messagesDiv).x) {
 					msgView.setSize(width, Dwt.DEFAULT);
 				}
