@@ -693,8 +693,17 @@ function(ex, continuation) {
 		if (ex.lineNumber && !ex.detail) {
 			// JS error that was caught before our JS-specific handler got it
 			ZmController.handleScriptError(ex);
-		} else {
-			var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
+		}
+        else {
+            var msg;
+
+            if (continuation && continuation.restUri && continuation.restUri.indexOf('zimbraim') !== -1) {
+                msg = ZmMsg.chatXMPPError;
+            }
+            else {
+                msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg || ex.message;
+            }
+
 			this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
 		}
 	}
