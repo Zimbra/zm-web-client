@@ -364,7 +364,7 @@ function(flag) {
 
 ZmTaskEditView.prototype.getpCompleteInputValue = function() {
     var pValue  = this._pCompleteSelectInput.getValue();
-    pValue      = pValue.replace(/[%]/g,"");
+    pValue      = pValue.replace(/[%\u066A]/g,"");  // also check for Arabic % character
 	pValue      = pValue.trim();
     var valid = /^\d*$/.test(pValue);
     var percent = 0;
@@ -393,7 +393,7 @@ ZmTaskEditView.prototype.formatPercentComplete = function(pValue) {
 
    var formatter = new AjxMessageFormat(AjxMsg.percentageString);
    if(AjxUtil.isString(pValue) && pValue.indexOf("%") != -1) {
-       return formatter.format(Math.round(pValue.replace(/[%]/g,"")));
+       return formatter.format(Math.round(pValue.replace(/[%\u066A]/g,"")));  // also check for Arabic % character
    } else {
        return formatter.format(Math.round(pValue));
    }
