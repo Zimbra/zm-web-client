@@ -30,11 +30,9 @@ ZmChatApp.prototype.toString = function() {    return "ZmChatApp"; };
 
 ZmChatApp.prototype.isChatEnabled = true;
 
-ZmChatApp.isServiceRunning = false;
+ZmChatApp.isServiceReachable = false;
 
-ZmChatApp.disconnected = false;
-
-ZmChatApp.reconnecting = false;
+ZmChatApp.isReconnect = false;
 
 ZmApp.CHAT = ZmId.APP_CHAT;
 ZmApp.CLASS[ZmApp.CHAT] = "ZmChatApp";
@@ -66,24 +64,16 @@ function() {
     // Stub for login
 };
 
-ZmChatApp.prototype._init = function(response) {
-    if (typeof response !== 'undefined' && response.isZmCsfeException) {
-        ZmChatApp.disconnected = true;
-        var msg = ZmMsg.chatXMPPError;
-        response.message = msg;
-        ZmController.prototype.popupErrorDialog.call(msg, response, true, false);
-    }
-    else {
-        if (appCtxt.get(ZmSetting.CHAT_FEATURE_ENABLED) && appCtxt.get(ZmSetting.CHAT_ENABLED)) {
-            //chain UI initialization to SOAP response via a callback
-            var callback = new AjxCallback(this, this.initChatUI);
-            //Call prebind
-            var soapDoc = AjxSoapDoc.create("GetAccountInfoRequest", "urn:zimbraAccount", null);
-            var accBy = soapDoc.set('account', appCtxt.getUsername());
-            accBy.setAttribute('by', 'name');
-            // TODO - Need to have different handler for errorCallback and it will fix Bug: 100887
-            appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode:true, errorCallback:callback, callback:callback});
-        }
+ZmChatApp.prototype._init = function() {
+    if (appCtxt.get(ZmSetting.CHAT_FEATURE_ENABLED) && appCtxt.get(ZmSetting.CHAT_ENABLED)) {
+        //chain UI initialization to SOAP response via a callback
+        var callback = new AjxCallback(this, this.initChatUI);
+        //Call prebind
+        var soapDoc = AjxSoapDoc.create("GetAccountInfoRequest", "urn:zimbraAccount", null);
+        var accBy = soapDoc.set('account', appCtxt.getUsername());
+        accBy.setAttribute('by', 'name');
+        // TODO - Need to have different handler for errorCallback and it will fix Bug: 100887
+        appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode:true, errorCallback:callback, callback:callback});
     }
 };
 
@@ -176,13 +166,23 @@ ZmChatApp.prototype.initChatUI = function(response) {
             __ = $.proxy(utils.__, converseObject);
 
             // Poll the XMPP service every 30 seconds by default else it is configurable
-            setTimeout(_.bind(self._pollService, self), 30000);
+            $(window).on("online offline", ZmChatApp.checkServerStatus);
+            setInterval(function() {
+                ZmChatApp.checkServerStatus(false, false, null, self);
+            }, 30000);
+
+            setInterval(function() {
+                if (converseObject.connection.connected) {
+                    converseObject.xmppstatus.sendPresence();
+                }
+            }, 30000);
         },
 
         overrides: {
             onConnected: function() {
                 var converse = this._super.converse;
-                if (ZmChatApp.reconnecting) {
+
+                if (ZmChatApp.isReconnect) {
                     converse.reconnect();
                 }
                 else {
@@ -201,7 +201,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     this.converse.roster.browserStorage._clear();
                 }
                 this.converse.session.browserStorage._clear();
-                ZmChatApp.reconnecting = false;
+                ZmChatApp.isReconnect = false;
             },
 
             ChatBoxView: {
@@ -964,9 +964,6 @@ ZmChatApp.prototype.initChatUI = function(response) {
                             //show controlbox in minimized state
                             this.toggleControlBox();
                         }
-
-                        ZmChatApp.disconnected = true;
-                        ZmChatApp.reconnecting = false;
                     }
                     else {
                         // Keep control box rendering separate in case of connected/disconnected
@@ -999,7 +996,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     }
                 },
                 reconnect: function() {
-                    self._checkIMExtensionSvcConn(null, false, new AjxCallback(self, self._reconnectCallbackHandler));
+                    ZmChatApp.checkServerStatus(true, false, new AjxCallback(self, ZmChatApp.reconnectChat), self);
                 }
             },
 
@@ -1078,7 +1075,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     if(headerText) {
                         this.$headerText.html(headerText);
                     }
-                },
+                }
                 
             }
         }
@@ -1136,8 +1133,7 @@ function(params, callback) {
     if (callback) {
         callback.run();
     }
-
-    this._checkIMExtensionSvcConn(null, false, new AjxCallback(this, this._init));
+    this._init();
 };
 
 ZmChatApp.prototype.setPlaySoundSetting =
@@ -1330,64 +1326,52 @@ function(chat_status, fullname) {
     }
 };
 
-ZmChatApp.prototype._checkIMExtensionSvcConn =
-function(response, isPoll, callbackhandler) {
-    if (response) {
-        if (response.isZmCsfeException) {
-            ZmChatApp.isServiceRunning = false;
-            return;
-        }
-        else {
-            ZmChatApp.isServiceRunning = true;
-            return;
-        }
-    }
+ZmChatApp.checkServerStatus =
+function(doStop, doNotTrigger, callback, chatAppObject) {
 
-    if (isPoll && !response && !ZmChatApp.disconnected) {
-        //if it is a poll and client is not disconnected than do not send the service request.
-        return;
-    }
-    var callback = callbackhandler || new AjxCallback(this, this._checkIMExtensionSvcConn);
-    var params = {
-        asyncMode: true,
-        noBusyOverlay: true,
-        callback: callback,
-        offlineCallback: callback,
-        errorCallback: callback
-    };
-
-    params.restUri = AjxUtil.formatUrl({
-        path: '/service/extension/zimbraim/'
-    });
-
-    appCtxt.getAppController().sendRequest(params);
-};
-
-ZmChatApp.prototype._pollService =
-function(response) {
-    if (response) {
-        if (response._isException || response instanceof ZmCsfeException) {
-            converse.disconnect();
-            ZmChatApp.disconnected = true;
-            ZmChatApp.reconnecting = false;
-        }
-        else {
-            if (ZmChatApp.disconnected) {
-                ZmChatApp.disconnected = false;
-                ZmChatApp.reconnecting = true;
-                this._init();
+    var self = chatAppObject;
+    $.ajax({
+        type: "HEAD",
+        url: "/public/blank.html",
+        cache: false,
+        statusCode: {
+            0: function() {
+                if (ZmChatApp.isServiceReachable === true) {
+                    if (doStop) {
+                        // Reset here - state must be correct for polling function
+                        ZmChatApp.isServiceReachable = false;
+                        if (!doNotTrigger) {
+                            converse.disconnect();
+                        }
+                    }
+                    else {
+                        return ZmChatApp.checkServerStatus(true, false, null, self);
+                    }
+                }
+                ZmChatApp.isServiceReachable = false;
+            },
+            200: function() {
+                if (ZmChatApp.isServiceReachable === false) {
+                    if (doStop) {
+                        ZmChatApp.isServiceReachable = true;
+                        if (!doNotTrigger) {
+                            ZmChatApp.reconnectChat.call(self);
+                        }
+                    }
+                    else {
+                        return ZmChatApp.checkServerStatus(true, false, null, self);
+                    }
+                }
+                ZmChatApp.isServiceReachable = true;
             }
-        }
-    }
+        },
+        complete: callback
+    });
+ };
+ZmChatApp.checkServerStatus(true, true, null, this);
 
-    setInterval(_.bind(this._checkIMExtensionSvcConn, this, null, true, new AjxCallback(this, this._pollService)), 30000);
-};
-
-ZmChatApp.prototype._reconnectCallbackHandler =
-function(response) {
-    if (!(response instanceof ZmCsfeException)) {
-        ZmChatApp.disconnected = false;
-        ZmChatApp.reconnecting = true;
-        this._init();
-    }
+ZmChatApp.reconnectChat =
+function() {
+    ZmChatApp.isReconnect = true;
+    this._init();
 };
