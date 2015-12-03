@@ -208,7 +208,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 onChatStatusChanged: function(item) {
                     var chat_status = item.get('chat_status'),
                         fullname = item.get('fullname'),
-                        elChatTitle = this.$el.find('.chat-title>span');
+                        elChatTitle = this.$el.find('.chat-title>span[class^=icon-]');
 
                     fullname = AjxUtil.isEmpty(fullname) ? item.get('jid'): fullname;
 					if (this.$el.is(':visible')) {
@@ -816,7 +816,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                             //update name in any open chat views.
                             var chatview = converseObject.chatboxviews.get(contact.attributes.jid);
                             if (chatview) {
-                                $(chatview.el).find('.chat-title').html("<span class='icon-" + contact.attributes.chat_status + "'></span>" + alias);
+                                $(chatview.el).find('.chat-title'.find('.chat-title>span.header-contact-name')).html(alias);
                             }
                             converseObject.getVCard(contact.get('jid'));
                         }
