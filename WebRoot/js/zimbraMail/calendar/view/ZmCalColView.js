@@ -681,7 +681,12 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
 	if ((is30 || isAllDay) && this.view !== ZmId.VIEW_CAL_DAY) {
         // fit as much of appt name as we can in one row, use ... if we have to truncate
         apptName = isAllDay ? apptName : appt.getDurationText(true, true) + " - " + apptName;
-        apptName = AjxStringUtil.fitString(apptName, this._getBoundsForAppt(appt).width - 15);
+        var apptBounds = this._getBoundsForAppt(appt),
+            apptWidth = apptBounds && apptBounds.width;
+
+        if (apptWidth > 30) {
+            apptName = AjxStringUtil.fitString(apptName, apptWidth - 15);
+        }
 	}
 
     var tagNames  = appt.getVisibleTags(),
