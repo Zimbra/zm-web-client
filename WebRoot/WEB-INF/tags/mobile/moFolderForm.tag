@@ -266,7 +266,7 @@
                     </div></div> 
                     <div class="tbl"><div class="tr">
                    
-                    <div class="td label">Tag Color: 
+                    <div class="td label"><fmt:message key="tagColor"/>: 
                                 <select name="tag_color">
                                     <optgroup label="<fmt:message key='color'/>">
                                         <option value="<fmt:message key="colorCyan"/>" ${etag.color eq 'cyan' ? 'selected=selected' : ''}>
