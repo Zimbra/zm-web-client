@@ -933,7 +933,7 @@ ZmContactSplitView.prototype._sashCallback = function(delta) {
 	var sashWidth = this._sash.getSize().x;
 	var totalWidth = Dwt.getSize(this._splitviewCell).x;
 
-	var origListWidth = this._listPart.getSize().width;
+	var origListWidth = this._listPart.getSize().x;
 	var newListWidth = origListWidth + delta;
 	var newContentPos = newListWidth + sashWidth;
 	var newContentWidth = totalWidth - newContentPos;
