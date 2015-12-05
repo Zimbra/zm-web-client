@@ -89,6 +89,11 @@ function() {
 	return false;
 };
 
+// No headers, can't sort
+ZmConvController.prototype.supportsSorting = function() {
+    return false;
+};
+
 ZmConvController.prototype._handleResponseLoadConv =
 function(conv, callback, result) {
 
@@ -230,9 +235,6 @@ function(ev) {
 		this._goToConv(op == ZmOperation.PAGE_FORWARD);
 	}
 };
-
-
-ZmConvController.prototype._setupGroupByMenuItems = function(view, menu) {};
 
 ZmConvController.getDefaultViewType =
 function() {
