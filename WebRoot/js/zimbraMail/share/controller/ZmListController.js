@@ -1360,3 +1360,8 @@ function() {
 	lv._checkItemCount();
 	lv._handleResponseCheckReplenish(true);
 };
+
+// Returns true if this controller supports sorting its items
+ZmListController.prototype.supportsSorting = function() {
+    return true;
+};

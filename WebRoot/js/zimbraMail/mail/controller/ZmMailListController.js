@@ -1549,9 +1549,12 @@ function(view, btn) {
 	if (!isExternalAccount && convsEnabled) {
 		this._convOrderViewMenu = this._setupConvOrderMenu(view, menu);
 	}
-	this._sortViewMenu = this._setupSortViewMenu(view, menu);
-	// col header view menu created in _updateViewMenu (if multi-column)
-	this._groupByViewMenu = this._mailListView._getGroupByActionMenu(menu, true, true);
+
+    // add sort and group by menus only if we have headers (not in standalone conv view)
+    if (this.supportsSorting()) {
+	    this._sortViewMenu = this._setupSortViewMenu(view, menu);
+	    this._groupByViewMenu = this._mailListView._getGroupByActionMenu(menu, true, true);
+    }
 
 	return menu;
 };
