@@ -280,7 +280,8 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 },
 
                 show: function (callback) {
-                    var chat_status = this.model.get('chat_status');
+                    var contact = converseObject.roster.get(this.model.get('jid'));
+                    var chat_status = contact ? contact.get('chat_status') : "online";
                     var fullname = this.model.get('fullname');
                     fullname = AjxUtil.isEmpty(fullname) ? item.get('jid'): fullname;
                     //ZCS change - Notify user about recipient being offline.
