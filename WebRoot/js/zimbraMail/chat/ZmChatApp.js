@@ -203,7 +203,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         )
                     );
                     //ZCS - comment rendering of avatar.
-                    //this.renderToolbar().renderAvatar();
+                    this.renderToolbar(); //.renderAvatar();
                     converseObject.emit('chatBoxOpened', this);
                     setTimeout(converseObject.refreshWebkit, 50);
                     return this.showStatusMessage();
