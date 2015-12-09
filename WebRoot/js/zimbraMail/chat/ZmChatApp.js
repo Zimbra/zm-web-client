@@ -104,20 +104,21 @@ ZmChatApp.prototype.initChatUI = function(response) {
         initialize: function() {
             self._registerGlobals();
             converseObject = this.converse;
+            converseObject.newChats = {};
         },
 
         overrides: {
             ChatBoxView: {
-                onChatStatusChanged: function(item) {
+                onChatStatusChanged: function (item) {
                     var chat_status = item.get('chat_status'),
                         fullname = item.get('fullname'),
                         elChatTitle = this.$el.find('.chat-title>span');
 
-                    fullname = AjxUtil.isEmpty(fullname) ? item.get('jid'): fullname;
-					if (this.$el.is(':visible')) {
+                    fullname = AjxUtil.isEmpty(fullname) ? item.get('jid') : fullname;
+                    if (this.$el.is(':visible')) {
                         if (chat_status === 'offline') {
                             this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatUserOffline, fullname));
-                        } else if (this.$el.find('div.chat-event:contains("' + AjxMessageFormat.format(ZmMsg.chatUserOffline, fullname) +'")').length) {
+                        } else if (this.$el.find('div.chat-event:contains("' + AjxMessageFormat.format(ZmMsg.chatUserOffline, fullname) + '")').length) {
                             this.$el.find('div.chat-event').remove();
                             switch (chat_status) {
                                 case 'online' :
@@ -141,7 +142,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     }
                 },
 
-                sendMessage: function(text) {
+                sendMessage: function (text) {
                     var userChatStatus = this.model.get('chat_status');
 
                     if (userChatStatus === ZmMsg.chatStatusOffline.toLowerCase() || userChatStatus === ZmMsg.chatStatusDnD.toLowerCase()) {
@@ -159,13 +160,19 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 show: function (callback) {
                     var userChatStatus = this.model.get('chat_status');
                     var fullname = this.model.get('fullname');
-                    fullname = AjxUtil.isEmpty(fullname) ? item.get('jid'): fullname;
+                    fullname = AjxUtil.isEmpty(fullname) ? item.get('jid') : fullname;
                     //ZCS change - Notify user about recipient being offline.
                     if (userChatStatus === ZmMsg.chatStatusOffline.toLowerCase() || userChatStatus === ZmMsg.chatStatusDnD.toLowerCase()) {
                         this.$el.find('.chat-content').append("<span class='offline-error'>" + AjxMessageFormat.format(ZmMsg.chatOfflineNotify, fullname) + "</span><br>");
                     }
+                    var isNewChat = converseObject.newChats[this.model.get('jid')];
                     if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
-                        return this.focus();
+                        if (isNewChat) {
+                            delete converseObject.newChats[this.model.get('jid')];
+                            return this.focus();
+                        } else {
+                            return this;
+                        }
                     }
                     this.$el.fadeIn(callback);
                     if (converseObject.connection.connected) {
@@ -175,7 +182,12 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         this.initDragResize();
                     }
                     this.setChatState('active');
-                    return this.focus();
+                    if (isNewChat) {
+                        delete converseObject.newChats[this.model.get('jid')];
+                        return this.focus();
+                    } else {
+                        return this;
+                    }
                 }
             },
             ChatBoxViews: {
@@ -498,6 +510,11 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 showRemoveContactPanel: function(ev) {
                     this.controlboxPane.hide();
                     this.removeContactPanel.show();
+                },
+
+                openChat: function (ev) {
+                    converseObject.newChats[this.model.attributes.jid] = true;
+                    this._super.openChat.apply(this);
                 }
             },
 
