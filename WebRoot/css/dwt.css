@@ -1846,6 +1846,7 @@ INPUT.xform_field {
 }
 
 .ZButton:focus,
+.ZMenuItem:focus,
 .ZSelectAutoSizingContainer:focus,
 .ZToolbarButton:focus,
 .ZSelect:focus,
