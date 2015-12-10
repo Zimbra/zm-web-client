@@ -204,6 +204,30 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 ZmChatApp.isReconnect = false;
             },
 
+            registerGlobalEventHandlers: function() {
+
+                // Tab or window close, page reload.
+                $(window).on('unload beforeunload', function() {
+                    converseObject.logOut();
+                });
+
+                // Signout button clicked
+                $('#logOff').click(function() {
+                    converseObject.logOut();
+                });
+
+                this._super.registerGlobalEventHandlers();
+            },
+
+            attemptPreboundSession: function() {
+                // Converse tries to restore the session from cached JID/SID. Overriding the function we will always attach user to new session.
+                if (this.converse.prebind_url) {
+                    this.converse.clearSession();
+                    this.converse._tearDown();
+                    this.converse.startNewBOSHSession();
+                }
+            },
+
             ChatBoxView: {
                 onChatStatusChanged: function(item) {
                     var chat_status = item.get('chat_status'),
