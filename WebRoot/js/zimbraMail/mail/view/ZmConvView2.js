@@ -1143,7 +1143,6 @@ ZmConvReplyView.prototype.reset =
 function() {
 	var msgView = this._msg && this._convView._msgViews[this._msg.id];
 	if (msgView) {
-		msgView._resetLinks();
 		msgView.delClassName("Reply");
 	}
 	this.setValue("");
@@ -1151,16 +1150,19 @@ function() {
 	this._msg = null;
 };
 
-ZmConvReplyView.prototype._initializeToolbar =
-function() {
+ZmConvReplyView.prototype._initializeToolbar = function() {
 	
 	if (!this._replyToolbar) {
 		var buttons = [
-			ZmOperation.SEND, ZmOperation.CANCEL,
-			ZmOperation.FILLER, ZmOperation.FORMAT_MORE_OPTIONS
+			ZmOperation.SEND,
+            ZmOperation.CANCEL,
+			ZmOperation.FILLER
 		];
 		var overrides = {};
-		overrides[ZmOperation.CANCEL] = {tooltipKey: "cancel", shortcut: null};
+		overrides[ZmOperation.CANCEL] = {
+            tooltipKey: "cancel",
+            shortcut:   null
+        };
 		var tbParams = {
 			parent:				this,
 			buttons:			buttons,
@@ -1173,16 +1175,7 @@ function() {
 		var tb = this._replyToolbar = new ZmButtonToolBar(tbParams);
 		tb.addSelectionListener(ZmOperation.SEND, this._convView._sendListener.bind(this._convView));
 		tb.addSelectionListener(ZmOperation.CANCEL, this._convView._cancelListener.bind(this._convView));
-		tb.addSelectionListener(ZmOperation.FORMAT_MORE_OPTIONS, this._moreOptions.bind(this));
 	}
-};
-
-ZmConvReplyView.prototype._moreOptions =
-function(ev) {
-	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev);
-	this._convView._compose({msg:this._msg, action:this.action, ev:mouseEv});
-	this.reset();
 };
 
 // Returns lists of To: and Cc: addresses to reply to, based on the msg
@@ -1284,8 +1277,7 @@ ZmMailMsgCapsuleView = function(params) {
 	this._browserToolTip = appCtxt.get(ZmSetting.BROWSER_TOOLTIPS_ENABLED);
 	
 	this._linkClass = "Link";
-	this._followedLinkClass = "Link followed";
-	
+
 	this.setScrollStyle(Dwt.VISIBLE);
 	
 	// cache text and HTML versions of original content
@@ -1508,9 +1500,9 @@ function(msg, container, callback) {
 };
 
 // use a callback in case we needed to load an alternative part
-ZmMailMsgCapsuleView.prototype._handleResponseLoadMessage1 =
-function(msg, container, callback) {
-	this._renderMessageFooter(msg, container);
+ZmMailMsgCapsuleView.prototype._handleResponseLoadMessage1 = function(msg, container, callback) {
+
+	this._renderMessageFooter(msg);
 	if (appCtxt.get(ZmSetting.MARK_MSG_READ) !== ZmSetting.MARK_READ_NOW) {
 		this._controller._handleMarkRead(msg);	// in case we need to mark read after a delay  bug 73711
 	}
@@ -1662,12 +1654,22 @@ function(bodyPart) {
 	return content;
 };
 
-ZmMailMsgCapsuleView.prototype._renderMessageFooter =
-function(msg, container) {
+/**
+ * Renders the row of links at the bottom of the msg.
+ *
+ * @param {ZmMailMsg}   msg     msg being displayed
+ * @param {string}      op      (optional) operation being performed
+ *
+ * @private
+ */
+ZmMailMsgCapsuleView.prototype._renderMessageFooter = function(msg, op) {
 
-	var div = document.createElement("div");
-	div.className = "footer";
-	div.id = this._footerId = [this.getHTMLElId(), ZmId.MV_MSG_FOOTER].join("_");
+    var div = this._footerId && Dwt.byId(this._footerId);
+    if (!div) {
+        div = document.createElement("div");
+        div.className = "footer";
+        div.id = this._footerId = [this.getHTMLElId(), ZmId.MV_MSG_FOOTER].join("_");
+    }
 	
 	var showTextKey, showTextHandler;
 	if (this._isCalendarInvite) {
@@ -1681,12 +1683,13 @@ function(msg, container) {
 	
 	var linkInfo = this._linkInfo = {};
     var isExternalAccount = appCtxt.isExternalAccount();
-	linkInfo[ZmOperation.SHOW_ORIG] 	= {key: showTextKey,	handler: showTextHandler,  disabled: isExternalAccount};
-	linkInfo[ZmOperation.DRAFT]			= {key: "editDraft",	handler: this._handleEditDraftLink, op: ZmOperation.DRAFT,		disabled: isExternalAccount};
-	linkInfo[ZmOperation.REPLY]			= {key: "reply",		handler: this._handleReplyLink, 	op: ZmOperation.REPLY,		disabled: isExternalAccount};
-	linkInfo[ZmOperation.REPLY_ALL]		= {key: "replyAll",		handler: this._handleReplyLink, 	op: ZmOperation.REPLY_ALL,	disabled: isExternalAccount};
-	linkInfo[ZmOperation.FORWARD]		= {key: "forward",		handler: this._handleForwardLink,	op: ZmOperation.FORWARD,	disabled: isExternalAccount};
-	linkInfo[ZmOperation.ACTIONS_MENU]	= {key: "moreActions",	handler: this._handleMoreActionsLink};
+	linkInfo[ZmOperation.SHOW_ORIG] 	    = {key: showTextKey,	        handler: showTextHandler,                                           disabled: isExternalAccount};
+	linkInfo[ZmOperation.DRAFT]			    = {key: "editDraft",	        handler: this._handleEditDraftLink,     op: ZmOperation.DRAFT,	    disabled: isExternalAccount};
+	linkInfo[ZmOperation.REPLY]			    = {key: "reply",		        handler: this._handleReplyLink, 	    op: ZmOperation.REPLY,	    disabled: isExternalAccount};
+	linkInfo[ZmOperation.REPLY_ALL]		    = {key: "replyAll",		        handler: this._handleReplyLink, 	    op: ZmOperation.REPLY_ALL,	disabled: isExternalAccount};
+	linkInfo[ZmOperation.FORWARD]		    = {key: "forward",		        handler: this._handleForwardLink,	    op: ZmOperation.FORWARD,    disabled: isExternalAccount};
+	linkInfo[ZmOperation.ACTIONS_MENU]	    = {key: "moreActions",	        handler: this._handleMoreActionsLink};
+	linkInfo[ZmOperation.COMPOSE_OPTIONS]	= {key: "moreComposeOptions",	handler: this._handleMoreOptionsLink,                               disabled: isExternalAccount};
 
 	var links;
 	var folder = appCtxt.getById(msg.folderId);
@@ -1708,14 +1711,19 @@ function(msg, container) {
         }
 	}
 	else {
-		links = [
-			ZmOperation.SHOW_ORIG,
-			ZmOperation.REPLY,
-			ZmOperation.REPLY_ALL,
-			ZmOperation.FORWARD,
-			ZmOperation.ACTIONS_MENU
-		];
+        links = [ ZmOperation.REPLY, ZmOperation.REPLY_ALL ];
+        if (op) {
+            // if user is doing Reply or Reply All, show the other one
+            links = (op === ZmOperation.REPLY) ? [ ZmOperation.REPLY_ALL ] : [ ZmOperation.REPLY ];
+        }
+        links.unshift(ZmOperation.SHOW_ORIG);
+        links.push(ZmOperation.FORWARD, ZmOperation.ACTIONS_MENU);
 	}
+
+    if (op) {
+        links.push(ZmOperation.COMPOSE_OPTIONS);
+    }
+
 	var linkHtml = [];
 	for (var i = 0; i < links.length; i++) {
 		var html = this._makeLink(links[i]);
@@ -1742,6 +1750,7 @@ function(msg, container) {
             linkFound = true;
 		}
 	}
+
     // Attempt to display the calendar if the preference is to auto-open it
     this._handleShowCalendarLink(ZmOperation.SHOW_ORIG, appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR)); //this is called from here since the _linkInfo is now ready and needed in _handleShowCalendarLink. Might be other reason too.
 };
@@ -1761,7 +1770,6 @@ function(id) {
 ZmMailMsgCapsuleView.prototype._linkClicked =
 function(id, op, ev) {
 
-	this._resetLinks(op);
 	var info = this._linkInfo && id && this._linkInfo[id];
 	var handler = (info && !info.disabled) ? info.handler : null;
 	if (handler) {
@@ -1804,20 +1812,6 @@ function(ev) {
 
 	if (footer) {
 		footer.style.opacity = null;
-	}
-};
-
-ZmMailMsgCapsuleView.prototype._resetLinks =
-function(op) {
-	var links = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
-	for (var i = 0; i < links.length; i++) {
-		var id = links[i];
-		var info = this._linkInfo && this._linkInfo[id];
-        if (info && info.disabled) { continue; }
-		var link = info && document.getElementById(info.linkId);
-		if (link) {
-			link.className = (op == id) ? this._followedLinkClass : this._linkClass;
-		}
 	}
 };
 
@@ -1911,17 +1905,23 @@ ZmMailMsgCapsuleView.prototype._handleMoreActionsLink = function(id, op, ev) {
 	this._actionListener(ev, true);
 };
 
-ZmMailMsgCapsuleView.prototype._handleReplyLink =
-function(id, op, ev, force) {
+ZmMailMsgCapsuleView.prototype._handleReplyLink = function(id, op, ev, force) {
+
 	if (!force && !this._controller.popShield(null, this._handleReplyLink.bind(this, id, op, ev, true))) {
 		return;
 	}
 	this._convView.setReply(this._msg, this, op);
-	var linkInfo = this._linkInfo && this._linkInfo[id];
-	var link = linkInfo && linkInfo.linkId && document.getElementById(linkInfo.linkId);
-	if (link) {
-		link.className = "Link followed";
-	}
+    this._renderMessageFooter(this._msg, op);
+};
+
+ZmMailMsgCapsuleView.prototype._handleMoreOptionsLink = function(ev) {
+
+    this._convView._compose({
+        msg:    this._msg,
+        action: this.action
+    });
+    this._convView._replyView.reset();
+    this._renderMessageFooter(this._msg);
 };
 
 ZmMailMsgCapsuleView.prototype._handleEditDraftLink =
@@ -1985,7 +1985,6 @@ function(expanded) {
 		this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
 		if (this._expanded) {
 			this._setTags(this._msg);
-			this._resetLinks();
 			this._controller._handleMarkRead(this._msg);
 			appCtxt.notifyZimlets("onMsgExpansion", [this._msg, this]);
 		}

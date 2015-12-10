@@ -1143,10 +1143,6 @@ INPUT[type="text"].search_input-expanded:focus {
 	margin:0px 3px;
 }
 
-.ZmMailMsgCapsuleView .Link.followed {
-	@Text-active@
-}
-
 .Conv2Reply .Link {
 	line-height:3em;
 }
