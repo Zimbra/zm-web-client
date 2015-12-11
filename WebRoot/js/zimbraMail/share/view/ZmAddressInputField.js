@@ -880,7 +880,6 @@ function() {
 
 	var ops = [ZmOperation.DELETE];
 	if (AjxClipboard.isSupported()) {
-		// we use Zero Clipboard (a Flash hack) to copy address
 		ops.push(ZmOperation.COPY);
 	};
 	ops.push(ZmOperation.EDIT);
