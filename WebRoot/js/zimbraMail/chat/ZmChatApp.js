@@ -845,6 +845,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
         prebind_url: AjxUtil.formatUrl({path: '/service/extension/zimbraim/'}),
         auto_login: true,
         keepalive: true,
+        storage: 'local',
         allow_logout: false,
         show_controlbox_by_default: true,
         roster_groups: true,
