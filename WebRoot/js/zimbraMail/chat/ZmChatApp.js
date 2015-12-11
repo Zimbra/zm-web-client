@@ -716,6 +716,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     'click span.close-chatbox-button': 'close',
                     'click span.add-contact-flyout-close': 'closeAddContactForm', // ZCS - event for add contact form close
                     'submit form.add-contact-form': 'addContactFromForm', // ZCS - event for add contact form submit button
+                    'keydown form.add-contact-form': 'handleKeyEventsOnForm',
                     'click span.search-contact-flyout-close': 'closeSearchContactForm',
                     'keyup input#search': 'searchContacts',
                     "click .zmsearch-xmpp a.open-chat": 'openSearchedContactChat',
@@ -1022,6 +1023,12 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 },
                 reconnect: function() {
                     ZmChatApp.checkServerStatus(true, false, new AjxCallback(self, ZmChatApp.reconnectChat), self);
+                },
+                handleKeyEventsOnForm: function(e) {
+                    //For Tabbing events happening on the form, irrespective of Tab or Shift+Tab, prevent propagation to the Dwt handlers.
+                    if( e.which === 9 ) {
+                        e.stopPropagation();
+                    }
                 }
             },
 
