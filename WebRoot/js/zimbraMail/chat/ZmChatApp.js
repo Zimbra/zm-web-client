@@ -228,6 +228,12 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 }
             },
 
+            applyHeightResistance: function (height) {
+                height = this._super.applyHeightResistance(height);
+                //add a minimum height of 10px for the chat window.
+                return (height < 10) ? 10: height;
+            },
+
             ChatBoxView: {
                 onChatStatusChanged: function(item) {
                     var chat_status = item.get('chat_status'),
