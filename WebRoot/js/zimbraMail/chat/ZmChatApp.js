@@ -612,7 +612,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
                 render: function() {
                     this._super.render.apply(this);
-                    var _self = this;
+                    this.$el.find('.alter-menu-xmpp-contact').attr('title',ZmMsg.chatRenameRemoveDropdownTitle);
                     // Set contact removal warning message here since templates don't pick up ZmMsg strings
                     var msgContainer = $('.remove-contact-flyout .removeContactWarningMsg');
                     msgContainer.html(ZmMsg.chatContactRemovalWarning);
@@ -848,7 +848,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                             //update name in any open chat views.
                             var chatview = converseObject.chatboxviews.get(contact.attributes.jid);
                             if (chatview) {
-                                $(chatview.el).find('.chat-title'.find('.chat-title>span.header-contact-name')).html(alias);
+                                $(chatview.el).find('.chat-title>span.header-contact-name').html(alias);
                             }
                             converseObject.getVCard(contact.get('jid'));
                         }
@@ -1267,6 +1267,8 @@ function () {
         },
         events: {
             'click button': 'btnClickHandler',
+            'focus button': 'btnFocusHandler',
+            'blur button': 'btnBlurHandler',
             'mouseover': 'btnMouseOverHandler',
             'mouseout': 'btnMouseOutHandler'
         },
@@ -1314,6 +1316,13 @@ function () {
             if(this.customEvents && this.customEvents['onClick']){
                 this.customEvents['onClick'].apply(this,[e]);
             }
+        },
+
+        btnFocusHandler: function(e) {
+            this.$btnWrapper.addClass('ZFocused');
+        },
+        btnBlurHandler: function(e) {
+            this.$btnWrapper.removeClass('ZFocused');
         }
     });
 }
