@@ -2322,7 +2322,6 @@ function(msgNode) {
 	if (msgNode.su) 	{ this.subject = msgNode.su; }
 	if (msgNode.fr) 	{ this.fragment = msgNode.fr; }
 	if (msgNode.rt) 	{ this.rt = msgNode.rt; }
-	if (msgNode.idnt)	{ this.identity = appCtxt.getIdentityCollection().getById(msgNode.idnt); }
 	if (msgNode.origid) { this.origId = msgNode.origid; }
 	if (msgNode.hp) 	{ this._attHitList = msgNode.hp; }
 	if (msgNode.mid)	{ this.messageId = msgNode.mid; }
@@ -2334,7 +2333,12 @@ function(msgNode) {
 	if (msgNode.ms) 	{ this.ms = msgNode.ms; }
 	if (msgNode.rev) 	{ this.rev = msgNode.rev; }
 
-	//Copying msg. header's
+    if (msgNode.idnt)	{
+        var identityColl = appCtxt.getIdentityCollection();
+        this.identity = identityColl && identityColl.getById(msgNode.idnt);
+    }
+
+    //Copying msg. header's
 	if (msgNode.header) {
 		this.headers = {};
 		for (var i = 0; i < msgNode.header.length; i++) {

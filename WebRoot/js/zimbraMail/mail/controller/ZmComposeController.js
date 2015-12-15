@@ -365,24 +365,25 @@ function() {
 
 // We don't call ZmController._preHideCallback here because it saves the current
 // focus member, and we want to start over each time
-ZmComposeController.prototype._preHideCallback =
-function(view, force) {
-	var dontSave = this._dontSavePreHide;
-	this._dontSavePreHide = false;
+ZmComposeController.prototype._preHideCallback = function(view, force) {
 
+    DBG.println('draft', 'ZmComposeController._preHideCallback for ' + view + ': force = ' + force + ', _dontSavePreHide = ' + this._dontSavePreHide);
 	if (this._autoSaveTimer) {
-		//the following is a bit suspicous to me. I assume maybe this method might be called with force == true
+		//the following is a bit suspicious to me. I assume maybe this method might be called with force == true
 		//in a way that is not after the popShield was activated? That would be the only explanation to have this.
 		//I wonder if that's the case that leaves orphan drafts
-		if (force && !dontSave) {
+		if (force) {
 			// auto-save if we leave this compose tab and the message has not yet been sent
-			//this is a refactoring/fix of code initially from bug 72106 (since it's confusing I mention this bug to keep this knowledge)
-			this._autoSaveCallback(true);
+			// this is a refactoring/fix of code initially from bug 72106 (since it's confusing I mention this bug to keep this knowledge)
+            if (this._dontSavePreHide) {
+                this._dontSavePreHide = false;
+            }
+            else {
+                this._autoSaveCallback(true);
+            }
 		}
-		//Important - killing the timer AFTER saving the draft, otherwise the code in ZmComposeController.prototype._sendMsg sees the timer is killed and exits without saving.
-		this._autoSaveTimer.kill();
-
 	}
+
 	return force ? true : this.popShield();
 };
 
@@ -392,8 +393,10 @@ function(view) {
 };
 
 
-ZmComposeController.prototype._preShowCallback =
-function() {
+ZmComposeController.prototype._preShowCallback = function() {
+
+    this._composeView.enableInputs(true);
+
 	return true;
 };
 
@@ -421,18 +424,15 @@ function() {
 	}
 };
 
-ZmComposeController.prototype._postHideCallback =
-function() {
-	// hack to kill the child window when replying to an invite
-	if (appCtxt.isChildWindow &&
-		(this._action == ZmOperation.REPLY_ACCEPT ||
-		this._action == ZmOperation.REPLY_DECLINE ||
-		this._action == ZmOperation.REPLY_TENTATIVE))
-	{
-		window.close();
-		return;
-	}
+ZmComposeController.prototype._postHideCallback = function() {
 
+    DBG.println('draft', 'ZmComposeController._postHideCallback for ' + this._currentViewId);
+    this._autoSaveTimer.kill();
+
+	// hack to kill the child window when replying to an invite
+	if (appCtxt.isChildWindow && ZmComposeController.IS_INVITE_REPLY[this._action]) {
+		window.close();
+	}
 };
 
 /**
@@ -637,7 +637,6 @@ function(draftType, msg, callback, result) {
 
 ZmComposeController.prototype._handleResponseCancelOrModifyAppt =
 function() {
-	this._composeView.reset(false);
 	this._app.popView(true);
     appCtxt.setStatusMsg(ZmMsg.messageSent);
 };
@@ -1635,7 +1634,6 @@ function(draftType, msg, resp) {
 		}
 
 		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
-			this._composeView.reset(false);
 
 			// bug 36341
 			if (!appCtxt.isOffline && resp && appCtxt.get(ZmSetting.SAVE_TO_IMAP_SENT) && msg.identity) {
@@ -1750,15 +1748,13 @@ function(ev) {
 	this._cancelCompose();
 };
 
-ZmComposeController.prototype._cancelCompose =
-function() {
+ZmComposeController.prototype._cancelCompose = function() {
+
 	var dirty = this._composeView.isDirty(true, true);
-	var needPrompt = dirty || (this._draftType == ZmComposeController.DRAFT_TYPE_AUTO);
-	if (!needPrompt) {
-		this._composeView.reset(true);
-	} else {
-		this._composeView.enableInputs(false);
-	}
+    // Prompt the user if compose view is dirty (they may want to save), or if a draft has been
+    // auto-saved and they might want to delete it
+	var needPrompt = dirty || (this._draftType === ZmComposeController.DRAFT_TYPE_AUTO);
+    this._composeView.enableInputs(!needPrompt);
 	this._composeView.reEnableDesignMode();
 	this._app.popView(!needPrompt);
 };
@@ -1934,6 +1930,7 @@ function(ev) {
 
 ZmComposeController.prototype._autoSaveCallback =
 function(idle) {
+    DBG.println('draft', 'DRAFT autosave check from ' + this._currentViewId);
     if (idle && !DwtBaseDialog.getActiveDialog() && !this._composeView.getHtmlEditor().isSpellCheckMode() && this._composeView.isDirty(true, true)) {
 		this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);
 	}
@@ -1950,6 +1947,7 @@ function(draftType, attId, docIds, callback, contactId) {
 	var respCallback = this._handleResponseSaveDraftListener.bind(this, draftType, callback);
 	this._resetDelayTime();
 	if (!docIds) {
+        DBG.println('draft', 'SAVE DRAFT for ' + this.getCurrentViewId() + ', type is ' + draftType);
 		this.sendMsg(attId, draftType, respCallback, contactId);
 	} else {
 		this.sendDocs(docIds, draftType, respCallback, contactId);
@@ -2103,8 +2101,6 @@ function(mailtoParams) {
 		// cancel
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
-		} else {
-			this._composeView.reset(false);
 		}
 		if (mailtoParams) {
 			this.doAction(mailtoParams);
@@ -2130,8 +2126,6 @@ function(mailtoParams) {
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
 		}
-
-        this._composeView.reset(false);
 
 		if (!mailtoParams) {
 			appCtxt.getAppViewMgr().showPendingView(true);

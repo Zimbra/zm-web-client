@@ -1355,9 +1355,9 @@ function(type) {
  * 
  * @param	{Boolean}	bEnableInputs		if <code>true</code>, enable the input fields
  */
-ZmComposeView.prototype.reset =
-function(bEnableInputs) {
+ZmComposeView.prototype.reset = function(bEnableInputs) {
 
+    DBG.println('draft', 'ZmComposeView.reset for ' + this._view);
 	this.backupForm = null;
 	this.sendUID = null;
 
@@ -1417,7 +1417,8 @@ function(bEnableInputs) {
 
 ZmComposeView.prototype.enableInputs =
 function(bEnable) {
-	this._recipients.enableInputs(bEnable);
+    DBG.println('draft', 'ZmComposeView.enableInputs for ' + this._view + ': ' + bEnable);
+    this._recipients.enableInputs(bEnable);
 	this._subjectField.disabled = this._bodyField.disabled = !bEnable;
 };
 
@@ -1559,7 +1560,9 @@ ZmComposeView.prototype.dispose =
 function() {
 	if (this._identityChangeListenerObj) {
 		var collection = appCtxt.getIdentityCollection();
-		collection.removeChangeListener(this._identityChangeListenerObj);
+        if (collection) {
+		    collection.removeChangeListener(this._identityChangeListenerObj);
+        }
 	}
 	DwtComposite.prototype.dispose.call(this);
 };
@@ -1662,15 +1665,19 @@ ZmComposeView.prototype.isDirty =
 function(incAddrs, incSubject) {
 
 	if (this._isDirty) {
+        DBG.println('draft', 'ZmComposeView.isDirty ' + this._view + ': true');
 		return true;
 	}
 
     // Addresses, Subject, non-html mode edit content
 	var curFormValue = this._formValue(incAddrs, incSubject);
     // Html editor content changed
-    var htmlEditorDirty =  this._htmlEditor && this._htmlEditor.isDirty();
+    var htmlEditorDirty =  this._htmlEditor && this._htmlEditor.isDirty(),
+        dirty = (curFormValue !== this._origFormValue) || htmlEditorDirty;
 
-	return (curFormValue !== this._origFormValue) || htmlEditorDirty;
+    DBG.println('draft', 'ZmComposeView.isDirty ' + this._view + ': '  + dirty);
+
+    return dirty;
 };
 
 ZmComposeView.prototype._removeAttachedFile  =
@@ -3780,8 +3787,8 @@ function(msg) {
 
 
 // Returns a string representing the form content
-ZmComposeView.prototype._formValue =
-function(incAddrs, incSubject) {
+ZmComposeView.prototype._formValue = function(incAddrs, incSubject) {
+
 	var vals = [];
 	if (incAddrs) {
 		for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
@@ -3791,21 +3798,18 @@ function(incAddrs, incSubject) {
 			}
 		}
 	}
+
 	if (incSubject) {
 		vals.push(this._subjectField.value);
 	}
+
     var htmlMode = (this._composeMode === Dwt.HTML);
     if (!htmlMode) {
         var content = this._getEditorContent();
         vals.push(content);
     }
-	var str = vals.join("|");
-	str = str.replace(/\|+/, "|");
-    if (str === "|") {
-        // No content gets reduced to a single divider, return an empty string
-        str = "";
-    }
-	return str;
+
+	return AjxUtil.collapseList(vals).join("|");
 };
 
 // Listeners
@@ -4060,8 +4064,9 @@ function() {
 	this._origFormValue = this._formValue(true, true);
 };
 
-ZmComposeView.prototype._clearFormValue =
-function() {
+ZmComposeView.prototype._clearFormValue = function() {
+
+    DBG.println('draft', 'ZmComposeView._clearFormValue for ' + this._view);
 	this._origFormValue = "";
 	this._isDirty = false;
     if (this._htmlEditor) {

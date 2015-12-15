@@ -1211,10 +1211,10 @@ ZmAppCtxt.prototype.isSpellCheckerAvailable = function () {
  * @param	{ZmZimbraAccount}	account		the account
  * @return	{ZmIdentityCollection}	the identity collection
  */
-ZmAppCtxt.prototype.getIdentityCollection =
-function(account) {
-	var context = this.isChildWindow ? window.opener : window;
-	return context.AjxDispatcher.run("GetIdentityCollection", account);
+ZmAppCtxt.prototype.getIdentityCollection = function(account) {
+
+    var context = this.isChildWindow ? window && window.opener : window;
+	return context && context.AjxDispatcher.run("GetIdentityCollection", account);
 };
 
 /**
@@ -1223,10 +1223,10 @@ function(account) {
  * @param	{ZmZimbraAccount}	account		the account
  * @return	{ZmModel}	the data source collection
  */
-ZmAppCtxt.prototype.getDataSourceCollection =
-function(account) {
-	var context = this.isChildWindow ? window.opener : window;
-	return context.AjxDispatcher.run("GetDataSourceCollection", account);
+ZmAppCtxt.prototype.getDataSourceCollection = function(account) {
+
+	var context = this.isChildWindow ? window && window.opener : window;
+	return context && context.AjxDispatcher.run("GetDataSourceCollection", account);
 };
 
 /**
@@ -1235,10 +1235,10 @@ function(account) {
  * @param	{ZmZimbraAccount}	account		the account
  * @return	{ZmSignatureCollection}	the signature collection
  */
-ZmAppCtxt.prototype.getSignatureCollection =
-function(account) {
-	var context = this.isChildWindow ? window.opener : window;
-	return context.AjxDispatcher.run("GetSignatureCollection", account);
+ZmAppCtxt.prototype.getSignatureCollection = function(account) {
+
+    var context = this.isChildWindow ? window && window.opener : window;
+	return context && context.AjxDispatcher.run("GetSignatureCollection", account);
 };
 
 
@@ -1687,7 +1687,7 @@ function(key) {
  */
 ZmAppCtxt.prototype.getById =
 function(id) {
-	return this.cacheGet(id) || (this.isChildWindow && window.opener.appCtxt.getById(id));
+	return this.cacheGet(id) || (this.isChildWindow && window && window.opener.appCtxt.getById(id));
 };
 
 /**
@@ -2188,7 +2188,7 @@ function() {
 ZmAppCtxt.handleWindowOpener = 
 function() {
 	try {
-		return window.opener && window.opener.appCtxt || appCtxt;
+		return window && window.opener && window.opener.appCtxt || appCtxt;
 	}
 	catch (ex) {
 		return appCtxt;

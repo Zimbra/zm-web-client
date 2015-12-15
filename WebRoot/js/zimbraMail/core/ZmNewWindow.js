@@ -705,17 +705,22 @@ function(msg) {
 /**
  * @private
  */
-ZmNewWindow._confirmExitMethod =
-function(ev) {
-	if (!appCtxt.get(ZmSetting.WARN_ON_EXIT) || !window.parentController)
+ZmNewWindow._confirmExitMethod = function(ev) {
+
+	if (!appCtxt.get(ZmSetting.WARN_ON_EXIT) || !window.parentController) {
 		return;
+    }
 
 	var cmd = window.newWindowCommand;
 
-	if (cmd == "compose" || cmd == "composeDetach")	{
-		var cc = AjxDispatcher.run("GetComposeController", appCtxt.composeCtlrSessionId);
+	if (cmd === "compose" || cmd === "composeDetach")	{
+		var cc = AjxDispatcher.run("GetComposeController", appCtxt.composeCtlrSessionId),
+            cv = cc && cc._composeView,
+            viewId = cc.getCurrentViewId(),
+            avm = appCtxt.getAppViewMgr();
+
 		// only show native confirmation dialog if compose view is dirty
-		if (cc && cc._composeView && cc._composeView.isDirty()) {
+		if (cv && avm.isVisible(viewId) && cv.isDirty()) {
 			return ZmMsg.newWinComposeExit;
 		}
 	} else if (cmd == 'documentEdit') {

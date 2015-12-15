@@ -557,6 +557,20 @@ function(type, visible) {
 };
 
 /**
+ * Returns true if the given view is visible to the user.
+ *
+ * @param {string}  viewId  a view ID
+ *
+ * @returns {boolean}   true if the given view is visible to the user
+ */
+ZmAppViewMgr.prototype.isVisible = function(viewId) {
+
+    var view = this._view[viewId];
+
+    return view && view.visible;
+};
+
+/**
  * Registers a set of elements comprising an app view.
  *
  * @param	{Hash}			params				a hash of parameters
