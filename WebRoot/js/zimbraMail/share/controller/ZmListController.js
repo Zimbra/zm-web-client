@@ -1365,3 +1365,8 @@ function() {
 ZmListController.prototype.supportsSorting = function() {
     return true;
 };
+
+// Returns true if this controller supports alternatively grouped list views
+ZmListController.prototype.supportsGrouping = function() {
+    return false;
+};

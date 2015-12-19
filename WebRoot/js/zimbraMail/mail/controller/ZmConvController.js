@@ -94,6 +94,11 @@ ZmConvController.prototype.supportsSorting = function() {
     return false;
 };
 
+// Cannot choose to group a conv by either msg or conv, it's always a msg list
+ZmConvController.prototype.supportsGrouping = function() {
+    return false;
+};
+
 ZmConvController.prototype._handleResponseLoadConv =
 function(conv, callback, result) {
 
