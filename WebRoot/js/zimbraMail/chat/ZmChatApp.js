@@ -134,8 +134,14 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
             applyHeightResistance: function (height) {
                 height = this._super.applyHeightResistance(height);
-                //add a minimum height of 10px for the chat window.
-                return (height < 10) ? 10: height;
+                //add a minimum height of 10px and max window height for the chat window.
+                var winHeight = $(document).height();
+                if (height < 10) {
+                    height = 10;
+                } else if (height > winHeight) {
+                    height = winHeight;
+                }
+                return height;
             },
 
             ChatBoxView: {
