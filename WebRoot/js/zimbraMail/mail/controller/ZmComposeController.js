@@ -427,7 +427,9 @@ function() {
 ZmComposeController.prototype._postHideCallback = function() {
 
     DBG.println('draft', 'ZmComposeController._postHideCallback for ' + this._currentViewId);
-    this._autoSaveTimer.kill();
+    if (this._autoSaveTimer) {
+        this._autoSaveTimer.kill();
+    }
 
 	// hack to kill the child window when replying to an invite
 	if (appCtxt.isChildWindow && ZmComposeController.IS_INVITE_REPLY[this._action]) {
