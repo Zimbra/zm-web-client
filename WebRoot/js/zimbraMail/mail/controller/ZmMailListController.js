@@ -1536,7 +1536,7 @@ function(view, btn) {
     var isExternalAccount = appCtxt.isExternalAccount(),
 	    convsEnabled = appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED);
 
-	if (convsEnabled) {
+	if (convsEnabled && this.supportsGrouping()) {
 		this._setupGroupByMenuItems(view, menu);
 	}
 	if (menu.getItemCount() > 0) {
@@ -2817,3 +2817,7 @@ ZmMailListController.prototype._setStatics = function() {
 	}
 };
 
+// Mail can be grouped by msg or conv
+ZmMailListController.prototype.supportsGrouping = function() {
+    return true;
+};
