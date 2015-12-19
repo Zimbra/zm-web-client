@@ -671,6 +671,7 @@ function() {
 		};
 		this._compose(params);
 	}
+    this._renderCurMsgFooter();
 };
 
 ZmConvView2.prototype._cancelListener =
@@ -678,6 +679,16 @@ function() {
 	if (this._replyView && this._controller.popShield()) {
 		this._replyView.reset();
 	}
+    this._renderCurMsgFooter();
+};
+
+// re-renders the message footer for the current msg view (one that's being replied to) so it has all its links
+ZmConvView2.prototype._renderCurMsgFooter = function() {
+
+    var msgView = this._replyView && this._replyView._msgView;
+    if (msgView) {
+        msgView._renderMessageFooter();
+    }
 };
 
 // Hands off to a compose view, or takes what's in the quick reply and sends it
@@ -1095,6 +1106,7 @@ function(msg, msgView, op) {
 	this.reparentHtmlElement(this._convView._messagesDiv, index);
 	msgView.addClassName("Reply");
 	msgView._createBubbles();
+    this._msgView = msgView;
 
 	this.setVisible(true);
 	Dwt.scrollIntoView(this.getHtmlElement(), this._convView._messagesDiv);
@@ -1664,6 +1676,7 @@ function(bodyPart) {
  */
 ZmMailMsgCapsuleView.prototype._renderMessageFooter = function(msg, op) {
 
+    msg = msg || this._msg;
     var div = this._footerId && Dwt.byId(this._footerId);
     if (!div) {
         div = document.createElement("div");
