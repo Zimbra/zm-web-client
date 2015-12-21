@@ -496,7 +496,7 @@ function() {
     // IE8 doesn't support :last-child selector
     if (AjxEnv.isIE8) {
         var lastCell = Dwt.byClassName('AlphabetBarCell', element).pop();
-        Dwt.addClass(lastChild, 'AlphabetBarLastCell');
+        Dwt.addClass(lastCell, 'AlphabetBarLastCell');
     }
 };
 
