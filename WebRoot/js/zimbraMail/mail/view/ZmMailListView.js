@@ -203,14 +203,17 @@ ZmMailListView.prototype.resetSize =
 function(newWidth, newHeight) {
 	this.setSize(newWidth, newHeight);
 	var margins = this.getMargins();
+	var listInsets = Dwt.getInsets(this._parentEl);
 
 	if (newWidth !== Dwt.DEFAULT) {
 		newWidth -= margins.left + margins.right;
+		newWidth -= listInsets.left + listInsets.right;
 	}
 
 	if (newHeight !== Dwt.DEFAULT) {
 		newHeight -= Dwt.getOuterSize(this._listColDiv).y;
 		newHeight -= margins.top + margins.bottom;
+		newHeight -= listInsets.top + listInsets.bottom;
 	}
 
 	Dwt.setSize(this._parentEl, newWidth, newHeight);

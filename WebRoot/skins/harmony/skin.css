@@ -216,6 +216,18 @@ TD.DwtListView-ColumnActive  {
 	font-weight:bold;
 }
 
+.DwtListView-Rows-Empty > * {
+	@TransparentBorder@
+}
+
+.DwtListView-Rows-Empty:focus {
+	outline: none;
+}
+
+.DwtListView-Rows-Empty:focus > * {
+	@FocusBorder@
+}
+
 .console_inset_app_l {
 	z-index:499 !important;  /* 1 less than veil */
 }
