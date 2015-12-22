@@ -2496,37 +2496,41 @@ function(menu) {
  */
 ZmHtmlEditor.prototype.pastePostProcess =
 function(ev) {
-    if (!ev || !ev.node || !ev.target) {
-        return;
-    }
+	if (!ev || !ev.node || !ev.target || ev.node.children.length === 0) {
+		return;
+	}
 
-    //Finding all tables in the pasted content and set the border as 1 if it is 0
-    var editor = ev.target,
-        dom = editor.dom,
-        tableArray = dom.select("table", ev.node),
-        i = 0,
-        length = tableArray.length,
-        table,
-        children = ev.node.children,
-        lastChildren = children[children.length - 1];
+	var editor = ev.target, tables = editor.dom.select("TABLE", ev.node);
 
-    for (; i < length; i++) {
-        table = tableArray[i];
-        //set the table border as 1 if it is 0 or unset
-        if (table && (table.border === "0" || table.border === "")) {
-            table.border = 1;
-        }
-    }
+	// Add a border to all tables in the pasted content
+	for (var i = 0; i < tables.length; i++) {
+		var table = tables[i];
+		// set the table border as 1 if it is 0 or unset
+		if (table && (table.border === "0" || table.border === "")) {
+			table.border = 1;
+		}
+	}
 
-    //If the pasted content's last children is table then append "<div><br></div>" so that focus can be set outside the table
-    if (lastChildren && lastChildren.nodeName.toLowerCase() === "table") {
-        var doc = editor.getDoc(),
-            div = doc.createElement("div");
-        lastChildren.parentNode.appendChild(div);
-    }
+	// does any child have a 'float' style?
+	var hasFloats = editor.dom.select('*', ev.node).some(function(node) {
+		return node.style['float'];
+	});
 
-    //Finding all paragraphs in the pasted content and set the margin as 0
-    dom.setStyle(dom.select("p", ev.node), "margin", "0");
+	// If the pasted content contains a table then append a DIV so
+	// that focus can be set outside the table, and to prevent any floats from
+	// overlapping other elements
+	if (hasFloats || tables.length > 0) {
+		var div = editor.getDoc().createElement("DIV");
+		div.style.clear = 'both';
+		ev.node.appendChild(div);
+	}
+
+	// Find all paragraphs in the pasted content and set the margin to 0
+	var paragraphs = editor.dom.select("p", ev.node);
+
+	for (var i = 0; i < paragraphs.length; i++) {
+		editor.dom.setStyle(paragraphs[i], "margin", "0");
+	}
 };
 
 ZmHtmlEditor.prototype._getTabGroup = function() {
