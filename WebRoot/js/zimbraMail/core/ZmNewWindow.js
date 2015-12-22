@@ -127,9 +127,11 @@ function() {
 /**
 * Allows this child window to inform parent it's going away
 */
-ZmNewWindow.unload =
-function(ev) {
-	if (!window.opener || !window.parentController) { return; }
+ZmNewWindow.unload = function(ev) {
+
+	if (!window || !window.opener || !window.parentController) {
+        return;
+    }
 
 	var command = window.newWindowCommand; //bug 54409 - was using wrong attribute for command in unload
 	if (command == "compose" || command == "composeDetach"
