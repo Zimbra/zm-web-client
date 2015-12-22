@@ -2697,7 +2697,7 @@ INPUT[type="text"].search_input-expanded:focus {
  * appearance of appointments in day views -- NOTE:colors of these items are not skinned
  */
 .appt							{ 	z-index:10;	}
-.appt-selected					{ 	z-index:20;	}
+.appt-selected					{ 	z-index:20; outline: none; }
 
 .appt-selected TD		 		{	font-weight:bold;   }
 
