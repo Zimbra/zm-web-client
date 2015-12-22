@@ -2084,29 +2084,32 @@ function(mode) {
 
 /**
  * Called as: Yes, save as draft
- * 			  Yes, go ahead and cancel
+ * 			  Yes, go ahead and leave compose
+ * 			  Yes, keep the auto-saved draft (view is dirty, new draft will be saved)
  *
  * @param mailtoParams		[Object]*	Used by offline client to pass on mailto handler params
  */
-ZmComposeController.prototype._popShieldYesCallback =
-function(mailtoParams) {
+ZmComposeController.prototype._popShieldYesCallback = function(mailtoParams) {
+
 	this._popShield.removePopdownListener(this._dialogPopdownListener);
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
 	if (this._canSaveDraft()) {
 		// save as draft
-		var callback = mailtoParams ? this.doAction.bind(this, mailtoParams) :
-					   				  this._popShieldYesDraftSaved.bind(this);
+		var callback = mailtoParams ? this.doAction.bind(this, mailtoParams) : this._popShieldYesDraftSaved.bind(this);
 		this._resetDelayTime();
 		this.sendMsg(null, ZmComposeController.DRAFT_TYPE_MANUAL, callback);
-	} else {
+	}
+    else {
 		// cancel
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
 		}
 		if (mailtoParams) {
 			this.doAction(mailtoParams);
-		} else {
+		}
+        else {
+            this._dontSavePreHide = true;
 			appCtxt.getAppViewMgr().showPendingView(true);
 		}
 	}
@@ -2117,22 +2120,29 @@ function() {
 	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
-// Called as: No, don't save as draft
-//			  No, don't cancel
-ZmComposeController.prototype._popShieldNoCallback =
-function(mailtoParams) {
+/**
+ * Called as: No, don't save as draft
+ * 			  No, don't leave compose
+ * 			  Yes, keep the auto-saved draft (view is not dirty, no need to save again)
+ *
+ * @param mailtoParams		[Object]*	Used by offline client to pass on mailto handler params
+ */
+ZmComposeController.prototype._popShieldNoCallback = function(mailtoParams) {
+
 	this._popShield.removePopdownListener(this._dialogPopdownListener);
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
+    this._dontSavePreHide = true;
+
 	if (this._canSaveDraft()) {
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
 		}
-
 		if (!mailtoParams) {
 			appCtxt.getAppViewMgr().showPendingView(true);
 		}
-	} else {
+	}
+    else {
 		if (!mailtoParams) {
 			appCtxt.getAppViewMgr().showPendingView(false);
 		}
@@ -2144,14 +2154,14 @@ function(mailtoParams) {
 	}
 };
 
+// Called as: No, do not keep the auto-saved draft
 ZmComposeController.prototype._popShieldDiscardCallback =
 function() {
 	this._deleteDraft(this._draftMsg);
-	this._dontSavePreHide = true; //do not save dirty state to a draft in pre hide
 	this._popShieldNoCallback();
 };
 
-// Called as: Don't save as draft or cancel
+// Called as: I changed my mind, just make the pop shield go away
 ZmComposeController.prototype._popShieldDismissCallback =
 function() {
 	this._popShield.removePopdownListener(this._dialogPopdownListener);
