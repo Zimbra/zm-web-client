@@ -199,7 +199,6 @@ ZmTaskListView.prototype.handleKeyAction =
 function(actionCode, ev) {
 	if (this._editing) {
 		switch (actionCode) {
-			case DwtKeyMap.SELECT_NEXT:		this.discardNewTask(); break;
 			case DwtKeyMap.DBLCLICK:		break;
 			default: DwtListView.prototype.handleKeyAction.call(this,actionCode,ev);
 		}
