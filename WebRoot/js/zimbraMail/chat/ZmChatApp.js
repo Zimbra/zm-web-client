@@ -30,9 +30,7 @@ ZmChatApp.prototype.toString = function() {    return "ZmChatApp"; };
 
 ZmChatApp.prototype.isChatEnabled = true;
 
-ZmChatApp.isServiceReachable = false;
-
-ZmChatApp.isReconnect = false;
+ZmChatApp.isServerReachable = false;
 
 ZmApp.CHAT = ZmId.APP_CHAT;
 ZmApp.CLASS[ZmApp.CHAT] = "ZmChatApp";
@@ -44,6 +42,10 @@ ZmChatApp.ACTIVE = 'active';
 ZmChatApp.COMPOSING = 'composing';
 ZmChatApp.PAUSED = 'paused';
 ZmChatApp.GONE = 'gone';
+
+ZmChatApp.CHAT_EVENTS = {};
+ZmChatApp.TIMERS = {};
+ZmChatApp.CHAT_POLL_INTERVAL = 30000;
 
 ZmChatApp.prototype._defineAPI =
 function() {
@@ -77,9 +79,22 @@ ZmChatApp.prototype._init = function() {
     }
 };
 
+ZmChatApp.prototype._addListeners =
+function() {
+
+    if (!ZmChatApp.TIMERS.checkServerStatusTimer) {
+        // Poll the XMPP service every 30 seconds by default else it is configurable
+        $(window).on("online offline", ZmChatApp.checkServerStatus);
+
+        ZmChatApp.TIMERS.checkServerStatusTimer = setInterval(ZmChatApp.checkServerStatus, ZmChatApp.CHAT_POLL_INTERVAL);
+    }
+
+    ZmChatApp.CHAT_EVENTS.bind("ZChatConnect", this._reconnectChat, this);
+    ZmChatApp.CHAT_EVENTS.bind("ZChatDisconnect", this._disconnectChat, this);
+};
+
 ZmChatApp.prototype._reconnectChat =
 function() {
-    ZmChatApp.isReconnect = true;
     this._init();
 };
 
@@ -150,8 +165,11 @@ ZmChatApp.prototype.initChatUI = function(response) {
         }
     };
 
-    var CHAT_EVENTS = {};
-    _.extend(CHAT_EVENTS, Backbone.Events);
+    ZmChatApp.CHAT_EVENTS = {};
+
+    _.extend(ZmChatApp.CHAT_EVENTS, Backbone.Events);
+
+    this._addListeners();
 
     var contains = function (attr, query) {
         return function (item) {
@@ -176,47 +194,19 @@ ZmChatApp.prototype.initChatUI = function(response) {
             converseObject.newChats = {};
             __ = $.proxy(utils.__, converseObject);
 
-            // Poll the XMPP service every 30 seconds by default else it is configurable
-            $(window).on("online offline", ZmChatApp.checkServerStatus);
-            $(document).on("ZChatConnect", self._reconnectChat.bind(self));
-            $(document).on("ZChatDisconnect", self._disconnectChat.bind(self));
-            setInterval(function() {
-                ZmChatApp.checkServerStatus(false, false);
-            }, 30000);
-
-            setInterval(function() {
-                if (converseObject.connection.connected) {
-                    converseObject.xmppstatus.sendPresence();
-                }
-            }, 30000);
+            if (!ZmChatApp.TIMERS.sendPresenceTimer) {
+                ZmChatApp.TIMERS.sendPresenceTimer =
+                    setInterval(function() {
+                        if (converseObject.connection) {
+                            if (converseObject.connection.connected) {
+                                converseObject.xmppstatus.sendPresence();
+                            }
+                        }
+                    }, ZmChatApp.CHAT_POLL_INTERVAL);
+            }
         },
 
         overrides: {
-            onConnected: function() {
-                var converse = this._super.converse;
-
-                if (ZmChatApp.isReconnect) {
-                    converse.reconnect();
-                }
-                else {
-                    this._super.onConnected();
-                }
-            },
-
-            reconnect: function () {
-                this.converse.clearSession();
-                this.converse._tearDown();
-                this.converse.startNewBOSHSession();
-            },
-
-            clearSession: function() {
-                if (this.converse.roster) {
-                    this.converse.roster.browserStorage._clear();
-                }
-                this.converse.session.browserStorage._clear();
-                ZmChatApp.isReconnect = false;
-            },
-
             registerGlobalEventHandlers: function() {
 
                 // Tab or window close, page reload.
@@ -448,7 +438,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     this._super.initialize.apply(this);
                     this.$tabs = this.$el;
                     this.removeContactFlyout = $('.remove-contact-flyout');
-                    CHAT_EVENTS.bind("RemoveContact:showFlyout", this.showRemoveContactPanel, this);
+                    ZmChatApp.CHAT_EVENTS.bind("RemoveContact:showFlyout", this.showRemoveContactPanel, this);
                 },
 
                 render: function() {
@@ -727,7 +717,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 showRemoveContactPanel: function(ev) {
                     this.controlboxPane.hide();
                     this.removeContactPanel.show();
-                    CHAT_EVENTS.trigger("RemoveContact:showFlyout", this);
+                    ZmChatApp.CHAT_EVENTS.trigger("RemoveContact:showFlyout", this);
                 },
 
                 openChat: function (ev) {
@@ -1052,10 +1042,8 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         url: "/public/blank.html",
                         cache: false
                     }).done(function() {
-                            ZmChatApp.isServiceReachable = true;
-                            $.event.trigger({
-                                type: "ZChatConnect"
-                            });
+                            ZmChatApp.isServerReachable = true;
+                            ZmChatApp.CHAT_EVENTS.trigger("ZChatConnect");
                     });
                 },
                 handleKeyEventsOnForm: function(e) {
@@ -1403,7 +1391,7 @@ function(chat_status, fullname) {
 };
 
 ZmChatApp.checkServerStatus =
-function(doStop, doNotTrigger) {
+function(doStop, doNotTrigger, callback) {
 
     $.ajax({
         type: "HEAD",
@@ -1411,39 +1399,37 @@ function(doStop, doNotTrigger) {
         cache: false,
         statusCode: {
             0: function() {
-                if (ZmChatApp.isServiceReachable === true) {
+                if (ZmChatApp.isServerReachable === true) {
                     if (doStop) {
-                        // Reset here - state must be correct for polling function
-                        ZmChatApp.isServiceReachable = false;
+                        // Reset here - state must be correct for functions triggered by ZChatDisconnect
+                        ZmChatApp.isServerReachable = false;
                         if (!doNotTrigger) {
-                            $.event.trigger({
-                                type: "ZChatDisconnect"
-                            });
+                            ZmChatApp.CHAT_EVENTS.trigger("ZChatDisconnect");
                         }
                     }
                     else {
                         return ZmChatApp.checkServerStatus(true);
                     }
                 }
-                ZmChatApp.isServiceReachable = false;
+                ZmChatApp.isServerReachable = false;
             },
             200: function() {
-                if (ZmChatApp.isServiceReachable === false) {
+                if (ZmChatApp.isServerReachable === false) {
                     if (doStop) {
-                        ZmChatApp.isServiceReachable = true;
+                        // Reset here - state must be correct for functions triggered by ZChatConnect
+                        ZmChatApp.isServerReachable = true;
                         if (!doNotTrigger) {
-                            $.event.trigger({
-                                type: "ZChatConnect"
-                            });
+                            ZmChatApp.CHAT_EVENTS.trigger("ZChatConnect");
                         }
                     }
                     else {
                         return ZmChatApp.checkServerStatus(true);
                     }
                 }
-                ZmChatApp.isServiceReachable = true;
+                ZmChatApp.isServerReachable = true;
             }
-        }
+        },
+        complete: callback
     });
  };
 ZmChatApp.checkServerStatus(true, true);
