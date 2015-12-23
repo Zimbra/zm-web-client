@@ -38,6 +38,7 @@
         var ptnFileAsCompanyAsSecondaryOnly = '<fmt:message key="fileAsCompanyAsSecondaryOnly" />';
         var ptnFileAsNameAsSecondaryOnly    = '<fmt:message key="fileAsNameAsSecondaryOnly" />';
     </fmt:bundle>
+    var ptnFullname = '<fmt:message key="fullname"/>';
 
     (function() {
 	var i = 1;
@@ -105,6 +106,13 @@
             break;
         }
         return fa || full || "";
+    }
+
+    function computeFullname(first, last) {
+        if (first && last) {
+            return ptnFullname.replace("{0}", first).replace("{1}", last);
+        }
+	return last || first;
     }
 
     function fileAsLastFirst(first, last, fullname, nickname) {
@@ -210,7 +218,7 @@
                 var company = oResult["company"];
 
                 oResult["email"]
-                    = "\"" + computeFileAs(fileAs, first, last, full, nick, company) + "\""
+                    = "\"" + computeFullname(first, last) + "\""
                     + " " + getAddressPart(email);
             }
             return true;

@@ -540,10 +540,10 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 				if (this.type == ZmAutocomplete.AC_TYPE_CONTACT) {
 					var contactList = AjxDispatcher.run("GetContacts");
 					var contact = contactList && contactList.getById(match.id);
-					var fileAsName = contact && ZmContact.computeFileAs(contact);
+					var displayName = contact && contact.getFullNameForDisplay(false);
 
-					this.fullAddress = "\"" + fileAsName + "\" <" + email.getAddress() + ">";
-					this.name = fileAsName;
+					this.fullAddress = "\"" + displayName + "\" <" + email.getAddress() + ">";
+					this.name = displayName;
 					this.text = AjxStringUtil.htmlEncode(this.fullAddress);
 				} else {
 					this.fullAddress = email.toString();

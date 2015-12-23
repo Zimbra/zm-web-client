@@ -50,6 +50,7 @@ var ptnFileAsNameCompany = '<fmt:message key="fileAsNameCompany" />';
 var ptnFileAsCompanyAsSecondaryOnly = '<fmt:message key="fileAsCompanyAsSecondaryOnly" />';
 var ptnFileAsNameAsSecondaryOnly    = '<fmt:message key="fileAsNameAsSecondaryOnly" />';
 </fmt:bundle>
+var ptnFullname = '<fmt:message key="fullname"/>';
 
 (function() {
  i = 1;
@@ -117,6 +118,13 @@ function computeFileAs(fileAs, first, last, full, nick, company) {
         break;
     }
     return fa || full || "";
+}
+
+function computeFullname(first, last) {
+    if (first && last) {
+        return ptnFullname.replace("{0}", first).replace("{1}", last);
+    }
+    return last || first;
 }
 
 function fileAsLastFirst(first, last, fullname, nickname) {
@@ -365,7 +373,7 @@ var kU = function(e,f,c){ // On key up, do this operations
                                 var company = acR[i].company;
                                 var d = acR[i].display;
                                 var g = acR[i].isGroup;
-                                e = "\"" + computeFileAs(fileAs, first, last, full, nick, company) + "\""
+                                e = "\"" + computeFullname(first, last) + "\""
                                   + " " + getAddressPart(e);
                                 var eHTML = e.replace(/[']/g,"\"").replace(/&/g, "&amp;").replace(/[<]/g, "&lt;").replace(/>/g, "&gt;");
                                 var imgsrc = t == 'gal' ? "<app:imgurl value='startup/ImgGALContact.png' />" : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.png' />" : "<app:imgurl value='contacts/ImgContact.png' />";
