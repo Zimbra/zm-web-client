@@ -1685,9 +1685,10 @@ function(key) {
  * @return	{Object}	the value
  * @private
  */
-ZmAppCtxt.prototype.getById =
-function(id) {
-	return this.cacheGet(id) || (this.isChildWindow && window && window.opener.appCtxt.getById(id));
+ZmAppCtxt.prototype.getById = function(id) {
+
+    // Try parent cache if we're a child window and we don't have it
+	return this.cacheGet(id) || (this.isChildWindow && window && window.opener && window.opener.appCtxt && window.opener.appCtxt.getById(id));
 };
 
 /**
