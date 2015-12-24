@@ -456,7 +456,7 @@ function(uid) {
 		html[i++] = " style='border:1px dotted #555'";
 	html[i++] = "><legend style='color:#555555'>";
 	html[i++] = ZmMsg.repeat;
-	html[i++] = "</legend><div style='height:100px'>";
+	html[i++] = "</legend><div style='height:110px'>";
 	html[i++] = "<div id='";
 	html[i++] = this._repeatSelectId;
 	html[i++] = "' style='margin-bottom:.25em;'></div><div id='";
