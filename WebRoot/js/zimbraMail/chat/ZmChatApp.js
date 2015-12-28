@@ -850,48 +850,21 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         this.$formSubmitBtn.type = "addContact";
 
                         $email.removeAttr('disabled');
-
-                        this.renameContact(converseObject.roster.get(jid), alias);
-
+                        var contact = converseObject.roster.get(jid);
+                        // Check helps if the contact being renamed unsubscribes itself from the buddy list
+                        if (contact) {
+                            contact.attributes.fullname = alias;
+                            //update name in any open chat views.
+                            var chatview = converseObject.chatboxviews.get(contact.attributes.jid);
+                            if (chatview) {
+                                $(chatview.el).find('.chat-title>span.header-contact-name').html(alias);
+                            }
+                            converseObject.getVCard(contact.get('jid'));
+                        }
                     }
                     else {
                         converseObject.roster.addAndSubscribe(jid, _.isEmpty(alias)? jid : alias);
                     }
-                },
-
-                renameContact: function(contact, alias) {
-
-                    // Check helps if the contact being renamed unsubscribes itself from the buddy list
-                    if (contact) {
-                        contact.attributes.fullname = alias;
-                        //update name in any open chat views.
-                        var chatview = converseObject.chatboxviews.get(contact.attributes.jid);
-                        if (chatview) {
-                            $(chatview.el).find('.chat-title>span.header-contact-name').html(alias);
-                        }
-                        converseObject.getVCard(contact.get('jid'));
-                    }
-
-                    var jid = contact.attributes.jid;
-
-                    var deferred = new $.Deferred();
-
-                    converseObject.roster.sendContactRenameIQ(jid, alias, null,
-                        function (iq) {
-                            var contact = this.create(_.extend({
-                                fullname: alias,
-                                jid: jid,
-                                subscription: 'both'
-                            }));
-                            deferred.resolve(contact);
-                        }.bind(this),
-                        function (err) {
-                            converse.log(err);
-                            deferred.resolve(err);
-                        }
-                    );
-
-                    return deferred.promise();
                 },
 
                 /**
@@ -1158,29 +1131,6 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     }
                 }
                 
-            },
-
-            RosterContacts: {
-                sendContactRenameIQ: function(jid, alias, groups, callback, errback) {
-                    // RFC to update a contact with a nickname
-                    // https://xmpp.org/rfcs/rfc3921.html#rfc.section.7.5
-
-                    /*  Send an IQ stanza to the XMPP server to rename a roster contact.
-                     *  Parameters:
-                     *    (String) jid - The Jabber ID of the user being added
-                     *    (String) alias - The alias of that user
-                     *    (Array of Strings) groups - Any roster groups the user might belong to
-                     *    (Function) callback - A function to call once the VCard is returned
-                     *    (Function) errback - A function to call if an error occured
-                     */
-
-                    // TODO - 'groups' will be null as we are not adding the users to any chat groups
-                    var iq = $iq({type: 'set'})
-                        .c('query', {xmlns: Strophe.NS.ROSTER})
-                        .c('item', { jid: jid, name: alias });
-                    _.map(groups, function (group) { iq.c('group').t(group).up(); });
-                    converseObject.connection.sendIQ(iq, callback, errback);
-                }
             }
         }
     });
