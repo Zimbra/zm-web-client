@@ -267,7 +267,7 @@ function(ev) {
 	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
 	if (aclv) {
 		// if the user types a single delimiting character with the list showing, do completion
-		var isDelim = (!ev.shiftKey && aclv._isDelimCode[key]);
+		var isDelim = (!ev.shiftKey && (aclv._isDelimCode[key] || (key === DwtKeyEvent.KEY_TAB && aclv.getVisible())));
 		var visible = aclv.getVisible();
 		aclv._actionHandled = false;
 		// DBG.println("ac", "key = " + key + ", isDelim: " + isDelim);
