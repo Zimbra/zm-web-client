@@ -6174,4 +6174,17 @@ a.ZmLinkDisabled {
     padding: 0 0 0 25px;
 }
 
+#conversejs #converse-roster dd {
+	position: relative;
+	overflow: visible !important;
+}
+ #conversejs .search-contact-flyout .search-converse-contact {
+    bottom: 0;
+    position: absolute;
+    overflow: auto;
+    top: 92px;
+ }
+#conversejs .search-contact-flyout .search-converse-contact dd.zmsearch-xmpp {
+	height: 100%;
+}
 /*Chat end */
