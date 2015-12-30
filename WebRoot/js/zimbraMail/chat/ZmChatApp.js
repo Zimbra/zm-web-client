@@ -95,7 +95,10 @@ function() {
 
 ZmChatApp.prototype._reconnectChat =
 function() {
-    this._init();
+    // This will ensure only one zimbraim request is processes irrespective of coming from auto-reconnect or retry btn.
+    if (ZmChatApp.TIMERS.ConnectTriggerCount === 1) {
+        this._init();
+    }
 };
 
 ZmChatApp.prototype._disconnectChat =
@@ -1064,13 +1067,30 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     }
                 },
                 reconnect: function() {
+                    var retryBtn = $('a.conn-retry');
+                    if (retryBtn.hasClass('conn-retry-disabled')) {
+                        return;
+                    }
+
                     $.ajax({
                         type: "HEAD",
                         url: "/public/blank.html",
                         cache: false
                     }).done(function() {
+                            // Set a trigger counter to stop ZChatConnect being fired by Retry and Auto-reconnect
+                            ZmChatApp.TIMERS.ConnectTriggerCount++;
+
+                            retryBtn.addClass('conn-retry-disabled');
                             ZmChatApp.isServerReachable = true;
                             ZmChatApp.CHAT_EVENTS.trigger("ZChatConnect");
+                    }).always(function() {
+                            // Disable the button for XHR complete state
+                            retryBtn.addClass('conn-retry-disabled');
+                    }).fail(function() {
+                            // Reset trigger counter to and let it be driven by retry or auto-reconnect handlers
+                            ZmChatApp.TIMERS.ConnectTriggerCount = 0;
+
+                            retryBtn.removeClass('conn-retry-disabled');
                     });
                 },
                 handleKeyEventsOnForm: function(e) {
@@ -1454,6 +1474,8 @@ function(doStop, doNotTrigger, callback) {
                         // Reset here - state must be correct for functions triggered by ZChatDisconnect
                         ZmChatApp.isServerReachable = false;
                         if (!doNotTrigger) {
+                            // Reset the trigger counter when disconnected and let retry or auto-reconnect drive the trigger count.
+                            ZmChatApp.TIMERS.ConnectTriggerCount = 0;
                             ZmChatApp.CHAT_EVENTS.trigger("ZChatDisconnect");
                         }
                     }
@@ -1469,6 +1491,8 @@ function(doStop, doNotTrigger, callback) {
                         // Reset here - state must be correct for functions triggered by ZChatConnect
                         ZmChatApp.isServerReachable = true;
                         if (!doNotTrigger) {
+                            // Increment the connect trigger count to keep track of event trigger activity
+                            ZmChatApp.TIMERS.ConnectTriggerCount++;
                             ZmChatApp.CHAT_EVENTS.trigger("ZChatConnect");
                         }
                     }
