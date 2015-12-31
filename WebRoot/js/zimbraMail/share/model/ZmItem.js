@@ -55,6 +55,9 @@ ZmItem = function(type, id, list, noCache) {
 	this.list = list;
 	this._list = {};
 
+    // number of views using this item
+    this.refCount = 0;
+
 	this.tags = [];
 	this.tagHash = {};
 	this.folderId = 0;
@@ -330,19 +333,24 @@ function() {
  * Clears the item.
  * 
  */
-ZmItem.prototype.clear =
-function() {
-	this._evtMgr.removeAll(ZmEvent.L_MODIFY);
-	if (this.tags.length) {
-		for (var i = 0; i < this.tags.length; i++) {
-			this.tags[i] = null;
-		}
-		this.tags = [];
-	}
-	for (var i in this.tagHash) {
-		this.tagHash[i] = null;
-	}
-	this.tagHash = {};
+ZmItem.prototype.clear = function() {
+
+    // only clear data if no views are using this item
+    if (this.refCount <= 1) {
+        this._evtMgr.removeAll(ZmEvent.L_MODIFY);
+        if (this.tags.length) {
+            for (var i = 0; i < this.tags.length; i++) {
+                this.tags[i] = null;
+            }
+            this.tags = [];
+        }
+        for (var i in this.tagHash) {
+            this.tagHash[i] = null;
+        }
+        this.tagHash = {};
+    }
+
+    this.refCount--;
 };
 
 /**

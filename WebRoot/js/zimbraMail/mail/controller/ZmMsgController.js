@@ -385,9 +385,9 @@ function() {
 	return this._msg;
 };
 
-ZmMsgController.prototype.setMsg =
-function (msg) {
+ZmMsgController.prototype.setMsg = function (msg) {
 	this._msg = msg;
+    msg.refCount++
 };
 
 ZmMsgController.prototype.getItemView = function() {
@@ -513,4 +513,8 @@ ZmMsgController.prototype._setStatics = function() {
 	}
 
 	ZmMailListController.prototype._setStatics();
+};
+
+ZmMsgController.prototype._postRemoveCallback = function() {
+    this._msg.refCount--;
 };

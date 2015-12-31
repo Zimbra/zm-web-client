@@ -1694,6 +1694,10 @@ function(row, index) {
 	this._updateLabelForItem(this.getItemFromElement(row));
 };
 
+ZmListView.prototype._itemAdded = function(item) {
+    item.refCount++;
+};
+
 ZmListView.prototype._getSectionHeaderDiv =
 function(group, section) {
     if (group && section) {
