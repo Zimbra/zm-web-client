@@ -103,11 +103,15 @@ function() {
  * Clears this item.
  * 
  */
-ZmMailItem.prototype.clear =
-function() {
-	this._clearParticipants();
-	this._loaded = false;
-	ZmItem.prototype.clear.call(this);
+ZmMailItem.prototype.clear = function() {
+
+    // only clear data if no more views are using this item
+    if (this.refCount <= 1) {
+        this._clearParticipants();
+        this._loaded = false;
+    }
+
+    ZmItem.prototype.clear.call(this);
 };
 
 ZmMailItem.prototype.getFolderId =

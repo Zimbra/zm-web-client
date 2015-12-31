@@ -67,6 +67,7 @@ ZmConvController.prototype.show =
 function(conv, parentController, callback, markRead, msg) {
 
 	this._conv = conv;
+    conv.refCount++;
 	conv.isInUse = true;
 
 	this._relatedMsg = msg;
@@ -512,4 +513,8 @@ ZmConvController.prototype._popShieldNoCallback =
 function(switchingView, callback) {
 	var ctlr = this._getConvListController();
 	return ctlr && ctlr._popShieldNoCallback.apply(this, arguments);
+};
+
+ZmConvController.prototype._postRemoveCallback = function() {
+    this._conv.refCount--;
 };
