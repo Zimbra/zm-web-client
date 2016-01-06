@@ -1314,21 +1314,20 @@ function(type) {
 	if (AjxEnv.supportsHTML5File &&
 	    type !== ZmComposeView.UPLOAD_BRIEFCASE) {
 		var isinline = (type === ZmComposeView.UPLOAD_INLINE);
-
-		var inputelem = document.createElement('INPUT');
-		inputelem.type = 'file';
-		inputelem.title = ZmMsg.uploadNewFile;
-		inputelem.multiple = true;
-		inputelem.style.display = 'none';
-
-		inputelem.onchange = this._submitMyComputerAttachments.bind(this, null, inputelem, isinline);
-
-		// IE won't react to unparented INPUTs
-		var fragment = document.createDocumentFragment();
-		fragment.appendChild(inputelem);
-
-		inputelem.click();
-
+		var fileInputElement = ZmComposeView.FILE_INPUT;
+		if (fileInputElement) {
+			fileInputElement.value = "";
+		}
+		else {
+			ZmComposeView.FILE_INPUT = fileInputElement = document.createElement('INPUT');
+			fileInputElement.type = "file";
+			fileInputElement.title = ZmMsg.uploadNewFile;
+			fileInputElement.multiple = true;
+			fileInputElement.style.display = "none";
+			document.body.appendChild(fileInputElement);
+		}
+		fileInputElement.onchange = this._submitMyComputerAttachments.bind(this, null, fileInputElement, isinline);
+		fileInputElement.click();
 		return;
 	}
 
