@@ -6173,10 +6173,12 @@ a.ZmLinkDisabled {
     background-size: 15px;
     padding: 0 0 0 25px;
 }
-
-#conversejs #converse-roster dd {
+#conversejs #converse-roster .roster-contacts, #conversejs .search-converse-contact .roster-contacts {
+	height: 100%; 
+}
+#conversejs #controlbox #converse-roster dd {
 	position: relative;
-	overflow: visible !important;
+	overflow: visible;
 }
  #conversejs .search-contact-flyout .search-converse-contact {
     bottom: 0;
