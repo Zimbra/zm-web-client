@@ -1223,7 +1223,7 @@ function(message, viewMode) {
 	var start = message.invite.getServerStartTime();
 	var end = message.invite.getServerEndTime();
 	if (viewMode === ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || viewMode === ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE
-			|| viewMode === ZmCalItem.MODE_COPY_SINGLE_INSTANCE || viewMode === ZmCalItem.MODE_EDIT_SERIES) {
+			|| viewMode === ZmCalItem.MODE_COPY_SINGLE_INSTANCE) {
 		var usd = this.getUniqueStartDate();
 		if (usd) {
 			this.setStartDate(usd);
@@ -1252,7 +1252,7 @@ function(message, viewMode) {
 
 	// record timezone
     var timezone;
-	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || viewMode == ZmCalItem.MODE_DELETE_INSTANCE || viewMode == ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE || viewMode === ZmCalItem.MODE_EDIT_SERIES) {
+	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || viewMode == ZmCalItem.MODE_DELETE_INSTANCE || viewMode == ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE) {
         timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 		this.setTimezone(timezone);
 		this.setEndTimezone(timezone);
