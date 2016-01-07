@@ -875,19 +875,18 @@ function(organizer) {
  * 
  * @private
  */
-ZmTreeController.prototype._treeViewListener =
-function(ev) {
-	if (ev.detail != DwtTree.ITEM_ACTIONED &&
-		ev.detail != DwtTree.ITEM_SELECTED &&
-		ev.detail != DwtTree.ITEM_DBL_CLICKED)
-	{
+ZmTreeController.prototype._treeViewListener = function(ev) {
+
+	if (ev.detail !== DwtTree.ITEM_ACTIONED && ev.detail !== DwtTree.ITEM_SELECTED && ev.detail !== DwtTree.ITEM_DBL_CLICKED) {
 		return;
 	}
 
 	var treeItem = ev.item;
 
 	var type = treeItem.getData(ZmTreeView.KEY_TYPE);
-	if (!type) { return; }
+	if (!type) {
+        return;
+    }
 
 	var item = treeItem.getData(Dwt.KEY_OBJECT);
 	if (item) {
@@ -899,9 +898,9 @@ function(ev) {
 			}
 			return;
 		}
-        if (item && item.type == ZmOrganizer.SEARCH) {
+        if (item && item.type === ZmOrganizer.SEARCH) {
             var controller = this._opc.getTreeController(ZmOrganizer.SEARCH);
-            if(controller){
+            if (controller) {
                 controller._actionedOrganizer = item;
                 controller._actionedOverviewId = treeItem.getData(ZmTreeView.KEY_ID);
             }
@@ -911,11 +910,11 @@ function(ev) {
 	var id = treeItem.getData(Dwt.KEY_ID);
 	var overviewId = this._actionedOverviewId = treeItem.getData(ZmTreeView.KEY_ID);
 	var overview = this._opc.getOverview(overviewId);
-	if (!overview) { return; }
-    var targetElement = DwtUiEvent.getTargetWithProp(ev, "id");
-    var isContextCmd = (ev.detail ==  DwtTree.ITEM_SELECTED) && treeItem._extraCell && targetElement &&  (treeItem._extraCell.id == targetElement.id);
+	if (!overview) {
+        return;
+    }
 
-	if ((ev.detail == DwtTree.ITEM_ACTIONED) || (isContextCmd)) {
+	if (ev.detail === DwtTree.ITEM_ACTIONED) {
 		// right click
 		if (overview.actionSupported) {
 			var actionMenu = this.getItemActionMenu(ev, item);
@@ -924,13 +923,16 @@ function(ev) {
 				actionMenu.popup(0, ev.docX, ev.docY);
 			}
 		}
-	} else if ((ev.detail == DwtTree.ITEM_SELECTED) && item) {
+	}
+    else if ((ev.detail === DwtTree.ITEM_SELECTED) && item) {
 		if (appCtxt.multiAccounts && (item instanceof ZmOrganizer)) {
 			this._handleMultiAccountItemSelection(ev, overview, treeItem, item);
-		} else {
+		}
+        else {
 			this._handleItemSelection(ev, overview, treeItem, item);
 		}
-	} else if ((ev.detail == DwtTree.ITEM_DBL_CLICKED) && item) {
+	}
+    else if ((ev.detail === DwtTree.ITEM_DBL_CLICKED) && item) {
 		this._itemDblClicked(item);
 	}
 };
