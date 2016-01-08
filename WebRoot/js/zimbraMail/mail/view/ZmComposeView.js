@@ -1981,9 +1981,8 @@ function(action, msg, subjOverride) {
 	}
 };
 
-ZmComposeView.prototype._setBody =
-function(action, msg, extraBodyText, noEditorUpdate, keepAttachments, extraBodyTextIsExternal) {
-		
+ZmComposeView.prototype._setBody = function(action, msg, extraBodyText, noEditorUpdate, keepAttachments, extraBodyTextIsExternal) {
+
 	this._setReturns();
 	var htmlMode = (this._composeMode === Dwt.HTML);
 
@@ -2003,6 +2002,8 @@ function(action, msg, extraBodyText, noEditorUpdate, keepAttachments, extraBodyT
 			incOptions = {what:		ZmSetting.INC_BODY,
 						  prefix:	ac.get(ZmSetting.FORWARD_USE_PREFIX),
 						  headers:	ac.get(ZmSetting.FORWARD_INCLUDE_HEADERS)};
+        } else if (action === ZmOperation.FORWARD_ATT && msg && !msg.isDraft) {
+            incOptions = {what:		ZmSetting.INC_ATTACH};
 		} else if (action === ZmOperation.DECLINE_PROPOSAL) {
 			incOptions = {what:		ZmSetting.INC_BODY};
 		} else if (action === ZmOperation.NEW_MESSAGE) {
