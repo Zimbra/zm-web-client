@@ -324,13 +324,16 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 show: function (callback) {
                     var contact = converseObject.roster.get(this.model.get('jid'));
                     var chat_status = contact ? contact.get('chat_status') : "online";
-                    var fullname = this.model.get('fullname');
+                    var fullname = this.model.get('fullname'),
+                        chatBoxId = this.model.get('box_id'),
+                        chatBox = document.getElementById(chatBoxId), // Not using jquery selector because chatBoxId constitutes of special characters
+                        chatTextArea = $(chatBox).find('.chat-textarea'); // Don't want to add unnecessary code for jquery special character escapes or reqex
                     fullname = AjxUtil.isEmpty(fullname) ? item.get('jid'): fullname;
                     //ZCS change - Notify user about recipient being offline.
                     if (chat_status === ZmChatApp.OFFLINE || chat_status === ZmChatApp.BUSY) {
                         var chat_status_display = (chat_status === ZmChatApp.BUSY) ? ZmMsg.chatStatusBusy : ZmMsg.chatStatusOffline;
                         this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatMsgDeliveryRestricted, [fullname, chat_status_display]));
-                        $('.chat-textarea').prop('disabled',true);
+                        chatTextArea.prop('disabled',true);
                     }
                     var isNewChat = converseObject.newChats[this.model.get('jid')];
                     if (this.$el.is(':visible') && this.$el.css('opacity') == "1") {
