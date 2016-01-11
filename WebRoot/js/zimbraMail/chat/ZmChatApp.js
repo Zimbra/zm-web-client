@@ -1206,6 +1206,51 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         .c('item', { jid: jid, name: alias });
                     _.map(groups, function (group) { iq.c('group').t(group).up(); });
                     converseObject.connection.sendIQ(iq, callback, errback);
+                },
+
+                presenceHandler: function (presence) {
+                    var $presence = $(presence),
+                        presence_type = presence.getAttribute('type');
+                    if (presence_type === 'error') { return true; }
+                    var jid = presence.getAttribute('from'),
+                        bare_jid = Strophe.getBareJidFromJid(jid),
+                        resource = Strophe.getResourceFromJid(jid),
+                        chat_status = $presence.find('show').text() || 'online',
+                        status_message = $presence.find('status'),
+                        contact = this.get(bare_jid);
+                    if (this.isSelf(bare_jid)) {
+                        if ((converseObject.connection.jid !== jid)&&(presence_type !== 'unavailable')) {
+                            // Another resource has changed its status, we'll update ours as well.
+                            converseObject.xmppstatus.save({'status': chat_status});
+                            converseObject.xmppstatus.save({'status_message': status_message.length ? status_message.text() : self._getXMPPStatus(chat_status.toLowerCase())});
+                        }
+                        return;
+                    } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
+                        return; // Ignore MUC
+                    }
+                    if (contact && (status_message.text() != contact.get('status'))) {
+                        contact.save({'status': status_message.text()});
+                    }
+                    if (presence_type === 'subscribed' && contact) {
+                        contact.ackSubscribe();
+                    } else if (presence_type === 'unsubscribed' && contact) {
+                        contact.ackUnsubscribe();
+                    } else if (presence_type === 'unsubscribe') {
+                        return;
+                    } else if (presence_type === 'subscribe') {
+                        this.handleIncomingSubscription(jid);
+                    } else if (presence_type === 'unavailable' && contact) {
+                        // Only set the user to offline if there aren't any
+                        // other resources still available.
+
+                        // TODO: Bug within converse. https://github.com/jcbrand/converse.js/issues/487
+                        //if (contact.removeResource(resource) === 0) {
+                        contact.save({'chat_status': chat_status.toLowerCase() == 'xa' ? 'away' : 'offline'});
+                        //}
+                    } else if (contact) { // presence_type is undefined
+                        this.addResource(bare_jid, resource);
+                        contact.save({'chat_status': chat_status.toLowerCase() == 'xa' ? 'away' : chat_status});
+                    }
                 }
             }
         }
@@ -1513,3 +1558,21 @@ function(doStop, doNotTrigger, callback) {
     });
  };
 ZmChatApp.checkServerStatus(true, true);
+
+ZmChatApp.prototype._getXMPPStatus =
+function(chat_status) {
+    switch (chat_status) {
+        case 'online' :
+            return ZmMsg.chatStatusOnline;
+        case 'away' :
+            return ZmMsg.chatStatusAway;
+        case 'dnd' :
+            return ZmMsg.chatStatusBusy;
+        case 'offline' :
+            return ZmMsg.chatStatusOffline;
+        case 'xa' :
+            return ZmMsg.chatStatusAway;
+        default:
+            return ZmMsg.chatStatusOffline;
+    }
+};
