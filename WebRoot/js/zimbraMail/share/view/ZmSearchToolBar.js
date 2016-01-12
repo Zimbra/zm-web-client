@@ -366,6 +366,7 @@ ZmMainSearchToolBar.prototype._initialize = function() {
     if (isExternalAccount) {
         this._searchField.setEnabled(false);
     }
+    searchBox.addListener(DwtEvent.ONFOCUS, this._childFocusListener.bind(this));
 
     // add search button
     button = this._button[ZmSearchToolBar.SEARCH_BUTTON] = new DwtButton({
@@ -600,13 +601,21 @@ ZmMainSearchToolBar.prototype._onInputFocus = function(ev) {
 	this._setInputExpanded(true);
 };
 
-// Collapse INPUT when it loses focus (unless that was due to a click on the menu button)
-ZmMainSearchToolBar.prototype._onInputBlur =
-function(ev) {
+// Collapse INPUT when it loses focus (unless that was due to a click on a search toolbar button)
+ZmMainSearchToolBar.prototype._onInputBlur = function(ev) {
+
 	var focusObj = appCtxt.getKeyboardMgr().getFocusObj();
-	if (focusObj != this._button[ZmSearchToolBar.TYPES_BUTTON] && focusObj != this._button[ZmSearchToolBar.SEARCH_BUTTON]) {
+	if (focusObj !== this._button[ZmSearchToolBar.TYPES_BUTTON] && focusObj !== this._button[ZmSearchToolBar.SEARCH_BUTTON] && !this._movingFocus) {
 		this._setInputExpanded(false);
 	}
+    this._movingFocus = false;  // done here since blur handler may be called on a timer
+};
+
+// note when we're moving focus within the toolbar so we don't collapse the INPUT
+ZmMainSearchToolBar.prototype._moveFocus = function(back) {
+
+    this._movingFocus = true;
+    ZmSearchToolBar.prototype._moveFocus.apply(this, arguments);
 };
 
 ZmMainSearchToolBar.prototype._setInputExpanded = function(expanded) {

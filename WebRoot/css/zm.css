@@ -380,6 +380,10 @@ INPUT[type="text"].search_input-expanded:focus {
 	width:100%;
 }
 
+.ZmSearchToolbar .ZFocused {
+	@FocusOutline@
+}
+
 .ZmSearchButton {
 	position:absolute;
 	right:4px;
