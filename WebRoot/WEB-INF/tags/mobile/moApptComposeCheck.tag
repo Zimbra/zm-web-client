@@ -39,7 +39,7 @@
 </c:url>
 <mo:handleError>
     <%--<zm:getMailbox var="mailbox"/>--%>
-    <zm:composeUploader var="uploader" ismobile="true"/>
+    <zm:composeUploader var="uploader"/>
     <%--<c:set var="needEditView" value="${param.action eq 'editappt' or param.action eq 'newappt'}"/>--%>
     <c:if test="${uploader.isUpload}">
         <c:choose>
