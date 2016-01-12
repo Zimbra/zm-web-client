@@ -38,7 +38,7 @@
 	<c:param name="noframe" value="true"/>
 </c:url>
 <mo:handleError>
-    <zm:composeUploader var="uploader"/>
+    <zm:composeUploader var="uploader" ismobile="true"/>
     <%--<c:set var="needComposeView" value="${param.action eq 'compose'}"/>--%>
     <c:if test="${uploader.isUpload}">
         <c:choose>
