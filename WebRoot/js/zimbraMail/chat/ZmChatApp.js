@@ -250,20 +250,17 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 onChatStatusChanged: function(item) {
                     var chat_status = item.get('chat_status'),
                         fullname = item.get('fullname'),
-                        elChatTitle = this.$el.find('.chat-title>span[class^=icon-]'),
-                        chatBoxId = item.get('box_id'),
-                        chatBox = document.getElementById(chatBoxId), // Not using jquery selector because chatBoxId constitutes of special characters
-                        chatTextArea = $(chatBox).find('.chat-textarea'); // Don't want to add unnecessary code for jquery special character escapes or reqex
+                        elChatTitle = this.$el.find('.chat-title>span[class^=icon-]');
 
                     fullname = AjxUtil.isEmpty(fullname) ? item.get('jid'): fullname;
 					if (this.$el.is(':visible')) {
                         if (chat_status === ZmChatApp.OFFLINE || chat_status === ZmChatApp.BUSY) {
                             var chat_status_display = (chat_status === ZmChatApp.BUSY) ? ZmMsg.chatStatusBusy : ZmMsg.chatStatusOffline;
                             this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatMsgDeliveryRestricted, [fullname, chat_status_display]));
-                            chatTextArea.prop('disabled', true);
+                            $('.chat-textarea').prop('disabled',true);
                         } else {
                             this.$el.find('div.chat-event').remove();
-                            chatTextArea.prop('disabled', false);
+                            $('.chat-textarea').prop('disabled', false);
                         }
                     }
 
