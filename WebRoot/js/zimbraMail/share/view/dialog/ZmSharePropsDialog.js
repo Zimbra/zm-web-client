@@ -209,11 +209,12 @@ function(mode, object, share) {
 
 	this._populateUrls();
 
+    DwtDialog.prototype.popup.call(this);
+
 	var size = this.getSize();
 	Dwt.setSize(this._granteeInput, 0.6*size.x);
 	//Dwt.setSize(this._passwordInput.getInputElement(), 0.6*size.x);
 
-	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 	if (isNewShare) {
 		this._userRadioEl.checked = true;
