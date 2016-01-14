@@ -1312,13 +1312,6 @@ function(params, callback) {
     this._init();
 };
 
-ZmChatApp.prototype.setPlaySoundSetting =
-function(value) {
-    if (appCtxt.get(ZmSetting.CHAT_FEATURE_ENABLED) && appCtxt.get(ZmSetting.CHAT_ENABLED)) {
-        converse.settings.set('play_sounds', value);
-    }
-};
-
 ZmChatApp.prototype.getRosterContact =
 function(jid) {
     return appCtxt.get(ZmSetting.CHAT_ENABLED) && converse.contacts.get(jid);
