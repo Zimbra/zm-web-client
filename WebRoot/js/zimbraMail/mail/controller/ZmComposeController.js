@@ -278,7 +278,7 @@ function() {
 	this._toolbar.enable(ZmOperation.DETACH_COMPOSE, false);
 
 	var view = this._composeView;
-	var msg = view._msg || view._origMsg;
+	var msg = this._msg || view._origMsg;
 	var subj = view._subjectField.value;
 	var msgAttId = view._msgAttId; //include original as attachment
 	var body = this._getBodyContent();
@@ -321,7 +321,8 @@ function() {
 		forAttIds:		this._forAttIds,
 		sessionId:		this.getSessionId(),
         readReceipt:	requestReadReceipt,
-		sigId:			this.getSelectedSignature()
+		sigId:			this.getSelectedSignature(),
+        incOptions:     this._curIncOptions
 	};
 };
 
@@ -1068,8 +1069,8 @@ function(params) {
 	var identity = params.identity = this._getIdentity(msg);
 
 	this._composeMode = params.composeMode || this._getComposeMode(msg, identity, params);
-	
-	var cv = this._composeView;
+
+    var cv = this._composeView;
 	if (!cv) {
 		this.initComposeView();
 		cv = this._composeView;
@@ -1084,9 +1085,8 @@ function(params) {
 	if (!this.isHidden) {
 		this._initializeToolBar();
 		this.resetToolbarOperations();
-		this._setOptionsMenu();
+		this._setOptionsMenu(this._composeMode, params.incOptions);
 	}
-	this._curIncOptions = null;
 	cv.set(params);
 
 	if (!this.isHidden) {
