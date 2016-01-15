@@ -121,7 +121,7 @@
     <property name="modernizr.dir" value="${build.js.dir}/ajax/3rdparty/modernizr"/>
 
     <!-- jQuery INTEGRATION -->
-    <property name="jquery.version" value="1.8.1"/>
+    <property name="jquery.version" value="1.11.0"/>
     <property name="jquery.dir" value="${build.js.dir}/ajax/3rdparty/jquery"/>
 
     <!-- ConverseJS INTEGRATION -->
