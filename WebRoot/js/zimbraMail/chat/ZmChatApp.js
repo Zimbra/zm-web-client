@@ -459,6 +459,10 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         LABEL_AWAY = ZmMsg.chatStatusAway,
                         LABEL_OFFLINE = ZmMsg.chatStatusOffline;
 
+                    // Makes remove contact form heading localized
+                    var formHeading = this.removeContactFlyout.find('.flyout-heading span');
+                    formHeading.html(ZmMsg.chatContactRemoveFormHeading);
+
                     // ZCS - contacts tab renders the UI for status drop down
                     this.$tabs.append(converseObject.templates.contacts_tab({
                         label_online: LABEL_ONLINE,
@@ -472,7 +476,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     //Replace Remove Contact Button with a custom button
                     this.$removeContactBtn = this.replaceButton({
                         cssClassName: 'remove-contact-btn',
-                        btnText: 'Remove',
+                        btnText: ZmMsg.chatRemoveContactButton, // Makes remove button on the form localized
                         clickHandler: function(e) {
                             _self._contactToRemove.removeContact(e);
                         } 
@@ -480,7 +484,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     
                     //Replace Keep Contact Button with a custom button
                     this.$keepContactBtn = this.replaceButton({
-                        btnText: 'Keep',
+                        btnText: ZmMsg.chatKeepContactButton, // Makes keep button on the form localized
                         clickHandler: function(e) {
                             _self._contactToRemove.keepContact(e);
                         } 
@@ -527,18 +531,21 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 getPrettyStatus: function (stat) {
                     var pretty_status;
                     var __ = $.proxy(utils.__, converseObject);
-                    if (stat === 'chat') {
-                        pretty_status = __('online');
+                    if (stat === 'chat' || stat === 'online') {
+                        pretty_status = ZmMsg.chatStatusOnline;
                     } else if (stat === 'dnd') {
-                        pretty_status = __('Busy');
+                        pretty_status = ZmMsg.chatStatusBusy;
                     } else if (stat === 'xa') {
-                        pretty_status = __('Away for long');
+                        pretty_status = ZmMsg.chatStatusAway;
                     } else if (stat === 'away') {
-                        pretty_status = __('Away');
-                    } else {
+                        pretty_status = ZmMsg.chatStatusAway;
+                    } else if (stat === 'offline') {
+                        pretty_status = ZmMsg.chatStatusOffline;
+                    }
+                    else {
                         // Bug fix - Error: No translation key found.
                         // ZCS - Make first character upper case
-                        pretty_status = stat && (__(stat).charAt(0).toUpperCase() + __(stat).slice(1)) || __('online');
+                        pretty_status = stat && (__(stat).charAt(0).toUpperCase() + __(stat).slice(1)) || ZmMsg.chatStatusOnline;
                     }
                     return pretty_status;
                 },
@@ -565,11 +572,24 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         emailField = addContactPanel.find('#email'),
                         displayField = addContactPanel.find('#display'),
                         formSubmitBtn = converseObject.controlboxView.$formSubmitBtn,
-                        formHeading = $('.flyout-heading').children().first();
+                        formHeading = $('.flyout-heading').children().first(),
+                        emailLabel = $(addContactPanel).find('.add-contact-form label[for=email]'),
+                        displayLabel = $(addContactPanel).find('.add-contact-form label[for=display]');
 
                     emailField.removeAttr('disabled');
+                    // Makes add contact form heading localized
                     formHeading.html(ZmMsg.chatAddContactFormHeading);
+                    // Makes the add button localized
                     formSubmitBtn.setText(ZmMsg.chatAddContactButton);
+                    // Makes the email field label localized
+                    emailLabel.html(ZmMsg.chatAddContactEmailLabel);
+                    // Makes the display name field label localized
+                    displayLabel.html(ZmMsg.chatAddContactDisplayLabel);
+                    // Makes the email input placeholder text localized
+                    $(emailField).attr("placeholder", ZmMsg.chatAddContactEmailPlaceholderText);
+                    // Makes the display input placeholder text localized
+                    $(displayField).attr("placeholder", ZmMsg.chatAddContactDisplayPlaceholderText);
+
                     formSubmitBtn.disable();
                     formSubmitBtn.type = "addContact";
 
@@ -602,8 +622,13 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     var addContactPanel = $('.add-contact-flyout'),
                         controlboxPane = $('.controlbox-panes'),
                         searchContactPanel = $('.search-contact-flyout'),
-                        searchField = searchContactPanel.find('#search');
+                        searchField = searchContactPanel.find('#search'),
+                        formHeading = $(searchContactPanel).find('.flyout-heading').children().first();
 
+                    // Makes the search contacts header localized
+                    formHeading.html(ZmMsg.chatSearchContactFormHeading);
+                    // Makes the search contact input placeholder localized
+                    $(searchField).attr("placeholder", ZmMsg.chatSearchContactInputPlaceholderText);
                     controlboxPane.hide();
                     addContactPanel.hide();
                     searchContactPanel.show();
@@ -634,6 +659,26 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     // Set contact removal warning message here since templates don't pick up ZmMsg strings
                     var msgContainer = $('.remove-contact-flyout .removeContactWarningMsg');
                     msgContainer.html(ZmMsg.chatContactRemovalWarning);
+
+                    // The roster items have tooltips which need to be localized. These contacts could be subscribed, pending and requesting contacts.
+                    var rosterContact = null,
+                        titleText = '';
+
+                    // We are dealing with pending contacts
+                    if (this.$el.hasClass('pending-xmpp-contact') || this.$el.hasClass('requesting-xmpp-contact')) {
+                        rosterContact = this.$el.find('span[title]');
+                    }
+                    // We are dealing with an subscribed contacts
+                    else if (this.$el.hasClass('current-xmpp-contact')) {
+                        rosterContact = this.$el.find('a[class=open-chat]');
+                    }
+
+                    titleText = rosterContact.prop('title');
+
+                    if (titleText.toLowerCase().indexOf('name') > -1) {
+                        titleText = titleText.replace('Name', ZmMsg.chatContactTooltipNameLabel);
+                        rosterContact.prop('title', titleText);
+                    }
                 },
 
                 showAlterContactMenu: function(ev) {
@@ -641,6 +686,12 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
                     var alterContactMenu = $(ev.target.nextElementSibling);
                     var openedCustomMenu = $('.custom-menu.opened');
+
+                    // Makes the dropdown menu items - Remove Contact and Rename Contact localized
+                    var customMenu = $(alterContactMenu);
+                    var menuItems = $(customMenu).children();
+                    menuItems.first().html(ZmMsg.chatContactRenameOptionButton); // Rename button
+                    menuItems.last().html(ZmMsg.chatContactRemoveOptionButton); // Remove button
 
                     if (openedCustomMenu.length > 0) {
                         openedCustomMenu.removeClass('opened');
@@ -674,7 +725,9 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         formSubmitBtn = converseObject.controlboxView.$formSubmitBtn,
                         tooltip = converseObject.controlboxView.$tooltip,
                         jid = $(ev.target.parentNode).attr('data-jid') || $(ev.target.parentElement).attr('data-jid'),
-                        formHeading = $('.flyout-heading').children().first();
+                        formHeading = $('.flyout-heading').children().first(),
+                        emailLabel = $(addContactPanel).find('.add-contact-form label[for=email]'),
+                        displayLabel = $(addContactPanel).find('.add-contact-form label[for=display]');
 
                     if(tooltip) {
                         tooltip.hide();
@@ -682,8 +735,17 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     
                     // button.removeClass().addClass('renameContact');
                     formSubmitBtn.type = "renameContact";
+                    // Makes the Rename button localized
                     formSubmitBtn.setText(ZmMsg.chatRenameContactButton)
+                    // Makes the Rename Contact form localized
                     formHeading.html(ZmMsg.chatRenameContactFormHeading);
+
+                    // Makes the email field label localized
+                    emailLabel.html(ZmMsg.chatAddContactEmailLabel);
+                    // Makes the display name field label localized
+                    displayLabel.html(ZmMsg.chatAddContactDisplayLabel);
+                    // Makes the display input placeholder text localized
+                    $(displayField).attr("placeholder", ZmMsg.chatAddContactDisplayPlaceholderText);
 
                     controlboxPane.hide();
                     addContactPanel.show();
@@ -1208,6 +1270,13 @@ ZmChatApp.prototype.initChatUI = function(response) {
                     converseObject.connection.sendIQ(iq, callback, errback);
                 },
 
+                /**
+                 * Handles the mapping and setting of 'changed/modified' xmpp status of the logged in user or the buddies.
+                 * This will also be called when a contact is added to the buddy list, we fetch their xmpp status and update from here.
+                 *
+                 *
+                 * @param   {object}      presence        An object that contains a user's xmpp presence
+                 */
                 presenceHandler: function (presence) {
                     var $presence = $(presence),
                         presence_type = presence.getAttribute('type');
@@ -1219,10 +1288,10 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         status_message = $presence.find('status'),
                         contact = this.get(bare_jid);
                     if (this.isSelf(bare_jid)) {
-                        if ((converseObject.connection.jid !== jid)&&(presence_type !== 'unavailable')) {
+                        if ((converseObject.connection.jid !== jid) && (presence_type !== 'unavailable')) {
                             // Another resource has changed its status, we'll update ours as well.
                             converseObject.xmppstatus.save({'status': chat_status});
-                            converseObject.xmppstatus.save({'status_message': status_message.length ? status_message.text() : self._getXMPPStatus(chat_status.toLowerCase())});
+                            converseObject.xmppstatus.save({'status_message': status_message.length ? self._getXMPPStatus(status_message.text()) : self._getXMPPStatus(chat_status.toLowerCase())});
                         }
                         return;
                     } else if (($presence.find('x').attr('xmlns') || '').indexOf(Strophe.NS.MUC) === 0) {
@@ -1258,7 +1327,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
     converse.initialize({
         allow_otr: false,
-        i18n: locales.en,
+        i18n: locales[appCtxt.get(ZmSetting.LOCALE_NAME)],
         bosh_service_url: url,
         authentication: 'prebind',
         prebind_url: AjxUtil.formatUrl({path: '/service/extension/zimbraim/'}),
