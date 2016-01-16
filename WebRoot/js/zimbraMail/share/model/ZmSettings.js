@@ -1168,6 +1168,8 @@ function(ev) {
 	else if (appCtxt.isOffline && id === ZmSetting.OFFLINE_UPDATE_NOTIFY) {
 		appCtxt.getAppController()._offlineUpdateChannelPref(ev.source.getValue());
 	}
+    else if (id === ZmSetting.CHAT_ENABLED || id === ZmSetting.CHAT_PLAY_SOUND || (id === ZmSetting.CHAT_PLAY_SOUND && id === ZmSetting.CHAT_ENABLED)) {
+	}
 };
 
 // Shows a confirm dialog that asks the user if they want to reload ZCS to show the change they just made
