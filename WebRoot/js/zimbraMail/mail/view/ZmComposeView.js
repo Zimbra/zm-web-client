@@ -210,7 +210,7 @@ function(params) {
 	}
 
 	this._setSubject(action, msg || (params.selectedMessages && params.selectedMessages[0]), params.subjOverride);
-	this._setBody(action, msg, params.extraBodyText, false, false, params.extraBodyTextIsExternal);
+	this._setBody(action, msg, params.extraBodyText, false, false, params.extraBodyTextIsExternal, params.incOptions);
 	if (params.extraBodyText) {
 		this._isDirty = true;
 	}
@@ -1981,7 +1981,7 @@ function(action, msg, subjOverride) {
 	}
 };
 
-ZmComposeView.prototype._setBody = function(action, msg, extraBodyText, noEditorUpdate, keepAttachments, extraBodyTextIsExternal) {
+ZmComposeView.prototype._setBody = function(action, msg, extraBodyText, noEditorUpdate, keepAttachments, extraBodyTextIsExternal, incOptions) {
 
 	this._setReturns();
 	var htmlMode = (this._composeMode === Dwt.HTML);
@@ -1989,7 +1989,7 @@ ZmComposeView.prototype._setBody = function(action, msg, extraBodyText, noEditor
 	var isDraft = (action === ZmOperation.DRAFT);
 
 	// get reply/forward prefs as necessary
-	var incOptions = this._controller._curIncOptions;
+	var incOptions = this._controller._curIncOptions = this._controller._curIncOptions || incOptions;
 	var ac = window.parentAppCtxt || window.appCtxt;
 	if (!incOptions) {
 		if (ZmComposeController.IS_REPLY[action]) {
