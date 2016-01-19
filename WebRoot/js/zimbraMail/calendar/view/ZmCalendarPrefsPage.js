@@ -625,17 +625,12 @@ function(wHrsString) {
     for(i=0; i<wHrsPerDay.length; i++) {
         wDay = wHrsPerDay[i].split(ZmWorkHours.STR_TIME_SEP);
         w = {};
-        idx = wDay[0];
-        if(wDay[1] === "Y") {
-            w.isWorkingDay = true;
-        }
-        else {
-            w.isWorkingDay = false;
-        }
+		w.dayOfWeek = wDay[0] - 1;
+		w.isWorkingDay = (wDay[1] === "Y");
         w.startTime = wDay[2];
         w.endTime = wDay[3];
 
-        wHrs[idx-1] = w;
+		wHrs[i] = w;
     }
     return wHrs;
 };
@@ -651,8 +646,8 @@ function() {
 
     for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
         dayStr = [];
-        dayStr.push(i+1);
-        if(this._workDaysCheckBox[i].isSelected()) {
+		dayStr.push(parseInt(this._workDaysCheckBox[i].getValue()) + 1);
+		if(this._workDaysCheckBox[i].isSelected()) {
             dayStr.push("Y");
         }
         else {
@@ -752,18 +747,34 @@ function(templateId) {
         radioIds = {},
         radioName = this._htmlElId + "_normalCustom",
         isCustom = this._isCustom;
-    
+
     this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#"+templateId, {id:this._htmlElId});
     //fill the containers for the work days and work time
     var firstDayOfWeek = appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
-    for (i = 0; i < AjxDateUtil.DAYS_PER_WEEK; i++) {
-        var dayIndex = (i + firstDayOfWeek) % AjxDateUtil.DAYS_PER_WEEK;
+
+	// Figure out where in the workHours array the info for firstDayOfWeek is located.
+	// The first item in array is associated with the first day of the week that has been set.
+	// This determines how the checkboxes will be displayed for work week days. Getting
+	// the correct position in the array for first day of week will allow the correct
+	// workHours[].isworkingDay value to be set.
+	var startingIndex = 0;
+	for (i = 0; i < AjxDateUtil.DAYS_PER_WEEK; i++) {
+		if (workHours[i].dayOfWeek == firstDayOfWeek) {
+			startingIndex = i;
+			break;
+		}
+	}
+
+	for (i = 0; i < AjxDateUtil.DAYS_PER_WEEK; i++) {
+		var dayIndex = (i + startingIndex) % AjxDateUtil.DAYS_PER_WEEK;
+		var dayOfWeek = (i + firstDayOfWeek) % AjxDateUtil.DAYS_PER_WEEK;
 
         checkbox = new DwtCheckbox({parent:this, parentElement:(this._htmlElId + "_CAL_WORKING_DAY_" + i)});
-        checkbox.setText(AjxDateUtil.WEEKDAY_MEDIUM[dayIndex]);
-        checkbox.setToolTipContent(AjxDateUtil.WEEKDAY_LONG[dayIndex]);
-        checkbox.setSelected(workHours[dayIndex].isWorkingDay);
-        checkbox.setEnabled(!isCustom)
+		checkbox.setText(AjxDateUtil.WEEKDAY_MEDIUM[dayOfWeek]);
+		checkbox.setToolTipContent(AjxDateUtil.WEEKDAY_LONG[dayOfWeek]);
+		checkbox.setValue(dayOfWeek);
+		checkbox.setSelected(workHours[dayIndex].isWorkingDay);
+		checkbox.setEnabled(!isCustom)
         this._workDaysCheckBox.push(checkbox);
     }
 
