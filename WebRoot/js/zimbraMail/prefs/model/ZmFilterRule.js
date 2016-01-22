@@ -392,35 +392,35 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_FROM] = {
 	opsOptions:	ZmFilterRule.MATCHING_OPS,
 	value:		ZmFilterRule.TYPE_INPUT,
 	valueMod:   ZmFilterRule.TYPE_SELECT,
-	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
+	vmOptions:	[{label: ZmMsg.filterRuleOptionAll, value: "all"}, {label: ZmMsg.filterRuleOptionLocalpart, value: "localpart"}, {label:ZmMsg.filterRuleOptionDomain, value: "domain"}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_TO] = {
 	ops:		ZmFilterRule.TYPE_SELECT,
 	opsOptions:	ZmFilterRule.MATCHING_OPS,
 	value:		ZmFilterRule.TYPE_INPUT,
 	valueMod:   ZmFilterRule.TYPE_SELECT,
-	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
+	vmOptions:	[{label: ZmMsg.filterRuleOptionAll, value: "all"}, {label: ZmMsg.filterRuleOptionLocalpart, value: "localpart"}, {label:ZmMsg.filterRuleOptionDomain, value: "domain"}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_CC] = {
 	ops:		ZmFilterRule.TYPE_SELECT,
 	opsOptions:	ZmFilterRule.MATCHING_OPS,
 	value:		ZmFilterRule.TYPE_INPUT,
 	valueMod:   ZmFilterRule.TYPE_SELECT,
-	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
+	vmOptions:	[{label: ZmMsg.filterRuleOptionAll, value: "all"}, {label: ZmMsg.filterRuleOptionLocalpart, value: "localpart"}, {label:ZmMsg.filterRuleOptionDomain, value: "domain"}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_TO_CC] = {
 	ops:		ZmFilterRule.TYPE_SELECT,
 	opsOptions:	ZmFilterRule.MATCHING_OPS,
 	value:		ZmFilterRule.TYPE_INPUT,
 	valueMod:   ZmFilterRule.TYPE_SELECT,
-	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
+	vmOptions:	[{label: ZmMsg.filterRuleOptionAll, value: "all"}, {label: ZmMsg.filterRuleOptionLocalpart, value: "localpart"}, {label:ZmMsg.filterRuleOptionDomain, value: "domain"}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_BCC] = {
 	ops:		ZmFilterRule.TYPE_SELECT,
 	opsOptions:	ZmFilterRule.MATCHING_OPS,
 	value:		ZmFilterRule.TYPE_INPUT,
 	valueMod:   ZmFilterRule.TYPE_SELECT,
-	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
+	vmOptions:	[{label: ZmMsg.filterRuleOptionAll, value: "all"}, {label: ZmMsg.filterRuleOptionLocalpart, value: "localpart"}, {label:ZmMsg.filterRuleOptionDomain, value: "domain"}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_SUBJECT] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
