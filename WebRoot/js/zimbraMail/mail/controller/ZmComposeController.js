@@ -310,6 +310,7 @@ function() {
 		subj:			subj,
 		priority:		this._getPriority(),
 		msgAttId:		msgAttId,
+        msgIds:         this._msgIds,
 		draftType: 		this._draftType,
 		draftMsg:		this._draftMsg,
 		body:			body,
