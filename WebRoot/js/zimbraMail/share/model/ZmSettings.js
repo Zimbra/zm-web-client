@@ -115,8 +115,6 @@ function() {
 	this.getSetting(ZmSetting.SHORTCUTS).addChangeListener(listener);
 	this.getSetting(ZmSetting.CHILD_ACCTS_VISIBLE).addChangeListener(listener);
 	this.getSetting(ZmSetting.ATTACHMENTS_BLOCKED).addChangeListener(listener);
-	this.getSetting(ZmSetting.CHAT_PLAY_SOUND).addChangeListener(listener);
-	this.getSetting(ZmSetting.CHAT_ENABLED).addChangeListener(listener);
 
 
 	if (appCtxt.isOffline) {
@@ -837,7 +835,7 @@ function() {
     this.registerSetting("ADMIN_DELEGATED",                 {type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("AC_TIMER_INTERVAL",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:300});
 	this.registerSetting("ASYNC_MODE",						{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"JUDASPRIEST"});
+	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"main"});
 
 	// next 3 are replaced during deployment
 	this.registerSetting("CLIENT_DATETIME",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildDateTime@"});
@@ -1171,7 +1169,6 @@ function(ev) {
 		appCtxt.getAppController()._offlineUpdateChannelPref(ev.source.getValue());
 	}
     else if (id === ZmSetting.CHAT_ENABLED || id === ZmSetting.CHAT_PLAY_SOUND || (id === ZmSetting.CHAT_PLAY_SOUND && id === ZmSetting.CHAT_ENABLED)) {
-		this._showConfirmDialog(ZmMsg.chatFeatureChangeRestart, this._refreshBrowserCallback.bind(this));
 	}
 };
 
