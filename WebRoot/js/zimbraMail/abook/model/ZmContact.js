@@ -425,6 +425,8 @@ function(node, args) {
 		}
 		AjxUtil.hashUpdate(contact.attr, node._attrs);	// merge new attrs just in case we don't have them
 		contact.list = args.list || new ZmContactList(null);
+		contact._list = {};
+		contact._list[contact.list.id] = true;
 	}
 
 	return contact;
@@ -1821,7 +1823,7 @@ function(newFolderId, resp) {
 			actionArg:      newFolder.name
 		}));
 	}
-	
+
 	this._notify(ZmEvent.E_MODIFY, resp);
 };
 
