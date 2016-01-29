@@ -672,7 +672,7 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
 	    isRemote = Boolean(calendar.url),
 	    is30 = appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR,
 	    is60 = appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HOUR,
-	    apptName = appt.getName();
+		apptName = AjxStringUtil.htmlEncode(appt.getName());
 
 	// normalize location
 	var location = appt.getLocation();
@@ -705,7 +705,7 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
 		id:             id,
 		newState:       isNew ? "_new" : "",
 		headerStyle:    bodyStyle,
-		name:           AjxStringUtil.htmlEncode(apptName),
+		name:           apptName,
 		starttime:      appt.getDurationText(true, true),
 		endtime:        !appt._fanoutLast && (appt._fanoutFirst || appt._fanoutNum > 0) ? "" : ZmCalBaseItem._getTTHour(appt.endDate),
 		location:       location,
