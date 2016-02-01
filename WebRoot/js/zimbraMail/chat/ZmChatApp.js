@@ -216,7 +216,12 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
                 // Tab or window close, page reload.
                 $(window).on('unload beforeunload', function() {
-                    converseObject.logOut();
+                    // Bug: 103451 - Disconnect Chat connection when download attachment file
+                    // Logout only when session has ended
+                    if (ZmZimbraMail.hasSessionEnded()) {
+                        converseObject.logOut();
+                    }
+
                 });
 
                 // Signout button clicked
@@ -675,11 +680,15 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         rosterContact = this.$el.find('a[class=open-chat]');
                     }
 
-                    titleText = rosterContact.prop('title');
+                    // Bug: 103144 - Some of the options from Chat window are not localized
+                    // While switching between requesting contact or pending contact to online contacts rosterContact object is not available.
+                    if (rosterContact) {
+                        titleText = rosterContact.prop('title');
 
-                    if (titleText.toLowerCase().indexOf('name') > -1) {
-                        titleText = titleText.replace('Name', ZmMsg.chatContactTooltipNameLabel);
-                        rosterContact.prop('title', titleText);
+                        if (titleText.toLowerCase().indexOf('name') > -1) {
+                            titleText = titleText.replace('Name', ZmMsg.chatContactTooltipNameLabel);
+                            rosterContact.prop('title', titleText);
+                        }
                     }
                 },
 
