@@ -87,6 +87,8 @@ function() {
         $(window).on("online offline", ZmChatApp.checkServerStatus);
 
         ZmChatApp.TIMERS.checkServerStatusTimer = setInterval(ZmChatApp.checkServerStatus, ZmChatApp.CHAT_POLL_INTERVAL);
+        // Set the counter while attaching the listener, it produces a NaN if not set to 0.
+        ZmChatApp.TIMERS.ConnectTriggerCount = 0;
     }
 
     ZmChatApp.CHAT_EVENTS.bind("ZChatConnect", this._reconnectChat, this);
@@ -1083,6 +1085,9 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         connErrorRetry.show();
 
                         this.loginpanel.render();
+
+                        // Reset the timer to 0 to make sure it doesn't produce a NaN.
+                        ZmChatApp.TIMERS.ConnectTriggerCount = 0;
 
                         var chatPaneHeader = $('#controlbox-tabs').find('a[href=#login-dialog]');
                         chatPaneHeader.html(ZmMsg.chatFeatureDisconnected);
