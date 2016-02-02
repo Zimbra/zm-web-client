@@ -218,21 +218,24 @@ function(enabled) {
     }
 };
 
-ZmCalPrintDialog.prototype._validateDateRange =
+ZmCalPrintDialog.prototype._validateDateTime =
 function(ev) {
     var hoursContainer = document.getElementById(this._htmlElId + "_hoursContainer"),
-        isValid = true;
-    if( this._dateRangeFrom.getEnabled() &&
-        this._dateRangeTo.getEnabled()) {
+        isValid = false;
+
+    if (this._selDate.getEnabled()) { //If we have choosen "Selected Date"
+        isValid = this._selDate.getValue();
+    }
+    else if (this._dateRangeFrom.getEnabled() &&
+        this._dateRangeTo.getEnabled()) {  //If we have choosen "Date Range"
         var startDate = this._dateRangeFrom.getTimeValue();
         var endDate = this._dateRangeTo.getTimeValue();
-
-        if(endDate < startDate) {
-            isValid = false;
-        }
+        isValid = startDate && endDate && endDate >= startDate;
     }
 
-    if(Dwt.getDisplay(hoursContainer) == Dwt.DISPLAY_BLOCK) {
+    if(isValid //If either "Selected Date" or "Date Range" is correct then we go for time validation
+            && Dwt.getVisible(hoursContainer)
+            && (this._selDate.getEnabled() || (startDate === endDate))) { //Only if dates are same does Time comparison matter
         var startTime = this._fromTimeSelect.getValue();
         var endTime = this._toTimeSelect.getValue();
 
@@ -240,6 +243,7 @@ function(ev) {
             isValid = false;
         }
     }
+
     if(!isValid) {
         Dwt.setDisplay(this._printErrorMsgContainer, Dwt.DISPLAY_BLOCK);
         this._printErrorMsgContainer.innerHTML = ZmMsg.errorInvalidDates;
@@ -309,7 +313,7 @@ function() {
 
 ZmCalPrintDialog.prototype._printButtonListener =
 function() {
-    if(!this._validateDateRange()) {
+    if(!this._validateDateTime()) {
         return false;
     }
     var url = this._getPrintOptions();
@@ -463,12 +467,8 @@ function() {
 
 ZmDateInput.prototype.getTimeValue =
 function() {
-    if(this.getEnabled()) {
-        return AjxDateUtil.simpleParseDateStr(this._dateInputField.getValue()).getTime();
-    }
-    else {
-        return "";
-    }
+    var dateObj = this.getEnabled() && AjxDateUtil.simpleParseDateStr(this._dateInputField.getValue());
+    return dateObj ? dateObj.getTime() : null;
 };
 
 ZmDateInput.prototype.setValue =
