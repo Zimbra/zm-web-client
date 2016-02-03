@@ -353,10 +353,10 @@ function() {
 	this._previewView.set(this._delayedSelectionItem);
 };
 
-ZmPreviewPaneView.prototype._listSelectionListener =
-function(ev){
-    var item = ev.item, handled = false;
-    if(!item) {
+ZmPreviewPaneView.prototype._listSelectionListener = function(ev, item) {
+
+    var item = item || ev.item;
+    if (!item) {
     	return;
     }
 
@@ -621,10 +621,14 @@ function(url){
     return url;
 };
 
-ZmPreviewView.prototype.set =
-function(item){
-    if(!item){
+ZmPreviewView.prototype.set = function(item) {
+
+    if (!item){
         this.enablePreview(false);
+        return;
+    }
+
+    if (item === this._previewItem) {
         return;
     }
 
@@ -634,7 +638,7 @@ function(item){
 
     this._previewContent = false;
 
-    if(item.isFolder){
+    if (item.isFolder) {
         this._setFolder(item);
         return;
     }
@@ -645,9 +649,10 @@ function(item){
     var restUrl = item.getRestUrl();
     restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
 
-    if(ZmMimeTable.isWebDoc(item.contentType)){
+    if (ZmMimeTable.isWebDoc(item.contentType)) {
         restUrl = restUrl + ( restUrl.match(/\?/) ? '&' : '?' ) + "viewonly=1";
-    }else{
+    }
+    else {
 
         this._setupLoading();
 
