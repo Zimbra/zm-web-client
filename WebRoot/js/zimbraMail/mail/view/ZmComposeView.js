@@ -1461,7 +1461,7 @@ ZmComposeView.prototype._attachSignatureVcard =
 function(signatureId) {
 
 	var signature = this.getSignatureById(signatureId);
-	if (signature && signature.contactId) {
+	if (signature && signature.contactId && !this._findVcardAtt(this._msg, signature, false)) {
 		if (!this._msg) {
 			this._msg = new ZmMailMsg();
 		}
@@ -1484,33 +1484,9 @@ function(oldSignatureId, newSignatureId) {
 		// uncheck box for previous vcard att so it gets removed
 		var oldSig = this.getSignatureById(oldSignatureId);
 		if (oldSig && oldSig.contactId) {
-			var vcardPart;
-			var atts = this._msg && this._msg.attachments;
-			if (atts && atts.length) {
-				//we need to figure out what input to uncheck
-				var sigContact;
-				var item = appCtxt.cacheGet(oldSig.contactId);
-				if (item && item.isZmContact) {
-					sigContact = item;
-				}
-				for (var i = 0; i < atts.length && !vcardPart; i++) {
-					if (ZmMimeTable.isVcard(atts[i].contentType)) {
-						//we may have multiple vcards, determine which one to remove based on signature in cache
-						if (sigContact) {
-							//remove the file extension from fileName
-							var name = atts[i].fileName.substring(0, atts[i].fileName.length - 4);
-							if (name === sigContact._fileAs) {
-								vcardPart = atts[i].part;
-							}
-						}
-						else {
-							vcardPart = atts[i].part;
-						}
-						atts.splice(i, 1);
-					}
-				}
-			}
-			var inputs = document.getElementsByName(ZmComposeView.FORWARD_ATT_NAME + this._sessionId);
+            var vcardPart = this._findVcardAtt(this._msg, oldSig, true),
+			    inputs = document.getElementsByName(ZmComposeView.FORWARD_ATT_NAME + this._sessionId);
+
 			if (inputs && inputs.length) {
 				for (var i = 0; i < inputs.length; i++) {
 					if (inputs[i].value === vcardPart) {
@@ -1527,6 +1503,59 @@ function(oldSignatureId, newSignatureId) {
 			this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL);
 		}
 	}
+};
+
+/**
+ * Searches for a vcard in a message's attachments. If the contact has not yet been loaded, we assume that
+ * a vcard attachment that we find is for that contact. Multiple vcard attachment where the first one is not
+ * from the signature should be very rare.
+ *
+ * @param {ZmMailMsg}       msg         mail message
+ * @param {ZmSignature}     signature   a signature
+ * @param {boolean}         removeAtt   if true, remove the vcard attachment from the msg
+ *
+ * @returns {string}    part number of vcard, or "undefined" if not found
+ * @private
+ */
+ZmComposeView.prototype._findVcardAtt = function(msg, signature, removeAtt) {
+
+    if (signature && signature.contactId) {
+
+        var vcardPart,
+            atts = msg && msg.attachments;
+
+        if (atts && atts.length) {
+            //we need to figure out what input to uncheck
+            var sigContact,
+                item = appCtxt.cacheGet(signature.contactId);
+
+            if (item && item.isZmContact) {
+                sigContact = item;
+            }
+
+            for (var i = 0; i < atts.length && !vcardPart; i++) {
+                var att = atts[i];
+                if (ZmMimeTable.isVcard(att.contentType)) {
+                    //we may have multiple vcards, determine which one to remove based on signature in cache
+                    if (sigContact) {
+                        // remove the .vcf file extension and try to match on the contact's name
+                        var name = att.fileName.substring(0, att.fileName.length - 4);
+                        if (name === sigContact._fileAs) {
+                            vcardPart = att.part;
+                        }
+                    }
+                    else {
+                        vcardPart = att.part;
+                    }
+                    if (removeAtt) {
+                        atts.splice(i, 1);
+                    }
+                }
+            }
+        }
+    }
+
+    return vcardPart;
 };
 
 ZmComposeView.prototype._checkSaveDraft =
