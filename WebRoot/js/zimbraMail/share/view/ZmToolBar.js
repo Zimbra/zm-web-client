@@ -310,7 +310,7 @@ function() {
     var offsetWidth;
     if (container && ((offsetWidth = container.offsetWidth) >= 30)) {
         var style = this._refElement.style;
-        style.maxWidth = style.width =  (offsetWidth - 30);
+		style.maxWidth = style.width =  (offsetWidth - 30) + "px";
         style.overflow = "hidden";
     }
 }
