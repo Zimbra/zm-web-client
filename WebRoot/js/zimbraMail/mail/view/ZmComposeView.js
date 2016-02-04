@@ -3310,7 +3310,10 @@ function(controller, enabled) {
 	var sendLater = appCtxt.get(ZmSetting.MAIL_SEND_LATER_ENABLED);
 	toolbar.getButton(sendLater ? ZmId.OP_SEND_MENU : ZmId.OP_SEND).setEnabled(enabled);
 	toolbar.getButton(ZmId.OP_SAVE_DRAFT).setEnabled(enabled);
-
+	var detachComposeButton = toolbar.getButton(ZmId.OP_DETACH_COMPOSE);
+	if (detachComposeButton) {
+		detachComposeButton.setEnabled(enabled);
+	}
 	appCtxt.notifyZimlets("enableComposeToolbarButtons", [toolbar, enabled]);
 };
 
