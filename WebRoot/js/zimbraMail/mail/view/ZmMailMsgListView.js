@@ -271,13 +271,13 @@ function(params) {
 			tooltip = ZmMailListView.prototype._getToolTip.apply(this, arguments);
 		}
 		else {
-		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
+			tooltip = AjxStringUtil.htmlEncode(item.fragment || (item.hasAttach ? "" : ZmMsg.fragmentIsEmpty));
 			var folderTip = null;
 			var folder = appCtxt.getById(item.folderId);
 			if (folder && folder.parent) {
 				folderTip = AjxMessageFormat.format(ZmMsg.accountDownloadToFolder, folder.getPath());
 			}
-			tooltip = folderTip ? [tooltip, folderTip].join("<br>") : tooltip;
+			tooltip = (tooltip && folderTip) ? [tooltip, folderTip].join("<br>") : tooltip || folderTip;
         }
 	}
 	else {

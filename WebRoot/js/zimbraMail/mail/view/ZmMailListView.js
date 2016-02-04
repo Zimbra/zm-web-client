@@ -947,7 +947,7 @@ function(params) {
 			tooltip = AjxStringUtil.stripTags(tooltip);
 		}
 		else {
-		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
+			tooltip = AjxStringUtil.htmlEncode(item.fragment || (item.hasAttach ? "" : ZmMsg.fragmentIsEmpty));
         }
         // Strip surrounding whitespace from the tooltip
         tooltip = AjxStringUtil.trim(tooltip, false, "\\s");
