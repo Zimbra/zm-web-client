@@ -87,8 +87,6 @@ function() {
         $(window).on("online offline", ZmChatApp.checkServerStatus);
 
         ZmChatApp.TIMERS.checkServerStatusTimer = setInterval(ZmChatApp.checkServerStatus, ZmChatApp.CHAT_POLL_INTERVAL);
-        // Set the counter while attaching the listener, it produces a NaN if not set to 0.
-        ZmChatApp.TIMERS.ConnectTriggerCount = 0;
     }
 
     ZmChatApp.CHAT_EVENTS.bind("ZChatConnect", this._reconnectChat, this);
@@ -216,12 +214,7 @@ ZmChatApp.prototype.initChatUI = function(response) {
 
                 // Tab or window close, page reload.
                 $(window).on('unload beforeunload', function() {
-                    // Bug: 103451 - Disconnect Chat connection when download attachment file
-                    // Logout only when session has ended
-                    if (ZmZimbraMail.hasSessionEnded()) {
-                        converseObject.logOut();
-                    }
-
+                    converseObject.logOut();
                 });
 
                 // Signout button clicked
@@ -257,20 +250,17 @@ ZmChatApp.prototype.initChatUI = function(response) {
                 onChatStatusChanged: function(item) {
                     var chat_status = item.get('chat_status'),
                         fullname = item.get('fullname'),
-                        elChatTitle = this.$el.find('.chat-title>span[class^=icon-]'),
-                        chatBoxId = item.get('box_id'),
-                        chatBox = document.getElementById(chatBoxId), // Not using jquery selector because chatBoxId constitutes of special characters
-                        chatTextArea = $(chatBox).find('.chat-textarea'); // Don't want to add unnecessary code for jquery special character escapes or reqex
+                        elChatTitle = this.$el.find('.chat-title>span[class^=icon-]');
 
                     fullname = AjxUtil.isEmpty(fullname) ? item.get('jid'): fullname;
 					if (this.$el.is(':visible')) {
                         if (chat_status === ZmChatApp.OFFLINE || chat_status === ZmChatApp.BUSY) {
                             var chat_status_display = (chat_status === ZmChatApp.BUSY) ? ZmMsg.chatStatusBusy : ZmMsg.chatStatusOffline;
                             this.showStatusNotification(AjxMessageFormat.format(ZmMsg.chatMsgDeliveryRestricted, [fullname, chat_status_display]));
-                            chatTextArea.prop('disabled', true);
+                            $('.chat-textarea').prop('disabled',true);
                         } else {
                             this.$el.find('div.chat-event').remove();
-                            chatTextArea.prop('disabled', false);
+                            $('.chat-textarea').prop('disabled', false);
                         }
                     }
 
@@ -680,15 +670,11 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         rosterContact = this.$el.find('a[class=open-chat]');
                     }
 
-                    // Bug: 103144 - Some of the options from Chat window are not localized
-                    // While switching between requesting contact or pending contact to online contacts rosterContact object is not available.
-                    if (rosterContact) {
-                        titleText = rosterContact.prop('title');
+                    titleText = rosterContact.prop('title');
 
-                        if (titleText.toLowerCase().indexOf('name') > -1) {
-                            titleText = titleText.replace('Name', ZmMsg.chatContactTooltipNameLabel);
-                            rosterContact.prop('title', titleText);
-                        }
+                    if (titleText.toLowerCase().indexOf('name') > -1) {
+                        titleText = titleText.replace('Name', ZmMsg.chatContactTooltipNameLabel);
+                        rosterContact.prop('title', titleText);
                     }
                 },
 
@@ -1094,9 +1080,6 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         connErrorRetry.show();
 
                         this.loginpanel.render();
-
-                        // Reset the timer to 0 to make sure it doesn't produce a NaN.
-                        ZmChatApp.TIMERS.ConnectTriggerCount = 0;
 
                         var chatPaneHeader = $('#controlbox-tabs').find('a[href=#login-dialog]');
                         chatPaneHeader.html(ZmMsg.chatFeatureDisconnected);

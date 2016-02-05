@@ -283,18 +283,6 @@ function() {
 };
 
 /**
- * Returns the state of ZCS application if user is logged out in case of browser quit.
- * The public method is added to take appropriate action in the chat app if user session is ending.
- *
- *
- * @public
- */
-ZmZimbraMail.hasSessionEnded =
-    function() {
-        return ZmZimbraMail._endSessionDone;
-    };
-
-/**
  * Startup the mail controller.
  * 
  * <p>
