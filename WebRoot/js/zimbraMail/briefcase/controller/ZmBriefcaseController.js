@@ -413,7 +413,13 @@ ZmBriefcaseController.prototype._doDelete = function(items, hardDelete) {
 
 	var message = items.length > 1 ? item.isRevision  ? ZmMsg.confirmPermanentDeleteItemList : ZmMsg.confirmDeleteItemList : null;
 	if (!message) {
-        var delMsgFormatter = new AjxMessageFormat(hardDelete || this._folderId == String(ZmOrganizer.ID_TRASH || (item.isRevision && item.parent.version !== item.version)) ? ZmMsg.confirmPermanentDeleteItem : ZmMsg.confirmDeleteItem );
+		if (hardDelete || this._folderId == String(ZmOrganizer.ID_TRASH) || (item.isRevision && item.parent.version !== item.version)) {
+			var pattern = ZmMsg.confirmPermanentDeleteItem;
+		}
+		else {
+			var pattern = ZmMsg.confirmDeleteItem;
+		}
+		var delMsgFormatter = new AjxMessageFormat(pattern);
 		message = delMsgFormatter.format(AjxStringUtil.htmlEncode(item.name));
 	}
 
