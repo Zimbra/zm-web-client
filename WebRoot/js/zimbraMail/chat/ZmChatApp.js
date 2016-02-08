@@ -1334,6 +1334,68 @@ ZmChatApp.prototype.initChatUI = function(response) {
                         this.addResource(bare_jid, resource);
                         contact.save({'chat_status': chat_status.toLowerCase() == 'xa' ? 'away' : chat_status});
                     }
+                },
+
+                /**
+                 * Updates the contact item based on the IQ response received to and from XMPP server.
+                 * The item gets updated when a contact is updated in case of subscribe, authorize and unsubscribe.
+                 *
+                 *
+                 * @param   {object}      item        The IQ query response item received in the form of a stanza from XMPP server.
+                 */
+                updateContact: function (item) {
+                    /* Update or create RosterContact models based on items
+                     * received in the IQ from the server.
+                     */
+                    var jid = item.getAttribute('jid');
+                    if (this.isSelf(jid)) { return; }
+                    var groups = [],
+                        contact = this.get(jid),
+                        ask = item.getAttribute("ask"),
+                        subscription = item.getAttribute("subscription");
+                    $.map(item.getElementsByTagName('group'), function (group) {
+                        groups.push(Strophe.getText(group));
+                    });
+                    if (!contact) {
+                        if ((subscription === "none" && ask === null) || (subscription === "remove")) {
+                            return; // We're lazy when adding contacts.
+                        }
+                        this.create({
+                            ask: ask,
+                            fullname: item.getAttribute("name") || jid,
+                            groups: groups,
+                            jid: jid,
+                            subscription: subscription
+                        }, {sort: false});
+                    } else {
+                        if (subscription === "remove") {
+                            return contact.destroy(); // will trigger removeFromRoster
+                        }
+                        // We only find out about requesting contacts via the
+                        // presence handler, so if we receive a contact
+                        // here, we know they aren't requesting anymore.
+                        // see docs/DEVELOPER.rst
+
+                        /*
+                         * Bug: 103135 - Pending Contact Roster Header not correct
+                         * By changing the subscription we are kind of auto-subscribing the users to each other.
+                         */
+                        if (subscription === "from") {
+                            subscription = "to";
+
+                            // Remove the ask attribute to auto-subscribe to requesting user's roster.
+                            if (ask === "subscribe") {
+                                ask = null;
+                            }
+                        }
+
+                        contact.save({
+                            subscription: subscription,
+                            ask: ask,
+                            requesting: null,
+                            groups: groups
+                        });
+                    }
                 }
             }
         }
