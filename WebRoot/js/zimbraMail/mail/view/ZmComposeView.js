@@ -632,17 +632,23 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 	}
 
 	// get list of message part id's for any forwarded attachments
-	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME + this._sessionId, !isDraft && this._hideOriginalAttachments);
-	var forwardMsgIds = [];
+	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME + this._sessionId, !isDraft && this._hideOriginalAttachments),
+        forwardAttObjs = this._getForwardAttObjs(forwardAttIds),
+        attachedMsgIds = AjxUtil.arrayAsHash(AjxUtil.map(forwardAttObjs, function(m) { return m.mid; })),
+	    forwardMsgIds = [];
+
 	if (this._msgIds) {
 		// Get any message ids added via the attachment dialog (See
 		// _attsDoneCallback which adds new forwarded attachments to msgIds)
 		forwardMsgIds = this._msgIds;
 		this._msgIds = null;
-	} else if (this._msgAttId) {
+	}
+    if (this._msgAttId) {
 		// Forward one message or Reply as attachment
 		forwardMsgIds.push(this._msgAttId);
 	}
+    // make sure we're not attaching a msg twice by checking for its ID in our list of forwarded attachments
+    forwardMsgIds = AjxUtil.filter(forwardMsgIds, function(m) { return !attachedMsgIds[m]; });
 
 	// --------------------------------------------
 	// Passed validation checks, message ok to send
@@ -654,7 +660,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 	msg.setTopPart(top);
 	msg.setSubject(subject);
 	msg.setForwardAttIds(forwardAttIds);
-	msg.setForwardAttObjs(this._getForwardAttObjs(forwardAttIds));
+	msg.setForwardAttObjs(forwardAttObjs);
 	if (!contactId) {
 		//contactId not passed in, but vcard signature may be set
 		if (this._msg && this._msg._contactAttIds) {
@@ -693,22 +699,6 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 	// replied/forw msg or draft shouldn't have att ID (a repl/forw voicemail mail msg may)
 	if (this._msg && this._msg.attId) {
 		msg.addAttachmentId(this._msg.attId);
-	}
-
-	if (this._msgAttId) {
-		if (forwardMsgIds.length > 0) {
-			// Check if the MsgId is already present in the fwdMsgIds list.
-			var i = 0;
-			while (forwardMsgIds[i] && forwardMsgIds[i] !== this._msgAttId) {
-				i++;
-			}
-			if (forwardMsgIds.length === i) {
-				forwardMsgIds.push(this._msgAttId);
-			}
-			delete i;
-		} else {
-			forwardMsgIds.push(this._msgAttId);
-		}
 	}
 
 	msg.setMessageAttachmentId(forwardMsgIds);
@@ -1067,7 +1057,14 @@ function(params) {
 	this._htmlEditor.setContent(content);
 
 	this._msgAttId = params.msgAttId;
-	if (params.identityId && this.identitySelect) {
+    if (params.attHtml) {
+        this._attcDiv.innerHTML = params.attHtml;
+    }
+    if (params.partMap && params.partMap.length) {
+        this._partToAttachmentMap = params.partMap;
+    }
+
+    if (params.identityId && this.identitySelect) {
 		var opt = this.identitySelect.getOptionAtIndex(params.identityId);
 		this.identitySelect.setSelectedOption(opt);
 		this._controller.resetIdentity(params.identity.id);
