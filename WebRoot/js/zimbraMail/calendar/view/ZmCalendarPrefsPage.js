@@ -539,7 +539,9 @@ function() {
 	this._radioGroup.setSelectedId(this._isCustom ? this._radioCustomId : this._radioNormalId);
 
     // Reset the custom work hours dialog as well
-    this._customDlg.reset();
+    if (this._customDlg) {
+        this._customDlg.reset();
+    }
 };
 
 ZmWorkHours.prototype.isDirty =
