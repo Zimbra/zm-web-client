@@ -1419,7 +1419,6 @@ function(message) {
 		var textContent = message.getBodyContent(ZmMimeTable.TEXT_PLAIN);
 		if (!this._includeEditReply) {
 			textContent = this._trimNotesSummary(textContent);
-            this.setIncludeEditReply(true);
 		}
 		this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		this.notesTopPart.setContent(textContent);
