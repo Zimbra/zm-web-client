@@ -296,6 +296,10 @@ function() {
 		addrList[type] = view.getAddrInputField(type).getAddresses(true);
 	}
 
+    var partToAttachmentMap = AjxUtil.map(view._partToAttachmentMap, function(member) {
+       return { mid:member.mid, part:member.part };
+    });
+
 	// this is how child window knows what to do once loading:
     var msgId = (msg && msg.nId) || Dwt.getNextId();
 	var newWinObj = appCtxt.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId.replace(/\s|\-/g, '_'));
@@ -309,6 +313,7 @@ function() {
 		addrs:			addrList,
 		subj:			subj,
 		priority:		this._getPriority(),
+        attHtml:        view._attcDiv.innerHTML,
 		msgAttId:		msgAttId,
         msgIds:         this._msgIds,
 		draftType: 		this._draftType,
@@ -319,11 +324,11 @@ function() {
 		accountName:	this._accountName,
 		backupForm:		backupForm,
 		sendUID:		sendUID,
-		forAttIds:		this._forAttIds,
 		sessionId:		this.getSessionId(),
         readReceipt:	requestReadReceipt,
 		sigId:			this.getSelectedSignature(),
-        incOptions:     this._curIncOptions
+        incOptions:     this._curIncOptions,
+        partMap:        partToAttachmentMap
 	};
 };
 
