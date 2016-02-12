@@ -593,7 +593,6 @@ function(results, callback, searchResultsController) {
 	var folderId = search && search.isSimple() && search.folderId;
 	var isInGal = search && (search.contactSource == ZmId.SEARCH_GAL);
 	var sessionId = searchResultsController ? searchResultsController.getCurrentViewId() : ZmApp.MAIN_SESSION;
-    console.log('[' + (new Date().getTime()) + '] ' + '************ _handleLoadShowSearchResults: GetContactListController ************');
 	var controller = AjxDispatcher.run("GetContactListController", sessionId, searchResultsController);
 	controller.show(results, isInGal, folderId);
 	this._setLoadedTime(this.toString(), new Date());

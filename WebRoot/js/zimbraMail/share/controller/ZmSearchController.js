@@ -406,27 +406,31 @@ function(type) {
  *
  * @param {ZmSearch}	searchObj		the current search
  */
-ZmSearchController.prototype.updateOverview =
-function(searchObj) {
+ZmSearchController.prototype.updateOverview = function(searchObj) {
+
 	var search = searchObj || appCtxt.getCurrentSearch();
+    if (!search) {
+        return;
+    }
 
 	var id, type;
-	if (search && (search.isSimple() || search.searchId)) {
+	if (search.isSimple() || search.searchId) {
 		if (search.searchId) {
 			id = this._getNormalizedId(search.searchId);
 			type = ZmOrganizer.SEARCH;
-		} else if (search.folderId) {
+		}
+        else if (search.folderId) {
 			id = this._getNormalizedId(search.folderId);
-			var folderTree = appCtxt.getFolderTree();
-			var folder = folderTree && folderTree.getById(id);
-			type = folder ? folder.type : ZmOrganizer.FOLDER;
-            if (search.searchFor == ZmItem.TASK) {
-                type = ZmOrganizer.TASKS;
-            }
-		} else if (search.tagId) {
+			var folderTree = appCtxt.getFolderTree(),
+			    folder = folderTree && folderTree.getById(id);
+
+            type = ZmOrganizer.ITEM_ORGANIZER[search.searchFor] || (folder && folder.type) || ZmOrganizer.FOLDER;
+		}
+        else if (search.tagId) {
 			id = this._getNormalizedId(search.tagId);
 			type = ZmOrganizer.TAG;
 		}
+
 		if (type) {
 			var app = appCtxt.getCurrentApp();
 			var overview = app && app.getOverview();
