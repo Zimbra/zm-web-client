@@ -3317,6 +3317,20 @@ function(controller, enabled) {
 	var sendLater = appCtxt.get(ZmSetting.MAIL_SEND_LATER_ENABLED);
 	toolbar.getButton(sendLater ? ZmId.OP_SEND_MENU : ZmId.OP_SEND).setEnabled(enabled);
 	toolbar.getButton(ZmId.OP_SAVE_DRAFT).setEnabled(enabled);
+	var optionsButton = toolbar.getButton(ZmId.OP_COMPOSE_OPTIONS);
+	if (optionsButton) {
+		var optionsMenu = optionsButton.getMenu();
+		if (optionsMenu) {
+			var includeOriginalMessage = optionsMenu.getMenuItem(ZmId.OP_INC_BODY);
+			if (includeOriginalMessage) {
+				includeOriginalMessage.setEnabled(enabled);
+			}
+			var includeAttachment = optionsMenu.getMenuItem(ZmId.OP_INC_ATTACHMENT);
+			if (includeAttachment) {
+				includeAttachment.setEnabled(enabled);
+			}
+		}
+	}
 	var detachComposeButton = toolbar.getButton(ZmId.OP_DETACH_COMPOSE);
 	if (detachComposeButton) {
 		detachComposeButton.setEnabled(enabled);
