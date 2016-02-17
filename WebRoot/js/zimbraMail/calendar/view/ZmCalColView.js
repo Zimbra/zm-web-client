@@ -684,6 +684,11 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
         var apptBounds = this._getBoundsForAppt(appt),
             apptWidth = apptBounds && apptBounds.width;
 
+        // If appointment day falls on a non work week day, do not display the appointment
+        if (!apptBounds) {
+            return null;
+        }
+
         if (apptWidth > 30) {
             apptName = AjxStringUtil.fitString(apptName, apptWidth - 15);
         }

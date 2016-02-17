@@ -880,6 +880,9 @@ function() { };
 ZmCalBaseView.prototype.addAppt = 
 function(ao) {
 	var item = this._createItemHtml(ao);
+    if (!item) {
+        return;
+    }
 	var div = this._getDivForAppt(ao);
 	if (div) div.appendChild(item);
 
