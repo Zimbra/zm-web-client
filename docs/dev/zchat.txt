@@ -16,10 +16,6 @@ PACKAGES
 |-> grunt
 |
 |-> grunt-cli
-|
-|-> bourbon
-	Note - Assuming bower has been installed till this point, refer to https://github.com/thoughtbot/bourbon
-	You may install bourbon using bower or you may add bourbon to GemFile and install using bundle.
 
 Steps:
 a.) Once npm/nodejs is setup, go to Terminal -> go to conversejs source folder -> execute following commands:
@@ -40,13 +36,6 @@ BUILD PROCESS
 -> Using the 'make' file available in Converse package.
 -> 'make dev' will get you a developer build. For more information visit => https://conversejs.org/docs/html/development.html
 -> 'make build' will get you a production build. For more information visit => https://conversejs.org/docs/html/builds.html
--> With the upgradation to converse 0.9.4, the 'make css' has changed a bit:
-	In the converse MakeFile:
-	1.) The command line variables section, SASS is now referring to ./.bundle/bin/sass
-	2.) In case you are using the old compass SASS then just change ./.bundle/bin/sass to sass or path to your existing sass command
-	3.) For css:: stamp-bundler, if you are not using bundle/sass then you may want to change it to $(SASS) sass/converse.scss > css/converse.css
-	4.) For watch:: stamp-bundler, for this bourbon needs to be pre-installed. It has also been checked in to our chat repository.
-		Change this to $(SASS) --watch -I ./bourbon/ sass/converse.scss:css/converse.css
 
 The build process (make build) will go through a series of build targets and it is better to ensure all the targets pass.
 Targets:
@@ -83,26 +72,6 @@ TEMPLATING and CUSTOMIZATION
 -> The templates are available at -> /converse.js-0.9.1/src/templates
 -> These are available as .html files to us, for more information visit => https://conversejs.org/docs/html/theming.html#id3
 -> Once changes are done to template files you need to run the 'make build' target that merges the content of these template files to converse.js
-
-THEMING/MODIFYING THE CSS
--> The CSS is generated from .scss (sass) files. Converse package is shipped with converse.scss and variable.scss, names being self explanatory the variable.scss holds all the SASS reusable variables and converse.scss contains styling for chat app.
--> Converse SASS has following library dependency
-|
-|-> bourbon (http://bourbon.io/)
-|	It's a library converse uses for the SASS mixin it provides. Mixin can be interpreted as Macros available in our programming languares.
-|	To know more about mixin => http://thesassway.com/intermediate/leveraging-sass-mixins-for-cleaner-code
-|	To know more about bourbon => http://bourbon.io/docs/
-
--> Currently the bourbon package is checked-in to our repository under => /JUDASPRIEST/ZimbraWebClient/converse/converse.js-0.9.1/bourbon/ branch. This version was fetched as per the Gemfile provided by converse.
-
--> In converse.scss you will find in the very first line an @import statement. This imports the mixin and it's dependencies provide in _bourbon.scss. To resolve it to correct path the original line has been commented out and new statement is as below:
-@import "bourbon/_bourbon";
-
-This falls back to the package that is available in our converse package directory.
-	
--> Getting started with styling changes follows these steps: 
-	a.) Modify converse.scss or variable.scss as per your need.
-	b.) Open terminal (bash/windows command prompt) -> navigate to your local Perforce converse directory 
 
 PATCHES
 -> In order to help with the upgrade we will be using patches for all the changes done to Converse.js. Make any changes to the converse.js javascript and templates file and run following command in ZimbraWebclient/converse directory
