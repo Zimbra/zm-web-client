@@ -3321,14 +3321,13 @@ function(controller, enabled) {
 	if (optionsButton) {
 		var optionsMenu = optionsButton.getMenu();
 		if (optionsMenu) {
-			var includeOriginalMessage = optionsMenu.getMenuItem(ZmId.OP_INC_BODY);
-			if (includeOriginalMessage) {
-				includeOriginalMessage.setEnabled(enabled);
-			}
-			var includeAttachment = optionsMenu.getMenuItem(ZmId.OP_INC_ATTACHMENT);
-			if (includeAttachment) {
-				includeAttachment.setEnabled(enabled);
-			}
+			var menuItemsToEnable = [ZmId.OP_INC_NONE, ZmId.OP_INC_BODY, ZmId.OP_INC_SMART, ZmId.OP_INC_ATTACHMENT, ZmId.OP_USE_PREFIX, ZmId.OP_INCLUDE_HEADERS];
+			AjxUtil.foreach(menuItemsToEnable, function(menuItemId) {
+				var menuItem = optionsMenu.getMenuItem(menuItemId);
+				if (menuItem) {
+					menuItem.setEnabled(enabled);
+				}
+			});
 		}
 	}
 	var detachComposeButton = toolbar.getButton(ZmId.OP_DETACH_COMPOSE);
