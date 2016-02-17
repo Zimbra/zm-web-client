@@ -125,14 +125,14 @@
     <property name="jquery.dir" value="${build.js.dir}/ajax/3rdparty/jquery"/>
 
     <!-- ConverseJS INTEGRATION -->
-    <property name="converse.version" value="0.9.4"></property>
+    <!--<property name="converse.version" value="0.9.4"></property>
     <property name='converse.root.dir' value='converse' />
     <property name='converse.js.dir' value='${converse.root.dir}/converse.js-${converse.version}' />
     <property name='converse.js.build.dir' value='${converse.root.dir}/converse.js-${converse.version}/builds' />
     <property name='converse.css.dir' value='${converse.root.dir}/converse.js-${converse.version}/css' />
     <property name='converse.fonticons.dir' value='${converse.root.dir}/converse.js-${converse.version}/fonticons' />
     <property name='converse.sounds.dir' value='${converse.root.dir}/converse.js-${converse.version}/sounds' />
-    <property name="converse.dir" value="${build.js.dir}/ajax/3rdparty/converse"/>
+    <property name="converse.dir" value="${build.js.dir}/ajax/3rdparty/converse"/>-->
 	
 	<!-- customize admin skin -->
 	<if>
@@ -343,7 +343,7 @@
         </war>
     </target>
 
-    <target name='sync' depends='jquery,modernizr,tinymce,templates,converse'>
+    <target name='sync' depends='jquery,modernizr,tinymce,templates'>
         <!-- NOTE: Keep order in sync with list of war filesets. -->
         <copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
             <fileset refid="webinf.fileset" />
@@ -1007,7 +1007,7 @@
         </if>
     </target>
 
-    <target name='jam-files' depends='jquery,modernizr,tinymce,templates,timezones,converse'>
+    <target name='jam-files' depends='jquery,modernizr,tinymce,templates,timezones'>
         <property name='jam.jsp.dir' value='${build.web.dir}/public/jsp'/>
 
         <mkdir dir='${build.js.dir}'/>
@@ -1315,7 +1315,7 @@ if (ext == null) ext = "";
         <delete dir="${jquery.dir}"/>
         <delete dir="${modernizr.dir}"/>
         <delete dir="${tinymce.dir}"/>
-        <delete dir="${converse.dir}"/>
+        <!--<delete dir="${converse.dir}"/>-->
     </target>
 
 	<!-- JavaScript API Documentation Tasks -->
@@ -1686,7 +1686,7 @@ if (ext == null) ext = "";
         <copy todir='${jquery.dir}' file='${web.dir}/jquery/${jquery.version}/jquery.js' verbose='${sync.verbose}'/>
     </target>
 
-    <target name="converse">
+    <!--<target name="converse">
         <copy todir="${converse.dir}/" file="${converse.js.build.dir}/templates.js"/>
         <copy todir="${converse.dir}/" file="${converse.js.dir}/converse.js"/>
         <mkdir dir="${converse.dir}/css"/>
@@ -1738,6 +1738,6 @@ if (ext == null) ext = "";
 
     <target name="get-converse-version">
         <echo message="${converse.version}" />
-    </target>
+    </target>-->
     
 </project>

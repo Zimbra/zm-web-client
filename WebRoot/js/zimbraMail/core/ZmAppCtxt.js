@@ -1405,7 +1405,7 @@ function(force, retryOnError) {
 			var cookieValue = localOfflineBrowserKey + "_" + new Date().getTime();
 			AjxCookie.setCookie(document, "ZM_OFFLINE_KEY", cookieValue, false, "/");
 		}
-		var manifestURL = appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,converse,skin.appcache?";
+		var manifestURL = appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
         var urlParams = [];
         urlParams.push("v=" + window.cacheKillerVersion);
         urlParams.push("debug=" + window.appDevMode);
