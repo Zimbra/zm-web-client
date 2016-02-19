@@ -130,7 +130,7 @@ function(name){
 
     }
     // if still not found return type as "Folder"
-    type = ZmMsg.folder;
+    type = ZmOrganizer.FOLDER;
     return type;
 }
 
