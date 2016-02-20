@@ -2151,7 +2151,20 @@ function(evt) {
 		this._deletedAccounts.push(account);
 	}
 	var index = this._accountListView.getItemIndex(account);
-	this._accounts.remove(account);
+    if (account.type == ZmAccount.TYPE_PERSONA) {
+        var personaList = ZmNewPersona.getPersonaList(this._accountListView.getList().getArray());
+        var personaListLength = personaList.length;
+
+        // If there's only one persona or the last added persona are being deleted then reset the personal display count.
+        if (personaListLength === 1) {
+            ZmNewPersona.ID = 0;
+        }
+        else if (personaListLength === index) {
+            ZmNewPersona.ID--;
+        }
+    }
+
+    this._accounts.remove(account);
 	this._resetAccountListView(index);
 };
 
@@ -3101,6 +3114,29 @@ function() {
 // Constants
 
 ZmNewPersona.ID = 0;
+
+/**
+ * Fetches the list of personas added to account list view amongst other accounts.
+ *
+ *
+ * @param	{String}	accountList		List of accounts added to account list view e.g. Persona and External (POP) account.
+ *
+ *
+ * @private
+ */
+ZmNewPersona.getPersonaList =
+function(accountList) {
+    var personas = [];
+
+    personas = AjxUtil.filter(accountList, function(accountItem) {
+        if (accountItem instanceof ZmNewPersona) {
+            return accountItem;
+        }
+    });
+
+    return personas;
+};
+
 }; // function ZmAccountsPage._defineClasses
 
 
