@@ -1006,7 +1006,7 @@ ZmHtmlEditor.prototype._getPastedClassUpdates = function(styleSheet) {
 			// Excel class definitions (for now) start with ".xl", but this tries to be a little less specific (and fragile).
 			// Convert the Excel class names (which may be duplicated with each paste) to unique class names, so that
 			// later paste formatting doesn't step on previous formatting.
-			if (selectorText.indexOf(".") == 0) {
+			if (selectorText && selectorText.indexOf(".") == 0) {
 				// Create a new unique class name that will be used instead
 				var newSelectorText = ".zimbra" + (++this._classCount).toString();
 				updates[selectorText] = newSelectorText;
