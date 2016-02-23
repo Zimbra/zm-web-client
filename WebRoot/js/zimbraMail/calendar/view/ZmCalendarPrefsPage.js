@@ -420,8 +420,13 @@ function(batchCmd) {
 ZmCalendarPrefsPage.prototype._postSaveBatchCmd =
 function(value) {
     appCtxt.set(ZmSetting.CAL_WORKING_HOURS, value);
+    var firstDayOfWeek = appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
+
     if(this._workHoursControl) {
-        if(this._workHoursControl.getDaysChanged()) {
+        // Check if either work days have changed or first day of week has changed.
+        // Need to reload the browser either way to show the correct changes.
+        if(this._workHoursControl.getDaysChanged() ||
+                parseInt(this._workHoursControl._workDaysCheckBox[0].getValue()) != firstDayOfWeek) {
             this._workHoursControl.setDaysChanged(false);
             var cd = appCtxt.getYesNoMsgDialog();
             cd.reset();
