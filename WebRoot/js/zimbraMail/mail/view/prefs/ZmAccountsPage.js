@@ -3122,14 +3122,14 @@ ZmNewPersona.ID = 0;
  * @param	{String}	accountList		List of accounts added to account list view e.g. Persona and External (POP) account.
  *
  *
- * @private
+ * @public
  */
 ZmNewPersona.getPersonaList =
 function(accountList) {
     var personas = [];
 
     personas = AjxUtil.filter(accountList, function(accountItem) {
-        if (accountItem instanceof ZmNewPersona) {
+        if (accountItem instanceof ZmNewPersona || accountItem.type == ZmAccount.TYPE_PERSONA) {
             return accountItem;
         }
     });
