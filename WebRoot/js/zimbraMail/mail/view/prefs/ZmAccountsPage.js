@@ -2160,7 +2160,9 @@ function(evt) {
             ZmNewPersona.ID = 0;
         }
         else if (personaListLength === index) {
-            ZmNewPersona.ID--;
+            if (ZmNewPersona.ID > 0) {
+                ZmNewPersona.ID--;
+            }
         }
     }
 
