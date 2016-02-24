@@ -30,7 +30,8 @@
     <tr>
         <td align="left" class="TbBt">
             <c:if test="${not empty requestScope.zimbra_target_item_name}">
-                <a href="/home/${requestScope.zimbra_target_account_name}${requestScope.zimbra_target_item_path}.ics"><app:img src="startup/ImgCalendarApp.png" alt="ics"/><span style='padding-left:5px'>${zm:cook(requestScope.zimbra_target_item_name)}.ics</span></a>
+                <a href="/home/${zm:cook(${requestScope.zimbra_target_account_name})}${zm:cook(${requestScope.zimbra_target_item_path})}.ics">
+                    <app:img src="startup/ImgCalendarApp.png" alt="ics"/><span style='padding-left:5px'>${zm:cook(requestScope.zimbra_target_item_name)}.ics</span></a>
             </c:if>
         </td>
         <td align='right' class='ZhCalTimeZone'>
