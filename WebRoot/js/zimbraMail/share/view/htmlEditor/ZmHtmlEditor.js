@@ -531,6 +531,10 @@ function() {
 	Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this._onTextareaFocus.bind(this, true, true));
 	Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
     Dwt.setHandler(textEl, DwtEvent.ONKEYDOWN, this._handleTextareaKeyEvent.bind(this));
+	if (editor) {
+		// TinyMCE internally stored textarea element reference as targetElm which is lost after the above operation. Once targetElm is undefined TinyMCE will try to get the element using it's id.
+		editor.targetElm = null;
+	}
 };
 
 ZmHtmlEditor.prototype.initTinyMCEEditor = function(params) {
