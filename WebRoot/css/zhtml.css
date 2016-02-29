@@ -488,7 +488,11 @@ A:visited { @Text-link@ }
 
 .MsgBody-html {
 	padding: 10px;
+}
 
+.zPrintMsgs .MsgBody-html {
+    word-wrap: break-word;
+    word-break: break-all;
 }
 
 .MsgBody-html pre, .MsgBody-html pre *, .MsgBody-html body, .MsgBody-html Section1{
