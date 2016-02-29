@@ -29,5 +29,4 @@
     <rest:status style="Critical">
         <fmt:message key="${error.code}"/>
     </rest:status>
-    <!-- ${fn:escapeXml(error.stackStrace)} -->
 </c:if>

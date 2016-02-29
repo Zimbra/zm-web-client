@@ -60,7 +60,6 @@
                 </c:otherwise>
             </c:choose>
         </c:if>
-        <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <c:if test="${empty wdays}">
         <c:set var="wdays" value="0,1,2,3,4,5,6"/>

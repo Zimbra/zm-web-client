@@ -89,7 +89,6 @@
                 </a>
             </h1>
             <c:if test="${not empty errorMessage}">
-                <!-- ${fn:escapeXml(error.stackStrace)} -->
                 <div id='ZLoginErrorPanel'>
                     <table width=100%>
                         <tr>

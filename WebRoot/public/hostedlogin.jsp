@@ -201,7 +201,6 @@ if (application.getInitParameter("offlineMode") != null)  {
                     <tr>
                         <td id="ZLoginBodyContainer">
                             <c:if test="${errorCode != null}">
-                                <!-- ${fn:escapeXml(error.stackStrace)} -->
                                 <div id="ZLoginErrorPanel">
                                     <table width="100%">
                                         <tr>
