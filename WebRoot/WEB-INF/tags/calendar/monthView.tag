@@ -47,7 +47,6 @@
         <app:status style="Critical">
             <fmt:message key="${error.code}"/>
         </app:status>
-        <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${validFolderIds}" start="${currentDay.timeInMillis}" end="${zm:addDay(currentDay, 42).timeInMillis}" query="${requestScope.calendarQuery}" varexception="gasException"/>
     <c:if test="${not empty gasException}">
@@ -55,7 +54,6 @@
         <app:status style="Critical">
             <fmt:message key="${error.code}"/>
         </app:status>
-        <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <c:set var="isZoom" value="${param.zoom eq true}" />
     <c:set var="isShowDeclined" value="${mailbox.prefs.calendarShowDeclinedMeetings}"/>

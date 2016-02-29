@@ -53,7 +53,6 @@
             <fmt:message key="${error.code}"/>
         </mo:status>
         --%>
-        <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <fmt:message var="noSubject" key="noSubject"/>
     <c:set var="bitMonths" value="${dateSymbols.shortMonths}"/>

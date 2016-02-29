@@ -48,7 +48,6 @@
         <mo:status style="Critical">
             <fmt:message key="${error.code}"/>
         </mo:status>
-        <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <c:set var="isZoom" value="${param.zoom eq true}" />
 

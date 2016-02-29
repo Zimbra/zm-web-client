@@ -93,7 +93,6 @@
                 </c:otherwise>
             </c:choose>
         </c:if>
-        <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <c:set var="multiDay">
         <mo:calMultiDay date="${date}" numdays="${numdays}" view="${view}" timezone="${timezone}"

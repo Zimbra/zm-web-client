@@ -60,7 +60,6 @@
                 </c:otherwise>
             </c:choose>
         </c:if>
-        <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
 </mo:handleError>
 

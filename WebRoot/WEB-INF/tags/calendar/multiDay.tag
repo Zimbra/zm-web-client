@@ -90,7 +90,6 @@
         <app:status style="Critical">
             <fmt:message key="${error.code}"/>
         </app:status>
-        <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${validFolderIds}" start="${currentDay.timeInMillis}" end="${rangeEnd}" query="${query}" varexception="gasException"/>
     <c:if test="${not empty gasException}">
@@ -98,7 +97,6 @@
         <app:status style="Critical">
             <fmt:message key="${error.code}"/>
         </app:status>
-        <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <c:set var="folderIds" value="${zm:getCanonicalFolderIds(mailbox, validFolderIds)}"/>
     <c:set var="isShowDeclined" value="${mailbox.prefs.calendarShowDeclinedMeetings}"/>
