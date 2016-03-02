@@ -252,10 +252,10 @@ function(currentDivId) {
 	if (currentDivId === this._codeDivId) {
 		var codeInput = this._codeInput;
 		codeInput.setAttribute("disabled", true);
-		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", name:{_content : this.username}, authToken:{_content : this._authToken}, twoFactorCode:{_content : codeInput.value}}};
+		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", csrfTokenSecured:1, name:{_content : this.username}, authToken:{_content : this._authToken}, twoFactorCode:{_content : codeInput.value}}};
 	}
 	else {
-		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", name:{_content : this.username}, password:{_content : passwordInput.value}}};
+		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", csrfTokenSecured:1, name:{_content : this.username}, password:{_content : passwordInput.value}}};
 	}
 	var callback = this._enableTwoFactorAuthCallback.bind(this, currentDivId);
 	command.invoke({jsonObj:jsonObj, noAuthToken: true, asyncMode: true, callback: callback, serverUri:"/service/soap/"});
