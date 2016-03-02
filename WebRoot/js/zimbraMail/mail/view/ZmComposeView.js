@@ -1628,18 +1628,9 @@ function(signatureId, mode) {
 	if (!signature && !extraSignature) { return; }
 
 	mode = mode || this._composeMode;
-	var htmlMode = (mode === Dwt.HTML),
-        sig = '';
-
-    if (signature) {
-        sig = signature.getValue(htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
-        if (htmlMode) {
-            sig = AjxStringUtil.stripScriptTags(sig);
-        }
-    }
-    if (htmlMode) {
-        sig = sig + this._crlf;
-    }
+    var htmlMode = (mode === Dwt.HTML);
+    var sig = signature ? signature.getValue(htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN) : "";
+    sig = AjxStringUtil.trim(sig + extraSignature) + (htmlMode ? "" : this._crlf);
 
 	return sig;
 };
