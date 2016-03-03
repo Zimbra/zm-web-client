@@ -274,6 +274,7 @@ function(ev) {
         return;
     }else if(this._editWarningDialog){
         this._editWarningDialog.popdown();
+		this._editWarningDialog.reset();
     }
     
 	var mode = ZmCalItem.MODE_EDIT;
