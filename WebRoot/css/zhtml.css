@@ -490,9 +490,10 @@ A:visited { @Text-link@ }
 	padding: 10px;
 }
 
-.zPrintMsgs .MsgBody-html {
+.zPrintMsgs .MsgBody-html, .zPrintMsgs {
     word-wrap: break-word;
-    word-break: break-all;
+    word-break: break-all; /* Works for IE and Firefox */
+    word-break: break-word;/* Works for webkit browsers - Chrome, safari */
 }
 
 .MsgBody-html pre, .MsgBody-html pre *, .MsgBody-html body, .MsgBody-html Section1{
