@@ -104,6 +104,12 @@ ${zm:clearMessageCache(mailbox)}
         padding: 10px;
         font-weight: bold;
     }
+
+    /* span, p td or div will honour parent's styling if these elements have their own styling that will get applied else will fallback to defaultPrintFontSize */
+    *[style*="font"] > span, *[style*="font"] > p, *[style*="font"] > td, *[style*="font"] > div {
+        font-family: inherit;
+        font-size: inherit;
+    }
 </style>
 <script type="text/javascript">
 <!--
