@@ -19,12 +19,13 @@
     <param-value>%%zimbraAdminPort%%</param-value>
   </context-param>
 
-    <!-- =============
+  <!-- =============
   <context-param>
      <param-name>zimbra.soap.url</param-name>
      <param-value>http://localhost:7070/service/soap</param-value>
   </context-param>
     -->
+
   <context-param>
     <param-name>zimbra.jsp.session.timeout</param-name>
     <param-value>300</param-value>
@@ -59,7 +60,7 @@
   <context-param>
     <!-- Enter a comma-separated list of servers that host images. -->
     <param-name>zimbraImageServers</param-name>
-    <param-value></param-value>
+    <param-value/>
   </context-param>
 
   <!-- NOTE: This filter needs to be first because Jetty will ignore
@@ -78,29 +79,28 @@
     <url-pattern>/</url-pattern>
     <url-pattern>/m/*</url-pattern>
   </filter-mapping>
-  
+
   <filter>
     <filter-name>DoSFilter</filter-name>
     <filter-class>com.zimbra.cs.servlet.DoSFilter</filter-class>
     <async-supported>true</async-supported>
 
     <init-param>
-     <param-name>maxRequestsPerSec</param-name>
-     <param-value>%%zimbraHttpDosFilterMaxRequestsPerSec%%</param-value>
+      <param-name>maxRequestsPerSec</param-name>
+      <param-value>%%zimbraHttpDosFilterMaxRequestsPerSec%%</param-value>
     </init-param>
 
     <init-param>
-     <param-name>remotePort</param-name>
-     <param-value>true</param-value>
+      <param-name>remotePort</param-name>
+      <param-value>true</param-value>
     </init-param>
-    
+
     <init-param>
-     <param-name>maxRequestMs</param-name>
-     <param-value>9223372036854775807</param-value>
+      <param-name>maxRequestMs</param-name>
+      <param-value>9223372036854775807</param-value>
     </init-param>
-    
   </filter>
-    
+
   <filter-mapping>
     <filter-name>DoSFilter</filter-name>
     <url-pattern>/*</url-pattern>
@@ -121,15 +121,15 @@
     <filter-name>ContextPathBasedThreadPoolBalancerFilter</filter-name>
     <filter-class>com.zimbra.cs.servlet.ContextPathBasedThreadPoolBalancerFilter</filter-class>
     <async-supported>true</async-supported>
-    
+
     <init-param>
-     <param-name>suspendMs</param-name>
-     <param-value>1000</param-value>
+      <param-name>suspendMs</param-name>
+      <param-value>1000</param-value>
     </init-param>
-    
+
     <init-param>
-     <param-name>Rules</param-name>
-     <param-value>%%list VAR:zimbraHttpContextPathBasedThreadPoolBalancingFilterRules , %%</param-value>
+      <param-name>Rules</param-name>
+      <param-value>%%list VAR:zimbraHttpContextPathBasedThreadPoolBalancingFilterRules , %%</param-value>
     </init-param>
   </filter>
 
@@ -205,7 +205,7 @@
     </init-param>
     <init-param>
       <param-name>output.dir</param-name>
-        <param-value>/help/{locale}/standard</param-value>
+      <param-value>/help/{locale}/standard</param-value>
     </init-param>
   </filter>
   <filter-mapping>
@@ -289,7 +289,7 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
- <filter>
+  <filter>
     <filter-name>RestFilter</filter-name>
     <filter-class>com.zimbra.webClient.filters.RestFilter</filter-class>
     <async-supported>true</async-supported>
@@ -307,6 +307,16 @@
   <filter-mapping>
     <filter-name>RequestStringFilter</filter-name>
     <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>YuiSwfFilter</filter-name>
+    <filter-class>com.zimbra.webClient.filters.YuiSwfFilter</filter-class>
+    <async-supported>true</async-supported>
+  </filter>
+  <filter-mapping>
+    <filter-name>YuiSwfFilter</filter-name>
+    <url-pattern>/yui/*</url-pattern>
   </filter-mapping>
 
   <error-page>
@@ -475,8 +485,8 @@
     <welcome-file>public/admin.jsp</welcome-file>
     <welcome-file>launchTouch.jsp</welcome-file>
   </welcome-file-list>
-  
-    <env-entry>
+
+  <env-entry>
     <description>
       The protocol mode can be one of three modes - mixed, http,
       or https.
@@ -488,7 +498,7 @@
 
   <env-entry>
     <description>
-	Memcached Servers in SERVER:PORT format seperated by space
+    Memcached Servers in SERVER:PORT format seperated by space
     </description>
     <env-entry-name>memcachedServers</env-entry-name>
     <env-entry-type>java.lang.String</env-entry-type>
@@ -519,7 +529,7 @@
     <env-entry-value>%%zimbraMemcachedClientTimeoutMillis%%</env-entry-value>
   </env-entry>
 
- <env-entry>
+  <env-entry>
     <description>
         Nginx Lookup Extension Handlers in SERVER:PORT format seperated by space
     </description>
@@ -540,7 +550,7 @@
     <env-entry-value>%%zimbraReverseProxyRouteLookupTimeoutCache%%</env-entry-value>
   </env-entry>
 
- <env-entry>
+  <env-entry>
     <description>
         UpStream Mail Servers in SERVER:PORT format seperated by space
     </description>
@@ -549,7 +559,7 @@
     <env-entry-value>%%getAllReverseProxyBackends%%</env-entry-value>
   </env-entry>
 
- <env-entry>
+  <env-entry>
     <description>
         Zimbra Services Installed on the server.
     </description>
@@ -592,13 +602,13 @@
     <env-entry-type>java.lang.String</env-entry-type>
     <env-entry-value>%%zimbraMailTrustedIP%%</env-entry-value>
   </env-entry>
-  
+
   <env-entry>
     <env-entry-name>httpLocalBind</env-entry-name>
     <env-entry-type>java.lang.String</env-entry-type>
     <env-entry-value>%%zimbraMailLocalBind%%</env-entry-value>
   </env-entry>
-  
+
   <jsp-config>
     <jsp-property-group>
       <url-pattern>/h/ac</url-pattern>
@@ -629,7 +639,7 @@
       <url-pattern>/h/mtags</url-pattern>
       <url-pattern>/h/mtasks</url-pattern>
       <url-pattern>/h/options</url-pattern>
-      <url-pattern>/h/postLoginRedirect</url-pattern>                
+      <url-pattern>/h/postLoginRedirect</url-pattern>
       <url-pattern>/h/printcalls</url-pattern>
       <url-pattern>/h/printcalendar</url-pattern>
       <url-pattern>/h/printvoicemails</url-pattern>
@@ -650,7 +660,7 @@
       <url-pattern>/m/zmain</url-pattern>
       <url-pattern>/m/zipad</url-pattern>
       <url-pattern>/m/moipadredirect</url-pattern>
-      <url-pattern>/m/momoveto</url-pattern>  
+      <url-pattern>/m/momoveto</url-pattern>
       <url-pattern>/m/zmview</url-pattern>
       <url-pattern>/m/mosearch</url-pattern>
       <url-pattern>/m/mocalendar</url-pattern>
@@ -680,7 +690,7 @@
       <url-pattern>/h/autoSaveDraft</url-pattern>
     </jsp-property-group>
   </jsp-config>
- 
+
 <!-- REDIRECTBEGIN
     <security-constraint>
         <web-resource-collection>
@@ -702,7 +712,7 @@ REDIRECTEND -->
       <role-name>user</role-name>
     </auth-constraint>
   </security-constraint>
- 
+
   <login-config>
     <auth-method>ZimbraAuth</auth-method>
     <realm-name>Zimbra</realm-name>
