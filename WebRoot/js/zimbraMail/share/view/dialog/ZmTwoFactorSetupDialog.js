@@ -275,6 +275,9 @@ function(currentDivId, result) {
 		var enableTwoFactorAuthResponse = response.Body.EnableTwoFactorAuthResponse;
 		var authToken = enableTwoFactorAuthResponse.authToken;
 		this._authToken = authToken && authToken[0] && authToken[0]._content;
+		if (enableTwoFactorAuthResponse.csrfToken && enableTwoFactorAuthResponse.csrfToken[0] && enableTwoFactorAuthResponse.csrfToken[0]._content) {
+			window.csrfToken = enableTwoFactorAuthResponse.csrfToken[0]._content;
+		}
 		var secret = enableTwoFactorAuthResponse.secret;
 		var scratchCodes = enableTwoFactorAuthResponse.scratchCodes;
 		if (secret && secret[0] && secret[0]._content) {
