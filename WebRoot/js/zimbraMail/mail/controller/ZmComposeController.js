@@ -1872,21 +1872,26 @@ ZmComposeController.prototype._setPriority = function(priority) {
 	}
 };
 
-ZmComposeController.prototype._switchInclude =
-function(op) {
+ZmComposeController.prototype._switchInclude = function(op) {
 
-	var origWhat = this._curIncOptions.what;
-	var menu = this._optionsMenu[this._action];
-	if (op == ZmOperation.USE_PREFIX || op == ZmOperation.INCLUDE_HEADERS) {
+	var menu = this._optionsMenu[this._action],
+        cv = this._composeView;
+
+	if (op === ZmOperation.USE_PREFIX || op === ZmOperation.INCLUDE_HEADERS) {
 		var mi = menu.getOp(op);
 		if (mi) {
-			if (op == ZmOperation.USE_PREFIX) {
+			if (op === ZmOperation.USE_PREFIX) {
 				this._curIncOptions.prefix = mi.getChecked();
-			} else {
+			}
+            else {
 				this._curIncOptions.headers = mi.getChecked();
 			}
 		}
-	} else if (ZmComposeController.INC_MAP[op]) {
+	}
+    else if (ZmComposeController.INC_MAP[op]) {
+        if (this._curIncOptions.what === ZmSetting.INC_ATTACH) {
+            cv.removeOrigMsgAtt();
+        }
 		this._curIncOptions.what = ZmComposeController.INC_MAP[op];
 	}
 
@@ -1907,10 +1912,11 @@ function(op) {
 	}
 
 	var params = {
-		action:			this._action,
-		msg:			this._msg,
-		extraBodyText:	this._composeView.getUserText(),
-		op:				op
+		action:			    this._action,
+		msg:			    this._msg,
+		extraBodyText:	    this._composeView.getUserText(),
+		op:				    op,
+        keepAttachments:    true
 	};
 	this._composeView.resetBody(params);
 	if (op === ZmOperation.INC_ATTACHMENT) {

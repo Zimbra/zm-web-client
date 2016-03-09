@@ -1097,6 +1097,16 @@ function(msgDraft) {
 	}
 	this.reEnableDesignMode();
     this._msg = msgDraft;
+
+    var incOptions = this._controller._curIncOptions;
+    if (!this._origMsgAttSize && this._msgAttId && incOptions && incOptions.what === ZmSetting.INC_ATTACH) {
+        var msgIdx = AjxUtil.indexOf(msgDraft._msgAttIds, this._msgAttId),
+            attMsgs = AjxUtil.filter(msgDraft.attachments, function(att) {
+            return att.getContentType() === ZmMimeTable.MSG_RFC822;
+        });
+        this._origMsgAttSize = attMsgs[msgIdx] && attMsgs[msgIdx].size;
+    }
+
 	this._msgAttId = null;
 	// always redo att links since user couldve removed att before saving draft
 	this.cleanupAttachments(true);
@@ -1383,7 +1393,8 @@ ZmComposeView.prototype.reset = function(bEnableInputs) {
 	this._resetBodySize();
 	this._controller._curIncOptions = null;
 	this._msgAttId = null;
-	this._clearFormValue();
+    this._origMsgAttSize = null;
+    this._clearFormValue();
 	this._components = {};
 		
 	// reset dirty shields
@@ -1718,8 +1729,8 @@ ZmComposeView.removeAttachedFile = function(ev, cvId, spanId, partId) {
 ZmComposeView.prototype._removeAttachedFile  =
 function(spanId, attachmentPart) {
 
-	var node = document.getElementById(spanId)
-	var parent = node && node.parentNode;
+	var node = document.getElementById(spanId),
+	    parent = node && node.parentNode;
 	this._attachCount--;
 
 	if (parent) {
@@ -1749,7 +1760,7 @@ function(spanId, id){
   
 	// Forward/Reply one message
 	if (!id) {
-		this._msgAttId = null;
+		this._msgAttId = this._origMsgAttSize = null;
 	}
 	else {
 		var index = this._msgIds && this._msgIds.length ? AjxUtil.indexOf(this._msgIds, id) : -1;
@@ -2134,7 +2145,7 @@ function(action, msg, extraBodyText, noEditorUpdate, keepAttachments, extraBodyT
 	else if (incOptions.what === ZmSetting.INC_NONE || incOptions.what === ZmSetting.INC_ATTACH) {
 		compList = [ZmComposeView.BC_NOTHING, ZmComposeView.BC_TEXT_PRE, ZmComposeView.BC_SIG_PRE, ZmComposeView.BC_SIG_POST];
 		if (this._msg && incOptions.what == ZmSetting.INC_ATTACH) {
-			this._msgAttId = this._msg.id;
+			this._msgAttId = this._origMsg ? this._origMsg.id : this._msg.id;
 		}
 	}
 
@@ -2974,6 +2985,19 @@ function(params, noEditorUpdate) {
 	this._setBody(action, msg, params.extraBodyText, noEditorUpdate, params.keepAttachments);
 	this._setFormValue();
 	this._resetBodySize();
+};
+
+/**
+ * Removes the attachment corresponding to the original message.
+ */
+ZmComposeView.prototype.removeOrigMsgAtt = function() {
+
+    for (var i = 0; i < this._partToAttachmentMap.length; i++) {
+        var att = this._partToAttachmentMap[i];
+        if (att.rfc822Part && att.sizeInBytes === this._origMsgAttSize) {
+            this._removeAttachedMessage(att.spanId);
+        }
+    }
 };
 
 // Generic routine for attaching an event handler to a field. Since "this" for the handlers is
