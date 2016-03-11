@@ -2,23 +2,23 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2014 Zimbra, Inc.
- *
- * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * 
+"License": "License",
+ * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at: http://www.zimbra.com/license
- * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15
- * have been added to cover use of software over a computer network and provide for limited attribution
- * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B.
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * See the License for the specific language governing rights and limitations under the License.
- * The Original Code is Zimbra Open Source Web Client.
- * The Initial Developer of the Original Code is Zimbra, Inc.
- * All portions of the code are Copyright (C) 2014 Zimbra, Inc. All Rights Reserved.
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
+ * 
+"AS IS": "AS IS",
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
-tinymce.addI18n('zh_TW',{
+tinymce.addI18n('zh_HK',{
 "Cut": "\u526a\u4e0b",
 "Heading 5": "\u6a19\u984c 5",
 "Header 2": "\u6a19\u984c 2",
@@ -30,7 +30,7 @@ tinymce.addI18n('zh_TW',{
 "Close": "\u95dc\u9589",
 "Font Family": "\u5b57\u9ad4",
 "Pre": "Pre",
-"Align right": "\u7f6e\u53f3\u5c0d\u9f4a",
+"Align right": "\u6587\u5b57\u9760\u53f3\u5c0d\u9f4a",
 "New document": "\u65b0\u6587\u4ef6",
 "Blockquote": "\u5f15\u7528",
 "Numbered list": "\u7de8\u865f\u6e05\u55ae",
@@ -54,22 +54,22 @@ tinymce.addI18n('zh_TW',{
 "Redo": "\u53d6\u6d88\u5fa9\u539f",
 "Paragraph": "\u6bb5\u843d",
 "Ok": "\u78ba\u5b9a",
-"Bold": "\u7c97\u9ad4",
+"Bold": "\u6587\u5b57\u4ee5\u7c97\u9ad4\u986f\u793a",
 "Code": "\u4ee3\u78bc",
 "Italic": "\u659c\u9ad4",
-"Align center": "\u7f6e\u4e2d\u5c0d\u9f4a",
+"Align center": "\u6587\u5b57\u4e2d\u9593\u5c0d\u9f4a",
 "Header 5": "\u6a19\u984c 5",
 "Heading 6": "\u6a19\u984c 6",
 "Heading 3": "\u6a19\u984c 3",
 "Decrease indent": "\u6e1b\u5c11\u7e2e\u6392",
 "Header 4": "\u6a19\u984c 4",
 "Paste is now in plain text mode. Contents will now be pasted as plain text until you toggle this option off.": "\u8cbc\u4e0a\u529f\u80fd\u73fe\u70ba\u7d14\u6587\u5b57\u6a21\u5f0f\u3002\u5728\u6c92\u6709\u95dc\u9589\u6b64\u9078\u9805\u4e4b\u524d\uff0c\u5167\u5bb9\u5c07\u4ee5\u7d14\u6587\u5b57\u5f62\u5f0f\u8cbc\u4e0a\u3002",
-"Underline": "\u5e95\u7dda",
+"Underline": "\u52a0\u5e95\u7dda",
 "Cancel": "\u53d6\u6d88",
 "Justify": "\u5de6\u53f3\u5c0d\u9f4a",
 "Inline": "\u5167\u806f",
 "Copy": "\u8907\u88fd",
-"Align left": "\u7f6e\u5de6\u5c0d\u9f4a",
+"Align left": "\u6587\u5b57\u9760\u5de6\u5c0d\u9f4a",
 "Visual aids": "\u5c0f\u5e6b\u624b",
 "Lower Greek": "\u5c0f\u5beb\u5e0c\u81d8\u5b57\u6bcd",
 "Square": "\u6b63\u65b9\u5f62",
@@ -82,7 +82,7 @@ tinymce.addI18n('zh_TW',{
 "Lower Roman": "\u5c0f\u5beb\u7f85\u99ac\u6578\u5b57",
 "Name": "\u540d\u7a31",
 "Anchor": "\u52a0\u5165\u9328\u9ede",
-"You have unsaved changes are you sure you want to navigate away?": "\u6240\u505a\u8b8a\u66f4\u5c1a\u672a\u5132\u5b58\uff0c\u60a8\u78ba\u5b9a\u8981\u96e2\u958b\uff1f",
+"You have unsaved changes are you sure you want to navigate away?": "\u6240\u505a\u8b8a\u66f4\u5c1a\u672a\u5132\u5b58\uff0c\u4f60\u78ba\u5b9a\u8981\u96e2\u958b\uff1f",
 "Restore last draft": "\u8f09\u5165\u4e0a\u4e00\u6b21\u7de8\u8f2f\u7684\u8349\u7a3f",
 "Special character": "\u7279\u6b8a\u5b57\u5143",
 "Source code": "\u539f\u59cb\u78bc",
@@ -90,17 +90,17 @@ tinymce.addI18n('zh_TW',{
 "R": "R",
 "G": "G",
 "Color": "\u984f\u8272",
-"Right to left": "\u5f9e\u53f3\u5230\u5de6",
-"Left to right": "\u5f9e\u5de6\u5230\u53f3",
+"Right to left": "\u53f3\u81f3\u5de6",
+"Left to right": "\u5de6\u81f3\u53f3",
 "Emoticons": "\u8868\u60c5\u7b26\u865f",
 "Robots": "\u6a5f\u5668\u4eba",
-"Document properties": "\u6587\u4ef6\u7684\u5c6c\u6027",
+"Document properties": "\u6587\u4ef6\u5c6c\u6027",
 "Title": "\u6a19\u984c",
 "Keywords": "\u95dc\u9375\u5b57",
 "Encoding": "\u7de8\u78bc",
 "Description": "\u63cf\u8ff0",
 "Author": "\u4f5c\u8005",
-"Fullscreen": "\u5168\u87a2\u5e55",
+"Fullscreen": "\u5168\u5c4f\u986f\u793a",
 "Horizontal line": "\u6c34\u5e73\u7dda",
 "Horizontal space": "\u5bec\u5ea6",
 "Insert\/edit image": "\u63d2\u5165\/\u7de8\u8f2f\u5716\u7247",
@@ -133,7 +133,7 @@ tinymce.addI18n('zh_TW',{
 "Orientation": "\u65b9\u5411",
 "Flip vertically": "\u5782\u76f4\u7ffb\u8f49",
 "Invert": "\u53cd\u8f49",
-"Insert date\/time": "\u63d2\u5165 \u65e5\u671f\/\u6642\u9593",
+"Insert date\/time": "\u63d2\u5165\u65e5\u671f\/\u6642\u9593",
 "Remove link": "\u79fb\u9664\u9023\u7d50",
 "Url": "\u7db2\u5740",
 "Text to display": "\u986f\u793a\u6587\u5b57",
@@ -141,14 +141,14 @@ tinymce.addI18n('zh_TW',{
 "Insert link": "\u63d2\u5165\u9023\u7d50",
 "New window": "\u53e6\u958b\u8996\u7a97",
 "None": "\u7121",
-"The URL you entered seems to be an external link. Do you want to add the required http:\/\/ prefix?": "\u60a8\u8f38\u5165\u7684\u7db2\u5740\u4f3c\u4e4e\u70ba\u5916\u90e8\u9023\u7d50\u3002\u662f\u5426\u8981\u52a0\u5165\u5fc5\u9700\u7684 http:\/\/ \u9996\u78bc\uff1f",
+"The URL you entered seems to be an external link. Do you want to add the required http:\/\/ prefix?": "\u4f60\u8f38\u5165\u7684\u7db2\u5740\u4f3c\u4e4e\u70ba\u5916\u90e8\u9023\u7d50\u3002\u662f\u5426\u8981\u52a0\u5165\u5fc5\u9700\u7684 http:\/\/ \u9996\u78bc\uff1f",
 "Target": "\u76ee\u6a19",
-"The URL you entered seems to be an email address. Do you want to add the required mailto: prefix?": "\u60a8\u8f38\u5165\u7684\u7db2\u5740\u597d\u50cf\u662f\u4e00\u500b\u96fb\u90f5\u5730\u5740\u3002\u662f\u5426\u8981\u52a0\u5165\u5fc5\u9700\u7684 mailto: \u9996\u78bc\uff1f",
+"The URL you entered seems to be an email address. Do you want to add the required mailto: prefix?": "\u4f60\u8f38\u5165\u7684\u7db2\u5740\u597d\u50cf\u662f\u4e00\u500b\u96fb\u90f5\u5730\u5740\u3002\u662f\u5426\u8981\u52a0\u5165\u5fc5\u9700\u7684 mailto: \u9996\u78bc\uff1f",
 "Insert\/edit link": "\u63d2\u5165\/\u7de8\u8f2f\u9023\u7d50",
-"Insert\/edit video": "\u63d2\u5165\/\u7de8\u8f2f\u5f71\u97f3",
+"Insert\/edit video": "\u63d2\u4ef6\/\u7de8\u8f2f\u5f71\u97f3",
 "Poster": "\u6d77\u5831",
 "Alternative source": "\u66ff\u4ee3\u5f71\u97f3",
-"Paste your embed code below:": "\u8acb\u5c07\u5d4c\u5165\u5f0f\u7a0b\u5f0f\u78bc\u8cbc\u5728\u4e0b\u9762:",
+"Paste your embed code below:": "\u8acb\u5c07\u5d4c\u5165\u7a0b\u5f0f\u78bc\u8cbc\u5728\u4e0b\u9762:",
 "Insert video": "\u63d2\u5165\u5f71\u97f3",
 "Embed": "\u5d4c\u5165\u78bc",
 "Nonbreaking space": "\u4e0d\u5206\u884c\u7684\u7a7a\u683c",
@@ -157,7 +157,7 @@ tinymce.addI18n('zh_TW',{
 "Preview": "\u9810\u89bd",
 "Print": "\u5217\u5370",
 "Save": "\u5132\u5b58",
-"Could not find the specified string.": "\u7121\u6cd5\u67e5\u8a62\u5230\u6b64\u7279\u5b9a\u5b57\u4e32",
+"Could not find the specified string.": "\u7121\u6cd5\u627e\u5230\u6b64\u7279\u5b9a\u5b57\u4e32\u3002",
 "Replace": "\u66ff\u63db",
 "Next": "\u4e0b\u4e00\u9801",
 "Whole words": "\u6574\u500b\u55ae\u5b57",
@@ -165,13 +165,13 @@ tinymce.addI18n('zh_TW',{
 "Replace with": "\u66ff\u63db\u6642\u4f7f\u7528\uff1a",
 "Find": "\u5c0b\u627e",
 "Replace all": "\u5168\u90e8\u66ff\u63db",
-"Match case": "\u5927\u5c0f\u5beb\u76f8\u7b26",
-"Prev": "\u4e0a\u4e00\u500b",
-"Spellcheck": "\u62fc\u5b57\u6aa2\u67e5",
+"Match case": "\u5339\u914d\u5927\u5c0f\u5beb",
+"Prev": "\u4e0a\u4e00\u9801",
+"Spellcheck": "\u6aa2\u67e5\u62fc\u5b57",
 "Finish": "\u5b8c\u6210",
 "Ignore all": "\u5168\u90e8\u5ffd\u7565",
 "Ignore": "\u5ffd\u7565",
-"Add to Dictionary": "\u52a0\u5165\u5b57\u5178\u4e2d",
+"Add to Dictionary": "\u52a0\u5165\u76ee\u9304",
 "Insert row before": "\u5728\u524d\u9762\u63d2\u5165\u5217",
 "Rows": "\u5217",
 "Height": "\u9ad8\u5ea6",
@@ -195,7 +195,7 @@ tinymce.addI18n('zh_TW',{
 "Delete table": "\u522a\u9664\u8868\u683c",
 "H Align": "\u6c34\u5e73\u5c0d\u9f4a",
 "Top": "\u9802\u4e0a",
-"Header cell": "\u6a19\u982d\u5132\u5b58\u683c",
+"Header cell": "\u8868\u982d\u5132\u5b58\u683c",
 "Column": "\u6b04",
 "Row group": "\u6a6b\u689d\u5716\u7d44",
 "Cell": "\u5132\u5b58\u683c",
@@ -231,7 +231,7 @@ tinymce.addI18n('zh_TW',{
 "Insert": "\u63d2\u5165",
 "File": "\u6a94\u6848",
 "Edit": "\u7de8\u8f2f",
-"Rich Text Area. Press ALT-F9 for menu. Press ALT-F10 for toolbar. Press ALT-0 for help": "RTF \u6587\u672c\u5340\u57df\u3002\u6309 ALT-F9 \u524d\u5f80\u4e3b\u9078\u55ae\u3002\u6309 ALT-F10 \u958b\u555f\u5de5\u5177\u5217\u3002\u6309 ALT-0 \u5c0b\u6c42\u5e6b\u52a9",
+"Rich Text Area. Press ALT-F9 for menu. Press ALT-F10 for toolbar. Press ALT-0 for help": "RTF \u6587\u672c\u5340\u57df\u3002\u6309 ALT-F9 \u524d\u5f80\u4e3b\u9078\u55ae\u3002\u6309 ALT-F10 \u958b\u555f\u5de5\u5177\u5217\u3002\u6309ALT-0 \u67e5\u770b\u76f8\u95dc\u8aaa\u660e",
 "Tools": "\u5de5\u5177",
 "View": "\u6aa2\u8996",
 "Table": "\u8868\u683c",
