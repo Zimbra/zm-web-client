@@ -297,7 +297,7 @@ function() {
 	}
 
     var partToAttachmentMap = AjxUtil.map(view._partToAttachmentMap, function(member) {
-       return { mid:member.mid, part:member.part };
+       return AjxUtil.hashCopy(member);
     });
 
 	// this is how child window knows what to do once loading:
@@ -328,7 +328,8 @@ function() {
         readReceipt:	requestReadReceipt,
 		sigId:			this.getSelectedSignature(),
         incOptions:     this._curIncOptions,
-        partMap:        partToAttachmentMap
+        partMap:        partToAttachmentMap,
+        origMsgAttSize: view._origMsgAttSize
 	};
 };
 
@@ -1136,7 +1137,7 @@ function(params) {
 
 		this._draftMsg = params.draftMsg;
 		this._draftType = params.draftType || ZmComposeController.DRAFT_TYPE_NONE;
-		if (this._msgIds || cv._msgAttId) {
+		if ((this._msgIds || cv._msgAttId) && !appCtxt.isChildWindow) {
 			this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);
 		}
 		else if (msg && (action == ZmOperation.DRAFT)) {

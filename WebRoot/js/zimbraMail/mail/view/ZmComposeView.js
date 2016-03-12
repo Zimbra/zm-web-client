@@ -1063,6 +1063,9 @@ function(params) {
     if (params.partMap && params.partMap.length) {
         this._partToAttachmentMap = params.partMap;
     }
+    if (params.origMsgAttSize) {
+        this._origMsgAttSize = params.origMsgAttSize;
+    }
 
     if (params.identityId && this.identitySelect) {
 		var opt = this.identitySelect.getOptionAtIndex(params.identityId);
