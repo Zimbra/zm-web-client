@@ -463,7 +463,7 @@ function(msg) {
 
 ZmComposeView.prototype._addReplyAttachments =
 function(){
-	this._showForwardField(this._msg, ZmComposeView.ADD_ORIG_MSG_ATTS);
+	this._showForwardField(this._msg, ZmComposeView.ADD_ORIG_MSG_ATTS, true);
 };
 
 ZmComposeView.prototype._handleInlineAtts =
@@ -647,6 +647,9 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 		// Forward one message or Reply as attachment
 		forwardMsgIds.push(this._msgAttId);
 	}
+    if (this._origMsgAtt) {
+        attachedMsgIds[this._origMsgAtt.mid] = true;
+    }
     // make sure we're not attaching a msg twice by checking for its ID in our list of forwarded attachments
     forwardMsgIds = AjxUtil.filter(forwardMsgIds, function(m) { return !attachedMsgIds[m]; });
 
@@ -1017,7 +1020,7 @@ function(composeMode, initOnly) {
 	}
 
 	if (this._msg && this._isInline(this._msg) && composeMode === Dwt.TEXT) {
-		this._showForwardField(this._msg, this._action, null, true);
+		this._showForwardField(this._msg, this._action, true);
 	}
 };
 
@@ -1063,8 +1066,8 @@ function(params) {
     if (params.partMap && params.partMap.length) {
         this._partToAttachmentMap = params.partMap;
     }
-    if (params.origMsgAttSize) {
-        this._origMsgAttSize = params.origMsgAttSize;
+    if (params.origMsgAtt) {
+        this._origMsgAtt = params.origMsgAtt;
     }
 
     if (params.identityId && this.identitySelect) {
@@ -1102,12 +1105,20 @@ function(msgDraft) {
     this._msg = msgDraft;
 
     var incOptions = this._controller._curIncOptions;
-    if (!this._origMsgAttSize && this._msgAttId && incOptions && incOptions.what === ZmSetting.INC_ATTACH) {
+    if (!this._origMsgAtt && this._msgAttId && incOptions && incOptions.what === ZmSetting.INC_ATTACH) {
         var msgIdx = AjxUtil.indexOf(msgDraft._msgAttIds, this._msgAttId),
             attMsgs = AjxUtil.filter(msgDraft.attachments, function(att) {
             return att.getContentType() === ZmMimeTable.MSG_RFC822;
-        });
-        this._origMsgAttSize = attMsgs[msgIdx] && attMsgs[msgIdx].size;
+        }),
+            attMsg = attMsgs[msgIdx];
+        if (attMsg) {
+            this._origMsgAtt = {
+                size:       attMsg.size,
+                part:       attMsg.part,
+                mid:        this._msgAttId,
+                draftId:    msgDraft.id
+            }
+        }
     }
 
 	this._msgAttId = null;
@@ -1396,7 +1407,7 @@ ZmComposeView.prototype.reset = function(bEnableInputs) {
 	this._resetBodySize();
 	this._controller._curIncOptions = null;
 	this._msgAttId = null;
-    this._origMsgAttSize = null;
+    this._origMsgAtt = null;
     this._clearFormValue();
 	this._components = {};
 		
@@ -1763,7 +1774,7 @@ function(spanId, id){
   
 	// Forward/Reply one message
 	if (!id) {
-		this._msgAttId = this._origMsgAttSize = null;
+		this._msgAttId = this._origMsgAtt = null;
 	}
 	else {
 		var index = this._msgIds && this._msgIds.length ? AjxUtil.indexOf(this._msgIds, id) : -1;
@@ -2185,7 +2196,7 @@ function(action, msg, extraBodyText, noEditorUpdate, keepAttachments, extraBodyT
 	var hasInlineImages = (bodyInfo.hasInlineImages) || !ac.get(ZmSetting.VIEW_AS_HTML);
 	if (!keepAttachments) {
 		//do not call this when switching between text and html editor.
-		this._showForwardField(msg || this._msg, action, incOptions, hasInlineImages, bodyInfo.hasInlineAtts);
+		this._showForwardField(msg || this._msg, action, hasInlineImages, bodyInfo.hasInlineAtts);
 	}
 
 	var sigId = this._controller.getSelectedSignature();
@@ -2997,7 +3008,7 @@ ZmComposeView.prototype.removeOrigMsgAtt = function() {
 
     for (var i = 0; i < this._partToAttachmentMap.length; i++) {
         var att = this._partToAttachmentMap[i];
-        if (att.rfc822Part && att.sizeInBytes === this._origMsgAttSize) {
+        if (att.rfc822Part && this._origMsgAtt && att.sizeInBytes === this._origMsgAtt.size) {
             this._removeAttachedMessage(att.spanId);
         }
     }
@@ -3664,7 +3675,7 @@ function() {
 };
 
 ZmComposeView.prototype._showForwardField =
-function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
+function(msg, action, includeInlineImages, includeInlineAtts) {
 
 	var html = "";
 	var attIncludeOrigLinkId = null;
@@ -3785,7 +3796,7 @@ ZmComposeView.prototype._includeOriginalAttachments =
 function(ev, force) {
 	this._hideOriginalAttachments = false;
 	this._isIncludingOriginalAttachments = true;
-	this._showForwardField(this._msg, this._action, null, true);
+	this._showForwardField(this._msg, this._action, true);
 };
 
 
