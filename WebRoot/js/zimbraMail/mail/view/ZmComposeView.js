@@ -1066,7 +1066,7 @@ function(params) {
     if (params.partMap && params.partMap.length) {
         this._partToAttachmentMap = params.partMap;
     }
-    if (params.origMsgAtt) {
+    if (params.origMsgAtt && params.origMsgAtt.part) {
         this._origMsgAtt = params.origMsgAtt;
     }
 
