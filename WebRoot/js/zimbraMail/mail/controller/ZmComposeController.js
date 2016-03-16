@@ -329,7 +329,7 @@ function() {
 		sigId:			this.getSelectedSignature(),
         incOptions:     this._curIncOptions,
         partMap:        partToAttachmentMap,
-        origMsgAtt:     AjxUtil.hashCopy(view._origMsgAtt)
+        origMsgAtt:     view._origMsgAtt ? AjxUtil.hashCopy(view._origMsgAtt) : null
 	};
 };
 
