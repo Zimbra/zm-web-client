@@ -278,7 +278,7 @@ function() {
 	this._toolbar.enable(ZmOperation.DETACH_COMPOSE, false);
 
 	var view = this._composeView;
-	var msg = this._msg || view._origMsg;
+	var msg = this._msg || view._origMsg || view._msg;
 	var subj = view._subjectField.value;
 	var msgAttId = view._msgAttId; //include original as attachment
 	var body = this._getBodyContent();
@@ -315,7 +315,7 @@ function() {
 		priority:		this._getPriority(),
         attHtml:        view._attcDiv.innerHTML,
 		msgAttId:		msgAttId,
-        msgIds:         this._msgIds,
+        msgIds:         msg && msg.isDraft ? null : this._msgIds,
 		draftType: 		this._draftType,
 		draftMsg:		this._draftMsg,
 		body:			body,

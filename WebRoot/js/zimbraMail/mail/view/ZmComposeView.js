@@ -1866,7 +1866,7 @@ function(name, removeOriginalAttachments) {
 			if (this._partToAttachmentMap.length && removeOriginalAttachments) {
 				var att = this._partToAttachmentMap[i].part;
 				var original = this._originalAttachments[att.label];
-				original = original && [att.sizeInBytes];
+				original = original && att.sizeInBytes;
 				if (removeOriginalAttachments && original) {
 					continue;
 				}
