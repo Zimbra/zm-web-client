@@ -39,4 +39,30 @@ function() {
 	return "ZmCalWorkWeekView";
 }
 
-
+/**
+ * Returns the available start time in work week view
+ *
+ * @param   {ZmAppt} appt
+ *
+ * @return	{Time} or <code>null</code> if start time is not available
+ */
+ZmCalWorkWeekView.prototype.getAvailableStartTime = function(appt) {
+	// If appointment start date is available in the view then just return start time
+	if (this._getDayForDate(appt.startDate)) {
+		return appt.startTime;
+	}
+	if (appt.isMultiDay()) {
+		//If multi-day appointment start date is not available in the view then try to find the next available day by rolling the start date to next day.
+		var startTime = Math.max(appt.getStartTime(), this._timeRangeStart);
+		var endTime = Math.min(appt.getEndTime(), this._timeRangeEnd);
+		while (startTime < endTime) {
+			var startDate = new Date(startTime);
+			if (this._getDayForDate(startDate)) {
+				return startTime;
+			}
+			AjxDateUtil.rollToNextDay(startDate);
+			startTime = startDate.getTime();
+		}
+	}
+	return null;
+};

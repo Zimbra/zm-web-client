@@ -631,10 +631,17 @@ function(div, allDay, folderId) {
 
 ZmCalColView.prototype._createItemHtml = function(appt) {
 
+	if (this.view === ZmId.VIEW_CAL_WORK_WEEK) {
+		var availableStartTime = this.getAvailableStartTime(appt);
+		if (!availableStartTime) {
+			return;
+		}
+	}
+
     var isAllDay = appt.isAllDayEvent();
 	if (isAllDay) {
-		var dataId = appt.getUniqueId(),
-		    startTime = Math.max(appt.getStartTime(), this._timeRangeStart);
+		var dataId = appt.getUniqueId();
+		var startTime = availableStartTime || Math.max(appt.getStartTime(), this._timeRangeStart);
 
 		this._allDayAppts[dataId] = {
 		    appt:       appt,
@@ -683,11 +690,6 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
         apptName = isAllDay ? apptName : appt.getDurationText(true, true) + " - " + apptName;
         var apptBounds = this._getBoundsForAppt(appt),
             apptWidth = apptBounds && apptBounds.width;
-
-        // If appointment day falls on a non work week day, do not display the appointment
-        if (!apptBounds) {
-            return null;
-        }
 
         if (apptWidth > 30) {
             apptName = AjxStringUtil.fitString(apptName, apptWidth - 15);
