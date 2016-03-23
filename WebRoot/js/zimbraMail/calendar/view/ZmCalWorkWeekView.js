@@ -49,7 +49,7 @@ function() {
 ZmCalWorkWeekView.prototype.getAvailableStartTime = function(appt) {
 	// If appointment start date is available in the view then just return start time
 	if (this._getDayForDate(appt.startDate)) {
-		return appt.startTime;
+		return appt.getStartTime();
 	}
 	if (appt.isMultiDay()) {
 		//If multi-day appointment start date is not available in the view then try to find the next available day by rolling the start date to next day.
