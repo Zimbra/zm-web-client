@@ -329,7 +329,8 @@ function() {
 		sigId:			this.getSelectedSignature(),
         incOptions:     this._curIncOptions,
         partMap:        partToAttachmentMap,
-        origMsgAtt:     view._origMsgAtt ? AjxUtil.hashCopy(view._origMsgAtt) : null
+        origMsgAtt:     view._origMsgAtt ? AjxUtil.hashCopy(view._origMsgAtt) : null,
+        origAction:     this._origAction
 	};
 };
 
@@ -1066,6 +1067,7 @@ function(params) {
 		params.action = ZmOperation.FORWARD_INLINE;
 	}
 	var action = this._action = params.action;
+    this._origAction = params.origAction;
 	
 	this._toOverride = params.toOverride;
 	this._ccOverride = params.ccOverride;
@@ -1512,7 +1514,7 @@ function(incOptions) {
 		mi.setChecked(incOptions.headers, true);
 	}
 	//If we attach multiple messages, disable changing from "include as attachment" to "include original" (inc_body, a.k.a. include inline). Bug 74467
-	var incOptionsDisabled = this._msgIds && this._msgIds.length > 1;
+	var incOptionsDisabled = (this._msgIds && this._msgIds.length > 1) || this._origAction === ZmOperation.FORWARD_CONV;
 	mi = menu.getOp(ZmOperation.INC_BODY);
 	if (mi) {
 		mi.setEnabled(!incOptionsDisabled);

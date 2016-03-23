@@ -1040,6 +1040,7 @@ ZmComposeView.prototype.setDetach =
 function(params) {
 
 	this._action = params.action;
+    this._controller._origAction = params.origAction;
 	this._msg = params.msg;
 
 	// set the addr fields as populated
