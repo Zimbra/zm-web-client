@@ -67,6 +67,10 @@ ZmConvView2.prototype.role = 'region';
  */
 ZmConvView2.prototype.set = function(conv) {
 
+    if (conv && this._item && conv.id === this._item.id && !this._convDirty) {
+        return;
+    }
+
 	var gotConv = (conv != null);
 	this.reset(gotConv);
 	this._item = conv;
@@ -162,6 +166,7 @@ function(conv) {
 	this._scheduleResize(firstExpanded || true);
 	this.inviteMsgsExpanded = 0; //reset the inviteMsgExpanded count.
 	Dwt.setLoadedTime("ZmConv");
+    this._convDirty = false;
 };
 
 // Only invoked by doing a saveDraft, from editing a reply in an individual Conversation display
@@ -760,6 +765,7 @@ function(ev) {
 	if ((ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_SIZE])) {
 		this._header._setInfo();
 	}
+    this._convDirty = true;
 };
 
 ZmConvView2.prototype._msgListChangeListener =
@@ -795,6 +801,7 @@ function(ev) {
 			return msgView._handleChange(ev);
 		}
 	}
+    this._convDirty = true;
 };
 
 ZmConvView2.prototype.resetMsg =
