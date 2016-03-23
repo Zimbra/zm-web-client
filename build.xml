@@ -1636,7 +1636,7 @@ if (ext == null) ext = "";
                 </pathconvert>
 
                 <echo file="${tinymce.dir}/locales.js"
-                      message='tinyMCE.locale_list = [ "${tinymce.locales}" ];'
+					  message='tinyMCE.locale_list = ["en", "${tinymce.locales}"];'
                       />
             </then>
         </if>
