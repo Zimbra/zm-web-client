@@ -17,6 +17,7 @@
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
+<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
@@ -24,6 +25,9 @@
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <%
 	String userName = request.getParameter("userName");
+	if (userName != null) {
+		userName = BeanUtils.cook(userName);
+	}
 	String isDebugMode = request.getParameter("isDebug");
 	String ext = (String)request.getAttribute("fileExtension");
 	if (ext == null) {
