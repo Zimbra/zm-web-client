@@ -868,6 +868,7 @@ function(params, reqId) {
 	// TODO: But for batch commands, some updates would not be seen immediately.
 	// TODO: To avoid security warning, send response in URL; so limit length
 	params.noSession = true;
+	params.noAuthToken = true;
 
 	// information
 	var requestStr = ZmCsfeCommand.getRequestStr(params);

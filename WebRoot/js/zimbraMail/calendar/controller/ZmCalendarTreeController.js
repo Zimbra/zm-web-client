@@ -883,12 +883,9 @@ function(organizer, errorCallback) {
             jsonObj: jsonObj,
             asyncMode: true,
             sensitive: true,
-            noAuthToken: true,
             callback: new AjxCallback(this, this.createDataSourceCallback),
             errorCallback: new AjxCallback(this, this.createDataSourceErrorCallback),
             accountName: accountName
         };
     appCtxt.getAppController().sendRequest(params);
 };
-
-

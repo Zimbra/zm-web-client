@@ -183,14 +183,12 @@ function(callback, errorCallback, batchCommand) {
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback);
 		batchCommand.setSensitive(Boolean(this.password));
-		batchCommand.setNoAuthToken(Boolean(this.password));
 		return;
 	}
 
 	var params = {
 		soapDoc: soapDoc,
 		sensitive: Boolean(this.password),
-        noAuthToken: Boolean(this.password),
 		asyncMode: Boolean(callback),
 		callback: respCallback,
 		errorCallback: errorCallback
@@ -236,14 +234,12 @@ ZmDataSource.prototype.save = function(callback, errorCallback, batchCommand, is
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback);
 		batchCommand.setSensitive(Boolean(this.password));
-        batchCommand.setNoAuthToken(Boolean(this.password));
 		return;
 	}
 
 	var params = {
 		soapDoc: soapDoc,
 		sensitive: Boolean(this.password),
-        noAuthToken: Boolean(this.password),
 		asyncMode: Boolean(callback),
 		callback: respCallback,
 		errorCallback: errorCallback
@@ -296,14 +292,12 @@ function(callback, errorCallback, batchCommand, noBusyOverlay) {
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, callback, errorCallback);
 		batchCommand.setSensitive(true);
-        batchCommand.setNoAuthToken(true);
 		return;
 	}
 
 	var params = {
 		soapDoc: soapDoc,
 		sensitive: true,
-        noAuthToken: true,
 		asyncMode: Boolean(callback),
 		noBusyOverlay: noBusyOverlay,
 		callback: callback,
