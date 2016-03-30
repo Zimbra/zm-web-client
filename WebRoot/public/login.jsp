@@ -156,7 +156,6 @@
                                 In case of JS-disabled browser, make the user do a manual submit.
                                 --%>
                                 <jsp:forward page="/h/postLoginRedirect">
-                                    <jsp:param name="postLoginUrl" value="${postLoginUrl}"/>
                                     <jsp:param name="zauthtoken" value="${authResult.authToken.value}"/>
                                     <jsp:param name="client" value="${param.client}"/>
                                 </jsp:forward>
