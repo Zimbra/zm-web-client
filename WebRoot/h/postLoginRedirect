@@ -29,7 +29,7 @@
     <title><fmt:message key="zimbraTitle"/></title>
     <link rel="stylesheet" type="text/css" href="<c:url value='/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin' />">
     <body>
-    <form method="post" name="loginForm2" id="loginForm2" action="${zm:cook(param.postLoginUrl)}" accept-charset="UTF-8">
+    <form method="post" name="loginForm2" id="loginForm2" action="${requestScope.postLoginUrl}" accept-charset="UTF-8">
         <div class="LoginScreen">
         <div id='skin_container_splash_screen' class='SplashScreen'>
         <div class="center">
