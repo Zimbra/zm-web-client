@@ -443,12 +443,6 @@
   </servlet>
 
   <servlet>
-    <servlet-name>AdminResources</servlet-name>
-    <servlet-class>com.zimbra.webClient.servlet.AdminServlet</servlet-class>
-    <async-supported>true</async-supported>
-  </servlet>
-
-  <servlet>
     <servlet-name>ServiceServlet</servlet-name>
     <servlet-class>com.zimbra.webClient.servlet.ServiceServlet</servlet-class>
     <async-supported>true</async-supported>
@@ -467,11 +461,6 @@
     <url-pattern>/res/*</url-pattern>
     <url-pattern>/messages/*</url-pattern>
     <url-pattern>/keys/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>AdminResources</servlet-name>
-    <url-pattern>/adminres</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
