@@ -22,7 +22,7 @@
 <html manifest="${fn:escapeXml(param.url)}">
 <head>
 	<script>
-			var retryOnError = <%=request.getParameter("retryOnError")%>;
+			var retryOnError = ${param.retryOnError eq 'true'};
 			var appCache = window.applicationCache;
 			// Checking for an update. Always the first event fired in the sequence.
 			appCache.addEventListener('checking', function() {
