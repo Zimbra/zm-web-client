@@ -187,7 +187,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                             <table width="100%">
                                 <tr>
                                     <td align="center" valign="middle">
-                                        <a href="http://www.zimbra.com/" id="bannerLink" target="_new"><span style="cursor:pointer;display:block;" class="ImgLoginBanner"></span></a>
+                                        <a href="https://www.zimbra.com/" id="bannerLink" target="_new"><span style="cursor:pointer;display:block;" class="ImgLoginBanner"></span></a>
                                     </td>
                                 </tr>
                                 <tr>

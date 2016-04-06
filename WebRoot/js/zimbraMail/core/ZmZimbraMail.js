@@ -2291,8 +2291,8 @@ function() {
 };
 
 
-ZmZimbraMail.ONLINE_HELP_URL = "http://help.zimbra.com/?";
-ZmZimbraMail.NEW_FEATURES_URL = "http://www.zimbra.com/products/whats_new.html?";
+ZmZimbraMail.ONLINE_HELP_URL = "https://help.zimbra.com/?";
+ZmZimbraMail.NEW_FEATURES_URL = "https://www.zimbra.com/products/whats_new.html?";
 
 ZmZimbraMail.DEFAULT_CONTACT_ICON = appContextPath + "/img/large/ImgPerson_48.png?v=" + window.cacheKillerVersion;
 ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL = appContextPath + "/img/large/ImgPerson_32.png?v=" + window.cacheKillerVersion;

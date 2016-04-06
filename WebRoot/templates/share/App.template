@@ -27,7 +27,7 @@
 	<$ if (data.showOfflineLink) { $>
 		<tr>
 			<td id='skin_td_switch_offline' colspan=3>
-				<a href="http://www.zimbra.com/products/desktop.html" target="_blank"><$= ZmMsg.switchToOfflineClientEx $></a>
+				<a href="https://www.zimbra.com/products/desktop.html" target="_blank"><$= ZmMsg.switchToOfflineClientEx $></a>
 			</td>
 		</tr>
 	<$ } $>
