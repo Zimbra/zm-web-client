@@ -448,7 +448,7 @@ if (application.getInitParameter("offlineMode") != null) {
 	<div class="LoginScreen">
 		<div class="${smallScreen?'center-small':'center'}">
 			<div class="contentBox">
-				<h1><a href="http://www.zimbra.com/" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'><span class="ScreenReaderOnly"><fmt:message key="zimbraTitle"/></span>
+				<h1><a href="https://www.zimbra.com/" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'><span class="ScreenReaderOnly"><fmt:message key="zimbraTitle"/></span>
 					<span class="Img${smallScreen?'App':'Login'}Banner"></span>
 				</a></h1>
 				<div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div>
