@@ -84,16 +84,9 @@
         <div class="center">
             <div class="contentBox">
             <h1>
-                <c:choose>
-                    <c:when test="${not empty logoURL}">
-                        <a href="${logoURL}" target="_new">
-                            <div class='ImgLoginBanner' style="margin: 20px 0 0 20px;"></div>
-                        </a>
-                    </c:when>
-                    <c:otherwise>
-                        <div class='ImgLoginBanner' style="margin: 20px 0 0 20px;"></div>
-                    </c:otherwise>
-                </c:choose>
+                <a href="${not empty logoURL ? logoURL : 'https://www.zimbra.com'}" target="_new">
+                    <div class='ImgLoginBanner' style="margin: 20px 0 0 20px;"></div>
+                </a>
             </h1>
             <c:if test="${not empty errorMessage}">
                 <div id='ZLoginErrorPanel'>
