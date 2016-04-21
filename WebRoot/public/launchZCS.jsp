@@ -135,8 +135,11 @@
 			locale = new Locale(language, country);
 		}
     }
-	String unitTest = getParameter(request, "unittest", "");
-	String preset = getParameter(request, "preset", "");
+	boolean isUnitTest = getParameter(request, "unittest", "").equals("1");
+	String preset = getParameter(request, "preset", null);
+	if (preset != null) {
+		preset = BeanUtils.cook(preset);
+	}
 
 	// make variables available in page context (e.g. ${foo})
 	pageContext.setAttribute("contextPath", contextPath);
@@ -151,7 +154,7 @@
 	pageContext.setAttribute("isProdMode", !prodMode.equals(""));
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
-	pageContext.setAttribute("unitTest", unitTest);
+	pageContext.setAttribute("isUnitTest", isUnitTest);
 	pageContext.setAttribute("preset", preset);
     pageContext.setAttribute("isCoverage", isCoverage);
     pageContext.setAttribute("isPerfMetric", isPerfMetric);
@@ -201,7 +204,7 @@
 		<c:param name="customerDomain"	value="${param.customerDomain}" />
 	</c:if>		
 </c:url>" rel="stylesheet" type="text/css" />
-<c:if test="${not empty unitTest}">
+<c:if test="${isUnitTest}">
 	<script>
 		window.exports = window.UT = {};
 		window.require = true;
@@ -476,7 +479,10 @@ delete text;
 			settings:settings, batchInfoResponse:batchInfoResponse,
 			offlineMode:${isOfflineMode}, devMode:${isDevMode},
 			protocolMode:protocolMode, httpPort:"<%=httpPort%>", httpsPort:"<%=httpsPort%>",
-			noSplashScreen:noSplashScreen, unitTest:"${unitTest}", preset:"${preset}", virtualAcctDomain : virtualAcctDomain
+			noSplashScreen:noSplashScreen,
+			unitTest:${isUnitTest},
+			preset:"${preset}",
+			virtualAcctDomain : virtualAcctDomain
 		};
 		ZmZimbraMail.run(params);
 		
