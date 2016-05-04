@@ -891,17 +891,15 @@ function(div) {
 	tlv._handleNewTaskClick(div);
 };
 
-ZmTaskListView._handleOnBlur =
-function(ev) {
-	var appCtxt = window.parentAppCtxt || window.appCtxt;
-    var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
-    var appController = appCtxt.getAppController();
-    if (appController._activeApp == ZmId.APP_TASKS) {
-        tlv.saveNewTask();
-    } else {
-        // Switched tabs, hide the newTask text, preserve till next time
-        tlv.hideNewTask();
-    }
+ZmTaskListView._handleOnBlur = function(ev) {
+	
+	var appCtxt = window.parentAppCtxt || window.appCtxt,
+    	tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView(),
+		value = AjxStringUtil.trim(tlv._newTaskInputEl.value);
+	
+	if (!value) {
+		tlv.hideNewTask();
+	}
 };
 
 ZmTaskListView.prototype._selectItem =
