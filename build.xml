@@ -1119,14 +1119,14 @@
                         dependsFile='${depends.file}' output='all'
                         basepath='&lt;%=contextPath%>/js/'
                         extension='.js?v=&lt;%=vers%>'>
-                    <prefix output='html'><![CDATA[<%
-String contextPath = request.getParameter("contextPath") == null ? request.getContextPath() : (String) request.getParameter("contextPath");
-if(contextPath.equals("/")) contextPath = "";
-contextPath = contextPath.replace("<", "&lt;").replace(">","&gt;").replace("&", "&amp;").replace("\"","&quot;").replace("\'", "&#039;");
+                    <prefix output='html'><![CDATA[<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
+<%
+String contextPath = request.getContextPath();
+if (contextPath.equals("/")) contextPath = "";
 String vers = (String) request.getAttribute("version");
-if (vers == null) vers = "";
+vers = BeanUtils.cook(vers);
 String ext = (String) request.getAttribute("fileExtension");
-if (ext == null) ext = "";
+ext = BeanUtils.cook(ext);
 %>]]></prefix>
                     <!-- NOTE: order is important; need to find generated files first -->
                     <src dir='${customer.web.dir}/js'/>
