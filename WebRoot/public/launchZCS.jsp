@@ -105,6 +105,7 @@
 	String noSplashScreen = getParameter(request, "nss", null);
     noSplashScreen = BeanUtils.cook(noSplashScreen);
     String virtualAcctDomain = getParameter(request, "virtualacctdomain", null);
+    virtualAcctDomain = BeanUtils.cook(virtualAcctDomain);
 	boolean isLeakDetectorOn = getParameter(request, "leak", "0").equals("1");
 
 	String mode = getAttribute(request, "mode", null);
@@ -482,7 +483,7 @@ delete text;
 			noSplashScreen:noSplashScreen,
 			unitTest:${isUnitTest},
 			preset:"${preset}",
-			virtualAcctDomain : virtualAcctDomain
+			virtualAcctDomain:virtualAcctDomain
 		};
 		ZmZimbraMail.run(params);
 		

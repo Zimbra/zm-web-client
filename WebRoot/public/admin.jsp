@@ -1,5 +1,6 @@
 <%@ page session="false" %>
 <%@ page session="false" language="java" import="java.util.*,javax.naming.*"%>
+<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -206,7 +207,7 @@
     String packages = "Ajax,XForms,Zimbra,Admin";
 
     String extraPackages = request.getParameter("packages");
-    if (extraPackages != null) packages += ","+extraPackages;
+    if (extraPackages != null) packages += "," + BeanUtils.cook(extraPackages);
 
     String pprefix = isDevMode ? "public/jsp" : "js";
     String psuffix = isDevMode ? ".jsp" : "_all.js";
@@ -224,7 +225,7 @@
     <% }
 %>
 <script type="text/javascript">
-AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(pageContext.request.locale)}";	
+AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(pageContext.request.locale)}";
 </script>
     <script type="text/javascript" language="JavaScript">
 	   function launch() {
