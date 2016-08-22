@@ -562,7 +562,7 @@
             <srcfileset refid="overlay.template.fileset" />
             <srcfileset dir='${skins.dir}' includes='**/*.template'/>
             <targetfileset dir='${build.template.dir}' includes='**/*.template.js'/>
-            <targetfileset dir='${ajax.build.classes.dir}/messages/AjxTemplateMsg*.properties' />
+            <targetfileset dir='${build.classes.dir}/messages/AjxTemplateMsg*.properties' />
             <targetfilelist dir='.' files="${templates.done}"/>
         </dependset>
         <if>
@@ -1081,7 +1081,8 @@ ext = BeanUtils.cook(ext);
 
 	    <taskdef name="try"
 	             classname="com.zimbra.webClient.build.TryTask"
-	             classpath="${ajax.build.classes.dir}"
+	             classpathref="class.path"
+
 	    />
 
         <!-- minimize js, prepend copyright, compress -->
