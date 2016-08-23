@@ -1,5 +1,9 @@
-<project name="ZimbraWebClient" default="war">
-    <import file="../ant-global.xml" />
+<project name="zm-web-client" default="war">
+    <import file="../zm-zcs/ant-global.xml"/>
+    <property name="ajax.dir" location="../zm-ajax" />
+    <property name="ajax.src.dir" location="${ajax.dir}/src" />
+    <property name="ajax.build.dir" location="${ajax.dir}/build" />
+    <property name='ajax.build.classes.dir' value='${ajax.build.dir}/classes'/>
 
     <!-- Properties -->
     <dirname property="this.zwc.basedir" file="${ant.file.ZimbraWebClient}" />
@@ -26,30 +30,14 @@
 	<property name="webxml.zimbraHttpDosFilterMaxRequestsPerSec" value="30" />
 	<property name="webxml.zimbraHttpContextPathBasedThreadPoolBalancingFilterRules" value="/service:max=10%, /soap:max=40%, /zimbra:max=40%" />
 
-    <!-- NOTE: These dirs need to stay ABSOLUTE paths! -->
-	<property name='common.dir' value='${this.zwc.basedir}/../ZimbraCommon'/>
-    <property name='common.lib.dir' value='${common.dir}/jars'/>
-    <property name='common.build.dir' value='${common.dir}/build'/>
-    <property name='common.build.classes.dir' value='${common.build.dir}/classes'/>
-
-    <property name='soap.dir' location='${this.zwc.basedir}/../ZimbraSoap'/>
-	<property name='soap.build.dir' value='${soap.dir}/build'/>
-
-    <property name="client.dir" location="${this.zwc.basedir}/../ZimbraClient"/>
-    <property name="client.build.classes.dir" location="${client.dir}/build/classes" />
-    <property name="client.build.dir" location="${client.dir}/build" />    
-    <property name="client.jarfile" location="${client.dir}/build/zimbraclient.jar"/>
-
-    <property name='taglib.dir' value='${this.zwc.basedir}/../ZimbraTagLib'/>
+    <!-- zm-taglib -->
+    <property name='taglib.dir' value='${this.zwc.basedir}/../zm-taglib'/>
     <property name='taglib.build.dir' value='${taglib.dir}/build'/>
-	<property name='taglib.build.classes.dir' value='${taglib.build.dir}/classes'/>
-
-    <property name='server.dir' value='${this.zwc.basedir}/../ZimbraServer'/>
-    <property name='server.build.dir' value='${server.dir}/build'/>
-	<property name='server.build.classes.dir' value='${server.build.dir}/classes'/>
-    <property name='server.dist.dir' value='${server.build.dir}/dist'/>
-
-	<property name='network.dir' value='${this.zwc.basedir}/../ZimbraNetwork' />
+    
+    <!-- zm-timezones -->
+    <property name='timezones.dir' value='${this.zwc.basedir}/../zm-timezones'/>
+    
+    <property name='network.dir' value='${this.zwc.basedir}/../ZimbraNetwork' />
 	<property name='network.zwc.dir' value='${network.dir}/ZimbraWebClient' />
 	<property name='network.zwc.help.dir' value='${network.zwc.dir}/WebRoot/help' />
 
@@ -124,38 +112,8 @@
     <property name="jquery.version" value="1.11.0"/>
     <property name="jquery.dir" value="${build.js.dir}/ajax/3rdparty/jquery"/>
 
-    <!-- ConverseJS INTEGRATION -->
-    <!--<property name="converse.version" value="0.9.4"></property>
-    <property name='converse.root.dir' value='converse' />
-    <property name='converse.js.dir' value='${converse.root.dir}/converse.js-${converse.version}' />
-    <property name='converse.js.build.dir' value='${converse.root.dir}/converse.js-${converse.version}/builds' />
-    <property name='converse.css.dir' value='${converse.root.dir}/converse.js-${converse.version}/css' />
-    <property name='converse.fonticons.dir' value='${converse.root.dir}/converse.js-${converse.version}/fonticons' />
-    <property name='converse.sounds.dir' value='${converse.root.dir}/converse.js-${converse.version}/sounds' />
-    <property name="converse.dir" value="${build.js.dir}/ajax/3rdparty/converse"/>-->
-	
-	<!-- customize admin skin -->
-	<if>
-		<isset property='adminSkin'/>
-		<then>
-			<property name="webxml.zimbraDefaultAdminSkin" value="${adminSkin}" />
-		</then>
-		<else>
-			<property name="webxml.zimbraDefaultAdminSkin" value="serenity" />
-		</else>
-	</if>
     <!-- Paths and Filesets -->
 
-    <path id='class.path'>
-        <pathelement location="${build.classes.dir}"/>
-        <fileset dir="${lib.dir}" includes="**/*.jar"/>
-        <fileset dir="${overlay.lib.dir}" includes="**/*.jar" erroronmissingdir="false" />
-        <fileset dir="${common.lib.dir}" includes="**/*.jar"/>
-        <pathelement location="${common.build.classes.dir}"/>
-        <pathelement location="${client.build.classes.dir}"/>
-	<pathelement location="${server.build.classes.dir}"/>
-	<pathelement location="${taglib.build.classes.dir}"/>
-    </path>
 
     <!-- pseudo-fileset so that targets that rely on it don't fail -->
     <fileset id='help.fileset' dir='${build.dir}' excludes='**'/>
@@ -194,28 +152,6 @@
         <property name='common.webinf.excludes' value='${custom.webinf.excludes},web.*,lib/**'/>
     </target>
 
-    <target name='ajax' depends='common'>
-        <property name='build.ajax' value='true'/>
-        <property name='deploy.app' value='ajax'/>
-        <property name='skins.dir' value='${web.dir}/skins'/>
-        <property name='web.includes' value='js/ajax/**,css/**,js/zimbraAdmin/**/*AutoComplete*.js'/>
-        <property name='web.excludes' value='WEB-INF/classes/**'/> <!-- default Eclipse output dir -->
-        <property name='jsp.includes' value='frameOpenerHelper.jsp'/>
-        <property name='jsp.excludes' value=''/>
-        <property name='img.includes' value='dwt/**'/>
-        <property name='img.excludes' value='${common.img.excludes}'/>
-        <property name='template.includes' value='dwt/**/*.template'/>
-        <property name='template.excludes' value=''/>
-        <property name='jam.includes' value='**/ajax/package/*.js'/>
-        <property name='jam.excludes' value=''/>
-		<property name='help.ignore' value='true' />
-        <property name='build.web.includes'
-                  value='js/**,img/dwt.gif,img/images.css,skin/**,public/**,templates/**'/>
-        <property name='build.web.excludes' value='${common.build.web.excludes}'/>
-        <property name='webinf.includes' value=''/>
-        <property name='webinf.excludes' value='**'/>
-    </target>
-
     <target name='client' depends='common'>
         <property name='deploy.app' value='zimbra'/>
         <property name='skins.dir' value='${web.dir}/skins'/>
@@ -243,30 +179,6 @@
                 />
     </target>
 
-    <target name='admin' depends='common'>
-        <property name='build.admin' value='true'/>
-        <property name='deploy.app' value='zimbraAdmin'/>
-        <property name='skins.dir' value='${web.dir}/admin_skins'/>
-        <property name='adminhelp.dir' value='${web.dir}/adminhelp'/>
-        <property name='build.adminhelp.dir' value='${build.web.dir}/adminhelp'/>
-        <property name='web.includes' value='${common.web.includes},migrationwizard/**,yui/2.7.0/**'/>
-        <property name='web.excludes' value='${common.web.excludes},js/zimbraMail/**'/>
-        <property name='jsp.includes' value='${common.jsp.includes}'/>
-        <property name='jsp.excludes'
-                  value='${common.jsp.excludes},launchNewWindow.jsp,login.jsp,*Mail.jsp,*ZCS.jsp,Spreadsheet*'/>
-        <property name='img.includes' value='admin/**,animated/**,dwt/**,logo/favicon.ico'/>
-        <property name='img.excludes' value='${common.img.excludes}'/>
-        <property name='template.includes' value='admin/**,dwt/**,zimbra/**'/>
-        <property name='template.excludes' value='${common.template.excludes}'/>
-        <property name='jam.includes' value='${common.jam.includes}'/>
-        <property name='jam.excludes' value='${common.jam.excludes},**/zimbraMail/**'/>
-		    <property name='help.includes' value='${common.admin.help.includes},*/**'/>
-		    <property name='help.excludes' value='${common.admin.help.excludes},*/standard/**,*/advanced/**'/>
-        <property name='build.web.includes' value='${common.build.web.includes}'/>
-        <property name='build.web.excludes' value='${common.build.web.excludes}'/>
-        <property name='webinf.includes' value='${common.webinf.includes}'/>
-        <property name='webinf.excludes' value='${common.webinf.excludes},tags/**,tlds/**'/>
-    </target>
 
     <target name='dev'>
         <property name='war.compress' value='false'/>
@@ -279,8 +191,9 @@
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**,test/**'/>
     </target>
 
+    <!-- add build-ajax in dependency once zm-ajax built script is ivy based -->
     <target name="war"
-            depends="templates,timezones,images,styles,settings,jam-files,compress,help"
+            depends="init,templates,timezones,images,styles,settings,copy-ajax,jam-files,compress,help"
             description="Builds all dependencies and assembles the war file.">
         <if><isset property='build.network' />
             <then>
@@ -288,6 +201,47 @@
             </then>
         </if>
         <antcall target="assemble-war"/>
+    </target>
+
+    <target name="copy-ajax">
+        <sync todir="${js.dir}">
+            <fileset dir="${ajax.dir}/${js.dir}"/>
+            <preserveintarget>
+                <include name="**"/>
+            </preserveintarget>
+        </sync>
+
+        <sync todir="${web.dir}/keys">
+            <fileset dir="${ajax.dir}/${web.dir}/keys"/>
+            <preserveintarget>
+                <include name="**"/>
+            </preserveintarget>
+        </sync>
+
+        <sync todir="${web.dir}/jquery">
+            <fileset dir="${ajax.dir}/${web.dir}/jquery"/>
+            <preserveintarget>
+                <include name="**"/>
+            </preserveintarget>
+        </sync>
+
+        <sync todir="${web.dir}/modernizr">
+            <fileset dir="${ajax.dir}/${web.dir}/modernizr"/>
+            <preserveintarget>
+                <include name="**"/>
+            </preserveintarget>
+        </sync>
+
+        <sync todir="${web.dir}/yui">
+            <fileset dir="${ajax.dir}/${web.dir}/yui"/>
+            <preserveintarget>
+                <include name="**"/>
+            </preserveintarget>
+        </sync>
+    </target>
+
+    <target name="build-ajax">
+        <ant dir="${ajax.dir}" target="zm-ajax" inheritAll="false"/>
     </target>
 
     <target name="assemble-war" depends="webxml-package-replace" description="Assembles the war file.  Assumes that all dependencies have been built.  Octopus/ZimbraWebClient/build.xml calls the war target, modifies files in ZimbraWebClient/build, and then calls this target.">
@@ -298,26 +252,26 @@
             <webinf refid="overlay.webinf.fileset" />
             <webinf refid="webinf.fileset" />
 
-            <classes dir='${build.classes.dir}' excludes='**/build/**'/>
+            <classes dir='${ajax.build.classes.dir}' excludes='**/build/**'/>
             <classes refid="overlay.src.props.fileset" />
             <classes refid="src.props.fileset" />
             <classes refid="overlay.messages.fileset" />
             <classes refid="messages.fileset" />
 
-            <lib dir='${lib.dir}' includes='gifencoder.jar'/>
-            <lib dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
-            <lib file="${client.jarfile}"/>
-            <lib dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
-            <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
-            <lib dir='${common.lib.dir}' includes='gmbal-api-only-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='jaxb-api-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='jaxb-impl-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='jaxws-api-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='jaxws-rt-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='jsr181-api-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='policy-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='stax-ex-*.jar'/>
-            <lib dir='${common.lib.dir}' includes='streambuffer-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='gifencoder.jar'/>
+            <lib dir='${common.jars.dir}' includes='zimbrasoap.jar'/>
+            <lib dir='${common.jars.dir}' includes='zimbraclient.jar'/>
+            <lib dir='${common.jars.dir}' includes='zimbrataglib.jar'/>
+            <lib dir='${common.jars.dir}' includes='zimbrastore.jar'/>
+            <lib dir='${common.jars.dir}' includes='gmbal-api-only-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='jaxb-api-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='jaxb-impl-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='jaxws-api-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='jaxws-rt-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='jsr181-api-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='policy-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='stax-ex-*.jar'/>
+            <lib dir='${common.jars.dir}' includes='streambuffer-*.jar'/>
 
             <!-- files from build tree -->
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
@@ -338,12 +292,12 @@
             <zipfileset refid='overlay.skins.fileset' prefix='skins' />
             <zipfileset refid='skins.fileset' prefix='skins' />
 
-            <zipfileset refid='help.fileset' prefix='help' />
-			      <zipfileset refid='network.help.fileset' prefix='help' />
+           <!--  <zipfileset refid='help.fileset' prefix='help' />
+			      <zipfileset refid='network.help.fileset' prefix='help' /> -->
         </war>
     </target>
 
-    <target name='sync' depends='jquery,modernizr,tinymce,templates'>
+    <target name='sync' depends='resolve,copy-ajax,jquery,modernizr,tinymce,templates'>
         <!-- NOTE: Keep order in sync with list of war filesets. -->
         <copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
             <fileset refid="webinf.fileset" />
@@ -360,25 +314,25 @@
         </copy>
 
         <copy todir="${webapp.dir}/WEB-INF/lib" verbose="${sync.verbose}">
-            <fileset dir='${lib.dir}' includes='gifencoder.jar'/>
-            <fileset dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
-            <fileset file="${client.jarfile}" />
-            <fileset dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
-            <fileset dir='${server.build.dir}' includes='zimbrastore.jar'/>
-            <fileset dir='${common.lib.dir}' includes='gmbal-api-only-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='jaxb-api-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='jaxb-impl-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='jaxws-api-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='jaxws-rt-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='jsr181-api-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='policy-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='stax-ex-*.jar'/>
-            <fileset dir='${common.lib.dir}' includes='streambuffer-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='gifencoder.jar'/>
+            <fileset dir='${common.jars.dir}' includes='zimbrasoap.jar'/>
+            <fileset dir='${common.jars.dir}' includes='zimbraclient.jar'/>
+            <fileset dir='${common.jars.dir}' includes='zimbrataglib.jar'/>
+            <fileset dir='${common.jars.dir}' includes='zimbrastore.jar'/>
+            <fileset dir='${common.jars.dir}' includes='gmbal-api-only-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='jaxb-api-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='jaxb-impl-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='jaxws-api-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='jaxws-rt-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='jsr181-api-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='policy-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='stax-ex-*.jar'/>
+            <fileset dir='${common.jars.dir}' includes='streambuffer-*.jar'/>
         </copy>
 
         <taskdef name="jscopy"
                  classname="com.zimbra.webClient.build.JSCopyTask"
-                 classpath="${build.classes.dir}" classpathref="class.path"
+                 classpathref="class.path"
                 />
 
         <!-- primary files from source trees -->
@@ -404,10 +358,10 @@
             <fileset refid="overlay.skins.fileset" />
         </jscopy>
 
-		<copy todir='${webapp.dir}/help'>
+		<!-- <copy todir='${webapp.dir}/help'>
 			<fileset refid='help.fileset' />
 			<fileset refid='network.help.fileset' />
-		</copy>
+		</copy> -->
 
         <!-- files from build tree -->
         <jscopy todir='${webapp.dir}' verbose='${sync.verbose}'>
@@ -431,11 +385,6 @@
 
         <condition property='build.prod.value' value='true' else='false'>
             <isset property="build.prod"/>
-        </condition>
-
-
-        <condition property='external.done' value='true'>
-            <available file="${taglib.build.dir}/zimbrataglib.jar"/>
         </condition>
 
         <!-- deployment properties -->
@@ -464,7 +413,7 @@
         </condition>
 
         <!-- common filesets -->
-        <fileset id="src.props.fileset" dir='${src.dir}' includes='**/*.properties' />
+        <fileset id="src.props.fileset" dir='${ajax.src.dir}' includes='**/*.properties' />
         <fileset id="overlay.src.props.fileset" erroronmissingdir="false"
                  dir='${overlay.dir}/${src.dir}' includes='**/*.properties' />
 
@@ -605,20 +554,7 @@
 		</if>
     </target>
 
-    <target name='compile' depends='init,external'>
-        <mkdir dir='${build.classes.dir}'/>
-        <javac destdir="${build.classes.dir}" classpathref="class.path"
-               debug="true" target="${javac.target}" includeantruntime="false">
-            <src location='${src.dir}'/>
-        </javac>
-    </target>
-
-    <target name='external' unless="external.done">
-        <!-- ant jar in ZimbraTagLib will build ZimbraCommon and ZimbraServer -->
-        <ant dir='${taglib.dir}' target="jar" inheritall="false"/>
-    </target>
-
-    <target name='templates' depends='compile'>
+    <target name='templates'>
         <property name='templates.done' value='${build.dir}/templates.done'/>
 
         <dependset>
@@ -635,9 +571,6 @@
 				<available file='${customer.skin.dir}' />
 				<not>
                     <isset property='build.ajax'/>
-                </not>
-                <not>
-                    <isset property='build.admin'/>
                 </not>
             </and>
             <then>
@@ -720,16 +653,13 @@
 		</for>
 	</target>
 
-    <target name='customer-templates' depends='compile' if='env.CUSTOMER_SKIN'>
+    <target name='customer-templates'  if='env.CUSTOMER_SKIN'>
         <if>
             <and>
 				<available file='${customer.skin.dir}' />
 				<not>
                     <isset property='build.ajax'/>
-                </not>
-                <not>
-                    <isset property='build.admin'/>
-                </not>
+                </not>                
             </and>
             <then>
                 <dirset id='skins.dirset' dir='${customer.skin.dir}' includes='*'/>
@@ -750,8 +680,8 @@
         </if>
     </target>
 
-    <target name='timezones' depends='compile'>
-        <property name='tz.data' value='${server.dir}/conf/timezones.ics'/>
+    <target name='timezones' >
+        <property name='tz.data' value='${timezones.dir}/conf/timezones.ics'/>
         <property name='tz.dir' value='${build.js.dir}/ajax/util'/>
         <property name='tz.file' value='${tz.dir}/AjxTimezoneData.js'/>
 
@@ -776,7 +706,7 @@
         </if>
     </target>
 
-    <target name='i18n' depends='compile'>
+    <target name='i18n' >
         <property name='i18n.msgs.dir' value='${build.classes.dir}/messages'/>
         <property name='i18n.msgs.file' value='${i18n.msgs.dir}/I18nMsg.properties'/>
 
@@ -802,7 +732,7 @@
         </if>
     </target>
 
-	<target name='keys-check' depends='compile'>
+	<target name='keys-check'>
 		<taskdef name='keycheck'
 		         classname='com.zimbra.kabuki.tools.i18n.CompareKeysTask'
 		         classpath='${build.classes.dir}'
@@ -864,7 +794,7 @@
 		<!-- delete output files if files changed -->
 		<dependset>
 			<srcfileset dir='${srcdir}' includes='*/**' />
-			<srcfileset dir='${src.dir}' includes='**/img/*.java' />
+			<srcfileset dir='${ajax.build.dir}' includes='**/img/*.class' />
 			<targetfileset dir='${destdir}' includes='${build.css.file}*.css,${build.css.file}*.js' />
 		</dependset>
 		<!-- merge images, if needed -->
@@ -907,7 +837,7 @@
 		</if>
 	</target>
 
-    <target name='images-init' depends='compile'>
+    <target name='images-init' >
         <taskdef name='imagemerge'
                  classname='com.zimbra.kabuki.tools.img.ImageMergerTask'
                  classpathref='class.path'
@@ -988,9 +918,6 @@
                 <not>
                     <isset property='build.ajax'/>
                 </not>
-                <not>
-                    <isset property='build.admin'/>
-                </not>
             </and>
             <then>
                 <property name='settings.dir' value='${build.js.dir}/zimbraMail/share/model'/>
@@ -1009,7 +936,6 @@
 
     <target name='jam-files' depends='jquery,modernizr,tinymce,templates,timezones'>
         <property name='jam.jsp.dir' value='${build.web.dir}/public/jsp'/>
-
         <mkdir dir='${build.js.dir}'/>
         <mkdir dir='${jam.jsp.dir}'/>
 
@@ -1021,11 +947,11 @@
 
         <taskdef name="packagedependset"
                  classname="com.zimbra.webClient.build.PackageDependSetTask"
-                 classpath="${build.classes.dir}"
+                 classpathref='class.path'
                 />
         <taskdef name="jammer"
                  classname="com.zimbra.webClient.build.PackageJammerTask"
-                 classpath="${build.classes.dir}"
+                 classpathref='class.path'
                 />
 
         <fileset id='jam-files.fileset' dir='${build.js.dir}' includes='*.js' excludes='*_all.js'/>
@@ -1051,7 +977,7 @@
 
         <packagedependset>
             <srcdependslist dir='.' files='${depends.file}'/>
-            <srcfileset dir='${src.dir}' includes='**/PackageJammerTask.java'/>
+            <srcfileset dir='${ajax.build.dir}' includes='**/PackageJammerTask.class'/>
             <targetfilelist dir='.' files='${jam.file}'/>
             <targetfilelist dir='.' files='${jsp.file}'/>
         </packagedependset>
@@ -1155,7 +1081,8 @@ ext = BeanUtils.cook(ext);
 
 	    <taskdef name="try"
 	             classname="com.zimbra.webClient.build.TryTask"
-	             classpath="${build.classes.dir}"
+	             classpathref="class.path"
+
 	    />
 
         <!-- minimize js, prepend copyright, compress -->
@@ -1186,7 +1113,7 @@ ext = BeanUtils.cook(ext);
                         <echo>Minimizing to @{var}${jsmin.ext}</echo>
 	                    <try>
 	                        <block>
-		                        <java jar="${common.lib.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true"
+		                        <java jar="${common.jars.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true"
 		                              output="${build.dir}/yui-compress.out" error="@{var}${compresserror.ext}">
 		                            <arg value="--line-break"/>
 		                            <arg value="0"/>
@@ -1234,7 +1161,7 @@ ext = BeanUtils.cook(ext);
 		<for list="${files}" param="filename">
 			<sequential>
 				<echo>Testing file: @{filename}</echo>
-				<java jar="${common.lib.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true">
+				<java jar="${common.jars.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true">
 				    <arg value="--line-break"/>
 				    <arg value="0"/>
 				    <arg value="--type"/>
@@ -1265,8 +1192,7 @@ ext = BeanUtils.cook(ext);
       dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes},${help.excludes2}' />
 	</target>
 
-    <target name='deploy' depends='war'>
-        <ant dir="${server.dir}" target="stop-jetty" inheritAll="false"/>
+    <target name='deploy' depends='resolve,war'>
 
         <echo>Deploy ${build.war.file} to ${deploy.dir}</echo>
         <delete dir="${webapp.dir}"/>
@@ -1278,10 +1204,6 @@ ext = BeanUtils.cook(ext);
 
         <antcall target='webxml-deploy-replace'/>
 
-        <ant dir="${server.dir}" target="start-jetty" inheritAll="false"/>
-
-        <!-- check if we have an SSH identity, needed for the admin console -->
-        <ant dir="${soap.dir}" target="zimbra-identity" inheritAll="false"/>
     </target>
 
     <target name='webxml-package-replace' depends='init'>
@@ -1309,13 +1231,11 @@ ext = BeanUtils.cook(ext);
     </target>
 
     <target name='clean' depends='customer-init'>
-        <ant dir="${taglib.dir}" target="clean" inheritAll="false"/>
         <delete dir='${build.dir}'/>
         <delete dir='${customer.build.dir}' />
         <delete dir="${jquery.dir}"/>
         <delete dir="${modernizr.dir}"/>
         <delete dir="${tinymce.dir}"/>
-        <!--<delete dir="${converse.dir}"/>-->
     </target>
 
 	<!-- JavaScript API Documentation Tasks -->
@@ -1385,7 +1305,7 @@ ext = BeanUtils.cook(ext);
 	  </java>
 	</target>
 	
-	<target name="generate-jsapi-changelog" depends="compile,package-jsapi-inventory">
+	<target name="generate-jsapi-changelog" depends="package-jsapi-inventory">
         <mkdir dir="${build.jsapi-changelog.dir}"/>
 		<copy todir="${build.jsapi-changelog.dir}">
 			<fileset dir="${jsdoctoolkit.dir}/templates/zimbra-jsapi-changelog">
@@ -1470,16 +1390,10 @@ ext = BeanUtils.cook(ext);
     <target name='sync-html' depends='taglib-jar,sync' />
 
     <!-- LEGACY TARGETS -->
-    <target name='dev-sync' depends='sync'/>
+    <target name='dev-sync' depends='init,sync'/>
     <target name='prod-war' depends='prod,war'/>
     <target name="prod-build" depends='prod,war,jspc.build'/>
     <target name='prod-deploy' depends='prod,deploy'/>
-    <target name='admin-dev-sync' depends='admin,sync'/>
-    <target name='admin-war' depends='admin,prod,war'/>
-    <target name='admin-dev-war' depends='admin,war'/>
-    <target name='admin-deploy' depends='admin,deploy'/>
-    <target name='admin-prod-deploy' depends='admin,prod,deploy'/>
-    <target name='ajax-prod-war' depends='ajax,prod,war'/>
 
     <target name='restart-webserver'>
         <ant dir="${server.dir}" target="restart-webserver"/>
@@ -1686,58 +1600,5 @@ ext = BeanUtils.cook(ext);
         <copy todir='${jquery.dir}' file='${web.dir}/jquery/${jquery.version}/jquery.js' verbose='${sync.verbose}'/>
     </target>
 
-    <!--<target name="converse">
-        <copy todir="${converse.dir}/" file="${converse.js.build.dir}/templates.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/converse.js"/>
-        <mkdir dir="${converse.dir}/css"/>
-        <copy todir="${converse.dir}/css/" file="${converse.css.dir}/converse.css" verbose="${sync.verbose}"/>
-        <copy todir="${build.css.dir}" file="${converse.css.dir}/converse.css" verbose="${sync.verbose}"/>
-        <copy todir="${converse.dir}/fonticons" verbose="${sync.verbose}">
-            <fileset dir="${converse.fonticons.dir}" includes="**"/>
-        </copy>
-        <copy todir="${build.web.dir}/fonticons" verbose="${sync.verbose}">
-            <fileset dir="${converse.fonticons.dir}" includes="**"/>
-        </copy>
-        <copy todir="${converse.dir}/sounds" verbose="${sync.verbose}">
-            <fileset dir="${converse.sounds.dir}" includes="**" excludes="README"/>
-        </copy>
-        <copy todir="${build.web.dir}/public/sounds" verbose="${sync.verbose}">
-            <fileset dir="${converse.dir}/sounds" includes="**"/>
-        </copy>
-        <copy tofile="${converse.dir}/jquery_min.js" file="${converse.js.dir}/components/jquery/dist/jquery.min.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/build/dep/salsa20.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/src/bigint.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/vendor/cryptojs/core.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/vendor/cryptojs/enc-base64.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/crypto-js-evanvosberg/src/md5.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/crypto-js-evanvosberg/src/evpkdf.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/vendor/cryptojs/cipher-core.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/vendor/cryptojs/aes.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/vendor/cryptojs/sha1.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/vendor/cryptojs/sha256.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/vendor/cryptojs/hmac.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/vendor/cryptojs/pad-nopadding.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/vendor/cryptojs/mode-ctr.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/otr/build/dep/eventemitter.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/src/otr.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/strophejs/strophe.js"/>
-        <copy tofile="${converse.dir}/strophe_vcard.js" file="${converse.js.dir}/components/strophejs-plugins/vcard/strophe.vcard.js"/>
-        <copy tofile="${converse.dir}/strophe_disco.js" file="${converse.js.dir}/components/strophejs-plugins/disco/strophe.disco.js"/>
-        <copy tofile="${converse.dir}/strophe_ping.js" file="${converse.js.dir}/components/strophejs-plugins/ping/strophe.ping.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/underscore/underscore.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/backbone/backbone.js"/>
-        <copy tofile="${converse.dir}/backbone_browserStorage.js" file="${converse.js.dir}/components/backbone.browserStorage/backbone.browserStorage.js"/>
-        <copy tofile="${converse.dir}/backbone_overview.js" file="${converse.js.dir}/components/backbone.overview/backbone.overview.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/src/moment-with-langs.js"/>
-        <copy tofile="${converse.dir}/jquery_browser.js" file="${converse.js.dir}/components/jquery.browser/dist/jquery.browser.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/typeahead.js/index.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/components/jed/jed.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.build.dir}/locales.js"/>
-        <copy todir="${converse.dir}/" file="${converse.js.dir}/src/utils.js"/>
-    </target>
-
-    <target name="get-converse-version">
-        <echo message="${converse.version}" />
-    </target>-->
     
 </project>
