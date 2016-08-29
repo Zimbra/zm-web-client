@@ -497,6 +497,7 @@ ZmInviteMsgView.PTST_MSG = [];
 ZmInviteMsgView.PTST_MSG[ZmCalBaseItem.PSTATUS_ACCEPT] = {msg: AjxMessageFormat.format(ZmMsg.inviteAccepted), className: "InviteStatusAccept"};
 ZmInviteMsgView.PTST_MSG[ZmCalBaseItem.PSTATUS_DECLINED] = {msg: AjxMessageFormat.format(ZmMsg.inviteDeclined), className: "InviteStatusDecline"};
 ZmInviteMsgView.PTST_MSG[ZmCalBaseItem.PSTATUS_TENTATIVE] = {msg: AjxMessageFormat.format(ZmMsg.inviteAcceptedTentatively), className: "InviteStatusTentative"};
+ZmInviteMsgView.PTST_MSG[ZmCalBaseItem.PSTATUS_NEEDS_ACTION] = {msg: AjxMessageFormat.format(ZmMsg.ptstMsgNeedsAction), className: "InviteStatusTentative"};
 
 ZmInviteMsgView.prototype.addSubs =
 function(subs, sentBy, sentByAddr, obo) {
