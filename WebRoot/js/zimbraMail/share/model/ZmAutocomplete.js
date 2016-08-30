@@ -540,11 +540,19 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 				if (this.type == ZmAutocomplete.AC_TYPE_CONTACT) {
 					var contactList = AjxDispatcher.run("GetContacts");
 					var contact = contactList && contactList.getById(match.id);
-					var displayName = contact && contact.getFullNameForDisplay(false);
-
-					this.fullAddress = "\"" + displayName + "\" <" + email.getAddress() + ">";
-					this.name = displayName;
-					this.text = AjxStringUtil.htmlEncode(this.fullAddress);
+					if (contact) {
+						var displayName = contact && contact.getFullNameForDisplay(false);
+						this.fullAddress = "\"" + displayName + "\" <" + email.getAddress() + ">";
+						this.name = displayName;
+						this.text = AjxStringUtil.htmlEncode(this.fullAddress);
+					}
+					else {
+						//we assume if we don't get contact object, its a shared contact.
+						this.fullAddress = email.toString();
+						this.name = email.getName();
+						this.email = email.getAddress();
+						this.text = AjxStringUtil.htmlEncode(this.fullAddress);
+					}
 				} else {
 					this.fullAddress = email.toString();
 					this.name = email.getName();
