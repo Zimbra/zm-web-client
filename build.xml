@@ -179,6 +179,8 @@
                 />
     </target>
 
+    <target name='jar'>
+    </target>
 
     <target name='dev'>
         <property name='war.compress' value='false'/>
