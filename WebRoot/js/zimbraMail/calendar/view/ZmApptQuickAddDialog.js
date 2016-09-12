@@ -438,7 +438,7 @@ function() {
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {
 			dataClass:		appCtxt.getAutocompleter(),
-			matchValue:		ZmAutocomplete.AC_VALUE_NAME,
+			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
 			compCallback:	acCallback,
             keyUpCallback:	this._handleLocationChange.bind(this),
 			options:		{type:ZmAutocomplete.AC_TYPE_LOCATION},
