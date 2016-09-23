@@ -10,7 +10,7 @@
 
     <property file='${this.zwc.basedir}/build-custom.properties'/>
 
-    <property name="javac.target" value="1.7"/>
+    <property name="javac.target" value="1.8"/>
 
     <property environment="env"/>
 
@@ -1539,6 +1539,7 @@ ext = BeanUtils.cook(ext);
                 <echo message="Generating ${tinymce.emoticon.file}" />
 
                 <script language="javascript">
+		    load("nashorn:mozilla_compat.js");
                     importClass(org.apache.tools.ant.util.Base64Converter);
                     importClass(java.nio.charset.StandardCharsets);
                     importClass(java.nio.file.Files);
