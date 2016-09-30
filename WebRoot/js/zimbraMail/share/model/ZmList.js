@@ -581,6 +581,10 @@ function(params, result) {
 		// enough for the most common cases. Prior to this fix it was only taking the current list
 		// the first item is in, so this is already better. :)
 		var item = movedItems[0];
+		// Bug:106757 Adds the missing current list to _lists
+		if(!item._list[item.list.id]) {
+			item._list[item.list.id] = true;
+		}
 		for (var listId in item._list) {
 			var ac = window.parentAppCtxt || appCtxt; //always get the list in the parent window. The child might be closed or closing, causing bugs.
 			var list = ac.getById(listId);
