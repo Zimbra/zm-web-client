@@ -581,7 +581,7 @@ function(params, result) {
 		// enough for the most common cases. Prior to this fix it was only taking the current list
 		// the first item is in, so this is already better. :)
 		var item = movedItems[0];
-		// Bug:106757 Adds the missing current list to _lists
+		// Bug:104027 Adds the missing current list to _lists
 		if(!item._list[item.list.id]) {
 			item._list[item.list.id] = true;
 		}
