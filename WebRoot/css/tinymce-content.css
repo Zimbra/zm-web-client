@@ -44,3 +44,12 @@
 .mce-inactive-editor .mce-resizehandle {
 	@transition@: opacity 0.2s ease;
 }
+
+/* Bug 103339 - compose new email issue with scrollbar */
+.mce-content-body {
+	word-wrap: break-word;
+	margin: 0px;
+	padding: 8px;
+	box-sizing: border-box;
+	max-width: 100%;
+}
