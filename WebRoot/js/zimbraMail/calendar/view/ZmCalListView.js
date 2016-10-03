@@ -561,7 +561,34 @@ function() {
  */
 ZmCalListView.prototype._onDatesChange =
 function(isStartDate) {
+	if (this._startDateField instanceof DwtInputField) { // Fix for Bug 103534, called when user modifies date from input field.
+		this.validStartEnd();
+		this._handleDateChange(isStartDate);
+		return;
+	}
 	if (ZmApptViewHelper.handleDateChange(this._startDateField, this._endDateField, isStartDate)) {
 		this._handleDateChange(isStartDate);
 	}
+};
+
+ZmCalListView.prototype.validStartEnd =  function() {
+
+		var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.getValue());
+		var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.getValue());
+	    var date = new Date();
+
+			if (startDate == null || isNaN(startDate)) {
+				startDate =  date;
+				this._startDateField.setValue(AjxDateUtil.simpleComputeDateStr(startDate));
+			}
+
+			if (endDate == null || isNaN(endDate)) {
+				endDate = date;
+				this._endDateField.setValue(AjxDateUtil.simpleComputeDateStr(endDate));
+			}
+
+			if((startDate.valueOf() > endDate.valueOf())) {
+				this._endDateField.setValue(AjxDateUtil.simpleComputeDateStr(startDate));
+			}
+
 };
