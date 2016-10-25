@@ -1420,7 +1420,11 @@ function(message) {
 		if (!this._includeEditReply) {
 			textContent = this._trimNotesSummary(textContent);
 		}
-		this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
+
+        // The last content type is updated based on message's content type, it takes care of text/plain or text/html based on their availability
+        var mimeContentType = this.isTextPartPresent(message) ? ZmMimeTable.TEXT_PLAIN : message._lastContentType;
+
+		this.notesTopPart.setContentType(mimeContentType);
 		this.notesTopPart.setContent(textContent);
 	}
 };
@@ -2832,4 +2836,29 @@ function(d, format) {
 	format = format || AjxDateFormat.SHORT;
 	var formatter = AjxDateFormat.getDateInstance();
 	return formatter.format(d);
+};
+
+/*
+ * Returns the status of text part from the message. If the message doesn't contain text body part then we convert html body part to text.
+ * This function helps in determining if we use text/plain or last content type to process the notes top part's body.
+ *
+ * @param	{ZmMailMsg}	message	the message object received for setting notes section
+ * @return {Boolean}
+ */
+ZmCalItem.prototype.isTextPartPresent =
+function(message) {
+    var textMimePart = message._topPart && message._topPart.children.getArray().filter(function(item) {
+        return item.contentType === ZmMimeTable.TEXT_PLAIN;
+    });
+
+    var textContent = textMimePart.length && textMimePart[0].getContent();
+
+    if (textContent && textContent.length) {
+        // The text part is available, set contenttype to text/plain
+        return true;
+    }
+    else {
+        // The text part is missing, set contenttype to text/html
+        return false;
+    }
 };
