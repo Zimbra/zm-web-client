@@ -2851,7 +2851,7 @@ function(message) {
         return item.contentType === ZmMimeTable.TEXT_PLAIN;
     });
 
-    var textContent = textMimePart.length && textMimePart[0].getContent();
+    var textContent = textMimePart && textMimePart.length && textMimePart[0].getContent();
 
     if (textContent && textContent.length) {
         // The text part is available, set contenttype to text/plain
