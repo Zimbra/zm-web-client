@@ -34,7 +34,7 @@
 </c:if>
 </c:forEach>
 <c:forEach var="part" items="${message.attachments}">
-    <c:if test="${!part.isMssage}">
+    <c:if test="${!part.isMssage && part.getContentDisposition() == 'attachment'}">
         <c:set var="pname" value="${part.displayName}"/>
         <c:if test="${empty pname}"><fmt:message key="unknownContentType" var="pname"><fmt:param value="${part.contentType}"/></fmt:message></c:if>
 
@@ -76,7 +76,7 @@
                             </c:if>
                             <c:if test="${not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsViewInHtmlOnly')}">
                                 <a href="${url}&amp;disp=a"><fmt:message key="download"/></a>
-                            </c:if>    
+                            </c:if>
                         </c:if>
                     </c:if>
                 </td>
