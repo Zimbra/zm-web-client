@@ -1165,6 +1165,20 @@ function(params, msg, finalChoice) {
 			if (cview) {
 				selection = params.conv ? [ params.conv ] : cview.getSelection();
 				selCount = params.conv ? 1 : selection.length;
+
+				/*
+					Bug 106342 - Forwarding invite shows html source in the body
+					Refer to last selected list item before deciding compose action. Selection is lost when context-menu is destroyed and there is no way
+					to find out which list item was selected. By default we fall back to mail compose view but in case of invite we need appt compose view.
+				*/
+				if (selCount === 0 && msg.isInvite() && cview.getSelection().length === 0) {
+					selection = this._lastSelectedListItem;
+
+					// Mutate the selCount only if we find any lastSelectedListItem, else it opens as a regular mail compose view.
+					if (selection) {
+						selCount = selection.length;
+					}
+				}
 			}
 		}
 		// bug 43428 - invitation should be forwarded using appt forward view
@@ -1862,6 +1876,10 @@ function(params, callback) {
 		callback.run(msg);
 	} else {
 		if (msg.id == this._pendingMsg) { return; }
+
+		// Bug: 106342 - Cache the currently selected message list item as it gets de-selected when context-menu is destroyed.
+		this._lastSelectedListItem = this._view[this._currentViewId].getSelection();
+
 		msg._loadPending = true;
 		this._pendingMsg = msg.id;
 		params.markRead = (params.markRead != null) ? params.markRead : this._handleMarkRead(msg, true);

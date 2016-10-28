@@ -677,6 +677,10 @@ ZmConvListController.prototype._getLoadedMsg =
 function(params, callback) {
 	params = params || {};
 	var sel = this._listView[this._currentViewId].getSelection();
+
+	// Bug: 106342 - Cache the currently selected conversation list item as it gets de-selected when context-menu is destroyed.
+	this._lastSelectedListItem = sel;
+
 	var item = (sel && sel.length) ? sel[0] : null;
 	if (item) {
 		if (item.type == ZmItem.CONV) {

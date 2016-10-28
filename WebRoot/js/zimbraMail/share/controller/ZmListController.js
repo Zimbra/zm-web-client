@@ -53,6 +53,7 @@ ZmListController = function(container, app, type, sessionId, searchResultsContro
 	this._newButton = null;
 	this._actionMenu = null;		// ZmActionMenu
 	this._actionEv = null;
+	this._lastSelectedListItem = null; // For Bug: 106342 [Selection of list item is lost after context-menu is destroyed]
 	
 	if (this.supportsDnD()) {
 		this._dropTgt = new DwtDropTarget("ZmTag");
