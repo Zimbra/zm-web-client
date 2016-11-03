@@ -1,4 +1,4 @@
-<project name="zm-web-client" default="war">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="zm-web-client" default="war">
     <import file="../zm-zcs/ant-global.xml"/>
     <property name="ajax.dir" location="../zm-ajax" />
     <property name="ajax.src.dir" location="${ajax.dir}/src" />
@@ -203,6 +203,7 @@
             </then>
         </if>
         <antcall target="assemble-war"/>
+        <antcall target='restart-webserver'/>
     </target>
 
     <target name="copy-ajax">
@@ -246,8 +247,23 @@
         <ant dir="${ajax.dir}" target="zm-ajax" inheritAll="false"/>
     </target>
 
-    <target name="assemble-war" depends="webxml-package-replace" description="Assembles the war file.  Assumes that all dependencies have been built.  Octopus/ZimbraWebClient/build.xml calls the war target, modifies files in ZimbraWebClient/build, and then calls this target.">
+    <target name="assemble-war" depends="webxml-package-replace, resolve" description="Assembles the war file.  Assumes that all dependencies have been built.  Octopus/ZimbraWebClient/build.xml calls the war target, modifies files in ZimbraWebClient/build, and then calls this target.">
         <mkdir dir='${build.war.dir}'/>
+        <ivy:install organisation="gifencoder" module="gifencoder" revision="1.0" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="zimbrasoap" module="zimbrasoap" revision="1.0" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="zimbraclient" module="zimbraclient" revision="1.0" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="zimbrataglib" module="zimbrataglib" revision="1.0" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="zimbrastore" module="zimbrastore" revision="1.0" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="gmbal-api-only" module="gmbal-api-only" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="jaxb-api" module="jaxb-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="jaxb-impl" module="jaxb-impl" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="jaxws-api" module="jaxws-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="jaxws-rt" module="jaxws-rt" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="jsr181-api" module="jsr181-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="policy" module="policy" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="stax-ex" module="stax-ex" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="streambuffer" module="streambuffer" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+
         <war warfile="${build.war.file}" webxml='${build.dir}/web.xml'
              compress='${war.compress}' duplicate="preserve">
             <webinf refid='customer.webinf.fileset' />
@@ -260,20 +276,7 @@
             <classes refid="overlay.messages.fileset" />
             <classes refid="messages.fileset" />
 
-            <lib dir='${common.jars.dir}' includes='gifencoder.jar'/>
-            <lib dir='${common.jars.dir}' includes='zimbrasoap.jar'/>
-            <lib dir='${common.jars.dir}' includes='zimbraclient.jar'/>
-            <lib dir='${common.jars.dir}' includes='zimbrataglib.jar'/>
-            <lib dir='${common.jars.dir}' includes='zimbrastore.jar'/>
-            <lib dir='${common.jars.dir}' includes='gmbal-api-only-*.jar'/>
-            <lib dir='${common.jars.dir}' includes='jaxb-api-*.jar'/>
-            <lib dir='${common.jars.dir}' includes='jaxb-impl-*.jar'/>
-            <lib dir='${common.jars.dir}' includes='jaxws-api-*.jar'/>
-            <lib dir='${common.jars.dir}' includes='jaxws-rt-*.jar'/>
-            <lib dir='${common.jars.dir}' includes='jsr181-api-*.jar'/>
-            <lib dir='${common.jars.dir}' includes='policy-*.jar'/>
-            <lib dir='${common.jars.dir}' includes='stax-ex-*.jar'/>
-            <lib dir='${common.jars.dir}' includes='streambuffer-*.jar'/>
+            <lib dir="${build.tmp.dir}" includes="*.jar"/>
 
             <!-- files from build tree -->
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
@@ -297,6 +300,8 @@
            <!--  <zipfileset refid='help.fileset' prefix='help' />
 			      <zipfileset refid='network.help.fileset' prefix='help' /> -->
         </war>
+        <!-- Delete tmp folder that may have been left over, e.g.: older versions of same libs -->
+        <delete dir="${build.tmp.dir}"/>
     </target>
 
     <target name='sync' depends='resolve,copy-ajax,jquery,modernizr,tinymce,templates'>
@@ -315,22 +320,28 @@
             <fileset dir='${build.classes.dir}' excludes='**/build/**'/>
         </copy>
 
-        <copy todir="${webapp.dir}/WEB-INF/lib" verbose="${sync.verbose}">
-            <fileset dir='${common.jars.dir}' includes='gifencoder.jar'/>
-            <fileset dir='${common.jars.dir}' includes='zimbrasoap.jar'/>
-            <fileset dir='${common.jars.dir}' includes='zimbraclient.jar'/>
-            <fileset dir='${common.jars.dir}' includes='zimbrataglib.jar'/>
-            <fileset dir='${common.jars.dir}' includes='zimbrastore.jar'/>
-            <fileset dir='${common.jars.dir}' includes='gmbal-api-only-*.jar'/>
-            <fileset dir='${common.jars.dir}' includes='jaxb-api-*.jar'/>
-            <fileset dir='${common.jars.dir}' includes='jaxb-impl-*.jar'/>
-            <fileset dir='${common.jars.dir}' includes='jaxws-api-*.jar'/>
-            <fileset dir='${common.jars.dir}' includes='jaxws-rt-*.jar'/>
-            <fileset dir='${common.jars.dir}' includes='jsr181-api-*.jar'/>
-            <fileset dir='${common.jars.dir}' includes='policy-*.jar'/>
-            <fileset dir='${common.jars.dir}' includes='stax-ex-*.jar'/>
-            <fileset dir='${common.jars.dir}' includes='streambuffer-*.jar'/>
+        <ivy:install organisation="gifencoder" module="gifencoder" revision="1.0" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="zimbrasoap" module="zimbrasoap" revision="1.0" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="zimbraclient" module="zimbraclient" revision="1.0" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="zimbrataglib" module="zimbrataglib" revision="1.0" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="zimbrastore" module="zimbrastore" revision="1.0" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="gmbal-api-only" module="gmbal-api-only" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="jaxb-api" module="jaxb-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="jaxb-impl" module="jaxb-impl" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="jaxws-api" module="jaxws-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="jaxws-rt" module="jaxws-rt" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="jsr181-api" module="jsr181-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="policy" module="policy" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="stax-ex" module="stax-ex" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="streambuffer" module="streambuffer" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+
+        <copy todir="${webapp.dir}/WEB-INF/lib">
+            <fileset dir="${build.tmp.dir}">
+                <include name="*.jar"/>
+            </fileset>
         </copy>
+
+        <delete dir="${build.tmp.dir}"/>
 
         <taskdef name="jscopy"
                  classname="com.zimbra.webClient.build.JSCopyTask"
@@ -374,6 +385,7 @@
 		<antcall target='webxml-package-replace' />
 		<copy tofile="${webapp.dir}/WEB-INF/web.xml" file='${build.dir}/web.xml' verbose='${sync.verbose}'/>
         <antcall target='webxml-deploy-replace'/>
+        <antcall target='restart-webserver'/>
     </target>
 
     <target name='init' depends='client,dev,customer-init'>
@@ -1398,7 +1410,9 @@ ext = BeanUtils.cook(ext);
     <target name='prod-deploy' depends='prod,deploy'/>
 
     <target name='restart-webserver'>
-        <ant dir="${server.dir}" target="restart-webserver"/>
+        <exec executable="zmmailboxdctl">
+            <arg value="restart"/>
+        </exec>
     </target>
 
     <!-- ZIMBRA FIREFOX EXTENSION -->

@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <ivy-module version="2.0"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
- <info organisation="com.zimbra" module="zm-web-client" status="release">
- </info>
- <dependencies>
-	<dependency org="commons-cli" name="commons-cli" rev="1.2" />
-	<dependency org="gifencoder" name="gifencoder" rev="1" />
-	<dependency org="com.yahoo.platform.yui" name="yuicompressor" rev="2.4.2-zimbra" />
-	<dependency org="rhino" name="js" rev="1.6R7"/>
-	<dependency org="zimbrataglib" name="zimbrataglib" rev="1.0" />
-	<dependency org="zimbrasoap" name="zimbrasoap" rev="1.0" /> 
-	<dependency org="zimbrastore" name="zimbrastore" rev="1.0" /> 
-	<dependency org="zimbraclient" name="zimbraclient" rev="1.0" /> 
-	<dependency org="zimbracommon" name="zimbracommon" rev="1.0" /> 
-	<dependency org="zimbraajax" name="zimbraajax" rev="1.0" /> 
-  </dependencies>
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+    <info organisation="zimbra" module="zm-web-client" status="integration">
+    </info>
+    <dependencies>
+        <dependency org="gmbal-api-only" name="gmbal-api-only" rev="2.2.6"/>
+        <dependency org="javax.xml.bind" name="jaxb-api" rev="2.2.6"/>
+        <dependency org="com.sun.xml.bind" name="jaxb-impl" rev="2.2.6"/>
+        <dependency org="javax.xml.ws" name="jaxws-api" rev="2.2.6"/>
+        <dependency org="com.sun.xml.ws" name="jaxws-rt" rev="2.2.6"/>
+        <dependency org="policy" name="policy" rev="2.2.6"/>
+        <dependency org="jsr181-api" name="jsr181-api" rev="2.2.6"/>
+        <dependency org="stax-ex" name="stax-ex" rev="2.2.6"/>
+        <dependency org="streambuffer" name="streambuffer" rev="2.2.6"/>
+        <dependency org="commons-cli" name="commons-cli" rev="1.2"/>
+        <dependency org="gifencoder" name="gifencoder" rev="1"/>
+        <dependency org="com.yahoo.platform.yui" name="yuicompressor" rev="2.4.2-zimbra"/>
+        <dependency org="rhino" name="js" rev="1.6R7"/>
+        <dependency org="zimbra" name="zm-soap" rev="latest.integration"/>
+        <dependency org="zimbra" name="zm-ajax" rev="latest.integration"/>
+        <dependency org="zimbra" name="zm-common" rev="latest.integration"/>
+        <dependency org="zimbra" name="zm-client" rev="latest.integration"/>
+        <dependency org="zimbra" name="zm-store" rev="latest.integration"/>
+        <dependency org="zimbra" name="zm-taglib" rev="latest.integration"/>
+    </dependencies>
 </ivy-module>
