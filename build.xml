@@ -203,7 +203,6 @@
             </then>
         </if>
         <antcall target="assemble-war"/>
-        <antcall target='restart-webserver'/>
     </target>
 
     <target name="copy-ajax">
@@ -385,7 +384,6 @@
 		<antcall target='webxml-package-replace' />
 		<copy tofile="${webapp.dir}/WEB-INF/web.xml" file='${build.dir}/web.xml' verbose='${sync.verbose}'/>
         <antcall target='webxml-deploy-replace'/>
-        <antcall target='restart-webserver'/>
     </target>
 
     <target name='init' depends='client,dev,customer-init'>
@@ -1217,7 +1215,7 @@ ext = BeanUtils.cook(ext);
         <unzip dest='${webapp.dir}' src="${webapp.file}"/>
 
         <antcall target='webxml-deploy-replace'/>
-
+        <antcall target='restart-webserver'/>
     </target>
 
     <target name='webxml-package-replace' depends='init'>
@@ -1404,7 +1402,9 @@ ext = BeanUtils.cook(ext);
     <target name='sync-html' depends='taglib-jar,sync' />
 
     <!-- LEGACY TARGETS -->
-    <target name='dev-sync' depends='init,sync'/>
+    <target name='dev-sync' depends='init,sync'>
+        <antcall target='restart-webserver'/>
+    </target>
     <target name='prod-war' depends='prod,war'/>
     <target name="prod-build" depends='prod,war,jspc.build'/>
     <target name='prod-deploy' depends='prod,deploy'/>
