@@ -299,6 +299,7 @@ function(calItem) {
 
 	var subs = this._getSubs(calItem);
 	subs.subject = AjxStringUtil.htmlEncode(subs.subject);
+	subs.location = AjxStringUtil.htmlEncode(subs.location);
 
 	this._hdrTableId = this._htmlElId + "_hdrTable";
 
