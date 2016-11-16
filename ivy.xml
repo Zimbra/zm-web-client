@@ -5,15 +5,15 @@
     <info organisation="zimbra" module="zm-web-client" status="integration">
     </info>
     <dependencies>
-        <dependency org="gmbal-api-only" name="gmbal-api-only" rev="2.2.6"/>
+        <dependency org="org.glassfish.gmbal" name="gmbal-api-only" rev="2.2.6"/>
         <dependency org="javax.xml.bind" name="jaxb-api" rev="2.2.6"/>
         <dependency org="com.sun.xml.bind" name="jaxb-impl" rev="2.2.6"/>
         <dependency org="javax.xml.ws" name="jaxws-api" rev="2.2.6"/>
         <dependency org="com.sun.xml.ws" name="jaxws-rt" rev="2.2.6"/>
-        <dependency org="policy" name="policy" rev="2.2.6"/>
-        <dependency org="jsr181-api" name="jsr181-api" rev="2.2.6"/>
-        <dependency org="stax-ex" name="stax-ex" rev="2.2.6"/>
-        <dependency org="streambuffer" name="streambuffer" rev="2.2.6"/>
+        <dependency org="com.sun.xml.ws" name="policy" rev="2.3.1"/>
+        <dependency org="javax.jws" name="jsr181-api" rev="2.2.6"/>
+        <dependency org="org.jvnet.staxex" name="stax-ex" rev="2.2.6"/>
+        <dependency org="com.sun.xml.stream.buffer" name="streambuffer" rev="2.2.6"/>
         <dependency org="commons-cli" name="commons-cli" rev="1.2"/>
         <dependency org="gifencoder" name="gifencoder" rev="1"/>
         <dependency org="com.yahoo.platform.yui" name="yuicompressor" rev="2.4.2-zimbra"/>
