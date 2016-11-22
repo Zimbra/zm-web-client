@@ -1249,12 +1249,7 @@ function(idoc) {
 		var len = images.length, fileImgs=[], img, src;
 		for (var i = 0; i < images.length; i++) {
 			img = images[i];
-			try {
-				src = img.src;
-			} catch(e) {
-				//IE8 throws invalid pointer exception for src attribute when src is a data uri
-			}
-			if (img && src && src.indexOf('file://') == 0) {
+			if (img && img.src && img.src.indexOf('file://') == 0) {
 				removeImg(img);
 				i--; //removeImg reduces the images.length by 1.
 			}

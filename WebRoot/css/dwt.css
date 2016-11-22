@@ -949,11 +949,7 @@ UL.DwtListView-Rows {
 /* Container of the calendar titlebar (arrows and month label, not DOW labels) */
 .DwtCalendarTitlebar {
 	@MiniCalHeaderBg@
-#IFDEF MSIE_LOWER_THAN_9
-	height:18px;
-#ELSE
 	height:2rem;
-#ENDIF
 }
 
 .DwtCalendarTitlebar > TABLE {
@@ -1909,15 +1905,6 @@ INPUT.xform_field {
 .ZWidgetTable DIV				{	}
 .ZHasText .ZWidgetTitle			{	padding:0px 4px;	}
 
-#IFDEF MSIE_LOWER_THAN_9
-.ZWidgetTable .ZLeftIcon .IEImage DIV, .ZWidgetTable .ZLeftIcon .IEImage IMG {
-	margin:0px !important;
-}
-.ZHasIcon .ZMenuItemBorder .ZLeftIcon .IEImageMask IMG {
-	width:auto; height:auto;
-}
-#ENDIF
-
 .ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG		{	margin:1px 0px;			}
 .ZWidgetTable .ZRightIcon DIV, .ZWidgetTable .ZRightIcon IMG	{	margin:1px 0px;			}
 .ZWidgetTable .ZDropDown DIV, .ZWidgetTable .ZDropDown IMG		{	margin:1px 0px;			}
@@ -2034,7 +2021,7 @@ INPUT.xform_field {
  *
  ***************/
 
-.ZSelectAutoSizingContainer					{	height:22px; height:2rem; width:auto;	}		/* TODO: SIZE ASSUMPTION! */
+.ZSelectAutoSizingContainer					{	height:2rem; width:auto;	}		/* TODO: SIZE ASSUMPTION! */
 
 .ZSelect									{	@Select@		@SelectSpacing@			}
 .ZSelect .ZWidgetTitle						{	padding-left:5px; text-align:left;		}

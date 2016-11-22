@@ -643,10 +643,9 @@ function(zimletArray, zimletNames, isJS) {
 		if (appCtxt.getSettings() && appCtxt.getSettings().getInfoResponse && appCtxt.getSettings().getInfoResponse.cos) {
 			cosId = appCtxt.getSettings().getInfoResponse.cos.id;
 		}
-		var extension = (!AjxEnv.isIE || (!AjxEnv.isIE6 && AjxEnv.isIE6up)) ? appExtension : "";
 		includes.unshift([
 			"/service/zimlet/res/Zimlets-nodev_all",
-			(isJS ? (".js" + extension) : ".css"),
+			(isJS ? (".js" + appExtension) : ".css"),
 			(languageId ? "?language=" + languageId : ""),
 			(countryId ? "&country=" + countryId : ""),
 			(cosId ? "&cosId=" + cosId : "")  // For an explanation of why we add cosId here, please see bug #58979

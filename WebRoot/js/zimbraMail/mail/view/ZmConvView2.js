@@ -1430,11 +1430,6 @@ function(el) {
 		for (var i = 0; i < props.length; i++) {
 			var prop = props[i];
 			var h = parseInt(styleObj[prop]);
-			if (prop === "height" && isNaN(h)) {
-				//default to offsetHeight if height is NaN (i.e. "auto" - this would happen for IE8 since getComputedStyleObject returns htmlElement.currentStyle, which has "auto" type stuff (i.e. not computed)
-				height = el.offsetHeight;
-				break;
-			}
 			height += isNaN(h) ? 0 : h;
 		}
 	}

@@ -569,27 +569,6 @@ function() {
     var opacity = this._state.value;
     var step = this._state.step;
 
-    // NOTE: IE8 and earlier are slow re-rendering when adjusting
-    //       opacity. So we try to do it using filters.
-    if (AjxEnv.isIE && !AjxEnv.isIE9up) {
-        try {
-            var el = this.getHtmlElement();
-            el.style.visibility = step > 0 ? "hidden" : "visible";
-
-            var duration = this._state.duration / 1000;
-            el.style.filter = "progid:DXImageTransform.Microsoft.Fade(duration="+duration+",overlap=1.0)";
-
-            el.filters[0].Apply();
-            el.style.visibility = step > 0 ? "visible" : "hidden";
-            el.filters[0].Play();
-        }
-        catch (e) {
-            DBG.println("error: "+e);
-        }
-        setTimeout(this._funcs["next"], 0);
-        return;
-    }
-
     var isOver = step > 0 ? opacity >= this._state.end : opacity <= this._state.end;
     if (isOver) {
         opacity = this._state.end;

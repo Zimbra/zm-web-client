@@ -483,9 +483,6 @@ INPUT.admin_xform_name_input_disabled {
 .mbxprogressusedCritical {
 	height:8px;
 	margin:1px 0px;
-#IFDEF MSIE_LOWER_THAN_9
-	font-size:0px;
-#ENDIF
 }
 
 .mbxprogressused {
@@ -505,9 +502,6 @@ INPUT.admin_xform_name_input_disabled {
 	border:1px solid grey;
 	height:10px;
 	width:100px;
-#IFDEF MSIE_LOWER_THAN_9
-	font-size:0px;
-#ENDIF
 }
 
 .ImgAppBanner {
@@ -731,12 +725,6 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE {
 #ENDIF
 }
 
-#IFDEF MSIE_LOWER_THAN_9
-.ZaSearchResultCountLabel {
-	margin-top:5px;
-}
-#ENDIF
-
 /* Search builder outer container */
 .ZaXMbxSearchBuilder {
 	height:225px;		/* ??? SIZE */
@@ -862,15 +850,6 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE {
 
 .ZaToastText {
 	max-width:500px;
-/************
- *
- * in IE, break-word can take effort when element has layout
- * here we set to fixed width to get layout 	
- *
- ************/ 
-#IFDEF MSIE_LOWER_THAN_9
-	width:400px; 
-#ENDIF
 	word-wrap:break-word;
 	@ToastText@
 }
@@ -882,9 +861,7 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE {
 
 .ZaToastBG {	@ToastContainer@	}
 
-#IFNDEF MSIE_LOWER_THAN_9
 TABLE {	border-collapse:separate;	}
-#ENDIF
 
 .oselect_display {
 	white-space:normal;

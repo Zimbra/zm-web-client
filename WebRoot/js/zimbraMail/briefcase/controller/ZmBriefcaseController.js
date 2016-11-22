@@ -968,12 +968,6 @@ function(items){
 
 		var win = window.open(restUrl, this._getWindowName(item.name), item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
         appCtxt.handlePopupBlocker(win);
-
-        // avoid losing focus in IE8 and earlier (bug 52206)
-        if (win && AjxEnv.isIE && !AjxEnv.isIE9up) {
-		    var ta = new AjxTimedAction(win, win.focus);
-		    AjxTimedAction.scheduleAction(ta, 100);
-        }
 	}
 };
 
@@ -1445,7 +1439,7 @@ function(ex){
 ZmBriefcaseController.prototype.createFromAttachment =
 function(msgId, partId, name){
 
-     var dlg = this._saveAttDialog = appCtxt.getChooseFolderDialog(this._app.getName());
+     var dlg = this._saveAttDialog = appCtxt.getChooseFolderDialog();
 	 var chooseCb = new AjxCallback(this, this._chooserCallback, [msgId, partId, name]);
 	 ZmController.showDialog(dlg, chooseCb, this._getCopyParams(dlg, msgId, partId));
 

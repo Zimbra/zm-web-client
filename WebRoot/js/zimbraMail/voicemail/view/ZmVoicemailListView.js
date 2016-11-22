@@ -248,9 +248,6 @@ ZmVoicemailListView.prototype._helpListener =
 function(ev) {
 	var dialog = appCtxt.getMsgDialog();
 	var message = AjxEnv.isIE ? ZmMsg.missingPluginHelpIE : ZmMsg.missingPluginHelp;
-    if (AjxEnv.isIE8) {
-        message = ZmMsg.missingPluginHelpIE8;
-    }
 	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
 	dialog.popup();
 };
