@@ -490,8 +490,10 @@ function(statusMsg, ev) {
 ZmMsgController.prototype._acceptShareHandler =
 function(ev) {
     ZmMailListController.prototype._acceptShareHandler.call(this, ev);
-    //Close View
-    appCtxt.getAppViewMgr().popView();
+	//Close View
+	if (!appCtxt.isChildWindow) {
+		appCtxt.getAppViewMgr().popView();
+	}
 };
 
 ZmMsgController.prototype._setStatics = function() {
