@@ -270,6 +270,7 @@
             <webinf refid="webinf.fileset" />
 
             <classes dir='${ajax.build.classes.dir}' excludes='**/build/**'/>
+            <classes dir='${build.classes.dir}' excludes='**/build/**'/>
             <classes refid="overlay.src.props.fileset" />
             <classes refid="src.props.fileset" />
             <classes refid="overlay.messages.fileset" />
