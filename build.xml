@@ -270,6 +270,7 @@
             <webinf refid="webinf.fileset" />
 
             <classes dir='${ajax.build.classes.dir}' excludes='**/build/**'/>
+            <classes dir='${build.classes.dir}' excludes='**/build/**'/>
             <classes refid="overlay.src.props.fileset" />
             <classes refid="src.props.fileset" />
             <classes refid="overlay.messages.fileset" />
@@ -386,7 +387,7 @@
         <antcall target='webxml-deploy-replace'/>
     </target>
 
-    <target name='init' depends='client,dev,customer-init'>
+    <target name='init' depends='resolve,client,dev,customer-init'>
         <!-- properties based on props set in client/admin/prod/dev targets -->
         <property name='deploy.server' value='jetty'/>
         <property name='build.war.dir' value='${build.dist.dir}/${deploy.server}/webapps'/>
