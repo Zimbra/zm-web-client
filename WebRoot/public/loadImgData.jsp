@@ -26,9 +26,7 @@ document.write("<DIV style='display:none'>");
 for (id in AjxImgData) {
 	data = AjxImgData[id];
 	if (data.f) data.f = data.f.replace(/@AppContextPath@/,appContextPath);
-	if (data.ief) data.ief = data.ief.replace(/@AppContextPath@/,appContextPath);
-	f = AjxEnv.isIE && !AjxEnv.isIE9up ? data.ief : data.f;
-	document.write("<IMG id='",id,"' src='",data.d||f,"?v=${vers}'>");
+	document.write("<IMG id='",id,"' src='",data.d||data.f,"?v=${vers}'>");
 }
 document.write("</DIV>");
 delete id;

@@ -1716,7 +1716,7 @@ ZmEditContactViewInputSelect.prototype._createInput = function() {
 	input.setHandler(DwtEvent.ONKEYDOWN, AjxCallback.simpleClosure(this._handleInputKeyDown, this, input));
 	input.setHandler(DwtEvent.ONKEYUP, AjxCallback.simpleClosure(this._handleInputKeyUp, this, input));
 	input.setHandler(DwtEvent.ONMOUSEDOWN, AjxCallback.simpleClosure(this._handleMouseDown, this, input));
-	if (AjxEnv.isIE  && !AjxEnv.isIE9 && !AjxEnv.isIE8) {
+	if (AjxEnv.isIE  && !AjxEnv.isIE9) {
 		// Add a handler to account for IE's 'clear an input field' X control. IE10+
 		input.setHandler(DwtEvent.ONMOUSEUP,   this._handleMouseUp.bind(this, input));
 	}

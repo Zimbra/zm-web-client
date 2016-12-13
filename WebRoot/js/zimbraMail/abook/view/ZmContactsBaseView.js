@@ -492,12 +492,6 @@ function() {
         this._makeFocusable(cell, true);
         this._setEventHdlrs([ DwtEvent.ONCLICK ], false, cell);
     }).bind(this));
-
-    // IE8 doesn't support :last-child selector
-    if (AjxEnv.isIE8) {
-        var lastCell = Dwt.byClassName('AlphabetBarCell', element).pop();
-        Dwt.addClass(lastCell, 'AlphabetBarLastCell');
-    }
 };
 
 ZmContactAlphabetBar.prototype.getInputElement =

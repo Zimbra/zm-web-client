@@ -247,8 +247,7 @@ function() {
 		inputControl.setDisplay(Dwt.DISPLAY_INLINE);
 
 		// Toggle the setting when editing the time input; it already recieves
-		// focus on click, so this is mainly for keyboard navigation. (Except
-		// on IE8, where the 'oninput' event doesn't work.)
+		// focus on click, so this is mainly for keyboard navigation.
 		inputControl.setHandler(DwtEvent.ONINPUT, function(ev) {
 			if (inputControl.getValue()) {
 				this.setFormValue(ZmSetting.MARK_MSG_READ,

@@ -398,7 +398,7 @@ if (application.getInitParameter("offlineMode") != null) {
  * ***** END LICENSE BLOCK *****
 -->
 	<c:set var="client" value="${param.client}"/>
-	<c:set var="useStandard" value="${not (ua.isFirefox3up or ua.isGecko1_9up or ua.isIE8up or ua.isSafari4Up or ua.isChrome or ua.isModernIE)}"/>
+	<c:set var="useStandard" value="${not (ua.isFirefox3up or ua.isGecko1_9up or ua.isIE9up or ua.isSafari4Up or ua.isChrome or ua.isModernIE)}"/>
 	<c:if test="${empty client}">
 		<%-- set client select default based on user agent. --%>
         <c:choose>
