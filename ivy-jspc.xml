@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ivy-module version="2.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+    <info organisation="zimbra" module="zm-web-client" status="integration">
+    </info>
+    <dependencies>
+        <dependency org="org.mortbay.jasper" name="apache-el" rev="8.0.20.M0"/>
+        <dependency org="org.mortbay.jasper" name="apache-jsp" rev="8.0.20.M0"/>
+        <dependency org="org.eclipse.jetty.orbit" name="org.eclipse.jdt.core" rev="3.8.2.v20130121"/>
+        <dependency org="org.eclipse.jetty" name="apache-jsp" rev="9.3.0.v20150612"/>
+        <dependency org="org.apache.taglibs" name="taglibs-standard-spec" rev="1.2.1"/>
+        <dependency org="org.apache.taglibs" name="taglibs-standard-impl" rev="1.2.1"/>
+        <dependency org="org.eclipse.jetty.toolchain" name="jetty-schemas" rev="3.1"/>
+        <dependency org="javax.servlet" name="javax.servlet-api" rev="3.1.0"/>
+        <dependency org="javax.mail" name="javax.mail-api" rev="1.4.5"/>
+        <dependency org="com.google.guava" name="guava" rev="13.0.1"/>
+        <dependency org="commons-httpclient" name="commons-httpclient" rev="3.1"/>
+        <dependency org="commons-codec" name="commons-codec" rev="1.7"/>
+        <dependency org="org.json" name="json" rev="20090211" />
+        <dependency org="com.yahoo.platform.yui" name="yuicompressor" rev="2.4.2-zimbra"/>
+        <dependency org="zimbra" name="zm-ajax" rev="latest.integration"/>
+        <dependency org="zimbra" name="zm-common" rev="latest.integration"/>
+        <dependency org="zimbra" name="zm-client" rev="latest.integration"/>
+        <dependency org="zimbra" name="zm-store" rev="latest.integration"/>
+        <dependency org="zimbra" name="zm-taglib" rev="latest.integration"/>
+    </dependencies>
+</ivy-module>
