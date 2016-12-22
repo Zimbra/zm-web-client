@@ -128,19 +128,34 @@ function(orig, result, startTime, endTime, fanoutAllDay, includeReminders) {
 		origEndTime = origEndDate.getTime();
 	}
 
-    //while (appt.isInRange(startTime,endTime) || (appt.isAlarmInRange() && includeReminders)) {
-    while (orig.isInRange(startTime,endTime) || (appt.isAlarmInRange() && includeReminders)) {
+	/*
+	 * Fix for bug https://jira.corp.synacor.com/browse/ZCS-207
+	 * With the old implementation we were creating appointment clones for the entire range of appointment span per instance.
+	 * I.e. If an appointment spans from 22 December 2016 till 22 December 2100, for each day appointment 22, 23, .... till year 2100,
+	 * each day's appt object would have all the entire duration's appts cloned. This would take forever to execute the loop.
+	 *
+	 * Now depending on day, week, work-week or month we create clones for only that day/week/work-week/month.
+	 * We fanout appts that are in the range of the startTime and endTime range.
+	 **/
+	var nextDay;
+	if (startTime < orig.getStartTime()) {
+		nextDay = new Date(orig.getStartTime());
+	}
+	else {
+		nextDay = new Date(startTime);
+	}
+
+	while (true) {
 		if (appt.isMultiDay()) {
-			var apptStartTime = appt.getStartTime();
+
+			if (appt.getStartTime() >= appt.getEndTime()) {
+				break;
+			}
+
 			// bug 12205: If someone mistypes "2007" as "200", we get into
 			//            a seemingly never-ending loop trying to fanout
 			//            every day even *before* the startTime of the view.
-			var nextDay = new Date(apptStartTime);
-			nextDay.setDate(nextDay.getDate()+1);
-			if (origEndTime < nextDay.getTime()) {
-				nextDay = new Date(origEndTime);
-			}
-			nextDay.setHours(0,0,0,0);
+
             if(AjxDateUtil.isDayShifted(nextDay)) {
                 AjxDateUtil.rollToNextDay(nextDay);
             }
@@ -156,8 +171,13 @@ function(orig, result, startTime, endTime, fanoutAllDay, includeReminders) {
 
 			fanoutNum++;
 			appt.setStartDate(nextDay);
-			if (appt.getStartTime() >= appt.getEndTime())
+
+			if (endTime < nextDay.getTime()) {
 				break;
+			}
+
+			nextDay.setDate(nextDay.getDate()+1);
+			nextDay.setHours(0,0,0,0);
 		} else {
 			if (orig.isInRange(startTime,endTime)  || (appt.isAlarmInRange() && includeReminders) ) {
 				appt._fanoutFirst = fanoutNum == 0;

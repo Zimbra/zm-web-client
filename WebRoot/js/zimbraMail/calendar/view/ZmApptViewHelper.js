@@ -130,7 +130,8 @@ function(startDateField, endDateField, isStartDate, skipCheck, oldStartDate) {
 	if (isStartDate) {
 		// if date was input by user and it's foobar, reset to today's date
 		if (!skipCheck) {
-			if (sd == null || isNaN(sd)) {
+			// Bug fix for https://jira.corp.synacor.com/browse/ZCS-207. Do not allow past appointments less than year 1900
+			if (sd == null || isNaN(sd) || sd.getFullYear() < 1900) {
 				sd = new Date();
 			}
 			// always reset the field value in case user entered date in wrong format
