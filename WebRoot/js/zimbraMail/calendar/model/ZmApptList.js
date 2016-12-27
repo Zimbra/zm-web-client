@@ -103,8 +103,7 @@ function(apptList, startTime, endTime, fanoutAllDay, includeReminders) {
 };
 
 /**
- * fanout multi-day appoints into multiple single day appts. This has nothing to do with recurrence...
- * TODO: should be more efficient by not fanning out appts in if part of the while if they are not in the range.
+ * fanout multi-day appoints into multiple single day appts. This has nothing to do with recurrence.
  * 
  * @private
  */
