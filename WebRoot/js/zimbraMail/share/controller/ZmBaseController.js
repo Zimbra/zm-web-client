@@ -1310,7 +1310,7 @@ ZmBaseController.prototype._getBubbleActionMenu = function() {
 	menu.setVisible(true);
 	var clipboard = appCtxt.getClipboard();
 	if (clipboard) {
-		clipboard.addClient([ this.toString(), this._currentViewId ].join('-'), menu.getOp(ZmOperation.COPY), {
+		clipboard.init(menu.getOp(ZmOperation.COPY), {
 			onMouseDown:    this._clipCopy.bind(this),
 			onComplete:     this._clipCopyComplete.bind(this)
 		});
