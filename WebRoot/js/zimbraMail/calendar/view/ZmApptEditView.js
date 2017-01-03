@@ -587,6 +587,12 @@ function() {
             errorMsg.push(ZmMsg.errorInvalidReminderValue);
         }
     }
+
+    var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+    if (startDate.getFullYear() < 1900) {
+        errorMsg.push(ZmMsg.errorInvalidStartDate);
+    }
+
 	if (errorMsg.length > 0) {
 		throw errorMsg.join("<br>");
 	}
