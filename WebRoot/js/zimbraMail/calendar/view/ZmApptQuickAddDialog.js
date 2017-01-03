@@ -177,22 +177,28 @@ function() {
 ZmApptQuickAddDialog.prototype.isValid = 
 function() {
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
-	var errorMsg = null;
+	var errorMsg = [];
 
 	if (subj && subj.length) {
 		if (!DwtTimeInput.validStartEnd( this._startDateField, this._endDateField, this._startTimeSelect, this._endTimeSelect)) {
-			errorMsg = ZmMsg.errorInvalidDates;
+			errorMsg.push(ZmMsg.errorInvalidDates);
 		}
 	} else {
-		errorMsg = ZmMsg.errorMissingSubject;
+		errorMsg.push(ZmMsg.errorMissingSubject);
 	}
-    if (errorMsg) {
+
+	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	if (startDate.getFullYear() < 1900) {
+		errorMsg.push(ZmMsg.errorInvalidStartDate);
+	}
+
+    if (errorMsg.length > 0) {
         var dlg = appCtxt.getMsgDialog();
-		dlg.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
+		dlg.setMessage(errorMsg.join("<br>"), DwtMessageDialog.WARNING_STYLE);
 		dlg.popup();
     }
 
-	return errorMsg == null;
+	return errorMsg.length == 0;
 };
 
 ZmApptQuickAddDialog.prototype.isDirty = 
