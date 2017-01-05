@@ -831,7 +831,15 @@ function() {
 			menu.addSelectionListener(menuItem, this._listeners[menuItem]);
 		}
 	}
-	menu.addPopupListener(this._menuPopupListener.bind(this));
+
+	var copyMenuItem = menu.getOp(ZmOperation.COPY);
+	if (copyMenuItem) {
+		appCtxt.getClipboard().init(copyMenuItem, {
+			onMouseDown:    this._clipCopy.bind(this),
+			onComplete:     this._clipCopyComplete.bind(this)
+		});
+	}
+
 	menu.addPopdownListener(this._menuPopdownListener.bind(this));
 
 	if (this._bubbleMenuCreatedCallback) {
@@ -979,19 +987,6 @@ function(resp, contact) {
 	var ctlr = window.parentAppCtxt ? window.parentAppCtxt.getApp(ZmApp.CONTACTS).getContactController() :
 									  AjxDispatcher.run("GetContactController");
 	ctlr.show(contact);
-};
-
-// Sets up our use of the clipboard to copy address via a menu item
-ZmAddressInputField.prototype._menuPopupListener =
-function() {
-
-	var clipboard = appCtxt.getClipboard();
-	if (clipboard) {
-		clipboard.addClient('ZmAddressInputField', this._actionMenu.getOp(ZmOperation.COPY), {
-			onMouseDown:    this._clipCopy.bind(this),
-			onComplete:     this._clipCopyComplete.bind(this)
-		});
-	}
 };
 
 // Copies address text from the active bubble to the clipboard.
