@@ -199,7 +199,7 @@
             description="Builds all dependencies and assembles the war file.">
         <if><isset property='build.network' />
             <then>
-                <ant dir="${network.dir}/ZimbraTouch" target="touch"/>
+                <ant dir="../zm-touch-client" target="touch"/>
             </then>
         </if>
         <antcall target="assemble-war"/>
