@@ -934,3 +934,65 @@ function(folderSelect) {
         }
     }
 };
+
+/**
+ * Compute start date and time and decide which warning message to show.
+ *
+ * @param {Date}		startDate		start date of the appointment
+ * @param {String}		htmlElId		currently referenced HTML Id
+ * @param {Boolean}		isAllDay		check for all day event
+ *
+ */
+ZmApptViewHelper.warnIfApptStartingInPast =
+function (startDate, htmlElId, isAllDay) {
+	var todaysDateTime = new Date(),
+		todaysDate = new Date(new Date().setHours(0, 0, 0)),
+		apptStartDate = new Date(new Date(startDate).setHours(0, 0, 0)),
+		apptStartDateTime = new Date(startDate),
+		isApptDateInPast = false,
+		isApptTimeInPast = false;
+
+	if (apptStartDate !== null || !isNaN(apptStartDate)) {
+		if (Date.parse(apptStartDate) - Date.parse(todaysDate) < 0) {
+			isApptDateInPast = true;
+		}
+
+		if (!isAllDay) {
+			var secondsElapsed = (apptStartDateTime.getTime() - todaysDateTime.getTime()) / 1000;
+			if (secondsElapsed <  0) {
+				isApptTimeInPast = true;
+			}
+		}
+	}
+
+	if (isApptDateInPast && isApptTimeInPast) {
+		ZmApptViewHelper._toggleMeetingInPastWarning(true, htmlElId, ZmMsg.meetingInPastWarning);
+	}
+	else if (isApptDateInPast) {
+		ZmApptViewHelper._toggleMeetingInPastWarning(true, htmlElId, ZmMsg.meetingDateInPastWarning);
+	}
+	else if (isApptTimeInPast) {
+		ZmApptViewHelper._toggleMeetingInPastWarning(true, htmlElId, ZmMsg.meetingTimeInPastWarning);
+	}
+	else {
+		ZmApptViewHelper._toggleMeetingInPastWarning(false, htmlElId, '');
+	}
+};
+
+/**
+ * Show/hide warning message in case the user is trying to schedule an appointment in past.
+ *
+ * @param {Boolean}		toggleFlag			state to hide/show warning message
+ * @param {String}		htmlElId			currently referenced HTML Id
+ * @param {String}		warningMessage		message to display as warning
+ *
+ */
+ZmApptViewHelper._toggleMeetingInPastWarning =
+function(toggleFlag, htmlElId, warningMessage) {
+	var warningTemplateElement = document.getElementById(htmlElId + '_meetingInPastWarning');
+	var warningTemplateTextElement = document.getElementById(htmlElId + '_meetingInPastWarningMessageText');
+	warningTemplateTextElement.innerHTML = warningMessage;
+
+	warningTemplateElement.style.display = toggleFlag ? "" : Dwt.DISPLAY_NONE;
+	warningTemplateTextElement.style.display = toggleFlag? "" : Dwt.DISPLAY_NONE;
+};
