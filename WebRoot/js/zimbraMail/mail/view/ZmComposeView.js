@@ -1221,6 +1221,7 @@ function(msg, idoc, account) {
 				images[i].setAttribute("dfsrc", dfsrc);
 			}
 		}
+		ZmMailMsgView.__unfangInternalImage(msg, images[i], "src", false);
 	}
 	return num === images.length;
 };
