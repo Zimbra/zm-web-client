@@ -2424,6 +2424,10 @@ function(ev, id) {
         var durationInfo = this.getDurationInfo();
         this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
         this._locationConflictAppt.endDate   = new Date(durationInfo.endTime);
+
+        // Warn the user if trying to schedule an appointment in the past.
+        ZmApptViewHelper.warnIfApptStartingInPast(this._locationConflictAppt.startDate, this._htmlElId);
+
         this.locationConflictChecker();
     }
 };
@@ -2865,6 +2869,13 @@ function(el) {
     }else{
 		ZmCalItemEditView.prototype._handleOnClick.call(this, el);
 	}
+
+    // Warn the user if trying to schedule an appointment in the past.
+    var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+    if (!this._allDayCheckbox.checked) {
+        startDate.setHours(this._startTimeSelect.getHours(), this._startTimeSelect.getMinutes(), 0);
+    }
+    ZmApptViewHelper.warnIfApptStartingInPast(startDate, this._htmlElId, this._allDayCheckbox.checked);
 };
 
 ZmApptEditView.prototype._handleOnFocus =

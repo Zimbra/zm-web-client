@@ -119,6 +119,9 @@ function(appt) {
 	this._repeatDescField.innerHTML = "";
 	this._origFormValue = this._formValue();
 	this._locations = [];
+
+	// Warn the user if trying to schedule an appointment in the past.
+	ZmApptViewHelper.warnIfApptStartingInPast(appt.startDate, this._htmlElId);
 };
 
 /**
@@ -628,7 +631,12 @@ function(ev) {
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
 	}
-    this._dateChangeListener();
+
+	// Warn the user if trying to schedule an appointment in the past.
+	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	startDate && ZmApptViewHelper.warnIfApptStartingInPast(startDate, this._htmlElId);
+
+	this._dateChangeListener();
 };
 
 ZmApptQuickAddDialog.prototype._repeatChangeListener = 
@@ -645,6 +653,12 @@ function(ev, id) {
     if (!this._appt.isAllDayEvent()) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
     }
+
+	// Warn the user if trying to schedule an appointment in the past.
+	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	startDate.setHours(this._startTimeSelect.getHours(), this._startTimeSelect.getMinutes(), 0);
+	startDate && ZmApptViewHelper.warnIfApptStartingInPast(startDate, this._htmlElId);
+
 	this._locationAssistant && this._locationAssistant.updateTime();
 };
 

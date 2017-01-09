@@ -564,6 +564,9 @@ function(calItem, mode) {
         this._reminderEmailCheckbox.setSelected(actions.contains(ZmCalItem.ALARM_EMAIL));
         this._reminderDeviceEmailCheckbox.setSelected(actions.contains(ZmCalItem.ALARM_DEVICE_EMAIL));
 	}
+
+	// Warn the user if trying to schedule an appointment in the past.
+	ZmApptViewHelper.warnIfApptStartingInPast(calItem.startDate, this._htmlElId, this._allDayCheckbox.checked);
 };
 
 ZmCalItemEditView.prototype.adjustReminderValue =
@@ -1112,7 +1115,14 @@ function(ev) {
                 this._setRepeatDesc(this._calItem);
             }
         }
-    }    
+    }
+
+	// Warn the user if trying to schedule an appointment in the past.
+	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	if (!this._allDayCheckbox.checked) {
+		startDate.setHours(this._startTimeSelect.getHours(), this._startTimeSelect.getMinutes(), 0);
+	}
+	ZmApptViewHelper.warnIfApptStartingInPast(startDate, this._htmlElId, this._allDayCheckbox.checked);
 };
 
 ZmCalItemEditView.prototype._resetRecurrence =
@@ -1312,6 +1322,13 @@ function(el) {
     var edField = this._endDateField;
     var oldStartDate = this._oldStartDateValue ? AjxDateUtil.simpleParseDateStr(this._oldStartDateValue) : null;
     ZmApptViewHelper.handleDateChange(sdField, edField, (el == sdField), false, oldStartDate);
+
+	// Warn the user if trying to schedule an appointment in the past.
+	var startDate = AjxDateUtil.simpleParseDateStr(sdField.value);
+	if (!this._allDayCheckbox.checked) {
+		startDate.setHours(this._calItem.startDate.getHours(), this._calItem.startDate.getMinutes(), 0);
+	}
+	ZmApptViewHelper.warnIfApptStartingInPast(startDate, this._htmlElId, this._allDayCheckbox.checked);
 };
 
 ZmCalItemEditView.prototype.handleStartDateChange =
