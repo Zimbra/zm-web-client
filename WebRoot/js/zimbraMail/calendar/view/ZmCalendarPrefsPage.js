@@ -402,8 +402,9 @@ function(batchCmd) {
         }
     }
 
-    if(this._workHoursControl) {
-        if(this._workHoursControl.isValid()) {
+	var workHoursControl = this._workHoursControl;
+    if(workHoursControl) {
+        if(workHoursControl.isValid() && workHoursControl.isDirty()) {
             var value = this._workHoursControl.getValue(),
                     soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount"),
                     node = soapDoc.set("pref", value),
@@ -411,7 +412,7 @@ function(batchCmd) {
             node.setAttribute("name", "zimbraPrefCalendarWorkingHours");
             batchCmd.addNewRequestParams(soapDoc, respCallback);
         }
-        else {
+        if (!workHoursControl.isValid()) {
             throw new AjxException(ZmMsg.calendarWorkHoursInvalid);
         }
     }
