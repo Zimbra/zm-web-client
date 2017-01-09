@@ -504,7 +504,7 @@ var submitForm = function(fobj, target, val) {
         fobj.target = target;
         fobj.action = fobj.action.replace('ajax=true', '');
         fobj.action = addParam(fobj.action,'isinframe=true');        
-        showLoadingMsg('<fmt:message key="MO_sendingRequestMsg"/>', true);
+        showLoadingMsg("<fmt:message key="MO_sendingRequestMsg"/>", true);
         fobj.submit();
         return true;
     }
@@ -612,7 +612,7 @@ var ajxReq = function(url, query, container, method, justPrefetch) {
     if(!justPrefetch){
         loading = true;
         container = container ? container : $('maincontainer');
-        showLoadingMsg('<fmt:message key="MO_loadingMsg"/>', true);
+        showLoadingMsg("<fmt:message key="MO_loadingMsg"/>", true);
     }
     xhr = XHR();
     if (xhr) {
@@ -707,9 +707,9 @@ var parseResponse = function (request, container,url) {
                 }
             }          
         } else if (request.status == 0) {
-            showLoadingMsg('<fmt:message key="MO_networkError"/>', true, 'Critical');
+            showLoadingMsg("<fmt:message key="MO_networkError"/>", true, 'Critical');
         } else {
-            showLoadingMsg('<fmt:message key="error"/> : ' + request.status, true, 'Critical');
+            showLoadingMsg("<fmt:message key="error"/> : " + request.status, true, 'Critical');
         }
         loading = false;
         GC().style.visibility = 'visible';
