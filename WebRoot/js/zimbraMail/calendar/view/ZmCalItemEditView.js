@@ -566,7 +566,10 @@ function(calItem, mode) {
 	}
 
 	// Warn the user if trying to schedule an appointment in the past.
-	ZmApptViewHelper.warnIfApptStartingInPast(calItem.startDate, this._htmlElId, this._allDayCheckbox.checked);
+	if (calItem instanceof ZmAppt) {
+		// We show warning for past meeting creation only when the application calendar. Task also uses the same function.
+		ZmApptViewHelper.warnIfApptStartingInPast(calItem.startDate, this._htmlElId, this._allDayCheckbox.checked);
+	}
 };
 
 ZmCalItemEditView.prototype.adjustReminderValue =
