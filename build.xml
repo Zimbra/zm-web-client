@@ -6,7 +6,7 @@
     <property name='ajax.build.classes.dir' value='${ajax.build.dir}/classes'/>
 
     <!-- Properties -->
-    <dirname property="this.zwc.basedir" file="${ant.file.ZimbraWebClient}" />
+    <dirname property="this.zwc.basedir" file="${ant.file.zm-web-client}" />
 
     <property file='${this.zwc.basedir}/build-custom.properties'/>
 
@@ -36,12 +36,7 @@
     
     <!-- zm-timezones -->
     <property name='timezones.dir' value='${this.zwc.basedir}/../zm-timezones'/>
-    
-    <property name='network.dir' value='${this.zwc.basedir}/../ZimbraNetwork' />
-	<property name='network.zwc.dir' value='${network.dir}/ZimbraWebClient' />
-	<property name='network.zwc.help.dir' value='${network.zwc.dir}/WebRoot/help' />
 
-	<property name='license.dir' value='${this.zwc.basedir}/../ZimbraLicenses'/>
 
     <property name='lib.dir' value='${this.zwc.basedir}/jars'/>
     <property name="jsdoctoolkit.dir" location="${lib.dir}/jsdoc-toolkit-2.3.0" />
@@ -66,8 +61,6 @@
     <property name='build.js.dir' value='${build.web.dir}/js'/>
     <property name='build.template.dir' value='${build.web.dir}/templates'/>
     <property name='build.skin.dir' value='${build.web.dir}/skins'/>
-    <property name='build.help.dir' value='${build.web.dir}/help'/>
-    <property name='build.adminhelp.dir' value='${build.web.dir}/adminhelp'/>
     <property name='build.dist.dir' value='${build.dir}/dist'/>
 
 	<property name='build.docs.dir' value='${build.dir}/docs'/>
@@ -114,10 +107,7 @@
 
     <!-- Paths and Filesets -->
 
-
     <!-- pseudo-fileset so that targets that rely on it don't fail -->
-    <fileset id='help.fileset' dir='${build.dir}' excludes='**'/>
-	<fileset id='network.help.fileset' dir='${build.dir}' excludes='**' />
 	<fileset id='customer.web.fileset' dir='${build.dir}' excludes='**'/>
 	<fileset id='customer.img.fileset' dir='${build.dir}' excludes='**' />
 	<fileset id='customer.skins.img.fileset' dir='${build.dir}' excludes='**' />
@@ -141,10 +131,6 @@
         <property name='common.template.excludes' value='${custom.template.excludes}'/>
         <property name='common.jam.includes' value='${custom.jam.includes},**/package/*.js'/>
         <property name='common.jam.excludes' value='${custom.jam.excludes},'/>
-        <property name='common.help.includes' value='${custom.help.includes}'/>
-        <property name='common.help.excludes' value='${custom.help.excludes}'/>
-        <property name='common.admin.help.includes' value='${custom.admin.help.includes}'/>
-        <property name='common.admin.help.excludes' value='${custom.admin.help.excludes}'/>
         <property name='common.build.web.includes' value='${custom.build.web.includes},**'/>
         <property name='common.build.web.excludes'
                   value='${custom.build.web.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}'/>
@@ -155,8 +141,6 @@
     <target name='client' depends='common'>
         <property name='deploy.app' value='zimbra'/>
         <property name='skins.dir' value='${web.dir}/skins'/>
-        <property name='help.dir' value='${web.dir}/help'/>
-        <property name='build.help.dir' value='${build.web.dir}/help'/>
         <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/2.7.0/**,qunit/**'/>
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
@@ -167,16 +151,10 @@
         <property name='template.excludes' value='${common.template.excludes},admin/**'/>
         <property name='jam.includes' value='${common.jam.includes}'/>
         <property name='jam.excludes' value='${common.jam.excludes},**/zimbraAdmin/**'/>
-        <property name='help.includes' value='${common.help.includes},*/standard/**,*/advanced/**'/>
-        <property name='help.excludes' value='${common.help.excludes}'/>
         <property name='build.web.includes' value='${common.build.web.includes}'/>
         <property name='build.web.excludes' value='${common.build.web.excludes}'/>
         <property name='webinf.includes' value='${common.webinf.includes}'/>
         <property name='webinf.excludes' value='${common.webinf.excludes}'/>
-
-        <fileset id='help.fileset'
-                 dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes}'
-                />
     </target>
 
     <target name='jar'>
@@ -195,13 +173,8 @@
 
     <!-- add build-ajax in dependency once zm-ajax built script is ivy based -->
     <target name="war"
-            depends="init,templates,timezones,images,styles,settings,copy-ajax,jam-files,compress,help"
+            depends="init,templates,timezones,images,styles,settings,copy-ajax,jam-files,compress"
             description="Builds all dependencies and assembles the war file.">
-        <if><isset property='build.network' />
-            <then>
-                <ant dir="../zm-touch-client" target="touch"/>
-            </then>
-        </if>
         <antcall target="assemble-war"/>
     </target>
 
@@ -297,8 +270,6 @@
             <zipfileset refid='overlay.skins.fileset' prefix='skins' />
             <zipfileset refid='skins.fileset' prefix='skins' />
 
-           <!--  <zipfileset refid='help.fileset' prefix='help' />
-			      <zipfileset refid='network.help.fileset' prefix='help' /> -->
         </war>
         <!-- Delete tmp folder that may have been left over, e.g.: older versions of same libs -->
         <delete dir="${build.tmp.dir}"/>
@@ -369,11 +340,6 @@
             <fileset refid="skins.fileset" />
             <fileset refid="overlay.skins.fileset" />
         </jscopy>
-
-		<!-- <copy todir='${webapp.dir}/help'>
-			<fileset refid='help.fileset' />
-			<fileset refid='network.help.fileset' />
-		</copy> -->
 
         <!-- files from build tree -->
         <jscopy todir='${webapp.dir}' verbose='${sync.verbose}'>
@@ -1191,24 +1157,6 @@ ext = BeanUtils.cook(ext);
 				</java>
 			</sequential>
 		</for>
-	</target>
-
-    <target name='help' depends='init' if='build.prod' unless='help.ignore'>
-		<if><isset property='build.network' />
-			<then>
-				<fileset id='network.help.fileset' erroronmissingdir="false"
-          dir='${network.zwc.help.dir}' includes='${help.includes}' excludes='${help.excludes}' />
-				<!-- NOTE:	This allows us to exclude help dirs from the base
-							help dir that are replaced by the network help. -->
-				<dirset id='network.help.dirset' erroronmissingdir="false"
-          dir='${network.zwc.help.dir}' includes='*/*' />
-				<pathconvert property='help.excludes2' pathsep=',' refid="network.help.dirset">
-					<regexpmapper from="^.*/WebRoot/help/(.*)$$" to="\1/**"/>
-				</pathconvert>
-			</then>
-		</if>
-		<fileset id='help.fileset' erroronmissingdir="false"
-      dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes},${help.excludes2}' />
 	</target>
 
     <target name='deploy' depends='resolve,war'>
