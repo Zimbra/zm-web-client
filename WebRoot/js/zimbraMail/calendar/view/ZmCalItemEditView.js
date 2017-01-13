@@ -566,7 +566,10 @@ function(calItem, mode) {
 	}
 
 	// Warn the user if trying to schedule an appointment in the past.
-	ZmApptViewHelper.warnIfApptStartingInPast(calItem.startDate, this._htmlElId, this._allDayCheckbox.checked);
+	if (calItem instanceof ZmAppt) {
+		// We show warning for past meeting creation only when the application calendar. Task also uses the same function.
+		ZmApptViewHelper.warnIfApptStartingInPast(calItem.startDate, this._htmlElId, this._allDayCheckbox.checked);
+	}
 };
 
 ZmCalItemEditView.prototype.adjustReminderValue =
@@ -1118,11 +1121,14 @@ function(ev) {
     }
 
 	// Warn the user if trying to schedule an appointment in the past.
-	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-	if (!this._allDayCheckbox.checked) {
-		startDate.setHours(this._startTimeSelect.getHours(), this._startTimeSelect.getMinutes(), 0);
+	if (calItem instanceof ZmAppt) {
+		// We show warning for past meeting creation only when the application calendar. Task also uses the same function.
+		var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+		if (startDate && !this._allDayCheckbox.checked) {
+			startDate.setHours(this._startTimeSelect.getHours(), this._startTimeSelect.getMinutes(), 0);
+		}
+		ZmApptViewHelper.warnIfApptStartingInPast(startDate, this._htmlElId, this._allDayCheckbox.checked);
 	}
-	ZmApptViewHelper.warnIfApptStartingInPast(startDate, this._htmlElId, this._allDayCheckbox.checked);
 };
 
 ZmCalItemEditView.prototype._resetRecurrence =
