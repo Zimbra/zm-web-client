@@ -52,7 +52,7 @@ function() {
 
 ZmTaskView.prototype.getTitle =
 function() {
-	return [ZmMsg.zimbraTitle, this._calItem.getName()].join(": ");
+	return [ZmMsg.zimbraTitle, (this._calItem && this._calItem.getName()) || ''].join(": ");
 };
 
 ZmTaskView.prototype.close =
