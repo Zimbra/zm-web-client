@@ -700,6 +700,10 @@ function(msg) {
 	//		ZmMailListController.prototype._handleResponseNewTaskListener
 	newMsg.cloneOf = msg;
 
+	if (msg.certificate) {
+		newMsg.certificate = msg.certificate;
+	}
+
 	return newMsg;
 };
 

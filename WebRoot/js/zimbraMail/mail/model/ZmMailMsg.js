@@ -2475,6 +2475,19 @@ function(msgNode) {
 			// window, which we dont currently load (re: support).
 		}
 	}
+	//S/MIME: Set mail's S/MIME related info
+	if (msgNode.certificate) {
+		this.certificate = msgNode.certificate;
+	}
+	if (msgNode.isSigned) {
+		this.isSigned = msgNode.isSigned == "true";
+	}
+	if (msgNode.isEncrypted) {
+		this.isEncrypted = msgNode.isEncrypted == "true";
+	}
+	if (msgNode.decryptionErrorCode) {
+		this.decryptionErrorCode = msgNode.decryptionErrorCode;
+	}
 };
 
 ZmMailMsg.createDlSubFromDom =

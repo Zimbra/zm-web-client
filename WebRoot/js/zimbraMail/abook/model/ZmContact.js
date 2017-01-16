@@ -430,6 +430,10 @@ function(node, args) {
 		contact._list = {};
 		contact._list[contact.list.id] = true;
 	}
+	//S/MIME: If user certificate is present, include it into contact's object
+	if (node.certificate) {
+		contact.certificate = node.certificate;
+	}
 
 	return contact;
 };
@@ -2592,6 +2596,10 @@ function(node) {
 		for (var i = 0; i < emails.length; i++) {
 			ac.setIsExpandableDL(emails[i], this.canExpand);
 		}
+	}
+	//S/MIME: If user certificate is present, include it into contact's object
+	if (node.certificate) {
+		this.certificate = node.certificate;
 	}
 };
 
