@@ -1127,7 +1127,7 @@ function(ev) {
 		if (startDate && !this._allDayCheckbox.checked) {
 			startDate.setHours(this._startTimeSelect.getHours(), this._startTimeSelect.getMinutes(), 0);
 		}
-		ZmApptViewHelper.warnIfApptStartingInPast(startDate, this._htmlElId, this._allDayCheckbox.checked);
+		startDate && ZmApptViewHelper.warnIfApptStartingInPast(startDate, this._htmlElId, this._allDayCheckbox.checked);
 	}
 };
 
@@ -1332,9 +1332,9 @@ function(el) {
 	// Warn the user if trying to schedule an appointment in the past.
 	var startDate = AjxDateUtil.simpleParseDateStr(sdField.value);
 	if (!this._allDayCheckbox.checked) {
-		startDate.setHours(this._calItem.startDate.getHours(), this._calItem.startDate.getMinutes(), 0);
+		startDate && startDate.setHours(this._calItem.startDate.getHours(), this._calItem.startDate.getMinutes(), 0);
 	}
-	ZmApptViewHelper.warnIfApptStartingInPast(startDate, this._htmlElId, this._allDayCheckbox.checked);
+	startDate && ZmApptViewHelper.warnIfApptStartingInPast(startDate, this._htmlElId, this._allDayCheckbox.checked);
 };
 
 ZmCalItemEditView.prototype.handleStartDateChange =

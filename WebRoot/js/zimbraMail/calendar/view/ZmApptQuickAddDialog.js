@@ -191,7 +191,7 @@ function() {
 	}
 
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-	if (startDate.getFullYear() < 1900) {
+	if (startDate && startDate.getFullYear() < 1900) {
 		errorMsg.push(ZmMsg.errorInvalidStartDate);
 	}
 
@@ -623,11 +623,11 @@ function(ev) {
 
 	// change the start/end date if they mismatch
 	if (parentButton == this._startDateButton) {
-		if (ed.valueOf() < ev.detail.valueOf())
+		if (ed && ed.valueOf() < ev.detail.valueOf())
 			this._endDateField.value = newDate;
 		this._startDateField.value = newDate;
 	} else {
-		if (sd.valueOf() > ev.detail.valueOf())
+		if (sd && sd.valueOf() > ev.detail.valueOf())
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
 	}
@@ -656,8 +656,10 @@ function(ev, id) {
 
 	// Warn the user if trying to schedule an appointment in the past.
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-	startDate.setHours(this._startTimeSelect.getHours(), this._startTimeSelect.getMinutes(), 0);
-	startDate && ZmApptViewHelper.warnIfApptStartingInPast(startDate, this._htmlElId);
+	if (startDate) {
+		startDate.setHours(this._startTimeSelect.getHours(), this._startTimeSelect.getMinutes(), 0);
+		ZmApptViewHelper.warnIfApptStartingInPast(startDate, this._htmlElId);
+	}
 
 	this._locationAssistant && this._locationAssistant.updateTime();
 };
