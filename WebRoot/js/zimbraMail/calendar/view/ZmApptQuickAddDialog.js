@@ -181,16 +181,25 @@ ZmApptQuickAddDialog.prototype.isValid =
 function() {
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
 	var errorMsg = [];
+	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 
 	if (subj && subj.length) {
-		if (!DwtTimeInput.validStartEnd( this._startDateField, this._endDateField, this._startTimeSelect, this._endTimeSelect)) {
-			errorMsg.push(ZmMsg.errorInvalidDates);
+		var isValidStartEnd = DwtTimeInput.validStartEnd(this._startDateField, this._endDateField, this._startTimeSelect, this._endTimeSelect);
+
+		if (!isValidStartEnd) {
+			if (!startDate || !endDate) {
+				errorMsg.push(ZmMsg.errorInvalidDatesFormat);
+			}
+			else {
+				// Shows error if end date is less than start date.
+				errorMsg.push(ZmMsg.errorInvalidDates);
+			}
 		}
 	} else {
 		errorMsg.push(ZmMsg.errorMissingSubject);
 	}
 
-	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	if (startDate && startDate.getFullYear() < 1900) {
 		errorMsg.push(ZmMsg.errorInvalidStartDate);
 	}
@@ -523,14 +532,11 @@ function() {
 ZmApptQuickAddDialog.prototype._addEventHandlers = 
 function() {
 	var qadId = AjxCore.assignId(this);
-
-	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmApptQuickAddDialog._onChange);
-	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmApptQuickAddDialog._onChange);
-	Dwt.setHandler(this._suggestLocation, DwtEvent.ONCLICK, this._showLocationSuggestions.bind(this));
-
 	var dateSelectListener = this._dateChangeListener.bind(this);
+
 	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, dateSelectListener);
 	Dwt.setHandler(this._endDateField,   DwtEvent.ONCHANGE, dateSelectListener);
+	Dwt.setHandler(this._suggestLocation, DwtEvent.ONCLICK, this._showLocationSuggestions.bind(this));
 
 	this._startDateField._qadId = this._endDateField._qadId =  qadId;
 };
@@ -668,6 +674,12 @@ ZmApptQuickAddDialog.prototype._dateChangeListener =
 function(ev, id) {
     if (!this._appt.isAllDayEvent()) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+
+		var el = DwtUiEvent.getTarget(ev);
+		var qad = AjxCore.objectWithId(el._qadId);
+
+		// Auto-corrects start/end date just like appt compose view
+		ZmApptViewHelper.handleDateChange(qad._startDateField, qad._endDateField, el == qad._startDateField);
     }
 	this._locationAssistant && this._locationAssistant.updateTime();
 };
