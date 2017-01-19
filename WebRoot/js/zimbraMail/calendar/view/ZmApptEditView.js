@@ -589,7 +589,7 @@ function() {
     }
 
     var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-    if (startDate.getFullYear() < 1900) {
+    if (startDate && startDate.getFullYear() < 1900) {
         errorMsg.push(ZmMsg.errorInvalidStartDate);
     }
 

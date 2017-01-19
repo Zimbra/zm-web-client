@@ -101,9 +101,9 @@ function() {
     var di = {};
     ZmApptViewHelper.getDateInfo(this._apptView, di);
     var startDate = AjxDateUtil.simpleParseDateStr(di.startDate);
-    startDate.setHours(0, 0, 0, 0);
+    startDate && startDate.setHours(0, 0, 0, 0);
     var endDate = AjxDateUtil.simpleParseDateStr(di.endDate);
-    endDate.setHours(23, 59, 59, 9999);
+    endDate && endDate.setHours(23, 59, 59, 9999);
     return {start:startDate, end:endDate};
 };
 
@@ -130,6 +130,12 @@ function(date) {
 ZmLocationAssistantView.prototype._findFreeBusyInfo =
 function(params) {
 
+    if (this._apptView instanceof ZmApptQuickAddDialog) {
+        if (AjxUtil.isEmpty(this._apptView._locationField.getValue())) {
+            return;
+        }
+    }
+
     var currAcct = this._apptView.getCalendarAccount();
 	// Bug: 48189 Don't send GetFreeBusyRequest for non-ZCS accounts.
 	if (appCtxt.isOffline && (!currAcct.isZimbraAccount || currAcct.isMain)) {
@@ -138,6 +144,10 @@ function(params) {
     }
 
     var tf = this._getTimeFrame();
+
+    if (!tf.start || !tf.end) {
+        return;
+    }
 
     params.itemIndex = {};
     params.items = [];
