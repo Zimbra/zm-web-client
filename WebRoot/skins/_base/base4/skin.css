@@ -1,0 +1,637 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2011, 2012, 2013, 2014 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at: http://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
+ * have been added to cover use of software over a computer network and provide for limited attribution 
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis, 
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing rights and limitations under the License. 
+ * The Original Code is Zimbra Open Source Web Client. 
+ * The Initial Developer of the Original Code is Zimbra, Inc. 
+ * All portions of the code are Copyright (C) 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
+ * ***** END LICENSE BLOCK *****
+ */
+BODY                                    {   margin:0px;     }
+
+.skin_layout_row                        { width:100%; clear:both; }
+.skin_layout_cell                       { height:100%; float:left; margin-bottom:auto; }
+.skin_layout                            { display:block; clear:both; width:100%; height:100% }
+
+#skin_outer *                           {   @FixBoxModel@   }
+/** generics **/
+.skin_table                             {   width:100%; height:100%; border-collapse:collapse; border-width:0px;    }
+.skin_table>TBODY>TR>TD                 {   padding:0px;                                                            }
+.skin_table>.skin_table_row>.skin_table_cell        {   padding:0px;                                    }
+.skin_container                         {   width:100%; height:100%; }
+.skin_container_ad                      {   width:100%; height:100%; }
+.skin_td_flex                           {   width:100%;     }
+/* hide the main screen initially - hide if html facade is not needed */
+#skin_outer                             {   display:none;   }
+/* hide search results toolbar initially */
+#skin_tr_search_results_toolbar         {   display:none; height:40px; width:100%;  }
+
+#skin_tr_main                           { height:100%; }
+
+/* hide all ads initially */
+.skin_outer_ad                          {   display:none;   }
+
+/** Outer container of the entire skin **/
+#skin_outer                             {   height:100%; @SkinOuter@        }
+#skin_layout_outer                      {   width:100%; height:100%; padding:0px;       }
+#skin_outer_td_main                     {   height:100%; width:100%;    }
+
+/** Top row contains header and app tabs **/
+#skin_spacing_top_row                   {   width:100%; @SkinTopRow@    }  /* width specified for bug 83004 */
+#skin_spacing_top_row .divider          {   border-left:1px solid @SkinTopRowDividerColor@;
+                                            height:60%;
+                                            margin:auto 10px;  /*auto to appease IE*/
+                                        }
+#skin_spacing_top_row > .skin_table     {   border-collapse: separate;  }
+#skin_spacing_top_row .DwtLinkButtonDropDownArrowRow    {   background-color:@SkinTopRowColor@;     }
+
+/** Logo displayed in the app **/
+#skin_spacing_logo                      {}
+#skin_container_logo                    {   width:@LogoWidth@;  }
+    
+/** Toast box **/
+#skin_container_toast                   {   width:100%; height:100%;    }
+    
+/** Search box **/  
+#skin_spacing_search,
+#skin_spacing_people_search             {   height:42px; width:@cssValue(HSashContainer,width)@;    }
+#skin_container_search                  {   height:1.7rem; }
+
+#skin_container_search .ZmSearchToolbar {   @SkinSearchToolbar@         }
+#skin_container_search .ZButton         {   height:auto;    }
+#skin_container_search .ZButtonBorder   {   border:0px; background-color:transparent; background-image:none; @NoShadow@ @NoRoundCorners@ }
+#skin_container_search .ZWidgetTitle    {   display:none;   }
+/** combined username/quota **/
+#skin_spacing_tree_top                  {   text-align:center;      }
+#skin_container_tree_top                {   @SkinBorderUsername@    }
+#skin_container_links                   {}
+/** User Name section **/
+#skin_container_username                {   height:auto; padding-bottom:2px; @SkinTextUsername@ }
+#skin_container_username *              {}
+/** Quota section **/   
+#skin_container_quota                   {   @SkinBorderQuota@   }
+/** Drop Menu section **/
+#skin_dropMenu                          {   font-size:14px; padding:0px 10px 0px 3px; text-align:center; vertical-align:middle; @Text-contrast@ @ActiveCursor@  }
+#skin_dropMenu .DwtLinkButtonDropDownArrowTd            {   border-left:0px; opacity:.75; padding-left:0px; }
+#skin_dropMenu .ZHover .DwtLinkButtonDropDownArrowTd    {   opacity:1;  }
+#skin_container_global_buttons          {   display:table-row;  }
+#skin_container_global_buttons>DIV      {   display:table-cell; padding-top:2px;    }
+/** Tree Toolbar a.k.a.  "current app" **/
+#skin_spacing_current_app               {}
+#skin_container_current_app             {   @SkinBorderCurrentApp@      }
+#skin_td_switch_offline,
+#skin_container_help,
+#skin_container_logoff,
+#skin_container_adminlink               {   white-space:nowrap; text-align:center; padding:0px 10px;    }
+#skin_container_help A,
+#skin_container_logoff A                { @Text-contrast@ }
+
+/** Tree Toolbar **/
+#skin_spacing_tree                      {   height:100%; padding-bottom:5px;    }
+#skin_container_tree                    {   @SkinBorderTree@                    }
+
+/** Tree Footer (mini-calendar) **/
+#skin_tr_tree_footer                    {   display:none;           }
+#skin_spacing_tree_footer               {}
+#skin_container_tree_footer             {   @SkinBorderMiniCal@     }
+
+/** Tree/App Sash **/
+#skin_spacing_tree_app_sash             {}
+/** App Chooser **/
+#skin_spacing_app_chooser               {}
+#skin_border_app_chooser                {   @SkinBorderAppChooser@      }
+#skin_container_app_chooser             {
+    margin-right:100px; /* space to not overlap app row toolbar buttons */
+    position:absolute;
+    width:auto;
+    height:auto;
+    z-index:1;
+    @AppTabChooser@
+}
+#skin_container_app_chooser>DIV>TABLE   { @AppTabTable@     }
+
+/** webclient offline sync notification **/
+#skin_container_global_buttons .offline {
+    margin:0px 5px 0px 8px;   /* simulates same padding on toolbar button */
+}
+
+/** reset styles on app row toolbar buttons **/
+#skin_container_global_buttons .ZToolbarButton,
+#skin_container_global_buttons .ZToolbarButtonTable { 
+    background-color:transparent;
+    background-image:none;
+    border:0px;
+    border-collapse: separate;
+    @cssShadow@:0px 0px 0px transparent;
+    #IFDEF MSIE_LOWER_THAN_9
+    -ms-filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+    filter:progid:DXImageTransform.Microsoft.gradient(enabled=false);
+    #ENDIF
+}
+
+/***************
+ *
+ *  APP-ROW-TOOLBAR-BUTTONS
+ *
+ ***************/
+
+/* may want to eventually move this to zm.css */
+
+#skin_container_global_buttons .ZToolbarButton                      {   @AppButton@ @AppButtonSpacing@  }
+
+#skin_container_global_buttons              .ZToolbarButtonBorder   {   @AppButtonBorder@   @AppButtonBorder-normal@    }
+#skin_container_global_buttons .ZHover      .ZToolbarButtonBorder   {   @AppButtonBorder-hover@         }
+#skin_container_global_buttons .ZDisabled   .ZToolbarButtonBorder   {   @AppButtonBorder-disabled@      }
+#skin_container_global_buttons .ZFocused    .ZToolbarButtonBorder   {   @AppButtonBorder-focused@       }
+#skin_container_global_buttons .ZActive     .ZToolbarButtonBorder   {   @AppButtonBorder-active@        }
+#skin_container_global_buttons .ZSelected   .ZToolbarButtonBorder   {   @AppButtonBorder-selected@      }
+
+
+/** App Toolbar **/
+#skin_spacing_app_top_toolbar           {   height:35px; height:3.0rem;     }
+#skin_container_app_top_toolbar         {   @SkinBorderAppToolbar@ width:auto; padding-top:5px; padding-left:@SashSize@;    }
+#skin_container_app_new_button          {   @SkinBorderAppToolbar@ width:@TreeStartWidth@; padding:5px; }
+#skin_spacing_app_row                   {   border-top:1px solid; border-spacing:0; padding:0px 7px; @AppTab@   }
+#skin_spacing_app_row                   {   
+    background-color:transparent; 
+    background-color:rgba(@SkinAppRowColorRGB@,.1);
+    border-color:transparent;
+    border-color:rgba(@SkinAppRowColorRGB@,.2);
+#IFDEF WEBKIT
+    border-color:rgba(@SkinAppRowColorRGB@,.1);
+#ENDIF
+#IFDEF MSIE_LOWER_THAN_9
+    zoom:1;
+    @SkinAppRowBorderColorIE@
+    -ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#19@SkinAppRowColorHex@, endColorstr=#19@SkinAppRowColorHex@);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#19@SkinAppRowColorHex@,endColorstr=#19@SkinAppRowColorHex@); 
+#ENDIF
+}
+#skin_spacing_app_row TABLE             {   border-collapse:separate;   }
+#skin_spacing_app_row .ZToolbarButton   {   height:auto;        }
+/** App  **/
+#skin_spacing_app_main                  {   height:100%;        }
+#skin_container_app_main                {}
+
+/** Top ad **/
+#skin_spacing_top_ad                    {}
+#skin_container_top_ad                  {   @AdStyle@ height:@TopAdHeight@;     }
+/** Sidebar ad **/
+#skin_spacing_sidebar_ad                {   padding:10px 0px 0px 5px;           }
+#skin_container_sidebar_ad              {   width:@SidebarAdWidth@; @AdStyle@   }
+
+/** Tree Top Ad **/
+#skin_spacing_tree_top_ad               {}
+#skin_container_tree_top_ad             {   @AdStyle@ height:@TreeTopAdHeight@;     }
+
+/** Tree Bottom Ad **/
+#skin_spacing_tree_bottom_ad            {}
+#skin_container_tree_bottom_ad          {   @AdStyle@ height:@TreeBottomAdHeight@;  }
+/** Bottom ad **/
+#skin_spacing_bottom_ad                 {}
+#skin_container_bottom_ad               {   @AdStyle@ height:@BottomAdHeight@;      }
+
+/*** HACKS: this makes the tables work properly -- rationalize this!  **/
+#skin_td_tree                           {   width:@TreeStartWidth@; height:100%;    }
+#skin_td_tree_app_sash                  {   width:@SashSize@;           }
+#skin_td_main                           {   width:auto; height:100%;    }
+#skin_td_sidebar_ad                     {   width:@SidebarAdWidth@;     }
+/*#skin_td_new_button                   {   padding:2px;    }*/
+
+/** Login, Splash and Error screen **/
+#skin_container_splash_screen           {   @SkinOuter@ @FullWindow@ z-index:90000000;      }
+
+#ZLoginBodyContainer                    {   @LoginPanelInnerBorder@ }
+#ZSplashPanel                           {   @SplashOuterBorder@     }
+#ZSplashBodyContainer                   {   @SplashInnerBorder@     }
+
+.LoginScreen,
+.SplashScreen,
+.ErrorScreen {
+    position:absolute;
+    left:0px;
+    top:0px;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    @FontFamily-default@
+    @FontSize-normal@
+    @LoginScreen@
+}
+.LoginScreen .center,
+.SplashScreen .center,
+.ErrorScreen .center {
+    margin-top:-160px;
+    margin-left:-250px;
+}
+
+.LoginScreen .center-small,
+.SplashScreen .center-small,
+.ErrorScreen .center-small {
+    height:270px;
+    margin-top:-135px;
+    margin-left:-126px;
+    width:250px;
+}
+.LoginScreen .center, .LoginScreen .center-small,
+.SplashScreen .center, .SplashScreen .center-small,
+.ErrorScreen .center, .ErrorScreen .center-small {
+    left:50%;
+    overflow:visible;
+    position:absolute;
+    top:40%;
+    z-index:11;
+}
+.LoginScreen .contentBox,
+.SplashScreen .contentBox,
+.ErrorScreen .contentBox {
+    @LoginContentBox@
+    width:500px;
+}
+.LoginScreen .contentBox,
+.SplashScreen .contentBox { 
+    min-height:265px;
+#IFDEF MSIE_LOWER_THAN_7
+    height:265px;
+#ENDIF
+}
+.LoginScreen .center-small .contentBox,
+.SplashScreen .center-small .contentBox,
+.ErrorScreen .center-small .contentBox { width:auto; }
+
+.center-small .form .submittd{ text-align:left; }
+ 
+.LoginScreen H1,
+.SplashScreen H1    {   @LoginH1@       }
+
+#ZLoginAppName      {   @LoginAppName@  }
+
+.LoginScreen .ImgLoginBanner, 
+.LoginScreen .ImgAppBanner, 
+.SplashScreen .ImgLoginBanner {
+    cursor:pointer;
+    display:block;
+}
+.LoginScreen #ZLoginErrorPanel,
+.ErrorScreen .InlineErrorPanel {
+    border:0px;
+    left:auto;
+    margin:10px 10%;
+    position:relative;
+    @InlineErrorPanel@
+}
+.LoginScreen #ZLoginErrorIcon,
+.ErrorScreen #ZErrorIcon {
+    margin:auto 10px auto auto;
+}
+.LoginScreen .Footer,
+.SplashScreen .Footer,
+.LoginScreen .Footer-small,
+.SplashScreen .Footer-small {
+    bottom:0px;
+    position:absolute;
+    text-align:center;
+    width:100%;
+    z-index:10;
+}
+.LoginScreen .copyright,
+.LoginScreen #ZLoginNotice,
+.SplashScreen .copyright {
+    cursor:default;
+    margin-bottom:5px;
+    @FontSize-normal@
+    @LoginFooterColor@
+}
+/* Login Screen Only Items */
+.LoginScreen .zLoginField {
+@roundCorners(5px)@
+}
+.LoginScreen INPUT[disabled] {
+    background-color:white;
+}
+.LoginScreen .decor1            { @Decor1L@ }
+.LoginScreen .decor2            { @Decor2L@ }
+.LoginScreen #ZLoginNotice A {
+    @LoginFooterColor@
+}
+
+/*Splash Screen Only Items*/
+.SplashScreen .content {
+    color:@LoginLabelColor@;
+    text-align:center;
+}
+.SplashScreen .message {
+    color:@LoginLabelColor@;
+    cursor:default;
+    padding-top:40px;
+    @FontSize-bigger@
+}
+.SplashScreen .switch {
+    margin:70px 100px 30px;
+#IFDEF WEBKIT
+    margin-bottom:0px;
+#ENDIF
+#IFDEF MSIE_9_OR_HIGHER
+    margin-bottom:0px;
+#ENDIF
+}
+.SplashScreen .switch A {
+    color:@LoginLabelColor@;
+    text-decoration:underline;
+    @FontSize-normal@
+}
+.SplashScreen .decor1           { @Decor1S@ }
+.SplashScreen .decor2           { @Decor2S@ }
+
+/* Error Screen Only Items */
+.ErrorScreen .contentBox        { padding-bottom:1em; }
+.ErrorScreen .ZErrorPanel       { margin-top:30px; }
+#IFDEF MSIE
+.ErrorScreen .InlineErrorPanel  { width:400px; }
+#ENDIF
+.ErrorScreen H2                 { margin:0px; }
+.ErrorScreen A:link,
+.ErrorScreen A:visited          { @Anchor@ }
+.ErrorScreen A:hover            { @Anchor-hover@ }
+.ErrorScreen A:active           { @Anchor-active@ }
+
+.ErrorScreen .decor1            { @Decor1@ }
+.ErrorScreen .decor2            { @Decor2@ }
+
+/** Logo Images **/
+.center-small .ImgLoginBanner,
+.ImgAppBanner           {   background-repeat:no-repeat; @AppBanner@    }
+.ImgLoginBanner         {   background-repeat:no-repeat; @LoginBannerPosition@ @LoginBanner@    }
+#IFDEF MSIE
+#skin_container_logo A, #skin_container_logo A:hover, #skin_container_logo A:link {
+    background-color:transparent;}
+#ENDIF
+
+/* TO INTEGRATE */
+/* Thumb between organizer and main panel needs tweak for thumb - not sure why */
+.console_inset_app_l .HSashThumb {
+    margin-left:-2px;
+}
+
+.UserInfoLink {
+    width:100%;
+    text-align:left;
+    white-space:nowrap;
+}
+.ZmPicker .ZToolbar {
+    @WidgetHeaderContainer@
+    @WidgetHeaderContainer-normal@
+}
+
+.BannerTextUser {
+    overflow:hidden !important;
+}
+.BannerTextUserOffline {
+    text-align:left !important;
+    padding:0px 3px;
+}
+
+/* App Chooser and App Tab Overrides -- TODO: Merge into main */
+.ZmAppChooser                               {   margin:0px !important;      }
+.ZAppTabBorder                              {   @AppTabRoundCorners@        }
+.ZAppTabBorder .ZLeftIcon                   {   @AppTabLeftIcon@            }
+.ZAppTabBorder .ZWidgetTitle                {   @AppTabWidgetTitle@         }
+.ZAppTabBorder .ZDropDown                   {   @AppTabDropDown@            }
+
+.ZSelectedPrev .ZAppTabBorder               {   @AppTabBorder-selectedPrev@ }
+.ZSelectedNext .ZAppTabBorder               {   @AppTabBorder-selectedNext@ }
+.ZFirstItem .ZAppTabBorder                  {   @AppTabBorder-first@        }
+.ZAppTabSpacer                              {   @AppTab@ @AppTabSpacer@     }
+
+/* Normal Tab Overrides -- TODO: Merge into main */
+.ZSelectedPrev .ZTabBorder                  {   @TabBorder-selectedPrev@    }
+.ZSelectedNext .ZTabBorder                  {   @TabBorder-selectedNext@    }
+.ZFirstItem .ZTabBorder                     {   @TabBorder-first@           }
+.ZLastItem .ZTabBorder                      {   @TabBorder-last@            }
+.ZTabBarPrefix                              {   @TabBarPrefix@              }
+.ZTabBarSuffix                              {   @TabBarSuffix@              }
+
+/* Quota */
+.quotaBar                                   {   height:8px;                 }
+/* USED? */
+.quotaLabel                                 {   text-align:right; @FontSize-smaller@    }
+
+.ZmInviteToolBar .ZToolbarTable, 
+.ZmShareToolBar .ZToolbarTable              {   height:100%;    }
+
+.ZNewButton .ZToolbarButtonBorder           {   @ToolbarNewButtonBorder@                }
+.ZNewButton.ZHover .ZToolbarButtonBorder    {   @ToolbarButtonBorder-hover@             }
+.ZNewButton.ZActive .ZToolbarButtonBorder   {   @ToolbarButtonBorder-active@            }
+
+#IFNDEF MSIE_LOWER_THAN_9
+.ZToolbarButtonTable TD:first-child         {   padding-left:@ToolbarButtonPaddingSize@;    }
+.ZToolbarButtonTable TD:last-child          {   padding-right:@ToolbarButtonPaddingSize@;   }
+#ENDIF
+
+#IFDEF MSIE_LOWER_THAN_9
+.ZToolbarButtonTable            {   padding: 0px @ToolbarButtonPaddingSize@;    }
+#ENDIF
+
+/* offline */
+.ZmNetworkStatus        { font-weight:bold; }
+.ZmNetworkStatusIcon    { cursor:pointer; }
+/* Input stuff -- adding classes properly -- TODO: put this back into dwt.css  */
+.DwtInputField INPUT[type="text"], 
+.DwtInputField INPUT[type="password"],
+.DwtSimpleInput {
+    @InputField@
+    @InputField-normal@
+}
+.DwtInputField TEXTAREA {
+    @TextArea@
+    @TextArea-normal@
+}
+.DwtInputField-error INPUT[type="text"],
+.DwtInputField-error INPUT[type="password"],
+.DwtSimpleInput-error {
+    @InputField@
+    @InputField-error@
+}
+.DwtInputField-error TEXTAREA {
+    @TextArea@
+    @TextArea-error@
+}
+.DwtInputField-focused INPUT[type="text"],
+.DwtInputField-focused INPUT[type="password"],
+.DwtSimpleInput-focused {
+    @InputField@
+    @InputField-focused@
+}
+.DwtInputField-focused TEXTAREA {
+    @TextArea@
+    @TextArea-focused@
+}
+.DwtInputField-disabled INPUT[type="text"],
+.DwtInputField-disabled INPUT[type="password"],
+.DwtSimpleInput-disabled {
+    @InputField@
+    @InputField-disabled@
+}
+.DwtInputField-disabled TEXTAREA {
+    @TextArea@
+    @TextArea-disabled@
+}
+.DwtInputField-hint INPUT[type="text"],
+.DwtInputField-hint INPUT[type="password"],
+.DwtInputField-hint INPUT,
+.DwtSimpleInput-hint {
+    @InputField@
+    @InputField-normal@
+    @InputField-hint@
+}
+.DwtInputField-hint TEXTAREA {
+    @TextArea@
+    @InputField-hint@
+}
+.DwtInputField-errorhint INPUT[type="text"],
+.DwtInputField-errorhint INPUT[type="password"],
+.DwtSimpleInput-errorhint {
+    @InputField@
+    @InputField-error@
+    @InputField-hint@
+}
+.DwtInputField-errorhint TEXTAREA {
+    @TextArea-error@
+    @Text-light@
+}
+TEXTAREA .BannerBar * {
+    @FontSize-smaller@
+}
+.BannerBar {
+    padding-top:1px;
+    height:1px;
+}
+.BannerBar TD {
+    padding-right:0px;
+}
+.BannerBar .quotabar {
+    background-color:white;
+}
+.BannerTextQuota {
+    text-align:center;
+    vertical-align:top;
+}
+.BannerTextUser,
+.BannerTextQuota {
+    cursor:default;
+}
+.BannerTextQuota-MultiAccount {
+    padding-top:5px;
+}
+
+/* styles for the HTML client */
+INPUT[type="text"],
+INPUT[type="password"]      {   @FieldBorder@   }
+SELECT                      {   @FieldBorder@   }
+.TabSpacer                  {   display:none;       }
+.Tab                        {   white-space:nowrap; height:30px; padding-right:5px !important;  }
+.TbTop                      {   border-width:0px 1px 1px 0px !important; padding-right:5px !important;  }
+.TbBottom                   {   border-width:0px 1px 1px 0px !important; padding-right:5px !important;  }
+.TabFiller                  {   @AppTabSpacer@ width:100%;  }
+.List .Header TH            {   @RightSeparator@    }
+.ZhSubTabs                  {   @TabBar@    }
+.ZhSubTabs                  {   padding:5px !important; }
+.ZhSubTabs .TabSelected     {   @TabBorder-selected@    }
+.ZhRow TD,
+.ZhRowOdd TD                {   border-width:0px 0px 1px !important; padding-left:3px !important;   }
+/* Quick fix for selected Adv. Search button */
+.ZmSearchToolbarCell .ZSelected .ZToolbarButtonBorder{
+#IFDEF GECKO
+    -moz-border-top-colors:#77736A #BFB8A9;
+    -moz-border-right-colors:#A7A194 #F0E9D8;
+    -moz-border-left-colors:#77736A #BFB8A9;
+    -moz-border-bottom-colors:#A7A194 #F0E9D8;
+#ENDIF
+    background-color:#FBF9F4 !important;
+    border:2px inset; 
+    color:white;
+}
+
+
+.ZAppTabBorder .ZLeftIcon DIV       { display:none; }
+
+/*Temporary overrides that need to move to skin properties*/
+/*.DwtListView-ColHeader            { height:1.8rem; height:19px;                   }*/
+.DwtListView-Column                 { background-color:@lighten(AppC,33)@;      }
+.DwtListView-Column TD              { color:@darken(AppC,55)@;                  }
+.overviewHeader         { border: 0px; padding:1px 0px;     }
+.overviewHeader>TABLE       { border:1px solid white;   }
+.overviewHeader .ZButton    { height:auto;  }
+.FirstOverviewHeader.overviewHeader { padding-top:0px;  }
+.RowDouble                          { height:auto; padding-top:0px;         }
+.RowDouble .TopRow,
+.RowDouble .ImgCheckboxChecked,
+.RowDouble .ImgCheckboxUnchecked    { margin:6px 0px 0px; }
+.RowDouble .ZmMsgListExpand         { margin-left:-2px; margin-right:2px; }
+.RowDouble .BottomRow               { margin:4px 0px 6px;   }
+.Row-matched, .RowDouble-matched,
+.RowDouble-matched .ZmListFlagsWrapper,
+.RowDouble-matched .ZmMsgListDate   { background-color:@SearchResultColor@;     }
+.TopRow, .BottomRow                 { height:16px; height:1.6rem; position:relative;    }
+#IFDEF MSIE_LESS_THAN_9
+.TopRow, .BottomRow                 { width:99%;    }
+#ENDIF
+.ZmListFlagsWrapper                 { position:absolute; right:0px; @ListItemContainer-normal@ }
+.SimpleContact .ZmListFlagsWrapper  { padding:.08rem 0px; right:0px; }
+.SimpleContact .ImgCheckboxUnchecked,
+.SimpleContact .ImgCheckboxChecked,
+.ZmContactIcon                      { margin:0px 5px 0px 2px; }
+#IFNDEF MSIE
+.ZmListFlagsWrapper DIV             { margin:0px 2px 0px 3px; }
+#ENDIF
+.TopRow .ImgMsgRead,
+.TopRow .ImgMsgUnread               { margin:0px 3px 0px 3px; }
+.TopRow .ImgCheckboxUnchecked,
+.TopRow .ImgCheckboxChecked         { margin:0px 0px 0px -1px; }
+.TopRow .ImgNodeCollapsed,
+.TopRow .ImgNodeExpanded            { padding:0px; }
+.ZmMsgListColTag                    { padding:0px 2px 0px 3px; vertical-align:middle; }
+.BottomRow .ZmMsgListColTag         { margin-right:3px; }
+.ZmMsgListDate                      { position:absolute; right:0px; text-align:right; width:75px; width:6.8rem;}
+.ZmMsgListColSelection, .ZmMsgListColFlag, .ZmMsgListColTag, .ZmMsgListColAccount,
+.ZmMsgListColStatus, .ZmMsgListColMute, .ZmMsgListColRead, .ZmMsgListColAttachment, .ZmMsgListColExpand
+{
+    width:16px;
+}
+
+.ZmMsgListColPriority {
+    width:8px;
+    margin-left:3px;
+}
+.ZmMsgListColFolder, .ZmMsgListColSize, .ZmMsgListColDate   { text-align:left; }
+/*The width for below styles are generated by program. Add any additional styles should be added here.
+.ZmMsgListColFrom { }
+.ZmMsgListColFolder { }
+.ZmMsgListColSize { }
+.ZmMsgListColDate { }
+.ZmMsgListColSubject { }
+*/
+.ZToolbarTable .vertSep             { border-color:@ToolbarSeparatorColor@;     }
+
+.appt_new_time .ImgBlank_16,
+.appt_time .ImgBlank_16             { display:none;     }
+
+/*
+ * TinyMCE customizations
+ */
+
+.ZmHtmlEditor .mce-btn, .ZmHtmlEditor .mce-panel {
+    background-color: @AppC@;
+    background-image: none;
+}
