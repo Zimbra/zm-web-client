@@ -92,6 +92,7 @@ function(params) {
     }
     var work = {
         msg: params.msg,
+        button: params.button,
         level: params.level || ZmStatusView.LEVEL_INFO,
         detail: params.detail,
         date: new Date(),
@@ -266,6 +267,7 @@ ZmToast.prototype.dispose =
 function() {
     this._textEl = null;
     this._iconEl = null;
+    this._buttonEl = null;
     this._detailEl = null;
     DwtComposite.prototype.dispose.call(this);
 };
@@ -319,6 +321,13 @@ function(work) {
 
         Dwt.removeChildren(this._textEl);
         this._textEl.appendChild(span);
+    }
+    
+    if (this._buttonEl && work.button) {
+        this._buttonEl.innerHTML = work.button;
+    }
+    else {
+        this._buttonEl && Dwt.removeChildren(this._buttonEl);
     }
 
     // get transitions
@@ -375,8 +384,9 @@ function() {
 
     var state = this._state = this._createState(transition);
 
-    this.setLocation(state.x, state.y);
-
+    if(state.x && state.y) {
+        this.setLocation(state.x, state.y);
+    }
     this._funcs[transition.type || "next"]();
 };
 
@@ -399,6 +409,7 @@ function(templateId, data) {
     DwtComposite.prototype._createHtmlFromTemplate.call(this, templateId, data);
     this._textEl = document.getElementById(data.id+"_text");
     this._iconEl = document.getElementById(data.id+"_icon");
+    this._buttonEl = document.getElementById(data.id+"_button");
     this._detailEl = document.getElementById(data.id+"_detail");
 };
 
@@ -415,18 +426,15 @@ function(transition) {
     switch (state.type) {
         case "fade-in":
             this.setOpacity(0);
-            this.setLocation(null, 0);
             state.value = state.start;
             break;
         case "fade-out":
         case "fade":
-            this.setLocation(null, 0);
             state.value = state.start;
             break;
         case "slide-in":
         case "slide-out":
         case "slide":{
-            this.setLocation(null, -36);
             this.setOpacity(100);
             state.value = state.start;
             break;
@@ -493,7 +501,10 @@ function() {
 		Dwt.removeChildren(this._textEl);
     }
     if (this._iconEl) {
-		Dwt.removeChildren(this._iconEl);
+        Dwt.removeChildren(this._iconEl);
+    }
+    if (this._buttonEl) {
+        Dwt.removeChildren(this._buttonEl);
     }
     this._funcs["next"]();
 };
