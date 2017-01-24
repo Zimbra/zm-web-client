@@ -720,7 +720,7 @@ function(summary, actionLogItem, showToastOnParentWindow) {
 	var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 	if (undoLink && actionController) {
 		actionController.onPopup();
-		ctxt.setStatusMsg({msg: summary + undoLink, transitions: actionController.getStatusTransitions()});
+		ctxt.setStatusMsg({msg: summary, button:undoLink, transitions: actionController.getStatusTransitions()});
 	} else {
 		ctxt.setStatusMsg(summary);
 	}
