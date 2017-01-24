@@ -4891,6 +4891,14 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZActive	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-active@		}
 .ZSelected	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-selected@	}
 
+#moreTabsMenuBtn                        			{	@TabMoreButtonContainer@	}
+#moreTabsMenuBtn .ZToolbarButtonBorder  			{	@TabMoreButton@ 			}
+#moreTabsMenuBtn.ZHover .ZToolbarButtonBorder       {   @TabMoreButton-hover@	    }
+#moreTabsMenuBtn.ZFocused .ZToolbarButtonBorder     {   @TabMoreButton-focused@	    }
+#moreTabsMenuBtn.ZActive .ZToolbarButtonBorder	  {   @TabMoreButton-active@	    }
+#moreTabsMenuBtn.ZSelected .ZToolbarButtonBorder    {   @TabMoreButton-selected@    }
+#moreTabsMenuBtn .ZToolbarButtonBorder .ZWidgetTitle{   @TabMoreButtonText@         }
+
 .SearchTabButton .ZAppTabBorder .ZLeftIcon DIV {
 	display:block;
 }
@@ -4912,8 +4920,13 @@ HTML>BODY .appt-selected .appt_allday_body
 	/* change the following to set the top of the toaster
 	margin-top:10px;  */
 }
+
 .ZToastContent {
 	@ToastContent@
+}
+
+.ZToastContent > div {
+	@ToastContentChildren@
 }
 
 .ZToastIcon {
@@ -4922,14 +4935,21 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZToastText {
-	max-width:510px;
 	@ToastText@
 	word-wrap: break-word;
 }
 
-.ZToastText a.undo {
+.ZToastButton a.undo {
 	font-size:0.75em;
-	margin-left:20px;
+	@ToastUndoContent@
+}
+
+.ZToastButton {
+	@ToastButton@
+}
+
+.ZToastButton:empty {
+	display:none;
 }
 
 .ZToastBG 				{	@ToastContainer@		}

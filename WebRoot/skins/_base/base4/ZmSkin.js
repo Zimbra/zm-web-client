@@ -63,7 +63,7 @@ ZmSkin.hints = {
     helpButton:     { style: "link", container: "quota", url: "@HelpAdvancedURL@" },        /*** TODO: this 'container' should be removed ??? ***/
     logoutButton:   { style: "link", container: "quota" },      /*** TODO: this 'container' should be removed ??? ***/
     appChooser:     { position:"static", direction: "LR" },
-    toast:          { location: "N", 
+    toast:          { location: "SW",
                       transitions: [
                             { type: "fade-in", step: 5, duration: 50 },
                             { type: "pause", duration: 5000 },
