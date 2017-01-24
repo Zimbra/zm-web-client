@@ -44,10 +44,13 @@
 
 
 <template id='share.Widgets#ZToast' class='ZToastInfo'>
+		<!-- ADD BELOW HTML INSIDE ZTOASTCONTENT IF YOU WANT NOTIFICATION LEVEL TO APPEAR AS A ICON ON TOAST
+        <div id='${id}_icon' class='ZToastIcon'></div>
+        -->
 	<div class='ZToastBG'>
 		<div class='ZToastContent'>
-			<div id='${id}_icon' class='ZToastIcon'></div>
 			<div id='${id}_text' class='ZToastText'></div>
+			<div id='${id}_button' class='ZToastButton' ></div>
 		</div>
 	</div>
 </template>
