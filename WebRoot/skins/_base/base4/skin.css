@@ -55,14 +55,16 @@ BODY                                    {   margin:0px;     }
                                         }
 #skin_spacing_top_row > .skin_table     {   border-collapse: separate;  }
 #skin_spacing_top_row .DwtLinkButtonDropDownArrowRow    {   background-color:@SkinTopRowColor@;     }
+#skin_spacing_top_row .ZmMoreTabs       {   @SkinTopRowMore@   }
 
 /** Logo displayed in the app **/
 #skin_spacing_logo                      {}
 #skin_container_logo                    {   width:@LogoWidth@;  }
     
 /** Toast box **/
-#skin_container_toast                   {   width:100%; height:100%;    }
-    
+#skin_container_toast                   {   @SkinContainerToast@    }
+#skin_container_toast .ZToastText > span {  @DisplayTable@ }
+
 /** Search box **/  
 #skin_spacing_search,
 #skin_spacing_people_search             {   height:42px; width:@cssValue(HSashContainer,width)@;    }
@@ -72,6 +74,9 @@ BODY                                    {   margin:0px;     }
 #skin_container_search .ZButton         {   height:auto;    }
 #skin_container_search .ZButtonBorder   {   border:0px; background-color:transparent; background-image:none; @NoShadow@ @NoRoundCorners@ }
 #skin_container_search .ZWidgetTitle    {   display:none;   }
+/** Temporarily setting it to same width as non expanded, to nullify the expansion effect. **/
+#skin_container_search .search_input-expanded {     width:200px;    }
+
 /** combined username/quota **/
 #skin_spacing_tree_top                  {   text-align:center;      }
 #skin_container_tree_top                {   @SkinBorderUsername@    }
@@ -109,10 +114,9 @@ BODY                                    {   margin:0px;     }
 /** Tree/App Sash **/
 #skin_spacing_tree_app_sash             {}
 /** App Chooser **/
-#skin_spacing_app_chooser               {}
+#skin_spacing_app_chooser               {   @SkinSpacingAppChooser@     }
 #skin_border_app_chooser                {   @SkinBorderAppChooser@      }
 #skin_container_app_chooser             {
-    margin-right:100px; /* space to not overlap app row toolbar buttons */
     position:absolute;
     width:auto;
     height:auto;
@@ -120,6 +124,7 @@ BODY                                    {   margin:0px;     }
     @AppTabChooser@
 }
 #skin_container_app_chooser>DIV>TABLE   { @AppTabTable@     }
+#skin_container_app_chooser .ZAppTab    { @AppTab@  }
 
 /** webclient offline sync notification **/
 #skin_container_global_buttons .offline {
@@ -162,24 +167,8 @@ BODY                                    {   margin:0px;     }
 #skin_spacing_app_top_toolbar           {   height:35px; height:3.0rem;     }
 #skin_container_app_top_toolbar         {   @SkinBorderAppToolbar@ width:auto; padding-top:5px; padding-left:@SashSize@;    }
 #skin_container_app_new_button          {   @SkinBorderAppToolbar@ width:@TreeStartWidth@; padding:5px; }
-#skin_spacing_app_row                   {   border-top:1px solid; border-spacing:0; padding:0px 7px; @AppTab@   }
-#skin_spacing_app_row                   {   
-    background-color:transparent; 
-    background-color:rgba(@SkinAppRowColorRGB@,.1);
-    border-color:transparent;
-    border-color:rgba(@SkinAppRowColorRGB@,.2);
-#IFDEF WEBKIT
-    border-color:rgba(@SkinAppRowColorRGB@,.1);
-#ENDIF
-#IFDEF MSIE_LOWER_THAN_9
-    zoom:1;
-    @SkinAppRowBorderColorIE@
-    -ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#19@SkinAppRowColorHex@, endColorstr=#19@SkinAppRowColorHex@);
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#19@SkinAppRowColorHex@,endColorstr=#19@SkinAppRowColorHex@); 
-#ENDIF
-}
-#skin_spacing_app_row TABLE             {   border-collapse:separate;   }
-#skin_spacing_app_row .ZToolbarButton   {   height:auto;        }
+
+
 /** App  **/
 #skin_spacing_app_main                  {   height:100%;        }
 #skin_container_app_main                {}
@@ -412,7 +401,7 @@ BODY                                    {   margin:0px;     }
 .ZSelectedPrev .ZAppTabBorder               {   @AppTabBorder-selectedPrev@ }
 .ZSelectedNext .ZAppTabBorder               {   @AppTabBorder-selectedNext@ }
 .ZFirstItem .ZAppTabBorder                  {   @AppTabBorder-first@        }
-.ZAppTabSpacer                              {   @AppTab@ @AppTabSpacer@     }
+.ZAppTabSpacer                              {   @AppTabSpacer@     }
 
 /* Normal Tab Overrides -- TODO: Merge into main */
 .ZSelectedPrev .ZTabBorder                  {   @TabBorder-selectedPrev@    }
