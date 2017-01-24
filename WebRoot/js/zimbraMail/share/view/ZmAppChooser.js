@@ -202,7 +202,7 @@ function(element, option){
         var containerEl = moreTabsMenu;
         var button = new DwtToolBarButton({parent:DwtShell.getShell(window), id: "moreTabsMenuBtn", style:"background:none no-repeat scroll 0 0 transparent; border: none"});
         button.setToolTipContent(ZmMsg.more, true);
-        button.setText("");
+        button.setText(ZmMsg.moreToolbar);
         button.reparentHtmlElement(moreTabsMenu);
         button.setMenu(new AjxListener(this, this._showOverflowTabsMenu));
         this._moreTabsBtn =  button;

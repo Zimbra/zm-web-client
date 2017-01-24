@@ -2127,7 +2127,7 @@ function(params, actionLogItem, result) {
 		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 		if (undoLink && actionController) {
 			actionController.onPopup();
-			appCtxt.setStatusMsg({msg: summary+undoLink, transitions: actionController.getStatusTransitions()});
+			appCtxt.setStatusMsg({msg: summary, button:undoLink, transitions: actionController.getStatusTransitions()});
 		} else {
 			appCtxt.setStatusMsg(summary);
 		}
