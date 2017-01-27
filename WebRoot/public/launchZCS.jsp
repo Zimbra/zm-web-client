@@ -454,7 +454,10 @@ delete text;
 		// NOTE: Domain info settings moved into launch function to
 		//       prevent sloppy code from accessing extraneous window
 		//       scoped variable.
-		<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
+		<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"
+			authtoken="${requestScope.authResult.authToken}"
+			csrftoken="${csrfToken}"/>
+
 		var settings = {
 			"dummy":1
 			<c:if test="${not empty domainInfo}">

@@ -46,7 +46,7 @@
 <!-- skin is ${zm:cook(skin)} -->
 <body class="user_font_system" <c:if test="${not empty onload}">onload="${onload}"</c:if>>
 <app:handleViewError>
-<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}" />
+<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}" authtoken="${mailbox.authToken}" csrftoken="${mailbox.csrfToken}"/>
 <c:if test="${not empty domainInfo}">
 	<c:set var="helpUrl" value="${domainInfo.attrs.zimbraHelpStandardURL}" scope='request' />
 	<c:set var="adminReference" value="${domainInfo.attrs.zimbraWebClientAdminReference}" scope="request"/>
