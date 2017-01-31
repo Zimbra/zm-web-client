@@ -99,7 +99,8 @@
 <template id='dwt.Widgets#DwtVerticalSash' width='0' height='0'>
 	<div class='DwtVerticalSash'>
 		<div class='VSashContainer'>
-			<div class='VSashThumb ImgVSash_thumb'></div>
+            <!-- Don't show sash thumb image -->
+			<!-- div class='VSashThumb ImgVSash_thumb'></div -->
 		</div>
 	</div>
 </template>
@@ -107,7 +108,8 @@
 <template id='dwt.Widgets#DwtHorizontalSash' width='0' height='0'>
 	<div class='DwtHorizontalSash'>
 		<div class='HSashContainer'>
-			<div class='HSashThumb ImgHSash_thumb'></div>
+            <!-- Don't show sash thumb image -->
+			<!-- div class='HSashThumb ImgHSash_thumb'></div -->
 		</div>
 	</div>
 </template>
@@ -377,21 +379,21 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 
 <template id='dwt.Widgets#ZTreeItem'>
 	<div class='${divClassName}' id='${id}_div'>
-		<table role="presentation" id='${id}_table' style="table-layout:fixed; width:100%">
+		<table role="presentation" id='${id}_table' style="table-layout:fixed; width:100%; height: 100%;">
 			<tr>
-				<td style="width:20px" align=center nowrap id='${id}_nodeCell'></td>
-				<$ if (data.isCheckedStyle) { $>
-					<td style="width:20px" nowrap id='${id}_checkboxCell' class="ZTreeItemCheckboxCell">
-                        <div class="ZTreeItemCheckbox" id='${id}_checkbox'>
-							<div class="ZTreeItemCheckboxImg" id='${id}_checkboxImg'>
-								<$= AjxImg.getImageHtml("MenuCheck") $>
-							</div>
-                        </div>
-					</td>
-				<$ } $>
 				<td style="width:20px" nowrap class='imageCell' id='${id}_imageCell'></td>
 				<td nowrap class='${textClassName}' id='${id}_textCell'></td>
                 <td class='imageCell' id='${id}_extraCell'></td>
+                <$ if (data.isCheckedStyle) { $>
+                    <td style="width:20px" nowrap id='${id}_checkboxCell' class="ZTreeItemCheckboxCell">
+                        <div class="ZTreeItemCheckbox" id='${id}_checkbox'>
+                            <div class="ZTreeItemCheckboxImg" id='${id}_checkboxImg'>
+                                <$= AjxImg.getImageHtml("MenuCheck") $>
+                            </div>
+                        </div>
+                    </td>
+                <$ } $>
+                <td style="width:20px; display: none;" align=center nowrap id='${id}_nodeCell'></td>
 			</tr>
 		</table>
 	</div>
@@ -401,12 +403,12 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 	<div class='${divClassName}' id='${id}_div'>
 		<table role="presentation" id='${id}_table'>
 			<tr>
-				<$ if (!data.noNodeCell) { $>
-					<td align=center nowrap id='${id}_nodeCell'></td>
-				<$ } $>
 				<td nowrap class='imageCell' id='${id}_imageCell'></td>
 				<td nowrap class='${textClassName}' id='${id}_textCell' width="100%"></td>
 				<td class='${textClassName} FakeAnchor' id='${id}_optCell'><div id='${id}_optButton'/></td>
+                <$ if (!data.noNodeCell) { $>
+                    <td align=center nowrap id='${id}_nodeCell'></td>
+                <$ } $>
 			</tr>
 		</table>
 	</div>
