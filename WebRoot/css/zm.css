@@ -166,14 +166,6 @@ INPUT[type="text"]:focus, INPUT[type="password"]:focus, INPUT[type="email"]:focu
  *	Overview tree (list of folders)
  */
 
-
-/* Override so first level of the tree does not indent */
-/* ??? DO WE WANT THIS FOR ALL TREES, OR JUST IN THE OVERVIEW TREES */
-.DwtTreeItemLevel1ChildDiv {
-	padding-left:0px;
-	margin-bottom:5px;
-}
-
 .panelTopBorder {
 	border-top:solid 1px @darken(AppC,50)@;
 }
