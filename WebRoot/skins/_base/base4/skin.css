@@ -18,6 +18,38 @@
  * All portions of the code are Copyright (C) 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
  * ***** END LICENSE BLOCK *****
  */
+@font-face {
+    font-family: Roboto;
+    src: local("Roboto-Regular"), url(@SkinFontDir@/Roboto-Regular.ttf);
+}
+@font-face {
+    font-family: Roboto;
+    src: local("Roboto-Bold"), url(@SkinFontDir@/Roboto-Bold.ttf);
+    font-weight: bold;
+}
+@font-face {
+    font-family: Roboto;
+    src: local("Roboto-Italic"), url(@SkinFontDir@/Roboto-Italic.ttf);
+    font-style: italic;
+}
+@font-face {
+    font-family: Roboto;
+    src: local("Roboto-BoldItalic"), url(@SkinFontDir@/Roboto-BoldItalic.ttf);
+    font-weight: bold;
+    font-style: italic;
+}
+@font-face {
+    font-family: Roboto;
+    src: local("Roboto-Light"), url(@SkinFontDir@/Roboto-Light.ttf);
+    font-weight: 300;
+}
+@font-face {
+    font-family: Roboto;
+    src: local("Roboto-LightItalic"), url(@SkinFontDir@/Roboto-LightItalic.ttf);
+    font-style: italic;
+    font-weight: 300;
+}
+
 BODY                                    {   margin:0px;     }
 
 .skin_layout_row                        { width:100%; clear:both; }
