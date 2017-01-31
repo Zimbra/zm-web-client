@@ -192,6 +192,7 @@
 
 /* text style for name of a selected tree item */
 .DwtTreeItem-Text-focused {
+    @TreeItemText@
 	@TreeItemText-focused@
 	@TreeItemSpacing@
 }
@@ -262,7 +263,7 @@
 
 .DwtTreeItemLevel1ChildDiv {
 	padding-left:@SmallIconWidth@;
-	padding-top:2px;		/* ??? */
+    @TreeContainerFirstChild@
 }
 
 .overviewHeader .ImgNodeExpanded,
@@ -944,14 +945,13 @@ UL.DwtListView-Rows {
 
 /* Outer container for the entire calendar */
 .DwtCalendar {
-	@MiniCalBg@
+	@MiniCalContainer@
 	@InactiveCursor@
 }
 
 /* Container of the calendar titlebar (arrows and month label, not DOW labels) */
 .DwtCalendarTitlebar {
 	@MiniCalHeaderBg@
-	height:2rem;
 }
 
 .DwtCalendarTitlebar > TABLE {
@@ -986,6 +986,7 @@ UL.DwtListView-Rows {
 
 /* Label for the days of the week in calendar titlebar */
 .DwtCalendarDow {
+    @MiniCalDOWButtonSize@
 	@MiniCalDOWBg@
 	@MiniCalDOWText@
 }
