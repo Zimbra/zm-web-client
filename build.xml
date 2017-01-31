@@ -1200,10 +1200,17 @@ ext = BeanUtils.cook(ext);
 
     <target name='clean' depends='customer-init'>
         <delete dir='${build.dir}'/>
-        <delete dir='${customer.build.dir}' />
-        <delete dir="${jquery.dir}"/>
-        <delete dir="${modernizr.dir}"/>
-        <delete dir="${tinymce.dir}"/>
+        <delete dir='${customer.build.dir}'/>
+        <delete dir='${web.dir}/jquery'/>
+        <delete dir='${web.dir}/modernizr'/>
+        <delete dir='${web.dir}/yui'/>
+        <delete dir='${web.dir}/js/ajax'/>
+        <delete dir='${web.dir}/js/zimbra'/>
+        <delete>
+            <fileset dir="${web.dir}/keys">
+                <include name="Ajx*.properties"/>
+            </fileset>
+        </delete>
     </target>
 
 	<!-- JavaScript API Documentation Tasks -->

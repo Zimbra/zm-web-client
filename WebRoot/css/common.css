@@ -616,7 +616,10 @@ LI.RowDouble, LI.Row {list-style: none;}
 
 /* Overview */
 
-.ZmOverview 				{	@FullSize@ 			}
+.ZmOverview 				{
+    @FullSize@
+    @OverviewTreeContainer@
+}
 
 
 .ZmOverviewContainer 		{	@TreeContainer@ 	}
@@ -649,8 +652,10 @@ LI.RowDouble, LI.Row {list-style: none;}
 	@TreeHeaderContainer@
 	@TreeHeaderText@
 	@TreeItemSpacing@
-	padding-top:1px;
-	padding-bottom:1px;
+}
+
+.overviewHeader > TABLE {
+    height: 100%;
 }
 
 .overviewHeader-Text,
