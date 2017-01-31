@@ -23,7 +23,6 @@
         <file>skin.properties</file>
     </substitutions>
     <css>
-        <file>font.css</file>
         <file>skin.css</file>
     </css>
     <script>
