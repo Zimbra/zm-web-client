@@ -93,8 +93,8 @@ ZmTreeView.KEY_ID	= "_treeId_";
 ZmTreeView.COMPARE_FUNC = {};
 
 // add space after the following items
-ZmTreeView.ADD_SEP = {};
-ZmTreeView.ADD_SEP[ZmFolder.ID_TRASH] = true;
+/*ZmTreeView.ADD_SEP = {};
+ZmTreeView.ADD_SEP[ZmFolder.ID_TRASH] = true;*/
 
 ZmTreeView.MAX_ITEMS = 50;
 
@@ -326,6 +326,7 @@ function(params) {
 	}
 	DBG.println(AjxDebug.DBG3, "Render: " + org.name + ": " + children.length);
 	var addSep = true;
+    var addSepForUserFolders = true;
 	var numItems = 0;
 	var len = children.length;
     if (params.startPos === undefined && params.lastRenderedFolder ){
@@ -401,7 +402,12 @@ function(params) {
 		if ((org.nId == ZmOrganizer.ID_ROOT) && child.link && addSep) {
 			params.treeNode.addSeparator();
 			addSep = false;
-		}
+		} else if(child.parent.id == ZmOrganizer.ID_ROOT && child.parent.type == ZmOrganizer.FOLDER && !child.link && !child._systemName && addSepForUserFolders) {
+            // Add Separator before rendering user folders at root level
+            params.treeNode.addSeparator();
+            addSepForUserFolders = false;
+        }
+
 		this._addNew(parentNode, child, null, params.noTooltips, params.omit);
 		numItems++;
 	}
@@ -582,9 +588,9 @@ function(parentNode, organizer, index, noTooltips, omit) {
 	}
 	this._treeItemHash[organizer.id] = ti;
 
-	if (ZmTreeView.ADD_SEP[organizer.nId]) {
+	/*if (ZmTreeView.ADD_SEP[organizer.nId]) {
 		parentNode.addSeparator();
-	}
+	}*/
 
 	// recursively add children
 	if (organizer.children && organizer.children.size()) {
