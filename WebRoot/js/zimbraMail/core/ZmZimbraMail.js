@@ -1918,7 +1918,8 @@ function() {
 							 createFunc:		"ZmSearchFolder.create",
 							 compareFunc:		"ZmFolder.sortCompare",
 							 openSetting:		ZmSetting.SEARCH_TREE_OPEN,
-							 displayOrder:		300
+							 displayOrder:		300,
+                             hideEmpty:         true
 							});
 
     ZmOrganizer.registerOrg(ZmOrganizer.SHARE, {
@@ -1946,7 +1947,8 @@ function() {
 							 compareFunc:		"ZmTag.sortCompare",
 							 newOp:				ZmOperation.NEW_TAG,
 							 openSetting:		ZmSetting.TAG_TREE_OPEN,
-							 displayOrder:		400
+							 displayOrder:		400,
+                             hideEmpty:         true
 							});
 
 	ZmOrganizer.registerOrg(ZmOrganizer.ZIMLET,
