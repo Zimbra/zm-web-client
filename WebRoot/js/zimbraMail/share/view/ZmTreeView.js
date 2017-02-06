@@ -92,10 +92,6 @@ ZmTreeView.KEY_ID	= "_treeId_";
 // compare functions for each type
 ZmTreeView.COMPARE_FUNC = {};
 
-// add space after the following items
-/*ZmTreeView.ADD_SEP = {};
-ZmTreeView.ADD_SEP[ZmFolder.ID_TRASH] = true;*/
-
 ZmTreeView.MAX_ITEMS = 50;
 
 // Static methods
@@ -587,10 +583,6 @@ function(parentNode, organizer, index, noTooltips, omit) {
 		ti.setDropTarget(this._dropTgt);
 	}
 	this._treeItemHash[organizer.id] = ti;
-
-	/*if (ZmTreeView.ADD_SEP[organizer.nId]) {
-		parentNode.addSeparator();
-	}*/
 
 	// recursively add children
 	if (organizer.children && organizer.children.size()) {
