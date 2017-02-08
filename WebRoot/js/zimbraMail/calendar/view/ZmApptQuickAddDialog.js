@@ -676,10 +676,12 @@ function(ev, id) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 
 		var el = DwtUiEvent.getTarget(ev);
-		var qad = AjxCore.objectWithId(el._qadId);
-
-		// Auto-corrects start/end date just like appt compose view
-		ZmApptViewHelper.handleDateChange(qad._startDateField, qad._endDateField, el == qad._startDateField);
+		//handle date change if user change's it manually.
+		if(ev && el){
+			var qad = AjxCore.objectWithId(el._qadId);
+			// Auto-corrects start/end date just like appt compose view
+			ZmApptViewHelper.handleDateChange(qad._startDateField, qad._endDateField, el == qad._startDateField);
+		}
     }
 	this._locationAssistant && this._locationAssistant.updateTime();
 };
