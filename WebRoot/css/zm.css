@@ -539,16 +539,6 @@ INPUT[type="text"].search_input-expanded:focus {
  * Conversation view stuff
  */
 
-/* message fragment text */
-.Row .ZmConvListFragment,
-.Conv2MsgHeader .ZmConvListFragment,
-.Row .Row-selected .ZmConvListFragment,
-.SubjectDoubleRow .ZmConvListFragment {
-	color:black;
-	opacity:0.4;
-	font-weight:normal;
-}
-
 /* bug #48863 - fix for IE/Webkit */
 .Trash TD {
 	text-decoration:line-through;
@@ -631,11 +621,6 @@ INPUT[type="text"].search_input-expanded:focus {
 
 .ZmMsgListColTag .ImgTagStack {
 	margin:0px;
-}
-
-.Row.ZmConvExpanded .ZmMsgListColFrom SPAN:first-child,
-.Row.ZmConvExpanded .ZmMsgListColSubject SPAN {
-	margin-left:2em;
 }
 
 /* put space between display of tag icons and their names */
