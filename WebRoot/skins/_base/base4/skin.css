@@ -196,9 +196,9 @@ BODY                                    {   margin:0px;     }
 
 
 /** App Toolbar **/
-#skin_spacing_app_top_toolbar           {   height:35px; height:3.0rem;     }
-#skin_container_app_top_toolbar         {   @SkinBorderAppToolbar@ width:auto; padding-top:5px; padding-left:@SashSize@;    }
-#skin_container_app_new_button          {   @SkinBorderAppToolbar@ width:@TreeStartWidth@; padding:5px; }
+#skin_spacing_app_top_toolbar           {   @ToolbarButtonHeight@     }
+#skin_container_app_top_toolbar         {   @SkinBorderAppToolbar@ width:auto; padding-left:@SashSize@; }
+#skin_container_app_new_button          {   @SkinBorderAppToolbar@ width:@TreeStartWidth@; }
 
 
 /** App  **/
@@ -231,7 +231,7 @@ BODY                                    {   margin:0px;     }
 /*#skin_td_new_button                   {   padding:2px;    }*/
 
 /** Login, Splash and Error screen **/
-#skin_container_splash_screen           {   @SkinOuter@ @FullWindow@ z-index:90000000;      }
+#skin_container_splash_screen           {   @FullWindow@ z-index:90000000;      }
 
 #ZLoginBodyContainer                    {   @LoginPanelInnerBorder@ }
 #ZSplashPanel                           {   @SplashOuterBorder@     }
@@ -325,6 +325,7 @@ BODY                                    {   margin:0px;     }
     text-align:center;
     width:100%;
     z-index:10;
+    margin-bottom: 34px;
 }
 .LoginScreen .copyright,
 .LoginScreen #ZLoginNotice,
@@ -359,17 +360,10 @@ BODY                                    {   margin:0px;     }
     @FontSize-bigger@
 }
 .SplashScreen .switch {
-    margin:70px 100px 30px;
-#IFDEF WEBKIT
-    margin-bottom:0px;
-#ENDIF
-#IFDEF MSIE_9_OR_HIGHER
-    margin-bottom:0px;
-#ENDIF
+    margin-bottom: 20px;
 }
 .SplashScreen .switch A {
-    color:@LoginLabelColor@;
-    text-decoration:underline;
+    color: @LoginLabelColor@;
     @FontSize-normal@
 }
 .SplashScreen .decor1           { @Decor1S@ }
@@ -589,8 +583,6 @@ SELECT                      {   @FieldBorder@   }
 
 /*Temporary overrides that need to move to skin properties*/
 /*.DwtListView-ColHeader            { height:1.8rem; height:19px;                   }*/
-.DwtListView-Column                 { background-color:@lighten(AppC,33)@;      }
-.DwtListView-Column TD              { color:@darken(AppC,55)@;                  }
 .RowDouble                          { height:auto; padding-top:0px;         }
 .RowDouble .TopRow,
 .RowDouble .ImgCheckboxChecked,
@@ -601,9 +593,6 @@ SELECT                      {   @FieldBorder@   }
 .RowDouble-matched .ZmListFlagsWrapper,
 .RowDouble-matched .ZmMsgListDate   { background-color:@SearchResultColor@;     }
 .TopRow, .BottomRow                 { height:16px; height:1.6rem; position:relative;    }
-#IFDEF MSIE_LESS_THAN_9
-.TopRow, .BottomRow                 { width:99%;    }
-#ENDIF
 .ZmListFlagsWrapper                 { position:absolute; right:0px; @ListItemContainer-normal@ }
 .SimpleContact .ZmListFlagsWrapper  { padding:.08rem 0px; right:0px; }
 .SimpleContact .ImgCheckboxUnchecked,
@@ -639,6 +628,22 @@ SELECT                      {   @FieldBorder@   }
 .ZmMsgListColDate { }
 .ZmMsgListColSubject { }
 */
+.Row .ZmMsgListColFrom,
+.Row .ZmMsgListColSubject {
+    @Text@
+    font-weight: normal;
+}
+
+.Row-selected .ZmMsgListColFrom,
+.Row-selected .ZmMsgListColSubject {
+    @Text-contrast@
+}
+
+.Unread .ZmMsgListColFrom,
+.Unread .ZmMsgListColSubject {
+    @Text-unread@
+}
+
 .ZToolbarTable .vertSep             { border-color:@ToolbarSeparatorColor@;     }
 
 .appt_new_time .ImgBlank_16,
