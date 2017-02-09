@@ -1,21 +1,23 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
- * 
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016 Synacor, Inc.
+ *
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at: http://www.zimbra.com/license
- * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
- * have been added to cover use of software over a computer network and provide for limited attribution 
- * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
- * 
- * Software distributed under the License is distributed on an "AS IS" basis, 
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
- * See the License for the specific language governing rights and limitations under the License. 
- * The Original Code is Zimbra Open Source Web Client. 
- * The Initial Developer of the Original Code is Zimbra, Inc. 
- * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at: https://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15
+ * have been added to cover use of software over a computer network and provide for limited attribution
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B.
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * See the License for the specific language governing rights and limitations under the License.
+ * The Original Code is Zimbra Open Source Web Client.
+ * The Initial Developer of the Original Code is Zimbra, Inc.  All rights to the Original Code were
+ * transferred by Zimbra, Inc. to Synacor, Inc. on September 14, 2015.
+ *
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016 Synacor, Inc. All Rights Reserved.
  * ***** END LICENSE BLOCK *****
  */
 
@@ -293,7 +295,9 @@ function() {
 	var addrList = {};
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		addrList[type] = view.getAddrInputField(type).getAddresses(true);
+        addrList[type] = {};
+		addrList[type].list = view.getAddrInputField(type).getAddresses(true);
+		addrList[type].value = view.getAddrInputField(type).getValue();
 	}
 
     var partToAttachmentMap = AjxUtil.map(view._partToAttachmentMap, function(member) {
@@ -608,9 +612,22 @@ function(attId, docIds, draftType, callback, contactId) {
 	// check for read receipt
 	var requestReadReceipt = !this.isHidden && this.isRequestReadReceipt();
 
-	var respCallback = this._handleResponseSendMsg.bind(this, draftType, msg, callback);
-	var errorCallback = this._handleErrorSendMsg.bind(this, draftType, msg);
-	msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime, isAutoSave);
+	var respCallback = this._handleResponseSendMsg.bind(this, draftType, msg, callback),
+	    errorCallback = this._handleErrorSendMsg.bind(this, draftType, msg),
+        sendParams = {
+            isDraft:            isDraft,
+            callback:           respCallback,
+            errorCallback:      errorCallback,
+            accountName:        acctName,
+            requestReadReceipt: requestReadReceipt,
+            sendTime:           this._sendTime,
+            isAutoSave:         isAutoSave
+        };
+
+    if (isDraft || !appCtxt.notifyZimlets("onMsgSend", [this, msg, sendParams])) {
+        msg.send(sendParams);
+    }
+
 	this._resetDelayTime();
 };
 
@@ -1734,11 +1751,8 @@ function(draftType, msg, resp) {
 // Listeners
 
 // Send button was pressed
-ZmComposeController.prototype._sendListener =
-function(ev) {
-	if (!appCtxt.notifyZimlets("onSendButtonClicked", [this, this._msg])) {
-	    this._send();
-    }
+ZmComposeController.prototype._sendListener = function(ev) {
+	this._send();
 };
 
 ZmComposeController.prototype._send =

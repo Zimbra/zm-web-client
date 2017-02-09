@@ -287,7 +287,7 @@
 		<fmt:message bundle="${zhmsg}" var="errorMessage" key="account.EXTERNAL_AUTH_FAILED"/>
 	</c:if>
     <c:if test="${errorCode eq 'account.TWO_FACTOR_SETUP_REQUIRED'}">
-        <c:url value="/public/TwoFactorSetup.jsp" var="twoFactorSetupURL">
+        <c:url value="TwoFactorSetup.jsp" var="twoFactorSetupURL">
             <c:param name="userName" value="${fullUserName}"/>
             <c:param name="skin" value="${skin}"/>
             <c:param name="version" value="${version}"/>
@@ -384,7 +384,7 @@ if (application.getInitParameter("offlineMode") != null) {
  login.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016 Synacor, Inc.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software Foundation,
@@ -394,7 +394,7 @@ if (application.getInitParameter("offlineMode") != null) {
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * If not, see <https://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 -->
 	<c:set var="client" value="${param.client}"/>

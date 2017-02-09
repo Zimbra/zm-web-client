@@ -1,21 +1,23 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
- * 
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016 Synacor, Inc.
+ *
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at: http://www.zimbra.com/license
- * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
- * have been added to cover use of software over a computer network and provide for limited attribution 
- * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
- * 
- * Software distributed under the License is distributed on an "AS IS" basis, 
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
- * See the License for the specific language governing rights and limitations under the License. 
- * The Original Code is Zimbra Open Source Web Client. 
- * The Initial Developer of the Original Code is Zimbra, Inc. 
- * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at: https://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15
+ * have been added to cover use of software over a computer network and provide for limited attribution
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B.
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * See the License for the specific language governing rights and limitations under the License.
+ * The Original Code is Zimbra Open Source Web Client.
+ * The Initial Developer of the Original Code is Zimbra, Inc.  All rights to the Original Code were
+ * transferred by Zimbra, Inc. to Synacor, Inc. on September 14, 2015.
+ *
+ * All portions of the code are Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016 Synacor, Inc. All Rights Reserved.
  * ***** END LICENSE BLOCK *****
  */
 
@@ -1451,10 +1453,13 @@ function(nfolder, resp) {
  * @param {Date} sendTime				if set, tell server that this message should be sent at the specified time
  * @param {Boolean} isAutoSave          if <code>true</code>, this an auto-save draft
  */
-ZmMailMsg.prototype.send =
-function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime, isAutoSave) {
+ZmMailMsg.prototype.send = function(params) {
 
-	var aName = accountName;
+    params = Dwt.getParams(arguments, ZmMailMsg.SEND_PARAMS);
+
+	var aName = params.accountName,
+        isDraft = params.isDraft;
+
 	if (!aName) {
 		// only set the account name if this *isnt* the main/parent account
 		var acct = appCtxt.getActiveAccount();
@@ -1462,41 +1467,49 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			aName = acct.name;
 		}
 	}
+
 	// if we have an invite reply, we have to send a different message
 	if (this.isInviteReply && !isDraft) {
 		// TODO: support for batchCmd here as well
-		return this.sendInviteReply(true, 0, callback, errorCallback, this._instanceDate, aName, false);
-	} else {
+		return this.sendInviteReply(true, 0, params.callback, params.errorCallback, this._instanceDate, aName, false);
+	}
+    else {
 		var jsonObj, request;
 		if (isDraft) {
 			jsonObj = {SaveDraftRequest:{_jsns:"urn:zimbraMail"}};
 			request = jsonObj.SaveDraftRequest;
-		} else {
+		}
+        else {
 			jsonObj = {SendMsgRequest:{_jsns:"urn:zimbraMail"}};
 			request = jsonObj.SendMsgRequest;
 			if (this.sendUID) {
 				request.suid = this.sendUID;
 			}
 		}
-		if (noSave) {
+		if (params.noSave) {
 			request.noSave = 1;
 		}
-		this._createMessageNode(request, isDraft, aName, requestReadReceipt, sendTime);
+
+		this._createMessageNode(request, isDraft, aName, params.requestReadReceipt, params.sendTime);
 		appCtxt.notifyZimlets("addExtraMsgParts", [request, isDraft]);
-		var params = {
-			jsonObj: jsonObj,
-			isInvite: false,
-			isDraft: isDraft,
-			isAutoSave: isAutoSave,
-			accountName: aName,
-			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
-			errorCallback: errorCallback,
-			batchCmd: batchCmd,
-            skipOfflineCheck: true
+
+		var sendParams = {
+			jsonObj:            jsonObj,
+			isInvite:           false,
+			isDraft:            isDraft,
+			isAutoSave:         params.isAutoSave,
+			accountName:        aName,
+			callback:           this._handleResponseSend.bind(this, isDraft, params.callback),
+			errorCallback:      params.errorCallback,
+			batchCmd:           params.batchCmd,
+            skipOfflineCheck:   true
 		};
-        this._sendMessage(params);
+
+        this._sendMessage(sendParams);
     }
 };
+
+ZmMailMsg.SEND_PARAMS = [ 'isDraft', 'callback', 'errorCallback', 'accountName', 'noSave', 'requestReadReceipt', 'batchCmd', 'sendTime', 'isAutoSave' ];
 
 ZmMailMsg.prototype._handleResponseSend =
 function(isDraft, callback, result) {
