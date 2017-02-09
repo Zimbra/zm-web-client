@@ -524,7 +524,10 @@ html[data-istwofactorsetuppage] .VeilOverlay TABLE {
 .selected,
 .Row-selected,
 .Row-selected-dragProxy,
-.Row-selected-disabled			{	@ListItemContainer-selected@		}
+.Row-selected-disabled,
+.Row-selected.ZmConvExpanded,
+.Row-selected-dragProxy.ZmConvExpanded,
+.Row-selected-disabled.ZmConvExpanded			{	@ListItemContainer-selected@		}
 
 .Row-selected .ZmListFlagsWrapper,
 .Row-selected-disabled .ZmListFlagsWrapper,
@@ -578,7 +581,10 @@ LI.RowDouble, LI.Row {list-style: none;}
 
 .Row-selected TD,
 .Row-selected-dragProxy TD,
-.Row-selected-disabled TD 		{	@ListItemText-selected@	}
+.Row-selected-disabled TD,
+.Row-selected DIV,
+.Row-selected-dragProxy DIV,
+.Row-selected-disabled DIV 		{	@ListItemText-selected@	}
 
 /* .Row-matched TD			 	{ 	@ListItemText-matched@				} */
 
