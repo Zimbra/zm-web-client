@@ -403,7 +403,7 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 				subj = ZmMailMsg.stripSubjectPrefixes(subj);
 			}
 			htmlArr[idx++] = "<div id='" + this._getFieldId(item, field) + "' " + AjxUtil.getClassAttr(classes) + zimletStyle + ">";
-			htmlArr[idx++] = "<span>";
+			htmlArr[idx++] = "<span class='ZmConvListSubject'>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj, true) + "</span>";
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);

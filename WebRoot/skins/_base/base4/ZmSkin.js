@@ -20,6 +20,8 @@
  */
 function ZmSkin(hints) {
     this.hints = this.mergeObjects(ZmSkin.hints, hints);
+
+    DwtListView.HEADERITEM_HEIGHT = 38 + 2;
 }
 
 
@@ -55,9 +57,6 @@ ZmSkin.hints = {
     bottomAd:       { containers: "skin_tr_bottom_ad" },
     treeTopAd:      { containers: "skin_tr_tree_top_ad" },
     treeBottomAd:   { containers: "skin_tr_tree_bottom_ad" },
-    
-
-    
 
     // specific components
     helpButton:     { style: "link", container: "quota", url: "@HelpAdvancedURL@" },        /*** TODO: this 'container' should be removed ??? ***/
