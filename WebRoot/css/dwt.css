@@ -585,7 +585,7 @@ TD.DwtListView-ColumnActive {
 
 UL.DwtListView-Rows {
 	list-style:none;
-	padding:0px;
+	padding: @OutlineWidth@;
 	margin:0px;
 }
 
@@ -596,10 +596,10 @@ UL.DwtListView-Rows {
 }
 
 .DwtListHeaderItem-label {
-	padding-left:3px;
 	white-space:nowrap;
 	overflow:hidden;
 	@OverflowEllipsis@
+    @ListColHeaderLabel@
 }
 
 /* Fix for bug: 85014 */
@@ -2010,6 +2010,10 @@ INPUT.xform_field {
 .ZActive	.ZToolbarButtonBorder				{							@ToolbarButtonBorder-active@	}
 .ZSelected	.ZToolbarButtonBorder				{							@ToolbarButtonBorder-selected@	}
 
+.ZNewButton .ZToolbarButtonBorder               {   @ToolbarNewButtonBorder@                }
+.ZNewButton.ZHover .ZToolbarButtonBorder        {   @ToolbarButtonBorder-hover@             }
+.ZNewButton.ZActive .ZToolbarButtonBorder       {   @ToolbarButtonBorder-active@            }
+
 			.ZToolbarButtonTable .ZWidgetTitle	{	@ToolbarButtonText@ 	@ToolbarButtonText-normal@		}
 .ZHover		.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-hover@		}
 .ZDisabled	.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-disabled@ 	}
@@ -2068,6 +2072,14 @@ INPUT.xform_field {
 .ZFocused	.ZTabBorder					{				@TabBorder-focused@		}
 .ZActive	.ZTabBorder					{				@TabBorder-active@		}
 .ZSelected	.ZTabBorder					{				@TabBorder-selected@ 	}
+
+/* Normal Tab Overrides */
+.ZSelectedPrev .ZTabBorder              {   @TabBorder-selectedPrev@    }
+.ZSelectedNext .ZTabBorder              {   @TabBorder-selectedNext@    }
+.ZFirstItem .ZTabBorder                 {   @TabBorder-first@           }
+.ZLastItem .ZTabBorder                  {   @TabBorder-last@            }
+.ZTabBarPrefix                          {   @TabBarPrefix@              }
+.ZTabBarSuffix                          {   @TabBarSuffix@              }
 
 			.ZTabTable .ZWidgetTitle	{	@TabText@ 	@TabText-normal@		}
 .ZHover		.ZTabTable .ZWidgetTitle	{				@TabText-hover@			}
