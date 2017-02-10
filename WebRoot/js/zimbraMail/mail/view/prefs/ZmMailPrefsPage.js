@@ -886,24 +886,18 @@ function() {
 		return;
 	}
 
-	var val, invalidEmails = [],
+	var val,
         items = AjxStringUtil.trim(this._inputEl.getValue(), true);
 	if (items.length) {
         items = AjxStringUtil.split(items, [',', ';', ' ']);
-        AjxUtil.foreach(items, function(emailItem){
-            val = AjxStringUtil.trim(emailItem);
-            if (val && AjxEmailAddress.validateAddress(val)) {
+        for(var i=0; i<items.length; i++) {
+            val = items[i];
+            if(val) {
                 this._addEmail(AjxStringUtil.htmlEncode(val));
                 if (!this._add[val]) {
                     this._add[val] = true;
                 }
             }
-            else if (val.length) {
-                invalidEmails.push(val);
-            }
-        }.bind(this));
-        if (invalidEmails.length) {
-            appCtxt.setStatusMsg(AjxMessageFormat.format(ZmMsg.errorInvalidEmailAddresses, invalidEmails.join(", ")), ZmStatusView.LEVEL_CRITICAL);
         }
 		this._inputEl.setValue("", true);
 		this._inputEl.blur();

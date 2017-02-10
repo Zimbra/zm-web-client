@@ -549,9 +549,8 @@ function(id, value, setup, control) {
 		var object = control || this.getFormObject(id);
 		if (!object) { return value; }
 
-		value = value || "";
-		var curValue = object.getValue() || "";
-        if (value != null && (curValue != value)) {
+		var curValue = object.getValue();
+		if (value != null && (curValue != value)) {
 			object.setValue(value);
 		}
 	} else if (type == ZmPref.TYPE_LOCALES) {
@@ -611,11 +610,6 @@ function(useDefaults) {
 		var pref = settings.getSetting(id);
 		var newValue = this._getPrefValue(id, useDefaults);
 		this.setFormValue(id, newValue);
-
-		//Resetting include options to initial state.
-		if (id === ZmSetting.FORWARD_INCLUDE_WHAT || id === ZmSetting.REPLY_INCLUDE_WHAT) {
-			setup.initFunction(this.getFormObject(id), newValue);
-		}
 	}
 
 	if (!useDefaults) {

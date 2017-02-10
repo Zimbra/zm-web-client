@@ -66,8 +66,9 @@ ZmImportExportBaseView.prototype.update = function() {
 };
 
 ZmImportExportBaseView.prototype.setValue = function(name, value) {
-    DwtForm.prototype.setValue.apply(this, arguments);
-	if (name == "TYPE" && value) {
+    var ovalue = this.getValue(name);
+	DwtForm.prototype.setValue.apply(this, arguments);
+	if (name == "TYPE" && value != ovalue) {
 		var type = value;
 		this._initSubType(type);
 		var isTgz = type == ZmImportExportController.TYPE_TGZ;

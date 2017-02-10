@@ -256,10 +256,7 @@ function(addDivContainer, onlyInnerContent) {
 		var editor = this.getEditor(),
             content1 = "";
         if (editor) {
-			try {
-				content1 = editor.save({format: "raw", set_dirty: false});
-			}
-			catch(e) {}
+            content1 = editor.save({ format:"raw", set_dirty: false });
         }
         else {
             content1 = field.value || "";
@@ -775,7 +772,7 @@ function(id, autoFocus) {
 	var plugins = [
 		"zemoticons",
 		"table", "directionality", "textcolor", "lists", "advlist",
-		"link", "hr", "charmap", "code", "image", "autolink"
+		"link", "hr", "charmap", "code", "image"
 	];
 
 	if (this._attachmentCallback) {
@@ -822,7 +819,7 @@ function(id, autoFocus) {
 		object_resizing : true,
         font_formats : fonts.join(";"),
         fontsize_formats : AjxMsg.fontSizes || '',
-		convert_urls : true,
+		convert_urls : false,
 		verify_html : false,
 		browser_spellcheck : true,
         content_css : appContextPath + '/css/tinymce-content.css?v=' + cacheKillerVersion,

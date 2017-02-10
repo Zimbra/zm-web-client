@@ -295,9 +295,7 @@ function() {
 	var addrList = {};
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-        addrList[type] = {};
-		addrList[type].list = view.getAddrInputField(type).getAddresses(true);
-		addrList[type].value = view.getAddrInputField(type).getValue();
+		addrList[type] = view.getAddrInputField(type).getAddresses(true);
 	}
 
     var partToAttachmentMap = AjxUtil.map(view._partToAttachmentMap, function(member) {
@@ -612,22 +610,9 @@ function(attId, docIds, draftType, callback, contactId) {
 	// check for read receipt
 	var requestReadReceipt = !this.isHidden && this.isRequestReadReceipt();
 
-	var respCallback = this._handleResponseSendMsg.bind(this, draftType, msg, callback),
-	    errorCallback = this._handleErrorSendMsg.bind(this, draftType, msg),
-        sendParams = {
-            isDraft:            isDraft,
-            callback:           respCallback,
-            errorCallback:      errorCallback,
-            accountName:        acctName,
-            requestReadReceipt: requestReadReceipt,
-            sendTime:           this._sendTime,
-            isAutoSave:         isAutoSave
-        };
-
-    if (isDraft || !appCtxt.notifyZimlets("onMsgSend", [this, msg, sendParams])) {
-        msg.send(sendParams);
-    }
-
+	var respCallback = this._handleResponseSendMsg.bind(this, draftType, msg, callback);
+	var errorCallback = this._handleErrorSendMsg.bind(this, draftType, msg);
+	msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime, isAutoSave);
 	this._resetDelayTime();
 };
 
@@ -1751,8 +1736,11 @@ function(draftType, msg, resp) {
 // Listeners
 
 // Send button was pressed
-ZmComposeController.prototype._sendListener = function(ev) {
-	this._send();
+ZmComposeController.prototype._sendListener =
+function(ev) {
+	if (!appCtxt.notifyZimlets("onSendButtonClicked", [this, this._msg])) {
+	    this._send();
+    }
 };
 
 ZmComposeController.prototype._send =

@@ -1453,13 +1453,10 @@ function(nfolder, resp) {
  * @param {Date} sendTime				if set, tell server that this message should be sent at the specified time
  * @param {Boolean} isAutoSave          if <code>true</code>, this an auto-save draft
  */
-ZmMailMsg.prototype.send = function(params) {
+ZmMailMsg.prototype.send =
+function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime, isAutoSave) {
 
-    params = Dwt.getParams(arguments, ZmMailMsg.SEND_PARAMS);
-
-	var aName = params.accountName,
-        isDraft = params.isDraft;
-
+	var aName = accountName;
 	if (!aName) {
 		// only set the account name if this *isnt* the main/parent account
 		var acct = appCtxt.getActiveAccount();
@@ -1467,49 +1464,41 @@ ZmMailMsg.prototype.send = function(params) {
 			aName = acct.name;
 		}
 	}
-
 	// if we have an invite reply, we have to send a different message
 	if (this.isInviteReply && !isDraft) {
 		// TODO: support for batchCmd here as well
-		return this.sendInviteReply(true, 0, params.callback, params.errorCallback, this._instanceDate, aName, false);
-	}
-    else {
+		return this.sendInviteReply(true, 0, callback, errorCallback, this._instanceDate, aName, false);
+	} else {
 		var jsonObj, request;
 		if (isDraft) {
 			jsonObj = {SaveDraftRequest:{_jsns:"urn:zimbraMail"}};
 			request = jsonObj.SaveDraftRequest;
-		}
-        else {
+		} else {
 			jsonObj = {SendMsgRequest:{_jsns:"urn:zimbraMail"}};
 			request = jsonObj.SendMsgRequest;
 			if (this.sendUID) {
 				request.suid = this.sendUID;
 			}
 		}
-		if (params.noSave) {
+		if (noSave) {
 			request.noSave = 1;
 		}
-
-		this._createMessageNode(request, isDraft, aName, params.requestReadReceipt, params.sendTime);
+		this._createMessageNode(request, isDraft, aName, requestReadReceipt, sendTime);
 		appCtxt.notifyZimlets("addExtraMsgParts", [request, isDraft]);
-
-		var sendParams = {
-			jsonObj:            jsonObj,
-			isInvite:           false,
-			isDraft:            isDraft,
-			isAutoSave:         params.isAutoSave,
-			accountName:        aName,
-			callback:           this._handleResponseSend.bind(this, isDraft, params.callback),
-			errorCallback:      params.errorCallback,
-			batchCmd:           params.batchCmd,
-            skipOfflineCheck:   true
+		var params = {
+			jsonObj: jsonObj,
+			isInvite: false,
+			isDraft: isDraft,
+			isAutoSave: isAutoSave,
+			accountName: aName,
+			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
+			errorCallback: errorCallback,
+			batchCmd: batchCmd,
+            skipOfflineCheck: true
 		};
-
-        this._sendMessage(sendParams);
+        this._sendMessage(params);
     }
 };
-
-ZmMailMsg.SEND_PARAMS = [ 'isDraft', 'callback', 'errorCallback', 'accountName', 'noSave', 'requestReadReceipt', 'batchCmd', 'sendTime', 'isAutoSave' ];
 
 ZmMailMsg.prototype._handleResponseSend =
 function(isDraft, callback, result) {
