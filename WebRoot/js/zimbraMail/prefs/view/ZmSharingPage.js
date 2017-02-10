@@ -1,21 +1,23 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc.
- * 
+ * Copyright (C) 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016 Synacor, Inc.
+ *
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at: http://www.zimbra.com/license
- * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15 
- * have been added to cover use of software over a computer network and provide for limited attribution 
- * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B. 
- * 
- * Software distributed under the License is distributed on an "AS IS" basis, 
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. 
- * See the License for the specific language governing rights and limitations under the License. 
- * The Original Code is Zimbra Open Source Web Client. 
- * The Initial Developer of the Original Code is Zimbra, Inc. 
- * All portions of the code are Copyright (C) 2009, 2010, 2011, 2012, 2013, 2014 Zimbra, Inc. All Rights Reserved. 
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at: https://www.zimbra.com/license
+ * The License is based on the Mozilla Public License Version 1.1 but Sections 14 and 15
+ * have been added to cover use of software over a computer network and provide for limited attribution
+ * for the Original Developer. In addition, Exhibit A has been modified to be consistent with Exhibit B.
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * See the License for the specific language governing rights and limitations under the License.
+ * The Original Code is Zimbra Open Source Web Client.
+ * The Initial Developer of the Original Code is Zimbra, Inc.  All rights to the Original Code were
+ * transferred by Zimbra, Inc. to Synacor, Inc. on September 14, 2015.
+ *
+ * All portions of the code are Copyright (C) 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016 Synacor, Inc. All Rights Reserved.
  * ***** END LICENSE BLOCK *****
  */
 
@@ -325,9 +327,9 @@ function() {
 		var list = [];
 		for (var i = 0; i < invalid.length; i++) {
 			var share = invalid[i];
-			var path = (share.link && share.link.path);
+			var path = share.link && share.link.path;
 			if (path) {
-				list.push(["<li>", path, "</li>"].join(""));
+				list.push(["<li>", AjxStringUtil.htmlEncode(path), "</li>"].join(""));
 			}
 		}
 		list = AjxUtil.uniq(list);
@@ -771,7 +773,7 @@ ZmSharingListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 
 	if (field == ZmSharingView.F_OWNER) {
-		html[idx++] = item.grantor.name || item.grantor.email;
+		html[idx++] = AjxStringUtil.htmlEncode(item.grantor.name) || item.grantor.email;
 	} else if (field == ZmSharingView.F_WITH) {
 		var type = item.grantee.type;
 		if (type == ZmShare.TYPE_PUBLIC) {
@@ -781,10 +783,10 @@ function(html, idx, item, field, colIdx, params) {
 		} else if (type == ZmShare.TYPE_GUEST) {
 			html[idx++] = item.grantee.id;
 		} else {
-			html[idx++] = item.grantee.name;
+			html[idx++] = AjxStringUtil.htmlEncode(item.grantee.name);
 		}
 	} else if (field == ZmSharingView.F_ITEM) {
-		html[idx++] = item.link.path;
+		html[idx++] = AjxStringUtil.htmlEncode(item.link.path);
 	} else if (field == ZmSharingView.F_TYPE) {
 		html[idx++] = (item.object && item.object.type) ? ZmMsg[ZmOrganizer.FOLDER_KEY[item.object.type]] :
 					  									  ZmShare._getFolderType(item.link.view);

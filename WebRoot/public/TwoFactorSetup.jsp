@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011, 2013, 2014 Zimbra, Inc.
+ * Copyright (C) 2015, 2016 Synacor, Inc.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software Foundation,
@@ -11,7 +11,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * If not, see <https://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ page buffer="8kb" autoFlush="true" %>
@@ -32,6 +32,10 @@
 	String ext = (String)request.getAttribute("fileExtension");
 	if (ext == null) {
 		ext = "";
+	}
+	String contextPath = request.getContextPath();
+	if (contextPath.equals("/")) {
+		contextPath = "";
 	}
 %>
 <!DOCTYPE html>
@@ -68,7 +72,7 @@
 	<% if (isDebugMode != null) { %>
 		<jsp:include page="/public/jsp/TwoFactor.jsp"/>
 	<% } else { %>
-		<script src="/js/TwoFactor_all.js<%=ext%>?v=${version}"></script>
+		<script src="${contextPath}/js/TwoFactor_all.js<%=ext%>?v=${version}"></script>
 	<% } %>
 </head>
 <body class="user_font_system">
