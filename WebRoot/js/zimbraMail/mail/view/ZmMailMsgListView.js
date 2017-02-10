@@ -171,7 +171,7 @@ function(htmlArr, idx, msg, field, colIdx, params, classes) {
 		} else {
 			// msg on its own (TV) shows subject and fragment
 			var subj = msg.subject || ZmMsg.noSubject;
-			htmlArr[idx++] = "<span id='";
+			htmlArr[idx++] = "<span class='ZmConvListSubject' id='";
 			htmlArr[idx++] = this._getFieldId(msg, field);
 			htmlArr[idx++] = "'>" + AjxStringUtil.htmlEncode(subj) + "</span>";
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
