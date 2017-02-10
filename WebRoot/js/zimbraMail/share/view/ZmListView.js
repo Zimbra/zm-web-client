@@ -575,7 +575,7 @@ function(item) {
 
 ZmListView.prototype._getFragmentHtml =
 function(item) {
-	return [" - ", AjxStringUtil.htmlEncode(item.fragment, true)].join("");
+	return AjxStringUtil.htmlEncode(item.fragment, true);
 };
 
 ZmListView.prototype._getFlagIcon =

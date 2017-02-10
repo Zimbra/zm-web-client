@@ -254,7 +254,7 @@ BODY                                    {   margin:0px;     }
 .SplashScreen .center,
 .ErrorScreen .center {
     margin-top:-160px;
-    margin-left:-250px;
+    margin-left:-285px;
 }
 
 .LoginScreen .center-small,
@@ -266,7 +266,7 @@ BODY                                    {   margin:0px;     }
     width:250px;
 }
 .LoginScreen .center, .LoginScreen .center-small,
-.SplashScreen .center, .SplashScreen .center-small,
+.SplashScreen .center-small,
 .ErrorScreen .center, .ErrorScreen .center-small {
     left:50%;
     overflow:visible;
@@ -278,15 +278,8 @@ BODY                                    {   margin:0px;     }
 .SplashScreen .contentBox,
 .ErrorScreen .contentBox {
     @LoginContentBox@
-    width:500px;
 }
-.LoginScreen .contentBox,
-.SplashScreen .contentBox { 
-    min-height:265px;
-#IFDEF MSIE_LOWER_THAN_7
-    height:265px;
-#ENDIF
-}
+
 .LoginScreen .center-small .contentBox,
 .SplashScreen .center-small .contentBox,
 .ErrorScreen .center-small .contentBox { width:auto; }
@@ -328,12 +321,13 @@ BODY                                    {   margin:0px;     }
     margin-bottom: 34px;
 }
 .LoginScreen .copyright,
-.LoginScreen #ZLoginNotice,
 .SplashScreen .copyright {
-    cursor:default;
-    margin-bottom:5px;
+    cursor: default;
     @FontSize-normal@
-    @LoginFooterColor@
+    @LoginCopyrightColor@
+}
+.LoginScreen #ZLoginNotice {
+    display: none;
 }
 /* Login Screen Only Items */
 .LoginScreen .zLoginField {
@@ -349,23 +343,45 @@ BODY                                    {   margin:0px;     }
 }
 
 /*Splash Screen Only Items*/
-.SplashScreen .content {
-    color:@LoginLabelColor@;
-    text-align:center;
+
+.SplashScreen .center {
+    left: 58%;
+    overflow: visible;
+    position: absolute;
+    top: 55%;
+    z-index: 11;
 }
-.SplashScreen .message {
-    color:@LoginLabelColor@;
-    cursor:default;
-    padding-top:40px;
-    @FontSize-bigger@
+
+.SplashScreen .content {
+    color: @LoginLabelColor@;
+    text-align: center;
+    margin-top: 30px;
 }
 .SplashScreen .switch {
-    margin-bottom: 20px;
+    margin-bottom: 5px;
 }
 .SplashScreen .switch A {
     color: @LoginLabelColor@;
     @FontSize-normal@
 }
+
+.SplashScreen .loader {
+    @SplashScreenLoader@
+}
+
+.SplashScreen .loader:before {
+    @SplashScreenLoaderProgress@
+}
+
+@keyframes loading {
+    from {left: -@SplashScreenLoaderWidth@; width: 30%;}
+    50% {width: 30%;}
+    70% {width: 70%;}
+    80% {left: 50%;}
+    95% {left: 120%;}
+    to {left: 100%;}
+}
+
 .SplashScreen .decor1           { @Decor1S@ }
 .SplashScreen .decor2           { @Decor2S@ }
 
@@ -386,18 +402,14 @@ BODY                                    {   margin:0px;     }
 
 /** Logo Images **/
 .center-small .ImgLoginBanner,
-.ImgAppBanner           {   background-repeat:no-repeat; @AppBanner@    }
-.ImgLoginBanner         {   background-repeat:no-repeat; @LoginBannerPosition@ @LoginBanner@    }
+.ImgAppBanner           {   @AppBanner@    }
+.ImgLoginBanner         {   @LoginBanner@    }
+
 #IFDEF MSIE
 #skin_container_logo A, #skin_container_logo A:hover, #skin_container_logo A:link {
-    background-color:transparent;}
-#ENDIF
-
-/* TO INTEGRATE */
-/* Thumb between organizer and main panel needs tweak for thumb - not sure why */
-.console_inset_app_l .HSashThumb {
-    margin-left:-2px;
+    background-color:transparent;
 }
+#ENDIF
 
 .UserInfoLink {
     width:100%;
@@ -417,26 +429,6 @@ BODY                                    {   margin:0px;     }
     padding:0px 3px;
 }
 
-/* App Chooser and App Tab Overrides -- TODO: Merge into main */
-.ZmAppChooser                               {   margin:0px !important;      }
-.ZAppTabBorder                              {   @AppTabRoundCorners@        }
-.ZAppTabBorder .ZLeftIcon                   {   @AppTabLeftIcon@            }
-.ZAppTabBorder .ZWidgetTitle                {   @AppTabWidgetTitle@         }
-.ZAppTabBorder .ZDropDown                   {   @AppTabDropDown@            }
-
-.ZSelectedPrev .ZAppTabBorder               {   @AppTabBorder-selectedPrev@ }
-.ZSelectedNext .ZAppTabBorder               {   @AppTabBorder-selectedNext@ }
-.ZFirstItem .ZAppTabBorder                  {   @AppTabBorder-first@        }
-.ZAppTabSpacer                              {   @AppTabSpacer@     }
-
-/* Normal Tab Overrides -- TODO: Merge into main */
-.ZSelectedPrev .ZTabBorder                  {   @TabBorder-selectedPrev@    }
-.ZSelectedNext .ZTabBorder                  {   @TabBorder-selectedNext@    }
-.ZFirstItem .ZTabBorder                     {   @TabBorder-first@           }
-.ZLastItem .ZTabBorder                      {   @TabBorder-last@            }
-.ZTabBarPrefix                              {   @TabBarPrefix@              }
-.ZTabBarSuffix                              {   @TabBarSuffix@              }
-
 /* Quota */
 .quotaBar                                   {   height:8px;                 }
 /* USED? */
@@ -444,10 +436,6 @@ BODY                                    {   margin:0px;     }
 
 .ZmInviteToolBar .ZToolbarTable, 
 .ZmShareToolBar .ZToolbarTable              {   height:100%;    }
-
-.ZNewButton .ZToolbarButtonBorder           {   @ToolbarNewButtonBorder@                }
-.ZNewButton.ZHover .ZToolbarButtonBorder    {   @ToolbarButtonBorder-hover@             }
-.ZNewButton.ZActive .ZToolbarButtonBorder   {   @ToolbarButtonBorder-active@            }
 
 #IFNDEF MSIE_LOWER_THAN_9
 .ZToolbarButtonTable TD:first-child         {   padding-left:@ToolbarButtonPaddingSize@;    }
@@ -629,18 +617,18 @@ SELECT                      {   @FieldBorder@   }
 .ZmMsgListColSubject { }
 */
 .Row .ZmMsgListColFrom,
-.Row .ZmMsgListColSubject {
+.Row .ZmConvListSubject {
     @Text@
     font-weight: normal;
 }
 
 .Row-selected .ZmMsgListColFrom,
-.Row-selected .ZmMsgListColSubject {
+.Row-selected .ZmConvListSubject {
     @Text-contrast@
 }
 
 .Unread .ZmMsgListColFrom,
-.Unread .ZmMsgListColSubject {
+.Unread .ZmConvListSubject {
     @Text-unread@
 }
 
