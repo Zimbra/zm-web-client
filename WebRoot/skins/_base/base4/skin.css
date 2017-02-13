@@ -99,7 +99,7 @@ BODY                                    {   margin:0px;     }
 
 /** Search box **/  
 #skin_spacing_search,
-#skin_spacing_people_search             {   height:42px; width:@cssValue(HSashContainer,width)@;    }
+#skin_spacing_people_search             {   width:@cssValue(HSashContainer,width)@; @AppTabHeight@  }
 #skin_container_search                  {   height:1.7rem; }
 
 #skin_container_search .ZmSearchToolbar {   @SkinSearchToolbar@         }
@@ -156,7 +156,7 @@ BODY                                    {   margin:0px;     }
     @AppTabChooser@
 }
 #skin_container_app_chooser>DIV>TABLE   { @AppTabTable@     }
-#skin_container_app_chooser .ZAppTab    { @AppTab@  }
+#skin_container_app_chooser .ZAppTab    { @AppTab@ @AppTabHeight@  }
 
 /** webclient offline sync notification **/
 #skin_container_global_buttons .offline {
