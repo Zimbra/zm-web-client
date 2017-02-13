@@ -1087,26 +1087,6 @@ INPUT[type="text"].search_input-expanded:focus {
 	overflow:hidden;
 }
 
-/*.Row .ZmConvListFragment,
-.Row .ZmConvListSubject,
-.Row-selected .ZmConvListFragment,
-.Row-selected .ZmConvListSubject {
-    display: inline-block;
-    @OverflowEllipsis@
-}
-
-.Row .ZmConvListSubject,
-.Row-selected .ZmConvListSubject {
-    width: 30%;
-}
-
-.Row .ZmConvListFragment,
-.Row-selected .ZmConvListFragment {
-    width: 70%;
-    padding-left: 5px;
-    padding-right: 5px;
-}*/
-
 .Conv2MsgHeader .date {
 	background:none repeat scroll 0 0 white;
 	padding:1px 7px 0.6em 5px;

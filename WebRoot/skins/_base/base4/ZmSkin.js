@@ -21,7 +21,7 @@
 function ZmSkin(hints) {
     this.hints = this.mergeObjects(ZmSkin.hints, hints);
 
-    DwtListView.HEADERITEM_HEIGHT = 38 + 2;
+    DwtListView.HEADERITEM_HEIGHT = 40;
 }
 
 
