@@ -1087,7 +1087,7 @@ INPUT[type="text"].search_input-expanded:focus {
 	overflow:hidden;
 }
 
-.Row .ZmConvListFragment,
+/*.Row .ZmConvListFragment,
 .Row .ZmConvListSubject,
 .Row-selected .ZmConvListFragment,
 .Row-selected .ZmConvListSubject {
@@ -1105,7 +1105,7 @@ INPUT[type="text"].search_input-expanded:focus {
     width: 70%;
     padding-left: 5px;
     padding-right: 5px;
-}
+}*/
 
 .Conv2MsgHeader .date {
 	background:none repeat scroll 0 0 white;
