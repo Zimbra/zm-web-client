@@ -455,18 +455,22 @@ function() {
 ZmMailListView.prototype._getLabelFieldList =
 function() {
 	var headers = [];
-	headers.push(ZmItem.F_SELECTION);
+	headers.push(
+        ZmItem.F_SELECTION,
+        ZmItem.F_READ,
+        ZmItem.F_FROM,
+        ZmItem.F_STATUS,
+        ZmItem.F_ATTACHMENT,
+        ZmItem.F_SUBJECT
+    );
+
 	if (appCtxt.get(ZmSetting.FLAGGING_ENABLED)) {
 		headers.push(ZmItem.F_FLAG);
 	}
+
 	headers.push(
+        ZmItem.F_TAG,
 		ZmItem.F_PRIORITY,
-		ZmItem.F_TAG,
-		ZmItem.F_READ,
-		ZmItem.F_STATUS,
-		ZmItem.F_FROM,
-		ZmItem.F_ATTACHMENT,
-		ZmItem.F_SUBJECT,
 		ZmItem.F_FOLDER,
 		ZmItem.F_SIZE
 	);
@@ -807,7 +811,8 @@ function() {
 
         var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
 		if (fromColSpan) {
-			fromColSpan.innerHTML = "&nbsp;" + colLabel;
+			//fromColSpan.innerHTML = "&nbsp;" + colLabel;
+            fromColSpan.innerHTML = colLabel;
 		}
 		var item = this._colHeaderActionMenu ? this._colHeaderActionMenu.getItem(headerCol._index) : null;
 		if (item) {

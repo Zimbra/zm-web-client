@@ -123,7 +123,7 @@ BODY                                    {   margin:0px;     }
 #skin_dropMenu .DwtLinkButtonDropDownArrowTd            {   border-left:0px; opacity:.75; padding-left:0px; }
 #skin_dropMenu .ZHover .DwtLinkButtonDropDownArrowTd    {   opacity:1;  }
 #skin_container_global_buttons          {   display:table-row;  }
-#skin_container_global_buttons>DIV      {   display:table-cell; padding-top:2px;    }
+#skin_container_global_buttons>DIV      {   display:table-cell;  }
 /** Tree Toolbar a.k.a.  "current app" **/
 #skin_spacing_current_app               {}
 #skin_container_current_app             {   @SkinBorderCurrentApp@      }
@@ -165,16 +165,8 @@ BODY                                    {   margin:0px;     }
 
 /** reset styles on app row toolbar buttons **/
 #skin_container_global_buttons .ZToolbarButton,
-#skin_container_global_buttons .ZToolbarButtonTable { 
-    background-color:transparent;
-    background-image:none;
-    border:0px;
+#skin_container_global_buttons .ZToolbarButtonTable {
     border-collapse: separate;
-    @cssShadow@:0px 0px 0px transparent;
-    #IFDEF MSIE_LOWER_THAN_9
-    -ms-filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
-    filter:progid:DXImageTransform.Microsoft.gradient(enabled=false);
-    #ENDIF
 }
 
 /***************
