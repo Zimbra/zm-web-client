@@ -890,18 +890,13 @@ INPUT[type="text"].search_input-expanded:focus {
    the msg that invoked it. */
 
 .Conv2View, .Conv2View-bottom {
-	@Conv2Bg@
-	height:100%;
+	@Conv2View@
 }
 
 /* The conv header contains the subject and a summary of the number of messages */
 
 .Conv2Header {
-	@BottomSeparator@
-	background-color:@lighten(AppC,25)@;
-	height:2.4em;
-	overflow:hidden;
-	position:relative;
+	@Conv2Header@
 }
 
 .Conv2Header .expandIcon {
@@ -910,20 +905,11 @@ INPUT[type="text"].search_input-expanded:focus {
 }
 
 .Conv2Header .subject {
-	@FontSize-bigger@
-	white-space:nowrap;
-	display: inline-block;
-	width: 10%;
+	@Conv2HeaderSubject@
 }
 
 .Conv2Header .info {
-	/* background-color MUST be the same as Conv2Header */
-	background-color:@lighten(AppC,25)@;
-	padding:.25em 5px .25em;
-	position:absolute;
-	right:0px;
-	top:0px;
-	white-space:nowrap;
+	@Conv2HeaderInfo@
 }
 
 /* The messages area contains collapsed and expanded messages */
