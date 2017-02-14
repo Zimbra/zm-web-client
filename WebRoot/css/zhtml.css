@@ -493,6 +493,7 @@ A:visited { @Text-link@ }
 .zPrintMsgs .MsgBody-html, .zPrintMsgs {
     word-wrap: break-word;
     word-break: break-word;/* Works for webkit browsers - Chrome, safari */
+	white-space: normal;
 }
 
 .zPrintMsgs table.Msg {
