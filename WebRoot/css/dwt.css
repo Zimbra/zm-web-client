@@ -2015,8 +2015,8 @@ INPUT.xform_field {
 .ZNewButton.ZActive .ZToolbarButtonBorder       {   @ToolbarButtonBorder-active@            }
 
 .ZNewButton             .ZToolbarButtonTable .ZWidgetTitle       {     @ToolbarNewButtonText@   @ToolbarNewButtonText-normal@      }
-.ZNewButton.ZHover      .ZToolbarButtonTable .ZWidgetTitle       {     @ToolbarNewButtonText@   @ToolbarNewButtonText-hover@       }
-.ZNewButton.ZDisabled   .ZToolbarButtonTable .ZWidgetTitle       {     @ToolbarNewButtonText@   @ToolbarNewButtonText-disabled@    }
+.ZNewButton.ZHover      .ZToolbarButtonTable .ZWidgetTitle       {                              @ToolbarNewButtonText-hover@       }
+.ZNewButton.ZDisabled   .ZToolbarButtonTable .ZWidgetTitle       {                              @ToolbarNewButtonText-disabled@    }
 
 			.ZToolbarButtonTable .ZWidgetTitle	{	@ToolbarButtonText@ 	@ToolbarButtonText-normal@		}
 .ZHover		.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-hover@		}
