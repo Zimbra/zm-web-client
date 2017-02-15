@@ -811,7 +811,6 @@ function() {
 
         var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
 		if (fromColSpan) {
-			//fromColSpan.innerHTML = "&nbsp;" + colLabel;
             fromColSpan.innerHTML = colLabel;
 		}
 		var item = this._colHeaderActionMenu ? this._colHeaderActionMenu.getItem(headerCol._index) : null;
