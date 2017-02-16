@@ -246,10 +246,9 @@ function(item,start,end) {
 	if (!color) {
 		return null;
 	}
-	start = start || 0.75;
-	end = end || 0.25;
+    var colorRGB = AjxColor.components(color).toString();
 
-	return Dwt.createLinearGradientCss(AjxColor.lighten(color, start), AjxColor.lighten(color, end), "v");
+    return "background-color: rgba(" + colorRGB + ", 0.1); border-left: 4px solid rgb(" + colorRGB + ")";
 };
 
 
