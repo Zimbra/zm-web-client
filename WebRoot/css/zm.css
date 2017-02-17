@@ -329,34 +329,32 @@ TD.DDSepInvisible DIV {
 
 /* Search input field */
 .search_input {
-	width:200px;
+	@SkinSearch@
 }
 
 .search_input-expanded {
-	width:400px;
+	@SkinSearchExpanded@
 }
 
 .DwtInputField INPUT[type="text"].search_input,
 .DwtInputField INPUT[type="text"].search_input-expanded {
 	@transition@:width .25s ease;
-	border:0px !important;
+	border:0px;
 
 #IFDEF WEBKIT
 	/* exclude padding from height calculation */
 	box-sizing: content-box !important;
-	padding-top: 2px;
-	padding-bottom: 2px;
 #ENDIF
 
 	/* ensure minimum height for small UI font sizes */
 	min-height:@SmallIconHeight@;
-	/* grow with larger font sizes */
-	height:1.3rem;
+	/* applying height equal to that of app tabs. */
+	@SkinSearchHeight@
 }
 
 INPUT[type="text"].search_input:focus,
 INPUT[type="text"].search_input-expanded:focus {
-	@FocusOutline@
+	@SkinSearchFocus@
 }
 
 /* the entire search toolbar */
@@ -3253,7 +3251,6 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmMoreTabs {
 	@ActiveCursor@
-	padding-left:5px;
 }
 
 
