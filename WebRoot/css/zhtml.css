@@ -494,10 +494,13 @@ A:visited { @Text-link@ }
 
 .zPrintMsgs .MsgBody-html, .zPrintMsgs {
     word-wrap: break-word;
-    word-break: break-all; /* Works for IE and Firefox */
     word-break: break-word;/* Works for webkit browsers - Chrome, safari */
+	white-space: normal;
 }
 
+.zPrintMsgs table.Msg {
+	table-layout: fixed;
+}
 .MsgBody-html pre, .MsgBody-html pre *, .MsgBody-html body, .MsgBody-html Section1{
 	@WordWrapPRE@
 }
