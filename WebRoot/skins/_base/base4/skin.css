@@ -97,17 +97,19 @@ BODY                                    {   margin:0px;     }
 #skin_container_toast                   {   @SkinContainerToast@    }
 #skin_container_toast .ZToastText > span {  @DisplayTable@ }
 
-/** Search box **/  
+/** Search box **/
+
+/* Search container with height same as tab height*/
 #skin_spacing_search,
-#skin_spacing_people_search             {   width:@cssValue(HSashContainer,width)@; @AppTabHeight@  }
-#skin_container_search                  {   height:1.7rem; }
+#skin_spacing_people_search             {   @AppTabHeight@  }
+#skin_container_search                  {   @SkinSearchHeight@ }
 
 #skin_container_search .ZmSearchToolbar {   @SkinSearchToolbar@         }
-#skin_container_search .ZButton         {   height:auto;    }
+#skin_container_search .ZButton         {   @SkinSearchHeight@ border-right: 1px solid @hexToRGBA(SecondaryBrandingColor, 17)@;  }
+#skin_container_search .ZButton.ZHover  {    @AppBg@    }
+#skin_container_search .ZmSearchButton  {   @SkinSearchHeight@ cursor: pointer;   }
 #skin_container_search .ZButtonBorder   {   border:0px; background-color:transparent; background-image:none; @NoShadow@ @NoRoundCorners@ }
 #skin_container_search .ZWidgetTitle    {   display:none;   }
-/** Temporarily setting it to same width as non expanded, to nullify the expansion effect. **/
-#skin_container_search .search_input-expanded {     width:200px;    }
 
 /** combined username/quota **/
 #skin_spacing_tree_top                  {   text-align:center;      }
