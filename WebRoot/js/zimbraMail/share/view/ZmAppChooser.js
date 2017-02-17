@@ -31,7 +31,8 @@
 /**
  * @class
  * This class represents a zimbra application chooser. The chooser is the "tab application" toolbar shown
- * in the Zimbra Web Client. The toolbar buttons are represented as "tabs".
+ * in the Zimbra Web Client. The toolbar buttons are represented as "tabs". If tabs overflow the available width,
+ * a more button is displayed to show the items that overflow.
  * 
  * @param	{Hash}	params		a hash of parameters
  * 
@@ -49,7 +50,8 @@ ZmAppChooser = function(params) {
 	this.setScrollStyle(Dwt.CLIP);
 
 	this._buttonListener = new AjxListener(this, this._handleButton);
-    this._initOverFlowTabs();
+    this._deletedButtons = [];
+    this._initMoreButton();
 	var buttons = params.buttons;
 	for (var i = 0; i < buttons.length; i++) {
 		var id = buttons[i];
@@ -60,7 +62,11 @@ ZmAppChooser = function(params) {
 		}
 	}
 
-	this._createPrecedenceList();
+    //check for tab overflow's initially to add to more.
+    var lastTab = this.getLastVisibleTab();
+    lastTab && this._isTabOverflow(lastTab.getHtmlElement());
+
+    this._createPrecedenceList();
 	this._inited = true;
 };
 
@@ -68,64 +74,13 @@ ZmAppChooser.prototype = new ZmToolBar;
 ZmAppChooser.prototype.constructor = ZmAppChooser;
 ZmAppChooser.prototype.role = "tablist";
 
-ZmAppChooser.prototype._initOverFlowTabs =
-function(){
-    this._leftOverflow = document.getElementById("moreTabsLeftContainer");
-    this._rightOverflow = document.getElementById("moreTabsRightContainer");
-    if (this._leftOverflow) {
-		this._leftOverflow.onclick = this._showLeftTab.bind(this);
-	}
-	if (this._rightOverflow) {
-    	this._rightOverflow.onclick = this._showRightTab.bind(this);
-	}
-    this._leftBtnIndex = -1;
-    this._deletedButtons = [];
-};
-
-ZmAppChooser.prototype._showLeftTab =
-function(){
-    var items = this.getItems();
-    if(this._leftBtnIndex > -1){
-        items[this._leftBtnIndex].setVisible(true);
-        this._leftBtnIndex--;
-    }
-    this._checkArrowVisibility();
-};
-
-ZmAppChooser.prototype._showRightTab =
-function(){
-    var items = this.getItems();
-    this._leftBtnIndex++;
-    items[this._leftBtnIndex].setVisible(false);
-    this._checkArrowVisibility();
-};
-
 ZmAppChooser.prototype._showTab =
 function(id, ev){
     var button = this._buttons[id];
     this._moreTabsBtn.getMenu().popdown();
     if (!button) return;
-    if (!button.getVisible()){ // Left side
-        var found = false;
-        for (var index in this._buttons){
-            if (!found && this._buttons[index].getHTMLElId() == button.getHTMLElId())
-              found = true;
-            else if (this._buttons[index].getVisible())
-                break;
-            if (found){
-                this._buttons[index].setVisible(true)
-                this._leftBtnIndex--;
-            }
-        }
-    }else { // Right side
-        while(this._isTabOverflow(button.getHtmlElement())){
-            this._showRightTab();
-        }
-    }
-    this._checkArrowVisibility();
+
     appCtxt.getAppController()._appButtonListener(ev);
-
-
 };
 
 ZmAppChooser.prototype._attachMoreTabMenuItems =
@@ -142,18 +97,28 @@ function(menu){
     this._deletedButtons = [];
     for(var index in this._buttons){
         var item = menu.getItemById(ZmOperation.MENUITEM_ID, index + "_menu");
+
+        //Skip buttons that are visible.
+        if( this._buttons[index].getVisible() ) {
+            continue;
+        }
+
         if (item){
             if (item.getText() != this._buttons[index].getText()){
                 item.setText(this._buttons[index].getText());
             }
         } else {
-            var mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.CASCADE_STYLE, id: index + "_menu"});
+            var mi = new ZmAppMenuItem({imageInfo: "CloseGray", parent:menu, style:DwtMenuItem.CASCADE_STYLE, id: index + "_menu"});
             mi.setData(ZmOperation.MENUITEM_ID, index + "_menu" );
             mi.setData(Dwt.KEY_ID, index);
             mi.addSelectionListener(this._showTab.bind(this, index));
             mi.setText(this._buttons[index].getText());
         }
     }
+
+    //set respective menu item selected if current selected tab is hidden.
+    var selectedTabVisible = this._buttons[this._selectedId].getVisible();
+    !selectedTabVisible  && this.setSelected(this._selectedId);
 
     if(menu.getHtmlElement().style.width == "0px"){
         this._moreTabsBtn.popup();
@@ -167,51 +132,51 @@ function(){
     return menu;
 };
 
+/**
+ * Sets the more button visibility. Also move visible items to drop down,
+ * if more button overflows the available width.
+ *
+ * @param display true/false
+ * @private
+ */
+ZmAppChooser.prototype._setMoreButtonVisibility =
+function(display){
+        this._moreTabsBtn.setVisible(display);
 
-ZmAppChooser.prototype._checkArrowVisibility =
-function(){
-    var items = this.getItems();
-    if (this._leftBtnIndex < 0)
-        this._setArrowVisibility(this._leftOverflow, "none");
-    else
-        this._setArrowVisibility(this._leftOverflow, "");
-
-    if (!this._isTabOverflow(items[items.length -1].getHtmlElement())){
-        this._setArrowVisibility(this._rightOverflow, "none");
-    }else{
-        this._setArrowVisibility(this._rightOverflow, "");
-    }
-    this._adjustWidth();
-};
-
-
-
-ZmAppChooser.prototype._setArrowVisibility =
-function(element, option){
-	if (!element) {
-		return;
-	}
-    element.style.display = option|| "";
-    var display = ((this._leftOverflow && this._leftOverflow.style.display == "none") && 
-					(this._rightOverflow && this._rightOverflow.style.display == "none")) ? "none" : "";
-	var moreTabsMenu = document.getElementById("moreTabsMenu");
-	if (moreTabsMenu) {
-    	moreTabsMenu.style.display = display;
-	}
-    if (display != "none" && !this._moreTabsBtn && moreTabsMenu ){
-        var containerEl = moreTabsMenu;
-        var button = new DwtToolBarButton({parent:DwtShell.getShell(window), id: "moreTabsMenuBtn", style:"background:none no-repeat scroll 0 0 transparent; border: none"});
-        button.setToolTipContent(ZmMsg.more, true);
-        button.setText(ZmMsg.moreToolbar);
-        button.reparentHtmlElement(moreTabsMenu);
-        button.setMenu(new AjxListener(this, this._showOverflowTabsMenu));
-        this._moreTabsBtn =  button;
-    }
+        if (display !== false) {
+            var moreBtnContainerEl = this._moreTabsBtn.getHtmlElement().parentNode;
+            while (this._isTabOverflow(moreBtnContainerEl)){
+                //hide last visible tab if more button overFlow's
+                var lastVisibleTab = this.getLastVisibleTab();
+                lastVisibleTab.setVisible(false);
+            }
+        }
 };
 
 /**
+ * Initializes a more button, hidden initially.
+ * @private
+ */
+ZmAppChooser.prototype._initMoreButton =
+    function() {
+
+        if (!this._moreTabsBtn) {
+            var moreTabsMenu = document.getElementById("moreTabsMenu");
+            var button = new DwtToolBarButton({parent:this, id: "moreTabsMenuBtn", style:"background:none no-repeat scroll 0 0 transparent; border: none"});
+            button.setToolTipContent(ZmMsg.more, true);
+            button.setText(ZmMsg.moreToolbar);
+            button.reparentHtmlElement(moreTabsMenu);
+            button.setMenu(new AjxListener(this, this._showOverflowTabsMenu));
+            this._moreTabsBtn =  button;
+        }
+        //hiding more button initially
+        this._setMoreButtonVisibility(false);
+    };
+
+
+/**
  * Returns a string representation of the object.
- * 
+ *
  * @return		{String}		a string representation of the object
  */
 ZmAppChooser.prototype.toString =
@@ -252,7 +217,7 @@ ZmAppChooser.prototype.SPACER_TEMPLATE = "dwt.Widgets#ZmAppChooserSpacer";
 //
 /**
  * Adds a selection listener.
- * 
+ *
  * @param	{AjxListener}	listener	the listener
  */
 ZmAppChooser.prototype.addSelectionListener =
@@ -260,16 +225,28 @@ function(listener) {
 	this.addListener(DwtEvent.SELECTION, listener);
 };
 
+/**
+ * Check's if button being added overflows & hide's the button making more button visible.
+ *
+ * @param button ZmAppButton object.
+ * @private
+ */
 ZmAppChooser.prototype._checkTabOverflowAdd =
 function(button) {
     var display = "none";
-    if (this._isTabOverflow(button)){
+    if (this._isTabOverflow(button.getHtmlElement())){
         display = "";
+        button.setVisible(false);
+        this._setMoreButtonVisibility(true);
     }
-    this._setArrowVisibility(this._rightOverflow, display);
-    this._adjustWidth();
 };
 
+/**
+ *
+ * @param tab
+ * @returns {boolean} If the tab overflow's the container
+ * @private
+ */
 ZmAppChooser.prototype._isTabOverflow =
 function(tab){
         var tabPos = tab.offsetLeft + tab.clientWidth + 30;
@@ -280,32 +257,79 @@ function(tab){
 
         if (!container) return false;
         var offsetWidth = container.offsetWidth;
-        return (offsetWidth < tabPos);
+        var isOverflow = offsetWidth < tabPos;
+
+        return isOverflow;
 };
 
-ZmAppChooser.prototype._adjustWidth =
-function(){
-    var container = this._refElement && this._refElement.parentNode;
-	if (container && container.offsetWidth >= 30) {
-    	this._refElement.style.maxWidth = this._refElement.style.width = container.offsetWidth - 30 + "px";
-    	this._refElement.style.overflow = "hidden";
-	}
+/**
+ * Getter for Last tab visible on app chooser.
+ * @returns {*}
+ */
+ZmAppChooser.prototype.getLastVisibleTab = function() {
+    var allTabs = this.getChildren();
+    var lastIndex = allTabs.length && allTabs.length - 1;
 
-};
-
-ZmAppChooser.prototype._checkTabOverflowDelete =
-function(index){
-    var items = this.getItems();
-    if(this._isTabOverflow(items[items.length - 1])){
-      return;
+    for(var i=lastIndex; i>0 ; i--){
+        if( allTabs[i] instanceof ZmAppButton && allTabs[i].getVisible()) {
+            return allTabs[i];
+        }
     }
-    this._showLeftTab();
-}
+    return null;
+};
+
+/**
+ * Getter for First tab hidden on app chooser calculated in order of addition.
+ * @returns {*}
+ */
+ZmAppChooser.prototype.getFirstHiddenTab = function() {
+    var allTabs = this.getChildren();
+    var lastIndex = allTabs.length && allTabs.length - 1;
+    var firstHiddenTab = null;
+
+    for(var i=lastIndex; i>0 ; i--){
+        if( allTabs[i] instanceof ZmAppButton && !allTabs[i].getVisible()) {
+            firstHiddenTab = allTabs[i];
+        }
+        else{
+            break;
+        }
+    }
+    return firstHiddenTab;
+};
+
+/**
+ * Convert's item from more drop down into visible tabs if space is available.
+ * @private
+ */
+ZmAppChooser.prototype._checkTabOverflowDelete =
+function(){
+    if(this._moreTabsBtn.getVisible()) {
+        var firstHiddenTab = this.getFirstHiddenTab();
+        var spaceForTab = true;
+        var moreBtnContainerEl = this._moreTabsBtn.getHtmlElement().parentNode;
+
+        while (spaceForTab && firstHiddenTab) {
+            firstHiddenTab.setVisible(true);
+            var isMoreOverflow = this._isTabOverflow(moreBtnContainerEl);
+            if (isMoreOverflow) {
+                spaceForTab = false;
+                firstHiddenTab && firstHiddenTab.setVisible(false);
+            }
+            else {
+                firstHiddenTabId = firstHiddenTab.getData(Dwt.KEY_ID);
+                this._deletedButtons.push(firstHiddenTabId);
+                firstHiddenTab = this.getFirstHiddenTab();
+            }
+        }
+
+    }
+};
 
 
 /**
  * Adds a button to the toolbar.
- * 
+ *
  * @param	{String}	id		the button id
  * @param	{Hash}		params		a hash of parameters
  * @param	{String}	params.text			the text
@@ -314,7 +338,7 @@ function(index){
  * @param	{String}	params.tooltip		the tool top
  * @param	{String}	params.textPrecedence	the image precedence
  * @param	{String}	params.imagePrecedence		the image precedence
- * 
+ *
  * @return	{ZmAppButton}		the newly created button
  */
 ZmAppChooser.prototype.addButton =
@@ -337,13 +361,15 @@ function(id, params) {
 	button.setData(Dwt.KEY_ID, id);
 	button.addSelectionListener(this._buttonListener);
 	this._buttons[id] = button;
-    this._checkTabOverflowAdd(button.getHtmlElement());
+
+    //if more button is visible, skip tab overflow check and hide the new tab by default.
+    this._moreTabsBtn.getVisible() ? button.setVisible(false) : this._checkTabOverflowAdd(button);
 	return button;
 };
 
 /**
  * Removes a button.
- * 
+ *
  * @param	{String}	id		the id of the button to remove
  */
 ZmAppChooser.prototype.removeButton =
@@ -351,21 +377,29 @@ function(id) {
 	var button = this._buttons[id];
 	if (button) {
         var index = this.__getButtonIndex(id);
+        var buttonVisible = button.getVisible();
 		button.dispose();
 		this._buttons[id] = null;
 		delete this._buttons[id];
-        if (this._moreTabsBtn &&
+        if (buttonVisible && this._moreTabsBtn &&
             this._moreTabsBtn.getMenu() &&
             this._moreTabsBtn.getMenu().getItemCount() > 0){
-            this._deletedButtons.push(id);
+            this._checkTabOverflowDelete();
         }
-        this._checkTabOverflowDelete(index);
-	}
+
+        //if item removed is menu item, adding it to delete list.
+        !buttonVisible && this._deletedButtons.push(id);
+
+        //hide more button if no hidden tabs available
+        if (!this.getFirstHiddenTab()) {
+            this._moreTabsBtn.setVisible(false);
+        }
+    }
 };
 
 /**
  * Replaces a button.
- * 
+ *
  * @param	{String}	oldId		the old button id
  * @param	{String}	newId		the new button id
  * @param	{Hash}		params		a hash of parameters
@@ -375,7 +409,7 @@ function(id) {
  * @param	{String}	params.tooltip			the tool tip
  * @param	{String}	params.textPrecedence	the text display precedence
  * @param	{String}	params.imagePrecedence	the image display precedence
- * 
+ *
  * @return	{ZmAppButton}		the newly created button
  */
 ZmAppChooser.prototype.replaceButton =
@@ -393,15 +427,23 @@ function(id) {
 
 /**
  * Sets the specified button as selected.
- * 
+ *
  * @param	{String}	id		the button id
  */
 ZmAppChooser.prototype.setSelected =
 function(id) {
-	var oldBtn = this._buttons[this._selectedId];
+    var oldBtn = this._buttons[this._selectedId];
 	if (this._selectedId && oldBtn) {
         this.__markPrevNext(this._selectedId, false);
 		oldBtn.setSelected(false);
+    }
+
+    if (this._moreTabsBtn.getVisible()) {
+        var moreMenu = this._moreTabsBtn.getMenu();
+        var oldMenuItem = moreMenu.getItemById(ZmOperation.MENUITEM_ID, this._selectedId + "_menu");
+        var newMenuItem = moreMenu.getItemById(ZmOperation.MENUITEM_ID, id + "_menu");
+        oldMenuItem && oldMenuItem.setSelected(false);
+        newMenuItem && !newMenuItem.isToggled() && newMenuItem.setSelected(true);
     }
 
 	var newBtn = this._buttons[id];
