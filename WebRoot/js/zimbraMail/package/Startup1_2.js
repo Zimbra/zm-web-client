@@ -71,6 +71,7 @@ AjxPackage.require("zimbraMail.share.view.ZmTagMenu");
 AjxPackage.require("zimbraMail.share.view.ZmListView");
 AjxPackage.require("zimbraMail.share.view.ZmAppChooser");
 AjxPackage.require("zimbraMail.share.view.ZmAppButton");
+AjxPackage.require("zimbraMail.share.view.ZmAppMenuItem");
 AjxPackage.require("zimbraMail.share.view.ZmStatusView");
 AjxPackage.require("zimbraMail.share.view.ZmOverviewContainer");
 AjxPackage.require("zimbraMail.share.view.ZmAccountOverviewContainer");

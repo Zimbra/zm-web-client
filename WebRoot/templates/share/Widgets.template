@@ -14,9 +14,7 @@
 			<td id='${id}_suffix' valign=bottom>
 				<div class='ZAppTabSpacer'></div>
 			</td>
-            <td width="100%" valign="middle" align="right" style="padding-right: 10px;" id="admin_link_container">
-                &nbsp;
-            </td>
+			<td id='moreTabsMenu' class="ZmMoreTabs">
         </tr>
 	</table>
 </template>
@@ -35,6 +33,18 @@
 			<td id='${id}_dropdown' 	class='ZDropDown'></td>
 		</tr>
 	</table>
+</template>
+
+<template id='share.Widgets#ZmAppMenuItem' class='ZWidget'>
+<table role="presentation" class='ZWidgetTable ZMenuItemTable ZMenuItemBorder'>
+	<tr>
+		<td id='${id}_check' class='ZCheckIcon'><div></div></td>
+		<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></td>
+		<td id='${id}_title' class='ZWidgetTitle'></td>
+		<td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+		<td id='${id}_dropdown' class='ZDropDown'><div></div></td>
+	</tr>
+</table>
 </template>
 
 <template id='share.Widgets#ZmAppChooserSpacer'>

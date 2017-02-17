@@ -987,6 +987,8 @@ function(viewId, text) {
 	var button = !appCtxt.isChildWindow && tp && appCtxt.getAppChooser().getButton(tp.id);
 	if (button) {
 		button.setText(AjxStringUtil.htmlEncode(text));
+		//check if tab with new title overflows.
+		appCtxt.getAppChooser()._checkTabOverflowAdd(button);
 	}
 };
 
