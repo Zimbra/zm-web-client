@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="22px" viewBox="0 0 40 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>89D5B5E4-D4FB-450C-8F81-52A3F0928311</title>
+    <desc>Created with sketchtool.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icons" transform="translate(-1231.000000, -790.000000)">
+            <g id="Mail" transform="translate(1227.000000, 34.000000)">
+                <g id="ic_attachment_black_24px" transform="translate(0.000000, 742.000000)">
+                    <g id="Group">
+                        <path d="M4,25 C4,18.92 8.92,14 15,14 L36,14 C40.42,14 44,17.58 44,22 C44,26.42 40.42,30 36,30 L19,30 C16.24,30 14,27.76 14,25 C14,22.24 16.24,20 19,20 L34,20 L34,24 L18.82,24 C17.72,24 17.72,26 18.82,26 L36,26 C38.2,26 40,24.2 40,22 C40,19.8 38.2,18 36,18 L15,18 C11.14,18 8,21.14 8,25 C8,28.86 11.14,32 15,32 L34,32 L34,36 L15,36 C8.92,36 4,31.08 4,25 Z" id="Shape" fill="#000000" fill-rule="nonzero"></path>
+                        <polygon id="Shape" points="0 0 48 0 48 48 0 48"></polygon>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
