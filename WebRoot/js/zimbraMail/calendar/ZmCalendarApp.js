@@ -442,8 +442,8 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_MONTH_VIEW, {textKey:"viewMonth", tooltipKey:"viewMonthTooltip", image:"MonthView", shortcut:ZmKeyMap.CAL_MONTH_VIEW});
 	ZmOperation.registerOp(ZmId.OP_MOUNT_CALENDAR, {textKey:"mountCalendar", image:"GroupSchedule"});
 	ZmOperation.registerOp(ZmId.OP_NEW_ALLDAY_APPT, {textKey:"newAllDayAppt", tooltipKey:"newAllDayApptTooltip", image:"NewAppointment"});
-	ZmOperation.registerOp(ZmId.OP_NEW_APPT, {textKey:"newAppt", tooltipKey:"newApptTooltip", image:"NewAppointment", shortcut:ZmKeyMap.NEW_APPT});
-	ZmOperation.registerOp(ZmId.OP_NEW_CALENDAR, {textKey:"newCalendar", image:"NewAppointment", tooltipKey: "newCalendarTooltip", shortcut:ZmKeyMap.NEW_CALENDAR});
+	ZmOperation.registerOp(ZmId.OP_NEW_APPT, {textKey:"newAppt", tooltipKey:"newApptTooltip", shortcut:ZmKeyMap.NEW_APPT});
+	ZmOperation.registerOp(ZmId.OP_NEW_CALENDAR, {textKey:"newCalendar", tooltipKey: "newCalendarTooltip", shortcut:ZmKeyMap.NEW_CALENDAR});
 	ZmOperation.registerOp(ZmId.OP_ADD_EXTERNAL_CALENDAR, {textKey:"addExternalCalendar", image:"NewAppointment", tooltipKey: "addExternalCalendarTooltip", shortcut:ZmKeyMap.ADD_EXTERNAL_CALENDAR});
     ZmOperation.registerOp(ZmId.OP_PRINT_CALENDAR, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, textPrecedence:30, showImageInToolbar: true}, ZmSetting.PRINT_ENABLED);
     ZmOperation.registerOp(ZmId.OP_PROPOSE_NEW_TIME, {textKey:"proposeNewTime", image:"ProposeTime", showTextInToolbar: true, showImageInToolbar: true});
@@ -769,8 +769,6 @@ function() {
 	return {
 		text:		ZmMsg.newAppt,
 		tooltip:	ZmMsg.createNewAppt,
-		icon:		"NewAppointment",
-		iconDis:	"NewAppointmentDis",
 		defaultId:	ZmOperation.NEW_APPT,
 		disabled:	!this.containsWritableFolder()
 	};

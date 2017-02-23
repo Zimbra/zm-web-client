@@ -1918,8 +1918,8 @@ function(keyMap, shortcut) {
 			var list = text.split(/;\s*/);
 			var sc = list[0];	// use first shortcut in list
 			if (!sc) { return null; }
-			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return let.toLowerCase(); });
-			text = [" [", sc.replace(",", ""), "]"].join("");
+			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return let.toUpperCase(); });
+			text = [sc.replace(",", "")].join("");
 		} else {
 			var key = [keyMap, "INHERIT"].join(".");
 			keyMap = AjxKeys[key] || ZmKeys[key];
