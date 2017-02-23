@@ -124,17 +124,17 @@ function() {
 			ZmOperation.addDeferredMenu(ZmOperation.addContactGroupMenu, parent, true);
 	}));
 	ZmOperation.registerOp(ZmId.OP_COPY, {textKey:"copy", image:"Copy"});
-	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", shortcut:ZmKeyMap.DEL, textPrecedence:60});
-	ZmOperation.registerOp(ZmId.OP_DELETE_WITHOUT_SHORTCUT, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", textPrecedence:60});
-	ZmOperation.registerOp(ZmId.OP_DETACH, {textKey:"detach", tooltipKey:"detach", image:"OpenInNewWindow", showImageInToolbar: true});
+	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", shortcut:ZmKeyMap.DEL, textPrecedence:60});
+	ZmOperation.registerOp(ZmId.OP_DELETE_WITHOUT_SHORTCUT, {textKey:"del", tooltipKey:"deleteTooltip", textPrecedence:60});
+	ZmOperation.registerOp(ZmId.OP_DETACH, {textKey:"detach", tooltipKey:"detach", showImageInToolbar: true});
     ZmOperation.registerOp(ZmId.OP_DETACH_WIN, {textKey:"detach", image:"OpenInNewWindow"});
-	ZmOperation.registerOp(ZmId.OP_EDIT, {textKey:"edit", tooltipKey:"editTooltip", image:"Edit", shortcut:ZmKeyMap.EDIT});
-	ZmOperation.registerOp(ZmId.OP_EDIT_AS_NEW, {textKey:"editAsNew", tooltipKey:"editTooltip", image:"Edit", shortcut:ZmKeyMap.EDIT});
-	ZmOperation.registerOp(ZmId.OP_EDIT_PROPS, {textKey:"editProperties", tooltipKey:"editPropertiesTooltip", image:"Properties"});
-	ZmOperation.registerOp(ZmId.OP_EXPAND, {textKey:"expand", image:"Plus"});
-	ZmOperation.registerOp(ZmId.OP_EXPAND_ALL, {textKey:"expandAll", image:"Plus"});
+	ZmOperation.registerOp(ZmId.OP_EDIT, {textKey:"edit", tooltipKey:"editTooltip", shortcut:ZmKeyMap.EDIT});
+	ZmOperation.registerOp(ZmId.OP_EDIT_AS_NEW, {textKey:"editAsNew", tooltipKey:"editTooltip", shortcut:ZmKeyMap.EDIT});
+	ZmOperation.registerOp(ZmId.OP_EDIT_PROPS, {textKey:"editProperties", tooltipKey:"editPropertiesTooltip"});
+	ZmOperation.registerOp(ZmId.OP_EXPAND, {textKey:"expand"});
+	ZmOperation.registerOp(ZmId.OP_EXPAND_ALL, {textKey:"expandAll"});
 //	ZmOperation.registerOp(ZmId.OP_EXPORT_FOLDER, {textKey:"exportFolder", image:"MailExport"});
-	ZmOperation.registerOp(ZmId.OP_EMPTY_FOLDER,{textKey:"emptyFolder",image:"EmptyFolder"});
+	ZmOperation.registerOp(ZmId.OP_EMPTY_FOLDER,{textKey:"emptyFolder"});
 	ZmOperation.registerOp(ZmId.OP_FORMAT_HTML, {textKey: "formatAsHtml"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORMAT_TEXT, {textKey: "formatAsText"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORMAT_MORE_OPTIONS, {textKey: "moreComposeOptions"});
@@ -147,23 +147,23 @@ function() {
     ZmOperation.registerOp(ZmId.OP_GROUPBY_TAG,  {textKey:"groupByTag"});
 	ZmOperation.registerOp(ZmId.OP_GO_TO_URL, {image:"URL", textKey:"goToUrlAlt"});
 //	ZmOperation.registerOp(ZmId.OP_IMPORT_FOLDER, {textKey:"importFolder", image:"MailImport"});
-	ZmOperation.registerOp(ZmId.OP_MARK_ALL_READ, {textKey:"markAllRead", image:"ReadMessage"});
+	ZmOperation.registerOp(ZmId.OP_MARK_ALL_READ, {textKey:"markAllRead"});
 //	ZmOperation.registerOp(ZmId.OP_MOUNT_FOLDER, {textKey:"mountFolder", image:"Folder"});
-	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder", textPrecedence:40, showImageInToolbar: true}); //todo - remove
-	ZmOperation.registerOp(ZmId.OP_MOVE_MENU, {textKey: "move", tooltipKey:"moveTooltip", image:"MoveToFolder", showImageInToolbar: true }, null,
+	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", tooltipKey:"moveTooltip", textPrecedence:40}); //todo - remove
+	ZmOperation.registerOp(ZmId.OP_MOVE_MENU, {textKey: "move", tooltipKey:"moveTooltip", showImageInToolbar: true }, null,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addMoveMenu, parent, true);
 		}));
 
     ZmOperation.registerOp(ZmId.OP_MUTE_CONV, {textKey:"muteConv", tooltipKey:"muteConvTooltip", image:"Mute", shortcut:ZmKeyMap.MUTE_UNMUTE_CONV});
-	ZmOperation.registerOp(ZmId.OP_NEW_FOLDER, {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder", shortcut:ZmKeyMap.NEW_FOLDER}, ZmSetting.USER_FOLDERS_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_NEW_FOLDER, {textKey:"newFolder", tooltipKey:"newFolderTooltip", shortcut:ZmKeyMap.NEW_FOLDER}, ZmSetting.USER_FOLDERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_MENU, {textKey:"_new", shortcut:ZmKeyMap.NEW, textPrecedence:100}, null,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addNewMenu, parent);
 		}));
-	ZmOperation.registerOp(ZmId.OP_NEW_TAG, {textKey:"newTag", tooltipKey:"newTagTooltip", image:"NewTag", shortcut:ZmKeyMap.NEW_TAG}, ZmSetting.TAGGING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_NEW_TAG, {textKey:"newTag", tooltipKey:"newTagTooltip", shortcut:ZmKeyMap.NEW_TAG}, ZmSetting.TAGGING_ENABLED);
     ZmOperation.registerOp(ZmId.OP_NOTIFY, {textKey: "notify", image:"Feedback"});
-	ZmOperation.registerOp(ZmId.OP_OPEN_IN_TAB, {textKey:"openInTab", image:"OpenInNewTab"});
+	ZmOperation.registerOp(ZmId.OP_OPEN_IN_TAB, {textKey:"openInTab"});
 	ZmOperation.registerOp(ZmId.OP_OPTS, {textKey:"options", tooltipKey:"options", image:"ContextMenu"});
 	ZmOperation.registerOp(ZmId.OP_PAGE_BACK, {image:"LeftArrow", shortcut:ZmKeyMap.PREV_PAGE});
 	ZmOperation.registerOp(ZmId.OP_PAGE_FORWARD, {image:"RightArrow", shortcut:ZmKeyMap.NEXT_PAGE});
@@ -174,9 +174,9 @@ function() {
 	//ZmOperation.registerOp(ZmId.OP_QUICK_COMMANDS, {textKey:"quickCommands", image:"QuickCommand"});
 	ZmOperation.registerOp(ZmId.OP_RECOVER_DELETED_ITEMS, {textKey:"recoverDeletedItems", image:"Trash", tooltipKey:"recoverDeletedItems"}, ZmSetting.DUMPSTER_ENABLED);
     ZmOperation.registerOp(ZmId.OP_REFRESH, {textKey:"refresh", tooltipKey:"refreshTooltip"});
-	ZmOperation.registerOp(ZmId.OP_RENAME_FOLDER, {textKey:"renameFolder", image:"Rename"});
-	ZmOperation.registerOp(ZmId.OP_RENAME_SEARCH, {textKey:"renameSearch", image:"Rename"});
-	ZmOperation.registerOp(ZmId.OP_RENAME_TAG, {textKey:"renameTag", image:"Rename"}, ZmSetting.TAGGING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_RENAME_FOLDER, {textKey:"renameFolder"});
+	ZmOperation.registerOp(ZmId.OP_RENAME_SEARCH, {textKey:"renameSearch"});
+	ZmOperation.registerOp(ZmId.OP_RENAME_TAG, {textKey:"renameTag"}, ZmSetting.TAGGING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SAVE, {textKey:"save", image:"Save", shortcut:ZmKeyMap.SAVE});
 	ZmOperation.registerOp(ZmId.OP_SEARCH, {textKey:"findEmailFromSender", image:"Search"}, ZmSetting.SEARCH_ENABLED);
     ZmOperation.registerOp(ZmId.OP_SEARCH_TO, {textKey:"findEmailToSender", image:"Search"}, ZmSetting.SEARCH_ENABLED);
@@ -194,7 +194,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHARE_DECLINE, {textKey:"declineShare", image:"Cancel"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SUBSCRIBE_APPROVE, {textKey:"dlApprove", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_SUBSCRIBE_REJECT, {textKey:"dlReject", image:"Cancel"});
-	ZmOperation.registerOp(ZmId.OP_SHARE_FOLDER, {textKey:"shareFolder", image:"SharedMailFolder"});
+	ZmOperation.registerOp(ZmId.OP_SHARE_FOLDER, {textKey:"shareFolder"});
 	ZmOperation.registerOp(ZmId.OP_SHOW_ALL_ITEM_TYPES, {textKey:"showAllItemTypes", image:"Globe"});
     ZmOperation.registerOp(ZmId.OP_SORT_ASC, {textKey:"sortAscending"});
     ZmOperation.registerOp(ZmId.OP_SORT_DESC, {textKey:"sortDescending"});
@@ -203,7 +203,7 @@ function() {
     ZmOperation.registerOp(ZmId.OP_SYNC_ALL, {textKey:"checkAllFeed", image:"Refresh"});
 	ZmOperation.registerOp(ZmId.OP_SYNC_OFFLINE_FOLDER, {textKey:"syncOfflineFolderOff", image:"Refresh"}, ZmSetting.OFFLINE_ENABLED); /* offline only */
 	ZmOperation.registerOp(ZmId.OP_TAG, null, ZmSetting.TAGGING_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_TAG_COLOR_MENU, {textKey:"tagColor", image:"TagStack"}, ZmSetting.TAGGING_ENABLED,
+	ZmOperation.registerOp(ZmId.OP_TAG_COLOR_MENU, {textKey:"tagColor"}, ZmSetting.TAGGING_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addColorMenu, parent);
 		}));
@@ -526,7 +526,7 @@ function(parent) {
 		}
 	}
 
-	var menu = new ZmActionMenu({parent:parent, menuItems:list, overrides:overrides});
+	var menu = new ZmActionMenu({parent:parent, menuItems:list, overrides:overrides, className: "ActionMenu MinSizeActionMenu"});
 	parent.setMenu(menu);
 
 	return menu;

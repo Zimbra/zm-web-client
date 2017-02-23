@@ -86,9 +86,9 @@ function() {
 
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE, {textKey:"newBriefcase", image:"NewFolder", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASE});
+	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE, {textKey:"newBriefcase", tooltipKey:"newBriefcaseTooltip", shortcut:ZmKeyMap.NEW_BRIEFCASE});
 	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"uploadNewFile", textPrecedence:70, showImageInToolbar:true, showTextInToolbar:true});
-	ZmOperation.registerOp(ZmId.OP_NEW_DOC, {textKey:"newDocument", tooltipKey:"newDocument", image:"NewDoc", shortcut:ZmKeyMap.NEW_DOC, textPrecedence:12});
+	ZmOperation.registerOp(ZmId.OP_NEW_DOC, {textKey:"newDocument", tooltipKey:"newDocument", shortcut:ZmKeyMap.NEW_DOC, textPrecedence:12});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewDoc"});
 	ZmOperation.registerOp(ZmId.OP_SAVE_FILE, {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"DownArrow"});
@@ -360,8 +360,6 @@ function() {
 	return {
 		text:		ZmMsg.newDocument,
 		tooltip:	ZmMsg.newDocument,
-		icon:		"NewDoc",
-		iconDis:	"NewDocDis",
 		defaultId:	ZmOperation.NEW_DOC,
         disabled:	!this.containsWritableFolder()
 	};

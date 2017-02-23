@@ -57,7 +57,7 @@ ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.PREV_UNREAD_MSG]	= DwtKeyMap.SEL
 ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_CONVLIST]	= ZmSetting.GROUP_BY_CONV;
 
 // view menu
-ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_CONVLIST]		= "ConversationView";
+ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_CONVLIST]		= "";
 ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_CONVLIST]	= "byConversation";
 ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_CONVLIST]	= ZmKeyMap.VIEW_BY_CONV;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_CONVLIST);
