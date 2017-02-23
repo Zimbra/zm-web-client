@@ -243,8 +243,6 @@ function() {
 	return {
 		text:		ZmMsg.newCall,
 		tooltip:	ZmMsg.newCallTooltip,
-		icon:		"PlacedCalls",
-		iconDis:	"PlacedCallsDis",
 		defaultId:	ZmOperation.NEW_CALL
 	};
 };

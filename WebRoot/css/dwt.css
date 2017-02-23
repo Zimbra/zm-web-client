@@ -262,7 +262,6 @@
 }
 
 .DwtTreeItemLevel1ChildDiv {
-	padding-left:@SmallIconWidth@;
     @TreeContainerFirstChild@
 }
 
@@ -2318,6 +2317,13 @@ INPUT.xform_field {
 .ZMenuItemTable {}
 .ZMenuItem									{	@MenuItem@						 				}
 
+.ZMenuItem.ZHasDropDown:hover,
+.ZMenuItem.ZHasDropDown:focus,
+.ZMenuItem.ZHasDropDown:active,
+.ZMenuItem.ZHasDropDown.ZSubMenuActive      {	@MenuItemBorder-hover@					 		}
+
+.MinSizeActionMenu .ZMenuItem               {   @MenuItemMinWidth@                              }
+
 			.ZMenuItemBorder				{	@MenuItemBorder@ 	@MenuItemBorder-normal@		}
 .ZHover		.ZMenuItemBorder				{						@MenuItemBorder-hover@		}
 .ZActive	.ZMenuItemBorder				{						@MenuItemBorder-active@		}
@@ -2332,6 +2338,14 @@ INPUT.xform_field {
 .ZActive	.ZMenuItemTable .ZWidgetTitle	{						@MenuItemText-active@		}
 .ZSelected	.ZMenuItemTable .ZWidgetTitle	{						@MenuItemText-selected@		}
 
+/* Dropdown text styles */
+            .ZMenuItemTable .ZDropDown	{	@MenuItemDropDownText@ 		}
+.ZHover		.ZMenuItemTable .ZDropDown	{	@Text-hover@				}
+.ZDisabled	.ZMenuItemTable .ZDropDown	{	@Text-disabled@				}
+.ZFocused	.ZMenuItemTable .ZDropDown	{	@Text-hover@				}
+.ZActive	.ZMenuItemTable .ZDropDown	{	@Text-hover@				}
+.ZSelected	.ZMenuItemTable .ZDropDown	{	@Text-hover@				}
+
 
 /* if any item in the menu has a check, icon or submenu,
 	make the shim div in all items have the proper width
@@ -2343,6 +2357,7 @@ INPUT.xform_field {
 
 
 .ZMenuItem-Separator							{	@MenuItemSeparator@			}
+.ZMenuItemSeparatorBorder  						{  	@MenuItemSeparatorPadding@ 	}
 .ZMenuItemSeparatorBorder TD					{	height:12px !important;		}
 
 .ZHasIcon .ZMenuItemSeparatorBorder .ZLeftIcon DIV, .ZHasIcon .ZMenuItemSeparatorBorder .ZLeftIcon IMG,
@@ -2464,4 +2479,17 @@ INPUT.xform_field {
 .DwtFormRowAdd.ZFocused .ZButtonBorder,
 .DwtFormRowRemove.ZFocused .ZButtonBorder {
 	@FocusBorder@
+}
+
+/** Folder chooser dropdown style **/
+
+
+.DwtMenu .ZmFolderChooser .OverviewTree .DwtTreeItem:hover {
+	cursor: pointer;
+   @MenuItemBorder-hover@;
+}
+
+.DwtMenu .ZmFolderChooser .OverviewTree .DwtTreeItem table {
+	height: 100%;
+	width: 100%;
 }
