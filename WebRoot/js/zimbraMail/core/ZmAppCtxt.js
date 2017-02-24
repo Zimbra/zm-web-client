@@ -1918,7 +1918,7 @@ function(keyMap, shortcut) {
 			var list = text.split(/;\s*/);
 			var sc = list[0];	// use first shortcut in list
 			if (!sc) { return null; }
-			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return let.toUpperCase(); });
+			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return window.skin && AjxUtil.isFunction(window.skin.shortcutFormatter) && window.skin.shortcutFormatter(let) });
 			text = [sc.replace(",", "")].join("");
 		} else {
 			var key = [keyMap, "INHERIT"].join(".");
