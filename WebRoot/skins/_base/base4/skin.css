@@ -638,7 +638,3 @@ SELECT                      {   @FieldBorder@   }
     background-color: @AppC@;
     background-image: none;
 }
-
-.TextStyleItalic {
-    font-style: italic;
-}

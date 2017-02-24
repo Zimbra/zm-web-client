@@ -287,6 +287,10 @@ ZmSkin.prototype = {
         var controller = app.getPrefController();
         var view = controller.getPrefsView();
         view.selectSection(pageId);
+    },
+
+    shortcutFormatter : function(key) {
+        return key.toUpperCase()
     }
 };
 

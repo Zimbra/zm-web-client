@@ -65,7 +65,7 @@ ZmFolderChooser = function(params) {
 		new DwtMenuItem({parent:moveMenu, style:DwtMenuItem.SEPARATOR_STYLE});
 	
 		// add New button
-		var newFolderItem = this._newButton = new DwtMenuItem({parent:moveMenu, id: moveMenu.getHTMLElId() + "|NEWFOLDER", className: "ZMenuItem TextStyleItalic"});
+		var newFolderItem = this._newButton = new DwtMenuItem({parent:moveMenu, id: moveMenu.getHTMLElId() + "|NEWFOLDER", className: "ZAddNewMenuItem"});
 		var appName = appCtxt.getCurrentAppName();	
 		var defaultApp = ZmApp.MAIL;
 		var newTextKey = ZmFolderChooser.NEW_ORG_KEY[appName] || ZmFolderChooser.NEW_ORG_KEY[defaultApp];
