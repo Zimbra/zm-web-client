@@ -1849,6 +1849,7 @@ INPUT.xform_field {
 .ZSelectAutoSizingContainer:focus,
 .ZToolbarButton:focus,
 .ZSelect:focus,
+.ZAddNewMenuItem:focus,
 .ZFocused.DwtCheckbox INPUT:focus,
 .ZFocused.DwtRadioButton INPUT:focus {
 	outline: none;
@@ -2346,6 +2347,7 @@ INPUT.xform_field {
 .ZActive	.ZMenuItemTable .ZDropDown	{	@Text-hover@				}
 .ZSelected	.ZMenuItemTable .ZDropDown	{	@Text-hover@				}
 
+.ZAddNewMenuItem 						{ 	@AddNewMenuItem@ 			}
 
 /* if any item in the menu has a check, icon or submenu,
 	make the shim div in all items have the proper width
