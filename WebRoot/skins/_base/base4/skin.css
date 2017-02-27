@@ -615,6 +615,8 @@ SELECT                      {   @FieldBorder@   }
     font-weight: normal;
 }
 
+.Row-selected-disabled .ZmMsgListColFrom,
+.Row-selected-disabled .ZmConvListSubject,
 .Row-selected .ZmMsgListColFrom,
 .Row-selected .ZmConvListSubject {
     @Text-contrast@
