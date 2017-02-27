@@ -246,11 +246,28 @@ function(item,start,end) {
 	if (!color) {
 		return null;
 	}
-    var colorRGB = AjxColor.components(color).toString();
+    var colorLighten = AjxColor.lighten(color, .9).toString();
 
-    return "background-color: rgba(" + colorRGB + ", 0.1); border-left: 4px solid rgb(" + colorRGB + ")";
+    return "background-color: " + colorLighten;
 };
 
+/**
+ * Return:  the border styling for each item row based on tag color.
+ * @param item ZmMailMsg/ZmConv object
+ * @returns {*}
+ * @private
+ */
+ZmMailListView.prototype._getExtraBorderStyle =
+function(item) {
+		if (!appCtxt.get(ZmSetting.COLOR_MESSAGES)) {
+			return null;
+		}
+		var color = item.getColor && item.getColor();
+		if (!color) {
+			color = "transparent";
+		}
+		return "border-left: 4px solid "+ color;
+};
 
 ZmMailListView.prototype._getAbridgedContent =
 function(item, colIdx) {
@@ -1775,4 +1792,42 @@ function(msg) {
 			Dwt.addClass(row, "Sent");
 		}
 	}
+};
+
+/**
+ * Overriding DwtListView.prototype._getRow to support border style for each list item.
+ * @param htmlArr
+ * @param idx
+ * @param item
+ * @param params
+ * @param classes
+ * @returns {*}
+ * @private
+ */
+ZmMailListView.prototype._getRow =
+function(htmlArr, idx, item, params, classes) {
+		var rowId = this._getRowId(item, params) || Dwt.getNextId();
+		var className = this._getRowClass(item, params);
+		var extraStyle = this._getExtraBorderStyle(item);
+
+		if (this.useListElement()) {
+			htmlArr[idx++] =  "<div ";
+			classes = classes || [];
+			if (className) {
+				classes.push(className);
+			}
+			if (rowId) {
+				htmlArr[idx++] = ["id='", rowId, "'"].join("");
+			}
+
+			if (extraStyle) {
+				htmlArr[idx++] = " style='" + extraStyle + ";'";
+			}
+
+			htmlArr[idx++] = AjxUtil.getClassAttr(classes) + ">";
+		} else {
+			htmlArr[idx++] = rowId ? ["<tr id='", rowId, "'"].join("") : "<tr";
+			htmlArr[idx++] = className ? ([" class='", className, "'>"].join("")) : ">";
+		}
+		return idx;
 };
