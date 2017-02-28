@@ -473,8 +473,6 @@ html[data-istwofactorsetuppage] .VeilOverlay TABLE {
 	@ListItemContainer@
 	@DisableSelection@
 	@ListItemHeightDouble@
-	border-bottom-color:#CCC;  /* TODO: Color should be a property reference */
-	padding-top:3px;
 }
 
 .Row TABLE, .RowDouble TABLE {
