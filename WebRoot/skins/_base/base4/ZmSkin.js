@@ -21,15 +21,17 @@
 function ZmSkin(hints) {
     this.hints = this.mergeObjects(ZmSkin.hints, hints);
 
-    DwtListView.HEADERITEM_HEIGHT = 26;
+    if(typeof DwtListView != 'undefined') {
+        DwtListView.HEADERITEM_HEIGHT = 26;
 
-    // @TODO change these in core files
-    // 5px added as padding to make it 35px
-    DwtListView.MIN_COLUMN_WIDTH = 30;
-    ZmListView.COL_WIDTH_ICON = 30;
-    ZmListView.COL_WIDTH_NARROW_ICON = 30;
+        // @TODO change these in core files
+        // 5px added as padding to make it 35px
+        DwtListView.MIN_COLUMN_WIDTH = 30;
+        ZmListView.COL_WIDTH_ICON = 30;
+        ZmListView.COL_WIDTH_NARROW_ICON = 30;
 
-    DwtListView.HEADERSASH_STYLE = 1;
+        DwtListView.HEADERSASH_STYLE = 1;
+    }
 }
 
 
