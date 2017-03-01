@@ -103,7 +103,7 @@ function(parent, type, id) {
         }
 		parent.enableAll(true);
 		var isSubFolderOfReadOnly = folder.parent && folder.parent.isReadOnly();
-		parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.MOVE, ZmOperation.EDIT_PROPS], !isSubFolderOfReadOnly);
+		parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.MOVE_FOLDER, ZmOperation.EDIT_PROPS], !isSubFolderOfReadOnly);
 		parent.enable(ZmOperation.SYNC, folder.isFeed()/* || folder.hasFeeds()*/);
 		parent.enable(ZmOperation.SYNC_ALL, folder.isFeed() || folder.hasFeeds());
 		parent.enable(ZmOperation.SHARE_FOLDER, isShareVisible);
@@ -115,7 +115,7 @@ function(parent, type, id) {
 			parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ, ZmOperation.EMPTY_FOLDER], false);
 		}
         if (appCtxt.isExternalAccount()) {
-			parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.MOVE], false);
+			parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.MOVE_FOLDER], false);
 		}
 	}
 	// system folder
@@ -281,7 +281,7 @@ ZmFolderTreeController.prototype._getActionMenuOps = function() {
 		ZmOperation.EMPTY_FOLDER,
 		ZmOperation.RECOVER_DELETED_ITEMS,
 		ZmOperation.SHARE_FOLDER,
-		ZmOperation.MOVE,
+		ZmOperation.MOVE_FOLDER,
 		ZmOperation.DELETE_WITHOUT_SHORTCUT,
 		ZmOperation.RENAME_FOLDER,
 		ZmOperation.EDIT_PROPS,

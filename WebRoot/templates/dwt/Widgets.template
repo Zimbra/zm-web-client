@@ -464,10 +464,10 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 <template id='dwt.Widgets#ZMenuItem' class='ZWidget'>
 	<table role="presentation" class='ZWidgetTable ZMenuItemTable ZMenuItemBorder'>
 		<tr>
-			<td id='${id}_check' class='ZCheckIcon'><div></div></td>
+			<td id='${id}_check' class='ZCheckIcon'></td>
 			<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></td>
 			<td id='${id}_title' class='ZWidgetTitle'></td>
-			<td id='${id}_dropdown' class='ZDropDown'><div></div></td>
+			<td id='${id}_dropdown' class='ZDropDown'></td>
 		</tr>
 	</table>
 </template>
