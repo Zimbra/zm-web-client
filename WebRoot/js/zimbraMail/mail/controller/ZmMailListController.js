@@ -592,13 +592,9 @@ function(address, item, ev){
 ZmMailListController.prototype._getToolBarOps =
 function() {
 	var list = [];
-	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
-	list.push(ZmOperation.SEP);
 	list = list.concat(this._deleteOps());
-	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.MOVE_MENU);
-	list.push(ZmOperation.TAG_MENU);
 	return list;
 };
 
@@ -623,6 +619,8 @@ function() {
 		viewType = this.getCurrentViewType();
 
 	list.push(ZmOperation.PRINT);
+	list.push(ZmOperation.SPAM);
+	list.push(ZmOperation.TAG_MENU);
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._flagOps());
 	list.push(ZmOperation.SEP);
@@ -709,7 +707,7 @@ function() {
 
 ZmMailListController.prototype._deleteOps =
 function() {
-	return [this.getDeleteOperation(), ZmOperation.SPAM];
+	return [this.getDeleteOperation()];
 };
 
 ZmMailListController.prototype._createOps =
@@ -841,6 +839,15 @@ ZmMailListController.prototype._actionsButtonListener =
 function(ev) {
 	this._enableReadUnreadToolbarActions();
 	this._enableMuteUnmuteToolbarActions();
+	//update tagmenu each time action button is called
+	var menu = this.getCurrentToolbar().getActionsMenu();
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		this._setTagMenu(menu);
+	}
+	//manage spam button
+	if (appCtxt.get(ZmSetting.SPAM_ENABLED)) {
+		this._setupSpamButton(menu);
+	}
 	ZmBaseController.prototype._actionsButtonListener.call(this, ev);
 };
 
@@ -1539,6 +1546,7 @@ function(view) {
 	// always reset the view menu button icon to reflect the current view
 	var btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
 	if (btn) {
+		btn.addClassName("ZViewMenuButton");
 		var viewType = appCtxt.getViewTypeFromId(view);
 		btn.setImage(ZmMailListController.GROUP_BY_ICON[viewType]);
 	}
@@ -1635,12 +1643,7 @@ function(parent) {
 			//might still be in a popup if it's in the Actions menu. That's the case now but I do this generically so it works if one day we move it as a main button (might want to do that in the spam folder at least)
 			inPopupMenu = parent.getActionsMenu() && parent.getActionsMenu().getOp(ZmOperation.SPAM);
 		}
-
-		if (inPopupMenu) {
-			item.setText(inSpamFolder ? ZmMsg.notJunkMarkLabel : ZmMsg.junkMarkLabel);
-		} else {
-			item.setText(inSpamFolder ? ZmMsg.notJunkLabel : ZmMsg.junkLabel);
-		}
+		item.setText(inSpamFolder ? ZmMsg.notJunkLabel : ZmMsg.junkLabel);
 		item.setImage(inSpamFolder ? 'NotJunk' : 'JunkMail');
 		if (item.setToolTipContent) {
 			var tooltip = inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip;
