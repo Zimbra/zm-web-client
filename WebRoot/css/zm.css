@@ -5335,6 +5335,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	@InactiveCursor@
 	padding-right:5px;
 	white-space:nowrap;
+	height: 100%;
 }
 
 .ZmApptComposeView .addresses {

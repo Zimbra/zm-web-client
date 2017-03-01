@@ -875,10 +875,10 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_DETACH_COMPOSE, {tooltipKey:"detachComposeTooltip", image:"OpenInNewWindow"});
 	ZmOperation.registerOp(ZmId.OP_DRAFT, null, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_EDIT_FILTER_RULE, {textKey:"filterEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_FORWARD, {textKey:"forward", tooltipKey:"forwardTooltip", shortcut:ZmKeyMap.FORWARD, textPrecedence:46});
-	ZmOperation.registerOp(ZmId.OP_FORWARD_ATT, {textKey:"forwardAtt", tooltipKey:"forwardAtt"});
-	ZmOperation.registerOp(ZmId.OP_FORWARD_CONV, {textKey:"forwardConv", tooltipKey:"forwardConv"});
-	ZmOperation.registerOp(ZmId.OP_FORWARD_INLINE, {textKey:"forwardInline", tooltipKey:"forwardTooltip"});
+	ZmOperation.registerOp(ZmId.OP_FORWARD, {textKey:"forward", image:"Forward", tooltipKey:"forwardTooltip", shortcut:ZmKeyMap.FORWARD, textPrecedence:46, showImageInToolbar: true, showTextInToolbar: true});
+	ZmOperation.registerOp(ZmId.OP_FORWARD_ATT, {textKey:"forwardAtt", tooltipKey:"forwardAtt", image:"Forward"});
+	ZmOperation.registerOp(ZmId.OP_FORWARD_CONV, {textKey:"forwardConv", tooltipKey:"forwardConv", image:"Forward"});
+	ZmOperation.registerOp(ZmId.OP_FORWARD_INLINE, {textKey:"forwardInline", tooltipKey:"forwardTooltip", image:"Forward"		});
 	ZmOperation.registerOp(ZmId.OP_INC_ATTACHMENT, {textKey:"includeMenuAttachment"});
     ZmOperation.registerOp(ZmId.OP_INC_BODY, {textKey:"includeMenuBody"});
 	ZmOperation.registerOp(ZmId.OP_INC_NONE, {textKey:"includeMenuNone"});
@@ -901,8 +901,8 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_PRIORITY_NORMAL, {textKey:"priorityNormal", image:"PriorityNormal_list"});
 	ZmOperation.registerOp(ZmId.OP_REMOVE_FILTER_RULE, {textKey:"filterRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
     ZmOperation.registerOp(ZmId.OP_REDIRECT, {textKey:"mailRedirect", tooltipKey:"mailRedirectTooltip"});
-	ZmOperation.registerOp(ZmId.OP_REPLY, {textKey:"reply", tooltipKey:"replyTooltip", shortcut:ZmKeyMap.REPLY, textPrecedence:50});
-	ZmOperation.registerOp(ZmId.OP_REPLY_ALL, {textKey:"replyAll", tooltipKey:"replyAllTooltip", shortcut:ZmKeyMap.REPLY_ALL, textPrecedence:48});
+	ZmOperation.registerOp(ZmId.OP_REPLY, {textKey:"reply", image:"Reply", tooltipKey:"replyTooltip", shortcut:ZmKeyMap.REPLY, textPrecedence:50, showImageInToolbar: true, showTextInToolbar: true});
+	ZmOperation.registerOp(ZmId.OP_REPLY_ALL, {textKey:"replyAll", image:"ReplyAll", tooltipKey:"replyAllTooltip", shortcut:ZmKeyMap.REPLY_ALL, textPrecedence:48, showImageInToolbar: true, showTextInToolbar: true});
 	ZmOperation.registerOp(ZmId.OP_REQUEST_READ_RECEIPT, {textKey:"requestReadReceipt"});
 	ZmOperation.registerOp(ZmId.OP_RESET, {textKey:"reset", image:"Refresh", tooltipKey: "refreshFilters"});
 	ZmOperation.registerOp(ZmId.OP_RUN_FILTER_RULE, {textKey:"filterRun", image:"SwitchFormat"}, [ ZmSetting.MAIL_ENABLED, ZmSetting.FILTERS_ENABLED ]);

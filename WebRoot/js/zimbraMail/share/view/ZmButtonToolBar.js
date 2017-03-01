@@ -84,7 +84,7 @@ ZmButtonToolBar = function(params) {
 	var secondaryOpList = ZmOperation.filterOperations(params.secondaryButtons);
 
 	if (secondaryOpList && secondaryOpList.length) {
-		this.opList.push(ZmOperation.SEP, ZmOperation.ACTIONS_MENU);
+		this.opList.push(ZmOperation.ACTIONS_MENU);
 	}
 
 	var rightSideOpList = ZmOperation.filterOperations(params.rightSideButtons);

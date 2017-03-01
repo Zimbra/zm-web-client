@@ -1102,7 +1102,7 @@ function(parent, items) {
 		// fetch tag tree from appctxt (not cache) for multi-account case
 		tagMenu.set(items, appCtxt.getTagTree(account));
 		if (parent.isZmActionMenu) {
-			tagOp.setText(this._getTagMenuMsg(items.length, items));
+			//tagOp.setText(this._getTagMenuMsg(items.length, items));
 		}
 		else {
 			tagMenu.parent.popup();
