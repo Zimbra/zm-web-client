@@ -258,7 +258,7 @@
 }
 
 .DwtTreeItemChildDiv {
-	padding-left:@SmallIconWidth@;
+	padding-left:@SkinWrapperPadding@;
 }
 
 .DwtTreeItemLevel1ChildDiv {
@@ -2003,6 +2003,8 @@ INPUT.xform_field {
  ***************/
 
 .ZToolbarButton									{	@ToolbarButton@			@ToolbarButtonSpacing@			}
+.ZToolbarButton.ZSubMenuActive:not(.ZNewButton) {	@ToolbarButton-MenuActive@                              }
+
 .ZToolbarButtonBorder							{	@ToolbarButtonBorder@	@ToolbarButtonBorder-normal@	}
 .ZHover		.ZToolbarButtonBorder				{							@ToolbarButtonBorder-hover@		}
 .ZDisabled	.ZToolbarButtonBorder				{							@ToolbarButtonBorder-disabled@	}
@@ -2010,13 +2012,15 @@ INPUT.xform_field {
 .ZActive	.ZToolbarButtonBorder				{							@ToolbarButtonBorder-active@	}
 .ZSelected	.ZToolbarButtonBorder				{							@ToolbarButtonBorder-selected@	}
 
-.ZNewButton .ZToolbarButtonBorder               {   @ToolbarNewButtonBorder@                }
-.ZNewButton.ZHover .ZToolbarButtonBorder        {   @ToolbarButtonBorder-hover@             }
-.ZNewButton.ZActive .ZToolbarButtonBorder       {   @ToolbarButtonBorder-active@            }
+.ZNewButton .ZToolbarButtonBorder               	   {   @ToolbarNewButtonBorder@                }
+.ZNewButton.ZHover .ZToolbarButtonBorder        	   {   @ToolbarButtonBorder-hover@             }
+.ZNewButton.ZActive .ZToolbarButtonBorder              {   @ToolbarButtonBorder-active@            }
+.ZNewButton.ZToolbarButton.ZSubMenuActive  .ZDropDown  {   @ToolbarButton-MenuActive@;		       }
 
 .ZNewButton             .ZToolbarButtonTable .ZWidgetTitle       {     @ToolbarNewButtonText@   @ToolbarNewButtonText-normal@      }
 .ZNewButton.ZHover      .ZToolbarButtonTable .ZWidgetTitle       {                              @ToolbarNewButtonText-hover@       }
 .ZNewButton.ZDisabled   .ZToolbarButtonTable .ZWidgetTitle       {                              @ToolbarNewButtonText-disabled@    }
+.ZNewButton             .ZToolbarButtonTable TD.ZDropDown  	     { 	   @ToolbarNewButtonDropIcon@		                           }
 
 			.ZToolbarButtonTable .ZWidgetTitle	{	@ToolbarButtonText@ 	@ToolbarButtonText-normal@		}
 .ZHover		.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-hover@		}
@@ -2025,6 +2029,9 @@ INPUT.xform_field {
 .ZActive	.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-active@		}
 .ZSelected	.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-selected@	}
 
+.ZToolbarButton.ZViewMenuButton	.ZToolbarButtonTable		                {       @ToolbarViewButtonContainer@       }
+.ZToolbarButton.ZViewMenuButton .ZToolbarButtonTable .ZWidgetTitle			{ 		@Text-light@ 		               }
+.ZToolbarButton.ZViewMenuButton	.ZToolbarButtonTable  TD.ZDropDown 			{		@ToolbarViewButtonDropIcon@ 	   }
 
 /***************
  *
@@ -2353,9 +2360,9 @@ INPUT.xform_field {
 	make the shim div in all items have the proper width
 	so things line up properly
 */
-.ZHasIcon .ZMenuItemBorder .ZLeftIcon DIV, .ZHasIcon .ZMenuItemBorder .ZLeftIcon IMG 		{	width:16px; height:16px; }
+/*.ZHasIcon .ZMenuItemBorder .ZLeftIcon DIV, .ZHasIcon .ZMenuItemBorder .ZLeftIcon IMG 		{	width:16px; height:16px; }
 .ZHasCheck .ZMenuItemBorder .ZCheckIcon DIV, .ZHasCheck .ZMenuItemBorder .ZCheckIcon IMG 	{	width:9px;	height:9px; }
-.ZHasSubmenu .ZMenuItemBorder .ZDropDown DIV, .ZHasSubmenu .ZMenuItemBorder .ZDropDown IMG 	{	width:16px;	height:16px; }
+.ZHasSubmenu .ZMenuItemBorder .ZDropDown DIV, .ZHasSubmenu .ZMenuItemBorder .ZDropDown IMG 	{	width:16px;	height:16px; }*/
 
 
 .ZMenuItem-Separator							{	@MenuItemSeparator@			}

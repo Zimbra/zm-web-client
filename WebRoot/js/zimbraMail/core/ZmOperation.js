@@ -124,7 +124,7 @@ function() {
 			ZmOperation.addDeferredMenu(ZmOperation.addContactGroupMenu, parent, true);
 	}));
 	ZmOperation.registerOp(ZmId.OP_COPY, {textKey:"copy", image:"Copy"});
-	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", shortcut:ZmKeyMap.DEL, textPrecedence:60});
+	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", shortcut:ZmKeyMap.DEL, textPrecedence:60, image:"Delete", showImageInToolbar: true, showTextInToolbar: true});
 	ZmOperation.registerOp(ZmId.OP_DELETE_WITHOUT_SHORTCUT, {textKey:"del", tooltipKey:"deleteTooltip", textPrecedence:60});
 	ZmOperation.registerOp(ZmId.OP_DETACH, {textKey:"detach", tooltipKey:"detach", showImageInToolbar: true});
     ZmOperation.registerOp(ZmId.OP_DETACH_WIN, {textKey:"detach", image:"OpenInNewWindow"});
@@ -149,11 +149,12 @@ function() {
 //	ZmOperation.registerOp(ZmId.OP_IMPORT_FOLDER, {textKey:"importFolder", image:"MailImport"});
 	ZmOperation.registerOp(ZmId.OP_MARK_ALL_READ, {textKey:"markAllRead"});
 //	ZmOperation.registerOp(ZmId.OP_MOUNT_FOLDER, {textKey:"mountFolder", image:"Folder"});
-	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", tooltipKey:"moveTooltip", textPrecedence:40}); //todo - remove
-	ZmOperation.registerOp(ZmId.OP_MOVE_MENU, {textKey: "move", tooltipKey:"moveTooltip", showImageInToolbar: true }, null,
+	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", image:"MoveToFolder", tooltipKey:"moveTooltip", textPrecedence:40}); //Operation to move message to given folder. todo - remove
+	ZmOperation.registerOp(ZmId.OP_MOVE_FOLDER, {textKey:"move", tooltipKey:"moveTooltip", textPrecedence:40}); //operation to move folder from folder tree
+	ZmOperation.registerOp(ZmId.OP_MOVE_MENU, {textKey: "move", image:"MoveToFolder", tooltipKey:"moveTooltip", showImageInToolbar: true, showTextInToolbar: true}, null,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addMoveMenu, parent, true);
-		}));
+		})); //Operation for move menu dropdown
 
     ZmOperation.registerOp(ZmId.OP_MUTE_CONV, {textKey:"muteConv", tooltipKey:"muteConvTooltip", image:"Mute", shortcut:ZmKeyMap.MUTE_UNMUTE_CONV});
 	ZmOperation.registerOp(ZmId.OP_NEW_FOLDER, {textKey:"newFolder", tooltipKey:"newFolderTooltip", shortcut:ZmKeyMap.NEW_FOLDER}, ZmSetting.USER_FOLDERS_ENABLED);
@@ -168,11 +169,11 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_PAGE_BACK, {image:"LeftArrow", shortcut:ZmKeyMap.PREV_PAGE});
 	ZmOperation.registerOp(ZmId.OP_PAGE_FORWARD, {image:"RightArrow", shortcut:ZmKeyMap.NEXT_PAGE});
 	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, textPrecedence:30, showImageInToolbar: true}, ZmSetting.PRINT_ENABLED);
-    ZmOperation.registerOp(ZmId.OP_PRIORITY_FILTER, {image:"Priority", textKey:"activityStream"}, ZmSetting.PRIORITY_INBOX_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_FIND_SHARES, {image:"Group", textKey:"findShares"}, ZmSetting.SHARING_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_PRIORITY_FILTER, {textKey:"activityStream"}, ZmSetting.PRIORITY_INBOX_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_FIND_SHARES, {textKey:"findShares"}, ZmSetting.SHARING_ENABLED);
 
 	//ZmOperation.registerOp(ZmId.OP_QUICK_COMMANDS, {textKey:"quickCommands", image:"QuickCommand"});
-	ZmOperation.registerOp(ZmId.OP_RECOVER_DELETED_ITEMS, {textKey:"recoverDeletedItems", image:"Trash", tooltipKey:"recoverDeletedItems"}, ZmSetting.DUMPSTER_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_RECOVER_DELETED_ITEMS, {textKey:"recoverDeletedItems", tooltipKey:"recoverDeletedItems"}, ZmSetting.DUMPSTER_ENABLED);
     ZmOperation.registerOp(ZmId.OP_REFRESH, {textKey:"refresh", tooltipKey:"refreshTooltip"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_FOLDER, {textKey:"renameFolder"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_SEARCH, {textKey:"renameSearch"});
@@ -199,9 +200,9 @@ function() {
     ZmOperation.registerOp(ZmId.OP_SORT_ASC, {textKey:"sortAscending"});
     ZmOperation.registerOp(ZmId.OP_SORT_DESC, {textKey:"sortDescending"});
 	ZmOperation.registerOp(ZmId.OP_SPELL_CHECK, {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip", shortcut:ZmKeyMap.SPELLCHECK, showImageInToolbar: true}, ZmSetting.SPELL_CHECK_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_SYNC, {textKey:"reload", image:"Refresh", shortcut:ZmKeyMap.REFRESH});
-    ZmOperation.registerOp(ZmId.OP_SYNC_ALL, {textKey:"checkAllFeed", image:"Refresh"});
-	ZmOperation.registerOp(ZmId.OP_SYNC_OFFLINE_FOLDER, {textKey:"syncOfflineFolderOff", image:"Refresh"}, ZmSetting.OFFLINE_ENABLED); /* offline only */
+	ZmOperation.registerOp(ZmId.OP_SYNC, {textKey:"reload", shortcut:ZmKeyMap.REFRESH});
+    ZmOperation.registerOp(ZmId.OP_SYNC_ALL, {textKey:"checkAllFeed"});
+	ZmOperation.registerOp(ZmId.OP_SYNC_OFFLINE_FOLDER, {textKey:"syncOfflineFolderOff"}, ZmSetting.OFFLINE_ENABLED); /* offline only */
 	ZmOperation.registerOp(ZmId.OP_TAG, null, ZmSetting.TAGGING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_TAG_COLOR_MENU, {textKey:"tagColor"}, ZmSetting.TAGGING_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {

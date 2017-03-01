@@ -3,3 +3,9 @@ build/
 .history
 .idea
 .classpath
+/WebRoot/js/zimbra/
+/WebRoot/js/ajax/
+/WebRoot/keys/AjxKeys*
+/WebRoot/jquery/
+/WebRoot/modernizr/
+/WebRoot/yui/
