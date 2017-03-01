@@ -80,7 +80,7 @@ BODY                                    {   margin:0px;     }
 #skin_outer_td_main                     {   height:100%; width:100%;    }
 
 /** Top row contains header and app tabs **/
-#skin_spacing_top_row                   {   width:100%; @SkinTopRow@    }  /* width specified for bug 83004 */
+#skin_spacing_top_row                   {   width:100%; @SkinTopRow@ padding: 0 @SkinWrapperPadding@  }  /* width specified for bug 83004 */
 #skin_spacing_top_row .divider          {   border-left:1px solid @SkinTopRowDividerColor@;
                                             height:60%;
                                             margin:auto 10px;  /*auto to appease IE*/
@@ -121,7 +121,7 @@ BODY                                    {   margin:0px;     }
 /** Quota section **/   
 #skin_container_quota                   {   @SkinBorderQuota@   }
 /** Drop Menu section **/
-#skin_dropMenu                          {   font-size:14px; padding:0px 10px 0px 3px; text-align:center; vertical-align:middle; @Text-contrast@ @ActiveCursor@  }
+#skin_dropMenu                          {   font-size:14px; padding:0px 0px 0px 3px; text-align:center; vertical-align:middle; @Text-contrast@ @ActiveCursor@  }
 #skin_dropMenu .DwtLinkButtonDropDownArrowTd            {   border-left:0px; opacity:.75; padding-left:0px; }
 #skin_dropMenu .ZHover .DwtLinkButtonDropDownArrowTd    {   opacity:1;  }
 #skin_container_global_buttons          {   display:table-row;  }
@@ -191,7 +191,7 @@ BODY                                    {   margin:0px;     }
 
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar           {   @ToolbarButtonHeight@     }
-#skin_container_app_top_toolbar         {   @SkinBorderAppToolbar@ width:auto; padding-left:@SashSize@; }
+#skin_container_app_top_toolbar         {   @SkinBorderAppToolbar@ width:auto; padding-left:@SashSize@; padding-right:@SkinWrapperPadding@ }
 #skin_container_app_new_button          {   @SkinBorderAppToolbar@ width:@TreeStartWidth@; }
 
 
@@ -428,8 +428,23 @@ BODY                                    {   margin:0px;     }
 .ZmShareToolBar .ZToolbarTable              {   height:100%;    }
 
 #IFNDEF MSIE_LOWER_THAN_9
-.ZToolbarButtonTable TD:first-child         {   padding-left:@ToolbarButtonPaddingSize@;    }
-.ZToolbarButtonTable TD:last-child          {   padding-right:@ToolbarButtonPaddingSize@;   }
+.ZToolbarButtonTable TD:not(:empty)         {   padding: 0 @ToolbarButtonPaddingSize@   }
+.ZToolbarButtonTable TD:first-child         {   padding-left:0;    }
+.ZToolbarButtonTable TD:last-child          {   padding-right:0;   }
+.ZMenuItemTable TD:not(:empty)              {   padding: 0 @ToolbarButtonPaddingSize@   }
+.ZMenuItemTable TD:first-child              {   padding-left:0;    }
+.ZMenuItemTable TD:last-child               {   padding-right:0;   }
+/* This rule aligns all menu item text, if any one of the menu item has icon in the menu */
+.ActionMenu.ZHasIcon:not(.ZHasCheck) .ZMenuItem .ZMenuItemTable .ZLeftIcon:empty::after,
+.ActionMenu.ZHasCheck.ZHasIcon .ZMenuItem .ZMenuItemTable .ZLeftIcon:empty::after   {
+  content: " "; 
+  padding-left: @IconGutterSize@;
+}
+.ActionMenu.ZHasCheck:not(.ZHasIcon) .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty::after,
+.ActionMenu.ZHasCheck.ZHasIcon .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty::after  {
+  content: " "; 
+  padding-left: @IconGutterSizeSmall@;
+}
 #ENDIF
 
 #IFDEF MSIE_LOWER_THAN_9

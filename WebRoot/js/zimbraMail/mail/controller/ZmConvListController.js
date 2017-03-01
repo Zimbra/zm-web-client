@@ -440,10 +440,10 @@ ZmConvListController.prototype._getSecondaryToolBarOps = function() {
 
 	var list = ZmDoublePaneController.prototype._getSecondaryToolBarOps.apply(this, arguments),
 		index = AjxUtil.indexOf(list, ZmOperation.EDIT_AS_NEW);
-
-	if (index !== -1 && appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
-		list.splice(index + 1, 0, ZmOperation.FORWARD_CONV);
-	}
+	// We don't need Forwad Conversation operation in action menu
+	// if (index !== -1 && appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
+	// 	list.splice(index + 1, 0, ZmOperation.FORWARD_CONV);
+	// }
 	return list;
 };
 
