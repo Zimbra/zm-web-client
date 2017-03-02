@@ -377,11 +377,13 @@ function(resetLeft) {
 		    hourElement = document.getElementById(this._hoursScrollDivId),
 		    alldayElement = document.getElementById(this._allDayScrollDivId),
 		    unionGridScrollElement = document.getElementById(this._unionGridScrollDivId),
-			alldayApptElement = document.getElementById(this._allDayApptScrollDivId);
+			alldayApptElement = document.getElementById(this._allDayApptScrollDivId),
+			tabContainerElement = document.getElementById(this._tabsContainerDivId);
 
 		hourElement.scrollTop = bodyElement.scrollTop;
 		hourElement.scrollLeft = bodyElement.scrollLeft;
 		if (resetLeft) bodyElement.scrollLeft = 0;
+		bodyElement.scrollLeft = tabContainerElement.scrollLeft;
 		alldayElement.scrollLeft = bodyElement.scrollLeft;
 		alldayApptElement.scrollLeft = bodyElement.scrollLeft;
 		if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
