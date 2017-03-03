@@ -1719,8 +1719,10 @@ function() {
 ZmListView.prototype._getEventTarget =
 function(ev) {
 	var target = ev && ev.target;
-	if (target && (target.nodeName === "IMG" || (target.className && target.className.match(/\bImg/)))) {
+	if (target && (target.nodeName === "IMG" || (target.className && target.className.match && target.className.match(/\bImg/)))) {
 		return target.parentNode;
-	}
+	} else if(target && target.nodeName === "svg") {
+        return target.parentNode.parentNode;
+    }
 	return target;
 };
