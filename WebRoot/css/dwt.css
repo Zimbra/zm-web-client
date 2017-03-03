@@ -1895,7 +1895,8 @@ INPUT.xform_field {
 .ZWidgetTable					{	width:100%;	height:100%;}
 
 .ZWidgetIcon					{	width:0px;	height:@SmallIconHeight@; overflow:hidden;}
-.ZDisabled .ZWidgetIcon DIV		{ 	@Icon-disabled@	}
+.ZDisabled .ZWidgetIcon DIV,
+.ZDisabled .ZCheckIcon DIV		{ 	@Icon-disabled@	}
 .ZWidgetIcon IMG				{	display: block; }
 
 .ZWidgetTitle					{ 	height:@SmallIconHeight@;	width:100%;	white-space:nowrap;	overflow: hidden; }
