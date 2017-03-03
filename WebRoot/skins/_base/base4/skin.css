@@ -431,6 +431,10 @@ BODY                                    {   margin:0px;     }
 .ZToolbarButtonTable TD:not(:empty)         {   padding: 0 @ToolbarButtonPaddingSize@   }
 .ZToolbarButtonTable TD:first-child         {   padding-left:0;    }
 .ZToolbarButtonTable TD:last-child          {   padding-right:0;   }
+
+.ZToolbarButton.ZHasDropDown.ZHasLeftIcon .ZDropDown                 {    display: none;              }
+.ZToolbarButton:not(.ZDisabled) .ZToolbarButtonTable .ZWidgetIcon    {   fill: @PrimaryBrandingColor@ }
+
 .ZMenuItemTable TD:not(:empty)              {   padding: 0 @ToolbarButtonPaddingSize@   }
 .ZMenuItemTable TD:first-child              {   padding-left:0;    }
 .ZMenuItemTable TD:last-child               {   padding-right:0;   }
@@ -443,7 +447,10 @@ BODY                                    {   margin:0px;     }
 .ActionMenu.ZHasCheck:not(.ZHasIcon) .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty::after,
 .ActionMenu.ZHasCheck.ZHasIcon .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty::after  {
   content: " "; 
-  padding-left: @IconGutterSizeSmall@;
+  padding-left: @IconGutterSize@;
+}
+.ActionMenu.ZHasCheck .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty {
+    padding-right: @ToolbarButtonPaddingSize@
 }
 #ENDIF
 
