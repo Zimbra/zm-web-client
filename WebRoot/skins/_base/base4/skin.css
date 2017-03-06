@@ -245,10 +245,14 @@ BODY                                    {   margin:0px;     }
     @LoginScreen@
 }
 .LoginScreen .center,
-.SplashScreen .center,
 .ErrorScreen .center {
-    margin-top:-160px;
-    margin-left:-285px;
+    margin-left:-135px;
+    margin-top:-100px;
+}
+
+.SplashScreen .center {
+    margin-left:-135px;
+    margin-top:-50px;
 }
 
 .LoginScreen .center-small,
@@ -260,18 +264,22 @@ BODY                                    {   margin:0px;     }
     width:250px;
 }
 .LoginScreen .center, .LoginScreen .center-small,
-.SplashScreen .center-small,
+.SplashScreen .center, .SplashScreen .center-small,
 .ErrorScreen .center, .ErrorScreen .center-small {
     left:50%;
     overflow:visible;
     position:absolute;
-    top:40%;
+    top:45%;
     z-index:11;
 }
 .LoginScreen .contentBox,
 .SplashScreen .contentBox,
 .ErrorScreen .contentBox {
     @LoginContentBox@
+}
+
+.SplashScreen .contentBox {
+    @SplashContentBox@
 }
 
 .LoginScreen .center-small .contentBox,
@@ -337,14 +345,6 @@ BODY                                    {   margin:0px;     }
 }
 
 /*Splash Screen Only Items*/
-
-.SplashScreen .center {
-    left: 61%;
-    overflow: visible;
-    position: absolute;
-    top: 55%;
-    z-index: 11;
-}
 
 .SplashScreen .content {
     color: @LoginLabelColor@;
