@@ -141,6 +141,8 @@ function(orig, result, startTime, endTime, fanoutAllDay, includeReminders) {
 	var nextDay;
 	if (startTime < orig.getStartTime()) {
 		nextDay = new Date(orig.getStartTime());
+		nextDay.setDate(nextDay.getDate() + 1);
+		nextDay.setHours(0,0,0,0);
 	}
 	else {
 		nextDay = new Date(startTime);
