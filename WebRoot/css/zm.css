@@ -6132,3 +6132,7 @@ a.ZmLinkDisabled {
 .svg-icon {
     @SVGIcon@
 }
+
+.ZmListFlagsWrapper  .svg-icon {
+	@ListItemBottomRowRightIconSize@
+}
