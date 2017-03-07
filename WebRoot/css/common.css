@@ -473,6 +473,7 @@ html[data-istwofactorsetuppage] .VeilOverlay TABLE {
 	@ListItemContainer@
 	@DisableSelection@
 	@ListItemHeightDouble@
+	@ListItemDoubleContainer@
 }
 
 .Row TABLE, .RowDouble TABLE {
@@ -483,6 +484,10 @@ html[data-istwofactorsetuppage] .VeilOverlay TABLE {
 	@ListItemText@
 }
 
+.RowDouble TD, .RowDouble DIV {
+	@ListItemDoubleText@
+}
+
 .RowDouble TD {
 	vertical-align:top;
 }
@@ -491,21 +496,20 @@ html[data-istwofactorsetuppage] .VeilOverlay TABLE {
 	vertical-align:text-bottom;
 }
 
-.ZmMsgListBottomRowIcon {
-	margin-left:23px;
-	margin-right:5px;
+.RowDouble .ZmListIconWrapper {
+	@ListItemIconWrapper@
+	@ListItemIconWrapperSize@
 }
 
 .ZmConvExpanded .ZmMsgListBottomRowIcon {
-	margin-left: 39px;
+
 }
 
 .ZmMsgListSelection .ZmMsgListBottomRowIcon {
-	margin-left: 37px;
 }
 
 .ZmConvExpanded .ZmMsgListSelection .ZmMsgListBottomRowIcon {
-	margin-left:54px;
+
 }
 
 #IFDEF MSIE

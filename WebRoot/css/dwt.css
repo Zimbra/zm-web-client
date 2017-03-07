@@ -588,7 +588,7 @@ UL.DwtListView-Rows {
 	margin:0px;
 }
 
-.TopRow DIV, .BottomRow DIV,
+.TopRow DIV,.MiddleRow DIV, .BottomRow DIV,
 .DwtMsgListMultiCol DIV,
 .SimpleContact DIV DIV {
 	display:inline-block;
@@ -602,14 +602,14 @@ UL.DwtListView-Rows {
 }
 
 /* Fix for bug: 85014 */
-.DwtListView-Rows TD, .ZmRowDoubleHeader, .DwtMsgListMultiCol DIV {
+.DwtListView-Rows TD, .DwtMsgListMultiCol DIV {
     overflow:hidden;
     padding-left:@TextPaddingSize@;
 }
 .DwtListView-Rows TD {
     padding-right:0px;
 }
-.ZmRowDoubleHeader, .DwtMsgListMultiCol DIV {
+.DwtMsgListMultiCol DIV {
     padding-right:2px;
 }
 
