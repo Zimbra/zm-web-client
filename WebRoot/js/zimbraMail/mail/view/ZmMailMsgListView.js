@@ -137,7 +137,7 @@ function(htmlArr, idx, msg, field, colIdx, params, classes) {
 					}
 					htmlArr[idx++] = "<span id='";
 					htmlArr[idx++] = [fieldId, parts[j].index].join(DwtId.SEP);
-					htmlArr[idx++] = "'>";
+					htmlArr[idx++] = "' class='ZmConvListFrom' >";
 					htmlArr[idx++] = AjxStringUtil.htmlEncode(parts[j].name);
 					htmlArr[idx++] = "</span>";
 				}
@@ -150,7 +150,7 @@ function(htmlArr, idx, msg, field, colIdx, params, classes) {
 			if (fromText) {
 				htmlArr[idx++] = "<span id='";
 				htmlArr[idx++] = this._getFieldId(msg, ZmItem.F_FROM);
-				htmlArr[idx++] = "'>";
+				htmlArr[idx++] = "' class='ZmConvListFrom'>";
 				htmlArr[idx++] = AjxStringUtil.htmlEncode(fromText);
 				htmlArr[idx++] = "</span>";
 			}
@@ -171,15 +171,17 @@ function(htmlArr, idx, msg, field, colIdx, params, classes) {
 		} else {
 			// msg on its own (TV) shows subject and fragment
 			var subj = msg.subject || ZmMsg.noSubject;
-			htmlArr[idx++] = "<span class='ZmConvListSubject' id='";
+			htmlArr[idx++] = "<div class='ZmConvListSubject' id='";
 			htmlArr[idx++] = this._getFieldId(msg, field);
-			htmlArr[idx++] = "'>" + AjxStringUtil.htmlEncode(subj) + "</span>";
-			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
+			htmlArr[idx++] = "'>" + AjxStringUtil.htmlEncode(subj) + "</div>";
+			if (this.isMultiColumn() && appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(msg);
 			}
 		}
 		htmlArr[idx++] = "</div>";
 
+	} else if (field == ZmItem.F_FRAGMENT && appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
+			htmlArr[idx++] = this._getFragmentSpan(msg);
 	} else if (field == ZmItem.F_FOLDER) {
 		htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + " id='";
 		htmlArr[idx++] = this._getFieldId(msg, field);
@@ -224,39 +226,56 @@ function(item, colIdx) {
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
-	if (selectionCssClass) {
-		idx = ZmMailListView.prototype._getCellContents.apply(this, [htmlArr, idx, item, ZmItem.F_SELECTION, colIdx]);
-	}
+
+	//left icons
+	idx = this._getIconWrapper(htmlArr, idx, item);
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_READ, colIdx, width);
+	htmlArr[idx++] = "</div>";
+
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right", ["ZmMsgListDate"]);
 	htmlArr[idx++] = "</div>";
 
-	// second row
-	htmlArr[idx++] = "<div class='BottomRow " + selectionCssClass + "'>";
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width,  null, ["ZmMsgListBottomRowIcon"]);
-	
-	// for multi-account, show the account icon for cross mbox search results
-	if (appCtxt.multiAccounts && appCtxt.getSearchController().searchAllAccounts) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16", "align=right");
+    // middle row
+    htmlArr[idx++] = "<div class='MiddleRow " + selectionCssClass + "'>";
+	idx = this._getIconWrapper(htmlArr, idx, item);
+	if (selectionCssClass) {
+		idx = ZmMailListView.prototype._getCellContents.apply(this, [htmlArr, idx, item, ZmItem.F_SELECTION, colIdx]);
 	}
-	if (item.isHighPriority || item.isLowPriority) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
-	}
+	htmlArr[idx++] = "</div>";
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx);
-	//add the attach, flag and tags in a wrapping div
-	idx = this._getListFlagsWrapper(htmlArr, idx, item);
+
+	htmlArr[idx++] = "</div>";
+
+    // bottom row
+	htmlArr[idx++] = "<div class='BottomRow " + selectionCssClass + "'>";
+	idx = this._getIconWrapper(htmlArr, idx, item);
 	if (item.hasAttach) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width);
+	}
+	htmlArr[idx++] = "</div>";
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FRAGMENT, colIdx);
+	//add the priority, flag and tags in a wrapping div
+	idx = this._getListFlagsWrapper(htmlArr, idx, item);
+
+	if (item.isHighPriority || item.isLowPriority) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
 	}
 	var tags = item.getVisibleTags();
 	if (tags && tags.length) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width, null, ["ZmMsgListColTag"]);
 	}
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width,  null, ["ZmMsgListBottomRowIcon"]);
+
+	// for multi-account, show the account icon for cross mbox search results
+	if (appCtxt.multiAccounts && appCtxt.getSearchController().searchAllAccounts) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16", "align=right");
+	}
+
 	if (appCtxt.get("FLAGGING_ENABLED")) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, width);
 	}
-	htmlArr[idx++] = "</div></div>";
+	htmlArr[idx++] = "</div>";
 
 	return htmlArr.join("");
 };
