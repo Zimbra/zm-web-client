@@ -278,12 +278,22 @@ ZmMailListView.prototype._getListFlagsWrapper =
 function(htmlArr, idx, item) {
 	htmlArr[idx++] = "<div class='ZmListFlagsWrapper'";
 	//compute the start and end of gradient based on height of this div and its position
-	var extraStyle = this._getExtraStyle(item,0.49,0.33);
+	var extraStyle = this._getExtraStyle(item);
 	if (extraStyle) {
 		htmlArr[idx++] = " style='" + extraStyle + ";'>";
 	} else {
 		htmlArr[idx++] = ">";
 	}
+	return idx;
+};
+
+ZmMailListView.prototype._getIconWrapper =
+function(htmlArr, idx, item, classes) {
+	classes = classes || [];
+	classes.push("ZmListIconWrapper");
+	htmlArr[idx++] = "<div ";
+	htmlArr[idx++] = AjxUtil.getClassAttr(classes);
+	htmlArr[idx++] = ">";
 	return idx;
 };
 
@@ -1836,4 +1846,18 @@ function(htmlArr, idx, item, params, classes) {
 			htmlArr[idx++] = className ? ([" class='", className, "'>"].join("")) : ">";
 		}
 		return idx;
+};
+
+/**
+ * Overriding ZmListView function to have conditional "-" added.
+ * @param item
+ * @returns {string}
+ * @private
+ */
+ZmMailListView.prototype._getFragmentHtml =
+function(item) {
+	var htmlArr = [" - ", AjxStringUtil.htmlEncode(item.fragment, true)];
+	//removing "-" for list's with reading pane right active.
+	!this.isMultiColumn() && htmlArr.shift();
+	return htmlArr.join("");
 };
