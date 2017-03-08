@@ -1,49 +1,32 @@
 <template id='mail.Message#MessageHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
+		<div class="MsgViewHeader">
+			<table role="presentation" width=100%>
+				<tr id='${hdrTableTopRowId}'>
+					<$ if (data.isSyncFailureMsg) { $>
+						<td id='${reportBtnCellId}'></td>
+					<$ } $>
+					<$ if (data.priorityImg) { $>
+					<td>
+						<div priority='<$=data.priority$>' id='<$=data.priorityDivId$>' style='margin-left:4px;' class='<$=data.priorityImg$>'></div>
+					</td>
+					<$ } $>
+					<td class='LabelColValue SubjectCol'>
+						<$= data.subject $>
+					</td>
+				</tr>
+			</table>
+		</div>
 		<table class='MsgHeaderTable' id='${id}_headerElement' width=100%>
 			<tr>
-				<td class='MsgHeaderContactContainer'>
-					<img class='MsgHeaderContactImage' src="${imageURL}" alt="${imageAltText}" onerror="this.style.visibility='hidden'"/>
-				</td>
 				<td>
 					<div>
-						<table role="presentation" width=100%>
-							<tr id='${hdrTableTopRowId}'>
-								<$ if (data.isSyncFailureMsg) { $>
-									<td>&nbsp;</td>
-									<td id='${reportBtnCellId}'></td>
-									<td>&nbsp;</td>
-								<$ } $>
-									<td>&nbsp;</td>
-								<$ if (data.priorityImg) { $>
-									<td>
-										<div priority='<$=data.priority$>' id='<$=data.priorityDivId$>' style='margin-left:4px;' class='<$=data.priorityImg$>'></div>
-									</td>
-								<$ } $>
-								<td class='LabelColValue SubjectCol' valign=top width=100%>
-									<$= data.subject $>
-								</td>
-								<td class='LabelColValue DateCol' align=right title='${dateTooltip}'>${dateString}</td>
-								<td>&nbsp;</td>
-							</tr>
-						</table>
-						<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='6' style='margin:0 7px;'>
+						<div class="info">
+						<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='6'>
 							<tr id='${expandRowId}'>
-								<td>
-									<table role="presentation" align=right>
-										<tr>
-											<td class='LabelColName' style='padding-left:7px;'><$= ZmMsg.fromLabel $></td>
-										</tr>
-									</table>
-								</td>
-								<td valign=top colspan=10>
-									<table role="presentation">
-										<tr id="OBJ_PREFIX_<$=Dwt.getNextId()$>_from">
-											<td id="OBJ_PREFIX_<$=Dwt.getNextId()$>_from" class='LabelColValue' style='white-space:nowrap'>
-												<$= AjxTemplate.expand("#SentBy", data) $>
-											</td>
-										</tr>
-									</table>
+								<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
+								<td id="OBJ_PREFIX_<$=Dwt.getNextId()$>_from" class='LabelColValue' style='white-space:nowrap'>
+									<$= AjxTemplate.expand("#SentBy", data) $>
 								</td>
 							</tr>
 
@@ -53,7 +36,7 @@
 									<td class='LabelColName'>
 										<$= participants.prefix ? AjxMessageFormat.format(ZmMsg.makeLabel, participants.prefix) : "&nbsp;" $>
 									</td>
-									<td class='LabelColValue' colspan='10'><$= participants.partStr $></td>
+									<td class='LabelColValue'><$= participants.partStr $></td>
 								</tr>
 							<$ } $>
 
@@ -61,6 +44,8 @@
 							<$= AjxTemplate.expand("#AddedHeaders", data) $>
 
 						</table>
+						</div>
+						<div class="date">${dateString}</div>
 
 						<$ if (data.hasAttachments) { $>
 							<div class="MessageHeaderAttachments" id="${attachId}_container">
@@ -78,7 +63,7 @@
 			</tr>
 		</table>
 		<div id='${infoBarId}'></div>
-	</div>
+	  </div>
 </template>
 
 <template id='mail.Message#SentBy'>
@@ -142,29 +127,23 @@
 		
 <template id='mail.Message#InviteHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
+       <div class="MsgViewHeader">
+			<table role="presentation" width=100%>
+				<tr id='${hdrTableTopRowId}'>
+					<$ if (data.closeBtnCellId) { $>
+					<td id='${closeBtnCellId}'></td>
+					<$ } $>
+					<td class='LabelColValue SubjectCol ${subjChangeClass}'>
+						<$= data.subject $>
+					</td>
+				</tr>
+			</table>
+		</div>
 		<table class='InvHeaderTable' id='${id}_headerElement'>
 			<tr>
-				<$ if (!data.noTopHeader) { $>
-				<td class='InvHeaderContactContainer'>
-					<img class='InvHeaderContactImage' src="${imageURL}" onerror="this.style.visibility='hidden'"/>
-				</td>
-				<$ } $>
 				<td>
 					<div class='InvHeaderDiv'>
-						<$ if (!data.noTopHeader) { $>
-						<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
-							<tr id='${hdrTableTopRowId}'>
-							<$ if (data.closeBtnCellId) { $>
-								<td id='${closeBtnCellId}'></td>
-							<$ } $>
-								<td class='LabelColValue SubjectCol ${subjChangeClass}' valign=top width=100%>
-									<$= data.subject $>
-								</td>
-								<td class='LabelColValue DateCol' align=right title='${dateTooltip}'>${dateString}</td>
-							</tr>
-						</table>
-						<$ } $>
-
+						<div class="date" title='${dateTooltip}'>${dateString}</div>
 						<table role="presentation" id='${hdrTableId}' width=100% class='ZPropertySheet' cellspacing='6'>
 							<$ if (data.counterInvMsg) { $>
 								<tr>
@@ -284,7 +263,6 @@
 		</div>
 		<div id='${infoBarId}'></div>
 	</div>
-	<div class='separator'></div>
 </template>
 
 <template id='mail.Message#InviteHeaderPtst'>
@@ -650,34 +628,18 @@
 </template>
 	
 <template id='mail.Message#Conv2MsgHeader-collapsed'>
-	<div class='image'>
-		<img src="${imageURL}" alt="${imageAltText}"
-		<$ if (data.defaultImageUrl) { $>
-			onerror="this.onerror=null;this.src='${defaultImageUrl}';"
-		<$ } $>
-		/>
-	</div>
 	<div class='info'>
 		<div id='${fromId}' class='ZmConvListFrom'>${from}</div>
-		<div class='ZmConvListFragment'><$= data.fragment $></div>
 	</div>
-	<div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='date' id='${dateCellId}' title='${dateTooltip}'>${date}</div>
 </template>
 
 <template id='mail.Message#Conv2MsgHeader-expanded'>
-	<div class='image'>
-		<img src="${imageURL}" alt="${imageAltText}"
-		<$ if (data.defaultImageUrl) { $>
-			onerror="this.onerror=null;this.src='${defaultImageUrl}';"
-		<$ } $>
-		/>
-	</div>
 	<div class='info'>
 		<table role="presentation" id='${hdrTableId}' class='ZPropertySheet' cellspacing='6'>
 			<tr>
 			<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
-			<td class='LabelColValue' style='white-space:nowrap'>
+			<td class='LabelColValue'>
 				<$= AjxTemplate.expand("#SentBy", data) $>
 			</td>
 			</tr>
@@ -688,7 +650,6 @@
 
 		</table>
 	</div>
-	<div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='date' id='${dateCellId}' title='${dateTooltip}'>${date}</div>
 	<$ if (data.isOutDated) { $>
 		<$= AjxTemplate.expand("#InviteNotCurrent", data) $>
