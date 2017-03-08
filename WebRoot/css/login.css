@@ -98,7 +98,7 @@ FORM {
 .form INPUT[type='password']:focus 	{ border:1px solid @SelC@; 					}
 .form SELECT 						{ height:20px; width:165px; 				}
 .form .submitTD 					{ text-align:left; 							}
-.form .ZLoginButton					{ @LoginButton@ float:right; font-size:1em;}
+.form .ZLoginButton					{ @LoginButton@ }
 .form HR { 
 	border-color:transparent transparent @LoginLabelColor@; 
 	height:0px;

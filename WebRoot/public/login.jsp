@@ -9,7 +9,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
-<app:skinAndRedirect />
+<app:skinAndRedirect defaultSkin="harmony2" />
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
@@ -466,14 +466,6 @@ if (application.getInitParameter("offlineMode") != null) {
 								</c:if>
 					</c:otherwise>
 				</c:choose>
-				<c:if test="${errorCode != null}">
-					<div id="ZLoginErrorPanel">
-						<table><tr>
-							<td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
-							<td><c:out value="${errorMessage}"/></td>
-						</tr></table>
-					</div>
-				</c:if>
                 <c:choose>
                     <c:when test="${totpAuthRequired || errorCode eq 'account.TWO_FACTOR_AUTH_FAILED'}">
                         <table class="form" id="totpTable" style="height:140px;width:350px;">
@@ -511,34 +503,33 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <c:when test="${not empty virtualacctdomain or not empty param.virtualacctdomain}">
                                         <%--External/Guest user login - *email* & password input fields--%>
                                         <tr>
-                                        <td><label for="username"><fmt:message key="email"/>:</label></td>
-                                        <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                        <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" placeholder="<fmt:message key='email' />"/></td>
                                         </tr>
                                     </c:when>
                                     <c:otherwise>
                                         <%--Internal user login - username & password input fields--%>
                                         <tr>
-                                        <td><label for="username"><fmt:message key="username"/>:</label></td>
-                                        <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocapitalize="off" autocorrect="off"/></td>
+                                        <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocapitalize="off" autocorrect="off" placeholder="<fmt:message key='username' />" /></td>
                                         </tr>
                                         </c:otherwise>
                                 </c:choose>
                                 <tr>
-                                <td><label for="password"><fmt:message key="password"/>:</label></td>
-                                <td><input id="password" autocomplete="off" class="zLoginField" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                <td><input id="password" autocomplete="off" class="zLoginField" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" placeholder="<fmt:message key='password' />"/></td>
                                 </tr>
                                 <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
                                     <tr>
-                                    <td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
-                                    <td><input id="loginNewPassword" autocomplete="off" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                    <td><input id="loginNewPassword" autocomplete="off" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" placeholder="<fmt:message key='newPassword' />" /></td>
                                     </tr>
                                     <tr>
-                                    <td><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
-                                    <td><input id="confirmNew" autocomplete="off" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                    <td><input id="confirmNew" autocomplete="off" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" placeholder="<fmt:message key='confirm' />"/></td>
+                                    </tr>
+                                </c:if>
+                                <c:if test="${errorCode != null}">
+                                    <tr id="ZLoginErrorPanel">
+                                        <td><c:out value="${errorMessage}"/></td>
                                     </tr>
                                 </c:if>
                                 <tr>
-                                <td>&nbsp;</td>
                                 <td class="submitTD">
                                 <c:set var="isSignedInDisabled" value="${domainInfo.attrs.zimbraWebClientStaySignedInDisabled}"/>
                                 <c:if test="${isSignedInDisabled eq false}">
@@ -550,9 +541,9 @@ if (application.getInitParameter("offlineMode") != null) {
                                 </tr>
                             </c:otherwise>
                         </c:choose>
-                        <c:if test="${empty param.virtualacctdomain}">
+                        <!-- <c:if test="${empty param.virtualacctdomain}">
                             <tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
-                            <td colspan="2"><hr/></td>
+                            <td><hr/></td>
                             </tr>
                             <tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
                             <td>
@@ -586,7 +577,7 @@ if (application.getInitParameter("offlineMode") != null) {
                         <c:otherwise>
                             <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessageWithoutTablet"/></div>
                         </c:otherwise>
-                        </c:choose>
+                        </c:choose> -->
                         <div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
                         </div>
                         </td>
