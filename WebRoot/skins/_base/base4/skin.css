@@ -247,7 +247,7 @@ BODY                                    {   margin:0px;     }
 .LoginScreen .center,
 .ErrorScreen .center {
     margin-left:-135px;
-    margin-top:-100px;
+    margin-top:-135px;
 }
 
 .SplashScreen .center {
@@ -269,7 +269,7 @@ BODY                                    {   margin:0px;     }
     left:50%;
     overflow:visible;
     position:absolute;
-    top:45%;
+    top:50%;
     z-index:11;
 }
 .LoginScreen .contentBox,
@@ -286,7 +286,24 @@ BODY                                    {   margin:0px;     }
 .SplashScreen .center-small .contentBox,
 .ErrorScreen .center-small .contentBox { width:auto; }
 
-.center-small .form .submittd{ text-align:left; }
+.center-small .form .submitTD { text-align:left; }
+.form .submitTD {
+    line-height: 36px;
+}
+
+.form .submitTD label {
+    @LoginCopyrightColor@
+    @FontSize-big@
+}
+
+.form TD:first-child LABEL { margin-right: 0px; }
+.form TD { padding-bottom: 30px; }
+.form #ZLoginErrorPanel TD { padding-bottom: 20px; }
+
+.form INPUT[type='text'], 
+.form INPUT[type='password'] { 
+    @LoginInputField@
+}
  
 .LoginScreen H1,
 .SplashScreen H1    {   @LoginH1@       }
@@ -301,15 +318,11 @@ BODY                                    {   margin:0px;     }
 }
 .LoginScreen #ZLoginErrorPanel,
 .ErrorScreen .InlineErrorPanel {
-    border:0px;
-    left:auto;
-    margin:10px 10%;
-    position:relative;
     @InlineErrorPanel@
 }
 .LoginScreen #ZLoginErrorIcon,
 .ErrorScreen #ZErrorIcon {
-    margin:auto 10px auto auto;
+    display: none;
 }
 .LoginScreen .Footer,
 .SplashScreen .Footer,
