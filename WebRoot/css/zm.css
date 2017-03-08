@@ -949,6 +949,7 @@ INPUT[type="text"].search_input-expanded:focus {
 .Conv2Messages {
 	width:100%;
 	max-width: 100%;
+	padding-bottom: 30px; /* To have spacing from bottom of container*/
 }
 
 .Conv2Messages-bottom {
@@ -1101,12 +1102,18 @@ INPUT[type="text"].search_input-expanded:focus {
 /* "Display Images" button in mail message view to show hidden images */
 /* ??? "Displayimages" CLASS REALLY SHOULD BE SHARED WITH "SpellCheckModeDiv"  */
 /* CLASS DEFINED IN spellcheck.css SINCE THEY SHOULD HAVE THE SAME VISUAL LOOK */
+.ZmMailMsgView .mail-view-info-bar:not(:empty) {
+	@MailViewInfoBar@
+}
+
+.ZmMailMsgCapsuleView .DisplayImages,
 .DisplayImages {
 	@WarningContainer@
 	@WarningText@
-	@BottomSeparator@
 	@ActiveCursor@
-	padding:1em 0em;
+	padding:@MailViewGutterSpace@ 20px;
+	line-height: 1.4;
+	margin:0;
 }
 
 /* for images that are rendered inline of a message body */
