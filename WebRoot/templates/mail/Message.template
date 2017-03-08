@@ -62,7 +62,7 @@
 				</td>
 			</tr>
 		</table>
-		<div id='${infoBarId}'></div>
+		<div class="mail-view-info-bar" id='${infoBarId}'></div>
 	  </div>
 </template>
 
@@ -261,7 +261,7 @@
 				</tr>
 			</table>
 		</div>
-		<div id='${infoBarId}'></div>
+		<div class="mail-view-info-bar" id='${infoBarId}'></div>
 	</div>
 </template>
 
@@ -302,7 +302,6 @@
 	<div id='${id}' class='DisplayImages'>
 		<table role="presentation" width='100%'>
 			<tr>
-				<td width='1%' style='padding:0 1em;'><$= AjxImg.getImageHtml("Warning") $></td>
 				<td>${text} <span id='${id}_link' class='FakeAnchor'>${link}</span></td>
 			</tr>
 		</table>
@@ -312,7 +311,6 @@
 <template id='mail.Message#ExtImageInformationBar'>
 	<div id='${id}' class='DisplayImages'>
 		<table role="presentation" width='100%'><tr>
-			<td width='1%' style='padding:0 1em;'><$= AjxImg.getImageHtml("Warning") $></td>
 			<td>
 				<div><span>${text}</span>&nbsp; 
 				<a href="javascript:void(0);" id='${id}_dispImgs'>${link}</a></div>
@@ -322,7 +320,7 @@
 				${or} 
 				<a href="javascript:void(0);" id='${id}_email'>${email}</a></div>
 			<$}$></td>
-			<td width='1%' style='padding:0 1em;'><div class="ImgClose" id='${id}_close'></div></td>
+			<td width='1%'><div class="ImgClose" id='${id}_close'></div></td>
 		</tr></table>
 	</div>
 </template>
