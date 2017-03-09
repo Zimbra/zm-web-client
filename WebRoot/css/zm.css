@@ -560,14 +560,14 @@ INPUT[type="text"].search_input-expanded:focus {
 
 .ZmConvListNumMsgs {
 	@FontSize-normal@
-	background-color:@darken(AppC,30)@; 
-	color:white; 
+	@Text-light@
 	padding:0px 4px;
-	@roundCorners(6px)@
+	font-weight: 300;
 }
 
-.Unread .ZmConvListNumMsgs {
-	background-color:@darken(AppC,40)@;
+
+.ZmConvListFragment {
+	display: inline-block;
 }
 
 .ZmConvExpanded,
@@ -5484,6 +5484,10 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	height: 100%;
 }
 
+.itemCountText div {
+	display: table-cell;
+}
+
 .ZmApptComposeView .addresses {
 	width:100%;
 }
@@ -6281,4 +6285,5 @@ a.ZmLinkDisabled {
 
 .ZmListFlagsWrapper  .svg-icon {
 	@ListItemBottomRowRightIconSize@
+	display: block;
 }
