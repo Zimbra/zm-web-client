@@ -62,7 +62,7 @@
 				</td>
 			</tr>
 		</table>
-		<div class="mail-view-info-bar" id='${infoBarId}'></div>
+		<div class="MailViewInfoBar" id='${infoBarId}'></div>
 	  </div>
 </template>
 
@@ -261,7 +261,7 @@
 				</tr>
 			</table>
 		</div>
-		<div class="mail-view-info-bar" id='${infoBarId}'></div>
+		<div class="MailViewInfoBar" id='${infoBarId}'></div>
 	</div>
 </template>
 
