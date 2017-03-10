@@ -830,7 +830,7 @@ INPUT[type="text"].search_input-expanded:focus {
 .ZmMailMsgView .MsgHeaderTable .info {
 	@ActiveCursor@
 	white-space:nowrap;
-	-moz-user-select:text;
+	@TextSelection@
 	padding: @MailViewGutterSpace@ @MailViewGutterSpace@ @MailViewInnerSpacing@;
 	margin: @MailViewInnerSpacing@ @MailViewGutterSpace@ 0;
 }
@@ -1102,7 +1102,7 @@ INPUT[type="text"].search_input-expanded:focus {
 /* "Display Images" button in mail message view to show hidden images */
 /* ??? "Displayimages" CLASS REALLY SHOULD BE SHARED WITH "SpellCheckModeDiv"  */
 /* CLASS DEFINED IN spellcheck.css SINCE THEY SHOULD HAVE THE SAME VISUAL LOOK */
-.ZmMailMsgView .mail-view-info-bar:not(:empty) {
+.ZmMailMsgView .MailViewInfoBar:not(:empty) {
 	@MailViewInfoBar@
 }
 
