@@ -51,7 +51,6 @@
 /* text message font (eg: not HTML) */
 .MsgBody-text {
 	@MailMsgBodyText@
-	@MailMsgBodyText-fixed@
     word-wrap: break-word;
 
 }
