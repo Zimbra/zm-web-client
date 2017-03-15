@@ -409,8 +409,7 @@ TD.vSpace {
 
 /* Used by the text laid over the multi-select icon to show number of items selected */
 .DragProxyTextLabel {
-	font-weight:bold;
-	color:white;
+	@ListItem-multipleDragProxy@
 }
 
 
@@ -561,10 +560,9 @@ html[data-istwofactorsetuppage] .VeilOverlay TABLE {
 .Row-dragProxy,
 .Row-matched-dragProxy 			{	@ListItemContainer-dragProxy@		}
 
-.RowDouble-dragProxy .ZmListFlagsWrapper,
-.RowDouble-dragProxy .ZmMsgListDate,
-.Row-dragProxy .ZmListFlagsWrapper,
-.Row-dragProxy .ZmMsgListDate	{	@ListItemContainer-dragProxy@	}
+.RowDouble-dragProxy,
+.Row-dragProxy 					{	@ListItemContainer-dragProxy@		}
+
 
 /* list row TD's (eg: text) */
 
