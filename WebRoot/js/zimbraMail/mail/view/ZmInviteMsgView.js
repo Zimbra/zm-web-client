@@ -180,7 +180,6 @@ function(msg) {
 						calAcct = calendar.getAccount();
 						calAcctId = calAcct.id;
 					}
-					var icon = (appCtxt.multiAccounts && calAcct) ? calAcct.getIcon() : (calendar.getIcon() + ",color=" + calendar.color);
 					var name = (appCtxt.multiAccounts && calAcct)
 						? ([calendar.name, " (", calAcct.getDisplayName(), ")"].join(""))
 						: calendar.name;
@@ -189,7 +188,7 @@ function(msg) {
 						: calendar.nId == ZmOrganizer.ID_CALENDAR;
                     //bug: 57538 - this invite is intended for owner of shared calendar which should be selected
                     if(msg.cif && calendar.owner == msg.cif && calendar.rid == ZmOrganizer.ID_CALENDAR) isSelected = true;
-					var option = new DwtSelectOptionData(calendar.id, name, isSelected, null, icon);
+					var option = new DwtSelectOptionData(calendar.id, name, isSelected, null, null);
 					this._inviteMoveSelect.addOption(option);
 				}
 
@@ -258,7 +257,6 @@ function(callback, dayViewCallback, result) {
 		for (var i = 0; i < attendees.length; i++) {
 			var at = attendees[i];
 			var subs = {
-				icon: ZmCalItem.getParticipationStatusIcon(at.ptst),
 				attendee: this.parent._getBubbleHtml(new AjxEmailAddress(at.a), options)
 			};
 			html[idx++] = AjxTemplate.expand("mail.Message#InviteHeaderPtst", subs);
@@ -402,7 +400,7 @@ function(reset) {
 			var parentHeight = grandParentSize.y;
 			var dvHeight = Math.floor(parentHeight / 3);
 			var mvHeight = parentHeight - dvHeight;
-
+			
 			this._dayView.setBounds(mvBounds.x, mvHeight, mvBounds.width, dvHeight);
             if (this.parent && this.parent instanceof ZmMailMsgView){
                 var el = this.parent.getHtmlElement();
@@ -632,6 +630,7 @@ function(subs, sentBy, sentByAddr, obo) {
 	// duration text
 	var durText = this._invite.getDurationText(null, null, null, true, sd, ed);
 	subs.invDate = durText;
+	subs.startDate = sd || this._invite.getServerStartDate();
 
 	// recurrence
 	if (this._invite.isRecurring()) {
@@ -761,6 +760,7 @@ function() {
 		if (id == ZmOperation.PROPOSE_NEW_TIME) { continue; }
 
 		var button = tb.getButton(id);
+		button.addClassName(id);
 		var standardItems = [notifyOperationButtonIds[i], replyButtonIds[i], ignoreOperationButtonIds[i]];
 		var menu = new ZmActionMenu({parent:button, menuItems:standardItems});
 		standardItems = menu.opList;
@@ -771,11 +771,11 @@ function() {
 		button.setMenu(menu);
 	}
 
-	this._respondOnBehalfLabel = tb.addFiller();
-	tb.addFiller();
+	this._respondOnBehalfLabel = new DwtControl({parent:tb.parent});
+	// tb.addFiller();
 
 	// folder picker
-	this._inviteMoveSelect = new DwtSelect({parent:tb});
+	this._inviteMoveSelect = new DwtSelect({parent:tb.parent});
 	this._inviteMoveSelect.setVisible(false); //by default hide it. bug 74254
 
 	return tb;

@@ -280,7 +280,7 @@ function(abook) {
 	// grid body
     // Fix for bug: 66603. Removed horizontal scroll bar from grid body
 	html.append("<div id='", this._bodyDivId, "' name='_bodyDivId' class=calendar_body style='position:absolute; overflow-x:hidden;'>");
-    html.append("<div id='", this._apptBodyDivId, "' name='_apptBodyDivId' class='ImgCalendarDayGrid' style='width:100%; height:1008px; position:absolute;background-color:#E3E3DC;'>");
+    html.append("<div id='", this._apptBodyDivId, "' name='_apptBodyDivId' class='ImgCalendarDayGrid' style='width:100%; height:1008px; position:absolute;background-color:#F8F8F8;'>");
 	html.append("<div id='", this._timeSelectionDivId, "' name='_timeSelectionDivId' class='calendar_time_selection' style='position:absolute; display:none;z-index:10;'></div>");
 	html.append("<div id='", this._newApptDivId, "' name='_newApptDivId' class='appt-selected' style='position:absolute; display:none;'></div>");
 
