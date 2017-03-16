@@ -445,8 +445,9 @@ BODY                                    {   margin:0px;     }
 .ZToolbarButtonTable TD:first-child         {   padding-left:0;    }
 .ZToolbarButtonTable TD:last-child          {   padding-right:0;   }
 
-.ZToolbarButton.ZHasDropDown.ZHasLeftIcon .ZDropDown                 {    display: none;              }
-.ZToolbarButton:not(.ZDisabled) .ZToolbarButtonTable .ZWidgetIcon    {   fill: @PrimaryBrandingColor@ }
+.ZToolbar .ZToolbarButton:not(.ZDisabled) .ZWidgetTitle                        {   color: @AltC@                }
+.ZToolbar .ZToolbarButton.ZHasDropDown.ZHasLeftIcon .ZDropDown                 {   display: none;               }
+.ZToolbar .ZToolbarButton:not(.ZDisabled) .ZToolbarButtonTable .ZWidgetIcon    {   fill: @PrimaryBrandingColor@ }
 
 .ZMenuItemTable TD:not(:empty)              {   padding: 0 @ToolbarButtonPaddingSize@   }
 .ZMenuItemTable TD:first-child              {   padding-left:0;    }
@@ -720,4 +721,21 @@ svg.ImgMsgRead {
 div.ImgTagStack {
     background: url("../img/zimbra.svg?v=@jsVersion@#ImgTagStack-view") no-repeat;
     background-size: 100% 100%;
+}
+
+/* Invite toolbar styling adjustment */
+.ZmInviteToolBar .ZToolbarTable .ZToolbarFiller {
+    display: none;
+}
+
+.ZmInviteToolBar .ZToolbarTable TD > div {
+   display: inline-block;
+}
+
+.ZmInviteToolBar .ZToolbarTable TD:last-of-type {
+    width: 100%;
+}
+
+.ZmInviteToolBar .ZToolbarTable TD:last-of-type > div {
+    float: right;
 }

@@ -265,7 +265,7 @@ INPUT[type="text"]:focus, INPUT[type="password"]:focus, INPUT[type="email"]:focu
 }
 
 /* toolbars in read message view that let you accept an appointment, share, etc (with no border) */
-.ZmCounterToolBar, .ZmShareToolBar {
+.ZmShareToolBar {
 	@InlineToolbarContainer@
 	padding-left:@BoxPaddingSize@;
 	background-color:@lighten(AppC,90)@; 
@@ -273,21 +273,41 @@ INPUT[type="text"]:focus, INPUT[type="password"]:focus, INPUT[type="email"]:focu
 
 .InvCounter .ZmCounterToolBar {
 	background-color:transparent;
+	border:none;
+}
+
+.InvCounter .ZmCounterToolBar table td {
+	vertical-align: middle;
+}
+
+.InvCounter .ZmCounterToolBar table td:last-child table {
+	padding-right: 0;
+}
+
+.InvCounter .ZmCounterToolBar table.ZToolbarButtonTable td.ZWidgetTitle {
+	@Text-link@
 }
 
 .ZmInviteToolBar {
 	@InlineToolbarContainer@
-	background-color:@lighten(AppC,90)@;
 }
 
-.LabelColValue .ZmInviteToolBar {
-	background-color:transparent;
-	padding:0px;
+.ZmInviteToolBar .ZToolbarButton.REPLY_ACCEPT .ZWidgetIcon {
+    fill: @IconCalInviteAccepted@;
 }
 
-.ZmInviteToolBar .ZToolbarTable, .ZmShareToolBar .ZToolbarTable {
+.ZmInviteToolBar .ZToolbarButton.REPLY_TENTATIVE .ZWidgetIcon {
+   fill: @IconCalInviteTentative@;
+}
+
+.ZmInviteToolBar .ZToolbarButton.REPLY_DECLINE .ZWidgetIcon {
+    fill: @IconCalInviteDeclined@;
+}
+
+
+/*.ZmInviteToolBar .ZToolbarTable, .ZmShareToolBar .ZToolbarTable {
 	height:34px;
-}
+}*/
 
 .ZmNavToolBar .DwtText {white-space:nowrap;}
 
@@ -682,23 +702,56 @@ INPUT[type="text"].search_input-expanded:focus {
 
 /* Container for the header of the message */
 .InvHeaderDiv {
-	padding:@MailViewInnerSpacing@ @MailViewGutterSpace@;
-	margin: @MailViewGutterSpace@;
+	padding: @MailViewInnerSpacing@ @MailViewGutterSpace@;
+	margin: 0 @MailViewGutterSpace@;
 }
 
-.InvHeaderDiv .date {
+.InvHeaderTable .date {
 	@Text-light@
-	margin-bottom: @MailViewGutterSpace@ 
+	padding: @MailViewInnerSpacing@ @MailViewGutterSpace@;
+    margin: @MailViewGutterSpace@ @MailViewGutterSpace@ 0;
 }
 
-.ZmMailMsgView .InvHeaderDiv .LabelColName {
+.InvHeaderDiv .InvHeaderPropertySheetWrapper {
+	@FullWidth@
+	clear: both;
+	overflow: auto;
+}
+
+.InvHeaderDiv .InvHeaderPropertySheetWrapper > div {
+	float: left;
+	margin: 0 @MailViewGutterSpace@;
+}
+
+.InvHeaderDiv .InvHeaderPropertySheetWrapper > div:first-child {
+	margin-left: 0;
+}
+
+.InvHeaderDiv .InvHeaderPropertySheetWrapper > div:last-child {
+	margin-right: 0;
+}
+
+.InvHeaderDiv .InvDateCard {
+	@InvDateCardWrapper@
+}
+
+.InvHeaderDiv .InvDateCard > * {
+	display: block;
+}
+
+.InvHeaderDiv .InvDateCard .InvDateCardMonth {
+	@InvDateCardMonth@
+}
+
+.InvHeaderDiv .InvDateCard .InvDateCardDate {
+	@InvDateCardDate@
+}
+
+.InvHeaderDiv .LabelColName {
 	@FontSize-big@
-	padding-bottom: @MailViewInnerSpacing@;
+	padding-bottom: @MailViewGutterSpace@;
 }
 
-.Conv2Messages .InvHeaderDiv {
-	background-color:transparent;
-}
 
 .InvHeaderTable {
 	@MailInvHeaderLight@
@@ -709,6 +762,7 @@ INPUT[type="text"].search_input-expanded:focus {
 .ZmConvView .calendar_view {
 	@TopSeparator@
 	@LeftSeparator@
+	@MailCalendarView@
 }
 
 .MessageHeaderAttachments,
@@ -806,6 +860,19 @@ INPUT[type="text"].search_input-expanded:focus {
 	top:0px;
 }
 
+.ZmMailMsgView > div {
+    margin: 0 @MailViewGutterSpace@;
+	@MailMsgBody@
+}
+
+.ZmMailMsgView > div:first-child {
+    margin-top: @MailViewGutterSpace@;
+}
+
+.ZmMailMsgView > div:last-child {
+    margin-bottom: @MailViewGutterSpace@;
+	flex: 1;
+}
 
 .ZmMailMsgView .LabelColName, 
 .ZmMailMsgCapsuleView .LabelColName {
@@ -871,6 +938,7 @@ INPUT[type="text"].search_input-expanded:focus {
 
 .InvHeaderTable .SubjectCol {
 	@FontSize-biggest@
+	padding: 0 0 @MailViewGutterSpace@ 0;
 }
 
 .InvHeaderTable .DateCol {
@@ -892,8 +960,7 @@ INPUT[type="text"].search_input-expanded:focus {
 
 .InvHeaderTable .InvChanged, 
 .InvHeaderTable .InvChanged .Object {
-	color:#EB7400;
-	font-style:italic;
+	@InvitationChanged@
 }
 
 
@@ -958,7 +1025,7 @@ INPUT[type="text"].search_input-expanded:focus {
 
 .Conv2Messages .InvHeaderTable {
 	background-color:@MailMsgBkgdColor@;
-	border-bottom-width:0px;
+	margin-top:0;
 }
 
 /*.Conv2Messages .Last {
@@ -1010,9 +1077,35 @@ INPUT[type="text"].search_input-expanded:focus {
 }
 
 .ZmMailMsgCapsuleView .SubjectCol {
-	@MailMsgHeaderText@
-	@FontSize-normal@
-	font-weight:bold;
+	@MailMsgHeaderText@;
+	padding: 0 0 @MailViewGutterSpace@ 0;
+}
+
+.ZmMailMsgCapsuleView > div.Conv2MsgHeader,
+.ZmMailMsgCapsuleView > div.MsgBody,
+.ZmMailMsgCapsuleView > div.footer {
+    margin: 0 @MailViewGutterSpace@;
+}
+
+/*.Conv2Messages > div:first-of-type {
+    margin-top: @MailViewInnerSpacing@;
+}
+
+.Conv2Messages > div:last-of-type {
+    margin-bottom: @MailViewInnerSpacing@;
+}*/
+
+.ZmMailMsgCapsuleView.Expanded {
+    @ConvExpanded@
+}
+
+.ZmMailMsgCapsuleView.Expanded .info {
+    margin-bottom: 5px;
+}
+
+.ZmMailMsgCapsuleView.Collapsed .Conv2MsgHeader {
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .ZmMailMsgCapsuleView .separator {
@@ -1097,6 +1190,63 @@ INPUT[type="text"].search_input-expanded:focus {
 	opacity:1;
 }
 
+.ZmMailMsgView .LabelColValue .addrBubble:not(.TagBubble),
+.ZmMailMsgView .LabelColValue .addrBubble-selected:not(.TagBubble),
+.ZmMailMsgCapsuleView .LabelColValue .addrBubble:not(.TagBubble),
+.ZmMailMsgCapsuleView .LabelColValue .addrBubble-selected:not(.TagBubble) {
+    @MailAddressBubble@
+}
+
+.ZmMailMsgView .LabelColValue .addrBubble:not(.TagBubble):last-of-type,
+.ZmMailMsgView .LabelColValue .addrBubble-selected:not(.TagBubble):last-of-type,
+.ZmMailMsgCapsuleView .LabelColValue .addrBubble:not(.TagBubble):last-of-type,
+.ZmMailMsgCapsuleView .LabelColValue .addrBubble-selected:not(.TagBubble):last-of-type {
+    padding-bottom: 0;
+}
+
+.ZmMailMsgView .LabelColValue.InLineList .addrBubble:not(.TagBubble),
+.ZmMailMsgView .LabelColValue.InLineList .addrBubble:not(.TagBubble) *,
+.ZmMailMsgView .LabelColValue.InLineList .addrBubble-selected:not(.TagBubble),
+.ZmMailMsgView .LabelColValue.InLineList .addrBubble-selected:not(.TagBubble) *,
+.ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble:not(.TagBubble),
+.ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble:not(.TagBubble) *,
+.ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble-selected:not(.TagBubble),
+.ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble-selected:not(.TagBubble) * {
+    display: inline-block;
+}
+
+.ZmMailMsgView .LabelColValue.InLineList .addrBubble:not(.TagBubble):not(:last-of-type)::after,
+.ZmMailMsgView .LabelColValue.InLineList .addrBubble-selected:not(.TagBubble):not(:last-of-type)::after,
+.ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble:not(.TagBubble):not(:last-of-type)::after,
+.ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble-selected:not(.TagBubble):not(:last-of-type)::after {
+    content: ',\00a0';
+}
+
+.Conv2MsgHeader .info .ZWidgetTable,
+.MsgHeaderTable .info .ZWidgetTable,
+.InvHeaderDiv .ZWidgetTable {
+    border:none;
+}
+
+.Conv2MsgHeader .info .ZWidgetTable TD,
+.MsgHeaderTable .info .ZWidgetTable TD,
+.InvHeaderDiv .ZWidgetTable TD {
+    vertical-align: top;
+}
+
+.Conv2MsgHeader .info .ZWidgetTable TD.ZDropDown DIV,
+.MsgHeaderTable .info .ZWidgetTable TD.ZDropDown DIV,
+.InvHeaderDiv .ZWidgetTable TD.ZDropDown DIV {
+    margin: -2px 0 0 0;
+}
+
+.Conv2MsgHeader .info .ZWidgetTable .ZWidgetTitle,
+.MsgHeaderTable .info .ZWidgetTable .ZWidgetTitle,
+.InvHeaderDiv .ZWidgetTable .ZWidgetTitle {
+    font-size: 1.18rem;
+    line-height: 1.27;
+    padding: 0;
+}
 
 /* ??? MOVE ME */
 /* "Display Images" button in mail message view to show hidden images */
@@ -2104,6 +2254,7 @@ INPUT[type="text"].search_input-expanded:focus {
 	@FullSize@
 	@PanelBg@
 	@PanelBorder@
+	box-sizing: border-box;
 }
 
 /* ??? SHOTGUN   NECESSARY?  calendar_body? */
@@ -2207,8 +2358,7 @@ INPUT[type="text"].search_input-expanded:focus {
 
 /* Container for the head of the calendar grid */
 .calendar_heading {
-	@WidgetHeaderContainer@
-	@WidgetHeaderContainer-normal@
+	@CalendarHeading@
 	/* SIZE??? */
 	height:1.8rem;
 	overflow:hidden;
@@ -2262,9 +2412,9 @@ INPUT[type="text"].search_input-expanded:focus {
 /* Separator between all-day and hourly sections */
 .calendar_header_allday_separator {
 	@HSashSize@
-	@SashBg@
+	@CalendarSeparatorBg@
 	@ActiveCursor@
-	@BottomSeparator@
+	@CalendarBottomSeparator@
 }
 
 /* Separator between all-day and hourly sections */
@@ -2289,7 +2439,7 @@ INPUT[type="text"].search_input-expanded:focus {
 
 /* Separator between individual days of the calendar */
 .calendar_day_separator {
-	@SeparatorBg@
+	@CalendarSeparatorBg@
 	font-size:0px;
 }
 
@@ -2654,8 +2804,8 @@ INPUT[type="text"].search_input-expanded:focus {
 	overflow:hidden;
 	border-style:solid;
 	border-color:#A3A3A3;
-	@cssShadow@:0px 1px 3px #666;
 	border-width:0px;
+	@SmallRoundCorners@
 #IFDEF GECKO
 	-moz-user-select:none;
 #ENDIF
@@ -2663,15 +2813,13 @@ INPUT[type="text"].search_input-expanded:focus {
 }
 
 .appt_body TABLE {
-	border:1px solid #999;
 	background-color:#E5E5E5;
 	border-collapse:separate;
-	@grad(#E5E5E5, white)@
 }
 
 .appt_30_body TABLE,
 .appt_allday_body TABLE {
-	border:1px solid #999;
+	
 }
 
 .appt-selected .appt_body,
@@ -2679,25 +2827,16 @@ INPUT[type="text"].search_input-expanded:focus {
 .appt-selected .appt_allday_body {
 	/*position:relative;
 	overflow:hidden;*/
-	border-width:0px 2px 2px 0px;
-#IFDEF WEBKIT
-	border-width:0px;
-	-webkit-box-shadow:2px 2px 4px #666;
-	box-shadow:2px 2px 4px #666;
-#ENDIF
-#IFDEF GECKO
-	border-width:0px;
-	-moz-user-select:none;
-	-moz-box-shadow:2px 2px 4px #666;
-	box-shadow:2px 2px 4px #666;
-#ENDIF
+	border: none;
+	@roundCorners(2px)@
+	@DisableSelection@
 	margin:0px -2px -2px 0px;
 }
 
 .appt-selected .appt_body TABLE,
 .appt-selected .appt_30_body TABLE,
 .appt-selected .appt_allday_body TABLE {
-	border:1px solid #666;
+	
 }
 
 .appt-selected .appt_body TD,
@@ -2712,9 +2851,9 @@ INPUT[type="text"].search_input-expanded:focus {
 }
 
 /* tweak the padding for firefox so the appts don't jump when selected */
-HTML>BODY .appt-selected .appt_body TD,
-HTML>BODY .appt-selected .appt_allday_body TD,
-HTML>BODY .appt-selected .appt_30_body TD {
+HTML>BODY .appt-selected .appt_body TD.appt_30_name,
+HTML>BODY .appt-selected .appt_allday_body TD.appt_30_name,
+HTML>BODY .appt-selected .appt_30_body TD.appt_30_name {
 	padding-left:2px;
 	padding-top:2px;
 	padding-right:2px;
@@ -2960,7 +3099,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 /* Colors for the free/busy blocks */		/*??? SKIN THIS ? */
-.ZmScheduler-free 			{ background-color:#E3E3DC;	}
+.ZmScheduler-free 			{ background-color:#F8F8F8;	}
 .ZmScheduler-busy 			{ background-color:#4AA6F1;	}
 .ZmScheduler-tentative 		{ background-color:#BAE0E3;	}
 .ZmScheduler-outOfOffice 	{ background-color:#7B5BAC;	}
@@ -5121,38 +5260,75 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	white-space:nowrap;
 }
 
-.InviteStatusAccept, .InviteStatusDecline, .InviteStatusTentative, 
-.InviteOutDated, .InviteIntendedFor, .InvCounter {
-	padding:3px;
-	border-bottom:1px solid #CCC;
+.InviteStatusAccept, .InviteStatusDecline, .InviteStatusTentative, .InviteOutDated, .InviteIntendedFor {
+	@InviteStatusContainer@
 }
 
 .Conv2Messages .InviteStatusAccept, .Conv2Messages .InviteStatusDecline, 
-.Conv2Messages .InviteStatusTentative, .Conv2Messages .InviteOutDated, 
+.Conv2Messages .InviteStatusTentative,
 .Conv2Messages .InviteIntendedFor, .Conv2Messages .InvCounter {
-	margin:0px 7px;
-	border-bottom-width:0px;
-	@roundCorners(5px)@
+	
 }
 
-.InviteStatusAccept TD, .InviteStatusDecline TD, .InviteStatusTentative TD, 
-.InviteOutDated TD, .InvCounter TD {
-	@FontSize-big@
+.Conv2Messages .InviteOutDated {
+	margin: @MailViewGutterSpace@ 0 0 0;
 }
 
 .InviteStatusAccept {
-	background-color:#CAE7B2;
+	@InviteStatusAccept@
 }
 
 .InviteStatusDecline {
-	background-color:#E7B2B2;
+	@InviteStatusDecline@
 }
 
-.InviteStatusTentative,
-.InviteIntendedFor,
+.InviteStatusTentative {
+	@InviteStatusTentative@
+}
+
+.InvCounter,
 .InviteOutDated,
-.InvHeaderTable .InvCounter {
-	background-color:#FFC;
+.InviteIntendedFor {
+	@InviteStatusCounter@
+}
+
+.InvCounter {
+	@InvCounter@
+}
+
+.InviteStatusAccept > table, 
+.InviteStatusDecline > table, 
+.InviteStatusTentative > table,
+.InviteOutDated > table, 
+.InviteIntendedFor > table {
+   margin: 0 @MailViewInnerSpacing@;
+   font-size: 1.1rem;
+}
+
+.InviteStatusAccept > table > tbody > tr > td, 
+.InviteStatusDecline > table > tbody > tr > td, 
+.InviteStatusTentative > table > tbody > tr > td,
+.InviteOutDated > table > tbody > tr > td,
+.InviteIntendedFor > table > tbody > tr > td {
+    padding: 0 4px;
+    font-size: 1.1rem;
+}
+
+.InvCounter > table {
+   font-size: 1.1rem;
+}
+
+.InvCounter > table > tbody > tr > td {
+    padding: 0 4px;
+    font-size: 1.1rem;
+}
+
+.InvCounter > table > tbody > tr > td:first-child {
+    padding-left: 0;
+}
+
+.InvCounter > table > tbody > tr > td:last-child {
+    padding-right: 0;
 }
 
 /* contact edit view */
