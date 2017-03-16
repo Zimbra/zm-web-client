@@ -595,8 +595,6 @@ UL.DwtListView-Rows {
 }
 
 .DwtListHeaderItem-label {
-	white-space:nowrap;
-	overflow:hidden;
 	@OverflowEllipsis@
     @ListColHeaderLabel@
 }
