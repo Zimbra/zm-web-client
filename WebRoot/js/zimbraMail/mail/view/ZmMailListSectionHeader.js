@@ -70,7 +70,7 @@ function(headerTitle) {
     htmlArr[idx++] = "<div id='" + id +"'>";
     htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='DwtListView-Column'><tr><td>";
     htmlArr[idx++] =  AjxImg.getImageHtml("NodeExpanded", "float:left;", nodeIdStr);
-	htmlArr[idx++] = "<div class='DwtListHeaderItem-label black' style='padding:0px 0px 2px 2px; float:left;' id='" + id + "_groupTitle'>";
+	htmlArr[idx++] = "<div class='DwtListHeaderItem-label black' style='float:left;' id='" + id + "_groupTitle'>";
     htmlArr[idx++] = headerTitle;
     htmlArr[idx++] = "</div>";
     htmlArr[idx++] = "</td></tr></table>"
