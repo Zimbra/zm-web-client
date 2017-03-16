@@ -2818,13 +2818,13 @@ function(status) {
 ZmCalItem.getParticipationStatusIcon =
 function(status) {
 	switch (status) {
-		case ZmCalBaseItem.PSTATUS_ACCEPT:		return "Check";
-		case ZmCalBaseItem.PSTATUS_DECLINED:	return "Cancel";
+		case ZmCalBaseItem.PSTATUS_ACCEPT:		return "EventAvailable";
+		case ZmCalBaseItem.PSTATUS_DECLINED:	return "EventBusy";
 		case ZmCalBaseItem.PSTATUS_DEFERRED:	return "QuestionMark";
 		case ZmCalBaseItem.PSTATUS_DELEGATED:	return "Plus";
 		case ZmCalBaseItem.PSTATUS_NEEDS_ACTION:return "NeedsAction";
 		case ZmCalBaseItem.PSTATUS_COMPLETED:	return "Completed";
-		case ZmCalBaseItem.PSTATUS_TENTATIVE:	return "QuestionMark";
+		case ZmCalBaseItem.PSTATUS_TENTATIVE:	return "EventTentative";
 		case ZmCalBaseItem.PSTATUS_WAITING:		return "Minus";
 	}
 	return "";
