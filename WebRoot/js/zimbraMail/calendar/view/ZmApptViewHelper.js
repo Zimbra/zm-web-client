@@ -707,11 +707,10 @@ function(id) {
 		case "T": color = "#BAE0E3"; break;
 		case "O": color = "#7B5BAC"; break;
 	}
-    var colorCss = Dwt.createLinearGradientCss("#FFFFFF", color, "v");
-    if (!colorCss) {
-        colorCss = "background-color: " + color + ";";
-    }
-    return colorCss;
+	var cssString = [];
+	cssString.push(ZmApptViewHelper.getTransparentDiagonalGradientCSS("45deg",3));
+	cssString.push("background-color: " + color);
+    return cssString.join(";");
 };
 
 ZmApptViewHelper.getBoxBorderFromId =
@@ -764,7 +763,8 @@ function(deeper, calendar, tagNames, segment) {
 
 ZmApptViewHelper.setupCalendarColor =
 function(last, colors, tagNames, templateData, colorParam, clearParam, peelTopOffset, peelRightOffset, div) {
-    var colorCss = Dwt.createLinearGradientCss("#FFFFFF", colors.appt.bgcolor, "v");
+    // var colorCss = Dwt.createLinearGradientCss("#FFFFFF", colors.appt.bgcolor, "v");
+	var colorCss = "background-color: rgba(" + AjxColor.components(colors.appt.bgcolor) + ", 0.2)";
     if (colorCss) {
         templateData[colorParam] = colorCss;
         if (clearParam) {
@@ -998,3 +998,25 @@ function(toggleFlag, htmlElId, warningMessage) {
 	warningTemplateElement.style.display = toggleFlag ? "" : Dwt.DISPLAY_NONE;
 	warningTemplateTextElement.style.display = toggleFlag? "" : Dwt.DISPLAY_NONE;
 };
+
+/**
+ * Utility method to return diagonal gradient CSS
+ * TODO: Need to find better alternative for this (maybe using PNG image)
+ * TODO: Handle browser prefixes
+ */
+ZmApptViewHelper.getTransparentDiagonalGradientCSS = function(angle, length) {
+	if(!angle) {
+		angle = "45deg";
+	}
+	if(!length) {
+		length = 10;
+	}
+	length = parseInt(length); 
+	var css = [];
+	css.push("background-image: repeating-linear-gradient(" + angle);
+	css.push("transparent");
+	css.push("transparent " + length + "px");
+	css.push("rgba(255,255,255,.5) " + length + "px");
+	css.push("rgba(255,255,255,.5) " + length*2 + "px)");
+	return css.join(",");
+}
