@@ -305,10 +305,6 @@ INPUT[type="text"]:focus, INPUT[type="password"]:focus, INPUT[type="email"]:focu
 }
 
 
-/*.ZmInviteToolBar .ZToolbarTable, .ZmShareToolBar .ZToolbarTable {
-	height:34px;
-}*/
-
 .ZmNavToolBar .DwtText {white-space:nowrap;}
 
 
@@ -752,7 +748,6 @@ INPUT[type="text"].search_input-expanded:focus {
 	padding-bottom: @MailViewGutterSpace@;
 }
 
-
 .InvHeaderTable {
 	@MailInvHeaderLight@
 	width:100%;
@@ -1086,14 +1081,6 @@ INPUT[type="text"].search_input-expanded:focus {
 .ZmMailMsgCapsuleView > div.footer {
     margin: 0 @MailViewGutterSpace@;
 }
-
-/*.Conv2Messages > div:first-of-type {
-    margin-top: @MailViewInnerSpacing@;
-}
-
-.Conv2Messages > div:last-of-type {
-    margin-bottom: @MailViewInnerSpacing@;
-}*/
 
 .ZmMailMsgCapsuleView.Expanded {
     @ConvExpanded@
