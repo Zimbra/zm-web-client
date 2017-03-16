@@ -432,13 +432,13 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_EDIT_REPLY_CANCEL);
 	ZmOperation.registerOp(ZmId.OP_EDIT_REPLY_TENTATIVE, {textKey:"replyTentative", image:"QuestionMark"});
 	ZmOperation.registerOp(ZmId.OP_EDIT_REPLY_DECLINE, {textKey:"replyDecline", image:"Cancel"});
-	ZmOperation.registerOp(ZmId.OP_INVITE_REPLY_ACCEPT, {textKey:"editReply", image:"Check"});
-	ZmOperation.registerOp(ZmId.OP_INVITE_REPLY_DECLINE, {textKey:"editReply", image:"Cancel"});
+	ZmOperation.registerOp(ZmId.OP_INVITE_REPLY_ACCEPT, {textKey:"editReply"});
+	ZmOperation.registerOp(ZmId.OP_INVITE_REPLY_DECLINE, {textKey:"editReply"});
 	ZmOperation.registerOp(ZmId.OP_INVITE_REPLY_MENU, {textKey:"editReply", image:"Reply"}, ZmSetting.MAIL_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmCalendarApp.addInviteReplyMenu, parent);
 	}));
-	ZmOperation.registerOp(ZmId.OP_INVITE_REPLY_TENTATIVE, {textKey:"editReply", image:"QuestionMark"});
+	ZmOperation.registerOp(ZmId.OP_INVITE_REPLY_TENTATIVE, {textKey:"editReply"});
 	ZmOperation.registerOp(ZmId.OP_MONTH_VIEW, {textKey:"viewMonth", tooltipKey:"viewMonthTooltip", image:"MonthView", shortcut:ZmKeyMap.CAL_MONTH_VIEW});
 	ZmOperation.registerOp(ZmId.OP_MOUNT_CALENDAR, {textKey:"mountCalendar", image:"GroupSchedule"});
 	ZmOperation.registerOp(ZmId.OP_NEW_ALLDAY_APPT, {textKey:"newAllDayAppt", tooltipKey:"newAllDayApptTooltip", image:"NewAppointment"});
@@ -446,7 +446,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_CALENDAR, {textKey:"newCalendar", tooltipKey: "newCalendarTooltip", shortcut:ZmKeyMap.NEW_CALENDAR});
 	ZmOperation.registerOp(ZmId.OP_ADD_EXTERNAL_CALENDAR, {textKey:"addExternalCalendar", image:"NewAppointment", tooltipKey: "addExternalCalendarTooltip", shortcut:ZmKeyMap.ADD_EXTERNAL_CALENDAR});
     ZmOperation.registerOp(ZmId.OP_PRINT_CALENDAR, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, textPrecedence:30, showImageInToolbar: true}, ZmSetting.PRINT_ENABLED);
-    ZmOperation.registerOp(ZmId.OP_PROPOSE_NEW_TIME, {textKey:"proposeNewTime", image:"ProposeTime", showTextInToolbar: true, showImageInToolbar: true});
+    ZmOperation.registerOp(ZmId.OP_PROPOSE_NEW_TIME, {textKey:"proposeNewTime", showTextInToolbar: true, showImageInToolbar: true});
     ZmOperation.registerOp(ZmId.OP_REINVITE_ATTENDEES, {textKey:"reinviteAttendees", image:"MeetingRequest"});
     ZmOperation.registerOp(ZmId.OP_FB_VIEW, {textKey:"viewFB", tooltipKey:"viewFBTooltip", image:"GroupSchedule", shortcut:ZmKeyMap.CAL_FB_VIEW});
 	ZmOperation.registerOp(ZmId.OP_SEARCH_MAIL, {textKey:"searchMail", image:"SearchMail"}, ZmSetting.MAIL_ENABLED);
