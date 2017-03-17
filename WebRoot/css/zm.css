@@ -866,7 +866,6 @@ INPUT[type="text"].search_input-expanded:focus {
 
 .ZmMailMsgView > div:last-child {
     margin-bottom: @MailViewGutterSpace@;
-	flex: 1;
 }
 
 .ZmMailMsgView .LabelColName, 
