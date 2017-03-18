@@ -124,8 +124,8 @@ BODY                                    {   margin:0px;     }
 #skin_dropMenu                          {   font-size:14px; padding:0px 0px 0px 3px; text-align:center; vertical-align:middle; @Text-contrast@ @ActiveCursor@  }
 #skin_dropMenu .DwtLinkButtonDropDownArrowTd            {   border-left:0px; opacity:.75; padding-left:0px; }
 #skin_dropMenu .ZHover .DwtLinkButtonDropDownArrowTd    {   opacity:1;  }
-#skin_container_global_buttons          {   display:table-row;  }
-#skin_container_global_buttons>DIV      {   display:table-cell;  }
+#skin_container_global_buttons          {   padding: 0 8px;  }
+#skin_container_global_buttons>DIV      {   display:table-cell; vertical-align: middle; }
 /** Tree Toolbar a.k.a.  "current app" **/
 #skin_spacing_current_app               {}
 #skin_container_current_app             {   @SkinBorderCurrentApp@      }
@@ -157,12 +157,12 @@ BODY                                    {   margin:0px;     }
     z-index:1;
     @AppTabChooser@
 }
-#skin_container_app_chooser>DIV>TABLE   { @AppTabTable@     }
+#skin_container_app_chooser>TABLE   { @AppTabTable@     }
 #skin_container_app_chooser .ZAppTab    { @AppTab@ @AppTabHeight@  }
 
 /** webclient offline sync notification **/
 #skin_container_global_buttons .offline {
-    margin:0px 5px 0px 8px;   /* simulates same padding on toolbar button */
+    
 }
 
 /** reset styles on app row toolbar buttons **/
@@ -179,15 +179,19 @@ BODY                                    {   margin:0px;     }
 
 /* may want to eventually move this to zm.css */
 
-#skin_container_global_buttons .ZToolbarButton                      {   @AppButton@ @AppButtonSpacing@  }
+#skin_container_global_buttons .ZToolbarButton                           {   @AppButton@ @AppButtonSpacing@  }
 
-#skin_container_global_buttons              .ZToolbarButtonBorder   {   @AppButtonBorder@   @AppButtonBorder-normal@    }
-#skin_container_global_buttons .ZHover      .ZToolbarButtonBorder   {   @AppButtonBorder-hover@         }
-#skin_container_global_buttons .ZDisabled   .ZToolbarButtonBorder   {   @AppButtonBorder-disabled@      }
-#skin_container_global_buttons .ZFocused    .ZToolbarButtonBorder   {   @AppButtonBorder-focused@       }
-#skin_container_global_buttons .ZActive     .ZToolbarButtonBorder   {   @AppButtonBorder-active@        }
-#skin_container_global_buttons .ZSelected   .ZToolbarButtonBorder   {   @AppButtonBorder-selected@      }
+#skin_container_global_buttons              .ZToolbarButtonBorder        {   @AppButtonBorder@   @AppButtonBorder-normal@  padding: 0 @SkinWrapperPadding@;  }
+#skin_container_global_buttons .ZHover      .ZToolbarButtonBorder        {   @AppButtonBorder-hover@         }
+#skin_container_global_buttons .ZDisabled   .ZToolbarButtonBorder        {   @AppButtonBorder-disabled@      }
+#skin_container_global_buttons .ZFocused    .ZToolbarButtonBorder        {   @AppButtonBorder-focused@       }
+#skin_container_global_buttons .ZActive     .ZToolbarButtonBorder        {   @AppButtonBorder-active@        }
+#skin_container_global_buttons .ZSelected   .ZToolbarButtonBorder        {   @AppButtonBorder-selected@      }
+#skin_container_global_buttons .ZSubMenuActive   .ZToolbarButtonBorder   {   @AppButtonBorder-selected@      }
 
+#skin_container_global_buttons              .ZToolbarButtonBorder .ZWidgetIcon { padding: 0; }
+#skin_container_global_buttons              .ZToolbarButtonBorder .ZDropDown { display: none; }
+#skin_container_global_buttons              .ZToolbarButtonBorder .svg-icon  { fill: @AppC@ }
 
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar           {   @ToolbarButtonHeight@     }
