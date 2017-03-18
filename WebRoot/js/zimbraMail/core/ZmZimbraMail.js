@@ -899,6 +899,7 @@ function(params) {
 	this._setExternalLinks();
 	this.setUserInfo();
 	this._setRefresh();
+	this._setZimletsButton();
 
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().getSearchToolbar();
@@ -1951,14 +1952,14 @@ function() {
                              hideEmpty:         true
 							});
 
-	ZmOrganizer.registerOrg(ZmOrganizer.ZIMLET,
-							{orgClass:			"ZmZimlet",
-							 treeController:	"ZmZimletTreeController",
-							 labelKey:			"zimlets",
-							 compareFunc:		"ZmZimlet.sortCompare",
-							 openSetting:		ZmSetting.ZIMLET_TREE_OPEN,
-							 hideEmpty:			true
-							});
+		// ZmOrganizer.registerOrg(ZmOrganizer.ZIMLET,
+		// 						{orgClass:			"ZmZimlet",
+		// 						treeController:	"ZmZimletTreeController",
+		// 						labelKey:			"zimlets",
+		// 						compareFunc:		"ZmZimlet.sortCompare",
+		// 						openSetting:		ZmSetting.ZIMLET_TREE_OPEN,
+		// 						hideEmpty:			true
+		// 						});
 	
 	// Technically, we don't need to do this because the drop listeners for dragged organizers typically do their
 	// own checks on the class of the dragged object. But it's better to do it anyway, in case it ever gets
@@ -3604,3 +3605,115 @@ ZmZimbraMail.prototype._showCurrentShortcuts = function() {
 
 // YUCK:
 ZmOrganizer.ZIMLET = "ZIMLET";
+
+
+/**
+ * Sets global zimlet drop button
+ */
+ZmZimbraMail.prototype._setZimletsButton = function () {
+	var containerEl = document.getElementById("skin_container_zimlets");
+	if (!containerEl) {
+		return;
+	}
+	var button = new DwtToolBarButton({ parent: DwtShell.getShell(window) });
+	button.setImage("Apps");
+	button.reparentHtmlElement(containerEl);
+	button.setEnabled(false);
+	appCtxt.addZimletsLoadedListener(new AjxListener(this, this._handleAllZimletsLoaded, button));
+};
+
+/**
+ * Callback that will executed when all zimlets are loaded
+ */
+ZmZimbraMail.prototype._handleAllZimletsLoaded = function (zimletsButton, event, data) {
+	var zimletManager = appCtxt.getZimletMgr && appCtxt.getZimletMgr();
+	if (!zimletManager) {
+		return;
+	}
+	var zimlets = zimletManager.getPanelZimlets && zimletManager.getPanelZimlets();
+	if (!zimlets) {
+		return;
+	}
+	//zimlet's list menu
+	var menu = new ZmPopupMenu({ parent: zimletsButton });
+	var menuItem;
+	zimlets.forEach(function (item) {
+		zimletPanelItem = item.zimletPanelItem;
+		menuItem = new DwtMenuItem({ parent: menu });
+		if (zimletPanelItem && zimletPanelItem.label) {
+			menuItem.setText(item.process(zimletPanelItem.label));
+		}
+		if (zimletPanelItem && zimletPanelItem.toolTipText) {
+			menuItem.setToolTipContent(item.process(zimletPanelItem.toolTipText));
+		}
+		if (zimletPanelItem && zimletPanelItem.icon) {
+			menuItem.setImage(zimletPanelItem.icon);
+		}
+		// TODO: Need to figure out if we really need 'selectionListener' method
+		// As all zimlet by default get "preference" action in context menu which does the same job as onClick of menuItem
+		menuItem.addSelectionListener(new AjxListener(this, this._zimletMenuItemClicked,item));
+		//Create zimlet's submenu
+		var menuItems = zimletPanelItem && zimletPanelItem.contextMenu && zimletPanelItem.contextMenu.menuItem;
+		if (menuItem) {
+			var params = {
+				parent: menuItem,
+				context: item,
+				menuItems: menuItems
+			}
+			var subMenu = this._makeZimletSubMenu(params);
+			menuItem.setMenu(subMenu);
+		}
+	}.bind(this));
+	if (zimlets.length) {
+		menu.createSeparator();
+	}
+	menuItem = new DwtMenuItem({ parent: menu, className: "ZAddNewMenuItem" });
+	menuItem.setText("Zimlets");
+	menuItem.setImage("Plus");
+	var appLoadCallback = new AjxCallback(this, this.__gotoZimletPrefSection);
+	menuItem.addSelectionListener(new AjxListener(this, this.activateApp,[ZmApp.PREFERENCES, false, appLoadCallback]));
+	zimletsButton.setMenu(menu);
+	zimletsButton.setEnabled(true);
+}
+
+/**
+ * Zimlet menu item click listener
+ */
+ZmZimbraMail.prototype._zimletMenuItemClicked = function (zimletContext, event) {
+	zimletContext.callHandler("_dispatch", ["singleClicked"]);
+};
+
+/**
+ * Make zimlet's submenu
+ * ref: ZmZimletContext.prototype._makeMenu
+ */
+ZmZimbraMail.prototype._makeZimletSubMenu = function (params) {
+	var menuItems = params.menuItems;
+	var context = params.context;
+	var menu = new ZmPopupMenu({ parent: params.parent, menuItems: ZmOperation.NONE });
+	for (var i = 0; i < menuItems.length; ++i) {
+		var data = menuItems[i];
+		if (!data.id) {
+			menu.createSeparator();
+		} else {
+			var params = { image: data.icon, text: context.process(data.label), disImage: data.disabledIcon };
+			var item = menu.createMenuItem(data.id, params);
+			item.setData("xmlMenuItem", data);
+			item.addSelectionListener(context._handleMenuItemSelected);
+			if (data.menuItem) {
+				item.setMenu(this._makeZimletSubMenu(data.menuItem));
+			}
+		}
+	}
+	return menu;
+};
+
+/**
+ * Go to Zimlets section in preferences
+ */
+ZmZimbraMail.prototype.__gotoZimletPrefSection = function() {
+	var view = appCtxt.getCurrentView();
+	if(view instanceof ZmPrefView) {
+		view.selectSection("PREF_ZIMLETS");
+	}
+};
