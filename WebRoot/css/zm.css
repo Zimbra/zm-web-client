@@ -714,17 +714,21 @@ INPUT[type="text"].search_input-expanded:focus {
 	overflow: auto;
 }
 
+.InvHeaderDiv .InvHeaderPropertySheetWrapper {
+	display: table-row;
+}
+
 .InvHeaderDiv .InvHeaderPropertySheetWrapper > div {
-	float: left;
-	margin: 0 @MailViewGutterSpace@;
+	display: table-cell;
+	vertical-align: top;
 }
 
 .InvHeaderDiv .InvHeaderPropertySheetWrapper > div:first-child {
-	margin-left: 0;
+	padding-right: @MailViewGutterSpace@;
 }
 
 .InvHeaderDiv .InvHeaderPropertySheetWrapper > div:last-child {
-	margin-right: 0;
+	padding-left: @MailViewGutterSpace@;
 }
 
 .InvHeaderDiv .InvDateCard {
@@ -3734,12 +3738,6 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmPrefZimletListView .Row {
-#IFNDEF GECKO
-	height:1.5rem;
-#ENDIF
-#IFDEF GECKO
-	height:1.6rem;
-#ENDIF
 	overflow:hidden;
 }
 
