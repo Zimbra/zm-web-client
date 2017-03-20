@@ -735,6 +735,10 @@ svg.ImgFlagRed {
     fill: @IconFlagRed@;
 }
 
+svg.ImgClose {
+    fill: @IconClose@;
+}
+
 svg.ImgColumnUpArrow,
 svg.ImgColumnDownArrow{
     fill: @IconColumnDownArrow@;
@@ -742,6 +746,28 @@ svg.ImgColumnDownArrow{
 
 .ZmMsgListBottomRowIcon svg {
     fill: @IconMsgStatus@;
+}
+
+/* Chat icons*/
+
+svg.Img_ImSmallAvailable {
+    fill: @IconImSmallAvailable@;
+}
+
+svg.Img_ImSmallInvisble {
+    fill: @IconImSmallInvisble@;
+}
+
+svg.Img_ImSmallUnavailable {
+    fill: @IconImSmallUnavailable@;
+}
+
+svg.Img_ImSmallAway {
+    fill: @IconImSmallAway@;
+}
+
+svg.Img_ImSmallDnD {
+    fill: @IconImDnD@;
 }
 
 /*Adding background for svg's with gradient via css background rule
