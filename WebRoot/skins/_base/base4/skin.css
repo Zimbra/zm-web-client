@@ -735,10 +735,6 @@ svg.ImgFlagRed {
     fill: @IconFlagRed@;
 }
 
-svg.ImgClose {
-    fill: @IconClose@;
-}
-
 svg.ImgColumnUpArrow,
 svg.ImgColumnDownArrow{
     fill: @IconColumnDownArrow@;
