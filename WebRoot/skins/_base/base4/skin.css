@@ -771,7 +771,7 @@ svg.Img_ImSmallDnD {
 */
 
 div.ImgTagStack {
-    background: url("../img/zimbra.svg?v=@jsVersion@#ImgTagStack-view") no-repeat;
+    background: url("../img/zimbra.svg?v=@jsVersion@#ImgTagStack-view") no-repeat 2px center;
     background-size: 100% 100%;
     display: inline-block;
     @SmallIconSize@
