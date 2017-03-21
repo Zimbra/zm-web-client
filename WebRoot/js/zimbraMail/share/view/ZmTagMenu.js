@@ -195,7 +195,7 @@ function(tagList, addRemove) {
 
 	var miNew = this._menuItems[ZmTagMenu.MENU_ITEM_ADD_ID] = new DwtMenuItem({parent:this, id: addid});
 	miNew.setText(AjxStringUtil.htmlEncode(ZmMsg.newTag));
-	miNew.setImage("NewTag");
+	miNew.setImage("Plus");
 	miNew.setShortcut(appCtxt.getShortcutHint(this._keyMap, ZmKeyMap.NEW_TAG));
 	miNew.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_CREATE);
 	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
@@ -205,7 +205,7 @@ function(tagList, addRemove) {
 	var miRemove = this._menuItems[ZmTagMenu.MENU_ITEM_REM_ID] = new DwtMenuItem({parent:this, id: removeid});
 	miRemove.setEnabled(false);
 	miRemove.setText(AjxStringUtil.htmlEncode(ZmMsg.removeTag));
-	miRemove.setImage("DeleteTag");
+	miRemove.setImage("Close");
 
 	var removeList = addRemove.remove;
 	if (removeList.length > 0) {
