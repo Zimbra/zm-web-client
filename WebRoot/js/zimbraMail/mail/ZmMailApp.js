@@ -886,9 +886,9 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_INCLUDE_HEADERS, {textKey:"includeHeaders"});
 	ZmOperation.registerOp(ZmId.OP_KEEP_READING, {textKey:"keepReading", tooltipKey:"keepReadingTooltip", shortcut:ZmKeyMap.KEEP_READING});
 	ZmOperation.registerOp(ZmId.OP_MARK_READ, {textKey:"markAsRead", shortcut:ZmKeyMap.MARK_READ});
-	ZmOperation.registerOp(ZmId.OP_MARK_UNREAD, {textKey:"markAsUnread", shortcut:ZmKeyMap.MARK_UNREAD});
+	ZmOperation.registerOp(ZmId.OP_MARK_UNREAD, {textKey:"markAsRead", shortcut:ZmKeyMap.MARK_UNREAD,image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_FLAG, {textKey:"flag", shortcut:ZmKeyMap.FLAG}, ZmSetting.FLAGGING_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_UNFLAG, {textKey:"unflag", shortcut:ZmKeyMap.FLAG}, ZmSetting.FLAGGING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_UNFLAG, {textKey:"flag", shortcut:ZmKeyMap.FLAG, image:"Check"}, ZmSetting.FLAGGING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOVE_DOWN_FILTER_RULE, {textKey:"filterMoveDown", image:"DownArrow"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOVE_TO_BCC, {textKey:"moveToBcc"});
 	ZmOperation.registerOp(ZmId.OP_MOVE_TO_CC, {textKey:"moveToCc"});
