@@ -470,6 +470,9 @@ BODY                                    {   margin:0px;     }
 .ActionMenu.ZHasCheck .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty {
     padding-right: @ToolbarButtonPaddingSize@
 }
+.ActionMenu.ZHasIcon .ZMenuItem .ZMenuItemTable .ZWidgetIcon:empty {
+    padding: 0 @ToolbarButtonPaddingSize@
+}
 #ENDIF
 
 #IFDEF MSIE_LOWER_THAN_9
