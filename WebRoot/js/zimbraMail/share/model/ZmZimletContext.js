@@ -681,10 +681,24 @@ function(actionUrl, canvas, obj, div, x, y) {
  */
 ZmZimletContext._translateZMObject =
 function(obj) {
-	// XXX Assumes all dragged objects are of the same type
-	var type = obj[0] ? obj[0].toString() : obj.toString();
-	return (ZmZimletContext._zmObjectTransformers[type])
-		? ZmZimletContext._zmObjectTransformers[type](obj) : obj;
+   if(!(obj instanceof Array))
+   {
+      //This code is what Zimbra does by default, we do this to try and avoid regressions
+      var type = obj[0] ? obj[0].toString() : obj.toString();
+    	return (ZmZimletContext._zmObjectTransformers[type])
+ 		? ZmZimletContext._zmObjectTransformers[type](obj) : obj;
+   }
+   else
+   {
+      //In case it is an array, we apply our patch
+      var transformedObjects = [];
+      for(x = 0; x < obj.length; x++)
+      {
+         var type = obj[x].toString();
+         transformedObjects[x] = (ZmZimletContext._zmObjectTransformers[type]) ? ZmZimletContext._zmObjectTransformers[type](obj[x]) : obj[x];
+      }
+      return transformedObjects;
+   }  
 };
 
 /**
