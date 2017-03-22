@@ -1647,7 +1647,7 @@ function(parent) {
 			inPopupMenu = parent.getActionsMenu() && parent.getActionsMenu().getOp(ZmOperation.SPAM);
 		}
 		item.setText(inSpamFolder ? ZmMsg.notJunkLabel : ZmMsg.junkLabel);
-		item.setImage(inSpamFolder ? 'NotJunk' : 'JunkMail');
+		item.setImage(inSpamFolder ? '' : 'JunkMail');
 		if (item.setToolTipContent) {
 			var tooltip = inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip;
 			item.setToolTipContent(ZmOperation.getToolTip(ZmOperation.SPAM, this.getKeyMapName(), tooltip), true);
@@ -2428,10 +2428,10 @@ function(menu) {
         return;
     }
 	var status = this._getReadStatus();
-	menu.enable(ZmOperation.MARK_READ, status.hasUnread);
-	menu.enable(ZmOperation.MARK_UNREAD, status.hasRead);
-	menu.enable(ZmOperation.FLAG, status.hasUnflagged);
-	menu.enable(ZmOperation.UNFLAG, status.hasFlagged);
+	menu.setItemVisible(ZmOperation.MARK_READ, status.hasUnread);
+	menu.setItemVisible(ZmOperation.MARK_UNREAD, status.hasRead);
+	menu.setItemVisible(ZmOperation.FLAG, status.hasUnflagged);
+	menu.setItemVisible(ZmOperation.UNFLAG, status.hasFlagged);
 
     if (appCtxt.isWebClientOffline()) {
         menu.enable([ZmOperation.ADD_FILTER_RULE,ZmOperation.CREATE_APPT, ZmOperation.CREATE_TASK], false);
