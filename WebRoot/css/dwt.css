@@ -972,6 +972,11 @@ UL.DwtListView-Rows {
 	@MiniCalButton-active@
 }
 
+/* With svg icon's evt.target is svg & DwtCalendarButton/DwtCalendarButton-hover class is being applied to its immediate parent.
+ If for svg's evt.target are updated, this rule should be applied to .DwtCalendarButton*/
+.DwtCalendarButton > div {
+	border: 1px solid transparent !important;
+}
 
 /* Name of the month in the calendar titlebar */
 .DwtCalendarTitleCell {
@@ -1012,8 +1017,8 @@ UL.DwtListView-Rows {
 
 .DwtCalendarDay-hover {
 	@MiniCalButton@
-	@MiniCalButton-hover@
 	@MiniCalDay@
+	@MiniCalButton-hover@
 }
 
 .DwtCalendarDay-active {
