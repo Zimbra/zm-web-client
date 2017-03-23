@@ -747,9 +747,11 @@ INPUT[type="text"].search_input-expanded:focus {
 	@InvDateCardDate@
 }
 
-.InvHeaderDiv .LabelColName {
+.ZmMailMsgView .InvHeaderDiv .LabelColName,
+.ZmMailMsgCapsuleView .InvHeaderDiv .LabelColName {
 	@FontSize-big@
 	padding-bottom: @MailViewGutterSpace@;
+	line-height: 1;
 }
 
 .InvHeaderTable {
@@ -876,6 +878,7 @@ INPUT[type="text"].search_input-expanded:focus {
 .ZmMailMsgCapsuleView .LabelColName {
 	@MailMsgHeaderLabel@
 	vertical-align: top;
+	line-height: 1.5;
 	width:1%;
 }
 
@@ -1182,8 +1185,10 @@ INPUT[type="text"].search_input-expanded:focus {
 
 .ZmMailMsgView .LabelColValue .addrBubble:not(.TagBubble),
 .ZmMailMsgView .LabelColValue .addrBubble-selected:not(.TagBubble),
+.ZmMailMsgView .LabelColValue .addrBubble-actioned:not(.TagBubble),
 .ZmMailMsgCapsuleView .LabelColValue .addrBubble:not(.TagBubble),
-.ZmMailMsgCapsuleView .LabelColValue .addrBubble-selected:not(.TagBubble) {
+.ZmMailMsgCapsuleView .LabelColValue .addrBubble-selected:not(.TagBubble),
+.ZmMailMsgCapsuleView .LabelColValue .addrBubble-actioned:not(.TagBubble) {
     @MailAddressBubble@
 }
 
@@ -1198,11 +1203,16 @@ INPUT[type="text"].search_input-expanded:focus {
 .ZmMailMsgView .LabelColValue.InLineList .addrBubble:not(.TagBubble) *,
 .ZmMailMsgView .LabelColValue.InLineList .addrBubble-selected:not(.TagBubble),
 .ZmMailMsgView .LabelColValue.InLineList .addrBubble-selected:not(.TagBubble) *,
+.ZmMailMsgView .LabelColValue.InLineList .addrBubble-actioned:not(.TagBubble),
+.ZmMailMsgView .LabelColValue.InLineList .addrBubble-actioned:not(.TagBubble) *,
 .ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble:not(.TagBubble),
 .ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble:not(.TagBubble) *,
 .ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble-selected:not(.TagBubble),
-.ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble-selected:not(.TagBubble) * {
+.ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble-selected:not(.TagBubble) *,
+.ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble-actioned:not(.TagBubble),
+.ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble-actioned:not(.TagBubble) * {
     display: inline-block;
+	vertical-align: top;
 }
 
 .ZmMailMsgView .LabelColValue.InLineList .addrBubble:not(.TagBubble):not(:last-of-type)::after,
@@ -1361,59 +1371,68 @@ INPUT[type="text"].search_input-expanded:focus {
 .addrBubble-selected,
 .addrBubble-actioned,
 .attachmentBubble {
-	border:1px solid #999;
-	color:black;
-	display:inline-block;
-	line-height:1.27rem;
-	margin:0px 1px;
-	padding:1px 5px 2px;
-	position:relative !important;
-	vertical-align:top;
-	white-space:nowrap;
-	@roundCorners(8px)@
+	@AddressBubble@
 }
 
-.addrBubble,
-.attachmentBubble {
-	@InactiveCursor@
-	background-color:#EEE;
-}
-
-.addrBubbleHolder .addrBubble:hover {
-	@ActiveCursor@
-}
-
+.addrBubble:hover,
 .addrBubble-selected,
-.addrBubbleHolder .addrBubble-selected {
-	@TextCursor@
-	background-color:@SelC@;
-}
-
 .addrBubble-actioned,
-.addrBubbleHolder .addrBubble-actioned {
-	@TextCursor@
-	background-color:@RightClickColor@;
+.attachmentBubble:hover {
+	@AddressBubbleActive@
 }
 
-.addrBubble .ImgBubbleExpand,
-.addrBubble .ImgBubbleDelete {
-	top:.1rem !important;
+.addrBubble > *,
+.addrBubble-selected > *,
+.addrBubble-actioned > *,
+.attachmentBubble > * {
+	@AddressBubbleChild@
 }
 
-.addrBubbleHolder, .attBubbleHolder {
-/*	padding:2px 0px;
-	margin-top:2px; */
-	max-height:98px;
-	overflow:auto;
+.addrBubble > :first-child,
+.addrBubble-selected > :first-child,
+.addrBubble-actioned > :first-child,
+.attachmentBubble > :first-child {
+	@AddreddBubbleLeftChild@
+}
+
+.addrBubble > :last-child,
+.addrBubble-selected > :last-child,
+.addrBubble-actioned > :last-child,
+.attachmentBubble > :last-child {
+	@AddreddBubbleRightChild@
+}
+
+.addrBubbleHolder,
+.attBubbleHolder {
+	@AddressBubbleHolder@
+} 
+
+.addrBubbleHolder > *, 
+.attBubbleHolder > * {
+	@AddressBubbleChild@
+}
+
+.addrBubbleHolder .addrBubble > *:not(:empty),
+.addrBubbleHolder .addrBubble-selected > *:not(:empty),
+.addrBubbleHolder .addrBubble-actioned > *:not(:empty),
+.attBubbleHolder  .attachmentBubble > *:not(:empty) {
+	@AddressBubbleHolderChild@
+}
+
+.addrBubbleHolder .addrBubbleOp,
+.attBubbleHolder .ImgBubbleDelete {
+	@AddressBubbleOp@
+}
+
+
+.addrBubbleHolder .addrBubble:hover .addrBubbleOp,
+.addrBubble-selected .addrBubbleOp,
+.addrBubble-actioned .addrBubbleOp {
+	@AddressBubbleOpActive@    
 }
 
 .ZmSearchResultsToolBar .addrBubbleHolder {
 	max-height: 2rem;
-}
-
-.attBubbleHolder {
-	display:inline;
-	border-radius:4px;
 }
 
 .addrBubbleContainer TEXTAREA,
@@ -1423,10 +1442,8 @@ INPUT[type="text"].search_input-expanded:focus {
 	border-width:0px !important;
     box-sizing: content-box;
     -webkit-box-sizing: content-box;
-	font-size:1rem;
-	height:1.6rem;
-	margin-left:3px;
-	margin-bottom:3px;
+	@FontSize-big@
+	line-height: 2;
 }
 
 .addrBubbleContainer TEXTAREA {
@@ -1465,10 +1482,7 @@ INPUT[type="text"].search_input-expanded:focus {
  * (the element is of multi class "addrBubble TagBubble")
  * doing it this way since multi-selection doesn't work in IE */
 .TagBubble {
-	@NoWrap@
-	display:inline-block;
-	vertical-align:middle;
-	@ActiveCursor@ /*otherwise .AddrBubble cursor is set to default (inactive). see above*/
+	@TagBubble@
 }
 
 .TagBubble .TagName,
@@ -1478,12 +1492,6 @@ INPUT[type="text"].search_input-expanded:focus {
 }
 
 /* Styles to show addresses in bubbles in input fields */
-.addrBubbleContainer .addrBubble,
-.addrBubbleContainer .addrBubble-selected,
-.addrBubbleContainer .addrBubble-actioned,
-.attBubbleContainer .attachmentBubble {
-	margin:2px 1px;
-}
 
 .addrBubbleContainer,
 .attBubbleContainer {
@@ -1535,19 +1543,6 @@ INPUT[type="text"].search_input-expanded:focus {
 	overflow:auto;
 }
 
-.addrBubbleHolder INPUT,
-.attBubbleHolder INPUT {
-	background-color:transparent;
-	border-width:0px !important;
-	font-size:1rem;
-	height:1.4rem;
-	margin:2px 0px 3px 3px !important;
-}
-
-.addrBubbleHolder INPUT:first-child,
-.attBubbleHolder INPUT:first-child {
-	margin-left:0px;
-}
 
 /* Styles used in search bubbles */
 .addrBubbleInsertionBar {
