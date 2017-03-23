@@ -747,6 +747,10 @@ svg.ImgColumnDownArrow{
     fill: @IconMsgStatus@;
 }
 
+.DwtCalendarTitlebar svg {
+    fill: @IconMiniCalendarTitlebar@;
+}
+
 /* Chat icons*/
 
 svg.Img_ImSmallAvailable {
