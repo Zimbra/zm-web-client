@@ -1550,31 +1550,34 @@ function(params) {
 	var text = AjxStringUtil.htmlEncode(addrObj ? addrObj.toString(appCtxt.get(ZmSetting.SHORT_ADDRESS)) : params.address);
 
 	var expandLinkText = "", removeLinkText = "", addrStyle = "";
-	var style = "cursor:pointer;position:absolute;top:2px;";
 
 	if (params.canExpand) {
 		var addr = params.email || params.address;
 		var expandLinkId = id + "_expand";
 		var expandLink = 'ZmAddressBubble.expandBubble("' + id + '","' + addr + '");';
-		var expStyle = style + "left:2px;";
-		var expandLinkText = AjxImg.getImageHtml("BubbleExpand", expStyle, "id='" + expandLinkId + "' onclick='" + expandLink + "'");
-		addrStyle += "padding-left:12px;";
+		var expandLinkText = AjxImg.getImageHtml("BubbleExpand", "", "id='" + expandLinkId + "' onclick='" + expandLink + "'");
 	}
+	//wrap into container
+	expandLinkText = expandLinkText ? expandLinkText = "<span class='addrBubbleOp'>" + expandLinkText + "</span>" : "";
 
 	if (params.canRemove) {
 		var removeLinkId = id + "_remove";
 		var removeLink = 'ZmAddressInputField.removeBubble("' + id + '");';
-		var removeStyle = style + "right:2px;";
-		var removeLinkText = AjxImg.getImageHtml("BubbleDelete", removeStyle, "id='" + removeLinkId + "' onclick='" + removeLink + "'");
-		addrStyle += "padding-right:12px;";
+		var removeLinkText = AjxImg.getImageHtml("BubbleDelete", "", "id='" + removeLinkId + "' onclick='" + removeLink + "'");
 	}
-	
+	//wrap into container
+	removeLinkText = removeLinkText ? removeLinkText = "<span class='addrBubbleOp'>" + removeLinkText + "</span>" : "";
+
 	var html = [], idx = 0;
-	var addrStyleText = (params.canExpand || params.canRemove) ? " style='" + addrStyle + "'" : "";
-	html[idx++] = "<span" + addrStyleText + ">" + text + " </span>";
+	html[idx++] = "<span>" + text + " </span>";
 	var addrText = html.join("");
 
-	return expandLinkText + addrText + removeLinkText;
+	//for search field retain current structure, else change format
+	if(params.type && params.type == ZmId.SEARCH) {
+		return expandLinkText + addrText + removeLinkText;	
+	} else {
+		return removeLinkText + addrText + expandLinkText;
+	}
 };
 
 
