@@ -235,6 +235,7 @@
         <ivy:install organisation="com.sun.xml.ws" module="policy" revision="2.3.1" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="org.jvnet.staxex" module="stax-ex" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="com.sun.xml.stream.buffer" module="streambuffer" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="org.apache.mina" module="mina-core" revision="2.0.4" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
 
         <war warfile="${build.war.file}" webxml='${build.dir}/web.xml'
              compress='${war.compress}' duplicate="preserve">
@@ -304,6 +305,7 @@
         <ivy:install organisation="com.sun.xml.ws" module="policy" revision="2.3.1" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="org.jvnet.staxex" module="stax-ex" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="com.sun.xml.stream.buffer" module="streambuffer" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="org.apache.mina" module="mina-core" revision="2.0.4" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
 
         <copy todir="${webapp.dir}/WEB-INF/lib">
             <fileset dir="${build.tmp.dir}">
