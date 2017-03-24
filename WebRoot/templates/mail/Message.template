@@ -126,7 +126,8 @@
 		
 <template id='mail.Message#InviteHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
-	  <$ if(appCtxt.getCurrentView().toString() == 'ZmTradView') { $>
+	  <$ var context = window.parentAppCtxt || window.appCtxt; $>
+	  <$ if(context.getCurrentView().toString() == 'ZmTradView') { $>
 		<div class="MsgViewHeader">
 				<table role="presentation" width=100%>
 					<tr id='${hdrTableTopRowId}'>
@@ -143,7 +144,7 @@
 		<table class='InvHeaderTable' id='${id}_headerElement'>
 			<tr>
 				<td>
-					<$ if(appCtxt.getCurrentView().toString() == 'ZmTradView') { $>
+					<$ if(context.getCurrentView().toString() == 'ZmTradView') { $>
 							<div class="date" title='${dateTooltip}'>${dateString}</div>
 						<$ } $>		
 						<$ if (data.counterInvMsg) { $>
