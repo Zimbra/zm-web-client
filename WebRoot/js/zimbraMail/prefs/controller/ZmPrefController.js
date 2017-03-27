@@ -304,7 +304,7 @@ function() {
 								elements:	elements,
 								controller:	this,
 								callbacks:	callbacks,
-								isAppView:	true});
+								tabParams:	this._getTabParams()});
 		this._initializeTabGroup();
 	}
 };
@@ -616,4 +616,10 @@ function() {
 ZmPrefController.prototype._getDefaultFocusItem = 
 function() {
 	return this._prefsView.getTabGroupMember() || this._lefttoolbar || this._toolbar || null;
+};
+
+ZmPrefController.prototype._getTabParams =
+function() {
+		return {id:ZmAppChooser.OPTIONS, image:"CloseGray", hoverImage:"Close", text:ZmMsg.preferences, textPrecedence:75,
+			tooltip:ZmMsg.preferences, style: DwtLabel.IMAGE_RIGHT};
 };
