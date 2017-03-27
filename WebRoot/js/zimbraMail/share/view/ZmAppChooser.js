@@ -191,6 +191,7 @@ function() {
 ZmAppChooser.SPACER								= "spacer";
 ZmAppChooser.B_HELP								= "Help";
 ZmAppChooser.B_LOGOUT							= "Logout";
+ZmAppChooser.OPTIONS							   = "Options";
 
 ZmApp.CHOOSER_SORT[ZmAppChooser.SPACER]			= 160;
 ZmApp.CHOOSER_SORT[ZmAppChooser.B_HELP]			= 170;
