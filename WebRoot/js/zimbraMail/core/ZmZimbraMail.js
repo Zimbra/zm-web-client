@@ -2324,15 +2324,17 @@ function(parent, parentElement, adminUrl) {
 	button.addSelectionListener(helpListener);
 
     var mi;
-	if (adminUrl) {
-	    mi = menu.createMenuItem("adminLink", {text: ZmMsg.adminLinkLabel});
-	    mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.adminLinkCallback, adminUrl));
+
+	if (this.getApp(ZmAppChooser.OPTIONS)) {
+		var preferenceListener = new AjxListener(this, this._appButtonListener);
+		var prefButtonId = ZmAppChooser.OPTIONS;
+		mi = menu.createMenuItem(prefButtonId, {text: ZmMsg.preferences});
+		mi.setData(Dwt.KEY_ID, prefButtonId);
+		mi.addSelectionListener(preferenceListener);
 	}
 
-    mi = menu.createMenuItem("standardHtmlLink", {text: ZmMsg.htmlClient});
-    mi.addSelectionListener(ZmZimbraMail.standardHtmlLinkCallback);
-
-	menu.createSeparator();
+	mi = menu.createMenuItem("showCurrentShortcuts", {text: ZmMsg.shortcuts});
+	mi.addSelectionListener(this._showCurrentShortcuts.bind(this));
 
 	if (supportedHelps.indexOf("productHelp") !== -1) {
 		mi = menu.createMenuItem("documentation", {text: ZmMsg.productHelp});
@@ -2344,14 +2346,20 @@ function(parent, parentElement, adminUrl) {
 		mi.addSelectionListener(new AjxListener(this, this._onlineHelpListener));
 	}
 
-
 	if (supportedHelps.indexOf("newFeatures") !== -1) {
 		mi = menu.createMenuItem("newFeatures", {text: ZmMsg.newFeatures});
 		mi.addSelectionListener(new AjxListener(this, this._newFeaturesListener));
 	}
 
-	mi = menu.createMenuItem("showCurrentShortcuts", {text: ZmMsg.shortcuts});
-	mi.addSelectionListener(this._showCurrentShortcuts.bind(this));
+	menu.createSeparator();
+
+	if (adminUrl) {
+	    mi = menu.createMenuItem("adminLink", {text: ZmMsg.adminLinkLabel});
+	    mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.adminLinkCallback, adminUrl));
+	}
+
+    mi = menu.createMenuItem("standardHtmlLink", {text: ZmMsg.htmlClient});
+    mi.addSelectionListener(ZmZimbraMail.standardHtmlLinkCallback);
 
 	menu.createSeparator();
 
@@ -2385,7 +2393,6 @@ function(parent, parentElement, adminUrl) {
 
 ZmZimbraMail.HELP_MENU_ABOUT  = "about";
 ZmZimbraMail.HELP_MENU_LOGOFF = "logOff";
-
 
 ZmZimbraMail.prototype.setupHelpMenu = function(button) {
 	button = button || this._helpButton;
@@ -3200,7 +3207,7 @@ function() {
 
 	var buttons = [];
 	for (var id in ZmApp.CHOOSER_SORT) {
-		if (id == ZmAppChooser.SPACER || id == ZmAppChooser.B_HELP || id == ZmAppChooser.B_LOGOUT) {
+		if (id == ZmAppChooser.OPTIONS || id == ZmAppChooser.SPACER || id == ZmAppChooser.B_HELP || id == ZmAppChooser.B_LOGOUT) {
 			continue;
 		}
 
@@ -3233,9 +3240,15 @@ function(ev) {
 		} else if (id == ZmAppChooser.B_LOGOUT) {
 			ZmZimbraMail.logOff();
 		} else if (id && ZmApp.ENABLED_APPS[id] && (id != this._activeTabId)) {
-			this.activateApp(id);
-			if (appCtxt.zimletsPresent()) {
-				appCtxt.getZimletMgr().notifyZimlets("onSelectApp", id);
+			var isCloseButton = (DwtUiEvent.getTargetWithProp(ev, "id") == ev.item._getIconEl(DwtLabel.RIGHT));
+			if (isCloseButton) {
+				this._appViewMgr.popView(false, id);
+			}
+			else {
+				this.activateApp(id);
+				if (appCtxt.zimletsPresent()) {
+					appCtxt.getZimletMgr().notifyZimlets("onSelectApp", id);
+				}
 			}
 		} else {
 			var isCloseButton = (DwtUiEvent.getTargetWithProp(ev, "id") == ev.item._getIconEl(DwtLabel.RIGHT));
