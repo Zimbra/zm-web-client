@@ -78,6 +78,7 @@ ZmAppButton = function(params) {
 			this.setHoverImage(params.rightHoverImage, DwtLabel.RIGHT);
 		}
 	}
+	this._ignoreInternalOverOut = false;
     this.setText(params.text);
 };
 

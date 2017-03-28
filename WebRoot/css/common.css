@@ -670,9 +670,7 @@ LI.RowDouble, LI.Row {list-style: none;}
 }
 
 .overviewHeader .imageCell {
-	@ImagePadding@
-	white-space:nowrap;	/* ??? */
-	min-width: 12px;
+	@TreeHeaderImageCell@
 }
 
 .overviewHeader TD 		{

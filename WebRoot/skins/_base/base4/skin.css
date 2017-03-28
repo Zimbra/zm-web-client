@@ -88,6 +88,7 @@ BODY                                    {   margin:0px;     }
 #skin_spacing_top_row > .skin_table     {   border-collapse: separate;  }
 #skin_spacing_top_row .DwtLinkButtonDropDownArrowRow    {   background-color:@SkinTopRowColor@;     }
 #skin_spacing_top_row .ZmMoreTabs       {   @SkinTopRowMore@   }
+#skin_spacing_top_row .svg-icon         {   fill: @AppC@; opacity: 0.7;   }
 
 /** Logo displayed in the app **/
 #skin_spacing_logo                      {}
@@ -103,13 +104,14 @@ BODY                                    {   margin:0px;     }
 #skin_spacing_search,
 #skin_spacing_people_search             {   @AppTabHeight@  }
 #skin_container_search                  {   @SkinSearchHeight@ }
+#skin_container_search .svg-icon         {   fill: initial; opacity: 1;  }
 
 #skin_container_search .ZmSearchToolbar {   @SkinSearchToolbar@         }
 #skin_container_search .ZButton         {   @SkinSearchHeight@ border-right: 1px solid @hexToRGBA(SecondaryBrandingColor, 17)@;  }
-#skin_container_search .ZButton.ZHover  {    @AppBg@    }
 #skin_container_search .ZmSearchButton  {   @SkinSearchHeight@ cursor: pointer;   }
-#skin_container_search .ZButtonBorder   {   border:0px; background-color:transparent; background-image:none; @NoShadow@ @NoRoundCorners@ }
+#skin_container_search .ZButtonBorder   {   border:0px; background-image:none; @NoShadow@ @NoRoundCorners@  padding: 0 8px; }
 #skin_container_search .ZWidgetTitle    {   display:none;   }
+#skin_container_search .ZmSearchButton .ZButtonBorder {   background: transparent;   }
 
 /** combined username/quota **/
 #skin_spacing_tree_top                  {   text-align:center;      }
@@ -473,6 +475,7 @@ BODY                                    {   margin:0px;     }
 .ActionMenu.ZHasIcon .ZMenuItem .ZMenuItemTable .ZWidgetIcon:empty {
     padding: 0 @ToolbarButtonPaddingSize@
 }
+.ActionMenu.ZHideCheckIconMenuType .ZCheckIcon { display: none; }
 #ENDIF
 
 #IFDEF MSIE_LOWER_THAN_9
@@ -551,7 +554,6 @@ TEXTAREA .BannerBar * {
 }
 .BannerBar {
     padding-top:1px;
-    height:1px;
 }
 .BannerBar TD {
     padding-right:0px;
@@ -799,4 +801,31 @@ div.ImgTagStack {
 
 .ZmInviteToolBar .ZToolbarTable TD:last-of-type > div {
     float: right;
+}
+
+.ZTopSearchPopupMenu .ZMenuItemBorder {
+    padding-left: 4px;
+}
+
+.overviewHeader .svg-icon {
+    fill: @TreeHeaderTextColor@
+}
+
+/* For end-to-end hover effect in tree for nested elements  */
+.ZmOverview .DwtTreeItem,
+.ZmOverview .DwtTreeItemLevel1ChildDiv .horizSep  {
+    padding-left: 100%;
+    margin-left: -100%;
+}
+
+.ZmOverview .DwtTreeItemLevel1ChildDiv {
+    padding-left: @SkinWrapperPadding@
+}
+
+.DwtTreeItem .imageCell:empty {
+    display: none;
+}
+
+.DwtTreeItem .svg-icon {
+    fill: @TreeItemTextColor@
 }
