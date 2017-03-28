@@ -136,7 +136,7 @@ ZmSearchTreeController.prototype._getActionMenuOps =
 function() {
 
 	return [
-		ZmOperation.MOVE,
+		ZmOperation.MOVE_FOLDER,
 		ZmOperation.DELETE_WITHOUT_SHORTCUT,
 		ZmOperation.RENAME_SEARCH,
 		ZmOperation.EDIT_PROPS,
