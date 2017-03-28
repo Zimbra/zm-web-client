@@ -773,11 +773,11 @@ function(clickedCol, ev) {
 						this.selectAll(ev.shiftKey);
 					} else {
 						this.deselectAll();
-						hdrDiv.className = ZmListView.UNCHECKED_CLASS;
+						AjxImg.setImage(hdrDiv, ZmListView.UNCHECKED_IMAGE);
 					}
 				} else {
 					this.allSelected = false;
-					hdrDiv.className = ZmListView.CHECKED_CLASS;
+					AjxImg.setImage(hdrDiv, ZmListView.CHECKED_IMAGE);
 					this.selectAll(ev.shiftKey);
 				}
 			}
@@ -858,6 +858,9 @@ function(check) {
 		hdrDiv.className = check
 			? ZmListView.CHECKED_CLASS
 			: ZmListView.UNCHECKED_CLASS;
+
+		//updating image node with latest svg.
+		check ? AjxImg.setImage(hdrDiv, ZmListView.CHECKED_IMAGE) : AjxImg.setImage(hdrDiv, ZmListView.UNCHECKED_IMAGE);
 	}
 };
 
