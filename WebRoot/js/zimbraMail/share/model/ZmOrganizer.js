@@ -212,7 +212,7 @@ ZmOrganizer.C_PINK				= 7;
 ZmOrganizer.C_GRAY				= 8;
 ZmOrganizer.C_ORANGE			= 9;
 ZmOrganizer.MAX_COLOR			= ZmOrganizer.C_ORANGE;
-ZmOrganizer.ORG_DEFAULT_COLOR 	= ZmOrganizer.C_GRAY;
+ZmOrganizer.ORG_DEFAULT_COLOR 	= ZmOrganizer.C_NONE;
 
 ZmOrganizer.COLOR_VALUES = [
 	null,
