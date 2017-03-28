@@ -305,7 +305,7 @@ ZmMainSearchToolBar = function(params) {
 	var miParams = {
 		msgKey:			"searchShared",
 		tooltipKey:		"searchShared",
-		icon:			"Group",
+		icon:			"SharedMailFolder",
 		setting:		ZmSetting.SHARING_ENABLED,
 		id:				ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED),
 		disableOffline: true
@@ -392,7 +392,7 @@ function() {
 
 	var menu = this._searchMenu = new DwtMenu({
 				parent:		this._button[ZmSearchToolBar.TYPES_BUTTON],
-				className:	"ActionMenu",
+				className:	"ActionMenu ZHideCheckIconMenuType ZTopSearchPopupMenu",
 				id:			ZmId.getMenuId(ZmId.SEARCH)
 			});
 	var mi;

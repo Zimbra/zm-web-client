@@ -168,7 +168,7 @@ function() {
 	ZmSearchToolBar.addMenuItem(ZmItem.BRIEFCASE_ITEM,
 								{msgKey:		"files",
 								 tooltipKey:	"searchForFiles",
-								 icon:			"Doc",
+								 icon:			"File",
 								 shareIcon:		null, // the following doesn't work now, so keep the regular icon. doesn't really matter in my opinion --> "SharedBriefcase",
 								 setting:		ZmSetting.BRIEFCASE_ENABLED,
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_BRIEFCASE),

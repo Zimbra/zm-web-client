@@ -3341,13 +3341,11 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmAppChooser {
 	margin-left:@SmallBoxPaddingSize@;
-	margin-top:1px;
 	height:100%;
 	overflow:hidden;
 }
 
 /* App Chooser and App Tab Overrides */
-.ZmAppChooser                               {   margin:0px !important;      }
 .ZAppTabBorder                              {   @AppTabRoundCorners@        }
 .ZAppTabBorder .ZLeftIcon                   {   @AppTabLeftIcon@            }
 .ZAppTabBorder .ZWidgetTitle                {   @AppTabWidgetTitle@         }
@@ -4971,13 +4969,14 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZActive	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-active@		}
 .ZSelected	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-selected@	}
 
-#moreTabsMenuBtn                        			{	@TabMoreButtonContainer@	}
-#moreTabsMenuBtn .ZToolbarButtonBorder  			{	@TabMoreButton@ 			}
-#moreTabsMenuBtn.ZHover .ZToolbarButtonBorder       {   @TabMoreButton-hover@	    }
-#moreTabsMenuBtn.ZFocused .ZToolbarButtonBorder     {   @TabMoreButton-focused@	    }
-#moreTabsMenuBtn.ZActive .ZToolbarButtonBorder	  {   @TabMoreButton-active@	    }
-#moreTabsMenuBtn.ZSelected .ZToolbarButtonBorder    {   @TabMoreButton-selected@    }
-#moreTabsMenuBtn .ZToolbarButtonBorder .ZWidgetTitle{   @TabMoreButtonText@         }
+#moreTabsMenuBtn                        			     {	 @TabMoreButtonContainer@	}
+#moreTabsMenuBtn .ZToolbarButtonBorder  			     {	 @TabMoreButton@ 			}
+#moreTabsMenuBtn.ZHover .ZToolbarButtonBorder            {   @TabMoreButton-hover@	    }
+#moreTabsMenuBtn.ZFocused .ZToolbarButtonBorder          {   @TabMoreButton-focused@	}
+#moreTabsMenuBtn.ZActive .ZToolbarButtonBorder	         {   @TabMoreButton-active@	    }
+#moreTabsMenuBtn.ZSelected .ZToolbarButtonBorder         {   @TabMoreButton-selected@   }
+#moreTabsMenuBtn.ZSubMenuActive .ZToolbarButtonBorder    {   @TabMoreButton-selected@   }
+#moreTabsMenuBtn .ZToolbarButtonBorder .ZWidgetTitle     {   @TabMoreButtonText@        }
 
 .SearchTabButton .ZAppTabBorder .ZLeftIcon DIV {
 	display:block;
