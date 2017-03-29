@@ -222,7 +222,7 @@ function(date, list, controller, noheader, emptyMsg, isMinical, getSimpleToolTip
 	html.append("<table cellpadding='0' cellspacing='0' border='0'>");
 	if (!noheader) html.append("<tr><td><div class='calendar_tooltip_month_day_label'>", title, "</div></td></tr>");
 	html.append("<tr><td>");
-	html.append("<table cellpadding='1' cellspacing='0' border='0'>");
+	html.append("<table cellpadding='1' cellspacing='0' border='0' style='width:100%;'>");
 	
 	var size = list ? list.size() : 0;
 
@@ -262,10 +262,7 @@ function(date, list, controller, noheader, emptyMsg, isMinical, getSimpleToolTip
 				html.append("</div></td></tr>");
 			}
 			else {
-				var color = ZmCalendarApp.COLORS[controller.getCalendarColor(ao.folderId)];
-				var isNew = ao.status == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
-				html.append("<tr><td class='calendar_month_day_item'><div class='", color, isNew ? "DarkC" : "C", "'>");
-				if (isNew) html.append("<b>");
+				html.append("<tr><td class='calendar_month_day_item'><span class='calendar_month_day_duration'>");
 				
 				var dur; 
 				if (isAllDay) {
@@ -279,14 +276,11 @@ function(date, list, controller, noheader, emptyMsg, isMinical, getSimpleToolTip
 				html.append(dur);
 				if (dur != "") {
 					html.append("&nbsp;");
-					if (isAllDay) { 
-						html.append("-&nbsp"); 
-					}
-				}   
+				}
+				html.append("</span><span class='calendar_month_day_description'>");
 				html.append(AjxStringUtil.htmlEncode(ao.getName()));
-				
-				if (isNew) html.append("</b>");
-				html.append("</div>");
+
+				html.append("</span>");
 				html.append("</td></tr>");
 			}
 		}
