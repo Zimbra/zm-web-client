@@ -2686,11 +2686,18 @@ INPUT[type="text"].search_input-expanded:focus {
 	padding-left:@BoxPaddingSize@;
 }
 
+.DwtToolTip .calendar_month_day_item {
+	@MiniCalTooltip-item@
+}
+
 /* label of a calendar day when shown in a hover balloon */
 .calendar_tooltip_month_day_label {
 	@NoWrap@
-	@SectionLabel@
-	text-align:center;
+	@TooltipTitle@
+}
+
+.calendar_month_day_duration {
+	@MiniCalTooltip-description@
 }
 
 .calendar_tooltip_attendees {
