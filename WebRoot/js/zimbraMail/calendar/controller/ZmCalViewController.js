@@ -3032,7 +3032,7 @@ function(date, noheader, callback, isMinical, getSimpleToolTip) {
 ZmCalViewController.prototype._handleToolTipSearchResponse =
 function(start, noheader, callback, isMinical, result) {
 	try {
-		var tooltip = ZmApptViewHelper.getDayToolTipText(start, result, this, noheader, null, isMinical);
+		var tooltip = ZmApptViewHelper.getDayToolTipText(start, result, this, noheader, null, isMinical, true);
 		callback.run(tooltip);
 	} catch (ex) {
 		DBG.println(ex);
