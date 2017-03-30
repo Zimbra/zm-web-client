@@ -715,7 +715,7 @@ ZmContactPicker.prototype.loadSharedGroupContacts =
     request = batchRequest.GetContactsRequest;
 
     for (j = 0,k =0; j < len1; j++) {
-        request.push({ cn: {id: sharedContactGroupArray[j]}, _jsns: 'urn:zimbraMail', derefGroupMember: '1', requestId: k++ });
+        request.push({ cn: {id: sharedContactGroupArray[j]}, _jsns: 'urn:zimbraMail', derefGroupMember: '1', returnCertInfo: '1', requestId: k++ }); //See ZCS-999 and ZCS-991 for returnCertInfo param
     }
         var respCallback = new AjxCallback(this, this.handleSharedContactResponse,[aList]);
        response =  appCtxt.getAppController().sendRequest({
