@@ -650,7 +650,7 @@ function(params) {
 			batchRequest.GetMsgRequest = getMsgRequest;
 		}
 		if (contactIdsLength > 0 && getMsgRequest.length < ZmOffline.MAX_REQUEST_IN_BATCH_REQUEST) {
-			batchRequest.GetContactsRequest = {_jsns:"urn:zimbraMail", derefGroupMember:1, cn:{id:contactIds.join()}};
+			batchRequest.GetContactsRequest = {_jsns:"urn:zimbraMail", derefGroupMember:1, returnCertInfo: 1, cn:{id:contactIds.join()}}; //See ZCS-999 and ZCS-991 for returnCertInfo param
 			contactIds.splice(0, contactIdsLength);
 		}
 		appCtxt.getRequestMgr().sendRequest(newParams);
