@@ -536,6 +536,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                 </tr>
                             </c:otherwise>
                         </c:choose>
+                        <input id="client" name="client" type="hidden" value="${client}"/>
+
                         <!-- <c:if test="${empty param.virtualacctdomain}">
                             <tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
                             <td><hr/></td>
@@ -588,6 +590,14 @@ if (application.getInitParameter("offlineMode") != null) {
 
 		<div class="${smallScreen?'Footer-small':'Footer'}">
 			<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="clientLoginNotice"/></div>
+            <c:if test="${client ne mobile || client ne touch}">
+                <div class="switch" id="loginScreenSwitchContainer">
+                    <a href="javascript:toggleClientType();">
+                        <span id="clientLoginSwitchHtml"> <fmt:message key="clientLoginSwitchToHtml"/> </span>
+                        <span id="clientLoginSwitchAjax" style="display: none"> <fmt:message key="clientLoginSwitchToAjax"/> </span>
+                    </a>
+                </div>
+            </c:if>
 			<div class="copyright">
 			<c:choose>
 				<c:when test="${mobileSupported}">
@@ -631,6 +641,26 @@ function clientChange(selectValue) {
 	div.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
 }
 
+function toggleClientType() {
+    var span1 = document.getElementById('clientLoginSwitchAjax');
+    var span2 = document.getElementById('clientLoginSwitchHtml');
+    var input = document.getElementById('client');
+
+    if (span1 && span2) {
+        if(span1.style.display == 'none') {
+            span1.style.display = 'block';
+            span2.style.display = 'none';
+
+            input.value = 'standard';
+        } else {
+            span1.style.display = 'none';
+            span2.style.display = 'block';
+
+            input.value = 'advanced';
+        }
+    }
+}
+
 // if they have JS, write out a "what's this?" link that shows the message below
 function showWhatsThis() {
 	var anchor = document.getElementById('ZLoginWhatsThisAnchor'),
@@ -650,7 +680,6 @@ function onLoad() {
 			loginForm.username.focus();
 		}
 	}
-	clientChange("${zm:cook(client)}");
     //check if the login page is loaded in the sidebar.
     if (navigator.mozSocial) {
         //send a ping so that worker knows about this page.
