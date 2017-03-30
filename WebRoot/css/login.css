@@ -231,3 +231,7 @@ FORM {
 .Footer-small #ZLoginNotice {
 	display:none;
 }
+
+.FakeAnchor, a:link, a:visited {
+    @Anchor@
+}

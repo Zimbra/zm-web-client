@@ -370,9 +370,13 @@ BODY                                    {   margin:0px;     }
     text-align: center;
     margin-top: 30px;
 }
+
+.LoginScreen .switch,
 .SplashScreen .switch {
     margin-bottom: 5px;
 }
+
+.LoginScreen .switch A,
 .SplashScreen .switch A {
     color: @LoginLabelColor@;
     @FontSize-normal@
