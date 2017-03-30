@@ -9,7 +9,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
-<app:skinAndRedirect defaultSkin="harmony2" />
+<app:skinAndRedirect />
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
