@@ -49,7 +49,7 @@
 
   <context-param>
     <param-name>zimbraDefaultSkin</param-name>
-    <param-value>harmony</param-value>
+    <param-value>clarity</param-value>
   </context-param>
 
   <context-param>
