@@ -358,7 +358,7 @@ function() {
 		ps.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
 	} else if (this._canSaveDraft()) {
 		ps.reset();
-		ps.setMessage(ZmMsg.askSaveDraft, DwtMessageDialog.WARNING_STYLE);
+		ps.setTitle(ZmMsg.askSaveDraft);
 		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 		ps.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
@@ -462,7 +462,7 @@ function(params) {
 
 	var ps = this._popShield = appCtxt.getYesNoCancelMsgDialog();
 	ps.reset();
-	ps.setMessage(ZmMsg.askSaveDraft, DwtMessageDialog.WARNING_STYLE);
+	ps.setTitle(ZmMsg.askSaveDraft);
 	ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this, params);
 	ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this, params);
 	ps.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
