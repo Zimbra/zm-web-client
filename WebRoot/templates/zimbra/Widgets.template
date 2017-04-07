@@ -13,11 +13,6 @@
 		</tr>
 		<$ if (data.showDetails) { $>
 		<tr>
-			<td>
-				<hr/>
-			</td>
-		</tr>
-		<tr>
 			<td style='height:100%;vertical-align:top;'>
 				${detail}
 			</td>

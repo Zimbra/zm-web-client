@@ -176,10 +176,7 @@ function(list) {
 	this._createButtons(this.ALL_APPTS, this.ALL_APPTS, dismissListener, openListener, snoozeListener, snoozeSelectButtonListener, snoozeSelectMenuListener);
 
 	this._updateIndividualSnoozeActionsVisibility();
-
-	//hide the separator from the dialog buttons since we do not use dialog buttons for this dialog.
-	document.getElementById(this._htmlElId + "_buttonsSep").style.display = "none";
-
+	
 };
 
 ZmReminderDialog.prototype._createButtons =
