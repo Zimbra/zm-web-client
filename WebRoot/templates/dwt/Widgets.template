@@ -41,13 +41,10 @@
 	<div class='DwtDialog WindowOuterContainer'>
 		<table role="presentation">
 			<tr id='${dragId}'>
-				<td class='minWidth'>${icon}</td>
 				<td id='${id}_title' class='DwtDialogTitle'>${title}</td>
-				<td class='minWidth'><div class='${closeIcon2}'></div></td>
-				<td class='minWidth'><div class='${closeIcon1}'></div></td>
 			</tr>
 			<tr>
-				<td class='WindowInnerContainer' colspan='4'>
+				<td class='WindowInnerContainer'>
 					<div id='${id}_content' class='DwtDialogBody'></div>
 					<$ if (data.controlsTemplateId) { $>
 						<$= AjxTemplate.expand(data.controlsTemplateId, data) $>
@@ -59,7 +56,6 @@
 </template>
 
 <template id='dwt.Widgets#DwtDialogControls'>
-	<div class='horizSep' id="${id}_buttonsSep"></div>
 	<div id='${id}_buttons' class='DwtDialogButtonBar'>
 		<$ if (AjxEnv.isNav) { $>
 			<input type='button' id='${id}_focus' style='height:0px;width:0px;display:none;'>
@@ -71,15 +67,11 @@
 	<div class='DwtDialog LightWindowOuterContainer'>
 		<table role="presentation" style='cursor:move;'>
 			<tr id='${dragId}'>
-				<td class='minWidth'>${icon}</td>
 				<td id='${id}_title' class='DwtDialogTitle'>${title}</td>
-				<td class='minWidth'><div class='${closeIcon2}'></div></td>
-				<td class='minWidth'><div class='${closeIcon1}'></div></td>
 			</tr>
 			<tr>
-				<td class='LightWindowInnerContainer full_size' colspan='4'>
+				<td class='LightWindowInnerContainer full_size'>
 					<div id='${id}_content' class='DwtDialogBody'></div>
-					<div class='horizSep'></div>
 					<div id='${id}_buttons' class='DwtDialogButtonBar'>
 						<$ if (AjxEnv.isNav) { $>
 						<input type='button' id='${id}_focus' style='height:0px;width:0px;display:none;'>
