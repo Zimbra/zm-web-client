@@ -457,7 +457,6 @@ function() {
 			- this._getSectionHeight("_handle")  //the header
 			- this._getSectionHeight("_searchTable")
 			- this._getSectionHeight("_paging")
-			- this._getSectionHeight("_buttonsSep")
 			- this._getSectionHeight("_buttons")
 			- 30; //still need some magic to account for some margins etc.
 
