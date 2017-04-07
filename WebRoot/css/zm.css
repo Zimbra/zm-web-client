@@ -6285,3 +6285,33 @@ a.ZmLinkDisabled {
 	@ListItemBottomRowRightIconSize@
 	display: block;
 }
+
+/* Dialog button style */ 
+.ZDialogButton {
+    margin-right: 8px; 
+}
+
+.ZDialogButton.ZPrimaryButton {
+    margin: 0;
+}
+
+.ZDialogButton .ZButtonTable .ZWidgetTitle {
+    color: @AltC@;
+    letter-spacing: 1px;
+}
+
+/* Primary button style */ 
+.ZPrimaryButton .ZButtonTable {
+    background: @AltC@;
+}
+
+.ZPrimaryButton.ZHover    .ZButtonTable,
+.ZPrimaryButton.ZFocused  .ZButtonTable,
+.ZPrimaryButton.ZActive   .ZButtonTable,
+.ZPrimaryButton.ZSelected .ZButtonTable {
+    background: @darken(AltC,30)@;
+}
+
+.ZPrimaryButton .ZButtonTable .ZWidgetTitle {
+    color: @AppC@;
+}
