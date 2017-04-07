@@ -647,11 +647,12 @@ UL.DwtListView-Rows {
 /* Container (TD) for the body of the dialog, including buttons.
 	Class "Dwt[Dark|Light]InnerBorder" is also applied to this elements */
 .DwtDialogBody 	{
-  cursor:default;
-
+  	@DialogBody@
 }
 
-
+.DwtDialogBody * {
+	@DialogBodyText@
+}
 
 /* ??? SHOTGUNS */
 .DwtDialog .Label {
@@ -667,14 +668,12 @@ UL.DwtListView-Rows {
 	/* @Label-wrap@ */
 }
 
-.DwtDialogButtonBar {}
-
-.DwtDialogButtonBar>TABLE>TBODY>TR>TD {
-	padding:5px; 
+.DwtDialogButtonBar {
+	@WindowButtonBar@
 }
-.DwtDialogButtonBar .ZButton {
-	margin-left:3px;
-	@DialogButtonHeight@
+
+.DwtDialogButtonBar .ZButton > .ZButtonTable {
+	@DialogButton@
 }
 
 
@@ -776,22 +775,18 @@ UL.DwtListView-Rows {
 
 /* Outer container for the message dialog */
 .DwtMsgDialog {
-	width:400px;
-	max-height:400px;
-	overflow:auto;
+	@DialogMessageBody@
 }
 
 /* For the error dialog when displaying a request */
 .DwtMsgDialog-wide {
-	width:600px;
-	max-height:400px;
-	overflow:auto;
+	@DialogMessageBodyWide@
 }
 
 /* Text area for the message dialog, including icon */
 .DwtMsgArea {
 	width:100%;
-	@BoxPadding@
+	@DialogBodyText@;
 }
 
 /* Outer container for the confirmation dialog */
