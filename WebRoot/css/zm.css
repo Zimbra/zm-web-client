@@ -803,37 +803,37 @@ INPUT[type="text"].search_input-expanded:focus {
 
 .AttachmentSpan{
 	overflow:visible;
-	padding-right:17px !important;
 	position:relative;
 }
 
 .AttProgressSpan1,
 .AttProgressSpan2 {
-	height:15px;
-	left:0px;
-	overflow:hidden;
-	@roundCorners(4px 0px 0px 4px)@
+	@AttachmentLoadingProgressSpan@
 }
 
 .AttProgressSpan1 {
 	background:#999;
 	color:white;
 	margin-top:0px;
-	padding:1px 0px 1px 5px;
 	position:absolute;
-	top:0px;
 	width:1px;
 }
 
 .AttachmentClose {
-	@ActiveCursor@
-	position:absolute;
-	right:2px;
-	top:2px;
+	@AttachmentChipCloseButton@
+	position:relative;
 }
 
 .AttachmentLoadingSpan {
 	background-color:@darken(AppC,30)@;
+}
+
+span.AttachmentLoadingBubble {
+	@AttachmentLoadingBubbleSpan@
+}
+
+div.AttachmentImgContainer {
+	@DropAttachmentImagePlaceHolder@
 }
 
 ::-webkit-file-upload-button {
@@ -1336,7 +1336,7 @@ INPUT[type="text"].search_input-expanded:focus {
 	@ComposeViewContainer@
 }
 
-.ZmComposeView > .ZPropertySheet {
+.ZmComposeView > div > .ZPropertySheet {
 	@AppViewTopHeaderContainer@
 }
 
@@ -1420,6 +1420,11 @@ INPUT[type="text"].search_input-expanded:focus {
 	width:100%;
 }
 
+.ZmComposeView .ComposeTableWrapper {
+	position:relative;
+	@AppViewTopHeaderContainer@;
+}
+
 .ZmComposeView .subjectField {
 	@ComposeViewSubjectInputField@
 }
@@ -1460,9 +1465,12 @@ INPUT[type="text"].search_input-expanded:focus {
 /* Styles for bubbles in general */
 .addrBubble,
 .addrBubble-selected,
-.addrBubble-actioned,
-.attachmentBubble {
+.addrBubble-actioned {
 	@AddressBubble@
+}
+
+.attachmentBubble {
+	@AttachmentBubble@
 }
 
 .addrBubble:hover,
@@ -1486,6 +1494,22 @@ INPUT[type="text"].search_input-expanded:focus {
 	@AddreddBubbleLeftChild@
 }
 
+.attachmentBubble .AttLink {
+	@AttachmentLink@
+}
+
+.attBubbleHolder  .attachmentBubble > *:not(:empty).attachmentSize {
+	@AttachmentFileSize@
+}
+
+.attBubbleHolder .attachmentBubble:hover .AttachmentClose {
+	@AttachmentBubbleOp@
+}
+
+.AttFileName {
+	@AttachmentName@
+}
+
 .addrBubble > :last-child,
 .addrBubble-selected > :last-child,
 .addrBubble-actioned > :last-child,
@@ -1505,16 +1529,17 @@ INPUT[type="text"].search_input-expanded:focus {
 
 /*.addrBubbleHolder .addrBubble > *:not(:empty),
 .addrBubbleHolder .addrBubble-selected > *:not(:empty),
-.addrBubbleHolder .addrBubble-actioned > *:not(:empty),
-.attBubbleHolder  .attachmentBubble > *:not(:empty) {
+.addrBubbleHolder .addrBubble-actioned > *:not(:empty) {
 	@AddressBubbleHolderChild@
 }*/
 
-.addrBubbleHolder .addrBubbleOp,
-.attBubbleHolder .ImgBubbleDelete {
-	@AddressBubbleOp@
+.attBubbleHolder  .attachmentBubble > *:not(:empty) {
+	@AttachmentBubbleHolderChild@
 }
 
+.addrBubbleHolder .addrBubbleOp {
+	@AddressBubbleOp@
+}
 
 /*.addrBubble:hover .addrBubbleOp,
 .addrBubble-selected .addrBubbleOp,
@@ -1562,6 +1587,18 @@ INPUT[type="text"].search_input-expanded:focus {
 .addrBubble .link {
 	@ActiveCursor@
 	color:#666;
+}
+
+div.EditorDragImgContainer > div.ImgEditorDrag {
+	@AttachmentEditorDragImage@
+}
+
+div.AttachmentImgContainer > div.ImgAttachClip {
+	@AttachmentComposeDragImage@
+}
+
+div.CompDragArea * {
+	pointer-events: none;
 }
 
 /* Styles to show addresses in bubbles in conversation view */
@@ -1618,6 +1655,7 @@ INPUT[type="text"].search_input-expanded:focus {
 	vertical-align: middle;
 	padding: 0px 2px;
 	line-height:3rem;
+	@FontSize-slightly-big@
 }
 
 .ZmGrantRightsDialog .addrBubbleContainer,
@@ -1640,6 +1678,9 @@ INPUT[type="text"].search_input-expanded:focus {
 	overflow:auto;
 }
 
+.attBubbleHolder > span {
+	@AttachmentChipSpacing@
+}
 
 /* Styles used in search bubbles */
 .addrBubbleInsertionBar {
@@ -1660,7 +1701,6 @@ INPUT[type="text"].search_input-expanded:focus {
 	@ActiveCursor@
 	font-weight:bold;
 }
-
 
 /*
  *	ZmHtmlEditor -- HTML editor stuff
@@ -6544,3 +6584,4 @@ a.ZmLinkDisabled {
 .ZmMailAttachmentsAllTable TD a.AttLink {
 	@MailAttachmentsAllText@
 }
+

@@ -756,6 +756,28 @@ svg.ImgColumnDownArrow{
     fill: @IconColumnDownArrow@;
 }
 
+.ZmComposeView svg.ImgAttachClip {
+    width: 100%;
+    height: 36px;
+    @opacity(40)@;
+}
+
+.ZmComposeView svg.ImgSelectPullDownArrow {
+    fill: @PrimaryBrandingColor@;
+}
+
+.ZmHtmlEditor svg.ImgEditorDrag {
+    background-color: @AppC@;
+    fill: @TxtC@;
+    width: 38px;
+    height: 38px;
+    @opacity(40)@;
+}
+
+.attachmentBubble  svg.ImgBubbleDelete {
+    fill: @AppC@;
+}
+
 .ZmMsgListBottomRowIcon svg {
     fill: @IconMsgStatus@;
 }
@@ -860,4 +882,36 @@ div.ImgLoader-view {
 
 .ZmMailAttachmentsTable > TBODY > TR > TD:first-of-type {
     padding-left: 0;
+}
+
+.ZmHtmlEditor .ZmHtmlEditorIFrame.EditorDrag {
+    @AttachmentEditorIframe@
+}
+
+.AttachBtn {
+    @AttachButton@
+}
+
+.AttLink:link, .AttLink:visited {
+    @AttachmentLink@
+}
+
+div.CompDragArea {
+    @AttachmentComposeDragContainer@
+}
+
+div.AttachmentDrop {
+    @AttachmentDropLabel@
+}
+
+div.EditorDragImgContainer {
+    @AttachmentDragEdtInlineImg@
+}
+
+div.InlineImgDrop {
+   @DropImageText@
+}
+
+div.ZmHtmlEditor .TxtAreaDrag {
+    @AttachmentTextAreaDrag@
 }
