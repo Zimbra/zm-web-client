@@ -373,35 +373,35 @@
 </template>
 
 <template id="mail.Message#To_Recipient">
-	<tr id='${toRowId}'>
-		<td width='1%' align=right valign=top style='${labelStyle}'>
+	<tr id='${toRowId}' class='ZmComposeToFieldWrapper'>
+		<td width='1%' valign=top style='${labelStyle}'>
 			<div id='${toPickerId}'><$=ZmMsg.toLabel$></div>
 		</td>
 		<td id='${toCellId}'>
 		</td>
-		<td width='1%'></td>
+		<td class='ZmComposeViewHeaderEmptyRight'></td>
 	</tr>
 </template>
 
 <template id="mail.Message#CC_Recipient">
 	<tr id='${ccRowId}' style='display:none;'>
-		<td width='1%' align=right valign=top style='${labelStyle}'>
+		<td width='1%' valign=top style='${labelStyle}'>
 			<div id='${ccPickerId}'><$=ZmMsg.ccLabel$></div>
 		</td>
 		<td id='${ccCellId}'>
 		</td>
-		<td width='1%'></td>
+		<td class='ZmComposeViewHeaderEmptyRight'></td>
 	</tr>
 </template>
 
 <template id="mail.Message#BCC_Recipient">
 	<tr id='${bccRowId}' style='display:none;'>
-		<td width='1%' align=right valign=top style='${labelStyle}'>
+		<td width='1%' valign=top style='${labelStyle}'>
 			<div id='${bccPickerId}'><$=ZmMsg.bccLabel$></div>
 		</td>
 		<td id='${bccCellId}'>
 		</td>
-		<td width='1%'></td>
+		<td class='ZmComposeViewHeaderEmptyRight'></td>
 	</tr>
 </template>
 
@@ -412,8 +412,8 @@
 	<!-- header -->
 	<table id='${headerId}' width=100% class='ZPropertySheet' cellspacing='6'>
 		<$ if (appCtxt.multiAccounts) { $>
-			<tr>
-				<td width='1%' align=right valign=top style='<$=labelStyle$>'>
+			<tr class='ZmComposeFromFieldWrapper'>
+				<td width='1%' style='<$=labelStyle$>'>
 					<$=ZmMsg.fromLabel$>
 				</td>
 				<td>
@@ -422,8 +422,8 @@
 				<td width='1%'></td>
 			</tr>
 		<$ } else {$>
-			<tr id='${identityRowId}' style='display:none;'>
-				<td width='1%' align=right style='<$=labelStyle$>'>
+			<tr class='ZmComposeFromFieldWrapper' id='${identityRowId}' style='display:none;'>
+				<td width='1%' style='<$=labelStyle$>'>
 					<$=ZmMsg.fromLabel$>
 				</td>
 				<td>
@@ -436,30 +436,30 @@
 		<$= AjxTemplate.expand("#CC_Recipient", data) $>
 		<$= AjxTemplate.expand("#BCC_Recipient", data) $>
 		<tr id='${subjectRowId}'>
-			<td width='1%' align=right style='<$=labelStyle$>'><$=ZmMsg.subjectLabel$></td>
+			<td width='1%' style='<$=labelStyle$>'><$=ZmMsg.subjectLabel$></td>
 			<td>
 				<table role="presentation" width='100%'>
 				<tr>
-					<td style='padding-right:4px;'>
+					<td>
 						<input type='text' id='${subjectInputId}' class='subjectField' autocomplete=off aria-label='<$=ZmMsg.subject$>'>
 					</td>
 				</tr>
 				</table>
 			</td>
-			<td nowrap width='1%'></td>
+			<td nowrap class='ZmComposeViewHeaderEmptyRight'></td>
 		</tr>
 		<tr id='${attRowId}'>
 			<td width='1%' style='vertical-align:top; <$=labelStyle$>'>
 				<table role="presentation" width='100%'>
 					<tr>
-						<td align=right id='${attBtnId}'></td>
+						<td id='${attBtnId}'></td>
 					</tr>
 				</table>
 			</td>
 			<td>
 				<div id='${attDivId}'></div>
 			</td>
-			<td width='1%'></td>
+			<td class='ZmComposeViewHeaderEmptyRight'></td>
 		</tr>
 		<tr id='${replyAttRowId}' style='display:none;'>
 			<td></td>
