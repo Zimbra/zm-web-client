@@ -530,13 +530,23 @@ function() {
 	var textEl = textField.cloneNode(false);
 	textField.parentNode.replaceChild(textEl, textField);//To clear undo/redo queue of textarea
 	//cloning and replacing node will remove event handlers and hence adding it once again
-	Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this._onTextareaFocus.bind(this, true, true));
-	Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
-    Dwt.setHandler(textEl, DwtEvent.ONKEYDOWN, this._handleTextareaKeyEvent.bind(this));
+	this.setTextAreaEventHandler(textEl);
+
 	if (editor) {
 		// TinyMCE internally stored textarea element reference as targetElm which is lost after the above operation. Once targetElm is undefined TinyMCE will try to get the element using it's id.
 		editor.targetElm = null;
 	}
+};
+
+ZmHtmlEditor.prototype.setTextAreaEventHandler = function(textEl) {
+	var dnd = this.parent._dnd;
+	Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this._onTextareaFocus.bind(this, true, true));
+	Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
+	Dwt.setHandler(textEl, DwtEvent.ONKEYDOWN, this._handleTextareaKeyEvent.bind(this));
+	Dwt.setHandler(textEl, DwtEvent.ONDRAGENTER, this._onDragEnter.bind(this));
+	Dwt.setHandler(textEl, DwtEvent.ONDRAGLEAVE, this._onDragLeave.bind(this));
+	Dwt.setHandler(textEl, DwtEvent.ONDRAGOVER, this._onDragOver.bind(this, dnd));
+	Dwt.setHandler(textEl, DwtEvent.ONDROP, this._onDrop.bind(this, dnd));
 };
 
 ZmHtmlEditor.prototype.initTinyMCEEditor = function(params) {
@@ -562,9 +572,7 @@ ZmHtmlEditor.prototype.initTinyMCEEditor = function(params) {
 	htmlEl.appendChild(textEl);
 	this._textAreaId = id;
 
-    Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this._onTextareaFocus.bind(this, true, true));
-    Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
-    Dwt.setHandler(textEl, DwtEvent.ONKEYDOWN, this._handleTextareaKeyEvent.bind(this));
+	this.setTextAreaEventHandler(textEl);
 
 	if (!window.tinyMCE) {
         window.tinyMCEPreInit = {};
@@ -1083,12 +1091,17 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
 
     ed.on('open', ZmHtmlEditor.onPopupOpen);
     if (view && view.toString() === "ZmComposeView" && ZmDragAndDrop.isSupported()) {
-        var dnd = view._dnd;
-        tinymceEvent.bind(doc, 'dragenter', this._onDragEnter.bind(this));
-        tinymceEvent.bind(doc, 'dragleave', this._onDragLeave.bind(this));
-        tinymceEvent.bind(doc, 'dragover', this._onDragOver.bind(this, dnd));
-        tinymceEvent.bind(doc, 'drop', this._onDrop.bind(this, dnd));
-    }
+		var dnd = view._dnd;
+		tinymceEvent.bind(doc, 'dragenter', this._onDragEnter.bind(this));
+		tinymceEvent.bind(doc, 'dragleave', this._onDragLeave.bind(this));
+		tinymceEvent.bind(doc, 'dragover', this._onDragEnter.bind(this));
+		tinymceEvent.bind(doc, 'drop', this._onDrop.bind(this, dnd));
+
+		var htmlEl = this.getHtmlElement();
+		var dragcontainer = Dwt.getElement(ZmId.getViewId(this.parent._view, ZmId.EDT_DRG_AREA));
+		htmlEl.appendChild(dragcontainer);
+		Dwt.setHandler(dragcontainer, DwtEvent.ONDROP, this._onDrop.bind(this, dnd));
+	}
 
 	this._overrideTinyMCEMethods();
 
@@ -1250,12 +1263,55 @@ ZmHtmlEditor.prototype.onBeforeRepaint = function(ev) {
     }
 };
 
-ZmHtmlEditor.prototype._onDragEnter = function() {
-    Dwt.addClass(Dwt.getElement(this._iFrameId), "DropTarget");
+ZmHtmlEditor.prototype.showComDragArea = function() {
+	var compDragArea = Dwt.getElement(ZmId.getViewId(this.parent._view, ZmId.CMP_DRG_AREA));
+	Dwt.setDisplay(compDragArea, Dwt.DISPLAY_BLOCK);
+	compDragArea.previousSibling.style.opacity = 0.1;
+};
+
+ZmHtmlEditor.prototype.hideComDragArea = function() {
+	var compDragArea = Dwt.getElement(ZmId.getViewId(this.parent._view, ZmId.CMP_DRG_AREA));
+	Dwt.setDisplay(compDragArea, Dwt.DISPLAY_NONE);
+	compDragArea.previousSibling.style.opacity = 1;
+};
+
+ZmHtmlEditor.prototype.clearAttachmentDragArea = function() {
+	this.hideComDragArea();
+	if (this._mode === Dwt.TEXT) {
+		var textField = this.getContentField();
+		Dwt.delClass(textField, "TxtAreaDrag");
+		return;
+	}
+	var _editorIframe = Dwt.getElement(this._iFrameId);
+	var dragcontainer = Dwt.getElement(ZmId.getViewId(this.parent._view, ZmId.EDT_DRG_AREA));
+
+	Dwt.setDisplay(dragcontainer, Dwt.DISPLAY_NONE);
+	Dwt.delClass(_editorIframe, "EditorDrag");
+	if (_editorIframe) {
+		_editorIframe.contentWindow.document.body.style.opacity = 1;
+	}
+};
+
+ZmHtmlEditor.prototype._onDragEnter = function(ev) {
+	this.showComDragArea();
+	if (this._mode === Dwt.TEXT) {
+		var textField = this.getContentField();
+		Dwt.addClass(textField, "TxtAreaDrag");
+		return;
+	}
+	var dragcontainer = Dwt.getElement(ZmId.getViewId(this.parent._view, ZmId.EDT_DRG_AREA));
+	var _editorIframe = Dwt.getElement(this._iFrameId);
+
+	Dwt.setDisplay(dragcontainer, Dwt.DISPLAY_BLOCK);
+	Dwt.addClass(_editorIframe, "EditorDrag");
+
+	if (_editorIframe) {
+		_editorIframe.contentWindow.document.body.style.opacity = 0.1;
+	}
 };
 
 ZmHtmlEditor.prototype._onDragLeave = function() {
-    Dwt.delClass(Dwt.getElement(this._iFrameId), "DropTarget");
+	this.clearAttachmentDragArea();
 };
 
 ZmHtmlEditor.prototype._onDragOver = function(dnd, ev) {
@@ -1263,8 +1319,12 @@ ZmHtmlEditor.prototype._onDragOver = function(dnd, ev) {
 };
 
 ZmHtmlEditor.prototype._onDrop = function(dnd, ev) {
-    dnd._onDrop(ev, true);
-    Dwt.delClass(Dwt.getElement(this._iFrameId), "DropTarget");
+	this.clearAttachmentDragArea();
+	var isEditorDND = true;
+	if (ev.target.className === "CompDragArea" || this._mode === Dwt.TEXT) {
+		 isEditorDND = false;
+	}
+	dnd._onDrop(ev, isEditorDND);
 };
 
 ZmHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
