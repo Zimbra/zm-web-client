@@ -3107,6 +3107,14 @@ function(composeMode, action) {
 
 	// init listeners
 	this.addControlListener(new AjxListener(this, this._controlListener));
+
+	var htmlEditor =  this._htmlEditor;
+	var composeDragArea  = Dwt.getElement(ZmId.getViewId(this._view, ZmId.CMP_DRG_AREA));
+	var composeTable = this._headerEl;
+
+	Dwt.setHandler(composeTable, DwtEvent.ONDRAGENTER, htmlEditor._onDragEnter.bind(htmlEditor));
+	Dwt.setHandler(composeDragArea, DwtEvent.ONDRAGLEAVE, htmlEditor._onDragLeave.bind(htmlEditor));
+	Dwt.setHandler(composeDragArea, DwtEvent.ONDROP, htmlEditor._onDrop.bind(htmlEditor, this._dnd));
 };
 
 ZmComposeView.prototype._createHtml =
@@ -3138,7 +3146,9 @@ function(templateId) {
 		replyAttRowId:		ZmId.getViewId(this._view, ZmId.CMP_REPLY_ATT_ROW),
 		attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
 		attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV),
-		attBtnId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_BTN)
+		attBtnId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_BTN),
+		compDragAreaId:     		ZmId.getViewId(this._view, ZmId.CMP_DRG_AREA),
+		editorDragAreaId:       	ZmId.getViewId(this._view, ZmId.EDT_DRG_AREA)
 	};
 
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);

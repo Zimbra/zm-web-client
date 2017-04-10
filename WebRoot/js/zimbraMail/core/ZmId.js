@@ -684,6 +684,8 @@ ZmId.CMP_ATT_COMPUTER_INP	= "_file_input_computer";
 ZmId.CMP_ATT_INLINE_INP		= "_file_input_inline";
 ZmId.CMP_ATT_INCL_ORIG_LINK	= "_show_orig";
 ZmId.CMP_DND_TOOLTIP        = "_zdnd_tooltip";
+ZmId.CMP_DRG_AREA			= "_cmp_drg_area";
+ZmId.EDT_DRG_AREA			= "_edt_drg_area";
 
 ZmId.CMP_TO_CELL			= "_to_cell";
 ZmId.CMP_CC_CELL			= "_cc_cell";
