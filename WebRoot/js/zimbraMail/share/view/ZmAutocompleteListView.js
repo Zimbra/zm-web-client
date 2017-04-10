@@ -833,7 +833,7 @@ function(on, str) {
 		var html = [], idx = 0;
 		html[idx++] = "<table role='presentation' cellpadding=0 cellspacing=0 border=0>";
 		html[idx++] = "<tr>";
-		html[idx++] = "<td><div class='ImgSpinner'></div></td>";
+		html[idx++] = "<td><div class='ImgLoader-view'></div></td>";
 		html[idx++] = "<td>" + ZmMsg.autocompleteWaiting + "</td>";
 		html[idx++] = "</tr>";
 		html[idx++] = "</table>";
@@ -1123,7 +1123,7 @@ function() {
 	if (!table) {
 		var html = [], idx = 0;
 		this._tableId = this.getHTMLElId() + '_table';
-		html[idx++] = "<table role='presentation' id='" + this._tableId + "' cellpadding=0 cellspacing=0 border=0>";
+		html[idx++] = "<table role='presentation' width='100%' id='" + this._tableId + "' cellpadding=0 cellspacing=0 border=0>";
 		html[idx++] = "</table>";
 		this.getHtmlElement().innerHTML = html.join("");
 		table = document.getElementById(this._tableId);
@@ -1171,7 +1171,7 @@ function(list, context) {
 	var len = this._matches.length;
 	for (var i = 0; i < len; i++) {
 		var match = this._matches[i];
-		if (match && (match.text || match.icon)) {
+		if (match && (match.name || match.email)) {
 			var rowId = match.id = this._getId("Row", i);
 			this._matchHash[rowId] = match;
 			var row = table.insertRow(-1);
@@ -1180,15 +1180,7 @@ function(list, context) {
 			row.index = i;
 			var html = [], idx = 0;
 			var cell = row.insertCell(-1);
-			cell.className = "AutocompleteMatchIcon";
-			if (match.icon) {
-				cell.innerHTML = (match.icon.indexOf('Dwt') !== -1) ? ["<div class='", match.icon, "'></div>"].join("") :
-								 									 AjxImg.getImageHtml(match.icon);
-			} else {
-				cell.innerHTML = "&nbsp;";
-			}
-			cell = row.insertCell(-1);
-			cell.innerHTML = AjxStringUtil.htmlEncode(match.text) || "&nbsp;";
+			cell.innerHTML = ( "<span class='acRowTop'>" + match.name + "</span>" + "<br/>" + match.email) || "&nbsp;";
 			if (forgetEnabled) {
 				this._insertLinkCell(this._forgetLink, row, rowId, this._getId("Forget", i), (match.score > 0));
 			}

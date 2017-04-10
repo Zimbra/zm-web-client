@@ -1330,9 +1330,75 @@ INPUT[type="text"].search_input-expanded:focus {
  */
 /* Outer container of message compose view */
 .ZmComposeView {
-	@PageBg@
-	@FullWidth@
+	@ComposeViewContainer@
 }
+
+.ZmComposeView > .ZPropertySheet {
+	@AppViewTopHeaderContainer@
+}
+
+/* Style for all rows except the From select row */
+.ZmComposeView .ZPropertySheet > tbody > tr:not(.ZmComposeFromFieldWrapper) {
+	@AppViewHeaderRows@
+}
+
+.ZmComposeView .ZPropertySheet > TBODY > TR > TD:first-child {
+	@AppViewHeaderRowFirstTd@
+}
+
+.ZmComposeView .ZPropertySheet>TBODY>TR>TD:first-child .ZWidgetTitle {
+	@AppViewHeaderButtonTitle@
+}
+
+.ZmComposeView .mce-tinymce {
+	@ComposeViewTinyMceContainer@
+}
+
+.ZmComposeView .ZmComposeFromFieldWrapper {
+	@ComposeViewFromWrapper@
+}
+
+.ZmComposeView .ZmComposeToFieldWrapper > td {
+	@ComposeViewToTd@
+}
+
+.ZmComposeView td.ZmComposeViewHeaderEmptyRight {
+	@ComposeViewHeaderEmptyRight@
+}
+
+.ZmComposeView .ZButton.ZHover .ZWidgetTitle,
+.ZmComposeView .ZButton.ZActive .ZWidgetTitle,
+.ZmComposeView .ZButton.ZFocused .ZWidgetTitle {
+	@AppViewButtonTitleHover@
+}
+
+.ZmComposeView .ZButton.ZHover .svg-icon,
+.ZmComposeView .ZButton.ZActive .svg-icon,
+.ZmComposeView .ZButton.ZFocused .svg-icon {
+	@AppViewButtonIconHover@
+}
+
+/* No change of bg color on hover */
+.ZmComposeView .ZHover .ZButtonBorder,
+.ZmComposeView .ZActive .ZButtonBorder,
+.ZmComposeView .ZFocused .ZButtonBorder,
+.ZmComposeView .ZSubMenuActive .ZButtonBorder {
+	@AppViewButtonHover@
+}
+
+.ZmComposeView .attBubbleContainer.ZFocused,
+.ZmComposeView .addrBubbleContainer.ZFocused {
+	@AppViewInputField-focused@
+}
+
+.ZmComposeView .addrBubbleContainer {
+	@AppViewAddrBubbleContainer@
+}
+
+.ZmComposeView .attBubbleContainer {
+	@AppViewAttBubbleContainer@
+}
+
 
 #IFDEF MSIE
 .ZmComposeView .ZPropertySheet {
@@ -1352,15 +1418,11 @@ INPUT[type="text"].search_input-expanded:focus {
 }
 
 .ZmComposeView .subjectField {
-	@FullWidth@
-	@InputBorder@
-	color:@TxtC@;
-	font-size:1rem;
-	height:1.8rem;
-/* MOW:why is this here ?  Use normal field defaults instead:
-	border:1px solid rgb(206,209,201);
-	padding:3px 6px 0px;
-*/
+	@ComposeViewSubjectInputField@
+}
+
+.ZmComposeView .subjectField:focus {
+	@AppViewInputField-focused@
 }
 
 /* to/cc/bcc textareas */
@@ -1474,7 +1536,8 @@ INPUT[type="text"].search_input-expanded:focus {
     box-sizing: content-box;
     -webkit-box-sizing: content-box;
 	@FontSize-big@
-	line-height: 2;
+	line-height: 3;
+	height: 3rem;
 }
 
 .addrBubbleContainer TEXTAREA {
@@ -1545,13 +1608,14 @@ INPUT[type="text"].search_input-expanded:focus {
 .attBubbleContainer.ZFocused TEXTAREA:focus,
 .addrBubbleContainer.ZFocused TEXTAREA:focus {
     outline:none;
+	background-color: transparent;
 }
 
 .attPlaceholderHint {
 	@Text-hint@
 	vertical-align: middle;
 	padding: 0px 2px;
-	line-height:2rem;
+	line-height:3rem;
 }
 
 .ZmGrantRightsDialog .addrBubbleContainer,
@@ -1602,7 +1666,7 @@ INPUT[type="text"].search_input-expanded:focus {
 
 /* Outer container */
 .ZmHtmlEditor {
-	padding:@TextPaddingSize@;
+	@ComposeViewHtmlEditor@
 }
 
 /* textarea where you type plain-text */
@@ -1610,6 +1674,7 @@ INPUT[type="text"].search_input-expanded:focus {
 	@FontSize-big@
 	@FontFamily-fixed@
 	@FullWidth@
+	@AppBorder@
 	overflow:auto;
 	padding:1px;
 }
@@ -3443,17 +3508,11 @@ HTML>BODY .appt-selected .appt_allday_body
  */
 
 .ZmAutocompleteListView {
-	@MenuContainer@
-	background-color:@ListItemBgColor-normal@;
-	width:auto;
-	padding:0px !important;
-	border-width:1px;
+	@AutoCompleteListViewContainer@
 }
 
 .acRow, .acRow-selected {
-	@ListItemHeight@
-	@ActiveCursor@
-	@DisableSelection@
+	@AutoCompleteRow@
 }
 
 .acRow {
@@ -3461,22 +3520,19 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .acRow-selected {
-	@ListItemContainer-selected@
+	@AutoCompleteRowSelected@
 }
 
-.ZmAutocompleteListView TD {
-	border-style:solid;
-	border-width:1px 0px;
-	border-color:@lighten(AppC,60)@;
-	border-top-color:@ListItemBgColor-normal@;
+.acRowTop {
+	@AutoCompleteRowTop@
 }
 
 .acWaiting {
-	@ListItemHeight@
-	background-color:@ListItemBgColor-normal@;
-	width:auto;
-	border:1px solid @darken(AltC,40)@;
-	padding:0px 3px;
+	@AutoCompleteWaitingContainer@
+}
+
+.acWaiting > table {
+	@AutoCompleteTableContainer@
 }
 
 .ZmPeopleAutocompleteListView TD {
@@ -3496,11 +3552,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .acRow TD {
-	@ListItemText@
-}
-
-.acRow-selected TD {
-	@ListItemText-selected@
+	@AutoCompleteListItemText@
 }
 
 .ZmAutocompleteListView TD.AutocompleteMatchIcon {
@@ -3509,10 +3561,11 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* not sure that these pseudoclasses will work in IE6 */
 .ZmAutocompleteListView TD:first-child {
-	padding-left:3px;
+	padding-left:@SkinWrapperPadding@;
 }
+
 .ZmAutocompleteListView TD:last-child {
-	padding-right:3px;
+	padding-right:10px;
 }
 
 .ZmAutocompleteListView .Link {
@@ -3529,7 +3582,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmAutocompleteListView .LinkText {
-	color:blue;
+	@AutoCompleteListViewLinkText@
 }
 
 .ZmAutocompleteListView .LinkText-hide {
