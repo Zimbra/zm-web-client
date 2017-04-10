@@ -686,6 +686,11 @@ SELECT                      {   @FieldBorder@   }
 .ZmHtmlEditor .mce-btn, .ZmHtmlEditor .mce-panel {
     background-color: @AppC@;
     background-image: none;
+    border: none;
+}
+
+.mce-container-body .mce-toolbar-grp {
+    padding-bottom: 10px;
 }
 
 /*
@@ -782,12 +787,19 @@ svg.Img_ImSmallDnD {
 /*Adding background for svg's with gradient via css background rule
   This can be removed once we have support for gradient's to be rendered with <use>
 */
-
 div.ImgTagStack {
     background: url("../img/zimbra.svg?v=@jsVersion@#ImgTagStack-view") no-repeat 2px center;
     background-size: 100% 100%;
     display: inline-block;
     @SmallIconSize@
+}
+
+/* Applying height/width to loader svg icon. This would not be required once we have
+    support for generating css with height/width from file name.
+*/
+div.ImgLoader-view {
+    height: @SmallIconWidth@ !important;
+    width: @SmallIconHeight@ !important;
 }
 
 /* Invite toolbar styling adjustment */
