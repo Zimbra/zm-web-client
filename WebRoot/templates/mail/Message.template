@@ -95,9 +95,17 @@
 
 
 <template id='mail.Message#MailAttachmentBubble'>
-		<span id="${id}" class="AttachmentLoading attachmentBubble AttachmentSpan" name="mailAttUploadingSpan" style="max-width:235px; position:static; overflow:visible;padding:0 2px 4px">
-			<span class="AttProgressSpan1">${fileName}</span>
-			<span class="AttProgressSpan2">${fileName}</span>
+		<span id="${id}" class="AttachmentLoading attachmentBubble AttachmentSpan AttachmentLoadingBubble" name="mailAttUploadingSpan">
+			<span class="AttProgressSpan1">
+				<span class="AttFileName">
+					${fileName}
+				</span>
+			</span>
+			<span class="AttProgressSpan2">
+				<span class="AttFileName">
+					${fileName}
+				</span>
+			</span>
 			<span onclick="window.appCtxt.getCurrentView()._abortUploadFile()" class="ImgBubbleDelete AttachmentClose"></span>
 		</span>
 </template>
@@ -397,6 +405,9 @@
 	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
 	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
 	<!-- header -->
+	<!-- Container for mainly creating a drag area for compose section, the height of which matches
+	the height of the compose section table, which can vary. -->
+	<div class='ComposeTableWrapper'>
 	<table id='${headerId}' width=100% class='ZPropertySheet' cellspacing='6'>
 		<$ if (appCtxt.multiAccounts) { $>
 			<tr class='ZmComposeFromFieldWrapper'>
@@ -457,6 +468,27 @@
 			</td>
 		</tr>
 	</table>
+
+	<div class='CompDragArea' id='${compDragAreaId}'>
+		<div class='AttachmentImgContainer'>
+			<$= AjxImg.getImageHtml({
+				imageName: 'AttachClip'
+				});
+			$>
+			<div class='AttachmentDrop'><$= ZmMsg.attachmentsDrop $>
+			</div>
+		</div>
+	</div>
+
+	<div class='EditorDragImgContainer' id='${editorDragAreaId}'>
+		<$= AjxImg.getImageHtml({
+			imageName:  'EditorDrag'
+			});
+		$>
+		<div class='InlineImgDrop'><$= ZmMsg.attachmentsImageDrop $>
+		</div>
+	</div>
+
 	<!-- compose editor is automatically appended below the header -->
 </template>
 
@@ -511,7 +543,10 @@
 					<$ var attachment = data.attachments[i]; $>
 
 					<span id='<$= attachment.spanId $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
-						<span>
+						<span tabindex=0 onclick="<$= attachment.closeHandler $>" onkeypress="<$= attachment.closeHandler $>" class="AttachmentClose" role="button" aria-label="<$= ZmMsg.remove $>">
+						<$= AjxImg.getImageHtml("BubbleDelete") $>
+						</span>
+						<span style='display:none'>
 							<input type="hidden" mid='<$=attachment.mid$>' value='<$=attachment.part$>' name='<$= data.fwdFieldName $>' >
 						</span>
 
@@ -522,9 +557,9 @@
 						<$= attachment.link $>
 						<$ } $>
 						<$ if (attachment.size) { $>
-							(<$= attachment.size $>)
+							<span class='attachmentSize'>(<$= attachment.size $>)</span>
 						<$ } $>
-						<span tabindex=0 onclick="<$= attachment.closeHandler $>" onkeypress="<$= attachment.closeHandler $>" class="ImgBubbleDelete AttachmentClose" role="button" aria-label="<$= ZmMsg.remove $>"></span>
+
 					</span>
 				<$ } $>
 
