@@ -67,7 +67,7 @@ BODY                                    {   margin:0px;     }
 /* hide the main screen initially - hide if html facade is not needed */
 #skin_outer                             {   display:none;   }
 /* hide search results toolbar initially */
-#skin_tr_search_results_toolbar         {   display:none; height:40px; width:100%;  }
+#skin_tr_search_results_toolbar         {   display:none; height:60px; width:100%;  }
 
 #skin_tr_main                           { height:100%; }
 
@@ -832,4 +832,9 @@ div.ImgTagStack {
 
 .DwtTreeItem .svg-icon {
     fill: @TreeItemTextColor@
+}
+
+/* Search Filter Buttons */
+.ZmSearchResultButton .ZButton .ZButtonTable .ZWidgetTitle {
+    @Text-link@
 }

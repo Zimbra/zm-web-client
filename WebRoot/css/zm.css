@@ -395,7 +395,7 @@ INPUT[type="text"].search_input-expanded:focus {
 }
 
 .ZmSearchResultsToolBar {
-	background-color:@AppC@;
+	@SearchResultToolbar@
 }
 
 .ZmSearchResultsToolBar .label {
@@ -411,24 +411,35 @@ INPUT[type="text"].search_input-expanded:focus {
 }
 
 .ZmSearchResultsFilterPanel {
-	width:100%;
-	height:100%;
-	background-color:@AppC@;
+	@SearchFilterPanel@
 }
 
 .ZmSearchResultsFilterPanel .header {
-	font-weight:bold;
-	margin:15px 0px 5px 5px;
+	@SearchToolbarHeader@
 }
 
 .ZmSearchResultsFilterPanel .filter {
-	margin-left:5px;
+	@SearchToolbarFilter@
 }
 
-.ZmSearchResultsFilterPanel .ZButton {
-	margin:5px;
-	width:90%;
-	height:20px;
+.ZmSearchResultsFilterPanel .filter > table label {
+	@SearchToolbarFilterText@
+}
+
+.ZmSearchResultsFilterPanel .ZButton > table {
+	@SearchToolbarButton@
+}
+
+.ZmSearchResultsFilterPanel .ZButton .ZButtonTable .ZWidgetTitle {
+	@SearchToolbarButtonText@
+}
+
+.ZmSearchFilterOpWrapper {
+	@SearchOpWrapper@
+}
+
+.ZSearchFilterOp {
+	@SearchOp@
 }
 
 .ZmSizeSearchFilterSubMenu {
@@ -444,20 +455,20 @@ INPUT[type="text"].search_input-expanded:focus {
 	margin-left:4px;
 }
 
-.ZmSearchResultText {
-	@AlignRight@
-	width:175px;
-	vertical-align:middle;
+.ZmSearchResultButton {
+	@SearchResultButton@
 }
 
 .ZmSearchResultInputField {
-	width:100%;
+	@SearchResultInputField@
 }
 
-.ZmSearchResultText,
-.ZmSearchResultInputField,
-.ZmSearchResultButton {
-	padding:0px 3px 0px 0px;
+.ZmSearchResultInputFieldIcon {
+	@SearchResultInputFieldIcon@
+}
+
+.ZmSearchResultText{
+	@SearchResultText@
 }
 
 /* cell surrounding a separator in the search toolbar */
@@ -1446,8 +1457,13 @@ INPUT[type="text"].search_input-expanded:focus {
 	@AddressBubbleOpActive@    
 }*/
 
-.ZmSearchResultsToolBar .addrBubbleHolder {
-	max-height: 2rem;
+.ZmSearchResultsToolBar .addrBubbleContainer {
+	@SearchFilterContainer@
+}
+
+.ZmSearchResultsToolBar .addrBubbleHolder,
+.ZmSearchResultsToolBar .addrBubbleHolder-empty {
+	@SearchFilter@
 }
 
 .addrBubbleContainer TEXTAREA,
@@ -4609,6 +4625,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	@ActiveCursor@
 }
 
+.ZCheckboxTable,
+.ZRadioButtonTable {
+	height: 100%;
+}
+
 .ZCheckboxTable>TBODY>TR>TD,
 .ZRadioButtonTable>TBODY>TR>TD {
 	padding:3px 0px;
@@ -4616,13 +4637,21 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZCheckboxTable INPUT[type="checkbox"] {
 	padding:0px;
-	margin:0px 3px;
+	margin:0px;
 }
 
 .ZRadioButtonTable INPUT[type="radio"] {
 	padding:0px;
 	margin:1px 3px;
 	vertical-align:text-bottom;
+}
+
+.ZCheckboxTableLeftText:not(:empty) {
+	@CheckboxTableLeftText@
+}
+
+.ZCheckboxTableRightText:not(:empty) {
+	@CheckboxTableRightText@
 }
 
 .ZInlineInput {
