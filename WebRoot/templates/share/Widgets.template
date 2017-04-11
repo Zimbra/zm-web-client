@@ -92,15 +92,23 @@
 <template id='share.Widgets#ZmSearchResultsToolBar'>
 	<table role="presentation" class='ZToolbarTable'>
 		<tr>
-			<td class='ZmSearchResultText'><div id='${id}_icon' class='ImgWarning_12' style='display:none; margin-right:5px;'></div><span id='${id}_label'></span></td>
+			<td class='ZmSearchResultText'>
+				<div id='${id}_icon' class='ImgWarning_12' style='display:none; margin-right:5px;'></div><span id='${id}_label'></span></td>
 			<td>
-			    <table role="presentation">
-			        <tr id='${id}_items'>
-                        <td id='${id}_inputFieldCell' class='ZmSearchResultInputField'></td>
-                        <td id='${id}_searchButton'   class='ZmSearchResultButton'></td>
-                        <td id='${id}_saveButton'     class='ZmSearchResultButton'></td>
-			        </tr>
-			    </table>
+				<table role="presentation">
+					<tr id='${id}_items'>
+						<td class='ZmSearchResultInputField'>
+							<div id='${id}_inputFieldCell'></div>
+							<div class="ZmSearchResultInputFieldIcon">
+								<$= AjxImg.getImageHtml("Search2") $>
+							</div>
+						</td>
+						<td class="ZmSearchResultButtonWrapper">
+							<div id='${id}_searchButton' class='ZmSearchResultButton'></div>
+							<div id='${id}_saveButton' class='ZmSearchResultButton'></div>
+						</td>
+					</tr>
+				</table>
 			</td>
 		</tr>
 	</table>
@@ -117,8 +125,10 @@
 	</div>
 	<div>
 		<div class='header'><$= ZmMsg.conditionals $></div>
-		<div style='margin:5px;'><$= ZmMsg.conditionalsDesc $></div>
-		<div id='${id}_conditionals'></div>
+		<div class="ZmSearchFilterOpWrapper">
+			<$= ZmMsg.conditionalsDesc $>
+			<div id='${id}_conditionals'></div>
+		</div>
 	</div>
 </template>
 
