@@ -681,6 +681,17 @@ function() {
     this._renderCurMsgFooter();
 };
 
+ZmConvView2.prototype._switchToFullComposeListener =
+function() {
+	var view = this._replyView;
+	this._compose({
+		msg: view._msg,
+		action: view.action
+	});
+	view.reset();
+	this._renderCurMsgFooter();
+};
+
 ZmConvView2.prototype._cancelListener =
 function() {
 	if (this._replyView && this._controller.popShield()) {
@@ -1056,8 +1067,6 @@ ZmConvReplyView = function(params) {
 	
 	this._convView = params.parent;
 	this._objectManager = new ZmObjectManager(this);
-
-	this.addControlListener(this._resized.bind(this));
 };
 
 ZmConvReplyView.prototype = new DwtComposite;
@@ -1108,10 +1117,13 @@ function(msg, msgView, op) {
 	this._replyToDiv.innerHTML = AjxTemplate.expand(this.TABLE_TEMPLATE, ai.participants[AjxEmailAddress.TO]);
 	this._replyCcDiv.innerHTML = gotCc ? AjxTemplate.expand(this.TABLE_TEMPLATE, ai.participants[AjxEmailAddress.CC]) : "";
 	Dwt.setVisible(this._replyCcDiv, gotCc);
-	setTimeout(this._resized.bind(this), 0);
 
 	var index = this._convView.getMsgViewIndex(msgView);
 	index = this._index = (index != -1) ? index + 1 : null;
+	if(index == null) {
+		// Put reply component on top
+		index = 0;
+	}
 	this.reparentHtmlElement(this._convView._messagesDiv, index);
 	msgView.addClassName("Reply");
 	msgView._createBubbles();
@@ -1176,14 +1188,21 @@ ZmConvReplyView.prototype._initializeToolbar = function() {
 	if (!this._replyToolbar) {
 		var buttons = [
 			ZmOperation.SEND,
-            ZmOperation.CANCEL,
-			ZmOperation.FILLER
+			ZmOperation.CANCEL,
+			ZmOperation.FILLER,
+			ZmOperation.SWITCH_TO_FULL_COMPOSE
 		];
 		var overrides = {};
 		overrides[ZmOperation.CANCEL] = {
-            tooltipKey: "cancel",
-            shortcut:   null
-        };
+			tooltipKey: "cancel",
+			shortcut:   null,
+			showImageInToolbar: true,
+			showTextInToolbar: true
+		};
+		overrides[ZmOperation.SEND] = {
+			showImageInToolbar: true,
+			showTextInToolbar: true
+		};
 		var tbParams = {
 			parent:				this,
 			buttons:			buttons,
@@ -1196,6 +1215,7 @@ ZmConvReplyView.prototype._initializeToolbar = function() {
 		var tb = this._replyToolbar = new ZmButtonToolBar(tbParams);
 		tb.addSelectionListener(ZmOperation.SEND, this._convView._sendListener.bind(this._convView));
 		tb.addSelectionListener(ZmOperation.CANCEL, this._convView._cancelListener.bind(this._convView));
+		tb.addSelectionListener(ZmOperation.SWITCH_TO_FULL_COMPOSE, this._convView._switchToFullComposeListener.bind(this._convView));
 	}
 };
 
@@ -1250,15 +1270,6 @@ function(addresses, type, addrs, used) {
 		}
 	}
 };
-
-ZmConvReplyView.prototype._resized =
-function() {
-	var bounds = this.boundsForChild(this._input);
-
-	Dwt.setSize(this._input, bounds.width, Dwt.CLEAR);
-};
-
-
 
 
 /**
@@ -1705,7 +1716,6 @@ ZmMailMsgCapsuleView.prototype._renderMessageFooter = function(msg, op) {
 	linkInfo[ZmOperation.REPLY_ALL]		    = {key: "replyAll",		        handler: this._handleReplyLink, 	    op: ZmOperation.REPLY_ALL,	disabled: isExternalAccount};
 	linkInfo[ZmOperation.FORWARD]		    = {key: "forward",		        handler: this._handleForwardLink,	    op: ZmOperation.FORWARD,    disabled: isExternalAccount};
 	linkInfo[ZmOperation.ACTIONS_MENU]	    = {key: "moreActions",	        handler: this._handleMoreActionsLink};
-	linkInfo[ZmOperation.COMPOSE_OPTIONS]	= {key: "moreComposeOptions",	handler: this._handleMoreOptionsLink,                               disabled: isExternalAccount};
 
 	var links;
 	var folder = appCtxt.getById(msg.folderId);
@@ -1928,16 +1938,6 @@ ZmMailMsgCapsuleView.prototype._handleReplyLink = function(id, op, ev, force) {
 	}
 	this._convView.setReply(this._msg, this, op);
     this._renderMessageFooter(this._msg, op);
-};
-
-ZmMailMsgCapsuleView.prototype._handleMoreOptionsLink = function(ev) {
-
-    this._convView._compose({
-        msg:    this._msg,
-        action: this.action
-    });
-    this._convView._replyView.reset();
-    this._renderMessageFooter(this._msg);
 };
 
 ZmMailMsgCapsuleView.prototype._handleEditDraftLink =
