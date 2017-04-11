@@ -984,7 +984,10 @@ function(ev, overview, treeItem, item) {
 
 			this._itemSelected(item);
 		}
-	}
+	} else if (treeItem._isHeader) {
+        // If header is not expanded then expand it
+        treeItem.setExpanded(!treeItem.getExpanded());
+    }
 };
 
 /**
