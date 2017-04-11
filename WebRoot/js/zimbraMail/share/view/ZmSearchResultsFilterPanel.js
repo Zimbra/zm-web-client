@@ -37,6 +37,8 @@ ZmSearchResultsFilterPanel = function(params) {
 	params.className = params.className || "ZmSearchResultsFilterPanel";
 	params.posStyle = Dwt.ABSOLUTE_STYLE;
 	DwtComposite.apply(this, arguments);
+
+	this.setScrollStyle(params.scroll || Dwt.SCROLL_Y); //set overflow-y auto
 	
 	// Need to wait for ZmApp.* constants to have been defined
 	if (!ZmSearchResultsFilterPanel.BASIC_FILTER) {
@@ -442,6 +444,7 @@ function() {
 			parent:			appCtxt.getShell(),
 			parentElement:	this._conditionalsContainer,
 			address:		cond,
+			className:		'ZSearchFilterOp',
 			addClass:		ZmParsedQuery.COND_OP[cond] ? ZmParsedQuery.COND : ZmParsedQuery.GROUP
 		};
 		var bubble = new ZmAddressBubble(bubbleParams);
