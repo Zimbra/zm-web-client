@@ -163,9 +163,6 @@ function(view, force) {
 			}
 			this._setReadingPanePref(view);
 			this._doublePaneView.setReadingPane(true);
-			if (replyView && view !== ZmSetting.RP_OFF) {
-				replyView._resized();
-			}
 		}
 	} else {
 		ZmMailListController.prototype.switchView.apply(this, arguments);
