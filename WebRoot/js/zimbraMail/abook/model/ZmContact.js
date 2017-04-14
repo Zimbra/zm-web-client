@@ -728,6 +728,7 @@ function(callback, errorCallback, batchCmd, deref) {
 	if (deref) {
 		jsonObj.GetContactsRequest.derefGroupMember = "1";
 	}
+	jsonObj.GetContactsRequest.returnCertInfo = "1"; //Fix for: ZCS-999 and ZCS-991
 	var request = jsonObj.GetContactsRequest;
 	request.cn = [{id:this.id}];
 
@@ -738,6 +739,7 @@ function(callback, errorCallback, batchCmd, deref) {
 		if (deref) {
 			jsonObj.GetContactsRequest.derefGroupMember = "1";
 		}
+		jsonObj.GetContactsRequest.returnCertInfo = "1"; //Fix for: ZCS-999 and ZCS-991
 		jsonObj.GetContactsRequest.cn = {id:this.id};
 		batchCmd.addRequestParams(jsonObj, respCallback, errorCallback);
 	} else {

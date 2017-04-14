@@ -681,10 +681,15 @@ function(actionUrl, canvas, obj, div, x, y) {
  */
 ZmZimletContext._translateZMObject =
 function(obj) {
-	// XXX Assumes all dragged objects are of the same type
-	var type = obj[0] ? obj[0].toString() : obj.toString();
-	return (ZmZimletContext._zmObjectTransformers[type])
-		? ZmZimletContext._zmObjectTransformers[type](obj) : obj;
+   var messages = [].concat(obj);
+   var transformedObjects = [];
+   
+   for(x = 0; x < messages.length; x++) {
+       var type = messages[x].toString();
+       transformedObjects[x] = (ZmZimletContext._zmObjectTransformers[type]) ? ZmZimletContext._zmObjectTransformers[type](messages[x]) : messages[x];
+   }
+   
+   return transformedObjects;
 };
 
 /**

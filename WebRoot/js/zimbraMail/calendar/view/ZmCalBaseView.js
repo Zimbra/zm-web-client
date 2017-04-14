@@ -590,6 +590,7 @@ function(ev) {
 	if (this._getItemData(div, "type") == ZmCalBaseView.TYPE_APPT) {
 		if (ev.button == DwtMouseEvent.LEFT || ev.button == DwtMouseEvent.RIGHT) {
 			this._itemClicked(div, ev);
+            this._controller.setCurrentListView(this);
 		}
 	}
 	return this._mouseDownAction(ev, div);
