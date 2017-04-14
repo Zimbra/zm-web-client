@@ -89,6 +89,8 @@ BODY                                    {   margin:0px;     }
 #skin_spacing_top_row .DwtLinkButtonDropDownArrowRow    {   background-color:@SkinTopRowColor@;     }
 #skin_spacing_top_row .ZmMoreTabs       {   @SkinTopRowMore@   }
 #skin_spacing_top_row .svg-icon         {   fill: @AppC@; opacity: 0.7;   }
+#skin_spacing_top_row .ZAppTab.ZHover .svg-icon,
+#skin_spacing_top_row .ZToolbarButton.ZHover .svg-icon   {   opacity: 1;   }
 
 /** Logo displayed in the app **/
 #skin_spacing_logo                      {}
