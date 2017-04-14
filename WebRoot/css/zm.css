@@ -1536,8 +1536,7 @@ INPUT[type="text"].search_input-expanded:focus {
     box-sizing: content-box;
     -webkit-box-sizing: content-box;
 	@FontSize-big@
-	line-height: 3;
-	height: 3rem;
+	line-height: 2;
 }
 
 .addrBubbleContainer TEXTAREA {
