@@ -1670,12 +1670,7 @@ INPUT[type="text"].search_input-expanded:focus {
 
 /* textarea where you type plain-text */
 .ZmHtmlEditor .ZmHtmlEditorTextArea {
-	@FontSize-big@
-	@FontFamily-fixed@
-	@FullWidth@
-	@AppBorder@
-	overflow:auto;
-	padding:1px;
+	@ComposeViewPlainTextEditor@
 }
 
 /* iframe where you edit HTML WYSIWYG-stylee */
