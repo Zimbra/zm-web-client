@@ -1171,16 +1171,27 @@ function(list, context) {
 	var len = this._matches.length;
 	for (var i = 0; i < len; i++) {
 		var match = this._matches[i];
-		if (match && (match.name || match.email)) {
+		var matchTypeContact = match.type == ZmAutocomplete.AC_TYPE_CONTACT || match.type == ZmAutocomplete.AC_TYPE_GAL;
+		if (match && (match.text || match.icon)) {
 			var rowId = match.id = this._getId("Row", i);
 			this._matchHash[rowId] = match;
 			var row = table.insertRow(-1);
 			row.className = this._origClass;
 			row.id = rowId;
 			row.index = i;
-			var html = [], idx = 0;
-			var cell = row.insertCell(-1);
-			cell.innerHTML = ( "<span class='acRowTop'>" + match.name + "</span>" + "<br/>" + match.email) || "&nbsp;";
+			var html = [], idx = 0, cell;
+			if (match.icon && !matchTypeContact) {
+				cell = row.insertCell(-1);
+				cell.className = "AutocompleteMatchIcon";
+				cell.innerHTML = (match.icon.indexOf('Dwt') !== -1) ? ["<div class='", match.icon, "'></div>"].join("") :
+					AjxImg.getImageHtml(match.icon);
+			}
+			cell = row.insertCell(-1);
+			if (matchTypeContact) {
+				cell.innerHTML = ("<span class='acRowTop'>" + match.name + "</span>" + "<br/>" + match.email) || "&nbsp;";
+			} else {
+				cell.innerHTML = match.text || "&nbsp;";
+			}
 			if (forgetEnabled) {
 				this._insertLinkCell(this._forgetLink, row, rowId, this._getId("Forget", i), (match.score > 0));
 			}
