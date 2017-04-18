@@ -4118,10 +4118,18 @@ HTML>BODY .appt-selected .appt_allday_body
 	overflow:auto;
 }
 
+.ZmAttachDialog .WindowOuterContainer {
+	@AttachDialogContainer@
+}
+
 .ZmAttachDialog-container {
 	overflow:hidden;
-	width:500px;
+	width:600px;
 	height:310px;
+}
+
+.ZmAttachDialog-container > .DwtComposite  {
+	margin-bottom: 10px;
 }
 
 .ZmAttachDialog-footer {
