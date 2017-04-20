@@ -2488,11 +2488,13 @@ INPUT.xform_field {
 }
 
 /** Folder chooser dropdown style **/
-
+.DwtMenu .ZmFolderChooser > table {
+	@FullWidth@
+}
 
 .DwtMenu .ZmFolderChooser .OverviewTree .DwtTreeItem:hover {
 	cursor: pointer;
-   @MenuItemBorder-hover@;
+	@MenuItemBorder-hover@;
 }
 
 .DwtMenu .ZmFolderChooser .OverviewTree .DwtTreeItem table {
