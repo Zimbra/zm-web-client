@@ -777,9 +777,12 @@ INPUT[type="text"].search_input-expanded:focus {
 	@MailCalendarView@
 }
 
-.MessageHeaderAttachments,
-.ZmMailMsgCapsuleView .attachments  {
+.MessageHeaderAttachments {
 	@MailMsgAttachments@
+}
+
+.ZmMailMsgCapsuleView .attachments {
+	@MailCapsuleViewAttachments@
 }
 
 .MessageHeaderAttachments > div {
@@ -6413,4 +6416,131 @@ a.ZmLinkDisabled {
 
 .ZPrimaryButton .ZButtonTable .ZWidgetTitle {
     color: @AppC@;
+}
+
+/* File type icon styles */
+.svg-icon.ImgUnknownDoc,
+.svg-icon.ImgGenericDoc,
+.svg-icon.ImgMSProjectDoc,
+.svg-icon.ImgMSVisioDoc {
+	@FileTypeUnknown@
+}
+
+.svg-icon.ImgExeDoc {
+	@FileTypeExe@
+}
+
+.svg-icon.ImgImageDoc {
+	@FileTypeImage@
+}
+
+.svg-icon.ImgPDFDoc {
+	@FileTypePdf@
+}
+
+.svg-icon.ImgEPSDoc {
+	@FileTypeEps@
+}
+
+.svg-icon.ImgMSExcelDoc {
+	@FileTypeExl@
+}
+.svg-icon.ImgMSPowerpointDoc {
+	@FileTypePPT@
+}
+
+.svg-icon.ImgMSWordDoc,
+.svg-icon.ImgDoc {
+	@FileTypeDoc@
+}
+
+.svg-icon.ImgZipDoc {
+	@FileTypeZip@
+}
+
+.svg-icon.ImgAudioDoc,
+.svg-icon.ImgVideoDoc {
+	@FileTypeMedia@
+}
+
+.svg-icon.ImgMessageDoc {
+	@FileTypeMail@
+}
+
+.svg-icon.ImgHtmlDoc {
+	@FileTypeHtml@
+}
+
+.svg-icon.ImgContactDoc {
+	@FileTypeVCard@
+}
+
+.svg-icon.ImgEventDoc {
+	@FileTypeCal@
+}
+
+/* Reading pane mail attachment styles */
+.ZmMailAttachmentsTable {
+	@MailAttachmentsTable@
+}
+
+.ZmMailAttachmentItem {
+	@MailAttachmentItem@
+}
+
+.ZmMailAttachmentItem:hover,
+.ZmMailAttachmentItem:active,
+.ZmMailAttachmentItem:focus {
+	@MailAttachmentItemActive@
+}
+
+.ZmMailAttachmentIcon,
+.ZmMailAttachmentIcon .svg-icon {
+	@MailAttachmentIcon@
+}
+
+.ZmMailAttachmentMetaInfo {
+	@MailAttachmentMetaInfo@
+}
+
+.ZmMailAttachmentMetaInfo > * {
+	display: inline-block;
+}
+
+.ZmMailAttachmentFileName {
+	@MailAttachmentFileName@
+}
+
+.ZmMailAttachmentFileName a.AttLink {
+	@MailAttachmentFileText@
+}
+
+.ZmMailAttachmentFileSize {
+	@MailAttachmentFileSize@
+}
+
+.ZmMailAttachmentLinks {
+	@MailAttachmentLinks@	
+}
+
+.ZmMailAttachmentLinks a.AttLink {
+	@MailAttachmentLinksText@
+}
+
+.ZmMailAttachmentItem:hover .ZmMailAttachmentLinks,
+.ZmMailAttachmentItem:active .ZmMailAttachmentLinks,
+.ZmMailAttachmentItem:focus .ZmMailAttachmentLinks {
+	opacity: 1;
+}
+
+.ZmMailAttachmentsAllTable {
+	@MailAttachmentsAllTable@
+}
+
+.ZmMailAttachmentsAllTable TD {
+	@MailAttachmentsAllItem@
+}
+
+.ZmMailAttachmentsAllTable TD a.AttLink {
+	@MailAttachmentsAllText@
 }

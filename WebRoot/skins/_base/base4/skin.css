@@ -852,3 +852,12 @@ div.ImgLoader-view {
 .ZmSearchResultButton .ZButton .ZButtonTable .ZWidgetTitle {
     @Text-link@
 }
+
+/* Custom spacing between cells in mail attachment container */
+.ZmMailAttachmentsTable > TBODY > TR > TD {
+    padding-left: @MailViewGutterSpace@
+}
+
+.ZmMailAttachmentsTable > TBODY > TR > TD:first-of-type {
+    padding-left: 0;
+}
