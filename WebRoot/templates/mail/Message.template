@@ -246,21 +246,21 @@
 								</table>
 							</div>	
 						</div>
-						<$ if (data.hasAttachments) { $>
+					</div>
+					<$ if (data.hasAttachments) { $>
 							<div class="MessageHeaderAttachments" id="${attachId}_container">
 								<div id="${attachId}" style='overflow:auto;'></div>
 							</div>
-						<$ } $>
-					</div>
-				<$ if (data.intendedForMsg) { $>
-					<div class="${intendedForClassName}">
-						<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-							<tr>
-								<td>${intendedForMsg}</td>
-							</tr>
-						</table>
-					</div>
-				<$ } $>
+					<$ } $>
+					<$ if (data.intendedForMsg) { $>
+						<div class="${intendedForClassName}">
+							<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+								<tr>
+									<td>${intendedForMsg}</td>
+								</tr>
+							</table>
+						</div>
+					<$ } $>
 				</td>
 				<td id='${id}_contactArea' class='ContactArea'>
 					<!-- Area reserved zimlets to add to message views. -->
@@ -338,37 +338,24 @@
 </template>
 
 <template id='mail.Message#AllAttachments'>
-	<table role="presentation" style='margin:5px 0 1px'>
-		<$ if (data.viewAllUrl && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
-			<tr>
-				<td width='1%' style='padding-right:3px;'>
-					<$= AjxImg.getImageHtml("ViewAll", "position:relative;") $>
-				</td>
-				<td style='white-space:nowrap;'>
-					<a style='text-decoration:underline' class='AttLink' href='${viewAllUrl}' target="_blank"><$= ZmMsg.viewAllImages $></a>
-				</td>
-			</tr>
-		<$}$>
-		<$ if (!appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) && !appCtxt.get(ZmSetting.ATTACHMENTS_VIEW_IN_HTML_ONLY)) { $>
+	<table role="presentation" class="ZmMailAttachmentsAllTable">
 		<tr>
-			<td width='1%' style='padding-right:3px;'>
-				<$= AjxImg.getImageHtml(ZmMimeTable.getInfo(ZmMimeTable.APP_ZIP).image, "position:relative;") $>
-			</td>
-			<td style='white-space:nowrap;'>
-				<a style='text-decoration:underline' class='AttLink' id='${downloadAllLinkId}' href='${url}&disp=a&fmt=zip'><$= ZmMsg.downloadAll $></a>
-			</td>
+			<$ if (data.viewAllUrl && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
+				<td>
+					<a class='AttLink' href='${viewAllUrl}' target="_blank"><$= ZmMsg.viewAllImages $></a>
+				</td>
+			<$}$>
+			<$ if (!appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) && !appCtxt.get(ZmSetting.ATTACHMENTS_VIEW_IN_HTML_ONLY)) { $>
+				<td>
+					<a class='AttLink' id='${downloadAllLinkId}' href='${url}&disp=a&fmt=zip'><$= ZmMsg.downloadAll $></a>
+				</td>
+			<$}$>
+			<$ if (!appCtxt.isExternalAccount()) { $>
+				<td>
+					<a class='AttLink' id='${removeAllLinkId}' href="javascript:;"><$= ZmMsg.removeAllAttachments $></a>
+				</td>
+			<$}$>
 		</tr>
-		<$ } $>
-		<$ if (!appCtxt.isExternalAccount()) { $>
-		<tr>
-			<td width='1%' style='padding-right:3px;'>
-				<$= AjxImg.getImageHtml("AttachmentRemove", "position:relative;") $>
-			</td>
-			<td style='white-space:nowrap;'>
-				<a style='text-decoration:underline' class='AttLink' id='${removeAllLinkId}' href="javascript:;"><$= ZmMsg.removeAllAttachments $></a>
-			</td>
-		</tr>
-		<$ } $>
 	</table>
 </template>
 
