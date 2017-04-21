@@ -41,7 +41,7 @@ ZmMailMsgView = function(params) {
 
 	this._scrollWithIframe = params.scrollWithIframe;
 	this._limitAttachments = this._scrollWithIframe ? 3 : 0; //making it local
-	this._attcMaxSize = this._limitAttachments * 16 + 8;
+	this._attcMaxSize = this._limitAttachments * 32 + 8;
 	this.setScrollStyle(this._scrollWithIframe ? DwtControl.CLIP : DwtControl.SCROLL);
 
 	ZmTagsHelper.setupListeners(this); //setup tags related listeners.
@@ -2010,7 +2010,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 
 	var attColumns = (this._controller.isReadingPaneOn() && this._controller.isReadingPaneOnRight()) ? 1 : ZmMailMsgView.ATTC_COLUMNS;
 	var dividx = idx;	// we might get back here
-	htmlArr[idx++] = "<table id='" + this._attLinksId + "_table' border=0 cellpadding=0 cellspacing=0>";
+	htmlArr[idx++] = "<table class='ZmMailAttachmentsTable' id='" + this._attLinksId + "_table' border=0 cellpadding=0 cellspacing=0>";
 
 	var attLinkIds = [];
 	var rows = 0;
@@ -2026,15 +2026,14 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 		}
 
 		htmlArr[idx++] = "<td>";
-		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='margin-right:1em; margin-bottom:1px'><tr>";
-		htmlArr[idx++] = "<td style='width:18px'>";
+		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmMailAttachmentItem'><tr>";
+		htmlArr[idx++] = "<td class='ZmMailAttachmentIcon'>";
 		htmlArr[idx++] = AjxImg.getImageHtml({
 			imageName: att.linkIcon,
-			styles: "position:relative;",
 			altText: ZmMsg.attachment
 		});
-		htmlArr[idx++] = "</td><td style='white-space:nowrap'>";
-
+		htmlArr[idx++] = "</td><td class='ZmMailAttachmentMetaInfo'>";
+		htmlArr[idx++] = "<div class='ZmMailAttachmentFileName'>"; //Filename wrapper
 		if (appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
 			// if attachments are blocked, just show the label
 			htmlArr[idx++] = att.label;
@@ -2068,24 +2067,31 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 				htmlArr[idx++] = link;
 			}
 		}
-		
+		htmlArr[idx++] = "</div>"; //close `ZmMailAttachmentFileName` class
 		// add any discretionary links depending on the attachment and what's enabled
 		var linkCount = 0;
 		var vCardLink = (att.links.vcard && !appCtxt.isWebClientOffline());
 		if (!appCtxt.isExternalAccount() && (att.size || att.links.html || vCardLink || att.links.download || att.links.briefcase || att.links.importICS)) {
 			// size
-			htmlArr[idx++] = "&nbsp;(";
+			htmlArr[idx++] = "<div class='ZmMailAttachmentFileSize'>"; //filesize wrapper
 			if (att.size) {
+				htmlArr[idx++] = "(";
 				htmlArr[idx++] = att.size;
-				htmlArr[idx++] = ") ";
+				htmlArr[idx++] = ")";
 			}
+			htmlArr[idx++] = "</div>"; //close `ZmMailAttachmentFileSize`
+			htmlArr[idx++] = "<div class='ZmMailAttachmentLinks'>"; //attachment links wrapper
 			// convert to HTML
 			if (att.links.html && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
 				var params = {
-					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_HTML),
-					blankTarget:	true,
-					href:			att.url + "&view=html",
-					text:			ZmMsg.preview
+					id: this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_HTML),
+					blankTarget: true,
+					noUnderline: true,
+					href: att.url + "&view=html",
+					text: ZmMsg.preview,
+					icon: 'Preview',
+					showText: false,
+					showIcon: true
 				};
 				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
 				linkCount++;
@@ -2094,9 +2100,13 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 			// save as vCard
 			else if (vCardLink) {
 				var params = {
-					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_VCARD),
-					jsHref:			true,
-					text:			ZmMsg.addressBook
+					id: this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_VCARD),
+					jsHref: true,
+					noUnderline: true,
+					text: ZmMsg.addressBook,
+					icon: 'AddContact',
+					showText: false,
+					showIcon: true
 				};
 				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
 				linkCount++;
@@ -2104,11 +2114,14 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 			}
 			// save locally
 			if (att.links.download && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) && !appCtxt.get(ZmSetting.ATTACHMENTS_VIEW_IN_HTML_ONLY)) {
-				htmlArr[idx++] = linkCount ? " | " : "";
 				var params = {
-					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_DOWNLOAD),
-                    text:			ZmMsg.download
-                };
+					id: this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_DOWNLOAD),
+					text: ZmMsg.download,
+					noUnderline: true,
+					icon: 'Download',
+					showText: false,
+					showIcon: true
+				};
                 if (att.url.indexOf("data:") === -1) {
                     params.href = att.url + "&disp=a";
                 } else {
@@ -2122,11 +2135,14 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 			}
 			// add as Briefcase file
 			if (att.links.briefcase && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) && !appCtxt.isWebClientOffline()) {
-				htmlArr[idx++] = linkCount ? " | " : "";
 				var params = {
-					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_BRIEFCASE),
-					jsHref:			true,
-					text:			ZmMsg.addToBriefcase
+					id: this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_BRIEFCASE),
+					jsHref: true,
+					noUnderline: true,
+					text: ZmMsg.addToBriefcase,
+					icon: 'Save',
+					showText: false,
+					showIcon: true
 				};
 				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
 				linkCount++;
@@ -2134,11 +2150,14 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 			}
 			// add ICS as calendar event
 			if (att.links.importICS) {
-				htmlArr[idx++] = linkCount ? " | " : "";
 				var params = {
-					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_CALENDAR),
-					jsHref:			true,
-					text:			ZmMsg.addToCalendar
+					id: this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_CALENDAR),
+					jsHref: true,
+					noUnderline: true,
+					text: ZmMsg.addToCalendar,
+					icon: 'AddEvent',
+					showText: false,
+					showIcon: true
 				};
 				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
 				linkCount++;
@@ -2146,11 +2165,14 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 			}
 			// remove attachment from msg
 			if (att.links.remove && !appCtxt.isWebClientOffline()) {
-				htmlArr[idx++] = linkCount ? " | " : "";
 				var params = {
-					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_REMOVE),
-					jsHref:			true,
-					text:			ZmMsg.remove
+					id: this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_REMOVE),
+					jsHref: true,
+					noUnderline: true,
+					text: ZmMsg.remove,
+					icon: 'Remove',
+					showText: false,
+					showIcon: true
 				};
 				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
 				linkCount++;
@@ -2167,12 +2189,13 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 						if (handlerFunc) {
 							var customHandlerLinkHTML = handlerFunc.call(this, att);
 							if (customHandlerLinkHTML) {
-								htmlArr[idx++] = " | " + customHandlerLinkHTML;
+								htmlArr[idx++] = customHandlerLinkHTML;
 							}
 						}
 					}
 				}
 			}
+			htmlArr[idx++] = "</div>"; //close `ZmMailAttachmentLinks`
 		}
 
 		htmlArr[idx++] = "</td></tr></table>";
@@ -2183,7 +2206,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 		}
 	}
 
-	// limit display size.  seems like an attc. row has exactly 16px; we set it
+	// limit display size.  seems like an attc. row has exactly 32px; we set it
 	// to 56px so that it becomes obvious that there are more attachments.
 	if (this._limitAttachments != 0 && rows > ZmMailMsgView._limitAttachments) {
 		htmlArr[dividx] = "<div style='height:";
@@ -2201,7 +2224,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 
 	if (!hasGeneratedAttachments && attInfo.length > 1 && !appCtxt.isWebClientOffline()) {
 		allAttParams = this._addAllAttachmentsLinks(attInfo, (imageAttsFound > 1), this._msg.subject);
-		htmlArr[idx++] = allAttParams.html;
+		htmlArr.unshift(allAttParams.html); //prepends all-attachments links
 	}
 
 	// Push all that HTML to the DOM
@@ -2279,6 +2302,8 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 ZmMailMsgView.getAttachmentLinkHtml =
 function(params) {
 	var html = [], i = 0;
+	var showText = AjxUtil.isSpecified(params.showText) ? params.showText : true;
+	var showIcon = AjxUtil.isSpecified(params.showIcon) ? params.showIcon : false;
 	html[i++] = "<a class='AttLink' ";
 	html[i++] = params.id ? "id='" + params.id + "' " : "";
 	html[i++] = !params.noUnderline ? "style='text-decoration:underline' " : "";
@@ -2293,8 +2318,14 @@ function(params) {
 		html[i++] = params.rfc822Part;
 		html[i++] = "\"); return false;'";
 	}
-	html[i++] = "title='" + AjxStringUtil.encodeQuotes(AjxStringUtil.htmlEncode(params.label || params.text));
-	html[i++] = "'>" + AjxStringUtil.htmlEncode(params.text) + "</a>";
+	html[i++] = "title='" + AjxStringUtil.encodeQuotes(AjxStringUtil.htmlEncode(params.label || params.text)) + "'>" ;
+	if(showIcon && params.icon) {
+		html[i++] = AjxImg.getImageHtml(params.icon);
+	}
+	if(showText) {
+		html[i++] = AjxStringUtil.htmlEncode(params.text);
+	}
+	html[i++] = "</a>";
 
 	return html.join("");
 };
