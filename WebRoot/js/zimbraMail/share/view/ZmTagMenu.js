@@ -183,8 +183,27 @@ function(tagList, addRemove) {
 		var tagName = addRemove.add[i];
 		this._addNewTag(this, tagName, tagList, true, null, this._addHash);
 	}
+	
+	var removeList = addRemove.remove;
+	if (removeList.length > 0) {
+		for (i = 0; i < removeList.length; i++) {
+			var tagName = removeList[i];
+			var tagHtmlId = 'Remove_tag_' + i;
+			this._addNewTag(this, tagName, tagList, false, null, this._removeHash, tagHtmlId);
+		}
+		//remove all tags
+		new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});
+		var mi = new DwtMenuItem({parent:this, id:"REMOVE_ALL_TAGS", className: "ZAddNewMenuItem"});
+		mi.setText(ZmMsg.allTags);
+		mi.setImage("Close");
+		mi.setShortcut(appCtxt.getShortcutHint(this._keyMap, ZmKeyMap.UNTAG));
+		mi.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_REMOVE_ALL);
+		mi.setData(Dwt.KEY_OBJECT, removeList);
+		mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
+	}
 
-	if (addRemove.add.length) {
+	//add separator at end of tags if no selected tags.
+	if(removeList.length == 0 ) {
 		new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});
 	}
 
@@ -193,61 +212,20 @@ function(tagList, addRemove) {
 	var addid = map ? (map + "_newtag"):this._htmlElId + "|NEWTAG";
 	var removeid = map ? (map + "_removetag"):this._htmlElId + "|REMOVETAG";
 
-	var miNew = this._menuItems[ZmTagMenu.MENU_ITEM_ADD_ID] = new DwtMenuItem({parent:this, id: addid});
+	var miNew = this._menuItems[ZmTagMenu.MENU_ITEM_ADD_ID] = new DwtMenuItem({parent:this, id: addid, className: "ZAddNewMenuItem"});
 	miNew.setText(ZmMsg.newTag);
 	miNew.setImage("Plus");
 	miNew.setShortcut(appCtxt.getShortcutHint(this._keyMap, ZmKeyMap.NEW_TAG));
 	miNew.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_CREATE);
 	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 	miNew.setEnabled(!appCtxt.isWebClientOffline());
-
-	// add static "Remove Tag" menu item
-	var miRemove = this._menuItems[ZmTagMenu.MENU_ITEM_REM_ID] = new DwtMenuItem({parent:this, id: removeid});
-	miRemove.setEnabled(false);
-	miRemove.setText(ZmMsg.removeTag);
-	miRemove.setImage("Close");
-
-	var removeList = addRemove.remove;
-	if (removeList.length > 0) {
-		miRemove.setEnabled(true);
-		var removeMenu = null;
-		if (removeList.length > 1) {
-			for (i = 0; i < removeList.length; i++) {
-				if (!removeMenu) {
-					removeMenu = new DwtMenu({parent:miRemove, className:this._className});
-					miRemove.setMenu(removeMenu);
-                    removeMenu.setHtmlElementId('REMOVE_TAG_MENU_' + this.getHTMLElId());
-				}
-				var tagName = removeList[i];
-                var tagHtmlId = 'Remove_tag_' + i;
-				this._addNewTag(removeMenu, tagName, tagList, false, null, this._removeHash, tagHtmlId);
-			}
-			// if multiple removable tags, offer "Remove All"
-			new DwtMenuItem({parent:removeMenu, style:DwtMenuItem.SEPARATOR_STYLE});
-			var mi = new DwtMenuItem({parent:removeMenu, id:"REMOVE_ALL_TAGS"});
-			mi.setText(ZmMsg.allTags);
-			mi.setImage("TagStack");
-			mi.setShortcut(appCtxt.getShortcutHint(this._keyMap, ZmKeyMap.UNTAG));
-			mi.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_REMOVE_ALL);
-			mi.setData(Dwt.KEY_OBJECT, removeList);
-			mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
-		}
-		else {
-			var tag = tagList.getByNameOrRemote(removeList[0]);
-			miRemove.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_TAGS);
-			miRemove.setData(ZmTagMenu.KEY_TAG_ADDED, false);
-			miRemove.setData(Dwt.KEY_OBJECT, tag);
-			miRemove.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
-		}		
-
-	}
 };
 
 ZmTagMenu.tagNameLength = 20;
 ZmTagMenu.prototype._addNewTag =
 function(menu, newTagName, tagList, add, index, tagHash, tagHtmlId) {
 	var newTag = tagList.getByNameOrRemote(newTagName);
-	var mi = new DwtMenuItem({parent:menu, index:index, id:tagHtmlId});
+	var mi = new DwtMenuItem({parent:menu, index:index, id:tagHtmlId, style:DwtMenuItem.CHECK_STYLE});
     var tagName = AjxStringUtil.clipByLength(newTag.getName(false),ZmTagMenu.tagNameLength);
 	var nameText = newTag.notLocal ? AjxMessageFormat.format(ZmMsg.tagNotLocal, tagName) : tagName;
     mi.setText(nameText);
@@ -256,6 +234,10 @@ function(menu, newTagName, tagList, add, index, tagHash, tagHtmlId) {
 	mi.setData(ZmTagMenu.KEY_TAG_ADDED, add);
 	mi.setData(Dwt.KEY_OBJECT, newTag);
 	mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
+
+	// add checkmark if tag is added already.
+	!add && mi.setChecked(true, true);
+	
 //	mi.setShortcut(appCtxt.getShortcutHint(null, ZmKeyMap.TAG));
 	tagHash[newTag.id] = mi;
 };
