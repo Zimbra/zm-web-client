@@ -91,8 +91,6 @@
 <template id='dwt.Widgets#DwtVerticalSash' width='0' height='0'>
 	<div class='DwtVerticalSash'>
 		<div class='VSashContainer'>
-            <!-- Don't show sash thumb image -->
-			<!-- div class='VSashThumb ImgVSash_thumb'></div -->
 		</div>
 	</div>
 </template>
@@ -100,8 +98,6 @@
 <template id='dwt.Widgets#DwtHorizontalSash' width='0' height='0'>
 	<div class='DwtHorizontalSash'>
 		<div class='HSashContainer'>
-            <!-- Don't show sash thumb image -->
-			<!-- div class='HSashThumb ImgHSash_thumb'></div -->
 		</div>
 	</div>
 </template>
