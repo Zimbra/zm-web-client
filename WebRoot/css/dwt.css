@@ -152,13 +152,11 @@
 .AppSash-vert 						{	@VSashSize@			}		/* outer class for sash */
 .DwtVerticalSash					{	@Sash@ @VSash@		}
 .VSashContainer						{	@SashContainer@ @VSashContainer@	}
-.VSashThumb							{	@SashThumb@ @VSashThumb@		}
 
 /* Horizontal sash -- splits a pane horizontally (into two wide panes) */
 .AppSash-horiz 						{	@HSashSize@			}		/* outer class for sash */
 .DwtHorizontalSash					{	@Sash@ @HSash@		}
 .HSashContainer						{	@SashContainer@ @HSashContainer@	}
-.HSashThumb							{	@SashThumb@ @HSashThumb@		}
 
 
 .RightBorderSeparator				{	border-right:5px solid @SeparatorColor@; 	}
