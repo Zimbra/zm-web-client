@@ -1710,10 +1710,10 @@ function(item, index, skipNotify, itemIndex) {
 			// Set a row offset to 1 for sorting dateDsc to skip first header
 			var offset = 1;
 			// If sorting is dateAsc then offset by all headers when adding a row
-			if (this._sortByString == "dateAsc") {
-				offset = this._group._sectionHeaders.length;
+			if (this._sortByString === ZmSearch.DATE_ASC) {
+				offset = this._group.getAllSectionHeaders().length;
 			}
-			this._addRow(div, index+offset); //account for header
+			this._addRow(div, index + offset); //account for header
 
 		}
 	}
