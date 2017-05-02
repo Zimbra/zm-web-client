@@ -1,3 +1,6 @@
+
+#comment goes here 
+
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="zm-web-client" default="war">
     <import file="../zm-zcs/ant-global.xml"/>
     <property name="ajax.dir" location="../zm-ajax" />
@@ -1567,6 +1570,4 @@ ext = BeanUtils.cook(ext);
     <target name="jquery">
         <copy todir='${jquery.dir}' file='${web.dir}/jquery/${jquery.version}/jquery.js' verbose='${sync.verbose}'/>
     </target>
-
-    
 </project>
