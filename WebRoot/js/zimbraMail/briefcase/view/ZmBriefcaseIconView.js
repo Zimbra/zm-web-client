@@ -89,14 +89,14 @@ function(item, params) {
 	}
 	
 	htmlArr[idx++] = "<table><tr>";
-    if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-        htmlArr[idx++] = "<td>";
-        idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, ZmItem.F_SELECTION));
-        htmlArr[idx++] = "</td>";
-    }
-    htmlArr[idx++] = "<td><div class='Img";
-	htmlArr[idx++] = icon;
-	htmlArr[idx++] = "'></div></td><td nowrap>";
+	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+		htmlArr[idx++] = "<td>";
+		idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, ZmItem.F_SELECTION));
+	htmlArr[idx++] = "</td>";
+	}
+	htmlArr[idx++] = "<td>";
+	htmlArr[idx++] = AjxImg.getImageHtml({imageName: icon, classes: ["ZmBriefcaseItemIcon"]});
+	htmlArr[idx++] = "</td><td nowrap>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
 	htmlArr[idx++] = "</td><tr></table>";
 	
@@ -112,8 +112,8 @@ function(item, params) {
 ZmBriefcaseIconView.prototype.set =
 function(list, sortField, doNotIncludeFolders){
 
-    doNotIncludeFolders = true;
+	doNotIncludeFolders = true;
 
-    ZmBriefcaseBaseView.prototype.set.call(this, list, sortField, doNotIncludeFolders);
+	ZmBriefcaseBaseView.prototype.set.call(this, list, sortField, doNotIncludeFolders);
 
 };

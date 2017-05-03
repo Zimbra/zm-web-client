@@ -589,6 +589,7 @@ LI.RowDouble, LI.Row {list-style: none;}
 /* .Row-matched TD			 	{ 	@ListItemText-matched@				} */
 
 .Row-focused TD 				{	@ListItemText-focused@			}
+.Row-selected.Row-focused TD 				{	@ListItemText-selected@			}
 
 .Row-selected-right TD			{	@ListItemText-actioned@			}
 
