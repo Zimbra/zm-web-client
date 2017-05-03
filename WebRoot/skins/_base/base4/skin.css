@@ -786,6 +786,67 @@ svg.ImgColumnDownArrow{
     fill: @IconMiniCalendarTitlebar@;
 }
 
+/* File type icon styles */
+.svg-icon.ImgUnknownDoc,
+.svg-icon.ImgGenericDoc,
+.svg-icon.ImgMSProjectDoc,
+.svg-icon.ImgMSVisioDoc {
+    @FileTypeUnknown@
+}
+
+.svg-icon.ImgExeDoc {
+    @FileTypeExe@
+}
+
+.svg-icon.ImgImageDoc {
+    @FileTypeImage@
+}
+
+.svg-icon.ImgPDFDoc {
+    @FileTypePdf@
+}
+
+.svg-icon.ImgEPSDoc {
+    @FileTypeEps@
+}
+
+.svg-icon.ImgMSExcelDoc {
+    @FileTypeExl@
+}
+.svg-icon.ImgMSPowerpointDoc {
+    @FileTypePPT@
+}
+
+.svg-icon.ImgMSWordDoc,
+.svg-icon.ImgDoc {
+    @FileTypeDoc@
+}
+
+.svg-icon.ImgZipDoc {
+    @FileTypeZip@
+}
+
+.svg-icon.ImgAudioDoc,
+.svg-icon.ImgVideoDoc {
+    @FileTypeMedia@
+}
+
+.svg-icon.ImgMessageDoc {
+    @FileTypeMail@
+}
+
+.svg-icon.ImgHtmlDoc {
+    @FileTypeHtml@
+}
+
+.svg-icon.ImgContactDoc {
+    @FileTypeVCard@
+}
+
+.svg-icon.ImgEventDoc {
+    @FileTypeCal@
+}
+
 /* Chat icons*/
 
 svg.Img_ImSmallAvailable {
