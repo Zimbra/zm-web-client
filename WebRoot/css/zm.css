@@ -4176,6 +4176,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmAttachDialog-inline {
 	height:20px;
+	margin-top:12px;
 }
 
 .ZmAttachDialog-removeLink {
@@ -5236,9 +5237,27 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmAttachDialog-container .ZmBriefcaseItemSmall {
-	border-style:solid; 
-	border-width:1px 0px;
-	border-color:@lighten(AppC,60)@
+	@AttachBriefcaseItem@
+}
+
+.ZmAttachDialog-container .ZmBriefcaseItemSmall.Row-selected {
+	@AttachBriefcaseItemSelected@
+}
+
+.ZmAttachDialog-container .ZmBriefcaseItemSmall td:nth-child(2),
+.ZmAttachDialog-container .ZmBriefcaseItemSmall td:nth-child(3) {
+	@AttachBriefcaseItemChild@
+}
+
+.ZmAttachDialog-container .ZmBriefcaseItemSmall td:first-child {
+	@AttachBriefcaseItemFirstChild@
+}
+
+.ZmAttachDialog-container .ZmBriefcaseItemIcon .svg-icon {
+	@AttachBriefcaseItemIcon@
+}
+.ZmAttachDialog-container .ZmBriefcaseItemSmall td {
+	@TreeItemHeight@;
 }
 
 .ZmBriefcaseItemSelected .ZmThumbnailItem {
@@ -6452,67 +6471,6 @@ a.ZmLinkDisabled {
     color: @AppC@;
 }
 
-/* File type icon styles */
-.svg-icon.ImgUnknownDoc,
-.svg-icon.ImgGenericDoc,
-.svg-icon.ImgMSProjectDoc,
-.svg-icon.ImgMSVisioDoc {
-	@FileTypeUnknown@
-}
-
-.svg-icon.ImgExeDoc {
-	@FileTypeExe@
-}
-
-.svg-icon.ImgImageDoc {
-	@FileTypeImage@
-}
-
-.svg-icon.ImgPDFDoc {
-	@FileTypePdf@
-}
-
-.svg-icon.ImgEPSDoc {
-	@FileTypeEps@
-}
-
-.svg-icon.ImgMSExcelDoc {
-	@FileTypeExl@
-}
-.svg-icon.ImgMSPowerpointDoc {
-	@FileTypePPT@
-}
-
-.svg-icon.ImgMSWordDoc,
-.svg-icon.ImgDoc {
-	@FileTypeDoc@
-}
-
-.svg-icon.ImgZipDoc {
-	@FileTypeZip@
-}
-
-.svg-icon.ImgAudioDoc,
-.svg-icon.ImgVideoDoc {
-	@FileTypeMedia@
-}
-
-.svg-icon.ImgMessageDoc {
-	@FileTypeMail@
-}
-
-.svg-icon.ImgHtmlDoc {
-	@FileTypeHtml@
-}
-
-.svg-icon.ImgContactDoc {
-	@FileTypeVCard@
-}
-
-.svg-icon.ImgEventDoc {
-	@FileTypeCal@
-}
-
 /* Reading pane mail attachment styles */
 .ZmMailAttachmentsTable {
 	@MailAttachmentsTable@
@@ -6529,7 +6487,7 @@ a.ZmLinkDisabled {
 }
 
 .ZmMailAttachmentIcon,
-.ZmMailAttachmentIcon .svg-icon {
+.ZmMailAttachmentIcon svg.svg-icon {
 	@MailAttachmentIcon@
 }
 
