@@ -60,7 +60,7 @@ ZmBriefcaseTabView.prototype.toString = function(){
  */
 ZmBriefcaseTabView.prototype.showMe =
 function() {
-    this.setSize(500, 295);
+    this.setSize(600, 295);
     this.showFolder(this._folderId || ZmOrganizer.ID_BRIEFCASE);
 };
 
