@@ -844,9 +844,6 @@ function(ev) {
 	this._enableMuteUnmuteToolbarActions();
 	//update tagmenu each time action button is called
 	var menu = this.getCurrentToolbar().getActionsMenu();
-	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		this._setTagMenu(menu);
-	}
 	//manage spam button
 	if (appCtxt.get(ZmSetting.SPAM_ENABLED)) {
 		this._setupSpamButton(menu);

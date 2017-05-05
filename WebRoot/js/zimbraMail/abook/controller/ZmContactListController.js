@@ -339,10 +339,8 @@ ZmContactListController.prototype._getToolBarOps =
 function() {
     var toolbarOps =  [];
     toolbarOps.push(ZmOperation.EDIT,
-            ZmOperation.SEP,
-            ZmOperation.DELETE, ZmOperation.SEP,
-			ZmOperation.MOVE_MENU, ZmOperation.TAG_MENU, ZmOperation.SEP,
-			ZmOperation.PRINT);
+            ZmOperation.DELETE,
+            ZmOperation.MOVE_MENU);
     return toolbarOps;
 };
 
@@ -352,8 +350,11 @@ function() {
 ZmContactListController.prototype._getSecondaryToolBarOps =
 function() {
     if (appCtxt.isExternalAccount()) { return []; }
-	var list = [ZmOperation.SEARCH_MENU];
-
+	var list = [];
+	list.push(ZmOperation.PRINT);
+	list.push(ZmOperation.TAG_MENU);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.SEARCH_MENU);
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		list.push(ZmOperation.NEW_MESSAGE);
 	}
@@ -667,12 +668,12 @@ function(view) {
 	printButton.setMenu(menu);
 
 	var id = ZmOperation.PRINT_CONTACT;
-	var mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
+	var mi = menu.createMenuItem(id, {text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
 	mi.setData(ZmOperation.MENUITEM_ID, id);
 	mi.addSelectionListener(this._listeners[ZmOperation.PRINT_CONTACT]);
 
 	id = ZmOperation.PRINT_ADDRBOOK;
-	mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
+	mi = menu.createMenuItem(id, {text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
 	mi.setData(ZmOperation.MENUITEM_ID, id);
 	mi.addSelectionListener(this._listeners[ZmOperation.PRINT_ADDRBOOK]);
 };
@@ -707,6 +708,7 @@ function(parent, num) {
 
 	parent.enable(printOp, !isDl);
 
+	parent.getOp(ZmOperation.NEW_MESSAGE) && parent.getOp(ZmOperation.NEW_MESSAGE).setImage('Message');
 	parent.enable(ZmOperation.NEW_MESSAGE, num > 0 && !appCtxt.isExternalAccount());
 
 	var folder = this._folderId && appCtxt.getById(this._folderId);
