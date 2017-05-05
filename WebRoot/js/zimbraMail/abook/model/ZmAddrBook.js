@@ -71,6 +71,7 @@ function() {
 	if (this.nId == ZmFolder.ID_TRASH)			{ return "Trash"; }
 	if (this.link || this.isRemote())			{ return "SharedContactsFolder"; }
 	if (this.nId == ZmFolder.ID_AUTO_ADDED)		{ return "EmailedContacts"; }
+	if (this.nId == ZmOrganizer.ID_DLS)			{ return "DistributionList"; }
 	return "ContactsFolder";
 };
 
