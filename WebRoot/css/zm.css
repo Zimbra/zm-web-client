@@ -356,12 +356,6 @@ TD.DDSepInvisible DIV {
 .DwtInputField INPUT[type="text"].search_input-expanded {
 	@transition@:width .25s ease;
 	border:0px;
-
-#IFDEF WEBKIT
-	/* exclude padding from height calculation */
-	box-sizing: content-box !important;
-#ENDIF
-
 	/* ensure minimum height for small UI font sizes */
 	min-height:@SmallIconHeight@;
 	/* applying height equal to that of app tabs. */
@@ -4138,7 +4132,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .DwtMenu .ZmFolderChooser .OverviewTree {
-	width:auto; /*no limit and not too much*/
+	@FolderChooserTree@
 }
 
 /* ZmChooseFolderDialog and ZmPickTagDialog */
@@ -6585,3 +6579,19 @@ a.ZmLinkDisabled {
 	@MailAttachmentsAllText@
 }
 
+/* Create Contact Group dialog */
+#CreateContactGroupDialog {
+	@CreateContactGroupDialog@
+}
+
+#CreateContactGroupDialog table.ZPropertySheet {
+	@CreateContactGroupDialogTable@
+}
+
+#CreateContactGroupDialog table.ZPropertySheet td {
+	@CreateContactGroupDialogCell@
+}
+
+#CreateContactGroupDialog table.ZPropertySheet td input[type='text'] {
+	@CreateContactGroupDialogInput@
+}

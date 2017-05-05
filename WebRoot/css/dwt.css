@@ -622,6 +622,9 @@ UL.DwtListView-Rows {
 .LightWindowOuterContainer	{		@LightWindowOuterBorder@		}
 .LightWindowInnerContainer	{		@LightWindowInnerBorder@		}
 
+.LightWindowOuterContainer > TABLE,
+.WindowOuterContainer > TABLE 	{		@FullWidth@					}
+
 #IFDEF GECKO
 /* Special Gecko border colors require that the table border not be collapsed */
 .WindowOuterContainer>TABLE,
