@@ -852,13 +852,13 @@ div.ImgLoader-view {
 }
 
 /* For end-to-end hover effect in tree for nested elements  */
-.ZmOverview .DwtTreeItem,
-.ZmOverview .DwtTreeItemLevel1ChildDiv .horizSep  {
+.DwtTreeItem,
+.DwtTreeItemLevel1ChildDiv .horizSep  {
     padding-left: 100%;
     margin-left: -100%;
 }
 
-.ZmOverview .DwtTreeItemLevel1ChildDiv {
+.DwtTreeItemLevel1ChildDiv {
     padding-left: @SkinWrapperPadding@
 }
 
