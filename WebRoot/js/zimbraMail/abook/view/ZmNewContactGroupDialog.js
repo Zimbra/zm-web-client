@@ -45,6 +45,9 @@ ZmNewContactGroupDialog = function(parent, className) {
 ZmNewContactGroupDialog.prototype = new ZmDialog;
 ZmNewContactGroupDialog.prototype.constructor = ZmNewContactGroupDialog;
 
+ZmNewContactGroupDialog.WIDTH = 350;
+ZmNewContactGroupDialog.HEIGHT = Dwt.DEFAULT;
+
 ZmNewContactGroupDialog.prototype.toString =
 function() {
 	return "ZmNewContactGroupDialog";
@@ -62,7 +65,7 @@ function(org, account) {
 		var acct = account || appCtxt.getActiveAccount();
 		this._accountSelect.setSelectedValue(acct.id);
 	}
-
+	this.setSize(ZmNewContactGroupDialog.WIDTH, ZmNewContactGroupDialog.HEIGHT);
 	ZmDialog.prototype.popup.call(this);
 };
 

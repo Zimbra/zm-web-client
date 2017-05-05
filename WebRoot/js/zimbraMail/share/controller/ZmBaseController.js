@@ -515,6 +515,9 @@ function(ev, list) {
 ZmBaseController.prototype._actionsButtonListener =
 function(ev) {
 	var menu = this.getCurrentToolbar().getActionsMenu();
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		this._setTagMenu(menu);
+	}
 	menu.parent.popup();	
 };
 
