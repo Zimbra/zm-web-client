@@ -228,7 +228,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_DISTRIBUTION_LIST, {textKey:"newDistList", tooltipKey:"newDistListTooltip", image:"NewGroup"}, ZmSetting.CONTACTS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_CONTACT, {textKey:"printContact", image:"Print", shortcut:ZmKeyMap.PRINT}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_ADDRBOOK, {textKey:"printAddrBook", image:"Print"}, ZmSetting.PRINT_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_SHARE_ADDRBOOK, {textKey:"shareAddrBook", image:"SharedContactsFolder"});
+	ZmOperation.registerOp(ZmId.OP_SHARE_ADDRBOOK, {textKey:"shareAddrBook"});
 };
 
 /**
