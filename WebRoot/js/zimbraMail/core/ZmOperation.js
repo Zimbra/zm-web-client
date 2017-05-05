@@ -128,7 +128,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_DELETE_WITHOUT_SHORTCUT, {textKey:"del", tooltipKey:"deleteTooltip", textPrecedence:60});
 	ZmOperation.registerOp(ZmId.OP_DETACH, {textKey:"detach", tooltipKey:"detach", showImageInToolbar: true});
     ZmOperation.registerOp(ZmId.OP_DETACH_WIN, {textKey:"detach", image:"OpenInNewWindow"});
-	ZmOperation.registerOp(ZmId.OP_EDIT, {textKey:"edit", tooltipKey:"editTooltip", shortcut:ZmKeyMap.EDIT});
+	ZmOperation.registerOp(ZmId.OP_EDIT, {textKey:"edit", tooltipKey:"editTooltip", shortcut:ZmKeyMap.EDIT, image:"Edit", showImageInToolbar:true, showTextInToolbar:true});
 	ZmOperation.registerOp(ZmId.OP_EDIT_AS_NEW, {textKey:"editAsNew", tooltipKey:"editTooltip", shortcut:ZmKeyMap.EDIT});
 	ZmOperation.registerOp(ZmId.OP_EDIT_PROPS, {textKey:"editProperties", tooltipKey:"editPropertiesTooltip"});
 	ZmOperation.registerOp(ZmId.OP_EXPAND, {textKey:"expand"});
@@ -179,9 +179,9 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_RENAME_SEARCH, {textKey:"renameSearch"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_TAG, {textKey:"renameTag"}, ZmSetting.TAGGING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SAVE, {textKey:"save", image:"Save", shortcut:ZmKeyMap.SAVE});
-	ZmOperation.registerOp(ZmId.OP_SEARCH, {textKey:"findEmailFromSender", image:"Search"}, ZmSetting.SEARCH_ENABLED);
-    ZmOperation.registerOp(ZmId.OP_SEARCH_TO, {textKey:"findEmailToSender", image:"Search"}, ZmSetting.SEARCH_ENABLED);
-    ZmOperation.registerOp(ZmId.OP_SEARCH_MENU, {textKey:"findEmails", image:"Search"}, ZmSetting.SEARCH_ENABLED,
+	ZmOperation.registerOp(ZmId.OP_SEARCH, {textKey:"findEmailFromSender"}, ZmSetting.SEARCH_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SEARCH_TO, {textKey:"findEmailToSender"}, ZmSetting.SEARCH_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SEARCH_MENU, {textKey:"findEmails", image:"Search"}, ZmSetting.SEARCH_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addSearchMenu, parent, true);
 		}));
