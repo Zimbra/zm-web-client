@@ -1209,7 +1209,7 @@ function(contact, params, asHtml, count) {
 	htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon(folder), null, "id=" + this._getFieldId(contact, "type"),null, null, ["ZmContactIcon"]);
 
 	// file as
-	htmlArr[idx++] = "<div id='" + this._getFieldId(contact, "fileas") + "'>";
+	htmlArr[idx++] = "<div class='ZmContactName' id='" + this._getFieldId(contact, "fileas") + "'>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs() || contact.getFileAsNoName());
 	htmlArr[idx++] = "</div>";
 	htmlArr[idx++] = "<div class='ZmListFlagsWrapper'>";
