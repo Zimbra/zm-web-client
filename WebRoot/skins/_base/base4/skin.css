@@ -620,16 +620,12 @@ SELECT                      {   @FieldBorder@   }
 .RowDouble-matched .ZmListFlagsWrapper,
 .RowDouble-matched .ZmMsgListDate   { background-color:@SearchResultColor@;     }
 .TopRow, .MiddleRow, .BottomRow     { height:16px; height:1.6rem; position:relative;    }
-.SimpleContact .ImgCheckboxUnchecked,
-.SimpleContact .ImgCheckboxChecked,
-.ZmContactIcon                      { margin:0px 5px 0px 2px; }
 .TopRow .ImgNodeCollapsed,
 .TopRow .ImgNodeExpanded            { padding:0px; }
 .ZmMsgListDate                      { position:absolute; right:0px; text-align:right; width:75px; width:6.8rem;}
 .ZmListFlagsWrapper                 { position:absolute; right:0px; @ListItemContainer-normal@  }
 .BottomRow .ZmListFlagsWrapper > div > div {  padding: 0 5px;  }
 .BottomRow .ZmListFlagsWrapper > div:last-child > div { padding-right: 0; }
-.SimpleContact .ZmListFlagsWrapper  { padding:.08rem 0px; right:0px; }
 
 .ZmMsgListColSelection, .ZmMsgListColFlag, .ZmMsgListColTag, .ZmMsgListColAccount,
 .ZmMsgListColStatus, .ZmMsgListColMute, .ZmMsgListColRead, .ZmMsgListColAttachment, .ZmMsgListColExpand,
@@ -975,4 +971,9 @@ div.InlineImgDrop {
 
 div.ZmHtmlEditor .TxtAreaDrag {
     @AttachmentTextAreaDrag@
+}
+
+/* Custom svg-icon style for contact-list view */
+.SimpleContact.Row-selected .svg-icon.ImgReadOnly{
+    fill:@AppC@
 }
