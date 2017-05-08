@@ -584,6 +584,7 @@ UL.DwtListView-Rows {
 	list-style:none;
 	padding: 0px;
 	margin:0px;
+	@FixBoxModel@
 }
 
 .TopRow DIV,.MiddleRow DIV, .BottomRow DIV,
