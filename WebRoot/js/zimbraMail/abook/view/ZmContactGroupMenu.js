@@ -169,7 +169,7 @@ function(menu, group, add, index, groupHash) {
 		var mi = new DwtMenuItem({parent:menu, index:index});
 		var groupName = AjxStringUtil.clipByLength(nickName, ZmContactGroupMenu.groupNameLength);
 		mi.setText(groupName);
-		mi.setImage("Group");
+		mi.setImage("GroupFolder");
 		mi.addSelectionListener(this._menuItemSelectionListener.bind(this), 0);
 		mi.setData(ZmContactGroupMenu.KEY_GROUP_EVENT, ZmEvent.E_MODIFY);
 		mi.setData(ZmContactGroupMenu.KEY_GROUP_ADDED, add);
