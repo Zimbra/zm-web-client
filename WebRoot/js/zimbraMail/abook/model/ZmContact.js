@@ -1109,7 +1109,7 @@ ZmContact.prototype.getIcon =
 function(addrBook) {
 	if (this.isDistributionList()) 						{ return "DistributionList"; }
 	if (this.isGal)										{ return "GALContact"; }
-	if (this.isShared() || (addrBook && addrBook.link))	{ return "SharedContact"; }
+	if (this.isShared() || (addrBook && addrBook.link))	{ return this.isGroup() ? "Group": "SharedContact"; }
 	if (this.isGroup())									{ return "Group"; }
 	return "Contact";
 };
