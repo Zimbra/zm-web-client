@@ -1867,8 +1867,7 @@ div.CompDragArea * {
 .ZmContactSplitView, 
 .ZmContactView,
 .ZmEditContactView {
-	@PanelBg@
-	@PanelBorder@
+	@ContactViewContainer@
 }
 
 .AlphabetBarTable {
@@ -1929,15 +1928,15 @@ div.CompDragArea * {
 /* Container for list of contacts */
 /* ??? RENAME */
 .ZmContactSimpleView {
-	@ListBg@
-	box-sizing:border-box;
-	border:1px solid @darken(AppC,50)@;
-	width:100%;
+	@ContactListView@
 }
 
 .ZmContactSimpleView .SimpleContact {
-	/* ensure children position themselves within this element */
-	position: relative;
+	@ContactListItem@
+}
+
+.ZmContactSimpleView .SimpleContact > DIV {
+	@ContactListItemContainer@
 }
 
 .ZmContactSimpleView .SimpleContact-right,
@@ -1947,6 +1946,27 @@ div.CompDragArea * {
 
 .ZmContactSimpleView .SimpleContact-drag {
 	@DragBg@
+}
+
+.ZmContactSimpleView .SimpleContact .ImgCheckboxUnchecked,
+.ZmContactSimpleView .SimpleContact .ImgCheckboxChecked {
+	@ContactItemCheckIcon@
+}
+
+.ZmContactSimpleView .SimpleContact .ZmContactIcon .svg-icon {
+	@ContactItemIcon@
+}
+
+.ZmContactSimpleView .SimpleContact .ZmContactName {
+	@ContactItemName@
+}
+
+.ZmContactSimpleView .SimpleContact .ZmListFlagsWrapper {
+	@ContactItemFilterList@
+}
+
+.ZmContactSimpleView .SimpleContact .ZmListFlagsWrapper DIV {
+	@ContactItemFilterItem@
 }
 
 /* ???  USE? */
