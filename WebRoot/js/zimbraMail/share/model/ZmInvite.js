@@ -989,7 +989,7 @@ function(isHtml) {
 		buf[i++] = "<p>\n<table border='0'>\n";
 	}
 
-	var orgName = this.getOrganizerName();
+	var orgName = AjxStringUtil.htmlEncode(this.getOrganizerName());
 	if (orgName) {
 		params = [ZmMsg.organizerLabel, orgName, ""];
 		buf[i++] = formatter.format(params);
@@ -1003,7 +1003,7 @@ function(isHtml) {
 		buf[i++] = "\n";
 	}
 
-	var locationSummary = this.getLocation();
+	var locationSummary = AjxStringUtil.htmlEncode(this.getLocation());
 	if (locationSummary) {
 		params = [ZmMsg.locationLabel, locationSummary, ""];
 		buf[i++] = formatter.format(params);

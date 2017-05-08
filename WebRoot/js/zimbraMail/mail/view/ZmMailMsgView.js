@@ -1831,6 +1831,7 @@ ZmMailMsgView.prototype._renderMessageBody1 = function(params, part) {
         // calendar part in ICS format
         else if (ct === ZmMimeTable.TEXT_CAL) {
             content = ZmMailMsg.getTextFromCalendarPart(bp);
+            content = AjxStringUtil.htmlEncode(content);
         }
 
         // HTML
