@@ -582,7 +582,7 @@ TD.DwtListView-ColumnActive {
 
 UL.DwtListView-Rows {
 	list-style:none;
-	padding: @OutlineWidth@;
+	padding: 0px;
 	margin:0px;
 }
 
@@ -1851,7 +1851,7 @@ INPUT.xform_field {
 .ZAddNewMenuItem:focus,
 .ZFocused.DwtCheckbox INPUT:focus,
 .ZFocused.DwtRadioButton INPUT:focus {
-	outline: none;
+	@NoFocusOutline@
 }
 
 
