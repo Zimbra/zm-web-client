@@ -28,9 +28,7 @@
 	<tr valign='top' class='contactHeaderRow'>
 		<td class='contactHeaderCell' align='center'>
 			<div id='${id}_IMAGE' tabindex='100'></div>
-			<div id='${id}_REMOVE_IMAGE_row' style='padding-left:7px;font-size:.8em;white-space:nowrap;'>
-					<a id='${id}_VIEW_IMAGE' href='#view' tabindex='101'><$=ZmMsg.view$></a>
-					|
+			<div id='${id}_REMOVE_IMAGE_row' style='font-size:.8em;white-space:nowrap;'>
 					<a id='${id}_REMOVE_IMAGE' href='#remove' tabindex='102'><$=ZmMsg.remove$></a>
 			</div>
 		</td>
@@ -69,53 +67,53 @@
 <template id='abook.Contacts#ZmEditContactView_headerName'>
 	<div id='${id}_NAME_row' class='contactHeaderCellRow'>
 		<table role="presentation">
-			<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
-			<tr id='${id}_PHONETIC_row'>
-				<td id='${id}_PHONETIC_PREFIX' class='inlineInput'></td>
-				<td id='${id}_PHONETIC_FIRST_row' class='inlineInput'>
-					<div id='${id}_PHONETIC_FIRST' tabindex='190'></div>
-				</td>
-				<td id='${id}_PHONETIC_MIDDLE' class='inlineInput'></td>
-				<td id='${id}_PHONETIC_MAIDEN' class='inlineInput'></td>
-				<td id='${id}_PHONETIC_LAST_row' class='inlineInput'>
-					<div id='${id}_PHONETIC_LAST' tabindex='191'></div>
-				</td>
-				<td id='${id}_PHONETIC_SUFFIX' class='inlineInput'></td>
-			</tr>
-			<$ } $>
 			<tr><td id='${id}_PREFIX_row' class='inlineInput'>
-					<div id='${id}_PREFIX' tabindex='200'></div>
+					<div id='${id}_PREFIX' tabindex='190'></div>
 				</td>
 				<td class='inlineInput'>
-					<div id='${id}_FIRST' tabindex='201'></div>
+					<div id='${id}_FIRST' tabindex='191'></div>
 				</td>
 				<td id='${id}_MIDDLE_row' class='inlineInput'>
-					<div id='${id}_MIDDLE' tabindex='202'></div>
+					<div id='${id}_MIDDLE' tabindex='192'></div>
 				</td>
 				<td id='${id}_MAIDEN_row' class='inlineInput'>
 					<table role="presentation"><tr>
 						<td class='inlineInputWrapper'>(</td>
-						<td><div id='${id}_MAIDEN' tabindex='203'></div></td>
+						<td><div id='${id}_MAIDEN' tabindex='193'></div></td>
 						<td class='inlineInputWrapper'>)</td>
 					</tr></table>
 				</td>
 				<td class='inlineInput'>
-					<div id='${id}_LAST' tabindex='204'></div>
+					<div id='${id}_LAST' tabindex='194'></div>
 				</td>
 				<td id='${id}_SUFFIX_row' class='inlineInput'>
 					<table role="presentation"><tr>
 						<td class='inlineInputWrapper'>,</td>
-						<td><div id='${id}_SUFFIX' tabindex='205'></div></td>
+						<td><div id='${id}_SUFFIX' tabindex='195'></div></td>
 					</tr></table>
 				</td>
-				<td><div id='${id}_DETAILS' tabindex='206'></div></td>
+				<td valign='bottom'><div id='${id}_DETAILS' tabindex='196'></div></td>
 			</tr>
+			<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
+			<tr id='${id}_PHONETIC_row'>
+				<td id='${id}_PHONETIC_FIRST_row' class='inlineInput'>
+					<div id='${id}_PHONETIC_FIRST' tabindex='201'></div>
+				</td>
+				<td id='${id}_PHONETIC_LAST_row' class='inlineInput'>
+					<div id='${id}_PHONETIC_LAST' tabindex='202'></div>
+				</td>
+				<td id='${id}_PHONETIC_PREFIX' class='inlineInput'></td>
+				<td id='${id}_PHONETIC_MIDDLE' class='inlineInput'></td>
+				<td id='${id}_PHONETIC_MAIDEN' class='inlineInput'></td>
+				<td id='${id}_PHONETIC_SUFFIX' class='inlineInput'></td>
+			</tr>
+			<$ } $>
 		</table>
 	</div>
 	<div id='${id}_NICKNAME_row' class='contactHeaderCellRow'>
 		<table role="presentation"><tr>
 			<td class='inlineInputWrapper'>&ldquo;</td>
-			<td><div id='${id}_NICKNAME' tabindex='250'></div></td>
+			<td class='inlineInput ZmEditContactNickName'><div id='${id}_NICKNAME' tabindex='250'></div></td>
 			<td class='inlineInputWrapper'>&rdquo;</td>
 		</tr></table>
 	</div>
@@ -125,20 +123,14 @@
 <template id='abook.Contacts#ZmEditContactView_headerJobInfo'>
 	<div id='${id}_JOB_row' class='contactHeaderCellRow'>
 		<table role="presentation"><tr>
-			<td id='${id}_TITLE_row' class='inlineInput'><div id='${id}_TITLE' tabindex='301'></div></td>
-			<td id='${id}_TITLE_DEPARTMENT_SEP' class='inlineInputWrapper'>&ndash;</td>
-			<td id='${id}_DEPARTMENT_row' class='inlineInput'><div id='${id}_DEPARTMENT' tabindex='302'></div></td>
-		</tr></table>
-	</div>
-	<div id='${id}_COMPANY_row' class='contactHeaderCellRow'>
-		<table role="presentation">
+			<td id='${id}_TITLE_row' class='inlineInput ZmEditContactJobTitle'><div id='${id}_TITLE' tabindex='301'></div></td>
+			<td id='${id}_TITLE_DEPARTMENT_SEP' class='ZmEditContactDepartmentSep'>&ndash;</td>
+			<td id='${id}_DEPARTMENT_row' class='inlineInput ZmEditContactDepartment'><div id='${id}_DEPARTMENT' tabindex='302'></div></td>
+			<td class='inlineInput ZmEditContactCompany'><div id='${id}_COMPANY' tabindex='304'></div></td>
 			<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
-			<tr id='${id}_PHONETIC_COMPANY_row'>
-				<td><div id='${id}_PHONETIC_COMPANY' tabindex='304'></div></td>
-			</tr>
+				<td class='inlineInput'><div id='${id}_PHONETIC_COMPANY' tabindex='305'></div></td>
 			<$ } $>
-			<tr><td><div id='${id}_COMPANY' tabindex='305'></div></td></tr>
-		</table>
+		</tr></table>
 	</div>
 </template>
 
@@ -169,8 +161,8 @@
 		<td class=rowValue><div id='${id}_OTHER' tabindex='1000'></div></td>
 	</tr>
 	<tr>
-		<td class=rowLabel><$=ZmMsg.notesLabel$></td>
-		<td class=rowValue><div id='${id}_NOTES' tabindex='1100'></div></td>
+		<td class='rowLabel ZmEditContactNotesLabel'><$=ZmMsg.notesLabel$></td>
+		<td class='rowValue ZmEditContactNotesInput'><div id='${id}_NOTES' tabindex='1100'></div></td>
 	</tr>
 </template>
 
@@ -182,13 +174,14 @@
 
 <template id='abook.Contacts#ZmEditContactViewDetailsButton'>
 	<span class='ScreenReaderOnly'><$= ZmMsg.chooseFields $></span>
+	<span id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></span>
 	<span aria-hidden='true' id='${id}_title' class='ZButtonBorder ZWidgetTitle'></span>
 </template>
 
 <template id='abook.Contacts#ZmEditContactViewInputSelect'>
 	<table role="presentation" class='inputTable'>
 		<tr><td class='inputElement'><div id='${id}_input' tabindex='100'></div></td>
-			<td><div id='${id}_select' tabindex='200'></div></td>
+			<td><div class='inputElementChild' id='${id}_select' tabindex='200'></div></td>
 		</tr>
 	</table>
 </template>
@@ -207,7 +200,7 @@
 		<tr>
 			<td class='inputElement'><div id='${id}_input' tabindex='100'></div></td>
 			<td class='inputElement' style='width:47px;'><div id='${id}_picker' tabindex='200'></div></td>
-			<td><div id='${id}_select' tabindex='300'></div></td>
+			<td class='inputElement'><div id='${id}_select' tabindex='300'></div></td>
 		</tr>
 	</table>
 </template>
@@ -215,7 +208,7 @@
 <template id='abook.Contacts#ZmEditContactViewAddressRow'>
 	<table role="presentation" class='inputTable'>
 		<tr id='${id}_row' class='DwtFormRow' valign='top'>
-			<td><div id='${id}' tabindex='100'></div></td>
+			<td class='inputElement'><div id='${id}' tabindex='100'></div></td>
 			<td><div id='${id}_add' class='DwtFormRowAdd' tabindex='200'></div></td>
 			<td><div id='${id}_remove' class='DwtFormRowRemove' tabindex='300'></div></td>
 		</tr>
@@ -225,8 +218,8 @@
 <template id='abook.Contacts#ZmEditContactViewAddressSelect'>
 	<table role="presentation" class='inputTable'>
 		<tr valign='top'>
-			<td class='inputElement'>
-				<div id='${id}_input' tabindex='100' style="padding:1px 3px;"></div>
+			<td>
+				<div id='${id}_input' tabindex='100'></div>
 			</td>
 			<td><div id='${id}_select' tabindex='200'></div></td>
 		</tr>
@@ -236,18 +229,16 @@
 <template id='abook.Contacts#ZmEditContactViewAddress' class='DwtForm ZmEditContactViewAddress'>
 	<table role="presentation" class='addressTable' width='100%'>
 		<tr><td><div id='${id}_STREET' tabindex='100'></div></td></tr>
+		<tr><td class='rowValue'><div id='${id}_CITY' tabindex='200'></div></td></tr>
 	</table>
-	<table role="presentation" class='addressTable' width='100%' style='margin-bottom:3px;'>
+	<table role="presentation" class='addressTable' width='100%'>
 		<tr>
-			<td><div id='${id}_CITY' tabindex='200'></div></td>
-			<td>,&nbsp;</td>
-			<td><div id='${id}_STATE' tabindex='300'></div></td>
-			<td>&nbsp;&nbsp;</td>
-			<td><div id='${id}_ZIP' tabindex='400'></div></td>
+			<td class='rowValue'><div id='${id}_STATE'  tabindex='300'></div></td>
+			<td class='rowValue'><div id='${id}_ZIP' tabindex='400'></div></td>
 		</tr>
 	</table>
 	<table role="presentation" class='addressTable' width='100%'>
-		<tr><td><div id='${id}_COUNTRY' tabindex='500'></div></td></tr>
+		<tr><td class='rowValue'><div id='${id}_COUNTRY' tabindex='500'></div></td></tr>
 	</table>
 </template>
 

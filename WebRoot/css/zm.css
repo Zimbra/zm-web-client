@@ -1864,10 +1864,14 @@ div.CompDragArea * {
  * ZmContactSplitView -- list of contacts w/display of one contact to the right
  */
 
-.ZmContactSplitView, 
+.ZmContactSplitView,
 .ZmContactView,
 .ZmEditContactView {
 	@ContactViewContainer@
+}
+
+.ZmEditContactView {
+	@ContactEditView@
 }
 
 .AlphabetBarTable {
@@ -2003,8 +2007,23 @@ div.CompDragArea * {
 	border-bottom:2px solid #AAA;
 }
 
+.ZmEditContactViewOtherCalendar {
+	@ContactEditMenuButtonStyle@
+	@ContactEditButtonHeight@
+}
+
+.DwtFormRowAdd .ZWidgetTitle:empty,
+.DwtFormRowRemove .ZWidgetTitle:empty,
+.ZmEditContactViewOtherCalendar .ZWidgetTitle:empty {
+	display: none;
+}
+
 .ZmEditContactView .contactHeaderRow {
-	@PageBg@
+	@ContactEditHeader@
+}
+
+.ZmEditContactView > table {
+	@ContactEditTableContainer@
 }
 
 .ZmContactView .contactContentTable {
@@ -5363,9 +5382,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 /* contact edit view */
 
 .ZmEditContactViewDetailsButton {
-	@ActiveCursor@
-	border:1px solid @darken(AppC,40)@;
-	background-color:@WidgetBgColor@;
+	@ContactEditButtonStyle@
 }
 
 .ZmEditContactViewDetailsButton .ZButtonBorder {
@@ -5378,21 +5395,27 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmEditContactViewImage {
-	border:1px solid @darken(AppC,40)@;
-	width:48px;
-	@PanelBg@
+	@ContactEditImageContainer@
 }
 
-.ZmEditContactView .inputTable {
-	margin-bottom:.25em;
+.ZHover .ZmEditContactImageBadge {
+	@ContactEditBadgeHover@
 }
 
-.ZmEditContactView .inputElement {
-	padding-right:.25em;
+.ZmEditContactViewImage img {
+	@ContactEditImage@
+}
+
+.ZmEditContactImageBadge {
+	@ContactEditImageBadge@
+}
+
+.ZmEditContactView .inputElement,
+.ZmEditContactView .inputElementChild:not(:empty) {
+	@ContactEditInputElement@
 }
 
 .ZmEditContactViewAddress {
-	@InputBorder@
 	@ZFieldBg-normal@
 #IFDEF MSIE
 	margin-bottom:.25em;
@@ -5401,21 +5424,20 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .ZmEditContactViewAddress .addressTable {
 	left:-3px;
-	positon:relative;
 #IFDEF MSIE
 	left:0px;
 	margin-right:.5em;
 #ENDIF
 }
 
+.ZmEditContactViewAddress td.rowValue {
+	padding-top:@ContactEditBetweenRowSpacing@;
+}
+
 .ZmEditContactViewAddress .DwtInputField TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField INPUT[type="text"] {
 	@FontSize-normal@
-}
-
-.ZmEditContactViewAddress .DwtInputField TEXTAREA:not(:focus),
-.ZmEditContactViewAddress .DwtInputField INPUT[type="text"]:not(:focus) {
-	border-color: transparent !important;
+	@FixBoxModel@
 }
 
 .ZmEditContactViewAddress .DwtInputField TEXTAREA {
@@ -5431,16 +5453,20 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmEditContactView .contactHeaderCell {
-	padding:.25em .5em;
-	border-bottom:solid 1px @darken(AppC,40)@;
+	@ContactEditHeaderCell@
+}
+
+.ZmEditContactView .contactHeaderCell:last-child {
+	@ContactEditHeaderLastChild@
 }
 
 .ZmEditContactView .contactHeaderCellRow {
 	padding-bottom:4px;
 }
 
-.ZmEditContactView .contactHeaderCellRow .inlineInput {
-	padding-right:4px;
+.ZmEditContactView .inlineInput,
+.ZmEditContactView .rowValue.inlineInput {
+	@ContactEditInlineInput@
 }
 
 .ZmEditContactView .contactHeaderCellRow .inlineInputWrapper {
@@ -5449,7 +5475,45 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmEditContactView .rowLabel, .ZmEditContactView .rowType {
-    padding:.75em .5em .4em;
+    padding: .75em .5em .4em;
+}
+
+.ZmEditContactView .contactHeaderCellRow .ZmEditContactDepartmentSep {
+	@ContactEditDepartmentSep@
+}
+
+.ZmEditContactView .contactHeaderCellRow .ZmEditContactNickName {
+	@ContactEditNickName@
+}
+
+.ZmEditContactView .contactHeaderCellRow .ZmEditContactDepartment {
+	@ContactEditDepartment@
+}
+
+.ZmEditContactView .contactHeaderCellRow .ZmEditContactJobTitle {
+	@ContactEditJobTitle@
+}
+
+.ZmEditContactView .contactHeaderCellRow .ZmEditContactCompany {
+	@ContactEditCompany@
+}
+
+.ZmEditContactView tr.DwtFormRow > td {
+	padding-top:@ContactEditBetweenRowSpacing@;
+}
+
+.ZmEditContactView .rowLabel.ZmEditContactNotesLabel {
+	@ContactEditNotesLabel@
+}
+
+.ZmEditContactView .rowValue.ZmEditContactNotesInput {
+	@ContactEditNotesInput@
+}
+
+.ZmEditContactView .rowLabel, .ZmEditContactView .rowType,
+.ZmContactSplitView .rowLabel, .ZmContactSplitView .rowType,
+.ZmContactSplitView .rowValue, .ZmContactSplitView .rowValue[colspan] {
+    padding:1em .5em .4em;
     vertical-align:top;
 }
 .ZmEditContactView .rowLabel, .ZmEditContactView .rowType {
@@ -5460,12 +5524,6 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	@FocusOutline@
 }
 
-/* cells with inputs generally need less top padding,
- * but there are variations for checkboxes and radiobuttons
- */
-.ZmEditContactView .rowValue {
-	padding:.4em .5em;
-}
 
 .ZmEditContactView .rowCheckGroup {
 	padding-top:.65em;
@@ -5476,9 +5534,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmEditContactView .rowLabel {
-	text-align:right;
-	font-weight:bold;
-	width: 1%;
+	@ContactEditRowLabel@
 }
 
 .ZmEditContactView .rowValue {
