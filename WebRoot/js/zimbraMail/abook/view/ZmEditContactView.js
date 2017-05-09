@@ -107,25 +107,25 @@ ZmEditContactView.prototype.getFormItems = function() {
 			// contact attribute fields
 			{ id: "IMAGE", type: "ZmEditContactViewImage" },
 			{ id: "ZIMLET_IMAGE", type: "DwtText" },
-			{ id: "PREFIX", type: "DwtInputField", width: 38, tooltip: ZmMsg.namePrefix, hint: ZmMsg.AB_FIELD_prefix, visible: "get('SHOW_PREFIX')" },
-			{ id: "FIRST", type: "DwtInputField", width: 95, tooltip: ZmMsg.firstName, hint: ZmMsg.AB_FIELD_firstName, visible: "get('SHOW_FIRST')", onblur: "this._controller.updateTabTitle()" },
-			{ id: "MIDDLE", type: "DwtInputField", width: 95, tooltip: ZmMsg.middleName, hint: ZmMsg.AB_FIELD_middleName, visible: "get('SHOW_MIDDLE')" },
-			{ id: "MAIDEN", type: "DwtInputField", width: 95, tooltip: ZmMsg.maidenName, hint: ZmMsg.AB_FIELD_maidenName, visible: "get('SHOW_MAIDEN')" },
-			{ id: "LAST", type: "DwtInputField", width: 95, tooltip: ZmMsg.lastName, hint: ZmMsg.AB_FIELD_lastName, visible: "get('SHOW_LAST')" , onblur: "this._controller.updateTabTitle()"},
-			{ id: "SUFFIX", type: "DwtInputField", width: 38, tooltip: ZmMsg.nameSuffix, hint: ZmMsg.AB_FIELD_suffix, visible: "get('SHOW_SUFFIX')" },
-			{ id: "NICKNAME", type: "DwtInputField", width: 66, hint: ZmMsg.AB_FIELD_nickname, visible: "get('SHOW_NICKNAME')" },
-			{ id: "COMPANY", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_company, visible: "get('SHOW_COMPANY')", onblur: "this._controller.updateTabTitle()" },
-			{ id: "TITLE", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_jobTitle, visible: "get('SHOW_TITLE')" },
-			{ id: "DEPARTMENT", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_department, visible: "get('SHOW_DEPARTMENT')" },
+			{ id: "PREFIX", type: "DwtInputField", width: 95, tooltip: ZmMsg.namePrefix, hint: ZmMsg.AB_FIELD_prefix, visible: "get('SHOW_PREFIX')" },
+			{ id: "FIRST", type: "DwtInputField", width: 160, tooltip: ZmMsg.firstName, hint: ZmMsg.AB_FIELD_firstName, visible: "get('SHOW_FIRST')", onblur: "this._controller.updateTabTitle()" },
+			{ id: "MIDDLE", type: "DwtInputField", width: 130, tooltip: ZmMsg.middleName, hint: ZmMsg.AB_FIELD_middleName, visible: "get('SHOW_MIDDLE')" },
+			{ id: "MAIDEN", type: "DwtInputField", width: 130, tooltip: ZmMsg.maidenName, hint: ZmMsg.AB_FIELD_maidenName, visible: "get('SHOW_MAIDEN')" },
+			{ id: "LAST", type: "DwtInputField", width: 160, tooltip: ZmMsg.lastName, hint: ZmMsg.AB_FIELD_lastName, visible: "get('SHOW_LAST')" , onblur: "this._controller.updateTabTitle()"},
+			{ id: "SUFFIX", type: "DwtInputField", width: 60, tooltip: ZmMsg.nameSuffix, hint: ZmMsg.AB_FIELD_suffix, visible: "get('SHOW_SUFFIX')" },
+			{ id: "NICKNAME", type: "DwtInputField", width: 160, hint: ZmMsg.AB_FIELD_nickname, visible: "get('SHOW_NICKNAME')" },
+			{ id: "COMPANY", type: "DwtInputField", width: 160, hint: ZmMsg.AB_FIELD_company, visible: "get('SHOW_COMPANY')", onblur: "this._controller.updateTabTitle()" },
+			{ id: "TITLE", type: "DwtInputField", width: 160, hint: ZmMsg.AB_FIELD_jobTitle, visible: "get('SHOW_TITLE')" },
+			{ id: "DEPARTMENT", type: "DwtInputField", width: 160, hint: ZmMsg.AB_FIELD_department, visible: "get('SHOW_DEPARTMENT')" },
 			{ id: "NOTES", type: "DwtInputField", hint: ZmMsg.notes, width: "47em", rows:4 },
             // phonetic name fields
             { id: "PHONETIC_PREFIX", visible: "this.isVisible('PREFIX')", ignore:true },
-            { id: "PHONETIC_FIRST", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_phoneticFirstName, visible: "this.isVisible('FIRST')" },
+            { id: "PHONETIC_FIRST", type: "DwtInputField", width: 160, hint: ZmMsg.AB_FIELD_phoneticFirstName, visible: "this.isVisible('FIRST')" },
             { id: "PHONETIC_MIDDLE", visible: "this.isVisible('MIDDLE')", ignore:true },
             { id: "PHONETIC_MAIDEN", visible: "this.isVisible('MAIDEN')", ignore:true },
-            { id: "PHONETIC_LAST", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_phoneticLastName, visible: "this.isVisible('LAST')" },
+            { id: "PHONETIC_LAST", type: "DwtInputField", width: 160, hint: ZmMsg.AB_FIELD_phoneticLastName, visible: "this.isVisible('LAST')" },
             { id: "PHONETIC_SUFFIX", visible: "this.isVisible('SUFFIX')", ignore:true },
-            { id: "PHONETIC_COMPANY", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_phoneticCompany, visible: "this.isVisible('COMPANY')" },
+            { id: "PHONETIC_COMPANY", type: "DwtInputField", width: 160, hint: ZmMsg.AB_FIELD_phoneticCompany, visible: "this.isVisible('COMPANY')" },
 			// contact list fields
 			{ id: "EMAIL", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
@@ -163,7 +163,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 			}, validator: ZmEditContactViewOther.validator },
 			// other controls
 			{ id: "DETAILS", type: "DwtButton",
-				label: "\u00BB", // &raquo;
+				image: "MoreHorizontal",
 				tooltip: ZmMsg.chooseFields,
 				ignore:true,
 				className: "ZmEditContactViewDetailsButton",
@@ -183,7 +183,6 @@ ZmEditContactView.prototype.getFormItems = function() {
 				visible: "appCtxt.multiAccounts"
 			},
 			// NOTE: Return false onclick to prevent default action
-			{ id: "VIEW_IMAGE", ignore: true, onclick: "open(get('IMAGE')) && false", visible: "get('IMAGE')" },
 			{ id: "REMOVE_IMAGE", ignore: true, onclick: this._handleRemoveImage, visible: "get('IMAGE')" },
 			// pseudo-items
 			{ id: "JOB", notab: true, ignore:true, visible: "get('SHOW_TITLE') && get('SHOW_DEPARTMENT')" },
@@ -841,6 +840,9 @@ ZmEditContactView.prototype._handleDetailCheck = function(itemId, id) {
 };
 
 ZmEditContactView.prototype._handleRemoveImage = function() {
+	//show the badge Icon for ZmEditContactViewImage.
+	this._imageBadgeEl && (this._imageBadgeEl.style.opacity = 1);
+	
 	var image = this.getValue("IMAGE", ""); //could be user uploaded, or zimlet (e.g. LinkedInImage Zimlet) one since we use both in same field.
 	var zimletImage = this.getValue("ZIMLET_IMAGE", "");
 	if (image !== zimletImage) {
@@ -1071,15 +1073,22 @@ ZmEditContactViewImage = function(params) {
 		"<div style='width:48;height:48'>",
 			"<img id='",this._htmlElId,"_img' width='48' height='48'>",
 		"</div>",
-		"<div id='",this._htmlElId,"_badge' style='position:absolute;"
-        ,"bottom:",(AjxEnv.isMozilla ? -4 : 0), ";right:", (AjxEnv.isMozilla ? 3 : 0),"px'>"
+		"<div class='ZmEditContactImageBadge' id='",this._htmlElId,"_badge' style='position:absolute;"
+        ,"bottom:14px;right:14px'>"
 	].join("");
 	el.style.cursor = "pointer";
 
 	this._src = "";
+
+	/**
+	 * Using badgeEl to hold ContactImage icon.
+	 * Setting the imgEl opacity to 0 by default, 1 when image is available.
+	 * */
 	this._imgEl = document.getElementById(this._htmlElId+"_img");
-	this._imgEl.onload = AjxCallback.simpleClosure(this._imageLoaded, this);
+	this._imgEl.style.opacity = 0;
 	this._badgeEl = document.getElementById(this._htmlElId+"_badge");
+	this.parent && (this.parent._imageBadgeEl = this._badgeEl);
+	AjxImg.setImage(this._badgeEl, "ContactImage");
 
 	this._setMouseEvents();
 
@@ -1124,19 +1133,18 @@ ZmEditContactViewImage.prototype.setValue = function(value, promptOnError) {
 	}
 	this._src = value;
 	if (!value) {
-		this._imgEl.src = ZmZimbraMail.DEFAULT_CONTACT_ICON;
-		this._badgeEl.className = "ImgAdd";
+		this._imgEl.style.opacity = 0;
 		this.setToolTipContent(ZmMsg.addImg);
-		this._imgEl.alt = ZmMsg.addImg;
 	}
 	else {
 		this._imgEl.src = value;
-		this._badgeEl.className = "ImgEditBadge";
 		this.setToolTipContent(ZmMsg.editImg);
 		this._imgEl.alt = ZmMsg.editImg;
+		this._imgEl.style.opacity = 1;
+		this._badgeEl.style.opacity = 0;
 	}
 	this.parent.setDirty("IMAGE", true);
-    this._imgEl.onerror = this._handleCorruptImageError.bind(this, promptOnError);
+	this._imgEl.onerror = this._handleCorruptImageError.bind(this, promptOnError);
 };
 
 /**
@@ -1158,16 +1166,6 @@ ZmEditContactViewImage.prototype._blur = function() {
     Dwt.delClass(this.getHtmlElement(), DwtControl.FOCUSED);
 };
 
-/**
- * @private
- */
-ZmEditContactViewImage.prototype._imageLoaded = function() {
-	this._imgEl.removeAttribute("width");
-	this._imgEl.removeAttribute("height");
-	var w = this._imgEl.width;
-	var h = this._imgEl.height;
-    this._imgEl.setAttribute(w>h ? 'width' : 'height', 48);
-};
 
 /**
  * @private
@@ -2703,13 +2701,11 @@ ZmEditContactViewAddress.prototype._createInput = function() {
 		// NOTE: form appropriately.
 		ondirty: "this.parent._handleDirty()",
 		items: [
-			{ id: "STREET", type: "DwtInputField", width: 343, rows: 2,
-				hint: ZmMsg.AB_FIELD_street, params: { forceMultiRow: true }
-			},
-			{ id: "CITY", type: "DwtInputField", width: 160, hint: ZmMsg.AB_FIELD_city },
-			{ id: "STATE", type: "DwtInputField", width: 90, hint: ZmMsg.AB_FIELD_state },
-			{ id: "ZIP", type: "DwtInputField", width: 80, hint: ZmMsg.AB_FIELD_postalCode },
-			{ id: "COUNTRY", type: "DwtInputField", width: 343, hint: ZmMsg.AB_FIELD_country }
+			{ id: "STREET", type: "DwtInputField", width: 351, hint: ZmMsg.AB_FIELD_street},
+			{ id: "CITY", type: "DwtInputField", width: 351, hint: ZmMsg.AB_FIELD_city },
+			{ id: "STATE", type: "DwtInputField", width: 162, hint: ZmMsg.AB_FIELD_state },
+			{ id: "ZIP", type: "DwtInputField", width: 171, hint: ZmMsg.AB_FIELD_postalCode },
+			{ id: "COUNTRY", type: "DwtInputField", width: 351, hint: ZmMsg.AB_FIELD_country }
 		]
 	};
 	return new DwtForm({parent:this,form:form});

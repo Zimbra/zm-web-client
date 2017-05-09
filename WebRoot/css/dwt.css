@@ -1972,8 +1972,6 @@ INPUT.xform_field {
 /* normal buttons with text should be at least a certain width */
 .ZHasText .ZButtonTable 			{	@TextButtonWidth@ }
 
-.ZButtonBorder .ZDropDown DIV		{	margin-left:3px;	}
-
 .ZButtonBorderless					{	}		/* TODO: ??? */
 
 
@@ -2041,7 +2039,9 @@ INPUT.xform_field {
 .ZSelectAutoSizingContainer					{	height:2rem; width:auto;	}		/* TODO: SIZE ASSUMPTION! */
 
 .ZSelect									{	@Select@		@SelectSpacing@			}
-.ZSelect .ZWidgetTitle						{	padding-left:5px; text-align:left;		}
+.ZSelect .ZWidgetTitle						{	@SelectTitle@		}
+.ZSelect .ZButtonBorder						{	@SelectBorder@		}
+.ZSelect .ZDropDown							{	@SelectDropDown@	}
 
 			.ZSelectBorder					{	@SelectBorder@	@SelectBorder-normal@	}
 .ZHover		.ZSelectBorder					{					@SelectBorder-hover@	}
@@ -2123,8 +2123,7 @@ INPUT.xform_field {
 }
 
 .DwtComboBox .ZButton					{	width:20px; @WidgetHeight@	}
-.DwtComboBox .ImgSelectPullDownArrow	{	margin-right:5px;			}
-
+.DwtComboBox .ZDropDown					{	@ComboBoxDropDown@	}
 
 
 
@@ -2474,14 +2473,15 @@ INPUT.xform_field {
 #ENDIF
 }
 
+.DwtFormRowAdd,
+.DwtFormRowRemove {
+	@FormAddRemoveButton@
+}
+
 .DwtFormRowAdd .ZButtonBorder,
 .DwtFormRowRemove .ZButtonBorder {
-	background-color:transparent;
-	background-image:none;
-	/* just make it transparent, so we retain the spacing for a focus border */
-	border-color: transparent;
-	@cssShadow@:0px 0px 0px transparent;
-	@roundCorners(0px)@
+	@FormButtonStyle@
+
 }
 
 .DwtFormRowAdd.ZFocused .ZButtonBorder,
