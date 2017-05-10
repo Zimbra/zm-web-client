@@ -459,6 +459,11 @@ if (application.getInitParameter("offlineMode") != null) {
 					<c:otherwise>
 								<form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
 								<input type="hidden" name="loginOp" value="login"/>
+
+								<c:if test="${totpAuthRequired || errorCode eq 'account.TWO_FACTOR_AUTH_FAILED'}">
+									<!-- if user has selected remember me in login page and we are showing totp screen to user, then we need to maintain value of that flag as after successfull two factor authentication we will have to rewrite ZM_AUTH_TOKEN with correct expires headers -->
+									<input type="hidden" name="zrememberme" value="${param.zrememberme}"/>
+								</c:if>
 					</c:otherwise>
 				</c:choose>
 				<c:if test="${errorCode != null}">
