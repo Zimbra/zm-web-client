@@ -1983,17 +1983,6 @@ div.CompDragArea * {
 	padding:5px;
 }
 
-/* Container for big display of one contact  */
-.ZmContactInfoView {
-	@AppBg@
-	@AppBorder@
-#IFDEF MSIE
-	height:100%;
-#ENDIF
-	overflow:auto;
-}
-
-.ZmContactInfoView .contactHeaderRow,
 .ZmContactView .contactHeaderRow,
 .ZmTaskEditView .contactHeaderRow {
 	height:40px;
@@ -2022,86 +2011,8 @@ div.CompDragArea * {
 	width: 100%;
 }
 
-.ZmContactView .headerRow .rowLabel,
-.ZmContactView .headerRow .rowType {
-	width: 1%;
-}
-
-.ZmContactView .headerRow .rowType > DIV {
-	@BoxMargin@
-}
-
-.ZmContactView .headerRow,
-.ZmContactInfoView .headerRow {
-	background-color:@darken(AppC,5)@;
-	border-bottom:1px solid @darken(AppC,50)@;
-}
-
-.ZmContactView .headerRowImage,
-.ZmContactInfoView .headerRowImage {
-	vertical-align:top;
-}
-
-.ZmContactView .headerRowImage IMG,
-.ZmContactInfoView .headerRowImage IMG,
-.ZmContactView .headerRowImage DIV,
-.ZmContactInfoView .headerRowImage DIV {
-	@ContactImageRadius@
-}
-
-.ZmContactView .contactHeaderSubTable,
-.ZmContactInfoView .contactHeaderSubTable {
-	background-color:@darken(AppC,15)@;
-	border-bottom:1px solid @darken(AppC,50)@;
-}
-
-.ZmContactInfoView .contactGroupTable {
-	background-color:white;
-	border:1px solid @darken(AppC,50)@;
-	float:left;
-	margin:.5em;
-	width:30%;
-}
-
 .contactHeaderTags {
 	padding-top: .5em;
-}
-
-.contactGroupTableImage {
-	vertical-align:top;
-	text-align:center;
-	padding:1em 5px 0em;
-	height:70px;
-}
-
-.contactGroupTableImage IMG {
-	@ContactGroupImageRadius@
-}
-
-.contactGroupTableContent {
-	padding-right:.5em;
-}
-
-.contactGroupTableContent SPAN {
-	@NoWrap@
-}
-
-.contactGroupTableContent .ImgPlus {
-	display:inline-block;
-	margin-left:.5em;
-}
-
-.ZmContactInfoView .contactHeaderSection {
-	@WidgetHeaderContainer@
-	@WidgetHeaderContainer-normal@
-	@FontSize-big@
-	padding:4px 10px;
-	font-weight:bold;
-	margin-top:10px;
-}
-
-.ZmContactInfoView .workName {
-	font-weight:bold;
 }
 
 .ZmEditGroupContact .Row {
@@ -2113,12 +2024,6 @@ div.CompDragArea * {
 	width:100%;
 }
 
-.ZmContactInfoView .headerRow .ImgGroupPerson_48,
-.ZmContactView .headerRow .ImgGroupPerson_48 {
-	@ContactImageRadius@
-}
-
-.ZmContactInfoView .contactHeader,
 .ZmContactView .contactHeader,
 .ZmTaskEditView .contactHeader,
 .ZmEditContactView .contactHeader {
@@ -2129,7 +2034,6 @@ div.CompDragArea * {
 }
 
 .ZmContactView .contactHeader2,
-.ZmContactInfoView .contactHeader2,
 .ZmEditContactView .contactHeader2 {
 	@FontSize-bigger@
 	@Text@
@@ -2141,51 +2045,16 @@ div.CompDragArea * {
 	height:25px;
 }
 
-.ZmContactView .companyFolder,
-.ZmContactInfoView .companyFolder {
+.ZmContactView .companyFolder {
 	@FontSize-big@
 	@NoWrap@
 	width:1%;
-}
-
-.ZmContactInfoView .companyFolder DIV,
-.ZmContactInfoView .companyFolder IMG {
-	display:inline-block;
-	vertical-align:bottom;
-}
-
-.ZmContactInfoView .contactOutput {
-	@Text@
-	vertical-align:top;
 }
 
 .ZmContactEditTabViewPage .contactLabel {
 	@Label-right@
 	width:1%;
 }
-
-.ZmContactInfoView .contactFirstCell {
-	padding-left:50px;
-	vertical-align:top;
-}
-
-.ZmContactInfoView .contactLabel {
-	@Label-right@
-	width:125px;
-	vertical-align:top;
-}
-
-.ZmContactSplitView .headerRow .rowType,
-.ZmContactView .contactLocation,
-.ZmContactInfoView .contactLocation {
-	@FontSize-big@
-	@Label-right@
-}
-
-.ZmContactInfoView .groupBody {
-	padding:3px;
-}
-
 
 /*
  *	Contact edit screen stuff
@@ -5579,24 +5448,16 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	padding:0px 2px;
 }
 
-.ZmEditContactView .rowLabel, .ZmEditContactView .rowType, 
-.ZmContactSplitView .rowLabel, .ZmContactSplitView .rowType,
-.ZmContactSplitView .rowValue, .ZmContactSplitView .rowValue[colspan] {
+.ZmEditContactView .rowLabel, .ZmEditContactView .rowType {
     padding:.75em .5em .4em;
     vertical-align:top;
 }
-.ZmEditContactView .rowLabel, .ZmEditContactView .rowType,
-.ZmContactSplitView .rowLabel, .ZmContactSplitView .rowType {
+.ZmEditContactView .rowLabel, .ZmEditContactView .rowType {
     white-space: nowrap;
 }
 
 .ZmContactInfoView *:focus {
 	@FocusOutline@
-}
-
-.ZmContactSplitView .rowType > DIV {
-	/* keep icons in the type, such as the location icon, on the same line */
-	display: inline-block;
 }
 
 /* cells with inputs generally need less top padding,
@@ -5614,27 +5475,17 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	padding-top:.55em;
 }
 
-.ZmEditContactView .rowLabel, .ZmContactSplitView .rowLabel {
+.ZmEditContactView .rowLabel {
 	text-align:right;
 	font-weight:bold;
 	width: 1%;
 }
 
-.ZmEditContactView .rowValue, .ZmContactSplitView .rowValue {
+.ZmEditContactView .rowValue {
 	max-width: 70rem;
 	min-width: 15rem;
 	width: 1%;
 	word-wrap: break-word;
-}
-
-.ZmContactSplitView .rowValue SPAN,
-.ZmContactSplitView .rowValue A {
-	@NoWrap@
-}
-
-.ZmContactSplitView .rowType {
-	color:gray;
-	width: auto;
 }
 
 .ZmContactSplitView .Object {
@@ -6572,4 +6423,163 @@ a.ZmLinkDisabled {
 
 #CreateContactGroupDialog table.ZPropertySheet td input[type='text'] {
 	@CreateContactGroupDialogInput@
+}
+
+/* Container for big display of one contact  */
+.ZmContactInfoView {
+	@ContactView@
+}
+
+.ZmContactInfoView .ZmContactWrapper {
+	@ContactWrapper@
+}
+
+/* Contact header style */
+.ZmContactHeader {
+	@ContactHeader@
+}
+
+.ZmContactHeader > TABLE {
+	@FullWidth@
+}
+
+.ZmContactHeader .ZmContactHeaderRow {
+	@ContactHeaderRow@
+}
+
+.ZmContactHeaderRow > DIV {
+	@ContactHeaderCell@
+}
+
+.ZmContactHeaderRow .ZmContactHeaderMain {
+	@ContactHeaderMain@
+}
+
+.ZmContactHeaderMain .ZmContactHeaderImage {
+	@ContactHeaderImageWrapper@
+}
+
+.ZmContactHeaderImage IMG,
+.ZmContactHeaderImage .svg-icon {
+	@ContactHeaderImage@
+}
+
+.ZmContactHeaderMain .ZmContactHeaderInfo {
+	@ContactHeaderInfo@
+}
+
+.ZmContactHeaderInfo .ZmContactTitle:not(:empty) {
+	@ContactHeaderTitle@
+}
+
+.ZmContactHeaderInfo .ZmContactSubTitle:not(:empty) {
+	@ContactHeaderSubTitle@
+}
+
+.ZmContactHeaderInfo .ZmContactHeaderText:not(:empty) {
+	@ContactHeaderText@
+}
+
+.ZmContactHeaderInfo .ZmContactHeaderJobInfo:not(:empty) {
+	@ContactHeaderJobInfo@
+}
+
+.ZmContactHeaderInfo .ZmContactHeaderTags:not(:empty) {
+	@ContactHeaderTags@
+}
+
+.ZmContactHeaderRow .ZmContactHeaderLocation {
+	@ContactHeaderLocation@
+}
+
+.ZmContactHeaderLocation > TABLE {
+	@ContactHeaderLocationTable@
+}
+
+.ZmContactHeaderLocation .ZmContactHeaderLocationIcon {
+	@ContactHeaderLocationIcon@
+}
+
+.ZmContactHeaderLocation .ZmContactHeaderLocationName {
+	@ContactHeaderLocationName@
+}
+
+.ZmContactHeaderLocation .ContactHeaderLocationLabel {
+	@ContactHeaderLocationLabel@
+}
+
+/* Contact info style */
+.ZmContactInfoView .ZmContactInfo:not(:empty) {
+	@ContactInfo@
+}
+
+.ZmContactInfo > TABLE {
+	@FullWidth@
+}
+
+.ZmContactInfo .ZmContactInfoMsg {
+	@ContactInfoMsg@
+}
+
+.ZmContactInfo .ZmContactInfoAction {
+	@ContactInfoAction@
+}
+
+/* Contact content style  */
+.ZmContactInfoView .ZmContactContent {
+	@ContactContent@
+}
+
+.ZmContactContent > TABLE {
+	@FullWidth@
+}
+
+.ZmContactContent .ZmContactRowWrapper {
+	@ContactRowWrapper@
+}
+
+.ZmContactRowWrapper .ZmContactRowLabel {
+	@ContactRowWLabel@
+}
+
+.ZmContactRowWrapper .ZmContactRowValueWrapper {
+	@ContactRowValueWrapper@
+}
+
+.ZmContactRowValueWrapper .ZmContacRowValue {
+	@ContactRowValue@
+}
+
+.ZmContactRowValueWrapper .ZmContacRowValueType {
+	@ContactRowValueType@
+}
+
+/* Contact Group View */
+.ZmContactInfoView .ZmContactGroupListContent {
+	@ContactGroupContent@
+}
+
+.ZmContactGroupItemTable {
+	@ContactGroupItemTable@
+}
+
+.ZmContactGroupItemTable TD {
+	@ContactGroupItemTableCell@
+}
+
+.ZmContactGroupItemImage IMG,
+.ZmContactGroupItemImage .svg-icon {
+	@ContactGroupItemImage@
+}
+
+.ZmContactGroupItemTable .ZmContactGroupItemContent * {
+	@ContactGroupItemContent@
+}
+
+.ZmContactInfoView .ZmContactGroupListContent .ZmContactGroupItemTable .ZmContactGroupItemContent {
+	@ContactGroupItemViewContentWrapper@
+}
+
+.ZmContactInfoView .ZmContactGroupListContent .ZmContactGroupItemTable .ZmContactGroupItemImage {
+	@ContactGroupItemViewImageWrapper@
 }
