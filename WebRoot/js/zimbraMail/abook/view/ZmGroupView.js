@@ -1655,6 +1655,7 @@ function(html, idx, item, field, colIdx, params) {
 		var addr = item.address;
 
 		if (contact && !this.parent.isDistributionList()) {
+			data.contact = contact;
 			data.imageUrl = contact.getImageUrl();
 			data.email = AjxStringUtil.htmlEncode(contact.getEmail());
 			data.title = AjxStringUtil.htmlEncode(contact.getAttr(ZmContact.F_jobTitle));
@@ -1668,7 +1669,7 @@ function(html, idx, item, field, colIdx, params) {
 			data.fullName = fullnameHtml;
 		}
 		else {
-			data.imgClassName = "PersonInline_48";
+			data.imgClassName = "DistributionList";
 			data.email = AjxStringUtil.htmlEncode(addr);
 			if (!this.parent.isDistributionList()) {
 				data.isInline = true;
