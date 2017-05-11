@@ -275,21 +275,28 @@
 </template>
 
 <template id='abook.Contacts#SplitView_content'>
-	<table id='${id}_details' class='contactContentTable'>
-	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
-	<$= ZmContactSplitView.showContactEmails(data) $>
-	<$= ZmContactSplitView.showContactPhones(data) $>
-	<$= ZmContactSplitView.showContactIMs(data) $>
-	<$= ZmContactSplitView.showContactAddresses(data) $>
-	<$= ZmContactSplitView.showContactUrls(data) $>
-	<$= ZmContactSplitView.showContactOther(data) $>
-	<$= ZmContactSplitView.showContactNotes(data) $>
-	<$= ZmContactSplitView.showContactDLMembers(data) $>
-	</table>
+	<div id='${id}_details' class='ZmContactWrapper'>
+		<div class='ZmContactHeader'>
+			<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+		</div>
+		<div class='ZmContactContent'>
+			<table>
+				<$= ZmContactSplitView.showContactEmails(data) $>
+				<$= ZmContactSplitView.showContactPhones(data) $>
+				<$= ZmContactSplitView.showContactIMs(data) $>
+				<$= ZmContactSplitView.showContactAddresses(data) $>
+				<$= ZmContactSplitView.showContactUrls(data) $>
+				<$= ZmContactSplitView.showContactOther(data) $>
+				<$= ZmContactSplitView.showContactNotes(data) $>
+				<$= ZmContactSplitView.showContactDLMembers(data) $>
+			</table>
+		</div>
+	</div>
 </template>
 
 <template id='abook.Contacts#SplitView_group'>
 	<$
+		var contact = data.contact;
 		var imageUrl = data.imageUrl;
 		var defaultImageUrl = data.defaultImageUrl;
 		var email = data.email;
@@ -297,49 +304,39 @@
 		var fullName = data.fullName;
 		var phone = data.phone;
 		var location = data.location;
-		var imgClassName = data.imgClassName || "Person_48";
+		var imgClassName = contact && contact.isDistributionList() ? 'DistributionList' : contact && contact.isGroup() ? 'Group' : 'Contact';
 		var quickAdd = "id='" + data.quickAddId + "'";
 		var isEdit = data.isEdit;
 		var delId = "id='" + data.delButtonId + "'";
 	$>
-	<table role="presentation" class='contactGroupTable'>
+	<table role="presentation" class='ZmContactGroupItemTable'>
 		<tr>
-		<$ if (imageUrl) { $>
-			<td class='contactGroupTableImage' width='48'><img src='<$= imageUrl $>'
-			<$ if (AjxEnv.isIE) { $>
-				height='48'
-			<$ } else { $>
-				style='max-width:48px;max-height:48px;'
-			<$ } $>
-			<$ if (defaultImageUrl) { $>
-				onerror='this.onerror=null;this.src="${defaultImageUrl}";'
-			<$ } $>
-			border='0'></td>
-		<$ } else { $>
-			<td class='contactGroupTableImage' width='48'><$= AjxImg.getImageHtml(imgClassName) $></td>
-		<$ } $>
-			<td class='contactGroupTableContent'>
+			<td class='ZmContactGroupItemImage' width=42>
+				<$ if (imageUrl) { $>
+					<img src='<$= imageUrl $>'
+						<$ if (defaultImageUrl) { $>
+							onerror='this.onerror=null;this.src="${defaultImageUrl}";'
+						<$ } $>
+					/>
+				<$ } else { $>
+					<$= AjxImg.getImageHtml({
+						imageName: imgClassName
+					}) $>
+				<$ } $>
+			</td>
+			<td class='ZmContactGroupItemContent'>
 				<$ if (fullName) {$>
 					<div><strong><$=fullName$></strong></div>
 				<$ } $>
-				<$ if (title) { $>
-					<div><span><$=title$></span></div>
-				<$}$>
 				<$ if (email) {$>
 					<div>
 						<$=email$>
 						<$ if (data.isInline) {$><$=AjxImg.getImageHtml("Plus", "", quickAdd)$><$ }$>
 					</div>
 				<$}$>
-				<$ if (phone) {$>
-					<div><$=phone$></div>
-				<$}$>
-				<$ if (location) {$>
-					<div><$=location$></div>
-				<$}$>
 			</td>
 		<$ if (isEdit) {$>
-			<td width='36' valign='top'><$=AjxImg.getImageHtml("Delete", "", delId)$></td>
+			<td width='36' valign='middle' class='ZmContactGroupItemAction'><$=AjxImg.getImageHtml("Delete", "", delId)$></td>
 		<$}$>
 		</tr>
 	</table>
@@ -353,72 +350,85 @@
 		var defaultImageUrl = data.defaultImageUrl;
 		var accountName = appCtxt.multiAccounts && contact.account && contact.account.getDisplayName();
 		var tagsId = data.id + '_tags_contact'; 
-		var imgClassName = contact.isDistributionList() ? 'Group_48' : contact.isGroup() ? 'GroupPerson_48' : 'Person_48';
+		var imgClassName = contact.isDistributionList() ? 'DistributionList' : contact.isGroup() ? 'Group' : 'Contact';
 		var isEdit = data.isEdit;
 	$>
-		<tr class='headerRow' id='${id}_headerRow'>
-			<$ if (imageUrl) { $>
-				<td class='rowLabel'>
-					<div class='headerRowImage'>
-						<img src='<$= imageUrl $>'
-				<$ if (AjxEnv.isIE) { $>
-					height='48'
-				<$ } else { $>
-					style='max-width:48px;max-height:48px;'
-				<$ } $>
-				<$ if (defaultImageUrl) { $>
-					onerror='this.onerror=null;this.src="${defaultImageUrl}";'
-				<$ } $>
-					border=0 alt='<$= imageLabel $>'>
-					</div>
-				</td>
-			<$ } else { $>
-				<td class='rowLabel'>
-					<div class='headerRowImage'>
-						<$= AjxImg.getImageHtml({
-							imageName: imgClassName, altText: imageLabel
-						}) $>
-					</div>
-				</td>
+	<div class='ZmContactHeaderRow headerRow' id='${id}_headerRow'>
+		<div class='ZmContactHeaderMain'>
+			<table role="presentation">
+				<tr>
+					<td class='ZmContactHeaderImage'>
+						<$ if (imageUrl) { $>
+							<img src='<$= imageUrl $>' alt='<$= imageLabel $>'
+								<$ if (defaultImageUrl) { $>
+									onerror='this.onerror=null;this.src="${defaultImageUrl}";'
+								<$ } $>
+							/>
+						<$ } else { $>
+							<$= AjxImg.getImageHtml({
+								imageName: imgClassName, altText: imageLabel
+							}) $>
+						<$ } $>
+					</td>
+					<td class='ZmContactHeaderInfo rowValue'>
+						<$= AjxTemplate.expand("#SplitView_headerName", data) $>
+						<$= AjxTemplate.expand("#SplitView_headerJobInfo", data) $>
+						<$ if (data.dlInfo && data.dlInfo.description) { $>
+						<div class='ZmContactHeaderText'><$= AjxStringUtil.htmlEncode(data.dlInfo.description) $></div>
+						<$ } $>
+						<$ if (!isEdit) {$>
+							<div class='ZmContactHeaderTags' id='<$= tagsId $>'></div>
+						<$ } $>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class='ZmContactHeaderLocation rowType'>
+			<$ if (accountName) { $>
+				<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+					<tr>
+						<td class="ZmContactHeaderLocationIcon"><$= ZmMsg.accountLabel $></td>
+						<td class="ZmContactHeaderLocationName"><$= AjxStringUtil.htmlEncode(accountName) $></td>
+					</tr>
+				</table>
 			<$ } $>
-			<td class='rowValue'>
-				<$= AjxTemplate.expand("#SplitView_headerName", data) $>
-				<$= AjxTemplate.expand("#SplitView_headerJobInfo", data) $>
-				<$ if (data.dlInfo && data.dlInfo.description) { $>
-					<div><$= AjxStringUtil.htmlEncode(data.dlInfo.description) $></div>
-				<$ } $>
-				<$ if (!isEdit) {$>
-					<div class='contactHeaderTags' id='<$= tagsId $>'></div>
-				<$ } $>
-			</td>
-			<td class='rowType' valign='top'>
-				<$ if (accountName) { $>
+			<$ if (!isEdit) { $>
+				<$ if (data.addrbook) { $>
 					<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 						<tr>
-							<td class='contactLocation'><$= ZmMsg.accountLabel $></td>
-							<td class='companyFolder'><$= AjxStringUtil.htmlEncode(accountName) $></td>
+							<td class="ZmContactHeaderLocationIcon">
+								<$= AjxImg.getImageHtml({
+									imageName: data.addrbook.getIconWithColor(),
+									altText: ZmMsg.locationLabel
+								}) $>
+							</td>
+							<td class="ZmContactHeaderLocationName"><$= data.addrbook.getName() $></td>
 						</tr>
 					</table>
-				<$ } $>
-				<$ if (!isEdit) { $>
-					<$ if (data.addrbook) { $>
-						<$= AjxImg.getImageHtml({
-								imageName: data.addrbook.getIconWithColor(),
-								altText: ZmMsg.locationLabel
-							}) $>&nbsp;<$= data.addrbook.getName() $>
-					<$ } else { $>
-						<$= AjxImg.getImageHtml('GAL') $>&nbsp;<$= ZmMsg.GAL $>
-					<$ } $>
 				<$ } else { $>
 					<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 						<tr>
-							<td id='${id}_locationLabel' class='contactLocation'><$= ZmMsg.locationLabel $></td>
-							<td id='${id}_LOCATION_FOLDER'></td>
+							<td class="ZmContactHeaderLocationIcon">
+								<$= AjxImg.getImageHtml('GALFolder') $>
+							</td>
+							<td class="ZmContactHeaderLocationName">
+								<$= ZmMsg.GAL $>
+							</td>
 						</tr>
 					</table>
 				<$ } $>
-			</td>
-		</tr>
+			<$ } else { $>
+				<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+					<tr>
+						<td id='${id}_locationLabel' class='ZmContactHeaderLocationLabel'>
+							<$= ZmMsg.locationLabel $>
+						</td>
+						<td id='${id}_LOCATION_FOLDER'></td>
+					</tr>
+				</table>
+			<$ } $>
+		</div>
+	</div>
 </template>
 
 <template id='abook.Contacts#SplitView_headerName'>
@@ -435,9 +445,13 @@
 			fullnameHtml = '';
 		}
 	$>
-	<div id='${id}_contactName' class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= fullnameHtml $></div>
+	<div id='${id}_contactName' class='ZmContactTitle <$= data.isInTrash ? "Trash" : "" $>'><$= fullnameHtml $></div>
 	<$ if (nickname && !isEdit) { $>
-		<div class='contactHeader'>&ldquo;<$= AjxStringUtil.htmlEncode(nickname) $>&rdquo;</div>
+		<$ if(contact.isGroup()) { $>
+			<div class='ZmContactTitle'><$= AjxStringUtil.htmlEncode(nickname) $></div>
+		<$ } else { $>
+			<div class='ZmContactSubTitle'>&ldquo;<$= AjxStringUtil.htmlEncode(nickname) $>&rdquo;</div>
+		<$ } $>
 	<$ } $>
 	<$ else if (isEdit) {$>
 		<div class='contactHeader2'>
@@ -481,23 +495,22 @@
 		var department = contact.getAttr(ZmContact.F_department);
 	$>
 	<$ if (title || department) { $>
-		<div class='contactHeader2'>
-		<$ if (title) { $>
-			<span><$= AjxStringUtil.htmlEncode(title) $></span>
-		<$ } $>
-		<$ if (department) { $>
+		<div class='ZmContactHeaderJobInfo'>
 			<$ if (title) { $>
-				&nbsp;&ndash;&nbsp;
+				<span><$= AjxStringUtil.htmlEncode(title) $></span>
 			<$ } $>
-			<span><$= AjxStringUtil.htmlEncode(department) $></span>
-		<$ } $>
+			<$ if (department) { $>
+				<$ if (title) { $>&nbsp;&ndash;&nbsp;<$ } $>
+				<span><$= AjxStringUtil.htmlEncode(department) $></span>
+			<$ } $>
+			<$ if (company) {
+				var phoneticCompany = isPhonetic && contact.getAttr(ZmContact.F_phoneticCompany);
+				var companyHtml = AjxStringUtil.htmlRubyEncode(company, phoneticCompany);
+				$>
+				<$ if (title) { $>&comma;&nbsp;<$ } $>
+				<span><$= companyHtml$></span>
+			<$ } $>
 		</div>
-	<$ } $>
-	<$ if (company) {
-		var phoneticCompany = isPhonetic && contact.getAttr(ZmContact.F_phoneticCompany);
-		var companyHtml = AjxStringUtil.htmlRubyEncode(company, phoneticCompany);
-		$>
-		<div class='contactHeader2'><$= companyHtml$></div>
 	<$ } $>
 </template>
 
@@ -518,77 +531,93 @@
 </template>
 
 <template id='abook.Contacts#SplitView_address_value'>
-	<tr valign='top'>
-		<td class='rowLabel'>
-			<!-- only show the first label visually -->
-			<label for='${labelId}' class='<$= data.first ? "" : "ScreenReaderOnly" $>'>
-				${label}
-			</label>
-		</td>
-		<td id='${labelId}' class='rowValue'>
-			<$ var address = data.address;
-			if (address.Street) { $>
-				<div><$=address.Street$></div>
-			<$ }
-			if (address.City || address.State || address.PostalCode) { $>
-				<div>
-					<span><$=address.City$></span>
-					<$ if (address.City && address.State) { $>, <$ } $>
-					<span><$=address.State$></span>
-					<$ if (address.City || address.State) { $>&nbsp;<$ } $>
-					<span><$=address.PostalCode$></span>
+	<tr>
+		<td>
+			<div class='ZmContactRowWrapper'>
+				<div class='ZmContactRowLabel' id='${labelId}_label'>
+						<!-- only show the first label visually -->
+						<label for='${labelId}_label' class='<$= data.first ? "" : "ScreenReaderOnly" $>'>
+							${label}
+						</label>
 				</div>
-			<$ }
-			if (address.Country) { $>
-				<div><$=address.Country$></div>
-			<$ } $>
-		</td>
-		<td class='rowType'>
-			<label for='${labelId}'>
-				&nbsp;<$= data.type $>
-			</label>
+				<div class='ZmContactRowValueWrapper'>
+					<div id='${labelId}_value' class='ZmContacRowValue rowValue' aria-labelledby='${labelId}_label ${labelId}_type'>
+						<$ var address = data.address;
+							if (address.Street) { $>
+								<$=address.Street$>
+							<$ }
+							if (address.City || address.State || address.PostalCode) { $>
+								<$ if (address.Street) { $>,&nbsp;<$ } $>
+								<$=address.City$>
+								<$ if (address.City && address.State) { $>,&nbsp;<$ } $>
+								<$=address.State$>
+								<$ if (address.City || address.State) { $>&nbsp;<$ } $>
+								<$=address.PostalCode$>
+							<$ }
+							if (address.Country) { $>
+								<$ if (address.Street || address.City || address.State || address.PostalCode) { $>,&nbsp;<$ } $>
+								<$=address.Country$>
+							<$ } 
+						$>
+					</div>
+					<$ if (data.type) { $>
+						<div id='${labelId}_type' class='ZmContacRowValueType'>
+							<label for='${labelId}_label'>
+								${type}
+							</label>
+						</div>
+					<$ } $>
+				</div>
+			</div>
 		</td>
 	</tr>
 </template>
 
 <template id='abook.Contacts#SplitView_list_item'>
-<tr valign='top'>
-	<$ if (data.isDL) { $>
-	<td><div class='ImgBlank_16'></div></td>
-	<$ } $>
-	<td class='rowLabel' id='${labelId}_label'>
-		<!-- only show the first label visually -->
-		<label for='${labelId}_label' class='<$= data.first ? "" : "ScreenReaderOnly" $>'>
-			${label}
-		</label>
+<tr>
+	<td>
+		<div class='ZmContactRowWrapper'>
+			<div class='<$= data.first ? "ZmContactRowLabel" : "" $>' id='${labelId}_label'>
+				<!-- only show the first label visually -->
+				<label for='${labelId}_label' class='<$= data.first ? "" : "ScreenReaderOnly" $>'>
+					${label}
+				</label>
+			</div>
+			<div class='ZmContactRowValueWrapper'>
+				<div id='${labelId}_value' class='ZmContacRowValue rowValue' aria-labelledby='${labelId}_label ${labelId}_type'>
+					<$= data.value $>
+				</div>
+				<$ if (data.type) { $>
+					<div id='${labelId}_type' class='ZmContacRowValueType'>
+						<label for='${labelId}_label'>
+							${type}
+						</label>
+					</div>
+				<$ } $>
+			</div>
+		</div>
 	</td>
-	<td id='${labelId}_value' <$= data.type ? "" : "colspan='2'" $> class='rowValue' aria-labelledby='${labelId}_label ${labelId}_type'>
-		<$= data.value $>
-	</td>
-	<$ if (data.type) { $>
-		<td id='${labelId}_type' class='rowType'>
-			<label for='${labelId}_label'>
-				&nbsp;${type}
-			</label>
-		</td>
-	<$ } $>
 </tr>
 </template>
 
 <template id='abook.Contacts#SplitViewGroup'>
-	<table class='contactContentTable'>
-		<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
-	</table>
-	<$ if (data.dlInfo) { $>
-	<table role="presentation" class='contactHeaderSubTable NoneBg ZPropertySheet' width='100%' cellspacing='6'>
-		<tr>
-			<td><ul id='${id}_subscriptionMsg' style='margin:.5em 0;padding-left:53px;'></ul></td>
-			<td id='${id}_subscriptionButton'></td>
-		</tr>
-	</table>
-	<$ } $>
-	<div class='contactGroupList' style='overflow:auto;'>
-		<$= ZmContactSplitView.showContactGroup(data) $>
+	<div id='${id}_details' class='ZmContactWrapper'>
+		<div class='ZmContactHeader'>
+			<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+		</div>
+		<div class='ZmContactInfo'>
+			<$ if (data.dlInfo) { $>
+				<table role="presentation" cellspacing='6'>
+					<tr>
+						<td><ul id='${id}_subscriptionMsg' class="ZmContactInfoMsg"></ul></td>
+						<td><div id='${id}_subscriptionButton' class="ZmContactInfoAction"></div></td>
+					</tr>
+				</table>
+			<$ } $>
+		</div>
+		<div class='ZmContactContent ZmContactGroupListContent'>
+			<$= ZmContactSplitView.showContactGroup(data) $>
+		</div>
 	</div>
 </template>
 
@@ -609,16 +638,16 @@
 <!-------------------------------- ZmGroupView -------------------------------->
 <!----------------------------------------------------------------------------->
 <template id='abook.Contacts#GroupView'>
-	<table class='ZPropertySheet'>
+	<div class='ZmContactHeader'>
 		<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
-	</table>
+	</div>
 	<$= AjxTemplate.expand("abook.Contacts#GroupViewMembers", data) $>
 </template>
 
 <template id='abook.Contacts#DlView'>
-	<table class='ZPropertySheet'>
-		<$= AjxTemplate.expand('abook.Contacts#SplitView_header', data) $>
-	</table>
+	<div class='ZmContactHeader'>
+		<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+	</div>
 	<div id='${id}_tabViewContainer'></div>
 </template>
 
