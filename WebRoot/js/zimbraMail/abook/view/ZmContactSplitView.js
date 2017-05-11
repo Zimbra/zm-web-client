@@ -853,6 +853,7 @@ function(data) {
 		var itemListData = {};
 		var contact = member.__contact;
 		if (contact) {
+			itemListData.contact = contact;
 			itemListData.imageUrl = contact.getImageUrl();
 			itemListData.defaultImageUrl = ZmZimbraMail.DEFAULT_CONTACT_ICON;
 			itemListData.imgClassName = contact.getIconLarge();
@@ -867,7 +868,7 @@ function(data) {
 			itemListData.fullName = fullnameHtml;
 		}
 		else {
-			itemListData.imgClassName = "PersonInline_48";
+			itemListData.imgClassName = "DistributionList";
 			itemListData.email = data.findObjects(member.value, ZmObjectManager.EMAIL, true);
 		}
 		html.push(AjxTemplate.expand("abook.Contacts#SplitView_group", itemListData));
