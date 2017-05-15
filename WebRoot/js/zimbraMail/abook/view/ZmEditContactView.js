@@ -1073,8 +1073,7 @@ ZmEditContactViewImage = function(params) {
 		"<div style='width:48;height:48'>",
 			"<img id='",this._htmlElId,"_img' width='48' height='48'>",
 		"</div>",
-		"<div class='ZmEditContactImageBadge' id='",this._htmlElId,"_badge' style='position:absolute;"
-        ,"bottom:14px;right:14px'>"
+		"<div class='ZmEditContactImageBadge' id='",this._htmlElId,"_badge'>"
 	].join("");
 	el.style.cursor = "pointer";
 
