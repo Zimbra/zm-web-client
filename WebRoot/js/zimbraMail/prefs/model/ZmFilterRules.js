@@ -376,20 +376,36 @@ function(index, notify, callback, result) {
 ZmFilterRules.prototype._handleErrorSaveRules =
 function(ex) {
 	if (ex.code == ZmCsfeException.SVC_PARSE_ERROR ||
-		ex.code == ZmCsfeException.SVC_INVALID_REQUEST)
+		ex.code == ZmCsfeException.SVC_INVALID_REQUEST ||
+		ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER ||
+		ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG)
 	{
 		var msgDialog = appCtxt.getMsgDialog();
-		msgDialog.setMessage([ZmMsg.filterError, " ", AjxStringUtil.htmlEncode(ex.msg)].join(""), DwtMessageDialog.CRITICAL_STYLE);
+
+		var msg = '';
+		switch(ex.code) {
+			case ZmCsfeException.MAIL_NO_SUCH_FOLDER:
+				msg = ZmMsg.errorNoSuchFolder;
+				break;
+			case ZmCsfeException.MAIL_NO_SUCH_TAG:
+				msg = ZmMsg.errorNoSuchTag;
+				break;
+			default:
+				msg = [ZmMsg.filterError, " ", AjxStringUtil.htmlEncode(ex.msg)].join("");
+		}
+
+		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 		msgDialog.popup();
-        //only reload rules if the filter rule dialog is not popped up or if a new rule is being added
-        //get index for refreshing list view
-        if (!appCtxt.getFilterRuleDialog() || !appCtxt.getFilterRuleDialog().isPoppedUp() || !appCtxt.getFilterRuleDialog().isEditMode()) {
-            var filterRulesController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
-            var sel = filterRulesController.getListView() ? filterRulesController.getListView().getSelection()[0] : null;
-            var index = sel ? this.getIndexOfRule(sel) - 1: null;   //new filter is inserted into vector, subtract 1 to get the selected index
-		    var respCallback = new AjxCallback(this, this._handleResponseHandleErrorSaveRules, [index]);
-		    this.loadRules(true, respCallback);
-        }
+
+		//only reload rules if the filter rule dialog is not popped up or if a new rule is being added
+		//get index for refreshing list view
+		if (!appCtxt.getFilterRuleDialog() || !appCtxt.getFilterRuleDialog().isPoppedUp() || !appCtxt.getFilterRuleDialog().isEditMode()) {
+			var filterRulesController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
+			var sel = filterRulesController.getListView() ? filterRulesController.getListView().getSelection()[0] : null;
+			var index = sel ? this.getIndexOfRule(sel) - 1: null;   //new filter is inserted into vector, subtract 1 to get the selected index
+			var respCallback = new AjxCallback(this, this._handleResponseHandleErrorSaveRules, [index]);
+			this.loadRules(true, respCallback);
+		}
 		return true;
 	}
 	return false;
