@@ -1874,59 +1874,36 @@ div.CompDragArea * {
 	@ContactEditView@
 }
 
+/* Alphabate navigation bar Styles */
+.ZmAlphabetBarWrapper {
+	@AlphabetBarWrapper@
+}
+
 .AlphabetBarTable {
-	@ButtonShadowDefault@
-	border-collapse:separate;
-	margin:5px;
-	table-layout:fixed;
+	@AlphabetBarTable@
 }
 
-/* We cannot use collapsed borders for the AlphabetBarTable, as it suppresses
-   the _leading_ border, and we have no easy means for selecting the element
-   preceding the focused element. Instead, we suppress the _trailing_ border in
-   CSS -- for all but the last cell, obviously -- and color it using the
-   adjacent sibling selector. */
-.AlphabetBarTable .AlphabetBarCell:focus + .AlphabetBarCell {
-	border-left-color: @SelOutsetLeftBorderColor@;
+.AlphabetBarTable .AlphabetBarCell {
+	@AlphabetBarCell@
 }
 
-.AlphabetBarCell:not(:last-child) {
-	border-right-width: 0px;
+.AlphabetBarTable:not(.AlphabetBarDisabled) .AlphabetBarCell.DwtButton-active {
+	@AlphabetBarCellActive@
 }
 
-.AlphabetBarTable .AlphabetBarCell:first-child 	{ @ButtonRoundingLeft@	}
-.AlphabetBarTable .AlphabetBarCell:last-child	{ @ButtonRoundingRight@	}
-
-.AlphabetBarTable .AlphabetBarCell.DwtButton-active,
-.AlphabetBarTable .AlphabetBarCell:hover {
-	border-color: @ButtonBorderColor@;
+.AlphabetBarTable:not(.AlphabetBarDisabled) .AlphabetBarCell:focus,
+.AlphabetBarTable:not(.AlphabetBarDisabled) .AlphabetBarCell:hover {
+	@AlphabetBarCellHover@
 }
 
-.AlphabetBarTable .AlphabetBarCell:hover {
-	@ButtonBorder-hover@
-	@NoShadow@
-}
-
-.AlphabetBarTable .AlphabetBarCell:focus {
-	@ButtonBorder-focused@
-	@NoShadow@
-	outline: none;
-}
-
-.AlphabetBarCell {
-	@ActiveCursor@
-	@NoRoundCorners@
-	@NoShadow@
-	text-align:center;
-}
-
+/* Disabled Alphabatebar */
 .AlphabetBarDisabled {
-	/* TODO:this was hard-coded to 50% opaque -- why not same as icon? */
 	@HalfOpacity@
 }
 
 .AlphabetBarDisabled .AlphabetBarCell {
 	@InactiveCursor@
+	@TransparentBg@
 }
 
 /* Container for list of contacts */
