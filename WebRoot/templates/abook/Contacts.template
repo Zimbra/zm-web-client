@@ -246,10 +246,10 @@
 <!---------------------------- ZmContactSplitView ----------------------------->
 <!----------------------------------------------------------------------------->
 <template id='abook.Contacts#SplitView'>
-	<table role="presentation" width='100%' height='100%' class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" width='100%' height='100%'>
 		<col width='230'></col>
 		<tr>
-			<td id='${id}_alphabetbar'></td>
+			<td id='${id}_alphabetbar' class='ZmAlphabetBarWrapper'></td>
 		</tr>
 		<tr height='100%'>
 			<td valign='top' style='padding:0;'>
@@ -854,19 +854,15 @@
 <!------------------------------- ZmAlphabetBar ------------------------------->
 <!----------------------------------------------------------------------------->
 <template id='abook.Contacts#ZmAlphabetBar'>
-	<center>
-		<table role="presentation" id='${id}_alphabet' width='80%' class='AlphabetBarTable'' cellspacing='0'>
+		<table role="presentation" id='${id}_alphabet' class='AlphabetBarTable' cellspacing='0'>
 			<tr>
 				<$ for (var i = 0; i < data.numLetters; i++) { $>
-					<td _idx="<$= i $>"	role='button'
-						class='DwtButton AlphabetBarCell'
-<$ if (data.alphabet[i].length > 1) { $> colspan='<$= data.alphabet[i].length/2 + 1 $>' <$ } $> >
+					<td _idx="<$= i $>"	role='button' class='DwtButton AlphabetBarCell'>
 						<$= data.alphabet[i] $>
 					</td>
 				<$ } $>
 			</tr>
 		</table>
-	</center>
 </template>
 
 <!----------------------------------------------------------------------------->
