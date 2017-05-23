@@ -1,4 +1,5 @@
 build/
 .project
-/.history
-/.idea
+.history
+.idea
+.classpath
