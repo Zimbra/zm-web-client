@@ -114,7 +114,7 @@ function() {
 	
 	ZmOperation.registerOp(ZmId.OP_ATTACHMENT, {textKey:"addAttachment", tooltipKey:"attachmentTooltip", image:"Attachment", shortcut:ZmKeyMap.ATTACHMENT, showImageInToolbar: true});
 	ZmOperation.registerOp(ZmId.OP_CALL, {image:"Telephone"});
-	ZmOperation.registerOp(ZmId.OP_CANCEL, {textKey:"cancel", tooltipKey:"cancelTooltip", image:"Cancel", shortcut:ZmKeyMap.CANCEL});
+	ZmOperation.registerOp(ZmId.OP_CANCEL, {textKey:"cancel", tooltipKey:"cancelTooltip", image:"Cancel", shortcut:ZmKeyMap.CANCEL, showImageInToolbar: true, showTextInToolbar: true});
 	ZmOperation.registerOp(ZmId.OP_CHECK_ALL, {textKey:"checkAll", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_CLEAR_ALL, {textKey:"clearAll", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_CLOSE, {textKey:"close", tooltipKey:"closeTooltip", image:"Close", shortcut:ZmKeyMap.CANCEL});
@@ -178,7 +178,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_RENAME_FOLDER, {textKey:"renameFolder"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_SEARCH, {textKey:"renameSearch"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_TAG, {textKey:"renameTag"}, ZmSetting.TAGGING_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_SAVE, {textKey:"save", image:"Save", shortcut:ZmKeyMap.SAVE});
+	ZmOperation.registerOp(ZmId.OP_SAVE, {textKey:"save", image:"Save", shortcut:ZmKeyMap.SAVE, showImageInToolbar: true, showTextInToolbar: true});
 	ZmOperation.registerOp(ZmId.OP_SEARCH, {textKey:"findEmailFromSender"}, ZmSetting.SEARCH_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SEARCH_TO, {textKey:"findEmailToSender"}, ZmSetting.SEARCH_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SEARCH_MENU, {textKey:"findEmails", image:"Search"}, ZmSetting.SEARCH_ENABLED,
