@@ -1,10 +1,9 @@
 build/
 .project
-/WebRoot/js/zimbra/
-/WebRoot/js/ajax/
-/WebRoot/keys/AjxKeys*
-/WebRoot/jquery/
-/WebRoot/modernizr/
-/WebRoot/yui/
-/.gitignore
-/.history
+.classpath
+WebRoot/jquery
+WebRoot/js/ajax
+WebRoot/js/zimbra
+AjxKeys*.properties
+WebRoot/modernizr
+WebRoot/yui

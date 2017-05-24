@@ -674,8 +674,11 @@ SELECT                      {   @FieldBorder@   }
 
 .ZToolbarTable .vertSep             { border-color:@ToolbarSeparatorColor@;     }
 
-.appt_new_time .ImgBlank_16,
-.appt_time .ImgBlank_16             { display:none;     }
+/*
+Ideally we should not apply ImgBlank_16 icon to elements, but we are doing it from many places so instead of changing that
+we are hiding element with that class
+*/
+.DwtShell .ImgBlank_16              { display:none;     }
 
 /*
  * TinyMCE customizations
@@ -695,74 +698,74 @@ SELECT                      {   @FieldBorder@   }
 *  Svg Icon Customizations
 */
 
-.svg-icon.ImgPriorityHigh_list,
-.svg-icon.ImgPriorityLow_list {
+.ImgPriorityHigh_list-svg .svg-icon,
+.ImgPriorityLow_list-svg .svg-icon {
     width:1.2em;
 }
 
-svg.ImgPriorityHigh_list {
+.ImgPriorityHigh_list-svg .svg-icon {
     fill: @IconPriorityHigh@;
 }
 
-svg.ImgPriorityLow_list {
+.ImgPriorityLow_list-svg .svg-icon {
     fill: @IconPriorityLow@;
 }
 
-svg.ImgCalInviteAccepted {
+.ImgCalInviteAccepted-svg .svg-icon {
     fill: @IconCalInviteAccepted@;
 }
 
-svg.ImgCalInviteDeclined {
+.ImgCalInviteDeclined-svg .svg-icon {
     fill: @IconCalInviteDeclined@;
 }
 
-svg.ImgCalInviteTentative {
+.ImgCalInviteTentative-svg .svg-icon {
     fill: @IconCalInviteTentative@;
 }
 
-svg.ImgMsgUnread {
+.ImgMsgUnread-svg .svg-icon {
     fill: @IconMsgUnread@;
 }
 
-svg.ImgCheckboxUnchecked {
+.ImgCheckboxUnchecked-svg .svg-icon {
     fill: @IconCheckboxUnchecked@;
 }
 
-.Row-selected svg.ImgMsgUnread,
-.Row-selected svg.ImgCheckboxChecked,
-.Row-selected svg.ImgCheckboxUnchecked
+.Row-selected .ImgMsgUnread-svg .svg-icon,
+.Row-selected .ImgCheckboxChecked-svg .svg-icon,
+.Row-selected .ImgCheckboxUnchecked-svg .svg-icon
 {
     fill: @IconSelectionListItem@
 }
 
-svg.ImgMsgRead {
+.ImgMsgRead-svg .svg-icon {
     fill: @IconMsgRead@;
 }
 
-svg.ImgFlagDis {
+.ImgFlagDis-svg .svg-icon {
     fill: @IconFlagDis@;
 }
 
-svg.ImgFlagRed {
+.ImgFlagRed-svg .svg-icon {
     fill: @IconFlagRed@;
 }
 
-svg.ImgColumnUpArrow,
-svg.ImgColumnDownArrow{
+.ImgColumnUpArrow-svg .svg-icon,
+.ImgColumnDownArrow-svg .svg-icon {
     fill: @IconColumnDownArrow@;
 }
 
-.ZmComposeView svg.ImgAttachClip {
+.ZmComposeView .ImgAttachClip-svg .svg-icon {
     width: 100%;
     height: 36px;
     @opacity(40)@;
 }
 
-.ZmComposeView svg.ImgSelectPullDownArrow {
+.ZmComposeView .ImgSelectPullDownArrow-svg .svg-icon {
     fill: @PrimaryBrandingColor@;
 }
 
-.ZmHtmlEditor svg.ImgEditorDrag {
+.ZmHtmlEditor .ImgEditorDrag-svg .svg-icon {
     background-color: @AppC@;
     fill: @TxtC@;
     width: 38px;
@@ -770,106 +773,106 @@ svg.ImgColumnDownArrow{
     @opacity(40)@;
 }
 
-.attachmentBubble  svg.ImgBubbleDelete {
+.attachmentBubble .ImgBubbleDelete-svg .svg-icon {
     fill: @AppC@;
 }
 
-.ZmMsgListBottomRowIcon svg {
+.ZmMsgListBottomRowIcon .svg-icon {
     fill: @IconMsgStatus@;
 }
 
-.DwtCalendarTitlebar svg {
+.DwtCalendarTitlebar .svg-icon {
     fill: @IconMiniCalendarTitlebar@;
 }
 
 /* File type icon styles */
-.svg-icon.ImgUnknownDoc,
-.svg-icon.ImgGenericDoc,
-.svg-icon.ImgMSProjectDoc,
-.svg-icon.ImgMSVisioDoc {
+.ImgUnknownDoc-svg .svg-icon,
+.ImgGenericDoc-svg .svg-icon,
+.ImgMSProjectDoc-svg .svg-icon,
+.ImgMSVisioDoc-svg .svg-icon {
     @FileTypeUnknown@
 }
 
-.svg-icon.ImgExeDoc {
+.ImgExeDoc-svg .svg-icon {
     @FileTypeExe@
 }
 
-.svg-icon.ImgImageDoc {
+.ImgImageDoc-svg .svg-icon {
     @FileTypeImage@
 }
 
-.svg-icon.ImgPDFDoc {
+.ImgPDFDoc-svg .svg-icon {
     @FileTypePdf@
 }
 
-.svg-icon.ImgEPSDoc {
+.ImgEPSDoc-svg .svg-icon {
     @FileTypeEps@
 }
 
-.svg-icon.ImgMSExcelDoc {
+.ImgMSExcelDoc-svg .svg-icon {
     @FileTypeExl@
 }
-.svg-icon.ImgMSPowerpointDoc {
+.ImgMSPowerpointDoc-svg .svg-icon {
     @FileTypePPT@
 }
 
-.svg-icon.ImgMSWordDoc,
-.svg-icon.ImgDoc {
+.ImgMSWordDoc-svg .svg-icon,
+.ImgDoc-svg .svg-icon {
     @FileTypeDoc@
 }
 
-.svg-icon.ImgZipDoc {
+.ImgZipDoc-svg .svg-icon {
     @FileTypeZip@
 }
 
-.svg-icon.ImgAudioDoc,
-.svg-icon.ImgVideoDoc {
+.ImgAudioDoc-svg .svg-icon,
+.ImgVideoDoc-svg .svg-icon {
     @FileTypeMedia@
 }
 
-.svg-icon.ImgMessageDoc {
+.ImgMessageDoc-svg .svg-icon {
     @FileTypeMail@
 }
 
-.svg-icon.ImgHtmlDoc {
+.ImgHtmlDoc-svg .svg-icon {
     @FileTypeHtml@
 }
 
-.svg-icon.ImgContactDoc {
+.ImgHtmlDoc-svg .svg-icon {
     @FileTypeVCard@
 }
 
-.svg-icon.ImgEventDoc {
+.ImgEventDoc-svg .svg-icon {
     @FileTypeCal@
 }
 
 /* Chat icons*/
 
-svg.Img_ImSmallAvailable {
+.Img_ImSmallAvailable-svg .svg-icon {
     fill: @IconImSmallAvailable@;
 }
 
-svg.Img_ImSmallInvisble {
+.Img_ImSmallInvisble-svg .svg-icon {
     fill: @IconImSmallInvisble@;
 }
 
-svg.Img_ImSmallUnavailable {
+.Img_ImSmallUnavailable-svg .svg-icon {
     fill: @IconImSmallUnavailable@;
 }
 
-svg.Img_ImSmallAway {
+.Img_ImSmallAway-svg .svg-icon {
     fill: @IconImSmallAway@;
 }
 
-svg.Img_ImSmallDnD {
+.Img_ImSmallDnD-svg .svg-icon {
     fill: @IconImDnD@;
 }
 
 /*Adding background for svg's with gradient via css background rule
   This can be removed once we have support for gradient's to be rendered with <use>
 */
-div.ImgTagStack {
-    background: url("../img/zimbra.svg?v=@jsVersion@#ImgTagStack-view") no-repeat 2px center;
+div.ImgTagStack-svg {
+    background: url("../svg/zimbra.svg?v=@jsVersion@#ImgTagStack-view") no-repeat 2px center;
     background-size: 100% 100%;
     display: inline-block;
     @SmallIconSize@
@@ -974,6 +977,6 @@ div.ZmHtmlEditor .TxtAreaDrag {
 }
 
 /* Custom svg-icon style for contact-list view */
-.SimpleContact.Row-selected .svg-icon.ImgReadOnly{
-    fill:@AppC@
+.SimpleContact.Row-selected .svg-icon.ImgReadOnly-svg {
+    fill: @AppC@
 }
