@@ -213,11 +213,7 @@ function(enable) {
  */
 ZmContactController.prototype._getToolBarOps =
 function() {
-	return [ZmOperation.SAVE, ZmOperation.CANCEL,
-			ZmOperation.SEP,
-			ZmOperation.PRINT, ZmOperation.DELETE,
-			ZmOperation.SEP,
-			ZmOperation.TAG_MENU];
+	return [ZmOperation.SAVE, ZmOperation.DELETE, ZmOperation.CANCEL];
 };
 
 /**
@@ -226,6 +222,14 @@ function() {
 ZmContactController.prototype._getActionMenuOps =
 function() {
 	return null;
+};
+
+ZmContactController.prototype._getSecondaryToolBarOps =
+function() {
+	var list = [];
+	list.push(ZmOperation.PRINT);
+	list.push(ZmOperation.TAG_MENU);
+	return list;
 };
 
 /**
