@@ -5441,6 +5441,10 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	padding-bottom:4px;
 }
 
+.ZmEditContactView .contactHeaderCellRow INPUT[type="text"] {
+	@ContactEditHeaderInput@
+}
+
 .ZmEditContactView .inlineInput,
 .ZmEditContactView .rowValue.inlineInput {
 	@ContactEditInlineInput@
