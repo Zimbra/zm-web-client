@@ -71,7 +71,7 @@
 -->
 <meta charset="UTF-8">
 <title><fmt:message key="zimbraTitle"/></title>
-<link href="<c:url value="/css/images,common,dwt,msgview,login,zm,spellcheck,skin.css">
+<link href="<c:url value="/css/images,svgs,common,dwt,msgview,login,zm,spellcheck,skin.css">
 	<c:param name="v" value="${vers}" />
 	<c:param name="skin" value="${skin}" />
 	<c:param name="locale" value="${locale}" />
