@@ -51,7 +51,7 @@
 
 	<link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 
-	<link href="<c:url value="/css/images,common,dwt,zm,skin.css">
+	<link href="<c:url value="/css/images,svgs,common,dwt,zm,skin.css">
 			<c:param name="v" value="${version}" />
 			<c:param name="skin" value="${skin}" />
 			<c:if test="${not empty param.isDebug}">
