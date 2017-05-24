@@ -2,7 +2,6 @@
     <import file="../zm-zcs/ant-global.xml"/>
     <property name="ajax.dir" location="../zm-ajax" />
     <property name="ajax.src.dir" location="${ajax.dir}/src" />
-    <property name="ajax.build.dir" location="${ajax.dir}/build" />
 
     <!-- Properties -->
     <dirname property="this.zwc.basedir" file="${ant.file.zm-web-client}" />
@@ -29,10 +28,6 @@
 	<property name="webxml.zimbraHttpDosFilterMaxRequestsPerSec" value="30" />
 	<property name="webxml.zimbraHttpContextPathBasedThreadPoolBalancingFilterRules" value="/service:max=10%, /soap:max=40%, /zimbra:max=40%" />
 
-    <!-- zm-taglib -->
-    <property name='taglib.dir' value='${this.zwc.basedir}/../zm-taglib'/>
-    <property name='taglib.build.dir' value='${taglib.dir}/build'/>
-    
     <!-- zm-timezones -->
     <property name='timezones.dir' value='${this.zwc.basedir}/../zm-timezones'/>
 
@@ -48,6 +43,7 @@
     <property name='template.dir' value='${web.dir}/templates'/>
     <property name='docs.dir' value='${zwc.basedir}/docs'/>
     <property name='img.dir' value='${web.dir}/img'/>
+    <property name='svg.dir' value='${web.dir}/svg'/>
 
     <property name='webinf.dir' value='${web.dir}/WEB-INF'/>
     <property name='webinf.lib.dir' value='${webinf.dir}/lib'/>
@@ -70,10 +66,8 @@
 	<property name='jsapi-inventory.file' value='${build.docs.dir}/jsapi-inventory.zip'/>
 	<property name='jsapi-changelog.file' value='${build.docs.dir}/jsapi-changelog.zip'/>
 
-    <property name='build.img.dir' value='${build.web.dir}/img'/>
-	<property name="build.css.file" value="images"/>
-	<property name="build.css.ext" value=".css"/>
-    <property name="build.css.filename" value="${build.css.file}${build.css.ext}"/>
+    <property name="build.css.ext" value=".css"/>
+    <!--property name="build.css.filename" value="${build.css.file}${build.css.ext}"/ -->
 
     <!-- jamming properties -->
     <property name="depends.ext" value='.depends'/>
@@ -126,6 +120,8 @@
         <property name='common.jsp.excludes' value='${custom.jsp.excludes}'/>
         <property name='common.img.includes' value='${custom.img.includes},**'/>
 		<property name='common.img.excludes' value='${custom.img.excludes},_*/**,**/_*,**/apple-touch-icon.png'/>
+		<property name='common.svg.includes' value='${custom.svg.includes},**'/>
+		<property name='common.svg.excludes' value='${custom.svg.excludes},_*/**,**/_*'/>
         <property name='common.template.includes' value='${custom.template.includes},**/*.template'/>
         <property name='common.template.excludes' value='${custom.template.excludes}'/>
         <property name='common.jam.includes' value='${custom.jam.includes},**/package/*.js'/>
@@ -146,6 +142,8 @@
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
         <property name='img.includes' value='${common.img.includes}'/>
         <property name='img.excludes' value='${common.img.excludes},admin/**'/>
+        <property name='svg.includes' value='${common.svg.includes}'/>
+        <property name='svg.excludes' value='${common.svg.excludes}'/>
         <property name='template.includes' value='${common.template.includes}'/>
         <property name='template.excludes' value='${common.template.excludes},admin/**'/>
         <property name='jam.includes' value='${common.jam.includes}'/>
@@ -274,6 +272,9 @@
             <zipfileset refid="overlay.img.fileset" prefix='img'/>
             <zipfileset refid="img.fileset" prefix='img'/>
 
+            <zipfileset refid="overlay.svg.fileset" prefix='svg'/>
+            <zipfileset refid="svg.fileset" prefix='svg'/>
+
             <zipfileset refid='overlay.skins.fileset' prefix='skins' />
             <zipfileset refid='skins.fileset' prefix='skins' />
 
@@ -342,6 +343,11 @@
         <copy todir='${webapp.dir}/img' verbose='${sync.verbose}'>
             <fileset refid="img.fileset" />
             <fileset refid="overlay.img.fileset" />
+        </copy>
+
+        <copy todir='${webapp.dir}/svg' verbose='${sync.verbose}'>
+            <fileset refid="svg.fileset" />
+            <fileset refid="overlay.svg.fileset" />
         </copy>
 
         <jscopy todir='${webapp.dir}/skins' verbose='${sync.verbose}'>
@@ -414,6 +420,10 @@
         <fileset id="img.fileset" dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' />
         <fileset id="overlay.img.fileset" erroronmissingdir="false"
                  dir='${overlay.dir}/${img.dir}' includes='${img.includes}' excludes='${img.excludes}' />
+
+        <fileset id="svg.fileset" dir='${svg.dir}' includes='${svg.includes}' excludes='${svg.excludes}' />
+        <fileset id="overlay.svg.fileset" erroronmissingdir="false"
+                 dir='${overlay.dir}/${svg.dir}' includes='${svg.includes}' excludes='${svg.excludes}' />
 
         <fileset id="messages.fileset" dir='${web.dir}' includes='messages/**,keys/**' />
         <fileset id="overlay.messages.fileset" erroronmissingdir="false"
@@ -730,14 +740,29 @@
 	</target>
 
 	<target name='images' depends='images-init'>
-		<mkdir dir='${build.img.dir}' />
+		<antcall target='process-images'>
+			<param name='path' value='svg' />
+			<param name='cssfile' value='svgs' />
+		</antcall>
+		<antcall target='process-images'>
+			<param name='path' value='img' />
+			<param name='cssfile' value='images' />
+		</antcall>
+	</target>
+
+	<target name='process-images'>
+		<mkdir dir='${build.web.dir}/${path}' />
 		<mkdir dir='${build.skin.dir}' />
+
 		<!-- merge base images -->
 		<antcall target='images-merge'>
-			<param name='srcdir' value='${img.dir}' />
-			<param name='destdir' value='${build.img.dir}' />
-			<param name='csspath' value='@AppContextPath@/img/' />
+			<param name='srcdir' value='${web.dir}/${path}' />
+			<param name='destdir' value='${build.web.dir}/${path}' />
+			<param name='csspath' value='@AppContextPath@/${path}/' />
+			<param name='cssfile' value='${cssfile}' />
+			<param name='cssext' value='${build.css.ext}' />
 		</antcall>
+
 		<!-- merge skin images -->
         <antcall target="images-skins">
             <param name="skin.dir" value="${skins.dir}" />
@@ -751,7 +776,7 @@
         </if>
 	</target>
 
-    <target name="images-skins">
+	<target name="images-skins">
         <dirset id='this.build.skins.dirset' dir='${skin.dir}' includes='*' excludes="_*" />
         <pathconvert property='this.build.skins.files' refid='this.build.skins.dirset' pathsep=','>
             <flattenmapper />
@@ -759,16 +784,19 @@
         <echo>DEBUG skin files: ${this.build.skins.files}</echo>
         <for list='${this.build.skins.files}' param='skinname'>
             <sequential>
-                <mkdir dir='${skin.dir}/@{skinname}/img'/>
-                <if><available file='${skin.dir}/@{skinname}/img' type='dir' />
+            	<!-- This will create empty img or svg folders in skin directory, we need to find a way to remove this -->
+                <mkdir dir='${skin.dir}/@{skinname}/${path}'/>
+                <if><available file='${skin.dir}/@{skinname}/${path}' type='dir' />
                     <then>
                         <antcall target="images-merge">
-                            <param name='srcdir' value='${skin.dir}/@{skinname}/img' />
-                            <param name='destdir' value='${build.skin.dir}/@{skinname}/img' />
+                            <param name='srcdir' value='${skin.dir}/@{skinname}/${path}' />
+                            <param name='destdir' value='${build.skin.dir}/@{skinname}/${path}' />
                             <!-- NOTE: @AppContextPath@ needs to be escaped here because -->
                             <!-- NOTE: it is used within a for loop which treats @xyz@ as -->
                             <!-- NOTE: property replacements for each iteration. -->
-                            <param name='csspath' value='@@AppContextPath@/skins/@{skinname}/img/' />
+                            <param name='csspath' value='@@AppContextPath@/skins/@{skinname}/${path}/' />
+                            <param name='cssfile' value='${cssfile}' />
+                            <param name='cssext' value='${build.css.ext}' />
                         </antcall>
                     </then>
                 </if>
@@ -780,21 +808,19 @@
 		<!-- delete output files if files changed -->
 		<dependset>
 			<srcfileset dir='${srcdir}' includes='*/**' />
-			<srcfileset dir='${ajax.build.dir}' includes='**/img/*.class' />
-			<targetfileset dir='${destdir}' includes='${build.css.file}*.css,${build.css.file}*.js' />
+			<targetfileset dir='${destdir}' includes='${cssfile}*.css,${cssfile}*.js' />
 		</dependset>
 		<!-- merge images, if needed -->
-		<if><not><available file='${destdir}/${build.css.filename}' /></not>
+		<if><not><available file='${destdir}/${cssfile}${build.css.ext}' /></not>
 			<then>
                 <mkdir dir="${destdir}" />
 				<!-- default locale images -->
 				<imagemerge destdir='${destdir}' disable='true'
-							cssfile='${build.css.filename}' csspath='${csspath}'
+							cssfile='${cssfile}${cssext}' csspath='${csspath}'
 							spacerimagespath='${this.zwc.basedir}/WebRoot/img/zimbra/'
-							jsfile='${build.css.filename}.js'>
+							jsfile='${cssfile}${cssext}.js'>
 					<dirset dir='${srcdir}' includes='*' excludes='?*_??,?*_??_??' />
 				</imagemerge>
-				<!-- <replace token="@jsVersion@" value="${build.simpleDate}" file='${destdir}/${build.css.filename}'/> Moved to SkinResources servlet -->
 
 				<!-- other locale images -->
 				<dirset id='this.images.l10n.dirset' dir='${srcdir}' includes='?*_??,?*_??_??' />
@@ -803,18 +829,15 @@
 				</pathconvert>
 				<for list='${this.images.l10n.locales}' param='locale'>
 					<sequential>
-						<if><not><available file="${destdir}/${build.css.file}_@{locale}${build.css.ext}" /></not>
+						<if><not><available file="${destdir}/${cssfile}_@{locale}${cssext}" /></not>
 							<then>
 								<imagemerge destdir='${destdir}' disable='true'
-											cssfile='${build.css.file}_@{locale}${build.css.ext}'
+											cssfile='${cssfile}_@{locale}${cssext}'
 											csspath='${csspath}'
 											spacerimagespath='${this.zwc.basedir}/WebRoot/img/zimbra/'
-											jsfile='${build.css.filename}.js'>
+											jsfile='${cssfile}${cssext}.js'>
 									<dirset dir='${srcdir}' includes='?*_@{locale}' />
 								</imagemerge>
-								<!-- <replace token="@jsVersion@" value="${build.simpleDate}"
-										 file='${destdir}/${build.css.file}_@{locale}${build.css.ext}'
-								/> Moved to SkinResources servlet -->
 							</then>
 						</if>
 					</sequential>
@@ -834,7 +857,8 @@
                 />
     </target>
 
-    <target name='build-skin-images' depends='images-init,build-skin-images-init'
+    <!-- Not sure if below target is required or not, we can remove in future -->
+    <!-- target name='build-skin-images' depends='images-init,build-skin-images-init'
             if='skin-images-present'>
         <property name='build.this.skin.dir' value='${build.web.dir}/skins/${skindir}/img'/>
 
@@ -850,8 +874,6 @@
 					jsfile='${build.css.filename}.js'>
             <dirset dir='${skinbasedir}/skins/${skindir}' includes='img/**'/>
         </imagemerge>
-
-        <!-- <replace token="@jsVersion@" value="${build.simpleDate}" file='${build.this.skin.dir}/${build.css.filename}'/>  Moved to SkinResources servlet -->
     </target>
 
     <target name='build-skin-images-init'>
@@ -861,7 +883,7 @@
                 <available file="${skinbasedir}/skins/${skindir}/img" type="dir"/>
             </or>
         </condition>
-    </target>
+    </target -->
 
     <target name='package-skin' depends='prod,templates,images' if='env.CUSTOMER_SKIN'>
         <fail unless="skinname">Must specify skinname property.</fail>
@@ -963,7 +985,6 @@
 
         <packagedependset>
             <srcdependslist dir='.' files='${depends.file}'/>
-            <srcfileset dir='${ajax.build.dir}' includes='**/PackageJammerTask.class'/>
             <targetfilelist dir='.' files='${jam.file}'/>
             <targetfilelist dir='.' files='${jsp.file}'/>
         </packagedependset>
@@ -1371,11 +1392,8 @@ ext = BeanUtils.cook(ext);
     <target name='server-war'>
         <ant dir='${server.dir}' target='war'/>
     </target>
-    <target name='taglib-jar'>
-        <ant dir='${taglib.dir}' target='jar'/>
-    </target>
-    <target name='deploy-html' depends='server-war,taglib-jar,deploy'/>
-    <target name='sync-html' depends='taglib-jar,sync' />
+    <target name='deploy-html' depends='server-war,deploy'/>
+    <target name='sync-html' depends='sync' />
 
     <!-- LEGACY TARGETS -->
     <target name='dev-sync' depends='init,sync'>

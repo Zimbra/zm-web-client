@@ -638,7 +638,7 @@ INPUT[type="text"].search_input-expanded:focus {
 	height:16px;
 }
 
-.ZmMsgListColTag .ImgTagStack {
+.ZmMsgListColTag .ImgTagStack-svg {
 	margin:0px;
 }
 
@@ -1583,11 +1583,11 @@ div.AttachmentImgContainer {
 	color:#666;
 }
 
-div.EditorDragImgContainer > div.ImgEditorDrag {
+div.EditorDragImgContainer > div.ImgEditorDrag-svg {
 	@AttachmentEditorDragImage@
 }
 
-div.AttachmentImgContainer > div.ImgAttachClip {
+div.AttachmentImgContainer > div.ImgAttachClip-svg {
 	@AttachmentComposeDragImage@
 }
 
@@ -1613,7 +1613,7 @@ div.CompDragArea * {
 }
 
 .TagBubble .TagName,
-.TagBubble .ImgBubbleDelete {
+.TagBubble .ImgBubbleDeleteParent {
 	display:inline-block;
 	vertical-align:middle;
 }
@@ -1929,8 +1929,8 @@ div.CompDragArea * {
 	@DragBg@
 }
 
-.ZmContactSimpleView .SimpleContact .ImgCheckboxUnchecked,
-.ZmContactSimpleView .SimpleContact .ImgCheckboxChecked {
+.ZmContactSimpleView .SimpleContact .ImgCheckboxUnchecked-svg,
+.ZmContactSimpleView .SimpleContact .ImgCheckboxChecked-svg {
 	@ContactItemCheckIcon@
 }
 
