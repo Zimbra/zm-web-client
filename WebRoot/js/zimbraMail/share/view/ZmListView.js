@@ -126,8 +126,8 @@ ZmListView.COL_JOIN = "|";
 
 ZmListView.CHECKED_IMAGE = "CheckboxChecked";
 ZmListView.UNCHECKED_IMAGE = "CheckboxUnchecked";
-ZmListView.CHECKED_CLASS = "ImgCheckboxChecked";
-ZmListView.UNCHECKED_CLASS = "ImgCheckboxUnchecked";
+ZmListView.CHECKED_CLASS = "ImgCheckboxCheckedParent";
+ZmListView.UNCHECKED_CLASS = "ImgCheckboxUncheckedParent";
 ZmListView.ITEM_CHECKED_ATT_NAME = "itemChecked";
 
 
