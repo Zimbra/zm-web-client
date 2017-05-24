@@ -124,7 +124,7 @@ If not, see <https://www.gnu.org/licenses/>.
     <title>Zimbra Docs</title>
     <style type="text/css">
         <!--
-        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,docs,images,docs,skin.css?v=<%= vers %><%= inSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)});
+        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,docs,images,svgs,docs,skin.css?v=<%= vers %><%= inSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)});
         -->
     </style>
     <jsp:include page="Resources.jsp">
@@ -170,7 +170,7 @@ If not, see <https://www.gnu.org/licenses/>.
             <jsp:param name="res" value="I18nMsg,TzMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys,AjxTemplateMsg" />
             <jsp:param name="skin" value="${skin}" />
         </jsp:include>
-        <link href='${contextPath}/css/common,dwt,msgview,login,zm,spellcheck,images,skin.css?v=${vers}${isDebug?"&debug=1":""}&skin=${zm:cook(skin)}' rel='stylesheet' type="text/css">
+        <link href='${contextPath}/css/common,dwt,msgview,login,zm,spellcheck,images,svgs,skin.css?v=${vers}${isDebug?"&debug=1":""}&skin=${zm:cook(skin)}' rel='stylesheet' type="text/css">
 </head>
 <c:set var="fileName" value="${empty param.name ? 'Untitled' : zm:cook(param.name)}"/>
 <c:set var="folderId" value="${empty param.l ? '' : zm:cook(param.l)}"/>

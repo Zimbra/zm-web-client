@@ -112,7 +112,7 @@ function(params) {
 	html[i++] = "&nbsp;</span>";
 
     if (!readOnly) {
-        html[i++] = "<span class='ImgBubbleDelete' onclick='";
+        html[i++] = "<span class='ImgBubbleDeleteParent' onclick='";
         html[i++] = removeClick;
         html[i++] = "'>";
 		html[i++] = AjxImg.getImageHtml("BubbleDelete");
