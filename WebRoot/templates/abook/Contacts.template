@@ -327,7 +327,7 @@
 				<$}$>
 			</td>
 		<$ if (isEdit) {$>
-			<td width='36' valign='middle' class='ZmContactGroupItemAction'><$=AjxImg.getImageHtml("Delete", "", delId)$></td>
+			<td width='20' valign='middle' class='ZmContactGroupItemAction'><$=AjxImg.getImageHtml("Close", "", delId)$></td>
 		<$}$>
 		</tr>
 	</table>
@@ -372,6 +372,11 @@
 						<$ } $>
 					</td>
 				</tr>
+				<!-- Edit Contact Group Tags -->
+				<tr>
+					<td></td>
+					<td><div id='${id}_tags' class='ZmContactHeaderTags'></div></td>
+				</tr>
 			</table>
 		</div>
 		<div class='ZmContactHeaderLocation rowType'>
@@ -414,7 +419,7 @@
 						<td id='${id}_locationLabel' class='ZmContactHeaderLocationLabel'>
 							<$= ZmMsg.locationLabel $>
 						</td>
-						<td id='${id}_LOCATION_FOLDER'></td>
+						<td id='${id}_LOCATION_FOLDER' class='ZmContactHeaderLocationName'></td>
 					</tr>
 				</table>
 			<$ } $>
@@ -473,7 +478,6 @@
 					<div id='${id}_groupNameParent'></div>
 			<$ } $>
 		</div>
-		<div id='${id}_tags' style='padding-top:5px;'></div>
 	<$ } $>
 </template>
 
@@ -629,17 +633,25 @@
 <!-------------------------------- ZmGroupView -------------------------------->
 <!----------------------------------------------------------------------------->
 <template id='abook.Contacts#GroupView'>
-	<div class='ZmContactHeader'>
-		<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+	<div class='ZmGroupViewWrapper'>
+		<div class='ZmContactHeader'>
+			<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+		</div>
+		<div class='ZmContactContent'>
+			<$= AjxTemplate.expand("abook.Contacts#GroupViewMembers", data) $>
+		</div>
 	</div>
-	<$= AjxTemplate.expand("abook.Contacts#GroupViewMembers", data) $>
 </template>
 
 <template id='abook.Contacts#DlView'>
-	<div class='ZmContactHeader'>
-		<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+	<div class='ZmGroupViewWrapper'>
+		<div class='ZmContactHeader'>
+			<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+		</div>
+		<div class='ZmContactContent'>
+			<div id='${id}_tabViewContainer'></div>
+		</div>
 	</div>
-	<div id='${id}_tabViewContainer'></div>
 </template>
 
 <template id='abook.Contacts#DlPropertiesView'>
@@ -757,88 +769,123 @@
 </template>
 
 <template id='abook.Contacts#GroupViewMembers'>
-	<table role="presentation" width='100%' height='100%' class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" width='100%' height='100%'>
 		<tr>
 			<!-- content: left pane -->
-			<td width='50%' valign='top'>
-				<div class='groupMembers' id='${id}_groupMembers'></div>
+			<td width='45%' valign='top' class="ZmGroupContactListWrapper">
+				<div class='ZmGroupMembersWrapper' id='${id}_groupMembers'></div>
 			</td>
 			<!-- content: right pane -->
-			<td width='50%' valign='top'>
+			<td width='55%' valign='top'>
 				<table role="presentation" width='100%'>
 				<tr id='${id}_searchFieldsRow'>
-					<td width='50'>&nbsp;</td>
+					<td width='18%' class="ZmGroupAddMemberBtnWrapper">&nbsp;</td>
 					<td>
-						<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-							<$ if (data.detailed) { $>
-							<tr id='${id}_searchNameRow'>
-								<td align='right'><$= ZmMsg.nameLabel $></td>
-								<td><input type='text' id='${id}_searchNameField'></td>
-								<td id='${id}_searchButton' valign='top' rowspan='3'></td>
-							</tr>
-							<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
-							<tr id='${id}_searchPhoneticRow'>
-								<td align='right'><$= ZmMsg.phoneticNameLabel $></td>
-								<td><input type='text' id='${id}_searchPhoneticField'></td>
-							</tr>
-							<$ } $>
-							<tr id='${id}_searchEmailRow'>
-								<td align='right'><$= ZmMsg.emailAddrLabel $></td>
-								<td><input type='text' id='${id}_searchEmailField'></td>
-							</tr>
-							<tr id='${id}_searchDepartmentRow'>
-								<td align='right'><$= ZmMsg.departmentLabel $></td>
-								<td><input type='text' id='${id}_searchDepartmentField'></td>
-							</tr>
-							<$ } else { $>
-							<tr id='${id}_searchRow'>
-								<td align='right'><$= ZmMsg.findLabel $></td>
-								<td><input type='text' id='${id}_searchField'></td>
-								<td id='${id}_searchButton'></td>
-							</tr>
-							<$ } $>
-
-							<$ if (data.showSearchIn) { $>
+						<table role="presentation" width='100%' class="ZmGroupMemberFilterWrapper">
 							<tr>
-								<td align='right'><$= ZmMsg.searchIn $></td>
-								<td colspan='2' id='${id}_listSelect'></td>
+								<td width='60%' class="ZmGroupMemberFilterColumnCell">
+									<table role="presentation" width='100%' class="ZmGroupMemberFilterColumnTable">
+										<tbody>
+											<$ if (data.detailed) { $>
+												<tr id='${id}_searchNameRow'>
+													<td >
+														<$= ZmMsg.nameLabel $>
+													</td>
+													<td>
+														<div class="ZmSearchWidget">
+															<input type='text' class='ZmSearchWidgetInput' id='${id}_searchNameField' placeholder='<$= ZmMsg.search $>'>
+															<div id='${id}_searchButton' class="ZmSearchWidgetButton"></div>
+														</div>
+													</td>
+												</tr>
+												<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
+												<tr id='${id}_searchPhoneticRow'>
+													<td>
+														<$= ZmMsg.phoneticNameLabel $>
+													</td>
+													<td>
+														<input type='text' id='${id}_searchPhoneticField'>
+													</td>
+												</tr>
+												<$ } $>
+												<tr id='${id}_searchEmailRow'>
+													<td>
+														<$= ZmMsg.emailAddrLabel $>
+													</td>
+													<td>
+														<input type='text' id='${id}_searchEmailField'>
+													</td>
+												</tr>
+												<tr id='${id}_searchDepartmentRow'>
+													<td>
+														<$= ZmMsg.departmentLabel $>
+													</td>
+													<td>
+														<input type='text' id='${id}_searchDepartmentField'>
+													</td>
+												</tr>
+											<$ } else { $>
+												<tr id='${id}_searchRow'>
+													<td>
+														<div class="ZmSearchWidget">
+															<input type='text' class='ZmSearchWidgetInput' id='${id}_searchField' placeholder='<$= ZmMsg.search $>'>
+															<div id='${id}_searchButton' class="ZmSearchWidgetButton"></div>
+														</div>
+													</td>
+												</tr>
+											<$ } $>
+										</tbody>
+									</table>
+								</td>
+								<$ if (data.showSearchIn) { $>
+								<td width='40%' class="ZmGroupMemberFilterColumnCell">
+									<table role="presentation" width='100%' class="ZmGroupMemberFilterColumnTable">
+										<tbody>
+											<tr>
+												<td>
+													<$= ZmMsg.searchIn $>
+												</td>
+												<td>
+													<div id='${id}_listSelect'></div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+								<$ } $>
 							</tr>
-							<$ } $>
 						</table>
 					</td>
 				</tr>
 				<tr>
-					<td width='50'>
-					<table role="presentation" width='100%' class='ZPropertySheet' cellspacing='6'>
-						<tr><td id='${id}_addButton'></td></tr>
-						<tr><td id='${id}_addAllButton'></td></tr>
-					</table>
+					<td width='18%' class="ZmGroupAddMemberBtnWrapper">
+						<table role="presentation" width='100%'>
+							<tr><td id='${id}_addButton' class="ZmGroupAddMemberBtn"></td></tr>
+							<tr><td id='${id}_addAllButton' class="ZmGroupAddMemberBtn"></td></tr>
+						</table>
 					</td>
-					<td>
-					<div id='${id}_listView'></div>
-					<table role="presentation" width='100%' class='ZPropertySheet' cellspacing='6'>
-						<tr id='${id}_navButtonsRow'>
-							<td width='100%'></td>
-							<td id='${id}_prevButton'></td>
-							<td id='${id}_nextButton'></td>
-						</tr>
-					</table>
+					<td class="ZmGroupSelectContactWrapper">
+						<div id='${id}_listView'></div>
+						<div class="ZmContactListPagination" id='${id}_navButtonsRow'>
+							<div class='ZmContactListPaginationLink' id='${id}_prevButton'></div>
+							<div class='ZmContactListPaginationLink' id='${id}_nextButton'></div>
+						</div>
 					</td>
 				</tr>
 				<tr id='${id}_manualAddRow'>
-					<td width='50'>
-					<table role="presentation" width='100%' class='ZPropertySheet' cellspacing='6'>
-						<tr><td id='${id}_addNewButton'></td></tr>
-					</table>
+					<td width='18%' class="ZmGroupAddMemberBtnWrapper">
+						<table role="presentation" width='100%'>
+							<tr><td id='${id}_addNewButton' class="ZmGroupAddMemberBtn"></td></tr>
+						</table>
 					</td>
 					<td>
-						<table role="presentation" width='100%' class='ZPropertySheet' cellspacing='6'>
+						<table role="presentation" width='100%' class="ZmContactGroupManualAddTable">
 							<tr>
-								<td><$=ZmMsg.enterAddrBelow$></td>
+								<td class=""><$=ZmMsg.enterAddrBelow$></td>
 							</tr>
 							<tr>
 								<td>
-									<textarea class='groupMembers' id='${id}_addNewField'></textarea>
+									<textarea id='${id}_addNewField'></textarea>
 								</td>
 							</tr>
 						</table>
