@@ -4021,23 +4021,65 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 /* ZmChooseFolderDialog and ZmPickTagDialog */
+
+#ChooseFolderDialog {
+	@ChooseFolderDialog@
+}
+
+#ChooseFolderDialog .WindowOuterContainer {
+	@ChooseFolderDialogContainer@
+}
+
 .ChooserDialog {
-	width:320px;
+	@ChooserDialogBody@
 }
 
 .ChooserDialog .DwtInputField {
-	padding-bottom:3px;
-	padding-top:3px;
+	@ChooserDialogInputContainer@
 }
 
-.ChooserDialog INPUT {
-	width:100%;
+.ChooserDialog .DwtInputField input[type=text] {
+	@ChooserDialogInputField@
 }
 
 .ChooserDialog .overview {
-	background-color:white;
-	border:1px solid black;
-	overflow:auto;
+	@ChooserDialogItemContainer@
+}
+
+.ChooserDialog .dialogOverview {
+	@ChooserDialogItemInnerContainer@
+}
+
+.ChooserDialog .DwtTreeItem {
+	@ChooserDialogItem@
+}
+
+.ChooserDialog .DwtTreeItemLevel1ChildDiv {
+	padding-left:0px;
+}
+
+.ChooserDialog svg.ImgContactsFolder {
+	fill:@IconChooseFolder@
+}
+
+.ChooserDialog .DwtTreeItem svg.ImgEmailedContacts{
+	fill:@IconChooseFolder@
+}
+
+.ChooserDialog .DwtTreeItem svg.ImgNodeExpanded {
+	fill:@SecondaryBrandingColor@
+}
+
+.ChooserDialog .DwtTreeItem-Control .DwtTreeItem-selected {
+	@ChooserDialogItemSelected@
+}
+
+#ChooseFolderDialog #ChooseFolderDialog_buttons {
+	@ChooseFolderDialogButtonContainer@
+}
+
+#ChooseFolderDialog .ZDialogButton .ZButtonTable .ZWidgetTitle {
+	@ChooseFolderDialogButtonTitle@
 }
 
 .ZmAttachDialog .WindowOuterContainer {
