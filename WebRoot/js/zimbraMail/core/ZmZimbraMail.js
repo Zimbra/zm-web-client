@@ -3667,7 +3667,7 @@ ZmZimbraMail.prototype._handleAllZimletsLoaded = function (zimletsButton, event,
 		menuItem.addSelectionListener(new AjxListener(this, this._zimletMenuItemClicked,item));
 		//Create zimlet's submenu
 		var menuItems = zimletPanelItem && zimletPanelItem.contextMenu && zimletPanelItem.contextMenu.menuItem;
-		if (menuItem) {
+		if (menuItems) {
 			var params = {
 				parent: menuItem,
 				context: item,
