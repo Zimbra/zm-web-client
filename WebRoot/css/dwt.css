@@ -1920,6 +1920,11 @@ INPUT.xform_field {
 .DwtDragProxy .ZWidgetTitle		{ width:auto; }
 .DwtDragProxy .ZWidgetTable 	{ width:auto; }
 
+.ZWidgetIcon:empty,
+.ZWidgetTitle:empty,
+.ZDropDown:empty {
+	width: 0px;
+}
 
 
 
@@ -2075,6 +2080,7 @@ INPUT.xform_field {
 .ZTabBarTable							{ 	width:auto; 			}
 
 .ZTab									{	@Tab@	@TabSpacing@	}
+.ZTabPage								{	@TabPage@ 				}
 
 			.ZTabBorder					{	@TabBorder@	@TabBorder-normal@		}
 .ZHover		.ZTabBorder					{				@TabBorder-hover@		}

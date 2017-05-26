@@ -2011,15 +2011,6 @@ div.CompDragArea * {
 	padding-top: .5em;
 }
 
-.ZmEditGroupContact .Row {
-	height:auto;
-}
-
-.ZmEditGroupContact .contactGroupTable {
-	float:none;
-	width:100%;
-}
-
 .ZmContactView .contactHeader,
 .ZmTaskEditView .contactHeader,
 .ZmEditContactView .contactHeader {
@@ -2056,13 +2047,7 @@ div.CompDragArea * {
  *	Contact edit screen stuff
  */
 
-
 /* Container for the edit screen */
-/* ??? RENAME -> ZmContactEditView */
-.ZmContactView .groupMembers {
-	width:100%;
-}
-
 /* ??? -> ZmFieldLabelRight */
 .ZmTaskEditView .editLabel {
 	@Label-right@
@@ -2076,7 +2061,6 @@ div.CompDragArea * {
 .ZmContactView .groupFieldset {
 	font-weight:bold;
 }
-
 
 .sectionLabel {
 	@SectionLabel@
@@ -6537,6 +6521,10 @@ a.ZmLinkDisabled {
 	@ContactHeaderLocationName@
 }
 
+.ZmContactHeaderLocation .ZmContactHeaderLocationName .ZButton {
+	@ContactHeaderSelectLocationButton@
+}
+
 .ZmContactHeaderLocation .ContactHeaderLocationLabel {
 	@ContactHeaderLocationLabel@
 }
@@ -6615,4 +6603,158 @@ a.ZmLinkDisabled {
 
 .ZmContactInfoView .ZmContactGroupListContent .ZmContactGroupItemTable .ZmContactGroupItemImage {
 	@ContactGroupItemViewImageWrapper@
+}
+
+/* Contact Group Create Edit */
+.ZmContactView {
+	@GroupEditView@
+}
+
+.ZmContactView .ZmGroupViewWrapper {
+	@GroupEditViewWrapper@
+}
+
+.ZmContactView .ZmGroupViewWrapper input[type='text'],
+.ZmContactView .ZmGroupViewWrapper textarea {
+	@GroupEditViewInput@
+}
+
+.ZmGroupViewWrapper .ZmContactHeaderTags {
+	@GroupEditTagsWrapper@
+}
+
+.ZmGroupViewWrapper .ZmContactHeaderLocation {
+	@GroupEditLocation@
+}
+
+.ZmGroupViewWrapper .ZmContactHeaderLocationLabel {
+	@GroupEditLocationLabel@
+}
+
+.ZmGroupViewWrapper .ZmContactHeaderLocationName .ZButtonBorder {
+	@GroupEditLocationNameWrapper@
+}
+
+.ZmGroupViewWrapper .ZmContactHeaderLocationName .ZWidgetTitle {
+	@GroupEditLocationName@
+}
+
+.ZmGroupViewWrapper .ZmContactHeaderLocationName .ZWidgetIcon {
+	@GroupEditLocationIcon@
+}
+
+.ZmGroupViewWrapper .ZmContactHeaderLocationName :not(.ZDisabled) .ZButtonBorder:hover .ZWidgetTitle,
+.ZmGroupViewWrapper .ZmContactHeaderLocationName :not(.ZDisabled) .ZButtonBorder:focus .ZWidgetTitle,
+.ZmGroupViewWrapper .ZmContactHeaderLocationName :not(.ZDisabled) .ZButtonBorder:active .ZWidgetTitle {
+	@GroupEditLocationNameActive@
+}
+
+.ZmGroupViewWrapper .ZmGroupMembersWrapper {
+	@GroupMembersWrapper@
+}
+
+.ZmGroupViewWrapper .ZmContactContent {
+	@GroupEditViewContent@
+}
+
+.ZmEditGroupContact {
+	@GroupEditContentListWrapper@
+}
+
+.ZmEditGroupContact .Row {
+	@GroupEditContentListRow@
+}
+
+.ZmEditGroupContact .Row.Row-selected {
+	@GroupEditContentListRowSelected@
+}
+
+.ZmEditGroupContact .Row TD,
+.ZmEditGroupContact .Row DIV {
+	@GroupEditContentListRowText@
+}
+
+.ZmEditGroupContact .Row.Row-selected TD,
+.ZmEditGroupContact .Row.Row-selected DIV {
+	@GroupEditContentListRowSelectedText@
+}
+
+.ZmEditGroupContact .ZmContactGroupItemTable {
+	@GroupEditContentItemTable@
+}
+
+.ZmGroupAddMemberBtnWrapper {
+	@GroupAddMemberBtnWrapper@
+}
+
+.ZmGroupAddMemberBtn .ZButton {
+	@GroupAddMemberBtn@
+}
+
+.ZmGroupAddMemberBtn .ZButton.ZFocused,
+.ZmGroupAddMemberBtn .ZButton.ZHover,
+.ZmGroupAddMemberBtn .ZButton.ZActive {
+	@GroupAddMemberBtnActive@
+}
+
+.ZmGroupAddMemberBtn .ZButton.ZDisabled {
+	@GroupAddMemberBtnDisabled@
+}
+
+.ZmGroupAddMemberBtn .ZButton DIV[class^='Img'] {
+	@GroupAddMemberBtnIcon@
+}
+
+.ZmContactGroupManualAddTable TD {
+	@GroupManualAddLabel@
+}
+
+.ZmContactGroupManualAddTable textarea {
+	@GroupManualAddInput@
+}
+
+.ZmGroupMemberFilterWrapper {
+	@GroupMemberFilterWrapper@
+}
+
+.ZmGroupMemberFilterWrapper td.ZmGroupMemberFilterColumnCell:not(:empty) {
+	@GroupMemberFilterColumnCell@
+}
+
+.ZmGroupMemberFilterWrapper .ZmGroupMemberFilterColumnTable > tbody > tr > td:not(:empty) {
+	@GroupMemberFilterCell@
+}
+
+.ZmGroupMemberFilterWrapper .ZmGroupMemberFilterColumnTable input[type='text'] {
+	@FixBoxModel@
+	@FullWidth@
+}
+
+.ZmGroupSelectContactWrapper .ZmContactListPagination {
+	@ContactListPagination@
+}
+
+.ZmContactListPagination > * {
+	@ContactListPaginationChild@
+}
+
+.ZmContactListPagination .ZmContactListPaginationLink .ZButton {
+	@ContactListPaginationLink@
+}
+
+.ZmContactListPagination .ZmContactListPaginationLink .ZButton .svg-icon {
+	@ContactListPaginationLinkIcon@
+}
+
+/* Common Search Widget */
+.ZmSearchWidget {
+	@SearchWidget@
+}
+
+.ZmSearchWidget .ZmSearchWidgetInput {
+	@SearchWidgetInput@
+}
+
+.ZmSearchWidget .ZmSearchWidgetButton {
+	@SearchWidgetButton@
 }
