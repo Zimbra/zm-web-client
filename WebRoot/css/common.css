@@ -570,10 +570,11 @@ html[data-istwofactorsetuppage] .VeilOverlay TABLE {
 .Row DIV, .RowDouble DIV		{	@ListItemText-normal@				}
 
 .RowOdd TD, .RowOdd DIV			{	@ListItemText-alt@	}
-.RowOdd .ZmMsgListDate,
-.RowOdd .ZmListFlagsWrapper		{	background-color:@ListItemBgColor-alt@;	}
 
-.RowEven .ZmMsgListDate			{	background-color:@PanelColor@; }
+/* We need following styles only for HTML client */
+html:not(.js).RowOdd .ZmMsgListDate,
+html:not(.js).RowOdd .ZmListFlagsWrapper		{	background-color:@ListItemBgColor-alt@;	}
+html:not(.js).RowEven .ZmMsgListDate			{	background-color:@PanelColor@; }
 
 LI.RowDouble, LI.Row {list-style: none;}
 
