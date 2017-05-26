@@ -41,7 +41,7 @@
 ZmGroupView = function(parent, controller) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, {parent:parent, className:"ZmContactView", posStyle:DwtControl.ABSOLUTE_STYLE});
-	this.setScrollStyle(Dwt.CLIP); //default is clip, for regular group it's fine. (otherwise there's always a scroll for no reason, not sure why). For DL we change in "set"
+	this.setScrollStyle(Dwt.SCROLL);
 
 	this._controller = controller;
 
@@ -552,16 +552,14 @@ ZmGroupView.prototype.setBounds =
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
 	if(this._addNewField){
-		Dwt.setSize(this._addNewField, Dwt.DEFAULT, 50);
+		Dwt.setSize(this._addNewField, Dwt.DEFAULT, 100);
 	}
-	this._groupMembersListView.setSize(Dwt.DEFAULT, height-150);
-
-	var headerTableHeight = Dwt.getSize(this._headerRow).y;
-	var tabBarHeight = this._tabBar ? Dwt.getSize(this._tabBar).y : 0; //only DL
+	var memberListHeight = height - 50;
+	this._groupMembersListView.setSize(Dwt.DEFAULT, memberListHeight);
 	var searchFieldsRowHeight = Dwt.getSize(this._searchFieldsRow).y;
 	var manualAddRowHeight = Dwt.getSize(this._manualAddRow).y;
 	var navButtonsRowHeight = Dwt.getSize(this._navButtonsRow).y;
-	var listHeight = height - headerTableHeight - tabBarHeight - searchFieldsRowHeight - manualAddRowHeight - navButtonsRowHeight - 40;
+	var listHeight = memberListHeight - searchFieldsRowHeight - manualAddRowHeight - navButtonsRowHeight;
 	this._listview.setSize(Dwt.DEFAULT, listHeight);
 };
 
@@ -751,7 +749,7 @@ function() {
 
 	// add "Search" button
 	this._searchButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_searchButton")});
-	this._searchButton.setText(ZmMsg.search);
+	this._searchButton.setImage('Search');
 	this._searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
 
 	// add list view for search results
@@ -771,17 +769,15 @@ function() {
 	var addListener = new AjxListener(this, this._addListener);
 	// add "Add" button
 	this._addButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_addButton")});
-	this._addButton.setText(ZmMsg.add);
+	this._addButton.setContent(AjxImg.getImageHtml("LeftArrow") + ZmMsg.add);
 	this._addButton.addSelectionListener(addListener);
 	this._addButton.setEnabled(false);
-	this._addButton.setImage("LeftArrow");
 
 	// add "Add All" button
 	this._addAllButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_addAllButton")});
-	this._addAllButton.setText(ZmMsg.addAll);
+	this._addAllButton.setContent(AjxImg.getImageHtml("LeftArrow") + ZmMsg.addAll);
 	this._addAllButton.addSelectionListener(addListener);
 	this._addAllButton.setEnabled(false);
-	this._addAllButton.setImage("LeftArrow");
 
 	var pageListener = new AjxListener(this, this._pageListener);
 	// add paging buttons
@@ -818,9 +814,8 @@ function() {
 	this._addNewField = document.getElementById(this._htmlElId + "_addNewField");
 	if (this._addNewField) {
 		this._addNewButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_addNewButton")});
-		this._addNewButton.setText(ZmMsg.add);
+		this._addNewButton.setContent(AjxImg.getImageHtml("LeftArrow") + ZmMsg.add);
 		this._addNewButton.addSelectionListener(new AjxListener(this, this._addNewListener));
-		this._addNewButton.setImage("LeftArrow");
 	}
 
 	var fieldMap = {};
@@ -1574,7 +1569,6 @@ function(items) {
 ZmGroupListView.prototype._getHeaderList =
 function() {
 	return [
-		(new DwtListHeaderItem({field:ZmItem.F_TYPE,	icon:"Contact",		width:ZmMsg.COLUMN_WIDTH_TYPE_CN})),
 		(new DwtListHeaderItem({field:ZmItem.F_NAME,	text:ZmMsg._name,	width:ZmMsg.COLUMN_WIDTH_NAME_CN, resizeable: true})),
 		(new DwtListHeaderItem({field:ZmItem.F_EMAIL,	text:ZmMsg.email}))
 	];

@@ -173,6 +173,7 @@ BODY                                    {   margin:0px;     }
 #skin_container_global_buttons .ZToolbarButton,
 #skin_container_global_buttons .ZToolbarButtonTable {
     border-collapse: separate;
+    @TransparentBg@
 }
 
 /***************
@@ -980,3 +981,19 @@ div.ZmHtmlEditor .TxtAreaDrag {
 .SimpleContact.Row-selected .svg-icon.ImgReadOnly-svg {
     fill: @AppC@
 }
+
+/* Contact group edit view overrides */
+.ZmGroupSelectContactWrapper .Row {
+    border:none;
+}
+
+.ZmGroupMemberFilterWrapper td.ZmGroupMemberFilterColumnCell:first-of-type,
+.ZmGroupMemberFilterWrapper .ZmGroupMemberFilterColumnTable > tbody > tr > td:first-of-type {
+	padding-left: 0;
+}
+
+.ZmGroupMemberFilterWrapper td.ZmGroupMemberFilterColumnCell:last-of-type,
+.ZmGroupMemberFilterWrapper .ZmGroupMemberFilterColumnTable > tbody > tr > td:last-of-type {
+	padding-right: 0;
+}
+
