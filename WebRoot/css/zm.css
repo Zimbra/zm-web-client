@@ -4042,15 +4042,15 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding-left:0px;
 }
 
-.ChooserDialog svg.ImgContactsFolder {
+.ChooserDialog .ImgContactsFolder-svg .svg-icon {
 	fill:@IconChooseFolder@
 }
 
-.ChooserDialog .DwtTreeItem svg.ImgEmailedContacts{
+.ChooserDialog .DwtTreeItem .ImgEmailedContacts-svg .svg-icon {
 	fill:@IconChooseFolder@
 }
 
-.ChooserDialog .DwtTreeItem svg.ImgNodeExpanded {
+.ChooserDialog .DwtTreeItem .ImgNodeExpanded-svg .svg-icon {
 	fill:@SecondaryBrandingColor@
 }
 
