@@ -3,3 +3,11 @@ build/
 .history
 .idea
 .classpath
+WebRoot/jquery
+WebRoot/js/ajax
+WebRoot/js/zimbra
+WebRoot/keys/AjxKeys*.properties
+WebRoot/messages/AjxMsg*.properties
+WebRoot/messages/I18nMsg*.properties
+WebRoot/modernizr
+WebRoot/yui
