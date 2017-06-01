@@ -414,14 +414,17 @@
 					</table>
 				<$ } $>
 			<$ } else { $>
-				<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-					<tr>
-						<td id='${id}_locationLabel' class='ZmContactHeaderLocationLabel'>
-							<$= ZmMsg.locationLabel $>
-						</td>
-						<td id='${id}_LOCATION_FOLDER' class='ZmContactHeaderLocationName'></td>
-					</tr>
-				</table>
+				<!-- If DL edit, don't show location -->
+				<$ if(!contact.isDistributionList()) { $>
+					<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+						<tr>
+							<td id='${id}_locationLabel' class='ZmContactHeaderLocationLabel'>
+								<$= ZmMsg.locationLabel $>
+							</td>
+							<td id='${id}_LOCATION_FOLDER' class='ZmContactHeaderLocationName'></td>
+						</tr>
+					</table>
+				<$ } $>
 			<$ } $>
 		</div>
 	</div>
@@ -644,7 +647,7 @@
 </template>
 
 <template id='abook.Contacts#DlView'>
-	<div class='ZmGroupViewWrapper'>
+	<div class='ZmGroupViewWrapper ZmDlViewWrapper'>
 		<div class='ZmContactHeader'>
 			<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
 		</div>
@@ -656,7 +659,7 @@
 
 <template id='abook.Contacts#DlPropertiesView'>
 	<$ if (data.contact.isDistributionList()) { $>
-		<table role="presentation" width='100%' class='ZmEditContactView'>
+		<table role="presentation" width='100%' class='ZmDLPropertiesView'>
 			<tr>
 				<td class='rowLabel'><$= ZmMsg.displayNameLabel $></td>
 				<td class='rowValue'><div class='DwtInputField'>
@@ -773,7 +776,7 @@
 		<tr>
 			<!-- content: left pane -->
 			<td width='45%' valign='top' class="ZmGroupContactListWrapper">
-				<div class='ZmGroupMembersWrapper' id='${id}_groupMembers'></div>
+				<div class='ZmGroupMembersWrapper DwtChooserListViewCustomStyle' id='${id}_groupMembers'></div>
 			</td>
 			<!-- content: right pane -->
 			<td width='55%' valign='top'>
