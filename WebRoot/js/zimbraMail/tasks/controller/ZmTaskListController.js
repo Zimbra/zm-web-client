@@ -78,14 +78,6 @@ ZmTaskListController.SORT_BY = [
     ZmId.VIEW_TASK_TODO    
 ];
 
-ZmTaskListController.ICON = {};
-ZmTaskListController.ICON[ZmId.VIEW_TASK_NOT_STARTED]		= "TaskViewNotStarted";
-ZmTaskListController.ICON[ZmId.VIEW_TASK_COMPLETED]			= "TaskViewCompleted";
-ZmTaskListController.ICON[ZmId.VIEW_TASK_IN_PROGRESS]		= "TaskViewInProgress";
-ZmTaskListController.ICON[ZmId.VIEW_TASK_WAITING]			= "TaskViewWaiting";
-ZmTaskListController.ICON[ZmId.VIEW_TASK_DEFERRED]			= "TaskViewDeferred";
-ZmTaskListController.ICON[ZmId.VIEW_TASK_ALL]				= "TaskList";
-ZmTaskListController.ICON[ZmId.VIEW_TASK_TODO]				= "TaskViewTodoList";
 
 ZmTaskListController.MSG_KEY = {};
 ZmTaskListController.MSG_KEY[ZmId.VIEW_TASK_NOT_STARTED]	= "notStarted";
@@ -231,9 +223,6 @@ function(view) {
 			this._setReadingPanePref(view);
 			this._taskMultiView.setReadingPane();
 		}
-        // always reset the view menu button icon to reflect the current view
-        var btn = this._toolbar[this._currentViewId].getButton(ZmOperation.VIEW_MENU);
-        btn.setImage(ZmTaskListController.READING_PANE_ICON[view]);
 	} else {
         if(view != this._getFilterByPref() && !appCtxt.isExternalAccount()) {
             this._setFilterByPref(ZmTaskListController.FILTERBY_SETTING[view]);
@@ -435,9 +424,9 @@ function() {
 	var toolbarOps =  [];
 	toolbarOps.push(ZmOperation.EDIT,
 			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.MOVE_MENU, ZmOperation.TAG_MENU,
+			ZmOperation.DELETE,
+			ZmOperation.MOVE_MENU,
 			ZmOperation.SEP,
-			ZmOperation.PRINT,
 			ZmOperation.SEP,
             ZmOperation.MARK_AS_COMPLETED,
             ZmOperation.SEP,
@@ -445,6 +434,14 @@ function() {
             );
 	
 	return toolbarOps;
+};
+
+ZmTaskListController.prototype._getSecondaryToolBarOps =
+function() {
+	var list = [];
+	list.push(ZmOperation.PRINT);
+	list.push(ZmOperation.TAG_MENU);
+	return list;
 };
 
 ZmTaskListController.prototype._getButtonOverrides =
@@ -564,59 +561,68 @@ function(view) {
 	printButton.setMenu(menu);
 
 	var id = ZmOperation.PRINT_TASK;
-	var mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
+	var mi = menu.createMenuItem(id, {text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
 	mi.setData(ZmOperation.MENUITEM_ID, id);
 	mi.addSelectionListener(this._listeners[ZmOperation.PRINT_TASK]);
 
 	id = ZmOperation.PRINT_TASKFOLDER;
-	mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
+	mi = menu.createMenuItem(id, {text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
 	mi.setData(ZmOperation.MENUITEM_ID, id);
 	mi.addSelectionListener(this._listeners[ZmOperation.PRINT_TASKFOLDER]);
 };
 
 ZmTaskListController.prototype._setupViewMenu =
 function(view) {
-    var btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
-    var menu = btn.getMenu();
-    if (!menu) {
+	var btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+	var menu = btn.getMenu();
+	if (!menu) {
 		menu = new ZmPopupMenu(btn);
 		btn.setMenu(menu);
+		btn.addClassName("ZViewMenuButton");
 
-
-        var pref = this._getFilterByPref();
-        for (var i = 0; i < ZmTaskListController.SORT_BY.length; i++) {
+		var pref = this._getFilterByPref();
+		for (var i = 0; i < ZmTaskListController.SORT_BY.length; i++) {
 			var id = ZmTaskListController.SORT_BY[i];
 			var params = {
-				image:ZmTaskListController.ICON[id],
 				text:ZmMsg[ZmTaskListController.MSG_KEY[id]],
 				style:DwtMenuItem.RADIO_STYLE,
-                radioGroupId:"TAKS_FILTER_BY"
+				radioGroupId:"TAKS_FILTER_BY"
 			};
 			var mi = menu.createMenuItem(id, params);
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-            if (id == ZmTaskListController.FILTERBY_SETTING_ID[pref]) { // "all" is the default
-            	mi.setChecked(true, true);
+			if (id == ZmTaskListController.FILTERBY_SETTING_ID[pref]) { // "all" is the default
+				mi.setChecked(true, true);
 			}
 		}
-        new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
-        btn.setImage(ZmTaskListController.READING_PANE_ICON[pref]);
-        pref = this._getReadingPanePref();
-        for (var i = 0; i < ZmTaskListController.RP_IDS.length; i++) {
+
+		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
+
+		//reading pane menu item similar to Mail app.
+		var readingPaneMenuItem = menu.createMenuItem(Dwt.getNextId("READING_PANE_"), {
+			text:   ZmMsg.readingPane,
+			style:  DwtMenuItem.NO_STYLE
+		});
+		
+		var readingPaneMenu = new ZmPopupMenu(readingPaneMenuItem);
+		pref = this._getReadingPanePref();
+
+		for (var i = 0; i < ZmTaskListController.RP_IDS.length; i++) {
 			var id = ZmTaskListController.RP_IDS[i];
 			var params = {
 				image:ZmTaskListController.READING_PANE_ICON[id],
 				text:ZmTaskListController.READING_PANE_TEXT[id],
 				style:DwtMenuItem.RADIO_STYLE,
-                radioGroupId:"TASKS_READING_PANE"
+				radioGroupId:"TASKS_READING_PANE"
 			};
-			var mi = menu.createMenuItem(id, params);
+			var mi = readingPaneMenu.createMenuItem(id, params);
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 			if (id == pref) {
 				mi.setChecked(true, true);
 			}
 		}
+		readingPaneMenuItem.setMenu(readingPaneMenu);
 	}
 };
 
