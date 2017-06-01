@@ -1877,6 +1877,7 @@ function(obj, batchMode) {
 	// cache old fileAs/fullName before resetting them
 	var oldFileAs = this.getFileAs();
 	var oldFullName = this.getFullName();
+	var oldContactImage = this.getImageUrl();
 	this._resetCachedFields();
 
 	var oldAttrCache = {};
@@ -1903,6 +1904,7 @@ function(obj, batchMode) {
 		oldAttr: oldAttrCache,
 		fullNameChanged: (this.getFullName() != oldFullName),
 		fileAsChanged: (this.getFileAs() != oldFileAs),
+		contactImageChanged: (this.getImageUrl!= oldContactImage),
 		contact: this
 	};
 

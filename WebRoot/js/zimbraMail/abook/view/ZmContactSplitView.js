@@ -1133,7 +1133,8 @@ ZmContactSimpleView.prototype._modifyContact =
 function(ev) {
 	ZmContactsBaseView.prototype._modifyContact.call(this, ev);
 
-	if (ev.getDetail("fileAsChanged")) {
+	//TODO: `contactImageChanged` event should be handled separately and should just update current row instead of relayout
+	if (ev.getDetail("fileAsChanged") || ev.getDetail("contactImageChanged")) {
 		var selected = this.getSelection()[0];
 		this._layout();
 		this.setSelection(selected, true);
@@ -1207,7 +1208,14 @@ function(contact, params, asHtml, count) {
 	}
 
 	// icon
-	htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon(folder), null, "id=" + this._getFieldId(contact, "type"),null, null, ["ZmContactIcon"]);
+	var avatarUrl = contact.getImageUrl();
+	if(avatarUrl) {
+		htmlArr[idx++] = "<div class='ZmContactIcon' id='" + this._getFieldId(contact, "type") + "' >";
+		htmlArr[idx++] = "<img src='" + avatarUrl + "' alt='" + contact.getFullName() + "' />";
+		htmlArr[idx++] = "</div>"; 
+	} else {
+		htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon(folder), null, "id=" + this._getFieldId(contact, "type"),null, null, ["ZmContactIcon"]);
+	}
 
 	// file as
 	htmlArr[idx++] = "<div class='ZmContactName' id='" + this._getFieldId(contact, "fileas") + "'>";
