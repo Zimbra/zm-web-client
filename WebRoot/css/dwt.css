@@ -2073,7 +2073,7 @@ INPUT.xform_field {
 .ZTabBarSuffix							{ 	@TabBarSuffix@ 			}
 .ZTabBarTable							{ 	width:auto; 			}
 
-.ZTab									{	@Tab@	@TabSpacing@	}
+.ZTab									{	@Tab@					}
 .ZTabPage								{	@TabPage@ 				}
 
 			.ZTabBorder					{	@TabBorder@	@TabBorder-normal@		}

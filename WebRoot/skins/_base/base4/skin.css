@@ -997,3 +997,28 @@ div.ZmHtmlEditor .TxtAreaDrag {
 	padding-right: 0;
 }
 
+/* Align columns for group edit */
+.ZmGroupMembersWrapper.DwtChooserListViewCustomStyle .DwtChooserListView .DwtListView-Column {
+    padding-bottom: 12px;
+}
+
+/* Custom DwtChooserListView Style */
+.DwtChooserListViewCustomStyle .DwtChooserListView {
+    @ChooserListViewCustomStyle@
+}
+
+.DwtChooserListViewCustomStyle .DwtChooserListView .DwtListView-ColHeader {
+    @ChooserListViewCustomStyleHeader@
+}
+
+.DwtChooserListViewCustomStyle .DwtChooserListView .DwtListView-ColHeader .DwtListHeaderItem-label {
+    @ChooserListViewCustomStyleHeaderLabel@
+}
+
+.DwtChooserListViewCustomStyle .DwtChooserListView .DwtListView-Column {
+    @ChooserListViewCustomStyleColumn@
+}
+
+.DwtChooserListViewCustomStyle .DwtChooserListView .DwtListView-Rows {
+    @ChooserListViewCustomStyleContainer@
+}
