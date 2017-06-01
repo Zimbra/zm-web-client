@@ -1934,7 +1934,8 @@ div.CompDragArea * {
 	@ContactItemCheckIcon@
 }
 
-.ZmContactSimpleView .SimpleContact .ZmContactIcon .svg-icon {
+.ZmContactSimpleView .SimpleContact .ZmContactIcon .svg-icon,
+.ZmContactSimpleView .SimpleContact .ZmContactIcon IMG {
 	@ContactItemIcon@
 }
 
@@ -2030,12 +2031,6 @@ div.CompDragArea * {
 .ZmEditContactView .contactHeader2 .Text {
 	@FontSize-bigger@
 	height:25px;
-}
-
-.ZmContactView .companyFolder {
-	@FontSize-big@
-	@NoWrap@
-	width:1%;
 }
 
 .ZmContactEditTabViewPage .contactLabel {
@@ -6701,6 +6696,44 @@ a.ZmLinkDisabled {
 
 .ZmGroupViewWrapper .ZmContactContent {
 	@GroupEditViewContent@
+}
+
+/* DL Create-edit page */
+.ZmContactView .ZmDlViewWrapper {
+	@DLEditViewWrapper@
+}
+
+.ZmDlViewWrapper .ZmContactHeader {
+	@DLEditViewHeader@
+}
+
+.ZmDlViewWrapper .contactHeader2,
+.ZmDlViewWrapper .contactHeader2 .Text {
+	@DLEditViewInput@
+}
+
+.ZmDlViewWrapper .ZmContactContent {
+	@DLEditViewContent@
+}
+
+.ZmDlViewWrapper .ZmContactContent .ZTabTable .ZWidgetTitle {
+	@DLEditViewTabText@
+}
+
+.ZmDlViewWrapper .ZmContactContent .ZTabPage {
+	@DLEditViewTabPage@
+}
+
+.ZmDlViewWrapper .ZmDLPropertiesView {
+	@DLPropertiesView@
+}
+
+.ZmDLPropertiesView .rowLabel {
+	@DLPropertiesViewRowLabel@
+}
+
+.ZmDLPropertiesView .rowValue {
+	@DLPropertiesViewRowValue@	
 }
 
 .ZmEditGroupContact {
