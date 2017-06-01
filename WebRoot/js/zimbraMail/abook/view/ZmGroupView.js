@@ -554,7 +554,7 @@ function(x, y, width, height) {
 	if(this._addNewField){
 		Dwt.setSize(this._addNewField, Dwt.DEFAULT, 100);
 	}
-	var memberListHeight = height - 50;
+	var memberListHeight = height - 150; //set member list height to totalContainerHeight - 150, to make sure that elements are of atleast enough required height
 	this._groupMembersListView.setSize(Dwt.DEFAULT, memberListHeight);
 	var searchFieldsRowHeight = Dwt.getSize(this._searchFieldsRow).y;
 	var manualAddRowHeight = Dwt.getSize(this._manualAddRow).y;
@@ -1695,13 +1695,7 @@ function(item) {
 ZmDlPropertiesTabView = function(parent, className) {
     if (arguments.length == 0) return;
 
-    DwtTabViewPage.call(this, parent, className, Dwt.ABSOLUTE_STYLE);
-
-	this.setScrollStyle(Dwt.SCROLL);
-
-	var htmlEl = this.getHtmlElement();
-	htmlEl.style.top = this.parent._tabView.getY() + this.parent._tabView._tabBar.getH() + "px";
-	htmlEl.style.bottom = 0;
+    DwtTabViewPage.call(this, parent, className, Dwt.RELATIVE_STYLE);
 
 };
 

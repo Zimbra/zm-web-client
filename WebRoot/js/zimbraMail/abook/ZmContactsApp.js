@@ -225,7 +225,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_ADDRBOOK, {textKey:"newAddrBook", tooltipKey:"newAddrBookTooltip"}, ZmSetting.NEW_ADDR_BOOK_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_CONTACT, {textKey:"newContact", tooltipKey:"newContactTooltip", shortcut:ZmKeyMap.NEW_CONTACT}, ZmSetting.CONTACTS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_GROUP, {textKey:"newGroup", tooltipKey:"newGroupTooltip"}, ZmSetting.CONTACTS_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_NEW_DISTRIBUTION_LIST, {textKey:"newDistList", tooltipKey:"newDistListTooltip", image:"NewGroup"}, ZmSetting.CONTACTS_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_NEW_DISTRIBUTION_LIST, {textKey:"newDistList", tooltipKey:"newDistListTooltip"}, ZmSetting.CONTACTS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_CONTACT, {textKey:"printContact", image:"Print", shortcut:ZmKeyMap.PRINT}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_ADDRBOOK, {textKey:"printAddrBook", image:"Print"}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_ADDRBOOK, {textKey:"shareAddrBook"});
