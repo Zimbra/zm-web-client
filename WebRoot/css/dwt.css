@@ -2026,7 +2026,7 @@ INPUT.xform_field {
 .ZSelected	.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-selected@	}
 
 .ZToolbarButton.ZViewMenuButton	.ZToolbarButtonTable		                {       @ToolbarViewButtonContainer@       }
-.ZToolbarButton.ZViewMenuButton .ZToolbarButtonTable .ZWidgetTitle			{ 		@Text-light@ 		               }
+.ZToolbarButton.ZViewMenuButton .ZToolbarButtonTable TD.ZWidgetTitle			{ 		@Text-light@ 		               }
 .ZToolbarButton.ZViewMenuButton	.ZToolbarButtonTable  TD.ZDropDown 			{		@ToolbarViewButtonDropIcon@ 	   }
 
 /***************
