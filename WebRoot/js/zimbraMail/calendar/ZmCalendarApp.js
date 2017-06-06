@@ -1049,8 +1049,8 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, reparen
 	dateButton.addDropDownSelectionListener(dateButtonListener);
 	//make sure to listen to the tiny left-edge(thats not part of drop-down menu)
 	dateButton.addSelectionListener(dateButtonListener);
-    //to keep the image unchanged on hover
-    dateButton.setDropDownHovImage(null);
+	dateButton.setImage("CalendarApp");
+	dateButton.setDropDownImages(null,null,null,null);
 	dateButton.setData(Dwt.KEY_ID, buttonId);
 	if (AjxEnv.isIE) {
 		dateButton.setSize("20");

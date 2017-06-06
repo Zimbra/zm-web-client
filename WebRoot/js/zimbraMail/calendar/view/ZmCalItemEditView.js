@@ -363,11 +363,6 @@ function() {
 	if (!this._rendered) { return; }
 
     this._resizeNotes();
-
-	var subjectContainer = this._subjectField.getHtmlElement().parentNode;
-	this._subjectField.setSize(0, Dwt.DEFAULT);
-	var containerBounds = Dwt.getInsetBounds(subjectContainer);
-	this._subjectField.setSize(containerBounds.width - 20, Dwt.DEFAULT);
 };
 
 ZmCalItemEditView.prototype.getHtmlEditor =
@@ -711,7 +706,7 @@ function(width) {
 		validationStyle: DwtInputField.CONTINUAL_VALIDATION
 	};
 	this._subjectField = new DwtInputField(params);
-	Dwt.setSize(this._subjectField.getInputElement(), "100%", "2rem");
+	Dwt.setSize(this._subjectField.getInputElement(), "100%", Dwt.DEFAULT);
 
 	// CalItem folder DwtSelect
 	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_folderSelect")});
@@ -756,8 +751,6 @@ function(width) {
 		};
 		this._reminderSelectInput = new DwtInputField(params);
 		var reminderInputEl = this._reminderSelectInput.getInputElement();
-        // Fix for bug: 83100. Fix adapted from ZmReminderDialog::_createButtons
-		Dwt.setSize(reminderInputEl, "120px", "2rem");
 		reminderInputEl.onblur = AjxCallback.simpleClosure(this._handleReminderOnBlur, this, reminderInputEl);
 
 		var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);

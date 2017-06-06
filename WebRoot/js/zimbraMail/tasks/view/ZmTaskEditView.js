@@ -306,15 +306,14 @@ function() {
 		isAppt: false
 	};
 
-	// XXX: rename template name to CalItem#CalItemEdit
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#EditView", subs);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("tasks.Tasks#EditView", subs);
 };
 
 ZmTaskEditView.prototype._getPriorityImage =
 function(flag) {
-	if (ZmCalItem.isPriorityHigh(flag))	{ return "PriorityHigh_list"; }
-	if (ZmCalItem.isPriorityLow(flag))	{ return "PriorityLow_list"; }
-	return "PriorityNormal_list";
+	if (ZmCalItem.isPriorityHigh(flag))	{ return "PriorityHigh"; }
+	if (ZmCalItem.isPriorityLow(flag)) 	{ return "PriorityLow"; }
+	return "Blank";
 };
 
 ZmTaskEditView.prototype._getPriorityText =
@@ -408,12 +407,10 @@ function(width) {
 	// add location
 	var params = {parent: this, type: DwtInputField.STRING};
 	this._location = new DwtInputField(params);
-	Dwt.setSize(this._location.getInputElement(), width, "2rem");
 	this._location.reparentHtmlElement(this._htmlElId + "_location");
 
 	// add priority DwtButton
-	this._prioritySelect = new DwtButton({parent:this});
-    this._prioritySelect.setSize(60, Dwt.DEFAULT);
+	this._prioritySelect = new DwtButton({parent:this, className:"ZButton ZSelect"});
 	this._prioritySelect.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
 	this._prioritySelect.reparentHtmlElement(this._htmlElId + "_priority");
 
@@ -436,7 +433,6 @@ function(width) {
     };
     this._pCompleteSelectInput = new DwtInputField(params);
     var pCompleteInputEl = this._pCompleteSelectInput.getInputElement();
-    Dwt.setSize(pCompleteInputEl, Dwt.DEFAULT, "2rem");
     pCompleteInputEl.onblur = AjxCallback.simpleClosure(this._handleCompleteOnBlur, this, pCompleteInputEl);
 
     var pCompleteButtonListener = new AjxListener(this, this._pCompleteButtonListener);

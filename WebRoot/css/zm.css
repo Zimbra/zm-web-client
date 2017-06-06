@@ -157,10 +157,20 @@ INPUT[type="text"]:focus, INPUT[type="password"]:focus, INPUT[type="email"]:focu
 
 
 /*
- *  Dwt Overrides
+ *  Fieldset
  */
 
+.ZmFieldset {
+	@FieldSetCustom@
+}
 
+.ZmFieldset legend {
+	@FieldSetCustomLegend@
+}
+
+.ZmFieldset > DIV.ZmFieldsetContent {
+	@FieldSetCustomContent@
+}
 
 /*
  *	Overview tree (list of folders)
@@ -544,6 +554,7 @@ INPUT[type="text"].search_input-expanded:focus {
 	border-top-left-radius:0;
 	border-bottom-left-radius:0;
 	border-left-width:0px;
+	background: inherit;
 }
 
 .ZmSelector .ZWidgetTitle {
@@ -575,9 +586,9 @@ INPUT[type="text"].search_input-expanded:focus {
 	display: inline-block;
 }
 
-.ZmConvExpanded,
-.ZmConvExpanded .ZmListFlagsWrapper,
-.ZmConvExpanded .ZmMsgListDate {
+.ZmConvExpanded:not(.Row-selected),
+.ZmConvExpanded:not(.Row-selected) .ZmListFlagsWrapper,
+.ZmConvExpanded:not(.Row-selected) .ZmMsgListDate {
 	@MailConvExpanded@
 }
 
@@ -1255,6 +1266,12 @@ div.AttachmentImgContainer {
 .MsgHeaderTable .info .ZWidgetTable TD,
 .InvHeaderDiv .ZWidgetTable TD {
     vertical-align: top;
+}
+
+.Conv2MsgHeader .info .ZWidgetTable TD.ZDropDown,
+.MsgHeaderTable .info .ZWidgetTable TD.ZDropDown,
+.InvHeaderDiv .ZWidgetTable TD.ZDropDown {
+	@MailHeaderDropDown@
 }
 
 .Conv2MsgHeader .info .ZWidgetTable TD.ZDropDown DIV,
@@ -1965,16 +1982,6 @@ div.CompDragArea * {
 	padding:5px;
 }
 
-.ZmContactView .contactHeaderRow,
-.ZmTaskEditView .contactHeaderRow {
-	height:40px;
-	@WidgetHeaderSize-big@
-}
-
-.ZmTaskEditView .ZHasDropDown {
-	display:inline-block;
-}
-
 .newTaskBanner {
 	@InactiveCursor@
 	color:rgb(120, 111, 91);
@@ -2013,7 +2020,6 @@ div.CompDragArea * {
 }
 
 .ZmContactView .contactHeader,
-.ZmTaskEditView .contactHeader,
 .ZmEditContactView .contactHeader {
 	@FontSize-biggest@
 	@Text@
@@ -2041,21 +2047,6 @@ div.CompDragArea * {
 /*
  *	Contact edit screen stuff
  */
-
-/* Container for the edit screen */
-/* ??? -> ZmFieldLabelRight */
-.ZmTaskEditView .editLabel {
-	@Label-right@
-}
-
-.ZmContactView .hintLabel {
-	@Label-right@
-	color:#5A5A5A;
-}
-
-.ZmContactView .groupFieldset {
-	font-weight:bold;
-}
 
 .sectionLabel {
 	@SectionLabel@
@@ -2176,7 +2167,42 @@ div.CompDragArea * {
 }
 
 .ZmTaskEditView {
-	@PageBg@
+	@TaskEditView@
+}
+
+.ZmTaskEditView .ZmTaskEditHeader {
+	@TaskEditHeader@
+}
+
+.ZmTaskEditView .ZmTaskEditContent {
+	@TaskEditContent@
+}
+
+.ZmTaskEditHeader .ZmTaskEditHeaderTable {
+	@TaskEditHeaderTable@
+}
+
+.ZmTaskEditHeader .ZmTaskEditHeaderTable > tbody > tr > td {
+	@TaskEditHeaderTableCell@
+}
+
+.ZmTaskEditHeaderTable .ZmFieldsetContent td,
+.ZmTaskEditHeaderTable .ZmFieldsetContent div,
+.ZmTaskEditHeaderTable .ZmFieldsetContent label {
+	@TaskEditViewFontSize@
+}
+
+.ZmTaskEditHeaderTable .ZmFieldsetContent .ZmRowLabel {
+	@TaskEditHeaderRowLabel@
+}
+
+.ZmTaskEditHeaderTable .ZmFieldsetContent .DwtInputField input {
+	@TaskEditHeaderTextInput@
+}
+
+.ZmTaskEditView .ZSelect,
+.ZmTaskEditView .ZSelect table {
+	@FullWidth@
 }
 
 .ZmTaskProgress {
@@ -6836,4 +6862,48 @@ a.ZmLinkDisabled {
 
 .ZmSearchWidget .ZmSearchWidgetButton {
 	@SearchWidgetButton@
+}
+
+/* Custom Select Widget */
+.ZmSelectWidgetWrapper {
+	@SelectWidgetWrapper@
+}
+
+.ZmSelectWidgetWrapper .ZmSelector {
+	@SelectWidgetSelector@
+}
+
+.ZmSelectWidgetWrapper .ZmSelector .ZDropDown {
+	@SelectWidgetDropDown@
+}
+
+.ZmSelectWidgetWrapper .DwtInputField input[type='text'],
+.ZmSelectWidgetWrapper input[type='text'] {
+	@SelectWidgetInput@
+}
+
+/* Custom Meta Property table */
+.ZmMetaPropertyTable {
+	@MetaPropertyTable@
+}
+
+.ZmMetaPropertyTable > tbody > tr > td:not(:empty) {
+	@MetaPropertyTableCell@
+}
+
+/* Clear breathing space */
+.ZmMetaPropertyTable > tbody > tr > td:first-of-type {
+	padding-left: 0;
+}
+
+.ZmMetaPropertyTable > tbody > tr > td:last-of-type {
+	padding-right: 0;
+}
+
+.ZmMetaPropertyTable > tbody > tr:first-of-type > td {
+	padding-top: 0;
+}
+
+.ZmMetaPropertyTable > tbody > tr:last-of-type > td {
+	padding-bottom: 0;
 }

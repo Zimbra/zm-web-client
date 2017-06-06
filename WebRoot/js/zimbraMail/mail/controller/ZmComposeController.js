@@ -1236,7 +1236,7 @@ function() {
 	var tb = this._toolbar = new ZmButtonToolBar({
 		parent: this._container,
 		buttons: buttons,
-		className: (appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar") + " ImgSkin_Toolbar itemToolbar",
+		className: (appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar") + " ImgSkin_Toolbar itemToolbar ZToolbar",
 		context: this._currentViewId
 	});
 
