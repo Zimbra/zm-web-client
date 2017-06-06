@@ -118,6 +118,8 @@ ZmListView.FIELD_CLASS[ZmItem.F_TYPE]		= "ListViewIcon";
 ZmListView.FIELD_CLASS[ZmItem.F_FLAG]		= "Flag";
 ZmListView.FIELD_CLASS[ZmItem.F_TAG]		= "Tag";
 ZmListView.FIELD_CLASS[ZmItem.F_ATTACHMENT]	= "Attach";
+ZmListView.FIELD_CLASS[ZmItem.F_SUBJECT]	= "Subject";
+ZmListView.FIELD_CLASS[ZmItem.F_DATE]		= "Date";
 
 ZmListView.ITEM_FLAG_CLICKED 				= DwtListView._LAST_REASON + 1;
 ZmListView.DEFAULT_REPLENISH_THRESHOLD		= 0;
