@@ -91,12 +91,6 @@ ZmTaskListView.SEC_MSG_KEY[ZmTaskListView.SEC_PASTDUE] = ZmMsg.taskSecPastDue;
 ZmTaskListView.SEC_MSG_KEY[ZmTaskListView.SEC_TODAY] = ZmMsg.taskSecToday;
 ZmTaskListView.SEC_MSG_KEY[ZmTaskListView.SEC_NODUEDATE] = ZmMsg.taskSecNoDuedate;
 
-ZmTaskListView.SEC_COLOR = {};
-ZmTaskListView.SEC_COLOR[ZmTaskListView.SEC_UPCOMING] = "OrangeC";
-ZmTaskListView.SEC_COLOR[ZmTaskListView.SEC_PASTDUE] = "RedC";
-ZmTaskListView.SEC_COLOR[ZmTaskListView.SEC_TODAY] = "GreenC";
-ZmTaskListView.SEC_COLOR[ZmTaskListView.SEC_NODUEDATE] = "GrayDarkC";
-
 ZmTaskListView.SINGLE_COLUMN_SORT = [
     {field:ZmItem.F_SUBJECT,msg:"subject"},
     {field:ZmItem.F_DATE,	msg:"date"},
@@ -243,9 +237,8 @@ function(sechdr) {
         htmlArr[idx++] = "<div id='_upComingTaskListHdr'>";
         htmlArr[idx++] = "<table width=100% class='DwtListView-Column'><tr>";
         this.dId = Dwt.getNextId();
-        htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label ";
-        htmlArr[idx++] = ZmTaskListView.SEC_COLOR[sechdr];
-        htmlArr[idx++] = "' style='padding:0px 0px 2px 2px; font-weight:bold;' id='";
+        htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label";
+        htmlArr[idx++] = "'id='";
         htmlArr[idx++] = this.dId;	// bug: 17653 - for QA
         htmlArr[idx++] = "'>";
         htmlArr[idx++] = ZmTaskListView.SEC_MSG_KEY[sechdr];
@@ -398,12 +391,9 @@ function(list, noResultsOk, doAdd) {
 			htmlArr[idx++] = "<td><div class='newTaskBanner' onclick='ZmTaskListView._handleOnClick(this)' id='";
 			htmlArr[idx++] = this.dId;	// bug: 17653 - for QA
 			htmlArr[idx++] = "'>";
+			htmlArr[idx++] = AjxImg.getImageHtml("Add");
 			htmlArr[idx++] = ZmMsg.createNewTaskHint;
 			htmlArr[idx++] = "</div></td>";
-		} else {
-			htmlArr[idx++] = "<td width=";
-			htmlArr[idx++] = hdr._width;
-			htmlArr[idx++] = ">&nbsp;</td>";
 		}
 	}
 	htmlArr[idx++] = "</tr></table>";
@@ -499,7 +489,7 @@ function(task, colIdx) {
 
     idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_SUBJECT, colIdx);
 
-    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
+    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE);
 
 	htmlArr[idx++] = "</tr></table>";
 
@@ -511,7 +501,7 @@ function(task, colIdx) {
 		htmlArr[idx++] = this.getColorForStatus(task.status);
 		htmlArr[idx++] = "' style='width:"+ task.pComplete + "%;'></div></div>";
 	}
-    htmlArr[idx++] = "</td><td width=75 align=right><table><tr>";
+    htmlArr[idx++] = "</td><td><table class='IconInnerWrapper'><tr>";
 
     idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_TAG, colIdx, width);
     if(task.priority == ZmCalItem.PRIORITY_HIGH || task.priority == ZmCalItem.PRIORITY_LOW) {
@@ -533,7 +523,7 @@ function(htmlArr, idx, task, field, colIdx, params) {
 
 	if (field == ZmItem.F_SELECTION) {
 		var icon = params.bContained ? "CheckboxChecked" : "CheckboxUnchecked";
-		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(task, field));
+		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(task, field), ["ZmTaskListIconWrapper"]);
 
 	} else if (field == ZmItem.F_PRIORITY) {
 		htmlArr[idx++] = "<center>";
