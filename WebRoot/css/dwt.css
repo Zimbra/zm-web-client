@@ -1901,7 +1901,7 @@ INPUT.xform_field {
 .ZDisabled .ZDropDown			{	@Text-disabled@ }
 
 .ZWidgetTable DIV				{	}
-.ZHasText .ZWidgetTitle			{	padding:0px 4px;	}
+.ZHasText .ZWidgetTitle			{	padding:0px @WidgetInternalPadding@;	}
 
 .ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG		{	margin:1px 0px;			}
 .ZWidgetTable .ZRightIcon DIV, .ZWidgetTable .ZRightIcon IMG	{	margin:1px 0px;			}
@@ -2038,6 +2038,7 @@ INPUT.xform_field {
 .ZSelectAutoSizingContainer					{	height:2rem; width:auto;	}		/* TODO: SIZE ASSUMPTION! */
 
 .ZSelect									{	@Select@		@SelectSpacing@			}
+.ZSelect .ZWidgetIcon:not(:empty)			{	@SelectIcon@		}
 .ZSelect .ZWidgetTitle						{	@SelectTitle@		}
 .ZSelect .ZButtonBorder						{	@SelectBorder@		}
 .ZSelect .ZDropDown							{	@SelectDropDown@	}
@@ -2122,7 +2123,7 @@ INPUT.xform_field {
 	
 }
 
-.DwtComboBox .ZButton					{	width:20px; @WidgetHeight@	}
+.DwtComboBox .ZButton					{	@WidgetHeight@	}
 .DwtComboBox .ZDropDown					{	@ComboBoxDropDown@	}
 
 
