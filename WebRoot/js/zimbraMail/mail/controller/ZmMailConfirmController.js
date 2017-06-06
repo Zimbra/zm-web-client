@@ -139,7 +139,7 @@ function() {
 	var buttons = [ZmOperation.CLOSE];
 
 	var className = appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:className+" ImgSkin_Toolbar",
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:className+" ImgSkin_Toolbar ZToolbar",
 										 context:ZmId.VIEW_MAIL_CONFIRM});
 	this._toolbar.addSelectionListener(ZmOperation.CLOSE, new AjxListener(this, this._closeListener));
 };

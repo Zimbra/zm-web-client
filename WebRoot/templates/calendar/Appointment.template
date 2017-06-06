@@ -239,6 +239,7 @@
 
 <!-- NOTE: Hopefully the EditView template can go away as soon as task -->
 <!-- NOTE: compose is redesigned to be more like appt compose. -->
+<!-- TODO: Edit View template for Appointment and Task are now separated. Remove conditional code for task-edit while working on task ZCS-792 and then remove this comment :) -->
 <template id='calendar.Appointment#EditView'>
 <$ var labelStyle = "width:"+(AjxEnv.isIE ? 30 : 32)+"px; overflow:visible; white-space:nowrap"; $>
 <$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
@@ -445,9 +446,11 @@
 <template id='calendar.Appointment#AttachContainer'>
 	<fieldset class='ZmFieldset'>
 		<legend class='ZmLegend'><$= ZmMsg.attachments $></legend>
-		<form style='margin:0;padding:0' method='POST' action='${url}' id='${uploadFormId}' enctype='multipart/form-data'>
-			<div id='${attachDivId}'></div>
-		</form>
+		<div class="ZmFieldsetContent">
+			<form style='margin:0;padding:0' method='POST' action='${url}' id='${uploadFormId}' enctype='multipart/form-data'>
+				<div id='${attachDivId}'></div>
+			</form>
+		</div>
 	</fieldset>
 </template>
 
@@ -1096,12 +1099,10 @@
 </template>
 
 <template id='calendar.Appointment#ApptTimeInput'>
-	<table role="presentation" class='miniTimeButton ZmSelector'>
-		<tr>
-			<td id='${id}_timeSelectInput'></td>
-			<td id='${id}_timeSelectBtn'> </td>
-		</tr>
-	</table>
+	<div class="ZmSelectWidgetWrapper">
+		<div id='${id}_timeSelectInput'></div>
+		<div class='ZmSelector' id='${id}_timeSelectBtn'></div>
+	</div>
 </template>
 
 
