@@ -52,3 +52,142 @@
 		<td class='LabelColValue'><$= data.val1 $> @ <$= data.val2 $></td>
 	</tr>
 </template>
+
+<!-- Task Edit view template -->
+<template id='tasks.Tasks#EditView'>
+	<div class="ZmTaskEditHeader">
+		<div id='${id}_top'>
+			<table class="ZmTaskEditHeaderTable" role="presentation" id='${id}_table'>
+				<tbody>
+					<tr>
+						<td valign=top>
+							<fieldset class="ZmFieldset">
+								<legend><$= ZmMsg.details $></legend>
+								<div class="ZmFieldsetContent">
+									<table role="presentation" width=100% class="ZmMetaPropertyTable">
+										<colgroup>
+											<col width='1%' style="white-space:nowrap;"/>
+											<col width='25%'/>
+											<col width='65%'/>
+										</colgroup>
+										<tbody>
+											<tr>
+												<td class="ZmRowLabel"><$= ZmMsg.subjectLabel $></td>
+												<td colspan=2 id='${id}_subject'></td>
+											</tr>
+											<tr>
+												<td class="ZmRowLabel"><$= ZmMsg.locationLabel $></td>
+												<td colspan=2 id='${id}_location'></td>
+											</tr>
+											<tr>
+												<td class="ZmRowLabel"><$= ZmMsg.priorityLabel $></td>
+												<td id='${id}_priority'></td>
+												<td>&nbsp;</td>
+											</tr>
+											<tr id='${id}_folderRow'>
+												<td class="ZmRowLabel"><$= data.isAppt ? ZmMsg.calendarLabel : ZmMsg.taskFolder $></td>
+												<td id='${id}_folderSelect'></td>
+												<td>&nbsp;</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</fieldset>
+						</td>
+						<td valign=top>
+							<fieldset class="ZmFieldset">
+								<legend id="${id}_timeLegend"><$= ZmMsg.progress $></legend>
+								<div class="ZmFieldsetContent">
+									<table role="presentation" width=100% class="ZmMetaPropertyTable">
+										<colgroup>
+											<col width='1%'/>
+											<col width='30%'/>
+											<col width='15%'/>
+											<col width='30%'/>
+										</colgroup>
+										<tbody>
+											<tr>
+												<td class='ZmRowLabel' id='${id}_statusLabel'><$= ZmMsg.statusLabel $></td>
+												<td class='ZmTaskEditWidgetContainer' id='${id}_status'></td>
+												<td class='ZmTaskEditWidgetContainer'>
+													<div class="ZmSelectWidgetWrapper">
+														<div id='${id}_pCompleteSelectInput'></div>
+														<div class="ZmSelector" id='${id}_pCompleteSelect'></div>
+													</div>
+												</td>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
+												<td></td>
+												<td colspan='3' id='${id}_due_message'></td>
+											</tr>
+											<tr>
+												<td class='ZmRowLabel'><$= ZmMsg.startDate + ":" $></td>
+												<td class='ZmTaskEditWidgetContainer'>
+													<div class="ZmSelectWidgetWrapper">
+														<input autocomplete='off' type='text' size=14 id='${id}_startDateField' aria-label='<$= ZmMsg.startDate $>' value='${currDate}' />
+														<div class='ZmSelector' id='${id}_startMiniCalBtn'></div>
+													</div>
+												</td>
+												<td>&nbsp;</td>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
+												<td class='ZmRowLabel'><$= ZmMsg.dateDueLabel $></td>
+												<td class='ZmTaskEditWidgetContainer'>
+													<div class="ZmSelectWidgetWrapper">
+														<input autocomplete='off' type='text' size=14 id='${id}_endDateField' aria-label='<$= ZmMsg.endDate $>' value='${currDate}' />
+														<div class='ZmSelector' id='${id}_endMiniCalBtn'></div>
+													</div>
+												</td>
+												<td>&nbsp;</td>
+												<td>&nbsp;</td>
+											</tr>
+											<tr>
+												<td class='ZmRowLabel' id='${id}_reminderLabel'><$= ZmMsg.reminderLabel $></td>
+												<td id='${id}_reminderSelectContainer'>
+													<table role="presentation" width='100%'>
+														<tbody>
+															<tr>
+																<td>
+																	<div class="ZmTaskReminderCheckbox" id='${id}_reminderCheckbox'></div>
+																</td>
+																<td>
+																	<div class="ZmSelectWidgetWrapper">
+																		<input autocomplete='off' type='text' size=14 id='${id}_remindDateField' aria-label='<$= ZmMsg.reminder $>' value='${currDate}' />
+																		<div class='ZmSelector' id='${id}_remindMiniCalBtn'></div>
+																	</div>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</td>
+												<td id='${id}_remindTimeSelect'></td>
+												<td><span id='${id}_reminderConfigure'></span></td>
+											</tr>
+											<tr>
+												<td>&nbsp;</td>
+												<td colspan="3"><div id='${id}_reminderEmailCheckbox'></div></td>
+											</tr>
+											<$ if (appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)) { $>
+												<tr>
+													<td>&nbsp</td>
+													<td colspan="2">
+														<div id='${id}_reminderDeviceEmailCheckbox'></div>
+													</td>
+												</tr>
+											<$ } $>
+										</tbody>
+									</table>
+								</div>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="ZmTaskEditContent">
+		<div id='${id}_notes'></div>
+	</div>
+</template>
