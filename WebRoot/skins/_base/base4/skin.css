@@ -465,24 +465,39 @@ BODY                                    {   margin:0px;     }
 .ZMenuItemTable TD:not(:empty)              {   padding: 0 @ToolbarButtonPaddingSize@   }
 .ZMenuItemTable TD:first-child              {   padding-left:0;    }
 .ZMenuItemTable TD:last-child               {   padding-right:0;   }
+
 /* This rule aligns all menu item text, if any one of the menu item has icon in the menu */
+.DwtMenu.ZHasIcon:not(.ZHasCheck) .ZMenuItem .ZMenuItemTable .ZLeftIcon:empty::after,
 .ActionMenu.ZHasIcon:not(.ZHasCheck) .ZMenuItem .ZMenuItemTable .ZLeftIcon:empty::after,
+.DwtMenu.ZHasCheck.ZHasIcon .ZMenuItem .ZMenuItemTable .ZLeftIcon:empty::after,
 .ActionMenu.ZHasCheck.ZHasIcon .ZMenuItem .ZMenuItemTable .ZLeftIcon:empty::after   {
   content: " "; 
   padding-left: @IconGutterSize@;
 }
+
+.DwtMenu.ZHasCheck:not(.ZHasIcon) .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty::after,
 .ActionMenu.ZHasCheck:not(.ZHasIcon) .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty::after,
+.DwtMenu.ZHasCheck.ZHasIcon .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty::after,
 .ActionMenu.ZHasCheck.ZHasIcon .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty::after  {
   content: " "; 
   padding-left: @IconGutterSize@;
 }
+
+.DwtMenu.ZHasCheck .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty,
 .ActionMenu.ZHasCheck .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty {
     padding-right: @ToolbarButtonPaddingSize@
 }
+
+.DwtMenu.ZHasIcon .ZMenuItem .ZMenuItemTable .ZWidgetIcon:empty,
 .ActionMenu.ZHasIcon .ZMenuItem .ZMenuItemTable .ZWidgetIcon:empty {
     padding: 0 @ToolbarButtonPaddingSize@
 }
-.ActionMenu.ZHideCheckIconMenuType .ZCheckIcon { display: none; }
+
+.DwtMenu.ZHideCheckIconMenuType .ZCheckIcon,
+.ActionMenu.ZHideCheckIconMenuType .ZCheckIcon { 
+    display: none; 
+}
+
 #ENDIF
 
 #IFDEF MSIE_LOWER_THAN_9
@@ -704,10 +719,12 @@ we are hiding element with that class
     width:1.2em;
 }
 
+.ImgPriorityHigh-svg .svg-icon,
 .ImgPriorityHigh_list-svg .svg-icon {
     fill: @IconPriorityHigh@;
 }
 
+.ImgPriorityLow-svg .svg-icon,
 .ImgPriorityLow_list-svg .svg-icon {
     fill: @IconPriorityLow@;
 }
@@ -839,7 +856,7 @@ we are hiding element with that class
     @FileTypeHtml@
 }
 
-.ImgHtmlDoc-svg .svg-icon {
+.ImgContactDoc-svg .svg-icon {
     @FileTypeVCard@
 }
 
@@ -988,12 +1005,14 @@ div.ZmHtmlEditor .TxtAreaDrag {
 }
 
 .ZmGroupMemberFilterWrapper td.ZmGroupMemberFilterColumnCell:first-of-type,
-.ZmGroupMemberFilterWrapper .ZmGroupMemberFilterColumnTable > tbody > tr > td:first-of-type {
+.ZmGroupMemberFilterWrapper .ZmGroupMemberFilterColumnTable > tbody > tr > td:first-of-type,
+.ZmTaskEditHeader .ZmTaskEditHeaderTable > tbody > tr > td:first-of-type {
 	padding-left: 0;
 }
 
 .ZmGroupMemberFilterWrapper td.ZmGroupMemberFilterColumnCell:last-of-type,
-.ZmGroupMemberFilterWrapper .ZmGroupMemberFilterColumnTable > tbody > tr > td:last-of-type {
+.ZmGroupMemberFilterWrapper .ZmGroupMemberFilterColumnTable > tbody > tr > td:last-of-type,
+.ZmTaskEditHeader .ZmTaskEditHeaderTable > tbody > tr > td:last-of-type {
 	padding-right: 0;
 }
 
@@ -1021,4 +1040,16 @@ div.ZmHtmlEditor .TxtAreaDrag {
 
 .DwtChooserListViewCustomStyle .DwtChooserListView .DwtListView-Rows {
     @ChooserListViewCustomStyleContainer@
+}
+
+/* Mail List view selected background color overrides */
+/* Has to apply !important to override inline-style applied by tag colored mail-list item */
+
+.ZmTradView .Row-selected,
+.ZmTradView .Row-selected .ZmListFlagsWrapper,
+.ZmTradView .Row-selected .ZmMsgListDate,
+.ZmConvDoublePaneView .Row-selected,
+.ZmConvDoublePaneView .Row-selected .ZmListFlagsWrapper,
+.ZmConvDoublePaneView .Row-selected .ZmMsgListDate {
+    background-color: @ListItemBgColor-selected@ !important;
 }
