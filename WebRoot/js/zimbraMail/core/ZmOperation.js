@@ -241,7 +241,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE_IGNORE, {textKey:"dontNotifyOrganizerLabel"});
 
 	// Compose Options - used by Calendar and Mail
-	ZmOperation.registerOp(ZmId.OP_COMPOSE_OPTIONS, {textKey:"options", image:"Preferences"});
+	ZmOperation.registerOp(ZmId.OP_COMPOSE_OPTIONS, {textKey:"actions", image:"MoreVertical", showTextInToolbar: true, showImageInToolbar: true});
 
 	ZmOperation.NEW_ORG_OPS.push(ZmOperation.NEW_FOLDER, ZmOperation.NEW_TAG);
 	ZmOperation.NEW_ORG_KEY[ZmOperation.NEW_FOLDER]	= "folder";
