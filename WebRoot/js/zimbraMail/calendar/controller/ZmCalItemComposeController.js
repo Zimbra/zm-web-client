@@ -355,7 +355,9 @@ function(mode) {
         saveButton.setText(ZmMsg.send);
     }
 
-	var printButton = this._toolbar.getButton(ZmOperation.PRINT);
+	var composeOptionBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+	var composeOptionMenu = composeOptionBtn.getMenu();
+	var printButton = composeOptionMenu.getItemById(ZmId.OP_PRINT, ZmId.OP_PRINT);
 	if (printButton) {
 		printButton.setEnabled(!isNew);
 	}
@@ -369,14 +371,6 @@ function() {
 
 	var buttons = [ZmOperation.SEND_INVITE, ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];
 
-	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
-		buttons.push(ZmOperation.ATTACHMENT);
-	}
-
-    if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-		buttons.push(ZmOperation.PRINT);
-	}
-
 	if (appCtxt.isSpellCheckerAvailable()) {
 		buttons.push(ZmOperation.SPELL_CHECK);
 	}
@@ -389,51 +383,55 @@ function() {
 		context:    this._currentViewId,
 		controller: this
 	});
+
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 
-	if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-		this._toolbar.addSelectionListener(ZmOperation.PRINT, new AjxListener(this, this._printListener));
-	}
-
-	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
-		this._toolbar.addSelectionListener(ZmOperation.ATTACHMENT, new AjxListener(this, this._attachmentListener));
-	}
-
-    var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
-    sendButton.setVisible(false);
+	var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
+	sendButton.setVisible(false);
 
 	// change default button style to toggle for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	if (spellCheckButton) {
 		spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
 	}
+	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
 
 	var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
-	if (optionsButton) {
-		optionsButton.setVisible(false); //start it hidden, and show in case it's needed.
+	var optionsMenu = new DwtMenu({parent:optionsButton, className:'DwtMenu ZmMenuAlignCheckIcon'});
+	optionsButton.setMenu(optionsMenu);
+	var menuItem = null;
+	
+	if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+		menuItem = new DwtMenuItem({parent:optionsMenu, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.PRINT].join("_")});
+		menuItem.setImage("Print");
+		menuItem.setText(ZmMsg.print);
+		menuItem.setData(ZmId.OP_PRINT, ZmId.OP_PRINT);
+		menuItem.addSelectionListener(new AjxListener(this, this._printListener));
 	}
 
-	if (optionsButton && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		optionsButton.setVisible(true); 
-
-		var m = new DwtMenu({parent:optionsButton});
-		optionsButton.setMenu(m);
-
-		var mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_HTML].join("_")});
-		mi.setImage("HtmlDoc");
-		mi.setText(ZmMsg.formatAsHtml);
-		mi.setData(ZmHtmlEditor.VALUE, Dwt.HTML);
-        mi.addSelectionListener(new AjxListener(this, this._formatListener));
-
-		mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_TEXT].join("_")});
-		mi.setImage("GenericDoc");
-		mi.setText(ZmMsg.formatAsText);
-		mi.setData(ZmHtmlEditor.VALUE, Dwt.TEXT);
-        mi.addSelectionListener(new AjxListener(this, this._formatListener));
+	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
+		menuItem = new DwtMenuItem({parent:optionsMenu, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.ATTACHMENT].join("_")});
+		menuItem.setImage("Attachment");
+		menuItem.setText(ZmMsg.addAttachment);
+		menuItem.setData(ZmId.OP_ATTACHMENT, ZmId.OP_ATTACHMENT);
+		menuItem.addSelectionListener(new AjxListener(this, this._attachmentListener));
 	}
 
-	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
+	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+		//add separator
+		menuItem = new DwtMenuItem({parent:optionsMenu, style: DwtMenuItem.SEPARATOR_STYLE});
+
+		menuItem = new DwtMenuItem({parent:optionsMenu, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_HTML].join("_")});
+		menuItem.setText(ZmMsg.formatAsHtml);
+		menuItem.setData(ZmHtmlEditor.VALUE, Dwt.HTML);
+		menuItem.addSelectionListener(new AjxListener(this, this._formatListener));
+
+		menuItem = new DwtMenuItem({parent:optionsMenu, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_TEXT].join("_")});
+		menuItem.setText(ZmMsg.formatAsText);
+		menuItem.setData(ZmHtmlEditor.VALUE, Dwt.TEXT);
+		menuItem.addSelectionListener(new AjxListener(this, this._formatListener));
+	}
 };
 
 ZmCalItemComposeController.prototype.showErrorMessage =

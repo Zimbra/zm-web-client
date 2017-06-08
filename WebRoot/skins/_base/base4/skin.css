@@ -463,39 +463,52 @@ BODY                                    {   margin:0px;     }
 .ZToolbar .ZToolbarButton:not(.ZDisabled) .ZToolbarButtonTable .ZWidgetIcon    {   fill: @PrimaryBrandingColor@ }
 
 .ZMenuItemTable TD:not(:empty)              {   padding: 0 @ToolbarButtonPaddingSize@   }
-.ZMenuItemTable TD:first-child              {   padding-left:0;    }
-.ZMenuItemTable TD:last-child               {   padding-right:0;   }
 
-/* This rule aligns all menu item text, if any one of the menu item has icon in the menu */
-.DwtMenu.ZHasIcon:not(.ZHasCheck) .ZMenuItem .ZMenuItemTable .ZLeftIcon:empty::after,
-.ActionMenu.ZHasIcon:not(.ZHasCheck) .ZMenuItem .ZMenuItemTable .ZLeftIcon:empty::after,
-.DwtMenu.ZHasCheck.ZHasIcon .ZMenuItem .ZMenuItemTable .ZLeftIcon:empty::after,
-.ActionMenu.ZHasCheck.ZHasIcon .ZMenuItem .ZMenuItemTable .ZLeftIcon:empty::after   {
-  content: " "; 
-  padding-left: @IconGutterSize@;
+/* Following rules aligns all menu items */
+
+/* Case: When menu has both `hasCheck` and `hasIcon` class */
+.DwtMenu.ZHasCheck.ZHasIcon .ZMenuItem.ZHasLeftIcon:not(.ZHasCheck) .ZMenuItemTable .ZCheckIcon,
+.DwtMenu.ZHasCheck.ZHasIcon .ZMenuItem.ZHasCheck:not(.ZHasLeftIcon) .ZMenuItemTable .ZWidgetIcon.ZLeftIcon {
+    display: none;
 }
 
-.DwtMenu.ZHasCheck:not(.ZHasIcon) .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty::after,
-.ActionMenu.ZHasCheck:not(.ZHasIcon) .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty::after,
-.DwtMenu.ZHasCheck.ZHasIcon .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty::after,
-.ActionMenu.ZHasCheck.ZHasIcon .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty::after  {
-  content: " "; 
-  padding-left: @IconGutterSize@;
+.DwtMenu.ZHasCheck.ZHasIcon .ZMenuItem:not(.ZHasCheck):not(.ZHasLeftIcon) .ZMenuItemTable .ZWidgetIcon:empty::after,
+.DwtMenu.ZHasCheck.ZHasIcon .ZMenuItem.ZHasCheck .ZMenuItemTable .ZCheckIcon:empty::after {
+    content: " "; 
+    padding-left: @IconGutterSize@;
 }
 
-.DwtMenu.ZHasCheck .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty,
-.ActionMenu.ZHasCheck .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty {
-    padding-right: @ToolbarButtonPaddingSize@
+.DwtMenu.ZHasCheck.ZHasIcon .ZMenuItem:not(.ZHasCheck):not(.ZHasLeftIcon) .ZMenuItemTable .ZWidgetIcon:empty,
+.DwtMenu.ZHasCheck.ZHasIcon .ZMenuItem.ZHasCheck .ZMenuItemTable .ZCheckIcon:empty {
+    padding: 0 @ToolbarButtonPaddingSize@;
 }
 
-.DwtMenu.ZHasIcon .ZMenuItem .ZMenuItemTable .ZWidgetIcon:empty,
-.ActionMenu.ZHasIcon .ZMenuItem .ZMenuItemTable .ZWidgetIcon:empty {
-    padding: 0 @ToolbarButtonPaddingSize@
+/* Case: When menu has only `hasCheck` class */
+.DwtMenu.ZHasCheck:not(.ZHasIcon) .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty::after {
+    content: " "; 
+    padding-left: @IconGutterSize@;
 }
 
-.DwtMenu.ZHideCheckIconMenuType .ZCheckIcon,
-.ActionMenu.ZHideCheckIconMenuType .ZCheckIcon { 
-    display: none; 
+.DwtMenu.ZHasCheck:not(.ZHasIcon) .ZMenuItem .ZMenuItemTable .ZCheckIcon:empty {
+    padding: 0 @ToolbarButtonPaddingSize@;
+}
+
+.DwtMenu.ZHasCheck:not(.ZHasIcon) .ZMenuItem .ZMenuItemTable .ZLeftIcon {
+    display: none;
+}
+
+/* Case: When menu has only `hasIcon` class */
+.DwtMenu.ZHasIcon:not(.ZHasCheck) .ZMenuItem .ZMenuItemTable .ZLeftIcon:empty::after {
+    content: " "; 
+    padding-left: @IconGutterSize@;
+}
+
+.DwtMenu.ZHasIcon:not(.ZHasCheck) .ZMenuItem .ZMenuItemTable .ZLeftIcon:empty {
+    padding: 0 @ToolbarButtonPaddingSize@;
+}
+
+.DwtMenu.ZHasIcon:not(.ZHasCheck) .ZMenuItem .ZMenuItemTable .ZCheckIcon {
+    display: none;
 }
 
 #ENDIF
