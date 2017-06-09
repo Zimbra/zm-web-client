@@ -52,9 +52,9 @@ ZmAppChooser = function(params) {
 	this._buttonListener = new AjxListener(this, this._handleButton);
     this._deletedButtons = [];
     this._initMoreButton();
-	var buttons = params.buttons;
-	for (var i = 0; i < buttons.length; i++) {
-		var id = buttons[i];
+	this._defaultButtons =  params.buttons;
+	for (var i = 0; i < this._defaultButtons.length; i++) {
+		var id = this._defaultButtons[i];
 		if (id == ZmAppChooser.SPACER) {
 			this.addSpacer(ZmAppChooser.SPACER_HEIGHT);
 		} else {
@@ -108,7 +108,11 @@ function(menu){
                 item.setText(this._buttons[index].getText());
             }
         } else {
-            var mi = new ZmAppMenuItem({imageInfo: "CloseGray", parent:menu, style:DwtMenuItem.CASCADE_STYLE, id: index + "_menu"});
+            var menuItemParams = {parent:menu, style:DwtLabel.IMAGE_RIGHT, id: index + "_menu"};
+            if(this._defaultButtons.indexOf(index) < 0) {
+                menuItemParams["imageInfo"] =  "CloseGray";
+            }
+            var mi = new ZmAppMenuItem(menuItemParams);
             mi.setData(ZmOperation.MENUITEM_ID, index + "_menu" );
             mi.setData(Dwt.KEY_ID, index);
             mi.addSelectionListener(this._showTab.bind(this, index));
@@ -148,7 +152,7 @@ function(display){
             while (this._isTabOverflow(moreBtnContainerEl)){
                 //hide last visible tab if more button overFlow's
                 var lastVisibleTab = this.getLastVisibleTab();
-                lastVisibleTab.setVisible(false);
+                lastVisibleTab && lastVisibleTab.setVisible(false);
             }
         }
 };
@@ -435,9 +439,9 @@ ZmAppChooser.prototype.setSelected =
 function(id) {
     var oldBtn = this._buttons[this._selectedId];
 	if (this._selectedId && oldBtn) {
-        this.__markPrevNext(this._selectedId, false);
+		this.__markPrevNext(this._selectedId, false);
 		oldBtn.setSelected(false);
-    }
+	}
 
     if (this._moreTabsBtn.getVisible()) {
         var moreMenu = this._moreTabsBtn.getMenu();
