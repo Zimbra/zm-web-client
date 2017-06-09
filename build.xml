@@ -32,10 +32,6 @@
     <!-- zm-taglib -->
     <property name='taglib.dir' value='${this.zwc.basedir}/../zm-taglib'/>
     <property name='taglib.build.dir' value='${taglib.dir}/build'/>
-    
-    <!-- zm-timezones -->
-    <property name='timezones.dir' value='${this.zwc.basedir}/../zm-timezones'/>
-
 
     <property name='lib.dir' value='${this.zwc.basedir}/jars'/>
     <property name="jsdoctoolkit.dir" location="${lib.dir}/jsdoc-toolkit-2.3.0" />
@@ -172,7 +168,7 @@
 
     <!-- add build-ajax in dependency once zm-ajax built script is ivy based -->
     <target name="war"
-            depends="init,templates,timezones,images,styles,settings,copy-ajax,jam-files,compress"
+            depends="init,images,styles,settings,copy-ajax,jam-files,compress"
             description="Builds all dependencies and assembles the war file.">
         <antcall target="assemble-war"/>
     </target>
@@ -222,7 +218,7 @@
     </target>
 
     <target name="build-ajax">
-        <ant dir="${ajax.dir}" target="zm-ajax" inheritAll="false"/>
+        <ant dir="${ajax.dir}" target="jar" inheritAll="false"/>
     </target>
 
     <target name="assemble-war" depends="webxml-package-replace, resolve" description="Assembles the war file.  Assumes that all dependencies have been built.  Octopus/ZimbraWebClient/build.xml calls the war target, modifies files in ZimbraWebClient/build, and then calls this target.">
@@ -666,30 +662,30 @@
         </if>
     </target>
 
-    <target name='timezones' >
-        <property name='tz.data' value='${timezones.dir}/conf/timezones.ics'/>
-        <property name='tz.dir' value='${build.js.dir}/ajax/util'/>
-        <property name='tz.file' value='${tz.dir}/AjxTimezoneData.js'/>
+    <target name="timezones">
+        <!-- Download timezones zip -->
+        <ivy:install organisation="zimbra" module="zm-timezones" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="zip" />
 
-        <dependset>
-            <srcfilelist dir="." files='${tz.data}'/>
-            <targetfilelist dir='.' files='${tz.file}'/>
-        </dependset>
+        <unzip dest="${build.tmp.dir}/zm-timezones" overwrite="true">
+            <fileset dir="${build.tmp.dir}">
+                <include name="**/zm-timezones-*.zip"/>
+            </fileset>
+        </unzip>
 
-        <if>
-            <not>
-                <available file='${tz.file}'/>
-            </not>
-            <then>
-                <taskdef name='timezones'
-                         classname='com.zimbra.kabuki.tools.tz.GenerateDataTask'
-                         classpathref='class.path'
-                        />
+        <!-- Copy timezone related files to proper folders -->
+        <sync todir="${js.dir}/ajax/util">
+            <fileset dir="${build.tmp.dir}/zm-timezones/js"/>
+            <preserveintarget>
+                <include name="*.js"/>
+            </preserveintarget>
+        </sync>
 
-                <mkdir dir='${tz.dir}'/>
-                <timezones src='${tz.data}' dest='${tz.file}'/>
-            </then>
-        </if>
+        <sync todir="${web.dir}/messages">
+            <fileset dir="${build.tmp.dir}/zm-timezones/messages"/>
+            <preserveintarget>
+                <include name="*.properties"/>
+            </preserveintarget>
+        </sync>
     </target>
 
     <target name='i18n' >
@@ -713,7 +709,7 @@
 
                 <mkdir dir='${i18n.msgs.dir}'/>
                 <i18n destdir='${i18n.msgs.dir}'/>
-				<i18n destdir='${i18n.msgs.dir}' basename='L10nMsg' client='false' server='true'/>
+                <i18n destdir='${i18n.msgs.dir}' basename='L10nMsg' client='false' server='true'/>
             </then>
         </if>
     </target>
