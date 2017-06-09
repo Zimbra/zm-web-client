@@ -51,6 +51,7 @@ ZmTaskMultiView = function(params) {
 
 ZmTaskMultiView.prototype = new DwtComposite;
 ZmTaskMultiView.prototype.constructor = ZmTaskMultiView;
+ZmTaskMultiView.MIN_LISTVIEW_WIDTH = 200;
 
 ZmTaskMultiView.prototype.toString =
 function() {
@@ -212,93 +213,58 @@ function(newWidth, newHeight, force) {
 
 ZmTaskMultiView.prototype._sashCallback =
 function(delta) {
-
 	var readingPaneOnRight = this._controller.isReadingPaneOnRight();
+	var listView = this._taskListView;
+	var itemView = this._taskView;
+	var itemViewSize = itemView.getSize(true);
+	var listViewSize = listView.getSize(true);
 
-	if (delta > 0) {
-		if (readingPaneOnRight) {
-			// moving sash right
-			var minMsgViewWidth = this._taskView.getMinWidth();
-			var currentMsgWidth = this._taskView.getSize().x;
-			delta = Math.max(0, Math.min(delta, currentMsgWidth - minMsgViewWidth));
-			var newListWidth = ((AjxEnv.isIE) ? this._vertMsgSash.getLocation().x : this._taskListView.getSize().x) + delta;
+	var newListViewSize;
+	var newItemViewBounds;
 
-			if (delta > 0) {
-				this._taskListView.resetSize(newListWidth, Dwt.DEFAULT);
-				this._taskView.setBounds(this._taskView.getLocation().x + delta, Dwt.DEFAULT,
-										currentMsgWidth - delta, Dwt.DEFAULT);
-			} else {
-				delta = 0;
-			}
-		} else {
-			// moving sash down
-			var newMsgViewHeight = this._taskView.getSize().y - delta;
-			var minMsgViewHeight = this._taskView.getMinHeight();
-			if (newMsgViewHeight > minMsgViewHeight) {
-				this._taskListView.resetSize(Dwt.DEFAULT, this._taskListView.getSize().y + delta);
-				this._taskView.setBounds(Dwt.DEFAULT, this._taskView.getLocation().y + delta,
-										Dwt.DEFAULT, newMsgViewHeight);
-			} else {
-				delta = 0;
-			}
+	var absDelta = Math.abs(delta);
+
+	if (readingPaneOnRight) {
+		var currentListViewWidth = AjxEnv.isIE ? this._vertMsgSash.getLocation().x : listViewSize.x;
+		var currentItemViewWidth = itemViewSize.x;
+		delta = this._getLimitedDelta(delta, currentItemViewWidth, itemView.getMinWidth(), currentListViewWidth, ZmTaskMultiView.MIN_LISTVIEW_WIDTH);
+		if (!delta) {
+			return 0;
 		}
-	} else {
-		var absDelta = Math.abs(delta);
-
-		if (readingPaneOnRight) {
-			// moving sash left
-			if (!this._minMLVWidth) {
-				var firstHdr = this._taskListView._headerList[0];
-				var hdrWidth = firstHdr._width;
-				if (hdrWidth == "auto") {
-					var header = Dwt.byId(firstHdr._id);
-					hdrWidth = header && Dwt.getSize(header).x;
-				}
-				this._minMLVWidth = hdrWidth;
-			}
-
-			var currentWidth = ((AjxEnv.isIE) ? this._vertMsgSash.getLocation().x : this._taskListView.getSize().x);
-			absDelta = Math.max(0, Math.min(absDelta, currentWidth - this._minMLVWidth));
-
-			if (absDelta > 0) {
-				delta = -absDelta;
-				this._taskListView.resetSize(currentWidth - absDelta, Dwt.DEFAULT);
-				this._taskView.setBounds(this._taskView.getLocation().x - absDelta, Dwt.DEFAULT,
-										this._taskView.getSize().x + absDelta, Dwt.DEFAULT);
-			} else {
-				delta = 0;
-			}
-		} else {
-			// moving sash up
-			if (!this._minMLVHeight) {
-				var list = this._taskListView.getList();
-				if (list && list.size()) {
-					var item = list.get(0);
-					var div = document.getElementById(this._taskListView._getItemId(item));
-					this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT + (Dwt.getSize(div).y * 2);
-				} else {
-					this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT;
-				}
-			}
-
-			if (this.getSash().getLocation().y - absDelta > this._minMLVHeight) {
-				// moving sash up
-				this._taskListView.resetSize(Dwt.DEFAULT, this._taskListView.getSize().y - absDelta);
-				this._taskView.setBounds(Dwt.DEFAULT, this._taskView.getLocation().y - absDelta,
-										Dwt.DEFAULT, this._taskView.getSize().y + absDelta);
-			} else {
-				delta = 0;
-			}
+		newListViewSize = {width: currentListViewWidth + delta, height: Dwt.DEFAULT};
+		newItemViewBounds = {
+			left: itemView.getLocation().x + delta,
+			top: Dwt.DEFAULT,
+			width: currentItemViewWidth - delta,
+			height: Dwt.DEFAULT
+		};
+	}
+	else {
+		//reading pane on bottom
+		var currentListViewHeight = AjxEnv.isIE ? this._horizMsgSash.getLocation().y : listViewSize.y;
+		var currentItemViewHeight = itemViewSize.y;
+		delta = this._getLimitedDelta(delta, currentItemViewHeight, itemView.getMinHeight(), currentListViewHeight, this._getMinListViewHeight(listView));
+		if (!delta) {
+			return 0;
 		}
+		newListViewSize = {width: Dwt.DEFAULT, height: currentListViewHeight + delta};
+		newItemViewBounds = {
+			left: Dwt.DEFAULT,
+			top: itemView.getLocation().y + delta,
+			width: Dwt.DEFAULT,
+			height: currentItemViewHeight - delta
+		};
 	}
 
-	if (delta) {
-		this._taskListView._resetColWidth();
-		if (readingPaneOnRight) {
-			this._vertSashX = this._vertMsgSash.getLocation().x;
-		} else {
-			this._horizSashY = this._horizMsgSash.getLocation().y;
-		}
+	listView.resetSize(newListViewSize.width, newListViewSize.height);
+	itemView.setBounds(newItemViewBounds.left, newItemViewBounds.top, newItemViewBounds.width, newItemViewBounds.height);
+
+	listView._resetColWidth();
+	if (readingPaneOnRight) {
+		this._vertMsgSashX = this._vertMsgSash.getLocation().x + delta;
+	}
+	else {
+		this._horizSashY = this._horizMsgSash.getLocation().y + delta;
 	}
 
 	return delta;
@@ -328,4 +294,45 @@ ZmTaskMultiView.prototype.set =
 function(list, sortField) { 
 	this._taskListView.set(list, sortField);
 	this.isStale = false;
+};
+
+/* Get minimum heiht of list */
+ZmTaskMultiView.prototype._getMinListViewHeight =
+function(listView) {
+	if (this._minListViewHeight) {
+		return this._minListViewHeight;
+	}
+
+	var list = listView.getList();
+	if (!list || !list.size()) {
+		return DwtListView.HEADERITEM_HEIGHT;
+	}
+	//only cache it if there's a list, to prevent a subtle bug of setting to just the header height if
+	//user first views an empty list.
+	var item = list.get(0);
+	var div = document.getElementById(listView._getItemId(item));
+	this._minListViewHeight = DwtListView.HEADERITEM_HEIGHT + Dwt.getSize(div).y * 2;
+	return this._minListViewHeight;
+};
+
+/**
+ * returns the delta after limiting it based on minimum view dimension (which is either width/height - this code doesn't care)
+ *
+ * @param delta
+ * @param currentItemViewDimension
+ * @param minItemViewDimension
+ * @param currentListViewDimension
+ * @param minListViewDimension
+ * @returns {number}
+ * @private
+ */
+ZmTaskMultiView.prototype._getLimitedDelta =
+function(delta, currentItemViewDimension, minItemViewDimension, currentListViewDimension, minListViewDimension) {
+	if (delta > 0) {
+		// moving sash right or down
+		return Math.max(0, Math.min(delta, currentItemViewDimension - minItemViewDimension));
+	}
+	// moving sash left or up
+	var absDelta = Math.abs(delta);
+	return -Math.max(0, Math.min(absDelta, currentListViewDimension - minListViewDimension));
 };
