@@ -502,14 +502,12 @@ and the container element is replaced with that control.
 				</tr>
 				<$ } $>
 
-				<$ if (data.isEnabled(ZmSetting.USE_SEND_MSG_SHORTCUT)) { $>
-					<tr>
+				<tr>
 						<td>&nbsp;</td>
 						<td class='ZOptionsField'>
 							<div id='${id}_USE_SEND_MSG_SHORTCUT' tabindex=0 />
 						</td>
-					</tr>
-				<$ } $>
+				</tr>
 
 				<tr>
 					<td>&nbsp;</td>
