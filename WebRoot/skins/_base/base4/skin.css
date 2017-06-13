@@ -899,6 +899,10 @@ we are hiding element with that class
     fill: @IconImDnD@;
 }
 
+div.newTaskBanner div.ImgAdd-svg .svg-icon {
+    fill: @PrimaryBrandingColor@
+}
+
 /*Adding background for svg's with gradient via css background rule
   This can be removed once we have support for gradient's to be rendered with <use>
 */
@@ -1065,4 +1069,12 @@ div.ZmHtmlEditor .TxtAreaDrag {
 .ZmConvDoublePaneView .Row-selected .ZmListFlagsWrapper,
 .ZmConvDoublePaneView .Row-selected .ZmMsgListDate {
     background-color: @ListItemBgColor-selected@ !important;
+}
+
+.newTaskBanner {
+    @TaskListViewNewTaskBannerWrapper@
+}
+
+div#_upComingTaskListHdr div.DwtListHeaderItem-label {
+    @TaskListViewHeaderItemLabel@
 }

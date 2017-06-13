@@ -1982,14 +1982,40 @@ div.CompDragArea * {
 	padding:5px;
 }
 
-.newTaskBanner {
-	@InactiveCursor@
-	color:rgb(120, 111, 91);
-	padding:5px 0px;
+div.newTaskBanner div.ImgAdd-svg {
+	@TaskListViewAddNewTaskIcon@
 }
 
-.newTaskBannerSep {
-	border-bottom:2px solid #AAA;
+.ZmTaskMultiView .DwtListView  .RowDouble {
+	@TaskReadingPaneRight-ListViewItem@
+}
+
+.ZmTaskMultiView .DwtListView .RowDouble td {
+	@TaskReadingPaneRight-ListViewItemCheckboxCell@
+}
+
+.ZmTaskMultiView .DwtListView  .RowDouble .TaskSubject {
+	@TaskReadingPaneRight-ListViewItemSubject@
+}
+
+.ZmTaskMultiView .DwtListView  .RowDouble .TaskDate {
+	@TaskReadingPaneRight-ListViewItemDate@
+}
+
+.ZmTaskMultiView .DwtListView .BottomRow {
+	@TaskReadingPaneRight-ListViewItemBottomContainer@
+}
+
+.ZmTaskMultiView .DwtListView .BottomRow .IconOuterWrapper {
+	@TaskReadingPaneRight-ListViewItemBottomIconOuterWrapper@
+}
+
+.ZmTaskMultiView .DwtListView .BottomRow .IconInnerWrapper {
+	@TaskReadingPaneRight-ListViewItemBottomIconInnerWrapper@
+}
+
+.ZmTaskMultiView .DwtListView .RowDouble > table > tbody >tr > td > div {
+	@TaskReadingPaneRight-ListViewItemCheckboxIconContainer@
 }
 
 .ZmEditContactViewOtherCalendar {
@@ -2220,10 +2246,6 @@ div.CompDragArea * {
 .ZmCompletedtask TD {
 	text-decoration:line-through;
 	color:#999;
-}
-
-.ZmOverduetask TD {
-	color:red;
 }
 
 .ZmOverdueCompletedtask TD {

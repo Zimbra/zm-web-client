@@ -243,9 +243,8 @@ function(sechdr) {
         htmlArr[idx++] = "<div id='_upComingTaskListHdr'>";
         htmlArr[idx++] = "<table width=100% class='DwtListView-Column'><tr>";
         this.dId = Dwt.getNextId();
-        htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label ";
-        htmlArr[idx++] = ZmTaskListView.SEC_COLOR[sechdr];
-        htmlArr[idx++] = "' style='padding:0px 0px 2px 2px; font-weight:bold;' id='";
+        htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label";
+        htmlArr[idx++] = "'id='";
         htmlArr[idx++] = this.dId;	// bug: 17653 - for QA
         htmlArr[idx++] = "'>";
         htmlArr[idx++] = ZmTaskListView.SEC_MSG_KEY[sechdr];
@@ -398,12 +397,9 @@ function(list, noResultsOk, doAdd) {
 			htmlArr[idx++] = "<td><div class='newTaskBanner' onclick='ZmTaskListView._handleOnClick(this)' id='";
 			htmlArr[idx++] = this.dId;	// bug: 17653 - for QA
 			htmlArr[idx++] = "'>";
+			htmlArr[idx++] = AjxImg.getImageHtml("Add");
 			htmlArr[idx++] = ZmMsg.createNewTaskHint;
 			htmlArr[idx++] = "</div></td>";
-		} else {
-			htmlArr[idx++] = "<td width=";
-			htmlArr[idx++] = hdr._width;
-			htmlArr[idx++] = ">&nbsp;</td>";
 		}
 	}
 	htmlArr[idx++] = "</tr></table>";
@@ -443,7 +439,7 @@ function(task) {
 };
 
 ZmTaskListView.prototype._getAbridgedCell =
-function(htmlArr, idx, item, field, colIdx, width, attr) {
+function(htmlArr, idx, item, field, colIdx, width, attr, className) {
 	var params = {};
 
 	htmlArr[idx++] = "<td";
@@ -455,7 +451,7 @@ function(htmlArr, idx, item, field, colIdx, width, attr) {
 	htmlArr[idx++] = " id='";
 	htmlArr[idx++] = this._getCellId(item, field, params);
 	htmlArr[idx++] = "'";
-	var className = this._getCellClass(item, field, params);
+	var className = className || this._getCellClass(item, field, params);
 	if (className) {
 		htmlArr[idx++] = " class='";
 		htmlArr[idx++] = className;
@@ -492,14 +488,14 @@ function(task, colIdx) {
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? "22" : "16";
 
 	// first row
-	htmlArr[idx++] = "<table width=100% class='TopRow'>";
+	htmlArr[idx++] = "<table width=100%>";
 	htmlArr[idx++] = "<tr id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, task.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
 
-    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_SUBJECT, colIdx);
+    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_SUBJECT, colIdx, '', '', 'TaskSubject');
 
-    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
+    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, '', 'TaskDate');
 
 	htmlArr[idx++] = "</tr></table>";
 
@@ -511,7 +507,7 @@ function(task, colIdx) {
 		htmlArr[idx++] = this.getColorForStatus(task.status);
 		htmlArr[idx++] = "' style='width:"+ task.pComplete + "%;'></div></div>";
 	}
-    htmlArr[idx++] = "</td><td width=75 align=right><table><tr>";
+    htmlArr[idx++] = "</td><td class='IconOuterWrapper'><table class='IconInnerWrapper'><tr>";
 
     idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_TAG, colIdx, width);
     if(task.priority == ZmCalItem.PRIORITY_HIGH || task.priority == ZmCalItem.PRIORITY_LOW) {
