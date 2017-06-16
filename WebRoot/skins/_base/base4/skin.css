@@ -511,6 +511,11 @@ BODY                                    {   margin:0px;     }
     display: none;
 }
 
+/* Hide CheckIcon for menus */
+.DwtMenu.ZHideCheckIconMenuType .ZCheckIcon { 
+    display: none;
+}
+
 #ENDIF
 
 #IFDEF MSIE_LOWER_THAN_9
