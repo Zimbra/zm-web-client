@@ -2313,7 +2313,9 @@ function(state, force) {
 			bwoId:			id +  ZmId.CMP_BWO_SPAN,
 			addressTypes:	ai.addressTypes,
 			participants:	ai.participants,
-			isOutDated:		msg.invite && msg.invite.isEmpty()
+			isOutDated:     msg.invite && msg.invite.isEmpty(),
+			toAddrs:        msg.getAddresses(AjxEmailAddress.TO).getArray(),
+			fromAddrs:      msg.getAddresses(AjxEmailAddress.FROM).getArray(),
 		});
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-expanded", subs);
 	}
@@ -2329,6 +2331,9 @@ function(state, force) {
 			showMoreLink.notoggle = 1;
 		}
 	}
+
+	//setup listeners for expanding/collapsing mail address container
+	this._msgView._setupMailAdressExpandCollapse();
 };
 
 /**
