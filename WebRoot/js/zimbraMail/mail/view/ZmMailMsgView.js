@@ -1502,12 +1502,14 @@ function(msg, container, doNotClearBubbles) {
 		attachmentsCount:	attachmentsCount,
 		bwo:                ai.bwo,
 		bwoAddr:            ai.bwoAddr,
-		bwoId:              ZmId.getViewId(this._viewId, ZmId.CMP_BWO_SPAN, this._mode)
+		bwoId:              ZmId.getViewId(this._viewId, ZmId.CMP_BWO_SPAN, this._mode),
+		toAddrs:            msg.getAddresses(AjxEmailAddress.TO).getArray(),
+		fromAddrs:          msg.getAddresses(AjxEmailAddress.FROM).getArray(),
 	};
 
 	if (msg.isHighPriority || msg.isLowPriority) {
 		subs.priority =			msg.isHighPriority ? "high" : "low";
-		subs.priorityImg =		msg.isHighPriority ? "ImgPriorityHigh_list" : "ImgPriorityLow_list";
+		subs.priorityImg =		msg.isHighPriority ? "PriorityHigh" : "PriorityLow";
 		subs.priorityDivId =	ZmId.getViewId(this._view, ZmId.MV_PRIORITY);
 	}
 
@@ -1572,6 +1574,11 @@ function(msg, container, doNotClearBubbles) {
 		topToolbar.reparentHtmlElement(container);
 		topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 		this._headerTabGroup.addMember(topToolbar);
+	}
+
+	//setup listeners for expanding/collapsing mail address container, if it's not invite header
+	if(!invite) {
+		this._setupMailAdressExpandCollapse();
 	}
 };
 
@@ -2851,3 +2858,30 @@ function(check) {
 ZmMailMsgView.prototype._getIframeTitle = function() {
 	return AjxMessageFormat.format(ZmMsg.messageTitle, this._msg.subject);
 };
+
+/**
+ * Setup listeners for mail addresses expand/collapse feature
+ */
+ZmMailMsgView.prototype._setupMailAdressExpandCollapse = function() {
+	this._addressInfoExpanded = Dwt.byId(this._hdrTableId + "_info_expanded");
+	this._addressInfoCollapsed = Dwt.byId(this._hdrTableId + "_info_collapsed");
+	this._addressInfoExpandBtn = Dwt.byId(this._hdrTableId + "_info_expand_btn");
+	this._addressInfoCollapseBtn = Dwt.byId(this._hdrTableId + "_info_collapse_btn");
+	//setup listeners
+	Dwt.setHandler(this._addressInfoExpandBtn, DwtEvent.ONCLICK, this._expandMailAdressContainer.bind(this, false));
+	Dwt.setHandler(this._addressInfoCollapseBtn, DwtEvent.ONCLICK, this._expandMailAdressContainer.bind(this, true));
+	//collapse address container initially
+	this._expandMailAdressContainer(true);
+}
+
+
+/**
+ * @description Expand/collapse detailed address container in mail header
+ * @param collapse: true | false
+ * If collapse = true, collapse the widget else expant it
+ */
+ZmMailMsgView.prototype._expandMailAdressContainer = function(collapse, event) {
+	collapse = !!collapse; //casting to boolean
+	this._addressInfoExpanded && Dwt.setVisible(this._addressInfoExpanded, collapse !== true);
+	this._addressInfoCollapsed && Dwt.setVisible(this._addressInfoCollapsed, collapse === true);
+}
