@@ -392,7 +392,7 @@ function() {
 
 	var menu = this._searchMenu = new DwtMenu({
 				parent:		this._button[ZmSearchToolBar.TYPES_BUTTON],
-				className:	"ActionMenu ZHideCheckIconMenuType ZTopSearchPopupMenu",
+				className:	"DwtMenu ActionMenu ZHideCheckIconMenuType ZTopSearchPopupMenu",
 				id:			ZmId.getMenuId(ZmId.SEARCH)
 			});
 	var mi;
