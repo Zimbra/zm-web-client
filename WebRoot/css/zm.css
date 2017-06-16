@@ -696,20 +696,9 @@ INPUT[type="text"].search_input-expanded:focus {
 
 .MsgHeaderTable {}
 
-.MsgHeaderContactImage, .InvHeaderContactImage {
-	width:48px;
-	margin:4px;
-	@MailMsgHeaderImageRadius@
-}
-
 .MsgHeaderTable>TBODY>TR>TD, 
 .InvHeaderTable>TBODY>TR>TD {
 	vertical-align:top;
-}
-
-.MsgHeaderContactContainer, .InvHeaderContactContainer {
-	width:56px;
-	text-align:center;
 }
 
 /* Container for the header of the message */
@@ -719,9 +708,7 @@ INPUT[type="text"].search_input-expanded:focus {
 }
 
 .InvHeaderTable .date {
-	@Text-light@
-	padding: @MailViewInnerSpacing@ @MailViewGutterSpace@;
-    margin: @MailViewGutterSpace@ @MailViewGutterSpace@ 0;
+	@MailMsgHeaderDate@
 }
 
 .InvHeaderDiv .InvHeaderPropertySheetWrapper {
@@ -766,13 +753,10 @@ INPUT[type="text"].search_input-expanded:focus {
 .ZmMailMsgView .InvHeaderDiv .LabelColName,
 .ZmMailMsgCapsuleView .InvHeaderDiv .LabelColName {
 	@FontSize-big@
-	padding-bottom: @MailViewGutterSpace@;
-	line-height: 1;
 }
 
 .InvHeaderTable {
 	@MailInvHeaderLight@
-	width:100%;
 }
 
 .ZmConvDoublePaneView .calendar_view, 
@@ -900,33 +884,27 @@ div.AttachmentImgContainer {
 
 .ZmMailMsgView .LabelColValue, 
 .ZmMailMsgCapsuleView .LabelColValue {
-	@FontSize-big@
-	vertical-align: top;
-	line-height: 1.5;
-	white-space:normal;
-	padding:0 0 5px 0;
+	@MailMsgHeaderValue@
 }
 
 .ZmMailMsgView .SubjectCol {
 	@MailMsgHeaderText@
 }
 
+.ZmMailMsgView .MsgPriorityImg {
+	@MailMsgHeaderPriorityImg@
+}
+
 .ZmMailMsgView .MsgHeaderTable .info {
-	@ActiveCursor@
-	white-space:nowrap;
-	@TextSelection@
-	padding: @MailViewGutterSpace@ @MailViewGutterSpace@ @MailViewInnerSpacing@;
-	margin: @MailViewInnerSpacing@ @MailViewGutterSpace@ 0;
+	@MailMsgHeaderAddress@
 }
 
 .ZmMailMsgView .MsgHeaderTable .date {
-	padding: 0 @MailViewGutterSpace@;
-	margin: 0 @MailViewGutterSpace@;
-	@Text-light@
+	@MailMsgHeaderDate@
 }
 
 .ZmMailMsgView div.MsgBody {
-	padding: @MailViewInnerSpacing@ @MailViewGutterSpace@;
+	padding: 0 @MailViewGutterSpace@;
 }
 
 /* ??? USE? */
@@ -1041,7 +1019,6 @@ div.AttachmentImgContainer {
 }
 
 .Conv2Messages .InvHeaderTable {
-	background-color:@MailMsgBkgdColor@;
 	margin-top:0;
 }
 
@@ -1245,8 +1222,7 @@ div.AttachmentImgContainer {
 .ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble-selected:not(.TagBubble) *,
 .ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble-actioned:not(.TagBubble),
 .ZmMailMsgCapsuleView .LabelColValue.InLineList .addrBubble-actioned:not(.TagBubble) * {
-	display: inline-block;
-	vertical-align: top;
+	width: auto;
 }
 
 .ZmMailMsgView .LabelColValue.InLineList .addrBubble:not(.TagBubble):not(:last-of-type)::after,
@@ -1286,6 +1262,18 @@ div.AttachmentImgContainer {
     font-size: 1.18rem;
     line-height: 1.27;
     padding: 0;
+}
+
+.Conv2MsgHeader .info-collapsed TABLE TD,
+.MsgHeaderTable .info-collapsed TABLE TD {
+	@MailAddressCollapsedCell@
+}
+
+.Conv2MsgHeader .info-collapsed TABLE TD.InfoLabel,
+.MsgHeaderTable .info-collapsed TABLE TD.InfoLabel,
+.Conv2MsgHeader .info TABLE TD.InfoLabel,
+.MsgHeaderTable .info TABLE TD.InfoLabel {
+	@MailAddressLabelCell@
 }
 
 /* ??? MOVE ME */
