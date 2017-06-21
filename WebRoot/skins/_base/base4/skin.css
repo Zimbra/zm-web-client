@@ -976,11 +976,11 @@ div.ImgLoader-view {
 }
 
 /* Custom spacing between cells in mail attachment container */
-.ZmMailAttachmentsTable > TBODY > TR > TD {
+.ZmAttachmentsTable > TBODY > TR > TD {
     padding-left: @MailViewGutterSpace@
 }
 
-.ZmMailAttachmentsTable > TBODY > TR > TD:first-of-type {
+.ZmAttachmentsTable > TBODY > TR > TD:first-of-type {
     padding-left: 0;
 }
 
@@ -1078,4 +1078,42 @@ div.ZmHtmlEditor .TxtAreaDrag {
 
 #_upComingTaskListHdr .DwtListHeaderItem-label {
     @TaskListViewHeaderItemLabel@
+}
+
+/*Circular Progress bar styling*/
+svg.progress-circle {
+	@FullWidth@
+}
+
+svg.progress-circle text {
+	fill: @CircularProgressBarTextColor@;
+}
+
+svg.progress-circle circle.bg {
+	stroke:@CircularProgressBarBg@;
+}
+
+svg.progress-circle circle.progress {
+	stroke:@CircularProgressBarActiveBg@;
+	transition: stroke-dashoffset .5s ease-out;
+}
+
+svg.progress-circle.tick-inside {
+	fill:@CircularProgressBarActiveBg@;
+}
+
+.Row-selected svg.progress-circle .bg {
+	stroke:@CircularProgressBarInverseBg@;
+}
+
+.Row-selected svg.progress-circle .progress {
+	stroke:@CircularProgressBarInverseActiveBg@;
+}
+
+.Row-selected svg.progress-circle text {
+	fill: @CircularProgressBarInverseTextColor@;
+}
+
+.Row-selected  svg.progress-circle.tick-inside {
+	fill:@CircularProgressBarInverseTextColor@;
 }
