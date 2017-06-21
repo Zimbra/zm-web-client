@@ -38,7 +38,8 @@
 ZmTaskView = function(parent, posStyle, controller) {
 
 	var id = ZmId.getViewId(ZmId.VIEW_TASK, null, parent._htmlElId);
-	ZmCalItemView.call(this, parent, posStyle, controller, id);
+	var className = "ZmTaskView";
+	ZmCalItemView.call(this, parent, posStyle, controller, id, className);
 };
 
 ZmTaskView.prototype = new ZmCalItemView;
@@ -109,7 +110,8 @@ function(calItem) {
 		folder: appCtxt.getTree(ZmOrganizer.TASKS).getById(calItem.folderId),
 		folderLabel: ZmMsg.folder,
         isTask:true,
-        _infoBarId:this._infoBarId
+        _infoBarId:this._infoBarId,
+        task:calItem
 	};
 };
 
@@ -124,10 +126,11 @@ function(calItem) {
 	var subs = this._getSubs(calItem);
 	var editBtnCellId = this._htmlElId + "_editBtnCell";
 	this._hdrTableId = this._htmlElId + "_hdrTable";
+	this._tagCellId = this._htmlElId + "_tags_task";
 
-    var el = this.getHtmlElement();
+	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("tasks.Tasks#ReadOnlyView", subs);
-    this._setTags(calItem);
+	this._setTags();
 
 	// content/body
 	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
@@ -145,7 +148,7 @@ function(calItem) {
         if (mode === ZmMimeTable.TEXT_PLAIN) {
             bodyPart = AjxStringUtil.convertToHtml(bodyPart);
         }
-        this._makeIframeProxy({container: el, html:bodyPart, isTextMsg:(mode == ZmMimeTable.TEXT_PLAIN)});
+        this._makeIframeProxy({container: Dwt.byId(this._htmlElId + "_body"), html:bodyPart, isTextMsg:(mode == ZmMimeTable.TEXT_PLAIN)});
 	}
    } else {
      ZmCalItemView.prototype._renderCalItem.call(this, calItem);
@@ -158,10 +161,30 @@ function(calItem) {
 ZmTaskView.prototype._taskChangeListener =
 function(ev){
     if(ev.event == ZmEvent.E_TAGS || ev.type == ZmEvent.S_TAG) {
-        this._setTags(this._calItem);
+        this._setTags();
     }
 };
 
 ZmTaskView.prototype._getItemCountType = function() {
 	return ZmId.ITEM_TASK;
+};
+
+/**
+ * Set tags for tasks
+ * @private
+ */
+ZmTaskView.prototype._setTags = function() {
+	//use the helper to get the tags.
+	var tagsHtml = ZmTagsHelper.getTagsHtml(this._calItem, this);
+	this._setTagsHtml(tagsHtml);
+};
+
+/**
+ * Set tags html
+ * @param html
+ */
+ZmTaskView.prototype._setTagsHtml = function(html) {
+	var tagCell = Dwt.byId(this._tagCellId);
+	if (!tagCell) { return; }
+	tagCell.innerHTML = html;
 };
