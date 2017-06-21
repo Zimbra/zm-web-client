@@ -2192,6 +2192,122 @@ div.CompDragArea * {
 	overflow:hidden;
 }
 
+/* Task View style */
+.ZmTaskInfoView {
+	@TaskView@
+}
+
+.ZmReadingPaneBottom .ZmTaskInfoView {
+	@TaskViewBottomPane@
+}
+
+.ZmTaskInfoView .ZmTaskWrapper {
+	@TaskWrapper@
+}
+
+.ZmTaskInfoView .Object {
+	@Anchor@ 
+}
+
+.ZmTaskInfoView .Object-hover {
+	@Anchor-hover@
+}
+
+/* Task view header style */
+.ZmTaskHeader {
+	@TaskHeader@
+}
+
+.ZmTaskHeader > TABLE {
+	@FullWidth@
+}
+
+.ZmTaskHeader .ZmTaskHeaderRow {
+	@TaskHeaderRow@
+}
+
+.ZmTaskHeaderRow > DIV {
+	@TaskHeaderCell@
+}
+
+.ZmTaskHeaderRow .ZmTaskHeaderMain {
+	@TaskHeaderMain@
+}
+
+.ZmTaskHeaderMain .ZmTaskHeaderImage {
+	@TaskHeaderImageWrapper@
+}
+
+.ZmTaskHeaderImage .svg-icon,
+.ZmTaskHeaderImage .progress-circle {
+	@TaskHeaderImage@
+}
+
+.ZmTaskHeaderMain .ZmTaskHeaderInfo {
+	@TaskHeaderInfo@
+}
+
+.ZmTaskHeaderInfo .ZmTaskTitle:not(:empty) {
+	@TaskHeaderTitle@
+}
+
+.ZmTaskHeaderInfo .ZmTaskHeaderTags:not(:empty) {
+	@TaskHeaderTags@
+}
+
+.ZmTaskHeaderRow .ZmTaskHeaderMeta {
+	@TaskHeaderMeta@
+}
+
+.ZmTaskHeaderMeta > TABLE {
+	@TaskHeaderMetaTable@
+}
+
+.ZmTaskHeaderMeta .ZmTaskHeaderLocationIcon,
+.ZmTaskHeaderMeta .ZmTaskHeaderPriorityIcon {
+	@TaskHeaderMetaTableIcon@
+}
+
+.ZmTaskHeaderMeta .ZmTaskHeaderLocationName,
+.ZmTaskHeaderMeta .ZmTaskHeaderPriorityName {
+	@TaskHeaderMetaTableValue@
+}
+
+/* Task info/exception style */
+.ZmTaskInfoView .ZmTaskInfo:not(:empty) {
+	@TaskInfo@
+}
+
+.ZmContactInfo > TABLE {
+	@FullWidth@
+}
+
+/* Task content style  */
+.ZmTaskInfoView .ZmTaskContent {
+	@TaskContent@
+}
+
+.ZmTaskContent > TABLE {
+	@FullWidth@
+}
+
+.ZmTaskContent .ZmTaskRowWrapper {
+	@TaskRowWrapper@
+}
+
+.ZmTaskRowWrapper .ZmTaskRowLabel {
+	@TaskRowLabel@
+}
+
+.ZmTaskRowWrapper .ZmTaskRowValue {
+	@TaskRowValue@
+}
+
+.ZmTaskBody {
+	@TaskBody@
+}
+
+/*Task Edit style */
 .ZmTaskEditView {
 	@TaskEditView@
 }
@@ -2232,10 +2348,7 @@ div.CompDragArea * {
 }
 
 .ZmTaskProgress {
-	background-color:white;
-	border:1px solid #C5C5C5;
-	height:.9rem;
-	width:80px;
+	@FullWidth@
 }
 
 .ZmTaskProgress DIV {
@@ -6448,70 +6561,74 @@ a.ZmLinkDisabled {
     color: @AppC@;
 }
 
-/* Reading pane mail attachment styles */
-.ZmMailAttachmentsTable {
-	@MailAttachmentsTable@
+/* Attachments styles */
+.ZmAttachmentsTable {
+	@AttachmentsTable@
 }
 
-.ZmMailAttachmentItem {
-	@MailAttachmentItem@
+.ZmAttachmentItem {
+	@AttachmentItem@
 }
 
-.ZmMailAttachmentItem:hover,
-.ZmMailAttachmentItem:active,
-.ZmMailAttachmentItem:focus {
-	@MailAttachmentItemActive@
+.ZmAttachmentItem:hover,
+.ZmAttachmentItem:active,
+.ZmAttachmentItem:focus {
+	@AttachmentItemActive@
 }
 
-.ZmMailAttachmentIcon,
-.ZmMailAttachmentIcon svg.svg-icon {
-	@MailAttachmentIcon@
+.ZmAttachmentIcon,
+.ZmAttachmentIcon svg.svg-icon {
+	@AttachmentIcon@
 }
 
-.ZmMailAttachmentMetaInfo {
-	@MailAttachmentMetaInfo@
+.ZmAttachmentCheckbox {
+	@AttachmentCheckbox@
 }
 
-.ZmMailAttachmentMetaInfo > * {
+.ZmAttachmentMetaInfo {
+	@AttachmentMetaInfo@
+}
+
+.ZmAttachmentMetaInfo > * {
 	display: inline-block;
 }
 
-.ZmMailAttachmentFileName {
-	@MailAttachmentFileName@
+.ZmAttachmentFileName {
+	@AttachmentFileName@
 }
 
-.ZmMailAttachmentFileName a.AttLink {
-	@MailAttachmentFileText@
+.ZmAttachmentFileName a.AttLink {
+	@AttachmentFileText@
 }
 
-.ZmMailAttachmentFileSize {
-	@MailAttachmentFileSize@
+.ZmAttachmentFileSize {
+	@AttachmentFileSize@
 }
 
-.ZmMailAttachmentLinks {
-	@MailAttachmentLinks@	
+.ZmAttachmentLinks {
+	@AttachmentLinks@	
 }
 
-.ZmMailAttachmentLinks a.AttLink {
-	@MailAttachmentLinksText@
+.ZmAttachmentLinks a.AttLink {
+	@AttachmentLinksText@
 }
 
-.ZmMailAttachmentItem:hover .ZmMailAttachmentLinks,
-.ZmMailAttachmentItem:active .ZmMailAttachmentLinks,
-.ZmMailAttachmentItem:focus .ZmMailAttachmentLinks {
+.ZmAttachmentItem:hover .ZmAttachmentLinks,
+.ZmAttachmentItem:active .ZmAttachmentLinks,
+.ZmAttachmentItem:focus .ZmAttachmentLinks {
 	opacity: 1;
 }
 
-.ZmMailAttachmentsAllTable {
-	@MailAttachmentsAllTable@
+.ZmAttachmentsAllTable {
+	@AttachmentsAllTable@
 }
 
-.ZmMailAttachmentsAllTable TD {
-	@MailAttachmentsAllItem@
+.ZmAttachmentsAllTable TD {
+	@AttachmentsAllItem@
 }
 
-.ZmMailAttachmentsAllTable TD a.AttLink {
-	@MailAttachmentsAllText@
+.ZmAttachmentsAllTable TD a.AttLink {
+	@AttachmentsAllText@
 }
 
 /* Create Contact Group dialog */
@@ -6649,7 +6766,7 @@ a.ZmLinkDisabled {
 }
 
 .ZmContactRowWrapper .ZmContactRowLabel {
-	@ContactRowWLabel@
+	@ContactRowLabel@
 }
 
 .ZmContactRowWrapper .ZmContactRowValueWrapper {

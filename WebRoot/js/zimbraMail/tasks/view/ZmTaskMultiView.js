@@ -110,6 +110,15 @@ function() {
         tlv.setSortByAsc(ZmItem.F_DATE, true);
     }
 
+    //conditionally add class to view based on reading pane
+    if(readingPaneEnabled) {
+        this.condClassName(readingPaneOnRight, "ZmReadingPaneRight", "ZmReadingPaneBottom");
+    } else {
+        ["ZmReadingPaneRight", "ZmReadingPaneBottom"].forEach(function(cls) {
+            this.delClassName(cls);
+        }.bind(this));
+    }
+
     tv.noTab = !readingPaneEnabled || AjxEnv.isIE;
 	var sz = this.getSize();
 	this._resetSize(sz.x, sz.y, true);
