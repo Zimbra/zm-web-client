@@ -304,6 +304,7 @@ function() {
 								elements:	elements,
 								controller:	this,
 								callbacks:	callbacks,
+								isAppView:	true,
 								tabParams:	this._getTabParams()});
 		this._initializeTabGroup();
 	}
