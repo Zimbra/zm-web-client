@@ -2019,7 +2019,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 
 	var attColumns = (this._controller.isReadingPaneOn() && this._controller.isReadingPaneOnRight()) ? 1 : ZmMailMsgView.ATTC_COLUMNS;
 	var dividx = idx;	// we might get back here
-	htmlArr[idx++] = "<table class='ZmMailAttachmentsTable' id='" + this._attLinksId + "_table' border=0 cellpadding=0 cellspacing=0>";
+	htmlArr[idx++] = "<table class='ZmAttachmentsTable' id='" + this._attLinksId + "_table' border=0 cellpadding=0 cellspacing=0>";
 
 	var attLinkIds = [];
 	var rows = 0;
@@ -2035,14 +2035,14 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 		}
 
 		htmlArr[idx++] = "<td>";
-		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmMailAttachmentItem'><tr>";
-		htmlArr[idx++] = "<td class='ZmMailAttachmentIcon'>";
+		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmAttachmentItem'><tr>";
+		htmlArr[idx++] = "<td class='ZmAttachmentIcon'>";
 		htmlArr[idx++] = AjxImg.getImageHtml({
 			imageName: att.linkIcon,
 			altText: ZmMsg.attachment
 		});
-		htmlArr[idx++] = "</td><td class='ZmMailAttachmentMetaInfo'>";
-		htmlArr[idx++] = "<div class='ZmMailAttachmentFileName'>"; //Filename wrapper
+		htmlArr[idx++] = "</td><td class='ZmAttachmentMetaInfo'>";
+		htmlArr[idx++] = "<div class='ZmAttachmentFileName'>"; //Filename wrapper
 		if (appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
 			// if attachments are blocked, just show the label
 			htmlArr[idx++] = att.label;
@@ -2076,20 +2076,20 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 				htmlArr[idx++] = link;
 			}
 		}
-		htmlArr[idx++] = "</div>"; //close `ZmMailAttachmentFileName` class
+		htmlArr[idx++] = "</div>"; //close `ZmAttachmentFileName` class
 		// add any discretionary links depending on the attachment and what's enabled
 		var linkCount = 0;
 		var vCardLink = (att.links.vcard && !appCtxt.isWebClientOffline());
 		if (!appCtxt.isExternalAccount() && (att.size || att.links.html || vCardLink || att.links.download || att.links.briefcase || att.links.importICS)) {
 			// size
-			htmlArr[idx++] = "<div class='ZmMailAttachmentFileSize'>"; //filesize wrapper
+			htmlArr[idx++] = "<div class='ZmAttachmentFileSize'>"; //filesize wrapper
 			if (att.size) {
 				htmlArr[idx++] = "(";
 				htmlArr[idx++] = att.size;
 				htmlArr[idx++] = ")";
 			}
-			htmlArr[idx++] = "</div>"; //close `ZmMailAttachmentFileSize`
-			htmlArr[idx++] = "<div class='ZmMailAttachmentLinks'>"; //attachment links wrapper
+			htmlArr[idx++] = "</div>"; //close `ZmAttachmentFileSize`
+			htmlArr[idx++] = "<div class='ZmAttachmentLinks'>"; //attachment links wrapper
 			// convert to HTML
 			if (att.links.html && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
 				var params = {
@@ -2204,7 +2204,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 					}
 				}
 			}
-			htmlArr[idx++] = "</div>"; //close `ZmMailAttachmentLinks`
+			htmlArr[idx++] = "</div>"; //close `ZmAttachmentLinks`
 		}
 
 		htmlArr[idx++] = "</td></tr></table>";
