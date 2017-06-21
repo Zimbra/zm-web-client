@@ -40,12 +40,15 @@
  * 
  * @private
  */
-ZmCalItemView = function(parent, posStyle, controller, id) {
+ZmCalItemView = function(parent, posStyle, controller, id, className) {
 	if (arguments.length == 0) return;
 
 	params = {parent: parent, posStyle: posStyle, controller: controller};
 	if (id) {
 		params.id = id;
+	}
+	if (className) {
+		params.className = className;
 	}
 	ZmMailMsgView.call(this, params);
 };

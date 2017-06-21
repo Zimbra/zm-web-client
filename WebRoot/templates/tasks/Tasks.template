@@ -8,48 +8,134 @@
 </template>
 
 <template id='tasks.Tasks#ReadOnlyView'>
-	<div class='MsgHeaderTable'>
-	<div class='SubjectCol LabelColValue' style="margin-left:5px;" id='zv__TKV__<$=Dwt.getNextId()$>__su'><$= data.subject $></div>
-	<table role="presentation" id='${id}_hdrTable' class="ZPropertySheet" cellspacing="6" style="margin-left:5px;">
-
-		<$ if (data.location) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.location, val:data.location, id:'__lo'}) $><$ } $>
-		<$ if (data.startDate) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.startDate, val:data.startDate, id:'__sd'}) $><$ } $>
-		<$ if (data.dueDate) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.dueDate, val:data.dueDate, id:'__ed'}) $><$ } $>
-		<$ if (data.priority) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.priority, val:data.priority, id:'__pr'}) $><$ } $>
-		<$ if (data.status) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.status, val:data.status, id:'__st'}) $><$ } $>
-		<$ if (data.pComplete) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.completed, val:data.pComplete+'%', id:'__pc'}) $><$ } $>
-		<$ if (data.alarm) { $><$= AjxTemplate.expand("tasks.Tasks#ReminderEntry", {lbl:ZmMsg.reminder, val1:data.remindDate, val2:data.remindTime, id:'__al' }) $><$ } $>
-
-		<!-- exception warning -->
-		<$ if (data.isException) { $>
-		<tr valign='center'>
-			<td colspan=100>
-				<table role="presentation">
-					<tr>
-						<td><$= AjxImg.getImageHtml("ApptException") $></td>
-						<td><b><$= ZmMsg.apptExceptionNote$></b></td>
-					</tr>
+	<div class="ZmTaskInfoView">
+		<div class="ZmTaskWrapper">
+			<div class="ZmTaskHeader">
+				<div class="ZmTaskHeaderRow headerRow">
+					<div class="ZmTaskHeaderMain">
+						<table role="presentation">
+							<tbody>
+								<tr>
+									<td class="ZmTaskHeaderImage">
+										<$= AjxImg.getCircularProgressBar(data.pComplete) $>
+									</td>
+									<td class="ZmTaskHeaderInfo rowValue">
+										<div class="ZmTaskTitle" id='zv__TKV__<$=Dwt.getNextId()$>__su'>
+											<$= data.subject $>
+										</div>
+										<div class="ZmTaskHeaderTags" id='${id}_tags_task'></div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="ZmTaskHeaderMeta rowType">
+						<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+							<tbody>
+								<tr id='zv__TKV__<$=Dwt.getNextId()$>__lo'>
+									<td class="ZmTaskHeaderLocationIcon">
+										<$= AjxImg.getImageHtml({
+											imageName: data.folder.getIconWithColor(),
+											altText: ZmMsg.locationLabel
+										}) $>
+									</td>
+									<td class="ZmTaskHeaderLocationName"><$= data.folder.getName() $></td>
+								</tr>
+							</tbody>
+						</table>
+						<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+							<tbody>
+								<tr id='zv__TKV__<$=Dwt.getNextId()$>__pr'>
+									<td class="ZmTaskHeaderPriorityIcon">
+										<$
+											var priorityIcon = '';
+											if(data.task.priority == ZmCalItem.PRIORITY_LOW) {
+												priorityIcon = 'PriorityLow';
+											} else if(data.task.priority == ZmCalItem.PRIORITY_HIGH) {
+												priorityIcon = 'PriorityHigh';
+											}
+										$>
+										<$ if(priorityIcon) { $>
+											<$= AjxImg.getImageHtml({
+												imageName: priorityIcon,
+												altText: ZmMsg.priority
+											}) $>
+										<$ } $>
+									</td>
+									<td class="ZmTaskHeaderPriorityName"><$= [data.priority, ZmMsg.priority].join(" "); $></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="ZmTaskInfo">
+				<$ if (data.isException) { $>
+					<table role="presentation" cellspacing="6">
+						<tbody>
+							<tr>
+								<td width="20"><$= AjxImg.getImageHtml("ApptException") $></td>
+								<td><$= ZmMsg.apptExceptionNote$></td>
+							</tr>
+						</tbody>
+					</table>
+				<$ } $>
+			</div>
+			<div id='${_infoBarId}'></div>
+			<div class="ZmTaskContent">
+				<table>
+					<$ if (data.location) { $>
+						<$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.location, val:data.location, id:'__lo'}) $>
+					<$ } $>
+					<$ if (data.startDate) { $>
+						<$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.startDate, val:data.startDate, id:'__sd'}) $>
+					<$ } $>
+					<$ if (data.dueDate) { $>
+						<$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.dueDate, val:data.dueDate, id:'__ed'}) $>
+					<$ } $>
+					<$ if (data.status) { $>
+						<$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.status, val:data.status, id:'__st'}) $>
+					<$ } $>
+					<$ if (data.alarm) { $>
+						<$= AjxTemplate.expand("tasks.Tasks#ReminderEntry", {lbl:ZmMsg.reminder, val1:data.remindDate, val2:data.remindTime, id:'__al' }) $>
+					<$ } $>
+					<$ if (data.attachStr) { $>
+						<$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr, id:'__at'}) $>
+					<$ } $>
 				</table>
-			</td>
-		</tr>
-		<$ } $>
-		<$ if (data.attachStr) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr, id:'__at'}) $><$ } $>
-	</table>
-    <div id='${_infoBarId}'></div>
+			</div>
+			<div id="${id}_body" class="ZmTaskBody"></div>
+		</div>
 	</div>
 </template>
 
 <template id="tasks.Tasks#AddEntry">
 	<tr id='zv__TKV__<$=Dwt.getNextId()$><$= data.id $>'>
-		<td class='LabelColName' style='padding-left:2px;' ><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.lbl)) $> </td>
-		<td class='LabelColValue'><$= data.val $></td>
+		<td>
+			<div class="ZmTaskRowWrapper">
+				<div class="ZmTaskRowLabel">
+					<$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.lbl)) $> 
+				</div>
+				<div class="ZmTaskRowValue">
+					<$= data.val $>
+				</div>
+			</div>
+		</td>
 	</tr>
 </template>
 
 <template id="tasks.Tasks#ReminderEntry">
 	<tr id='zv__TKV__<$=Dwt.getNextId()$><$= data.id $>'>
-		<td class='LabelColName' style='padding-left:2px;'><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.lbl)) $> </td>
-		<td class='LabelColValue'><$= data.val1 $> @ <$= data.val2 $></td>
+		<td>
+			<div class="ZmTaskRowWrapper">
+				<div class="ZmTaskRowLabel">
+					<$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.lbl)) $> 
+				</div>
+				<div class="ZmTaskRowValue">
+					<$= data.val1 $> @ <$= data.val2 $>
+				</div>
+			</div>
+		</td>
 	</tr>
 </template>
 

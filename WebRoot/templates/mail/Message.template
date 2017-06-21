@@ -362,7 +362,7 @@
 </template>
 
 <template id='mail.Message#AllAttachments'>
-	<table role="presentation" class="ZmMailAttachmentsAllTable">
+	<table role="presentation" class="ZmAttachmentsAllTable">
 		<tr>
 			<$ if (data.viewAllUrl && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
 				<td>
