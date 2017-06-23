@@ -36,7 +36,7 @@
                     </td>
                     <td><div class='vertSep'></div></td>
                     <td>
-                        <zm:currentResultUrl var="newUploadUrl" value="" context="${context}" action="newbrief"/>
+                        <zm:currentResultUrl var="newUploadUrl" value="" context="${context}" action="newbrief" crumb="${mailbox.accountInfo.crumb}"/>
                         <a <c:if test="${keys}">id="NEW_UPLOAD" </c:if>href="${fn:escapeXml(newUploadUrl)}&lbfums="><app:img altkey="uploadNewFile" src="startup/ImgAttachment.png"/><span>&nbsp;<fmt:message key="uploadNewFile"/></span></a>
                     </td>
                     <td><div class='vertSep'></div></td>

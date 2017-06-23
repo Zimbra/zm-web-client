@@ -24,6 +24,7 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <zm:composeUploader var="uploader"/>
+    <zm:checkCrumb crumb="${param.crumb}"/>
 
     <c:set var="needUploadView" value="${param.action eq 'newbrief'}"/>
     <c:set var="needListView" value="${false}"/>
