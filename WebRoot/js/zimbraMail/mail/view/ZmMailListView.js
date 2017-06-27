@@ -1707,7 +1707,13 @@ function(item, index, skipNotify, itemIndex) {
                 this._addRow(headerDiv, index);
             }
 			index = parseInt(index) || 0;  //check for NaN index
-            this._addRow(div, index+1); //account for header
+			// Set a row offset to 1 for sorting dateDsc to skip first header
+			var offset = 1;
+			// If sorting is dateAsc then offset by all headers when adding a row
+			if (this._sortByString === ZmSearch.DATE_ASC) {
+				offset = this._group.getAllSectionHeaders().length;
+			}
+			this._addRow(div, index + offset); //account for header
 
 		}
 	}
