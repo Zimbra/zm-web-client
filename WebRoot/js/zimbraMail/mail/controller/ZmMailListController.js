@@ -386,7 +386,10 @@ function(actionCode, ev) {
 						frag = item.invite ? item.invite.getToolTip() : this.getMsg().invite.getToolTip();
 					} else {
 						frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
-						if (frag != "") { lv.setToolTipContent(AjxStringUtil.htmlEncode(frag), true); }
+						if (frag != "") {
+							frag = AjxStringUtil.htmlEncode(frag);
+							lv.setToolTipContent(frag, true);
+						}
 					}
 					var tooltip = this._shell.getToolTip();
 					tooltip.popdown();
