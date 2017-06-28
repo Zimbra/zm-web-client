@@ -299,11 +299,12 @@ function() {
 		elements[ZmAppViewMgr.C_NEW_BUTTON] = this._lefttoolbar;
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
-
+		var hide = [ZmAppViewMgr.C_TREE_FOOTER]; //hide mini-calendar from preference section
 		this._app.createView({	viewId:		this._currentViewId,
 								elements:	elements,
 								controller:	this,
 								callbacks:	callbacks,
+								hide:		hide,
 								isAppView:	true,
 								tabParams:	this._getTabParams()});
 		this._initializeTabGroup();

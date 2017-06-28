@@ -86,7 +86,8 @@ ZmPrefPage.createFromSection = function(section) {
 // ZmOrganizer methods
 
 ZmPrefPage.prototype.getIcon = function() {
-	return this.icon || "Preferences";
+	//don't show icon for preference tree
+	return null;
 };
 
 ZmPrefPage.prototype.getToolTip = function(force) {
