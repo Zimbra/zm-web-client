@@ -604,9 +604,9 @@
 <template id="share.Dialogs#UploadDialog">
 	<div>
 		<div id="${id}_label" style="margin-bottom:0.5em;"><$=ZmMsg.uploadChoose$></div>
-		<div style="margin-bottom:0.5em;margin-left:1em;">
+		<div style="margin-bottom:0.5em;">
 			<form accept-charset='utf-8' method='POST' action='<$= data.uri $>' id='${id}_form' enctype='multipart/form-data'>
-				<table role="presentation" id='${id}_table' class='ZPropertySheet' cellspacing='6'></table>
+				<table role="presentation" id='${id}_table' class='ZPropertySheet ZmUploadFileTable' cellspacing='6'></table>
 			</form>
 		</div>
 		<table role="presentation" class='ZPropertySheet' cellspacing='6'>
