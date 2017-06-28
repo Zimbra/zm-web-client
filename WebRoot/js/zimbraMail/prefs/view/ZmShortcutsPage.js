@@ -73,8 +73,9 @@ function(deferred) {
 		return;
 	}
 
-	var button = new DwtButton({parent:this});
+	var button = new DwtButton({parent:this, style:DwtLabel.IMAGE_LEFT});
 	button.setText(ZmMsg.print);
+	button.setImage("Print");
 	var printButtonId = this._htmlElId + "_SHORTCUT_PRINT";
 	var buttonDiv = document.getElementById(printButtonId);
 	buttonDiv.appendChild(button.getHtmlElement());
@@ -107,7 +108,8 @@ function() {
 
 	var html = [], i = 0;
 	html[i++] = "<html><head>";
-	html[i++] = "<link href='" + appContextPath + "/css/zm.css' rel='stylesheet' type='text/css' />";
+	//adding skin query param in the css being loaded to load compiled stylesheet.
+	html[i++] = "<link href='" + appContextPath + "/css/zm.css?skin="+ appCtxt.getSkinHint("name") +"' rel='stylesheet' type='text/css' />";
 	html[i++] = "</head><body>";
 	html[i++] = "<div class='ShortcutsPrintHeader'>" + ZmMsg.keyboardShortcuts + "</div>";
 
@@ -282,8 +284,9 @@ ZmShortcutList.prototype._getKeysHtml = function(params, html, i) {
 				var keySeq = ks.split(/\s*;\s*/);
 				var keySeq1 = [];
 				for (var m = 0; m < keySeq.length; m++) {
-					html[i++] = "<dt>" + ZmShortcutList._formatKeySequence(keySeq[m], this._style) + "</dt>";
-					html[i++] = "<dd>" + desc + "</dd>";
+					html[i++] = "<dt>" + desc + "</dt>";
+					html[i++] = "<dd>" + ZmShortcutList._formatKeySequence(keySeq[m], this._style) + "</dd>";
+					html[i++] = "<div class='ZmShortcutSeparator'></div>"
 				}
 			}
 		}
