@@ -829,6 +829,14 @@ div.AttachmentImgContainer {
 	@ActiveCursor@
 }
 
+.ZmUploadFileLabel {
+	@UploadFileLabel@
+}
+
+.ZmUploadFileTable td {
+	@UploadFileTableChild@
+}
+
 .BrowseAttachBtn {
 	@AlignRight@
 	@MailAttachButton@
