@@ -55,6 +55,7 @@ ZmUploadDialog.prototype.constructor = ZmUploadDialog;
 
 ZmUploadDialog.UPLOAD_FIELD_NAME = "uploadFile";
 ZmUploadDialog.UPLOAD_TITLE_FIELD_NAME = "uploadFileTitle";
+ZmUploadDialog.UPLOAD_INPUT_LABEL_CLASS = "ZmUploadFileLabel";
 
 // Data
 
@@ -139,8 +140,7 @@ function(controller, folder, callback, title, loc, oneFileOnly, noResolveAction,
     var labelEl = document.getElementById(id+"_label");
     if (labelEl) {
         if(oneFileOnly && isImage){
-            labelEl.innerHTML = ZmMsg.uploadChooseImage;
-            Dwt.setVisible(labelEl, true);
+            Dwt.setVisible(labelEl, false);
         }
         else{
             labelEl.innerHTML = ZmMsg.uploadChoose;
@@ -407,29 +407,27 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 	var inputId = id + "_input";
 	var removeId = id + "_remove";
 	var addId = id + "_add";
-    var sizeId = id + "_size";
+	var detailId = id + "_detail";
 
 	var table = this._tableEl;
 	var row = table.insertRow(-1);
-
-    var cellLabel = row.insertCell(-1);
-    cellLabel.innerHTML = ZmMsg.fileLabel;
-
 	var cell = row.insertCell(-1);
 	// bug:53841 allow only one file upload when oneInputOnly is set
 	cell.innerHTML = [
-		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 ",(this._supportsHTML5 ? (oneInputOnly ? "" : "multiple") : ""),">"
+		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 ",(this._supportsHTML5 ? (oneInputOnly ? "" : "multiple") : ""),
+		" style='width: 0.1px;height: 0.1px;opacity: 0;overflow: hidden;position: absolute;z-index: -1;'>",
+		"<label for='", inputId, "'class='", ZmUploadDialog.UPLOAD_INPUT_LABEL_CLASS, "'><span>", ZmMsg.uploadChooseButtonLabel, "</span></label>"
 	].join("");
 
 	var cell = row.insertCell(-1);
-    cell.id = sizeId;
+	cell.id = detailId;
 	cell.innerHTML = "&nbsp;";
 
     //HTML5
     if(this._supportsHTML5){
         var inputEl = document.getElementById(inputId);
-        var sizeEl = cell;
-        Dwt.setHandler(inputEl, "onchange", AjxCallback.simpleClosure(this._handleFileSize, this, inputEl, sizeEl));
+        var fileDetailEl = cell;
+        Dwt.setHandler(inputEl, "onchange", AjxCallback.simpleClosure(this._handleFileSelection, this, inputEl, fileDetailEl));
     }
 
     if(oneInputOnly){
@@ -479,28 +477,37 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
     }
 };
 
-ZmUploadDialog.prototype._handleFileSize =
-function(inputEl, sizeEl){
+ZmUploadDialog.prototype._handleFileSelection =
+function(inputEl, fileDetailEl){
 
     var files = inputEl.files;
-    if(!files) return;
+    if(!files || !files.length){
+        fileDetailEl && (fileDetailEl.innerHTML = "");
+        return;
+    }
 
-    var sizeStr = [], className, totalSize =0;
+    var sizeStr = [], className, fileNameDetail, totalSize =0;
     for(var i=0; i<files.length;i++){
         var file = files[i];
         var size = file.size || file.fileSize /*Safari*/ || 0;
-	    var aCtxt = ZmAppCtxt.handleWindowOpener();
+        var aCtxt = ZmAppCtxt.handleWindowOpener();
         if(size > aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT))
             className = "RedC";
         totalSize += size;
     }
 
-    if(sizeEl) {
-        sizeEl.innerHTML = "  ("+AjxUtil.formatSize(totalSize, true)+")";
+    if(files.length > 1) {
+        fileNameDetail = AjxMessageFormat.format(ZmMsg.itemSelectionCount, [files.length, AjxMessageFormat.format(ZmMsg.typeFile, files.length)]);
+    } else {
+        fileNameDetail = files[0] && files[0]["name"];
+    }
+	
+    if(fileDetailEl) {
+        fileDetailEl.innerHTML = fileNameDetail+ "  (" + AjxUtil.formatSize(totalSize, true) + ")";
         if(className)
-            Dwt.addClass(sizeEl, "RedC");
+            Dwt.addClass(fileDetailEl, "RedC");
         else
-            Dwt.delClass(sizeEl, "RedC");
+            Dwt.delClass(fileDetailEl, "RedC");
     }
     
 };
