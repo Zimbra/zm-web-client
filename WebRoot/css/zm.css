@@ -5955,10 +5955,6 @@ DIV .SuggestBtn {
 	padding:0px;
 }
 
-.ZmActivityStreamFilterList DIV {
-	margin-bottom:.5em;
-}
-
 #IFDEF WEBKIT
 .ZmActivityStreamFilterList INPUT[type='checkbox'] {
 	margin-top:.25em;

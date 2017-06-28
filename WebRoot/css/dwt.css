@@ -1929,7 +1929,7 @@ INPUT.xform_field {
  ***************/
 
 .ZButton									{	@Button@		@ButtonSpacing@			}
-
+.ZTextButton								{					@TextButton@			}
 			.ZButtonBorder					{	@ButtonBorder@	@ButtonBorder-normal@	}
 .ZHover		.ZButtonBorder					{					@ButtonBorder-hover@	}
 .ZDisabled	.ZButtonBorder					{					@ButtonBorder-disabled@ }
