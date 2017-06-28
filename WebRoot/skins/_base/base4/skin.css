@@ -1117,3 +1117,8 @@ svg.progress-circle.tick-inside {
 .Row-selected  svg.progress-circle.tick-inside {
 	fill:@CircularProgressBarInverseTextColor@;
 }
+
+/* Preference overview tree */
+.ZmPrefTreeView .DwtTreeItemLevel1ChildDiv {
+    border-bottom: none;
+}
