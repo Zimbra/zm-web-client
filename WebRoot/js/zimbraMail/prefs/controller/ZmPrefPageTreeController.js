@@ -98,7 +98,7 @@ function(params) {
 
 	// setup tree view
 	var treeView = ZmTreeController.prototype.show.apply(this, arguments);
-
+	treeView.addClassName("ZmPrefTreeView");
 	if (!appCtxt.multiAccounts || (appCtxt.multiAccounts && account.isMain)) {
 		var page1 = root.children.get(0);
 		if (page1) {
@@ -109,6 +109,7 @@ function(params) {
 		var hi = treeView.getHeaderItem();
 		if (hi) {
 			hi.setExpanded(true, true);
+			hi.setVisible(false, true); //hide preference overview tree header
 		}
 	}
 	treeView.addSelectionListener(new AjxListener(this, this._handleTreeItemSelection, view));
