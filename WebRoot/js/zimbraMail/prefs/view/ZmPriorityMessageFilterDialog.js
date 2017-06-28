@@ -68,6 +68,7 @@ function() {
 	
 	this._moveMsgIntoStream = this._priorityMessageForm.getControl("MOVE_MSG_STREAM");
 	this._notToMe = this._priorityMessageForm.getControl("NOT_TO_ME");
+	this._notToMeCont = Dwt.byId(params.id + "_NOT_TO_ME_CONT");
 	this._selectField = this._priorityMessageForm.getControl("SELECT_FIELD");
 	this._selectField.fixedButtonWidth();
 	this._notInMyAddrBk = this._priorityMessageForm.getControl("NOT_IN_ADDR");
@@ -80,8 +81,8 @@ function() {
 	this._streamHash[ZmFilterRule.TEST_ADDRBOOK] = {control: this._notInMyAddrBk, negative: true, headerValue: "from"};
 	this._streamHash[ZmFilterRule.TEST_ME] = {control: this._notToMe, negative: true, headerValue: "to"};
 	
-    this._advancedControls = new DwtText({parent:this,className:"FakeAnchor"});
-    this._advancedControls.setText(ZmMsg.advancedControls);
+    this._advancedControls = new DwtText({parent:this,className:"FakeAnchor ZTextButton"});
+    this._advancedControls.setText(ZmMsg.advancedSettings);
     this._advancedControls.getHtmlElement().onclick = advancedListener;
     this._advancedControls.replaceElement(document.getElementById("PriorityInboxAdvancedControls"));
 };
@@ -108,6 +109,7 @@ function() {
 	this._notInMyAddrBk.setEnabled(enabled);
 	this._dlSubscribedTo.setEnabled(enabled);
 	this._massMarketing.setEnabled(enabled);
+	Dwt.condClass(this._notToMeCont, enabled, "", "DisabledText");
 };
 
 ZmPriorityMessageFilterDialog.prototype._onAdvancedControls = 
