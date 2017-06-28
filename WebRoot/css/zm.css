@@ -4405,19 +4405,19 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmShortcutList {
-	padding: 1rem;
-	-moz-columns: 3;
-	-webkit-columns: 3;
-	columns: 3;
+	@ShortcutListWrapper@
 }
 
 .ZmShortcutList DL {
-	margin-top: 0;
+	@ShortcutList@
+}
+
+.ZmShortcutList .ZmShortcutSeparator {
+	@ShortcutSeparator@
 }
 
 .shortcutListMap .title {
-	font-weight:bold;
-	padding-bottom:1rem;
+	@ShortcutListTitle@
 }
 
 .shortcutListMap.panel .title, .shortcutListMap.print .title {
@@ -4439,7 +4439,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .shortcutListMap DT {
 	display: inline-block;
-	text-align: right;
+	text-align: left;
 	padding-right: 1em;
 }
 
@@ -4448,8 +4448,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .shortcutListMap.prefs DT {
-	min-width: 144px;
-	margin-bottom: 4px;
+	@PrefShortcutLabel@
 }
 
 .shortcutListMap DD {
@@ -4516,23 +4515,12 @@ HTML>BODY .appt-selected .appt_allday_body
 	white-space:nowrap;
 }
 
-.shortcutKeyCombo.prefs {
-	margin-right:5px;
-	margin-left:5px;
-}
-
 .shortcutKey {
-	font-weight:bold;
 	padding:2px 4px;
 }
 
 .shortcutKey.prefs {
-	background-color:lightGray;
-	border:solid darkGray;
-	border-width:1px 2px 3px 1px;
-	line-height:22px;
-	margin:1px;
-	@Text@
+	@PrefShortcutKey@
 }
 
 .shortcutKey.panel, .shortcutKey.print {
