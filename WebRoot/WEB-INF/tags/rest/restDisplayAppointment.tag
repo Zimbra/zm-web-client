@@ -51,8 +51,8 @@
 </c:if>
 <fmt:message var="noSubject" key="noSubject"/>
 
-<fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
-<fmt:message bundle='${AjxMsg}' key='${zm:getCanonicalId(timezone)}' var='timezoneStr' scope='request' />
+<fmt:setBundle basename='/messages/TzMsg' var='TzMsg' scope='request' />
+<fmt:message bundle='${TzMsg}' key='${zm:getCanonicalId(timezone)}' var='timezoneStr' scope='request' />
 
 <c:set var="isPart" value="${!empty message.partName}"/>
 <table cellpadding=0 cellspacing=0 width=100% class='Compose'>
