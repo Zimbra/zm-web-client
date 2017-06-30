@@ -1990,14 +1990,6 @@ div.CompDragArea * {
 	@TaskReadingPaneRight-ListViewItemDate@
 }
 
-.ZmTaskMultiView .DwtListView .BottomRow .IconInnerWrapper {
-	@TaskReadingPaneRight-ListViewItemBottomIconInnerWrapper@
-}
-
-.ZmTaskMultiView .DwtListView .RowDouble .BottomRow {
-	margin:0px;
-}
-
 .ZmTaskMultiView .RowDouble > table > tbody > tr > td {
 	@TaskReadingPaneRight-ListViewItemCell@
 }
@@ -2012,6 +2004,24 @@ div.CompDragArea * {
 
 .ZmTaskMultiView .DwtListView  .RowDouble .TopRow {
 	@TaskReadingPaneRight-ListViewItemTopRowContainer@
+}
+
+.ZmTaskMultiView .DwtListView  .RowDouble .ZmTaskProgress {
+	@TaskReadingPaneRight-ProgressBarImageWrapper@
+}
+
+.ZmTaskMultiView .DwtListView  .RowDouble .ZmTaskProgress .svg-icon,
+.ZmTaskMultiView .DwtListView  .RowDouble  .ZmTaskProgress .progress-circle {
+	@TaskHeaderImage@
+	@TaskReadingPaneRight-ProgressBarImage@
+}
+
+.ZmTaskMultiView .DwtListView  .RowDouble  .ZmTaskProgress .tick-inside {
+	@TaskReadingPaneRight-CompletedProgressBarImage@
+}
+
+.ZmTaskMultiView .DwtListView  .RowDouble .BottomRow {
+	@TaskReadingPaneRight-BottomRowIconContainer@
 }
 
 .ZmTaskMultiView .newTaskBannerSep td {
@@ -2187,9 +2197,8 @@ div.CompDragArea * {
  * Task application
  */
 
-.InlineWidget {
-	z-index:300;
-	overflow:hidden;
+INPUT[type="text"].InlineWidget {
+	@TaskListViewNewTaskInputWidget@
 }
 
 /* Task View style */
@@ -2345,15 +2354,6 @@ div.CompDragArea * {
 .ZmTaskEditView .ZSelect,
 .ZmTaskEditView .ZSelect table {
 	@FullWidth@
-}
-
-.ZmTaskProgress {
-	@FullWidth@
-}
-
-.ZmTaskProgress DIV {
-	display:block;
-	height:100%;
 }
 
 .ZmCompletedtask TD {
