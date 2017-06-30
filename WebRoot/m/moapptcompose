@@ -40,7 +40,7 @@
         </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
-    <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
+    <fmt:setBundle basename='/messages/TzMsg' var='TzMsg' scope='request' />
 
     <%--<fmt:message var="title" key="newAppointment"/>--%>                          
     <fmt:message var="hourFmt" key="CAL_APPT_EDIT_HOUR_FORMAT"/>
@@ -336,7 +336,7 @@
     <c:set var="addedTimeZone" value="true"/>
     <div class="tr nr"><span class="label td"><fmt:message key="timeZonePrefLabel"/></span>
             <span class="value td" style="padding:0px; text-align:left;"><select name="timeZone" id="timeZone">
-                <zm:forEachTimeZone var="tz"><fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
+                <zm:forEachTimeZone var="tz"><fmt:message var="displayName" bundle='${TzMsg}' key="${tz.id}"/>
                     <option <c:if test="${compose.timeZone eq tz.id}">selected</c:if> value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
                 </zm:forEachTimeZone>
             </select></span></div>

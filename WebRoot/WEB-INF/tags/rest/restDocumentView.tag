@@ -82,7 +82,7 @@ response.setHeader("Pragma", "no-cache");
     <link rel="stylesheet" type="text/css" href="${cssurl}" />
 
     <jsp:include page="/public/Resources.jsp">
-        <jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys" />
+        <jsp:param name="res" value="I18nMsg,TzMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys" />
         <jsp:param name="skin" value="${skin}" />
         <jsp:param name="localeId" value="${localeId}"/>
     </jsp:include>
