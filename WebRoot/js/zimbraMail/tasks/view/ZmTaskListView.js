@@ -482,39 +482,36 @@ function(task, colIdx) {
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? "22" : "16";
 
 	// first row
-	htmlArr[idx++] = "<table width=100% class='TopRow'>";
+	htmlArr[idx++] = "<table class='TopRow'>";
 	htmlArr[idx++] = "<tr id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, task.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
 
-    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_SUBJECT, colIdx);
-
-    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE);
-
-	htmlArr[idx++] = "</tr></table>";
-
-    // second row
-    htmlArr[idx++] = "<table width=100% class='BottomRow'><tr><td>";
-	if (task.pComplete) {
-		htmlArr[idx++] = "<div class='ZmTaskProgress'><div";
-		htmlArr[idx++] = " class='";
-		htmlArr[idx++] = this.getColorForStatus(task.status);
-		htmlArr[idx++] = "' style='width:"+ task.pComplete + "%;'></div></div>";
+	if (task.pComplete || task.pComplete === 0) {
+		htmlArr[idx++] = "<td class='ZmTaskProgress'>";
+		htmlArr[idx++] = AjxImg.getCircularProgressBar(task.pComplete);
+		htmlArr[idx++] = "</td>";
 	}
-    htmlArr[idx++] = "</td><td><table class='IconInnerWrapper'><tr>";
 
-    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_TAG, colIdx, width);
-    if(task.priority == ZmCalItem.PRIORITY_HIGH || task.priority == ZmCalItem.PRIORITY_LOW) {
-        idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_PRIORITY, colIdx, width, "align=right");
-    }
-    if (task.hasAttach) {
-        idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_ATTACHMENT, colIdx, width);
-    }
-    htmlArr[idx++] = "</tr></table></td>";
-    htmlArr[idx++] = "</tr></table>";
+	idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_SUBJECT, colIdx);
 
+	htmlArr[idx++] = "<td align='right'><table><tr>";
+	idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE);
+	htmlArr[idx++] = "</tr><tr><td><table class='BottomRow'><tr>";
+
+	idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_TAG, colIdx, width, "align=right");
+	if (task.priority == ZmCalItem.PRIORITY_HIGH || task.priority == ZmCalItem.PRIORITY_LOW) {
+		idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_PRIORITY, colIdx, width, "align=right");
+	}
+
+	if (task.hasAttach) {
+		idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_ATTACHMENT, colIdx, width);
+	}
+
+	htmlArr[idx++] = "</tr></table></td>";
+	htmlArr[idx++] = "</tr></table></td>";
+	htmlArr[idx++] = "</tr></table>";
 	return htmlArr.join("");
-
 };
 
 
@@ -623,10 +620,6 @@ function(el) {
 		// However, it cannot be a child of the list itself, since it should have a fixed position.
 		var parentEl = document.getElementById(this._htmlElId);
 		parentEl.appendChild(this._newTaskInputEl);
-
-		this._newTaskInputEl.style.padding  = "0px";
-		this._newTaskInputEl.style.borderWidth  = "0px";
-
 		this._resetInputSize(el);
 	} else {
         // Preserve any existing newTask text.  This will be cleared when
