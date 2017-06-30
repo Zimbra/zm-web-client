@@ -5,7 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-<fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
+<fmt:setBundle basename='/messages/TzMsg' var='TzMsg' scope='request' />
 <app:handleError>
     ${zm:clearMessageCache(mailbox)}
     <zm:getMailbox var="mailbox"/>
@@ -402,7 +402,7 @@
                                                     <td>
                                                         <select name="timeZone" id="timeZone">
                                                             <zm:forEachTimeZone var="tz">
-                                                                <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
+                                                                <fmt:message var="displayName" bundle='${TzMsg}' key="${tz.id}"/>
                                                                 <option
                                                                         <c:if test="${compose.timeZone eq tz.id}">selected</c:if>
                                                                         value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>

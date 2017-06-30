@@ -130,7 +130,7 @@
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
 <jsp:include page="Resources.jsp">
-	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys,AjxTemplateMsg" />
+	<jsp:param name="res" value="I18nMsg,TzMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys,AjxTemplateMsg" />
 	<jsp:param name="skin" value="${skin}" />
 </jsp:include>
 <link href='${contextPath}/css/common,dwt,msgview,login,zm,spellcheck,images,skin.css?v=${vers}${isDebug?"&debug=1":""}&skin=${zm:cook(skin)}' rel='stylesheet' type="text/css">

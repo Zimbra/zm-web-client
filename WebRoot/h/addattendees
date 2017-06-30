@@ -17,7 +17,7 @@
         </c:otherwise>
         </c:choose>
         <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
-        <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
+        <fmt:setBundle basename='/messages/TzMsg' var='TzMsg' scope='request' />
     
     <fmt:message var="title" key="addAttendeesResourcesFromContacts"/>
     <fmt:message var="hourFmt" key="CAL_APPT_EDIT_HOUR_FORMAT"/>
@@ -246,7 +246,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                                                                 <td>
                                                                     <select name="timeZone" id="timeZone">
                                                                         <zm:forEachTimeZone var="tz">
-                                                                            <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
+                                                                            <fmt:message var="displayName" bundle='${TzMsg}' key="${tz.id}"/>
                                                                             <option
                                                                                     <c:if test="${compose.timeZone eq tz.id}">selected</c:if>
                                                                                     value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
