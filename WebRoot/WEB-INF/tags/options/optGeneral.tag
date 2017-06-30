@@ -21,7 +21,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
+<fmt:setBundle basename='/messages/TzMsg' var='TzMsg' scope='request' />
 <table width="100%">
 <tr>
 <td>
@@ -88,7 +88,7 @@
             <select name="zimbraPrefTimeZoneId" id="timeZone">
                 <c:set var="tzpref" value="${mailbox.prefs.timeZoneCanonicalId}"/>
                 <zm:forEachTimeZone var="tz">
-                    <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.id}"/>
+                    <fmt:message var="displayName" bundle='${TzMsg}' key="${tz.id}"/>
                     <option
                             <c:if test="${tzpref eq tz.id}">selected</c:if>
                             value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>

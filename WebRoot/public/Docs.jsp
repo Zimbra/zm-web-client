@@ -128,7 +128,7 @@ If not, see <https://www.gnu.org/licenses/>.
         -->
     </style>
     <jsp:include page="Resources.jsp">
-        <jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys" />
+        <jsp:param name="res" value="I18nMsg,TzMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys" />
         <jsp:param name="skin" value="${zm:cook(skin)}" />
     </jsp:include>
     <jsp:include page="Boot.jsp"/>
@@ -167,7 +167,7 @@ If not, see <https://www.gnu.org/licenses/>.
             }
         %>
         <jsp:include page="Resources.jsp">
-            <jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys,AjxTemplateMsg" />
+            <jsp:param name="res" value="I18nMsg,TzMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys,AjxTemplateMsg" />
             <jsp:param name="skin" value="${skin}" />
         </jsp:include>
         <link href='${contextPath}/css/common,dwt,msgview,login,zm,spellcheck,images,skin.css?v=${vers}${isDebug?"&debug=1":""}&skin=${zm:cook(skin)}' rel='stylesheet' type="text/css">

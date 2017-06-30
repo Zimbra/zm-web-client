@@ -22,8 +22,8 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
-<fmt:message bundle='${AjxMsg}' key='${zm:getCanonicalId(timezone)}' var='timezoneStr' scope='request' />
+<fmt:setBundle basename='/messages/TzMsg' var='TzMsg' scope='request' />
+<fmt:message bundle='${TzMsg}' key='${zm:getCanonicalId(timezone)}' var='timezoneStr' scope='request' />
 
 <%-- TODO: blank for now, could add timezone drop down or more date selection --%>
 
