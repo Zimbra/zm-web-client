@@ -368,7 +368,7 @@ function() {
 				control = this._setupMenuButton(id, value, ZmPreferencesPage.fontSizeMap);
 			}
 			else if (type == ZmPref.TYPE_PASSWORD) {
-				this._addButton(elem, setup.displayName, 50, new AjxListener(this, this._changePasswordListener), "CHANGE_PASSWORD");
+				this._addButton(elem, setup.displayName, Dwt.DEFAULT, new AjxListener(this, this._changePasswordListener), "CHANGE_PASSWORD", "ZInlineButton");
 			}
 			else if (type == ZmPref.TYPE_IMPORT) {
 				this._addImportWidgets(elem, id, setup);
@@ -664,7 +664,7 @@ function(id, useDefault) {
 
 // Add a button to the preferences page
 ZmPreferencesPage.prototype._addButton =
-function(parentIdOrElem, text, width, listener, id) {
+function(parentIdOrElem, text, width, listener, id, className) {
 	var params = {parent: this};
 	if (id) {
 		params.id = id;
@@ -674,6 +674,9 @@ function(parentIdOrElem, text, width, listener, id) {
 	button.setText(text);
 	button.addSelectionListener(listener);
 	this._replaceControlElement(parentIdOrElem, button);
+	if (className) {
+		button.addClassName(className);
+	}
 	return button;
 };
 
@@ -967,6 +970,7 @@ function(id, setup, value) {
 	var button = new DwtButton(params);
 	button.setSize(60, Dwt.DEFAULT);
 	button.setMenu(new AjxListener(this, this._createLocalesMenu, [setup]));
+	button.addClassName("ZSelect"); //this will show drop-button like select control
 	this._showLocale(value, button);
 
 	this._dwtObjects[id] = button;
@@ -989,6 +993,7 @@ function(id, value, itemMap) {
 	var button = new DwtButton({parent:this});
 	button.setSize(60, Dwt.DEFAULT);
 	button.setMenu(new AjxListener(this, this._createMenu, [button, itemMap]));
+	button.addClassName("ZSelect"); //this will show drop-button like select control
 	this._showItem(value, itemMap, button);
 
 	this._dwtObjects[id] = button;
