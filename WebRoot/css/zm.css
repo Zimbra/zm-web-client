@@ -3713,22 +3713,19 @@ HTML>BODY .appt-selected .appt_allday_body
  */
 
 .ZmPreferencesPage {
-	padding:0.5em 2em;
-	width:99%;
+	@PrefView@
 }
 
-.ZOptionsHeaderTable, .ZOptionsSectionTable {
-	width:99%;
+.prefHeaderWrapper {
+	@PrefSectionHeaderWrapper@
 }
 
-/* Match the width of ZmPreferencesPage */
 .prefHeader {
-	@FontSize-bigger@
-	background-color:@darken(AppC,30)@;
-	color:white;
-	padding:4px 8px;
-	width:99%;
-	@roundCorners(6px 6px 0 0)@
+	@PrefSectionHeader@
+}
+
+.prefHeaderActions {
+	@PrefSectionHeaderActions@
 }
 
 .prefHeaderComment {width:99%;}
@@ -3742,7 +3739,45 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZOptionsSectionMain {
-	@roundCorners(0px 0px 8px 8px)@
+	@PrefSectionContent@
+}
+
+.ZOptionsSectionMain>TABLE>TBODY>TR>TD {
+	@PrefSectionRowCell@
+}
+
+.ZOptionsSectionMain .ZOptionsLabel {
+	@PrefSectionRowLabelWrapper@
+}
+
+.ZOptionsSectionMain .ZOptionsField {
+	@PrefSectionRowValueWrapper@
+}
+
+.ZOptionsField .DwtCheckbox,
+.ZOptionsField .DwtRadioButton {
+	@PrefRowCheckWidget@
+}
+
+.ZOptionsField .ZSelect > table {
+	@PrefRowSelectWidget@
+}
+
+.ZOptionsField .ZPropertySheet > tbody > tr > td {
+	@PrefRowInlineTable@
+}
+
+.ZOptionsField .ZPropertySheet > tbody > tr > td:first-child {
+	padding-left: 0;
+}
+
+.ZOptionsField .ZPropertySheet > tbody > tr > td:lst-child {
+	padding-right: 0;
+}
+
+.DwtCheckbox .DwtInputField input[type="text"],
+.DwtRadioButton .DwtInputField input[type="text"] {
+	@CheckWidgetInputText@
 }
 
 .ZmPreferencesPage .Label {
@@ -3757,7 +3792,11 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* Table for a section of prefs (head + body) */
 .ZOptionsSectionTable {
-	margin-bottom:1.5em;
+	@PrefSectionContentTable@
+}
+
+.ZOptionsSectionTable * {
+	@PrefViewFontSize@
 }
 
 /* header row for a section -- color/etc comes from graphics */
@@ -3771,16 +3810,6 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 .ZOptionsHeader {
 	width:100%;
-}
-
-/* container for body of a prefs section */
-.ZOptionsSectionMain {
-	@ChromeBg@
-	padding:1em;
-}
-
-.ZOptionsSectionMain>TABLE>TBODY>TR>TD {
-	@PropertySheetSpacing@
 }
 
 .ZOptionsSectionTabView .ZmPreferencesPage {
@@ -3800,33 +3829,15 @@ HTML>BODY .appt-selected .appt_allday_body
 	background-color:transparent;
 }
 
-.ZOptionsSectionTabView .ZTabBorder {
-	background-color:@TabColor@;
-	border-color:@TabBorderColor@;
-}
-
-.ZOptionsSectionTabView .ZSelected .ZTabBorder {
-	background-color:@AppC@;
-	border-bottom-color:@AppC@;
-}
-
-
 .ZOptionsLabel,
 .ZOptionsLabelTop,
 .ZOptionsLabelNarrow,
 .ZOptionsTableLabel {
-	@Text@
-	width:150px;
-	font-weight:bold;
-	white-space:nowrap;
-	text-align:right;
-	vertical-align:middle;
-	line-height:20px;
+	@PrefSectionRowLabel@
 }
 
 .ZOptionsLabelTop {
 	vertical-align:top;
-	line-height:20px;
 }
 
 .ZOptionsLabelNarrow {
@@ -3845,12 +3856,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:100px;
 }
 
-/* REVISIT:Why do disabled inputs have a fixed height of 20px? */
-.ZOptionsField INPUT[disabled],
-.ZOptionsTableRow INPUT[disabled] {
-	height:auto;
-}
-
 .ZOptionsField INPUT[type="checkbox"] {
 	@ActiveCursor@
 }
@@ -3860,10 +3865,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	cursor:expression(this.type=="checkbox"?'pointer':'');
 }
 #ENDIF
-
-.ZOptionsField.ZOptionsSubField, .ZOptionsInfo.ZOptionsSubField {
-	padding-left:2em;
-}
 
 .ZDeviceOptionsTable INPUT {
 	width:100%;
@@ -6007,10 +6008,8 @@ DIV .SuggestBtn {
 	width:500px;
 }
 
-.ZmFolderPropertiesDialog-container .ZSelected .ZTabBorder {
-	background-color:@lighten(AppC,25)@;
-	border-bottom-color:@lighten(AppC,25)@;
-	/*Color comes from WindowInnerBorder */
+.ZmFolderPropertiesDialog-container .ZTabBar {
+	background: @white@;
 }
 
 .ZmFolderPropertyView .ZHasDropDown{
@@ -7008,6 +7007,10 @@ a.ZmLinkDisabled {
 	@SelectWidgetSelector@
 }
 
+.ZmSelectWidgetWrapper .ZmSelector .ZButton {
+	@SelectWidgetDropButton@
+}
+
 .ZmSelectWidgetWrapper .ZmSelector .ZDropDown {
 	@SelectWidgetDropDown@
 }
@@ -7041,4 +7044,88 @@ a.ZmLinkDisabled {
 
 .ZmMetaPropertyTable > tbody > tr:last-of-type > td {
 	padding-bottom: 0;
+}
+
+/* Custom Checkbox Style */
+input[type="checkbox"] {
+	@CheckBox@
+}
+
+input[type="checkbox"]::before {
+	@CustomCheckBoxTickIcon@
+}
+
+input[type="checkbox"]:checked {
+	@CheckBoxChecked@
+}
+
+input[type="checkbox"]:checked::before {
+	@CheckBoxCheckedTickIcon@
+}
+
+input[type="checkbox"]:active,
+input[type="checkbox"]:focus {
+	@CheckBoxActive@
+}
+
+input[type="checkbox"]:disabled {
+	@CheckBoxDisabled@
+}
+
+input[type="checkbox"] + label {
+	@CheckBoxLabel@
+}
+
+/* Custom Radio Style */
+input[type="radio"] {
+	@RadioButton@
+}
+
+input[type="radio"]::before {
+	@RadioButtonTickIcon@
+}
+
+input[type="radio"]:checked {
+	@RadioButtonChecked@
+}
+
+input[type="radio"]:checked::before {
+	@RadioButtonCheckedTickIcon@
+}
+
+input[type="radio"]:active,
+input[type="radio"]:focus {
+	@RadioButtonActive@
+}
+
+input[type="radio"]:disabled {
+	@RadioButtonDisabled@
+}
+
+input[type="radio"] + label {
+	@RadioButtonLabel@
+}
+
+/* Checkbox/radio buttons inside highlighted-selected rows */
+.Row-selected input[type="checkbox"],
+.Row-selected input[type="radio"] {
+	border-color: @CheckElmInverseBorderColor@;
+}
+
+.Row-selected input[type="checkbox"]:active,
+.Row-selected input[type="checkbox"]:focus,
+.Row-selected input[type="checkbox"]:checked,
+.Row-selected input[type="radio"]:active,
+.Row-selected input[type="radio"]:focus,
+.Row-selected input[type="radio"]:checked {
+	border-color: @CheckElmInverseActiveBorderColor@;
+}
+
+.Row-selected input[type="checkbox"]:checked,
+.Row-selected input[type="radio"]::before {
+	background: @CheckElmInverseBgColor@;
+}
+
+.Row-selected input[type="checkbox"]::before {
+	border-color: @CheckElmInverseTickColor@;
 }
