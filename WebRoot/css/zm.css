@@ -1667,7 +1667,27 @@ div.CompDragArea * {
 
 .ZmGrantRightsDialog .addrBubbleContainer,
 .ZmPreferencesPage .addrBubbleContainer {
-    width: 290px;
+	@GrantRightsDialogInputContainer@
+}
+
+.ZmGrantRightsDialog .WindowOuterContainer {
+	@GrantRightsDialogOuterContainer@
+}
+
+.ZmGrantRightsDialog #ZmGrantRightsDialog_name_row .Label {
+	@GrantRightsDialogEmailLabel@
+}
+
+.ZmGrantRightsDialog INPUT[type='text'] {
+	@GrantRightsDialogInput@
+}
+
+.ZmGrantRightsDialog .SendType td {
+	padding-top:@SkinWrapperPadding@;
+}
+
+.ZmGrantRightsDialog INPUT[type='checkbox'] {
+	@GrantRightsDialogCheckBox@
 }
 
 .addrBubbleContainerPending {
