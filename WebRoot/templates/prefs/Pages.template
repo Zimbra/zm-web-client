@@ -2211,14 +2211,15 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 <template id='prefs.Pages#GrantRightsDialog'>
 	<table role="presentation">
 		<tr id='${id}_name_row'>
-			<td class="Label" style="padding-right:10px"><$=ZmMsg.emailLabel$></td>
+			<td class="Label"><$=ZmMsg.emailLabel$></td>
+		</tr>
+		<tr>
 			<td id="${id}_name_cell">
 			</td>
 		</tr>
 		<tr>
-			<td class="Label">&nbsp;</td>
 			<td>
-				<table role="presentation">
+				<table class="SendType" role="presentation">
 					<tr>
 						<td><input type="checkbox" id='${id}_sendAs'></td>
 						<td><label class="Text" for='${id}_sendAs'
