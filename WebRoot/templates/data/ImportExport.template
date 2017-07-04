@@ -6,7 +6,7 @@
 				<td class='ZOptionsSectionMain'>
 					<table role="presentation" width="100%">
 						<tr><td><div id='${id}_IMPORT_FOLDER' tabindex="100"></div></td></tr>
-						<tr><td align="right"><button id="${id}_IMPORT_BUTTON" tabindex="200" style="display:inline-block;"></button></td></tr>
+						<tr><td align="right"><button id="${id}_IMPORT_BUTTON" tabindex="200" class="ZAltButton" style="display:inline-block;"></button></td></tr>
 					</table>
 				</td>
 			</tr>
@@ -19,7 +19,7 @@
 				<td class='ZOptionsSectionMain'>
 					<table role="presentation" width="100%" >
 						<tr><td><div id='${id}_EXPORT_FOLDER' tabindex="300"></div></td></tr>
-						<tr><td align="right"><button id="${id}_EXPORT_BUTTON" tabindex="400" style="display:inline-block;"></button></td></tr>
+						<tr><td align="right"><button id="${id}_EXPORT_BUTTON" tabindex="400" class="ZAltButton" style="display:inline-block;"></button></td></tr>
 					</table>
 				</td>
 			</tr>
@@ -50,7 +50,7 @@
 		</tr>
 		<tr id='${id}_RESOLVE_row'>
 			<td class="ZOptionsLabelTop"><$=ZmMsg.resolveDuplicatesLabel$></td>
-			<td class="ZOptionsField"><table role="presentation"><tr>
+			<td class="ZOptionsField"><table role="presentation" class="ZPropertySheet"><tr>
 				<td><div id="${id}_RESOLVE_IGNORE" tabindex="500"></div></td>
 				<td><div id="${id}_RESOLVE_MODIFY" tabindex="501"></div></td>
 				<td><div id="${id}_RESOLVE_REPLACE" tabindex="502"></div></td>
@@ -60,7 +60,6 @@
 		<tr id="${id}_ADVANCED_row">
 			<td class="ZOptionsLabelTop">&nbsp;</td>
 			<td class="ZOptionsField">
-				<hr>
 				<span id="${id}_ADVANCED" tabindex="700"></span>
 			</td>
 		</tr>
@@ -79,7 +78,7 @@
 		<$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) || appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { $>
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.typeLabel$></td>
 			<td class="ZOptionsField">
-				<table role="presentation">
+				<table role="presentation" class="ZPropertySheet">
 					<tr>
 						<td><div id="${id}_TYPE_TGZ" tabindex="100"></div></td>
 					<$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) { $>
@@ -108,7 +107,6 @@
 		<tr id="${id}_ADVANCED_row">
 			<td class="ZOptionsLabelTop">&nbsp;</td>
 			<td class="ZOptionsField">
-				<hr>
 				<span id="${id}_ADVANCED" tabindex="500"></span>
 			</td>
 		</tr>

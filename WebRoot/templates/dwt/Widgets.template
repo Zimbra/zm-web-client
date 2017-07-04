@@ -200,12 +200,10 @@
 
 
 <template id='dwt.Widgets#DwtComboBox' class='DwtComboBox'>
-	<table role="presentation">
-		<tr>
-			<td width=*><div id='${id}_input'></div></td>
-			<td><div id='${id}_button'></div></td>
-		</tr>
-	</table>
+	<div class="DwtComboBoxWrapper">
+		<div id='${id}_input'></div>
+		<div id='${id}_button'></div>
+	</div>
 </template>
 
 <template id='dwt.Widgets#DwtComboBoxButton' class='ZWidget'>
