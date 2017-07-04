@@ -1967,6 +1967,117 @@ INPUT.xform_field {
 	cursor:pointer;
 }
 
+/* ZAltButton: Alternate button style */
+.ZAltButton { 
+	@AltButton@
+}
+
+.ZAltButton .ZButtonBorder {
+	@AltButtonBorder@
+	@AltButtonBorder-normal@
+}
+
+.ZAltButton.ZHover .ZButtonBorder { 
+	@AltButtonBorder-hover@
+}
+
+.ZAltButton.ZDisabled .ZButtonBorder {
+	@AltButtonBorder-disabled@
+}
+
+.ZAltButton.ZFocused .ZButtonBorder {
+	@AltButtonBorder-focused@
+}
+
+.ZAltButton.ZActive .ZButtonBorder {
+	@AltButtonBorder-active@
+
+}
+.ZAltButton.ZSelected .ZButtonBorder {
+	@AltButtonBorder-selected@
+}
+
+.ZAltButton .ZButtonTable .ZWidgetTitle {
+	@AltButtonText@
+	@AltButtonText-normal@
+}
+
+.ZAltButton.ZHover .ZButtonTable .ZWidgetTitle {
+	@AltButtonText-hover@
+}
+
+.ZAltButton.ZDisabled .ZButtonTable .ZWidgetTitle {
+	@AltButtonText-disabled@
+}
+
+.ZAltButton.ZFocused .ZButtonTable .ZWidgetTitle {
+	@AltButtonText-focused@
+}
+
+.ZAltButton.ZActive .ZButtonTable .ZWidgetTitle {
+	@AltButtonText-active@
+}
+
+.ZAltButton.ZSelected .ZButtonTable .ZWidgetTitle {
+	@AltButtonText-selected@
+}
+
+/* ZInlineButton: Inline Button */
+/* An instace of `DwtButton` but looks like inline anchor link */
+
+.ZInlineButton {
+	@InlineButton@
+}
+
+.ZInlineButton .ZButtonBorder {
+	@InlineButtonBorder@
+	@InlineButtonBorder-normal@
+}
+
+.ZInlineButton.ZHover .ZButtonBorder {
+	@InlineButtonBorder-hover@
+}
+
+.ZInlineButton.ZDisabled .ZButtonBorder {
+	@InlineButtonBorder-disabled@ 
+}
+
+.ZInlineButton.ZFocused .ZButtonBorder {
+	@InlineButtonBorder-focused@
+}
+
+.ZInlineButton.ZActive .ZButtonBorder {
+	@InlineButtonBorder-active@	
+}
+
+.ZInlineButton.ZSelected .ZButtonBorder {
+	@InlineButtonBorder-selected@	
+}
+
+.ZInlineButton .ZButtonTable .ZWidgetTitle {
+	@InlineButtonText@
+	@InlineButtonText-normal@
+}
+
+.ZInlineButton.ZHover .ZButtonTable .ZWidgetTitle {
+	@InlineButtonText-hover@
+}
+
+.ZInlineButton.ZDisabled .ZButtonTable .ZWidgetTitle {
+	@InlineButtonText-disabled@
+}
+
+.ZInlineButton.ZFocused .ZButtonTable .ZWidgetTitle {
+	@InlineButtonText-focused@
+}
+
+.ZInlineButton.ZActive .ZButtonTable .ZWidgetTitle {
+	@InlineButtonText-active@
+}
+
+.ZInlineButton.ZSelected .ZButtonTable .ZWidgetTitle {
+	@InlineButtonText-selected@
+}
 
 /* normal buttons with text should be at least a certain width */
 .ZHasText .ZButtonTable 			{	@TextButtonWidth@ }
@@ -2120,14 +2231,20 @@ INPUT.xform_field {
 
 .DwtComboBox .DwtInputField INPUT[type='text'],
 .DwtComboBox .DwtInputField INPUT[type='password'] {
-	
+	@ComboBoxInput@
 }
 
-.DwtComboBox .ZButton					{	@WidgetHeight@	}
-.DwtComboBox .ZDropDown					{	@ComboBoxDropDown@	}
+.DwtComboBox .DwtComboBoxWrapper {	
+	@ComboBoxWrapper@
+}
 
+.DwtComboBox .ZButton {
+	@ComboBoxSelector@
+}
 
-
+.DwtComboBox .ZDropDown {
+	@ComboBoxDropDown@
+}
 
 /***************
  *
