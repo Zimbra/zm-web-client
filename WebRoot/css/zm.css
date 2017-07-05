@@ -3771,7 +3771,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding-left: 0;
 }
 
-.ZOptionsField .ZPropertySheet > tbody > tr > td:lst-child {
+.ZOptionsField .ZPropertySheet > tbody > tr > td:last-child {
 	padding-right: 0;
 }
 
