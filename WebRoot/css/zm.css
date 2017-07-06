@@ -3742,7 +3742,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@PrefSectionContent@
 }
 
-.ZOptionsSectionMain>TABLE>TBODY>TR>TD {
+.ZOptionsSectionMain > TABLE > TBODY > TR > TD {
 	@PrefSectionRowCell@
 }
 

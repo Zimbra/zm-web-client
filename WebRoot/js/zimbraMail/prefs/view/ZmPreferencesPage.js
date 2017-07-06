@@ -674,7 +674,7 @@ function(parentIdOrElem, text, width, listener, id, className) {
 	button.setText(text);
 	button.addSelectionListener(listener);
 	this._replaceControlElement(parentIdOrElem, button);
-	if(className) {
+	if (className) {
 		button.addClassName(className);
 	}
 	return button;
