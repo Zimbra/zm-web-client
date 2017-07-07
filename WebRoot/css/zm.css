@@ -2048,6 +2048,10 @@ div.CompDragArea * {
 	@TaskReadingPaneRight-CompletedProgressBarImage@
 }
 
+.ZmTaskMultiView .DwtListView .Row-selected .ZmTaskProgress .tick-inside {
+	@TaskReadingPaneRight-CompletedProgressBarImage-Selected@
+}
+
 .ZmTaskMultiView .DwtListView  .RowDouble .BottomRow {
 	@TaskReadingPaneRight-BottomRowIconContainer@
 }
