@@ -664,7 +664,7 @@
 
     <target name="timezones">
         <!-- Download timezones zip -->
-        <ivy:install organisation="zimbra" module="zm-timezones" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="zip" />
+        <ivy:install organisation="zimbra" module="zm-timezones" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver-zip" to="build-tmp" overwrite="true" transitive="true" type="zip" />
 
         <unzip dest="${build.tmp.dir}/zm-timezones" overwrite="true">
             <fileset dir="${build.tmp.dir}">
