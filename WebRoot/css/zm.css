@@ -6904,6 +6904,10 @@ a.ZmLinkDisabled {
 	@DLEditViewTabPage@
 }
 
+.ZmDlViewWrapper .ZmContactContent .ZTabPage .ZTabPageTitle {
+	@DLEditViewTabPageTitle@
+}
+
 .ZmDlViewWrapper .ZmDLPropertiesView {
 	@DLPropertiesView@
 }
@@ -6914,6 +6918,11 @@ a.ZmLinkDisabled {
 
 .ZmDLPropertiesView .rowValue {
 	@DLPropertiesViewRowValue@	
+}
+
+.ZmDLPropertiesView input[type='text'],
+.ZmDLPropertiesView textarea {
+	@DLPropertiesViewInput@
 }
 
 .ZmEditGroupContact {

@@ -658,18 +658,19 @@
 </template>
 
 <template id='abook.Contacts#DlPropertiesView'>
+	<h4 class='ZTabPageTitle'><$= ZmMsg.dlProperties $></h4>
 	<$ if (data.contact.isDistributionList()) { $>
 		<table role="presentation" width='100%' class='ZmDLPropertiesView'>
 			<tr>
 				<td class='rowLabel'><$= ZmMsg.displayNameLabel $></td>
 				<td class='rowValue'><div class='DwtInputField'>
-					<input type='text' autocomplete='off' id='${id}_dlDisplayName' class='Text' style='width:45em;'>
+					<input type='text' autocomplete='off' id='${id}_dlDisplayName' class='Text'/>
 				</div></td>
 			</tr>
 			<tr>
 				<td class='rowLabel'><$= ZmMsg.descriptionLabel $></td>
 				<td class='rowValue'><div class='DwtInputField'>
-					<textarea rows='4' id='${id}_dlDesc' style='width:45em;'></textarea>
+					<textarea rows='4' id='${id}_dlDesc'></textarea>
 				</div></td>
 			</tr>
 			<tr>
@@ -710,7 +711,7 @@
 			<tr>
 				<td class='rowLabel'></td>
 				<td class='rowValue'><div class='DwtInputField'>
-					<input type='text' autocomplete='off' id='${id}_dlListSpecificMailers' class='Text' style='margin-left:2em;width:43em;'>
+					<input type='text' autocomplete='off' id='${id}_dlListSpecificMailers' class='Text'/>
 				</div></td>
 			</tr>
 			<tr>
@@ -758,13 +759,13 @@
 			<tr>
 				<td class='rowLabel'><$= ZmMsg.listOwnersLabel $></td>
 				<td class='rowValue'><div class='DwtInputField'>
-					<input type='text' autocomplete='off' id='${id}_dlListOwners' class='Text' style='width:45em;'>
+					<input type='text' autocomplete='off' id='${id}_dlListOwners' class='Text'/>
 				</div></td>
 			</tr>
 			<tr>
 				<td class='rowLabel'><$= ZmMsg.notesLabel $></td>
 				<td class='rowValue'><div class='DwtInputField'>
-					<textarea rows='4' id='${id}_dlNotes' style='width:45em;'></textarea>
+					<textarea rows='4' id='${id}_dlNotes'></textarea>
 				</div></td>
 			</tr>
 		</table>
