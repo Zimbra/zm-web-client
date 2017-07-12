@@ -1211,13 +1211,14 @@ ext = BeanUtils.cook(ext);
         <delete dir='${web.dir}/js/zimbra'/>
         <delete>
             <fileset dir="${web.dir}/keys">
-                <include name="Ajx*.properties"/>
+                <include name="AjxKeys*.properties"/>
             </fileset>
         </delete>
         <delete>
             <fileset dir="${web.dir}/messages">
-                <include name="Ajx*.properties"/>
-                <include name="I18n*.properties"/>
+                <include name="AjxMsg*.properties"/>
+                <include name="I18nMsg*.properties"/>
+                <include name="TzMsg*.properties"/>
             </fileset>
         </delete>
     </target>
