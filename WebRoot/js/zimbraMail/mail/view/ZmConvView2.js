@@ -1195,14 +1195,9 @@ ZmConvReplyView.prototype._initializeToolbar = function() {
 		var overrides = {};
 		overrides[ZmOperation.CANCEL] = {
 			tooltipKey: "cancel",
-			shortcut:   null,
-			showImageInToolbar: true,
-			showTextInToolbar: true
+			shortcut:   null
 		};
-		overrides[ZmOperation.SEND] = {
-			showImageInToolbar: true,
-			showTextInToolbar: true
-		};
+
 		var tbParams = {
 			parent:				this,
 			buttons:			buttons,
