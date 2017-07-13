@@ -28,6 +28,7 @@
 
 <c:set var="client" value="${param.client}"/>
 <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
+<c:set var="validationErrorCode" value="${not empty errorCode ? errorCode : (not empty header['errorCode'] ) ? header['errorCode'] : null}" />
 
 <head><title><fmt:message key="externalUserRegistration"/></title>
 <link rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml.css'>
@@ -63,11 +64,15 @@
 
 			<form action="/service/extuserprov/" method="post" onsubmit="return checkPasswords();">
 
-			<div id="ZLoginErrorPanel" style="display:none;">
+			<div id="ZLoginErrorPanel" style="${not empty validationErrorCode ? 'display:block': 'display:none'}">
 				<table>
 					<tr>
 						<td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
-						<td id="errorMessage"></td>
+						<td id="errorMessage">
+							<c:if test="${not empty validationErrorCode}"> 
+								<fmt:message bundle="${zhmsg}" key='${validationErrorCode}'/>
+							</c:if>
+						</td>
 					</tr>
 				</table>
 			</div>
