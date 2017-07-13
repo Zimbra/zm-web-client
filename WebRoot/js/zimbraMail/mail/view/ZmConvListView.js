@@ -411,7 +411,7 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 			}
 			htmlArr[idx++] = "</div>";
 		}
-		else if (field == ZmItem.F_FRAGMENT && appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
+		else if (field == ZmItem.F_FRAGMENT && appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 		}
 		else if (field === ZmItem.F_FOLDER) {
