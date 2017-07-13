@@ -22,7 +22,7 @@ function ZmSkin(hints) {
     this.hints = this.mergeObjects(ZmSkin.hints, hints);
 
     if(typeof DwtListView != 'undefined') {
-        DwtListView.HEADERITEM_HEIGHT = 26;
+        DwtListView.HEADERITEM_HEIGHT = 36;
 
         // @TODO change these in core files
         // 5px added as padding to make it 35px
