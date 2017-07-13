@@ -180,7 +180,7 @@ function(htmlArr, idx, msg, field, colIdx, params, classes) {
 		}
 		htmlArr[idx++] = "</div>";
 
-	} else if (field == ZmItem.F_FRAGMENT && appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
+	} else if (field == ZmItem.F_FRAGMENT && appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 			htmlArr[idx++] = this._getFragmentSpan(msg);
 	} else if (field == ZmItem.F_FOLDER) {
 		htmlArr[idx++] = "<div " + AjxUtil.getClassAttr(classes) + " id='";
