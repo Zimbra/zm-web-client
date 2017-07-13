@@ -865,7 +865,7 @@ ZmMailApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_ADD_FILTER_RULE, {textKey:"createFilter"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_ADD_TO_FILTER_RULE, {textKey: "addToFilter", image: "MailRule"}, ZmSetting.FILTERS_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_ADD_SIGNATURE, {textKey:"signature", image:"AddSignature", tooltipKey:"chooseSignature"}, ZmSetting.SIGNATURES_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_ADD_SIGNATURE, {textKey:"signature", tooltipKey:"chooseSignature"}, ZmSetting.SIGNATURES_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_CHECK_MAIL, {textKey:"checkMail", tooltipKey:"checkMailPrefDefault", image:"Refresh", textPrecedence:90, showImageInToolbar: true});
 	ZmOperation.registerOp(ZmId.OP_CREATE_APPT, {textKey:"createAppt"}, ZmSetting.CALENDAR_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_CREATE_TASK, {textKey:"createTask"}, ZmSetting.TASKS_ENABLED);
@@ -898,7 +898,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_MESSAGE_WIN, {textKey:"newEmail", tooltipKey:"newMessageTooltip", shortcut:ZmKeyMap.NEW_MESSAGE_WIN});
 	ZmOperation.registerOp(ZmId.OP_PRIORITY_HIGH, {textKey:"priorityHigh", image:"PriorityHigh_list"});
 	ZmOperation.registerOp(ZmId.OP_PRIORITY_LOW, {textKey:"priorityLow", image:"PriorityLow_list"});
-	ZmOperation.registerOp(ZmId.OP_PRIORITY_NORMAL, {textKey:"priorityNormal", image:"PriorityNormal_list"});
+	ZmOperation.registerOp(ZmId.OP_PRIORITY_NORMAL, {textKey:"priorityNormal"});
 	ZmOperation.registerOp(ZmId.OP_REMOVE_FILTER_RULE, {textKey:"filterRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
     ZmOperation.registerOp(ZmId.OP_REDIRECT, {textKey:"mailRedirect", tooltipKey:"mailRedirectTooltip"});
 	ZmOperation.registerOp(ZmId.OP_REPLY, {textKey:"reply", image:"Reply", tooltipKey:"replyTooltip", shortcut:ZmKeyMap.REPLY, textPrecedence:50, showImageInToolbar: true, showTextInToolbar: true});
@@ -906,7 +906,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_REQUEST_READ_RECEIPT, {textKey:"requestReadReceipt"});
 	ZmOperation.registerOp(ZmId.OP_RESET, {textKey:"reset", image:"Refresh", tooltipKey: "refreshFilters"});
 	ZmOperation.registerOp(ZmId.OP_RUN_FILTER_RULE, {textKey:"filterRun", image:"SwitchFormat"}, [ ZmSetting.MAIL_ENABLED, ZmSetting.FILTERS_ENABLED ]);
-	ZmOperation.registerOp(ZmId.OP_SAVE_DRAFT, {textKey:"saveDraft", tooltipKey:"saveDraftTooltip", image:"DraftFolder", shortcut:ZmKeyMap.SAVE}, ZmSetting.SAVE_DRAFT_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SAVE_DRAFT, {textKey:"saveDraft", tooltipKey:"saveDraftTooltip", image:"DraftFolder", shortcut:ZmKeyMap.SAVE, showImageInToolbar: true, showTextInToolbar: true}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SEND_MENU, {textKey:"send", tooltipKey:"sendTooltip", image:"Send"}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SEND_LATER, {textKey:"sendLater", tooltipKey:"sendLaterTooltip", image:"SendLater"}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHOW_BCC, {textKey:"showBcc"});
