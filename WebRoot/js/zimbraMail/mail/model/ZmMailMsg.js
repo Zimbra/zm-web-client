@@ -2792,9 +2792,25 @@ function(addrNodes) {
 ZmMailMsg.prototype._addReadReceipt =
 function(addrNodes, accountName) {
 	var addrNode = {t:"n"};
-	if (this.identity) {
-		addrNode.a = this.identity.readReceiptAddr || this.identity.sendFromAddress;
-		addrNode.p = this.identity.sendFromDisplay;
+	var identity = this.identity;
+	var ac = window.parentAppCtxt || window.appCtxt;
+
+	if (identity) {
+		addrNode.a = identity.readReceiptAddr || identity.sendFromAddress;
+		addrNode.p = identity.sendFromDisplay;
+
+		// ZCS-1874, if read receipt is for external POP/IMAP account then set proper email and display name
+		if (identity.isFromDataSource) {
+			var dataSource = ac.getDataSourceCollection().getById(identity.id);
+			if (dataSource) {
+				// mail is "from" external account
+				addrNode.a = dataSource.getEmail();
+				if (ac.get(ZmSetting.DEFAULT_DISPLAY_NAME)) {
+					var dispName = dataSource.identity && dataSource.identity.sendFromDisplay;
+					addrNode.p = dispName || dataSource.userName || dataSource.getName();
+				}
+			}
+		}
 	} else {
 		addrNode.a = accountName || appCtxt.getActiveAccount().getEmail();
 	}
