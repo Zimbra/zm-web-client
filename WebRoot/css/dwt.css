@@ -498,8 +498,6 @@
 /* Container for the list header */
 .DwtListView-ColHeader {
 	@ListHeaderContainer@
-	position:relative;
-	overflow:hidden;
 }
 
 /* Header for one column of the list */
