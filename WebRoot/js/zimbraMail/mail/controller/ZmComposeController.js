@@ -1222,7 +1222,7 @@ function() {
 		buttons.push(ZmOperation.SEND);
 	}
 
-	buttons.push(ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
+	buttons.push(ZmOperation.SAVE_DRAFT, ZmOperation.SEP, ZmOperation.CANCEL);
 
 	if (appCtxt.isSpellCheckerAvailable()) {
 		buttons.push(ZmOperation.SEP, ZmOperation.SPELL_CHECK);
@@ -1380,10 +1380,6 @@ function(action) {
         list.push(ZmOperation.SEP, ZmOperation.USE_PREFIX, ZmOperation.INCLUDE_HEADERS);
     }
 
-	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
-		list.push(ZmOperation.SEP, ZmOperation.ADD_SIGNATURE);
-	}
-
 	list.push(ZmOperation.SEP, ZmOperation.SHOW_BCC);
 
 	if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
@@ -1395,6 +1391,10 @@ function(action) {
 
 	if (ac.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, ac.getActiveAccount())) {
 		list.push(ZmOperation.SEP, ZmOperation.REQUEST_READ_RECEIPT);
+	}
+
+	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
+		list.push(ZmOperation.ADD_SIGNATURE);
 	}
 
 	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);

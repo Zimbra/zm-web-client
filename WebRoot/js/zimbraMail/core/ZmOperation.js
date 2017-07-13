@@ -185,7 +185,7 @@ function() {
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addSearchMenu, parent, true);
 		}));
-	ZmOperation.registerOp(ZmId.OP_SEND, {textKey:"send", tooltipKey:"sendTooltip", image:"Send", shortcut:ZmKeyMap.SEND});
+	ZmOperation.registerOp(ZmId.OP_SEND, {textKey:"send", tooltipKey:"sendTooltip", image:"Send", shortcut:ZmKeyMap.SEND, showImageInToolbar: true, showTextInToolbar: true});
     ZmOperation.registerOp(ZmId.OP_FREE_BUSY_LINK, {textKey:"freeBusyLink", tooltipKey:"freeBusyLinkTooltip", image:"Send"});
     ZmOperation.registerOp(ZmId.OP_SEND_FB_HTML, {textKey:"sendHTMLLink", tooltipKey:"freeBusyLinkTooltip"});
     ZmOperation.registerOp(ZmId.OP_SEND_FB_ICS, {textKey:"sendICSLink", tooltipKey:"freeBusyLinkTooltip"});
@@ -199,7 +199,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHOW_ALL_ITEM_TYPES, {textKey:"showAllItemTypes", image:"Globe"});
     ZmOperation.registerOp(ZmId.OP_SORT_ASC, {textKey:"sortAscending"});
     ZmOperation.registerOp(ZmId.OP_SORT_DESC, {textKey:"sortDescending"});
-	ZmOperation.registerOp(ZmId.OP_SPELL_CHECK, {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip", shortcut:ZmKeyMap.SPELLCHECK, showImageInToolbar: true}, ZmSetting.SPELL_CHECK_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SPELL_CHECK, {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip", shortcut:ZmKeyMap.SPELLCHECK, showImageInToolbar: true, showTextInToolbar: true}, ZmSetting.SPELL_CHECK_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SYNC, {textKey:"reload", shortcut:ZmKeyMap.REFRESH});
     ZmOperation.registerOp(ZmId.OP_SYNC_ALL, {textKey:"checkAllFeed"});
 	ZmOperation.registerOp(ZmId.OP_SYNC_OFFLINE_FOLDER, {textKey:"syncOfflineFolderOff"}, ZmSetting.OFFLINE_ENABLED); /* offline only */
