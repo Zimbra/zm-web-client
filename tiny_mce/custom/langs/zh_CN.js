@@ -20,7 +20,7 @@
  * All portions of the code are Copyright (C) 2014, 2016 Synacor, Inc. All Rights Reserved.
  * ***** END LICENSE BLOCK *****
  */
-tinymce.addI18n('zh_CN',{
+tinymce.addI18n("zh_CN",{
 "Cut": "\u526a\u5207",
 "Heading 5": "\u6807\u9898 5",
 "Header 2": "\u6807\u98982",
