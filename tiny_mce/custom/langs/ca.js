@@ -20,7 +20,7 @@
  * All portions of the code are Copyright (C) 2014, 2016 Synacor, Inc. All Rights Reserved.
  * ***** END LICENSE BLOCK *****
  */
-tinymce.addI18n('ca-ES',{
+tinymce.addI18n("ca",{
 "Cut": "Retalla",
 "Heading 5": "T\u00edtol 5",
 "Header 2": "T\u00edtol 2",

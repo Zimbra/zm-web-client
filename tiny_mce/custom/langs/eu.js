@@ -20,7 +20,7 @@
  * All portions of the code are Copyright (C) 2014, 2016 Synacor, Inc. All Rights Reserved.
  * ***** END LICENSE BLOCK *****
  */
-tinymce.addI18n('eu',{
+tinymce.addI18n("eu",{
 "Cut": "Ebaki",
 "Heading 5": "5. goiburua",
 "Header 2": "2. goiburua",
