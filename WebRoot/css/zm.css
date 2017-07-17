@@ -4023,16 +4023,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmPreferencesPage .exportButton { }
 .ZmPreferencesPage .resetButton {	width:100px;	}
 
-.ZmWhiteBlackList {
-	@InputBorder@
-	width:210px;
-	height:150px;
-}
-
-.ZmWhiteBlackList .Row {
-	padding-left:3px;
-}
-
 #Prefs_Pages_Sharing_mountedShares .DwtListView {
 	min-height:6rem;
 }
@@ -7157,4 +7147,60 @@ input[type="radio"] + label {
 
 .Row-selected input[type="checkbox"]::before {
 	border-color: @CheckElmInverseTickColor@;
+}
+
+.ZmTrustedAddrPrefHeader {
+	@TrustedAddrPrefHeader@
+}
+
+.ZmTrustedAddrHeader {
+	@TrustedAddrHeader@
+}
+
+.ZmWhiteBlackViewTable {
+	@WhiteBlackViewContainer@
+}
+
+.ZmWhiteBlackViewAddEmail {
+	@WhiteBlackViewAddEmailContainer@
+}
+
+.ZmWhiteBlackViewTable .DwtInputField INPUT[type="text"] {
+	@WhiteBlackViewInput@
+}
+
+.ZmWhiteBlackViewAddItem {
+	@WhiteBlackViewAddItemCell@
+}
+
+.ZmWhiteBlackViewAddItem .ImgAdd-svg {
+	@WhiteBlackViewAddItemIconWrapper@
+}
+
+.ZmWhiteBlackViewAddItem .ImgAdd-svg .svg-icon {
+	@WhiteBlackViewAddItemIcon@
+}
+
+.ZOptionsSectionMain .ZmWhiteBlackListView {
+	@WhiteBlackListViewOuterContainer@
+}
+
+.ZmWhiteBlackList {
+	@WhiteBlackListViewInnerContainer@
+}
+
+.ZmWhiteBlackList .Row {
+	@WhiteBlackListViewRow@
+}
+
+.ZmWhiteBlackList .Row TD {
+	@WhiteBlackListViewRowCell@
+}
+
+.ZmWhiteBlackList .RemoveItem {
+	@WhiteBlackListRemoveItemCell@
+}
+
+.ZmWhiteBlackViewNumberUsed {
+	@WhiteBlackListViewItemsNumberUsed@
 }
