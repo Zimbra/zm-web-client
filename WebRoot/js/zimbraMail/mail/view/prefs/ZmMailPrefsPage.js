@@ -723,6 +723,31 @@ function(dialog) {
  *
  * @private
  */
+
+ZmWhiteBlackListView = function(params) {
+	if (arguments.length == 0) {
+		return;
+	}
+	DwtListView.call(this, params);
+	this.delButtons = {};
+};
+
+ZmWhiteBlackListView.prototype = new DwtListView;
+ZmWhiteBlackListView.prototype.constructor = ZmWhiteBlackListView;
+
+ZmWhiteBlackListView.prototype._getCellContents = function(htmlArr, idx, item) {
+	if (item && item.addr) {
+		htmlArr[idx++] = item.addr;
+	}
+	var delButtonId = Dwt.getNextId("DelWhiteBlackItem_");
+	this.delButtons[delButtonId] = true;
+	htmlArr[idx++] = "<td class='RemoveItem'>";
+	htmlArr[idx++] = AjxImg.getImageHtml("Cancel", "", "id='" + delButtonId + "'");
+	htmlArr[idx++] = "</td>";
+
+	return idx;
+};
+
 ZmWhiteBlackList = function(parent, id, templateId) {
 	DwtComposite.call(this, {parent:parent});
 
@@ -834,6 +859,13 @@ function() {
 	this._numUsedText.innerHTML = AjxMessageFormat.format(ZmMsg.whiteBlackNumUsed, [this._listView.size(), this._max]);
 };
 
+ZmWhiteBlackList.prototype._selectionListener = function (ev) {
+	var selection = this._listView.getSelection();
+	if (ev && ev.target && this._listView.delButtons[ev.target.id]) {
+		this._removeListener(ev);
+	}
+};
+
 ZmWhiteBlackList.prototype._setContent =
 function(templateId) {
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#"+templateId, {id:this._htmlElId});
@@ -841,33 +873,21 @@ function(templateId) {
 	var id = this._htmlElId + "_EMAIL_ADDRESS";
 	var el = document.getElementById(id);
 	this._inputEl = new DwtInputField({parent:this, parentElement:id, size:35, hint:ZmMsg.enterEmailAddressOrDomain});
-	this._inputEl.getInputElement().style.width = "210px";
 	this._inputEl._showHint();
 	this._inputEl.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleKeyUp));
 	this.parent._addControlTabIndex(el, this._inputEl);
 
 	id = this._htmlElId + "_LISTVIEW";
-	el = document.getElementById(id);
-	this._listView = new DwtListView({parent:this, parentElement:id});
-	this._listView.addClassName("ZmWhiteBlackList");
+	el = Dwt.getElement(id);
+	this._listView = new ZmWhiteBlackListView({parent:this, parentElement:id, className:"ZmWhiteBlackList"});
+	this._listView.addSelectionListener(new AjxListener(this, this._selectionListener));
 	this.parent._addControlTabIndex(el, this._listView);
 
 	id = this._htmlElId + "_ADD_BUTTON";
-	el = document.getElementById(id);
-	var addButton = new DwtButton({parent:this, parentElement:id});
-	addButton.setText(ZmMsg.add);
-	addButton.addSelectionListener(new AjxListener(this, this._addListener));
-	this.parent._addControlTabIndex(el, addButton);
-
-	id = this._htmlElId + "_REMOVE_BUTTON";
-	el = document.getElementById(id);
-	var removeButton = new DwtButton({parent:this, parentElement:id});
-	removeButton.setText(ZmMsg.remove);
-	removeButton.addSelectionListener(new AjxListener(this, this._removeListener));
-	this.parent._addControlTabIndex(el, removeButton);
-
+	el = Dwt.getElement(id);
+	Dwt.setHandler(el, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._addListener, this));
 	id = this._htmlElId + "_NUM_USED";
-	this._numUsedText = document.getElementById(id);
+	this._numUsedText = Dwt.getElement(id);
 };
 
 ZmWhiteBlackList.prototype._addEmail =
