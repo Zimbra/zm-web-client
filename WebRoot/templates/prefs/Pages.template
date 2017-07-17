@@ -672,26 +672,33 @@ and the container element is replaced with that control.
 	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
 </template>
 <template id='prefs.Pages#TrustedList'>
-	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" class='ZmWhiteBlackViewTable' cellspacing='6'>
 		<tr>
-			<td id='${id}_EMAIL_ADDRESS' tabindex=0></div></td>
-			<td id='${id}_ADD_BUTTON' valign=top tabindex=0></td>
+			<td>
+				<table class='ZmWhiteBlackViewAddEmail'>
+					<tr>
+						<td id='${id}_EMAIL_ADDRESS' tabindex=0></div></td>
+						<td class='ZmWhiteBlackViewAddItem' id='${id}_ADD_BUTTON' valign=top tabindex=0>
+							<$= AjxImg.getImageHtml('Add') $>
+						</td>
+					</tr>
+				</table>
+			</td>
 		</tr>
 		<tr>
-			<td id='${id}_LISTVIEW' tabindex=0></td>
-			<td id='${id}_REMOVE_BUTTON' valign=top tabindex=0></td>
+			<td class='ZmWhiteBlackListView' id='${id}_LISTVIEW' tabindex=0></td>
 		</tr>
 	</table>
-	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
+	<div class='ZOptionsInfo ZmWhiteBlackViewNumberUsed' id='${id}_NUM_USED'></div>
 </template>
 
 <template id='prefs.Pages#Trusted'>
-	<div class='prefHeader'><$=ZmMsg.trustedAddrsDomains$></div>
+	<div class='prefHeader ZmTrustedAddrPrefHeader'><$=ZmMsg.trustedAddrsDomains$></div>
 	<table role="presentation" class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<div><$=ZmMsg.trustedAddrHeaderMsg$></div>
-				<div id='${id}_TRUSTED_ADDR_LIST' tabindex=0 />
+				<div class='ZmTrustedAddrHeader' ><$=ZmMsg.trustedAddrHeaderMsg$></div>
+				<div class='ZmTrustedAddrContent'id='${id}_TRUSTED_ADDR_LIST' tabindex=0 />
 			</td>
 		</td>
 	</table>
