@@ -912,7 +912,7 @@ we are hiding element with that class
   This can be removed once we have support for gradient's to be rendered with <use>
 */
 div.ImgTagStack-svg {
-    background: url("../svg/zimbra.svg?v=@jsVersion@#ImgTagStack-view") no-repeat 2px center;
+    background: url("../svg/gradient/ImgTagStack.svg?v=@jsVersion@") no-repeat 2px center;
     background-size: 100% 100%;
     display: inline-block;
     @SmallIconSize@
