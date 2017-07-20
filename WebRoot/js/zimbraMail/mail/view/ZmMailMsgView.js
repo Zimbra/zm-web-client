@@ -1053,8 +1053,6 @@ function(params) {
 	DBG.println(AjxDebug.DBG1, "Use IFRAME: " + this._usingIframe);
 	
 	if (this._usingIframe) {
-		// bug fix #9475 - IE isnt resolving MsgBody class in iframe so set styles explicitly
-		var inner_styles = AjxEnv.isIE ? ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }" : "";
 		var params1 = {
 			parent:					this,
 			parentElement:			params.container,
@@ -1063,13 +1061,17 @@ function(params) {
 			id:						this._msgBodyDivId,
 			hidden:					true,
 			html:					"<div>" + (this._cleanedHtml || html) + "</div>",
-			styles:					inner_styles,
 			noscroll:				!this._scrollWithIframe,
 			posStyle:				DwtControl.STATIC_STYLE,
 			processHtmlCallback:	callback,
 			useKbMgmt:				true,
 			title:                  this._getIframeTitle()
 		};
+
+		// bug fix #9475 - IE isnt resolving MsgBody class in iframe so set styles explicitly
+		if (AjxEnv.isIE) {
+			params1.styles = ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }";
+		}
 
 		// TODO: cache iframes
 		var ifw = this._ifw = new DwtIframe(params1);
