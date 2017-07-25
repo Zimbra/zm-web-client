@@ -6804,8 +6804,12 @@ a.ZmLinkDisabled {
 	@ContactGroupItemImage@
 }
 
-.ZmContactGroupItemTable .ZmContactGroupItemContent * {
+.ZmContactGroupItemTable .ZmContactGroupItemContent > DIV {
 	@ContactGroupItemContent@
+}
+
+.ZmContactGroupItemTable .ZmContactGroupItemAction > DIV {
+	@ContactGroupItemViewAction@
 }
 
 .ZmContactInfoView .ZmContactGroupListContent .ZmContactGroupItemTable .ZmContactGroupItemContent {
