@@ -322,12 +322,14 @@
 				<$ if (email) {$>
 					<div>
 						<$=email$>
-						<$ if (data.isInline) {$><$=AjxImg.getImageHtml("Plus", "", quickAdd)$><$ }$>
 					</div>
 				<$}$>
 			</td>
 		<$ if (isEdit) {$>
-			<td width='20' valign='middle' class='ZmContactGroupItemAction'><$=AjxImg.getImageHtml("Close", "", delId)$></td>
+			<td width='20' valign='middle' class='ZmContactGroupItemAction'>
+				<$ if (data.isInline) {$><$=AjxImg.getImageHtml("AddContact", "", quickAdd)$><$ }$>
+				<$=AjxImg.getImageHtml("Close", "", delId)$>
+			</td>
 		<$}$>
 		</tr>
 	</table>
