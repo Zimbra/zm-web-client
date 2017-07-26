@@ -3906,15 +3906,43 @@ HTML>BODY .appt-selected .appt_allday_body
 	height:auto;
 }
 
-.ZmPrefZimletListView .DwtListView-Rows {
-	overflow:visible;
+.ZmPrefZimletDetail {
+	@PrefZimletDetail@
 }
 
-.ZmPrefZimletListView .Row {
-	overflow:hidden;
+.ZOptionsItemsListView {
+	@OptionsItemsListContainer@
 }
 
-.ZmPrefZimletListView .Row-selected {
+.ZOptionsItemsListView .DwtListView-ColHeader {
+	@OptionsItemsListColumnHeaderWrapper@
+}
+
+.ZOptionsItemsListView .DwtListView-Column {
+	@OptionsItemsListColumnHeaderCell@
+}
+
+.ZOptionsItemsListView .Row .ZmPrefCheckboxColumn {
+	@OptionsItemsListCheckboxColumn@
+}
+
+.ZOptionsItemsListView .Row {
+	@OptionsItemsListRow@
+}
+
+.ZOptionsItemsListView .Row:last-of-type {
+	@OptionsItemsListLastRow@
+}
+
+.ZOptionsItemsListView .Row TD {
+	@OptionsItemsListRowCell@
+}
+
+.ZOptionsItemsListView .DwtListView-Rows {
+	@OptionsItemsListRows@
+}
+
+.ZOptionsItemsListView .Row-selected {
 	height:auto;
 #IFNDEF GECKO
 	min-height:1.5rem;
@@ -3925,9 +3953,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	overflow:visible;
 }
 
-.ZmPrefZimletListView .Row-selected TD {
-	line-height:1.7rem;
-	white-space:normal;
+.ZOptionsItemsListView .Row-selected TD {
+	@OptionsItemsListRowCellSelected@
 }
 
 .ZOptionsOfflineAccts {
