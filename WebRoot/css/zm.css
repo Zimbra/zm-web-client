@@ -3787,7 +3787,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	@PrefSectionRowCell@
 }
 
-.ZOptionsSectionMain .ZOptionsLabel {
+.ZOptionsSectionMain .ZOptionsLabel,
+.ZOptionsSectionMain .ZOptionsLabelTop {
 	@PrefSectionRowLabelWrapper@
 }
 
@@ -3800,7 +3801,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	@PrefRowCheckWidget@
 }
 
-.ZOptionsField .ZSelect > table {
+.ZOptionsField .ZSelect > table,
+.ZOptionsField .DwtComboBox {
 	@PrefRowSelectWidget@
 }
 
@@ -3814,6 +3816,37 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZOptionsField .ZPropertySheet > tbody > tr > td:last-child {
 	padding-right: 0;
+}
+
+/* Out-of-Office preference section */
+.ZmOutOfOfficeWrapper {
+	@PrefOOOWrapper@
+}
+
+.ZmOutOfOfficeWrapper textarea {
+	@FullWidth@
+}
+
+.ZmOutOfOfficeWrapper textarea.ZmOOOExternalMsg {
+	@PrefOOOExternalMsg@
+}
+
+.ZmOutOfOfficeWrapper .ZmOOOTimePeriodWrapper {
+	@PrefOOOTimePeriodWrapper@
+}
+
+.ZmOutOfOfficeWrapper .ZmOOOTimePeriodWrapper > tbody > tr > td {
+	@PrefOOOTimePeriodCell@
+}
+
+.ZmOOOTimePeriodWrapper .ZmOOODurationLabel {
+	@PrefOOODurationLabel@
+}
+
+.ZmOOOTimePeriodWrapper .ZmOOODuration .ZmSelectWidgetWrapper,
+.ZmOOOTimePeriodWrapper .ZmOOODuration .DwtTimeInput,
+.ZmOutOfOfficeWrapper .ZmOOOCalendar .ZSelect > table {
+	@PrefOOOMiniDropDown@
 }
 
 .DwtCheckbox .DwtInputField input[type="text"],
@@ -6243,11 +6276,6 @@ DIV.ZmSuggestLink {
 }
 .ZmLocationTooltipTitle {
 	font-weight:bold;
-}
-
-.ZmOOODuration,
-.ZmOOOCalendar {
-	padding:4px 2px 2px 4px;
 }
 
 .FakeAnchor, a:link, a:visited {
