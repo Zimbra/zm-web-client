@@ -1812,7 +1812,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			<td class='ZOptionsSectionMain'>
 				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 					<tr>
-						<td><div style='margin-bottom:1em;'><$=ZmMsg.zimletsPrefsMsg$></div></td>
+						<td><div class='ZmPrefZimletDetail'><$=ZmMsg.zimletsPrefsMsg$></div></td>
 					</tr>
 					<tr>
 						<td><div id='${id}_CHECKED_ZIMLETS' tabindex=0></div></td>
