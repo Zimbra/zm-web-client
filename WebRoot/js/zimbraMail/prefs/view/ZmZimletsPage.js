@@ -478,7 +478,7 @@ function() {
 ZmPrefZimletListView = function(parent, controller) {
 	DwtListView.call(this, {
 		parent: parent,
-		className: "ZmPrefZimletListView",
+		className: "DwtListView ZOptionsItemsListView",
 		headerList: this._getHeaderList(),
         id: "ZmPrefZimletListView",
 		view: ZmId.VIEW_PREF_ZIMLETS
@@ -555,11 +555,17 @@ ZmPrefZimletListView.prototype._getCellId = function(item, field, params) {
 	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM_CELL, "zimlets", item.name, field);
 };
 
+ZmPrefZimletListView.prototype._getCellClass = function (item, field) {
+	if (field === ZmPrefZimletListView.COL_ACTIVE) {
+		return "ZmPrefCheckboxColumn";
+	}
+};
+
 ZmPrefZimletListView.prototype._getHeaderList =
 function() {
 	var hlist = [
 		(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_ACTIVE, text:ZmMsg.active, width:ZmMsg.COLUMN_WIDTH_ACTIVE})),
-        (new DwtListHeaderItem({field:ZmPrefZimletListView.COL_NAME, text:ZmMsg.name, width:ZmMsg.COLUMN_WIDTH_FOLDER_DLV})),    
+		(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_NAME, text:ZmMsg.name, width:ZmMsg.COLUMN_WIDTH_FOLDER_DLV})),
 		(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_DESC, text:ZmMsg.description}))
 	];
 
