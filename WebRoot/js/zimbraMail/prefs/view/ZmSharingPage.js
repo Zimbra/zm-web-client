@@ -397,13 +397,14 @@ function() {
 	var params = {};
 	params.parent = this;
 	params.template = "prefs.Pages#ShareForm";
+	params.className = "DwtForm DwtFormInline";
 	params.form = {
 		items: [
 			{ id: ZmSharingView.ID_RADIO, type: "DwtRadioButtonGroup", onclick: this._onClick, items: [
 			{ id: ZmSharingView.ID_GROUP, type: "DwtRadioButton", value: ZmSharingView.ID_GROUP, label: ZmMsg.showGroupShares, checked: true },
 			{ id: ZmSharingView.ID_USER, type: "DwtRadioButton", value: ZmSharingView.ID_USER, label: ZmMsg.showUserShares }]},
 			{ id: ZmSharingView.ID_OWNER, type: "ZmAddressInputField", validator: this._validateOwner, params: { singleBubble: true } },
-			{ id: ZmSharingView.ID_FIND_BUTTON, type: "DwtButton", label: ZmMsg.findShares, onclick: this._onClick }
+			{ id: ZmSharingView.ID_FIND_BUTTON, type: "DwtButton", label: ZmMsg.findShares, className: "ZAltButton", onclick: this._onClick }
 		]
 	};
 	this._shareForm = new DwtForm(params);
@@ -429,7 +430,7 @@ function() {
 	params.form = {
 		items: [
 			{ id: ZmSharingView.ID_FOLDER_TYPE, type: "DwtSelect", items: options},
-			{ id: ZmSharingView.ID_SHARE_BUTTON, type: "DwtButton", label: ZmMsg.share, onclick: this._onClick }
+			{ id: ZmSharingView.ID_SHARE_BUTTON, type: "DwtButton", className: "ZAltButton", label: ZmMsg.share, onclick: this._onClick }
 		]
 	};
 	this._grantForm = new DwtForm(params);
@@ -880,6 +881,12 @@ function(share, html, idx) {
 
 	var type = share.grantee.type;
 	var actions = ["edit", "revoke", "resend"];
+	var iconMap = {
+		"edit": "Edit",
+		"revoke": "Close",
+		"resend": "MsgStatusSent"
+	};
+	var iconStyle = "display:inline";
 	if (type == ZmShare.TYPE_ALL || type == ZmShare.TYPE_DOMAIN || !share.link.role) {
 		html[idx++] = ZmMsg.configureWithAdmin;
 		actions = [];
@@ -895,7 +902,7 @@ function(share, html, idx) {
 		if (share.isGuest() && action == "edit") { continue; }
 		if ((share.isPublic() || share.invalid) && (action == "edit" || action == "resend")) { continue; }
 
-		html[idx++] = "<a href='javascript:;' id='" + linkId + "' onclick='ZmSharingView._handleShareAction(" + '"' + share.domId + '", "' + handlers[i] + '"' + ");'>" + ZmMsg[action] + "</a> ";
+		html[idx++] = "<a title='"+ ZmMsg[action]  +"' href='javascript:;' class='ZmSharingActionLink' id='" + linkId + "' onclick='ZmSharingView._handleShareAction(" + '"' + share.domId + '", "' + handlers[i] + '"' + ");'>" + AjxImg.getImageHtml(iconMap[action], iconStyle) + "</a> ";
 	}
 
 	return idx;
@@ -920,4 +927,18 @@ function(share, list, compareFunc) {
 		}
 	}
 	return null;
+};
+
+//overriding no results container getter function for custom behavior
+ZmSharingListView.prototype._getNoResultsContainer =
+function() {
+	var div = document.createElement("div");
+	div.className = "ZmListViewTableNoResultsContainer";
+	return div;
+};
+
+//preventing selection in the list view.
+ZmSharingListView.prototype._allowLeftSelection =
+function(clickedEl, ev, button) {
+	return false;
 };
