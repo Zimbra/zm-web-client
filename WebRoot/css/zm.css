@@ -1665,8 +1665,7 @@ div.CompDragArea * {
 	@FontSize-slightly-big@
 }
 
-.ZmGrantRightsDialog .addrBubbleContainer,
-.ZmPreferencesPage .addrBubbleContainer {
+.ZmGrantRightsDialog .addrBubbleContainer {
 	@GrantRightsDialogInputContainer@
 }
 
@@ -3756,11 +3755,21 @@ HTML>BODY .appt-selected .appt_allday_body
 	@PrefSectionHeader@
 }
 
+.prefSubHeader {
+	@PrefSectionSubHeader@
+}
+
 .prefHeaderActions {
 	@PrefSectionHeaderActions@
 }
 
-.prefHeaderComment {width:99%;}
+.prefHeaderComment {
+	@PrefHeaderComment@
+}
+
+.ZOptionsShareFormTable {
+	@PrefShareFormContainer@
+}
 
 .ZOptionsHeaderL, .ZOptionsHeaderR {
 	display:none;
@@ -5911,6 +5920,14 @@ DIV .SuggestBtn {
 	color:@TxtC@;
 	padding:5em 1em 1em;
 	text-align:center;
+}
+
+.ZmListViewTableNoResultsContainer .NoResults {
+	@NoResultsTableListView@
+}
+
+.ZmSharingActionLink .svg-icon {
+	@PrefSharingViewActionIcon@
 }
 
 .ZmShareSearchView {

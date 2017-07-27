@@ -2986,6 +2986,14 @@ function(){
    this.parent._editDelegateButton();
 }
 
+//overriding no results container getter function for custom behavior
+ZmAccountDelegatesListView.prototype._getNoResultsContainer =
+function() {
+	var div = document.createElement("div");
+	div.className = "ZmListViewTableNoResultsContainer";
+	return div;
+};
+
 ZmAccountAppPasscodeListView = function(parent, className, posStyle, noMaximize) {
 	className = className || "DwtListView";
 	className += " ZOptionsItemsListView";
