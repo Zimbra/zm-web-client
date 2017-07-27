@@ -2589,6 +2589,10 @@ INPUT.xform_field {
 #ENDIF
 }
 
+.DwtFormInline {
+	display: inline;
+}
+
 .DwtFormRowAdd,
 .DwtFormRowRemove {
 	@FormAddRemoveButton@
