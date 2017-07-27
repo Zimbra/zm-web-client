@@ -1923,10 +1923,12 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 
 <template id='prefs.Pages#SharingPrefPage'>
-	<div class="rightAlign prefHeaderComment"><$=ZmMsg.sharingChangesSavedImmediately$></div>
-	<div class='prefHeader'><$=ZmMsg.pendingSharesTitle$></div>
+	<div class='prefHeader'><$=ZmMsg.sharing$></div>
+	<div class="prefHeaderComment"><$=ZmMsg.sharingChangesSavedImmediately$></div>
+	<div class="prefSubHeader"><$=ZmMsg.pendingSharesTitle$></div>
 	<table role="presentation" class='ZOptionsSectionTable' width=100%>
 		<tr>
+			<td width="20%" valign="top"><$=ZmMsg.show$>:</td>
 			<td class='ZOptionsSectionMain'>
 				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 					<tr><td><div id='${id}_shareForm'></div></td></tr>
@@ -1934,14 +1936,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</td>
 		</tr>
 		<tr>
-			<td class='ZOptionsSectionMain'>
+			<td colspan='2' class='ZOptionsSectionMain'>
 				<div>
 					<div id='${id}_pendingShares'></div>
 				</div>
 			</td>
 		</tr>
 	</table>
-	<div class='prefHeader'><$=ZmMsg.mountedSharesTitle$></div>
+	<div class='prefSubHeader'><$=ZmMsg.mountedSharesTitle$></div>
 	<table role="presentation" class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
@@ -1951,7 +1953,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</td>
 		</tr>
 	</table>
-	<div class='prefHeader'><$=ZmMsg.sharingByMe$></div>
+	<div class='prefSubHeader'><$=ZmMsg.sharingByMe$></div>
 	<table role="presentation" class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
@@ -1961,7 +1963,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table role="presentation" width=100%>
-					<tr><td><div class="sharingPageListTitle"><$=ZmMsg.shareAFolder$></div></td></tr>
 					<tr><td><div id='${id}_grantForm'></div></td></tr>
 				</table>
 			</td>
@@ -1970,20 +1971,18 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#ShareForm'>
-	<table role="presentation">
+	<table role="presentation" class="ZOptionsShareFormTable">
 		<tr><td colspan=3><div id="${id}_group" class="ZOptionsInfo" tabindex=0></div></td></tr>
-		<tr><td><div id="${id}_user" class="ZOptionsInfo" tabindex=0></div></td>
-			<td><div id="${id}_owner" class="ZOptionsInfo" tabindex=0></div></td>
-			<td><div id="${id}_findButton" tabindex=0></div></td></tr>
+		<tr><td><div id="${id}_user" class="ZOptionsInfo" tabindex=0></div></td></tr>
+		<tr><td><div id="${id}_owner" class="" tabindex=0></div></td></tr>
+		<tr><td><div id="${id}_findButton" tabindex=0></div></td></tr>
 	</table>
 	<br/>
 </template>
 
 <template id='prefs.Pages#GrantForm'>
-	<div><$=ZmMsg.grantFormText$></div>
-	<br/>
 	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-		<tr><td><$=ZmMsg.folderType$></td>
+		<tr><td><$=ZmMsg.grantFormText$></td>
 			<td><div id='${id}_folderType' tabindex=0></div></td>
 			<td><div id='${id}_shareButton' tabindex=0></div></td></tr>
 	</table>
