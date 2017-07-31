@@ -3779,6 +3779,14 @@ HTML>BODY .appt-selected .appt_allday_body
 	@roundCorners(8px 8px 0px 0px)@
 }
 
+.ZOptionsSectionMain td.ZOptionsSubHeadingLabel {
+	@PrefSubHeadingLabel@
+}
+
+.ZOptionsSectionMain td.ZOptionsSubHeadingContent {
+	@PrefSubHeadingContent@
+}
+
 .ZOptionsSectionMain {
 	@PrefSectionContent@
 }

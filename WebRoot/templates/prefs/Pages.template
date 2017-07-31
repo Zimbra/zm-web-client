@@ -967,7 +967,7 @@ and the container element is replaced with that control.
 						</tr>
 					<$ } $>
 					<tr><td colspan=2></td></tr>
-					<tr><td style='text-align:left' colspan=2><b><$=ZmMsg.accountFromPrompt$></b></td></tr>
+					<tr><td class='ZOptionsSubHeadingLabel' colspan=2><$=ZmMsg.accountFromPrompt$></td></tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
 						<td class='ZOptionsField'><$=ZmMsg.fromDetail$></td>
@@ -1009,18 +1009,23 @@ and the container element is replaced with that control.
 					<tr><td colspan=2></td></tr>
 					<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE)) { $>
 						<tr valign=top>
-							<td class='ZOptionsLabel'><$=ZmMsg.twoStepAccountSecurity$></td>
-							<td class='ZOptionsField' valign='middle'>
-								<span id='${id}_TWO_STEP_AUTH'>
+							<td class='ZOptionsLabel ZOptionsSubHeadingLabel'><$=ZmMsg.twoStepAccountSecurity$></td>
+							<td class='ZOptionsField ZOptionsSubHeadingContent' valign='middle'>
+								<div id='${id}_TWO_STEP_AUTH'>
 									<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) { $>
 										<$=ZmMsg.twoStepAuth$>
 									<$ } $>
 									<$ else { $>
 										<$=ZmMsg.twoStepStandardAuth$>
 									<$ } $>
-								</span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField ZOptionsSubField'>
 								<$ if (!appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_REQUIRED)) { $>
-									<a style="margin:20px;" href="#" id='${id}_TWO_STEP_AUTH_LINK'>
+									<a href="#" id='${id}_TWO_STEP_AUTH_LINK'>
 										<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) { $>
 											<$=ZmMsg.twoStepAuthDisableLink$>
 										<$ } $>
@@ -1091,8 +1096,8 @@ and the container element is replaced with that control.
 						<tr><td colspan=2></td></tr>
 					<$ } $>
 					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.delegatesLabel$></td>
-						<td style='text-align:left'><$=ZmMsg.delegateRightsPrompt$></td></tr>
+						<td class='ZOptionsLabel ZOptionsSubHeadingLabel'><$=ZmMsg.delegatesLabel$></td>
+						<td style='text-align:left' class='ZOptionsSubHeadingContent'><$=ZmMsg.delegateRightsPrompt$></td></tr>
 					<tr>
 						<td></td>
 						<td>
@@ -1222,7 +1227,7 @@ and the container element is replaced with that control.
 					</tr>
 					<tr><td colspan=2></td></tr>
 					<tr>
-						<td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td>
+						<td class='ZOptionsLabel ZOptionsSubHeadingLabel' colspan=2><$=ZmMsg.accountFromPrompt$></td>
 					</tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
@@ -1288,7 +1293,7 @@ and the container element is replaced with that control.
 					</tr>
 					<tr><td colspan=2></td></tr>
 					<tr>
-						<td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td>
+						<td class='ZOptionsLabel ZOptionsSubHeadingLabel' colspan=2><$=ZmMsg.accountFromPrompt$></td>
 					</tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
