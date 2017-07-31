@@ -1904,14 +1904,14 @@ function(id, setup, value) {
 		return listView;
 	}
 	if (id == "TEST") {
-		var button = new DwtButton({parent:this});
+		var button = new DwtButton({parent:this, className: "ZButton ZAltButton"});
 		button.setText(setup.displayName);
 		button.addSelectionListener(new AjxListener(this, this._handleTestButton));
 		return button;
 	}
 	if (id == "WHEN_IN_FOLDER_BUTTON") {
 		var button = new DwtButton({parent:this});
-		button.setImage("SearchFolder");
+		button.setImage("Search");
 		button.addSelectionListener(new AjxListener(this, this._handleFolderButton));
 		return button;
 	}
@@ -1984,7 +1984,7 @@ function() {
 	var deleteButtonDiv = document.getElementById(this._htmlElId+"_DELETE");
 	if (deleteButtonDiv) {
 		var button = new DwtButton({parent:this});
-		button.setText(ZmMsg.del);
+		button.setText(ZmMsg.removeAccount);
 		button.setEnabled(false);
 		button.addSelectionListener(new AjxListener(this, this._handleDeleteButton));
 		this._replaceControlElement(deleteButtonDiv, button);
@@ -2834,7 +2834,7 @@ function(account, field, html) {
 		el = document.getElementById(this._getCellId(account, field)+"_name");
     }
     if(field == ZmItem.F_EMAIL) {
-        html = "<div style='margin-left: 10px;'>"+ html +"</div>";    
+        html = "<div>"+ html +"</div>";
     }
 	el.innerHTML = html;
 };
@@ -2868,7 +2868,7 @@ function(buffer, i, item, field, col, params) {
         var email = item.getEmail();
         var identity = item.getIdentity();
         if (!item.isMain && identity.sendFromAddressType == ZmSetting.SEND_ON_BEHALF_OF) email = appCtxt.getActiveAccount().name + " " + ZmMsg.sendOnBehalfOf + " " + email;
-		buffer[i++] = "<div style='margin-left: 10px;'>"+ AjxStringUtil.htmlEncode(email) +"</div>";
+		buffer[i++] = "<div>"+ AjxStringUtil.htmlEncode(email) +"</div>";
 		return i;
 	}
 	if (field == ZmItem.F_TYPE) {
@@ -2887,7 +2887,7 @@ ZmAccountsListView.prototype._getHeaderList =
 function() {
 	return [
 		new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg.accountName, width:ZmAccountsListView.WIDTH_NAME}),
-		new DwtListHeaderItem({field:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmAccountsListView.WIDTH_STATUS, align:"center"}),
+		new DwtListHeaderItem({field:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmAccountsListView.WIDTH_STATUS}),
 		new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.emailAddr}),
 		new DwtListHeaderItem({field:ZmItem.F_TYPE, text:ZmMsg.type, width:ZmAccountsListView.WIDTH_TYPE})
 	];
@@ -2938,7 +2938,7 @@ function(account, field, html) {
 		el = document.getElementById(this._getCellId(account, field)+"_name");
     }
     if(field == ZmItem.F_EMAIL) {
-        html = "<div style='margin-left: 10px;'>"+ html +"</div>";
+        html = "<div>"+ html +"</div>";
     }
 	el.innerHTML = html;
 };
@@ -2951,7 +2951,7 @@ function(buffer, i, item, field, col, params) {
 		var cellId = this._getCellId(item, field);
 		buffer[i++] = "<div id='";
 		buffer[i++] = cellId;
-		buffer[i++] = "_name' style='margin:0 5px; overflow:hidden;'>";
+		buffer[i++] = "_name' style='overflow:hidden;'>";
 		buffer[i++] = AjxStringUtil.htmlEncode(item.user);
 		buffer[i++] = "</div>";
 		return i;
@@ -2960,7 +2960,7 @@ function(buffer, i, item, field, col, params) {
         var cellId = this._getCellId(item, field);
 		buffer[i++] = "<div id='";
 		buffer[i++] = cellId;
-		buffer[i++] = "_type' style='margin:0 5px;'>";
+		buffer[i++] = "_type'>";
 		buffer[i++] = (item.sendAs && item.sendOnBehalfOf)  ? ZmMsg.sendAsAndSendOnBehalfOf : (item.sendAs ? ZmMsg.sendAs : ZmMsg.sendOnBehalfOflbl);
 		buffer[i++] = "</div>";
 		return i;
