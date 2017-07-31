@@ -3783,6 +3783,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	@PrefSectionContent@
 }
 
+.ZOptionsSectionMain .ZmOptionsTable {
+	@PrefSectionOptionTable@
+}
+
 .ZOptionsSectionMain > TABLE > TBODY > TR > TD {
 	@PrefSectionRowCell@
 }
@@ -4007,16 +4011,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZOptionsAcctName {
 	margin-right:10px;
 	white-space:nowrap;
-}
-
-.ZmSignatureListView {
-/*	width:180px !important;*/
-	height:100%;
-	background-color:white;
-}
-
-.ZmSignatureListView TD {
-	padding-left:5px;
 }
 
 .ZmFilterRulesView {
@@ -7279,4 +7273,78 @@ input[type="radio"] + label {
 
 .ZmWhiteBlackViewNumberUsed {
 	@WhiteBlackListViewItemsNumberUsed@
+}
+
+/* Preference signature interface panel */
+.ZmPrefSignaturePage {
+	@PrefSignaturePage@
+}
+
+.ZmPrefSignaturePage hr {
+	@PrefSignaturePageSeparator@
+}
+
+.ZmSignatureNameWrapper {
+	@PrefSignatureNameWrapper@
+}
+
+.ZmSignatureNameWrapper > label {
+	@PrefSignatureNameLabel@
+}
+
+.ZmSignatureNameWrapper .DwtInputField input[type='text'] {
+	@PrefSignatureNameInput@
+}
+
+.ZmSignatureFormatWrapper {
+	@PrefSignatureFormatWrapper@
+}
+
+.ZmSignatureListWrapper {
+	@PrefSignatureListWrapper@
+}
+
+.ZmSignatureListView {
+	@PrefSignatureListView@
+}
+
+.ZmSignatureListView [class*='Row'] TD {
+	@PrefSignatureListRow@
+}
+
+.ZmSignatureListView [class*='Row-selected'] {
+	@PrefSignatureListRowActive@
+}
+
+.ZmSignatureListActions {
+	@PrefSignatureListActions@
+}
+
+.ZmSignatureEditorWrapper {
+	@PrefSignatureEditorWrapper@
+}
+
+.ZmSignatureEditorWrapper .ZmSignatureEditor {
+	@PrefSignatureEditorContainer@
+}
+
+.ZmSignatureEditor .ZmHtmlEditor {
+	@PrefSignatureEditor@
+}
+
+.ZmSignatureEditor .ZmHtmlEditor .ZmHtmlEditorIFrame,
+.ZmSignatureEditor .ZmHtmlEditorTextArea {
+	@PrefSignatureEditorTextArea@
+}
+
+.ZmSignatureUsageOptions TD > .ZSelect {
+	@PrefSignatureUsageSelectBox@
+}
+
+.ZmSignatureUsageOptions .ZSelect > table {
+	@PrefSignatureUsageSelect@
+}
+
+.ZmSignatureEditorWrapper .ZmSignatureVCardWrapper {
+	@PrefSignatureVCardWrapper@
 }
