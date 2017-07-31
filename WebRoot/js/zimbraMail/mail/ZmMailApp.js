@@ -621,7 +621,7 @@ function() {
 	ZmPref.registerPref("SIGNATURE_STYLE", {
 		displayName:		ZmMsg.signatureStyle,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		orientation:		ZmPref.ORIENT_HORIZONTAL,
+		orientation:		ZmPref.ORIENT_VERTICAL,
 		displayOptions:		[ZmMsg.aboveQuotedText, ZmMsg.atBottomOfMessage],
 		options:			[ZmSetting.SIG_OUTLOOK, ZmSetting.SIG_INTERNET]
 	});
