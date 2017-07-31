@@ -733,23 +733,22 @@ and the container element is replaced with that control.
 			</td>
 		</tr>
 	</table>
-
 	<div class='prefHeader'><$=ZmMsg.signaturesUsing$></div>
 	<table role="presentation" class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table role="presentation" id='${id}_SIG_TABLE' class='ZPropertySheet' cellspacing='6'>
+				<table role="presentation" id='${id}_SIG_TABLE' class='ZPropertySheet ZmSignatureUsageOptions' cellspacing='6' width=100%>
 					<tr>
 						<td>&nbsp;</td>
 						<td><$=ZmMsg.newMessages$></td>
 						<td><$=ZmMsg.repliesForwards$></td>
 					</tr>
 				</table>
-				
+				<hr/>
 				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.placeSignature$></td>
-						<td class='ZOptionsInfo'><div id='${id}_SIGNATURE_STYLE' tabindex=0></div></td>
+						<td class='ZOptionsLabelTop'><$=ZmMsg.placeSignature$></td>
+						<td class='ZOptionsField'><div id='${id}_SIGNATURE_STYLE' tabindex=0></div></td>
 					</tr>
 				</table>
 			</td>
@@ -760,45 +759,52 @@ and the container element is replaced with that control.
 <template id="prefs.Pages#SignatureSplitView">
 	<table role="presentation" width='100%'>
 		<tr>
-			<td>&nbsp;</td>
 			<td>
-				<table role="presentation" width="100%">
-					<tr>
-						<td class="Label"><$=ZmMsg.nameLabel$></td>
-						<td class='ZOptionsField'><input id='${id}_SIG_NAME' tabindex=0 size=30></td>
-						<td width="100%">&nbsp;</td>
-						<td><div id='${id}_SIG_FORMAT' tabindex=0></div></td>
-					</tr>
-				</table>
+				<div class="ZmSignatureNameWrapper">
+					<label><$=ZmMsg.nameLabel$></label>
+					<input id='${id}_SIG_NAME' tabindex=0 size=30>
+				</div>
+			</td>
+			<td align='right'>
+				<div class="ZmSignatureFormatWrapper">	
+					<div id='${id}_SIG_FORMAT' tabindex=0></div>
+				</div>
 			</td>
 		</tr>
+	</table>
+	<hr/>
+	<table role="presentation" width=100%>
 		<tr>
-			<td width=180 height=200 valign='top'>
+			<td class='ZmSignatureListWrapper'>
 				<div id='${id}_SIG_LIST' width='100%' tabindex=0></div>
 			</td>
 			<td>
-				<div id='${id}_SIG_EDITOR' tabindex=0></div>
+				<div class="ZmSignatureEditorWrapper">
+					<div class="ZmSignatureEditor">
+						<div id='${id}_SIG_EDITOR' tabindex=0></div>
+					</div>
+					<div class="ZmSignatureVCardWrapper">
+						<table role="presentation">
+							<tr>
+								<td class="Label"><$=ZmMsg.signatureVcardLabel$></td>
+								<td class='ZOptionsField'><input id='${id}_SIG_VCARD' tabindex=0 size=30></td>
+								<td><div id='${id}_SIG_VCARD_BROWSE' style='padding-right:5px; padding-left:5px;' tabindex=0></div></td>
+								<td><div id='${id}_SIG_VCARD_CLEAR' tabindex=0></div></td>
+							</tr>
+						</table>
+					</div>
+				</div>	
 			</td>
 		</tr>
 		<tr>
 			<td>
-				<table role="presentation">
-					<tr>
-						<td class="ZOptionsField"><div id='${id}_SIG_NEW' tabindex=0></div></td>
-						<td class='ZOptionsField'>&nbsp;</td>
-						<td class="ZOptionsField" align='right'><div id='${id}_SIG_DELETE' tabindex=0></div></td>
-					</tr>
-				</table>
+				<div class="ZmSignatureListActions">
+					<div id='${id}_SIG_NEW' tabindex=0></div>
+					<div id='${id}_SIG_DELETE' tabindex=0></div>
+				</div>
 			</td>
-			<td align='right'>
-				<table role="presentation">
-					<tr>
-						<td class="Label"><$=ZmMsg.signatureVcardLabel$></td>
-						<td class='ZOptionsField'><input id='${id}_SIG_VCARD' tabindex=0 size=30></td>
-						<td><div id='${id}_SIG_VCARD_BROWSE' style='padding-right:5px; padding-left:5px;' tabindex=0></div></td>
-						<td><div id='${id}_SIG_VCARD_CLEAR' tabindex=0></div></td>
-					</tr>
-				</table>
+			<td>
+				&nbsp;
 			</td>
 		</tr>
 	</table>
