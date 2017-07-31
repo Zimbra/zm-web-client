@@ -425,8 +425,8 @@ and the container element is replaced with that control.
 				<$ var isHtmlCompose = data.isEnabled(ZmSetting.HTML_COMPOSE_ENABLED); $>
 				<$ if (isHtmlCompose) { $>
 					<tr>
-						<td class='ZOptionsLabelTop' valign=top><$=ZmMsg.composeLabel$></td>
-						<td class='ZOptionsNestedTable'>
+						<td class='ZOptionsLabelTop ZmPrefMailComposeLabel' valign=top><$=ZmMsg.composeLabel$></td>
+						<td class='ZOptionsNestedTable ZmPrefMailComposeContent'>
 							<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 								<colgroup>
 									<col width=1>
@@ -438,13 +438,13 @@ and the container element is replaced with that control.
 									<col> <!-- color -->
 								</colgroup>
 								<tr valign=top>
-									<td class='ZOptionsFieldTop' style="white-space:nowrap"><div id='${id}_COMPOSE_AS_FORMAT' tabindex=0></div></td>
-									<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fFamilyLabel$></td>
+									<td class='ZOptionsFieldTop ZmPrefMailComposeFormat'><div id='${id}_COMPOSE_AS_FORMAT' tabindex=0></div></td>
+									<td class='ZOptionsLabelNarrow'><$=ZmMsg.fFamilyLabel$></td>
 									<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_FAMILY' tabindex=0></select></td>
-									<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fSizeLabel$></td>
+									<td class='ZOptionsLabelNarrow'><$=ZmMsg.fSizeLabel$></td>
 									<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_SIZE' tabindex=0></select></td>
-									<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fColorLabel$></td>
-									<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_COLOR' tabindex=0></select></td>
+									<td class='ZOptionsLabelNarrow'><$=ZmMsg.fColorLabel$></td>
+									<td class='ZOptionsField'><select class='ZmPrefMailComposeColorPicker' id='${id}_COMPOSE_INIT_FONT_COLOR' tabindex=0></select></td>
 								</tr>
 							</table>
 						</td>
@@ -599,7 +599,7 @@ and the container element is replaced with that control.
 								<td class='ZOptionsLabel' style='text-align:left'><$=ZmMsg.whiteListLabel$></td>
 							</tr>
 							<tr>
-								<td class='ZOptionsField'><div id='${id}_MAIL_BLACKLIST'></div></td>
+								<td class='ZOptionsField ZmPrefMailBlockMessage'><div id='${id}_MAIL_BLACKLIST'></div></td>
 								<td class='ZOptionsField'><div id='${id}_MAIL_WHITELIST'></div></td>
 							</tr>
 						</table>
@@ -644,33 +644,6 @@ and the container element is replaced with that control.
 	<$ } $>
 </template>
 
-<!-- NOTE: we have two separate templates for white/black lists for tabbing support -->
-<template id='prefs.Pages#BlackList'>
-	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-		<tr>
-			<td id='${id}_EMAIL_ADDRESS' tabindex=0></div></td>
-			<td id='${id}_ADD_BUTTON' valign=top tabindex=0></td>
-		</tr>
-		<tr>
-			<td id='${id}_LISTVIEW' tabindex=0></td>
-			<td id='${id}_REMOVE_BUTTON' valign=top tabindex=0></td>
-		</tr>
-	</table>
-	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
-</template>
-<template id='prefs.Pages#WhiteList'>
-	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-		<tr>
-			<td id='${id}_EMAIL_ADDRESS' tabindex=0></div></td>
-			<td id='${id}_ADD_BUTTON' valign=top tabindex=0></td>
-		</tr>
-		<tr>
-			<td id='${id}_LISTVIEW' tabindex=0></td>
-			<td id='${id}_REMOVE_BUTTON' valign=top tabindex=0></td>
-		</tr>
-	</table>
-	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
-</template>
 <template id='prefs.Pages#TrustedList'>
 	<table role="presentation" class='ZmWhiteBlackViewTable' cellspacing='6'>
 		<tr>
