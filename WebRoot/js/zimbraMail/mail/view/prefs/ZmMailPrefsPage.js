@@ -481,12 +481,12 @@ function(id, setup, value) {
 ZmMailPrefsPage.prototype._setupCustom =
 function(id, setup, value) {
 	if (id == ZmSetting.MAIL_BLACKLIST) {
-		this._blackListControl = new ZmWhiteBlackList(this, id, "BlackList");
+		this._blackListControl = new ZmWhiteBlackList(this, id, "TrustedList");
 		return this._blackListControl;
 	}
 
 	if (id == ZmSetting.MAIL_WHITELIST) {
-		this._whiteListControl = new ZmWhiteBlackList(this, id, "WhiteList");
+		this._whiteListControl = new ZmWhiteBlackList(this, id, "TrustedList");
 		return this._whiteListControl;
 	}
 };
