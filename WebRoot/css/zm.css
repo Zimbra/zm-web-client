@@ -7348,3 +7348,31 @@ input[type="radio"] + label {
 .ZmSignatureEditorWrapper .ZmSignatureVCardWrapper {
 	@PrefSignatureVCardWrapper@
 }
+
+.ZOptionsSectionMain .ZmPrefMailBlockMessage {
+	@PrefMailBlockMessageCell@
+}
+
+.ZOptionsLabelTop.ZmPrefMailComposeLabel {
+	@PrefMailComposeLabel@
+}
+
+.ZmPrefMailComposeContent .ZOptionsLabelNarrow {
+	@PrefMailComposeRowLabel@
+}
+
+.ZmPrefMailComposeContent .ZOptionsField {
+	@PrefMailComposeRowValueWrapper@
+}
+
+.ZmPrefMailComposeContent .ZOptionsField .ZSelect > table {
+	@PrefMailComposeRowSelectWidget@
+}
+
+.ZmPrefMailComposeContent .ZmPrefMailComposeColorPicker table {
+	@PrefMailComposeRowColorPickerWidget@
+}
+
+.ZmPrefMailComposeContent .ZmPrefMailComposeFormat {
+	@PrefMailComposeAsFormatWrapper@
+}
