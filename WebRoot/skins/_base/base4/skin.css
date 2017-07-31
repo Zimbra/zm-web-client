@@ -1122,3 +1122,8 @@ svg.progress-circle.tick-inside {
 .ZmPrefTreeView .DwtTreeItemLevel1ChildDiv {
     border-bottom: none;
 }
+
+/* Preference signature view */
+.ZmSignatureUsageOptions TD:last-of-type > .ZSelect {
+	padding-right: 0;
+}

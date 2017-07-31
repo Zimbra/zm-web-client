@@ -29,6 +29,7 @@ ZmSignaturesPage = function(parent, section, controller) {
 	this._maxEntries = appCtxt.get(ZmSetting.SIGNATURES_MAX);
 
 	this.addControlListener(this._resetSize.bind(this));
+	this.addClassName("ZmPrefSignaturePage");
 };
 
 ZmSignaturesPage.prototype = new ZmPreferencesPage;
@@ -401,6 +402,7 @@ function(container) {
 	var button = new DwtButton(this);
 	button.setText(ZmMsg.newSignature);
 	button.addSelectionListener(this._handleAddButton.bind(this));
+	button.addClassName("ZAltButton");
 	this._replaceControlElement(addEl, button);
 	this._sigAddBtn = button;
 
@@ -409,6 +411,7 @@ function(container) {
 	var button = new DwtButton(this);
 	button.setText(ZmMsg.del);
 	button.addSelectionListener(this._handleDeleteButton.bind(this));
+	button.addClassName("ZAltButton");
 	this._replaceControlElement(deleteEl, button);
 	this._deleteBtn = button;
 
