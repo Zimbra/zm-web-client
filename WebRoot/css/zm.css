@@ -4113,40 +4113,89 @@ HTML>BODY .appt-selected .appt_allday_body
 	vertical-align:middle;
 }
 
-.ZmFilterRuleDialog .FilterRuleSection,
-.ZmFilterRuleDialog .FilterActionSection {
-	background-color:rgba(255,255,255,.5);
-	border:1px solid rgba(0,0,0,.25);
-	margin:.25em 1em 1em;
-	padding:0px;
-#IFDEF MSIE
+.ZmFilterRuleDialog .WindowOuterContainer {
+	@FilterRuleDialogOuterContainer@
+}
+
+.ZmFilterRuleDialog .ZmFilterNameSection {
+	@FilterRuleDialogFilterNameSection@
+}
+
+.ZmFilterRuleDialog .ZmFilterName {
+	@FilterRuleDialogFilterName@
+}
+
+.ZmFilterRuleDialog .ZmFilterActiveLabel {
+	@FilterRuleDialogCheckBoxLabel@
+}
+
+.ZmFilterRuleDialog .ZmFilterNameInput {
+	@FilterRuleDialogFilterNameInputWrapper@
+}
+
+.ZmFilterRuleDialog .ZmFilterNameInput INPUT[type="text"]{
+	@FilterRuleDialogFilterNameInputField@
+}
+
+.ZmFilterRuleDialog .ZmFilterRuleSection,
+.ZmFilterRuleDialog .ZmFilterActionSection {
+	@FilterRuleDialogFieldSet@
+	#IFDEF MSIE
 	/* IE sucks at rgba backgrounds, so using gradient hack */
 	filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#80FFFFFF',endColorstr='#80FFFFFF');
 #ENDIF
 }
 
-.ZmFilterRuleDialog .FilterRuleSection>DIV,
-.ZmFilterRuleDialog .FilterActionSection>DIV {
-	padding:.5em 1.5em .5em .5em;
+.ZmFilterRuleDialog .ZmFilterRuleSectionContent,
+.ZmFilterRuleDialog .ZmFilterActionSectionContent {
+	@FilterRuleDialogFieldSetContent@
 }
 
-.FilterActions>TBODY>TR>TD {
-	padding-right:6px;
+.ZmFilterRuleDialog .ZmFilterAddConditionSection,
+.ZmFilterRuleDialog .ZmFilterAddActionSection {
+	@FilterRuleDialogAddSection@
+}
+
+.ZmFilterRuleDialog .ZmFilterAddCondition,
+.ZmFilterRuleDialog  .ZmFilterAddAction {
+	@FilterRuleDialogAddWrapper@
+}
+
+.ZmFilterRuleDialog .ImgAdd-svg,
+.ZmFilterRuleDialog  .ImgAdd-svg {
+	@FilterRuleDialogAddIconWrapper@
+}
+
+.ZmFilterRuleDialog .ZmFilterBrowse td {
+	@FilterRuleDialogBrowseButton@
+
+}
+
+.ZmFilterRuleDialog .DwtInputField INPUT[type='text'] {
+	@FilterRuleDialogInputField@
+}
+
+.ZmFilterRuleDialog input:focus {
+	@FilterRuleDialogInputFocused@
+}
+
+.ZmFilterRuleDialog .filterActions>tbody>tr> td:first-of-type {
+	@FilterRuleDialogActionSectionSelectWidget@
 }
 
 #IFDEF MSIE
 	/* IE won't pick up padding on the table cell elements unless the collapse is turned off */
-.FilterAddRemoveButtons {
-	border-collapse:separate;
+.ZmFilterRuleDialog .ZmFilterRemoveButtons {
+	@FilterRuleDialogRemoveButtons@
 }
 #ENDIF
 
-.FilterAddRemoveButtons>TBODY>TR>TD {
-	padding:0px 3px;
+.ZmFilterRuleDialog .ZmFilterRemoveButtons > TBODY > TR > TD {
+	@FilterRuleDialogRemoveButtonsCell@
 }
 
-.FilterAddRemoveButtons .ZButtonTable .ZLeftIcon DIV {
-	margin:1px 4px;
+.ZmFilterRuleDialog .ImgRemove-svg {
+	@FilterRuleDialogRemoveIconWrapper@
 }
 
 .infoBox {
