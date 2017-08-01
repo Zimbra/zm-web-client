@@ -1406,34 +1406,61 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 -->
 <template id='prefs.Pages#MailFilterRule'>
 
-	<table role="presentation" width='100%' style='margin-bottom:.75em; min-width:450px;'><tr>
-		<td><table role="presentation" width='100%' class='ZPropertySheet' cellspacing='6'><tr>
-			<td width='1%' style='white-space:nowrap;'> <$=ZmMsg.filterNameLabel$> </td>
-			<td width='99%'> <input id='${id}_name' type='text' tabindex=0 style='width:100%;'> </td>
-		</tr></table></td>
-		<td width='1%'><table role="presentation" class='ZCheckboxTable' style='margin-left:1em;'><tr>
-			<td> <input id='${id}_active' type='checkbox' name='cbActive' checked tabindex=0> </td>
-			<td style='white-space:nowrap;'><label for='${id}_active'> <$=ZmMsg.active$> </label></td>
-		</tr></table></td>
-	</tr></table>
+	<table class='ZmFilterNameSection' role="presentation" width='100%'>
+		<tr>
+			<td>
+				<table role="presentation" width='100%' class='ZPropertySheet' cellspacing='6'>
+					<tr>
+						<td class='ZmFilterName' width='99%'> <$=ZmMsg.nameLabel$></td>
+						<td class='ZmFilterCheckBox' width='1%'>
+							<table role="presentation" class='ZCheckboxTable'>
+								<tr>
+									<td><input id='${id}_active' type='checkbox' name='cbActive' checked tabindex=0></td>
+									<td class='ZmFilterActiveLabel'><label for='${id}_active'> <$=ZmMsg.active$> </label></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td class='ZmFilterNameInput' colspan='2'><input id='${id}_name' type='text' tabindex=0'></td>
+					</tr>
+				</table>
+			</td>
+
+		</tr>
+	</table>
 
 	<div id='${id}_condition' tabindex=0></div>
-	<fieldset class='FilterRuleSection'>
-		<div style='overflow-x:hidden;overflow-y:auto;height:145px;'>
+	<fieldset class='ZmFilterRuleSection'>
+		<div class='ZmFilterRuleSectionContent'>
 			<table role="presentation" id='${id}_conditions' width='100%' tabindex=0 class='ZPropertySheet' cellspacing='6'>
 				<tbody></tbody>
 			</table>
 		</div>
 	</fieldset>
 
+	<div class='ZmFilterAddConditionSection'>
+		<div class='ZmFilterAddCondition' id='${id}_add_condition'>
+			<$= AjxImg.getImageHtml('Add') $>
+			<$=ZmMsg.filterAddCondition$>
+		</div>
+	</div>
+
 	<div><$=ZmMsg.filterActions$></div>
-	<fieldset class='FilterActionSection'>
-		<div style='overflow-x:hidden;overflow-y:auto;height:82px'>
+	<fieldset class='ZmFilterActionSection'>
+		<div class="ZmFilterActionSectionContent">
 			<table role="presentation" id='${id}_actions' width='100%' tabindex=0 class='ZPropertySheet' cellspacing='6'>
 				<tbody></tbody>
 			</table>
 		</div>
 	</fieldset>
+
+	<div class='ZmFilterAddActionSection'>
+		<div class='ZmFilterAddAction' id='${id}_add_action'>
+			<$= AjxImg.getImageHtml('Add') $>
+			<$=ZmMsg.filterAddAction$>
+		</div>
+	</div>
 
 	<input id='${id}_stop' type='checkbox' name='cbStop' checked tabindex=0>
 </template>
