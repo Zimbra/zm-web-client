@@ -707,6 +707,7 @@ ZmSharingListView = function(params) {
 	this.type = params.type;
 	this.status = params.status;
 	params.headerList = this._getHeaderList();
+	params.className = "DwtListView ZOptionsItemsListView";
 	DwtListView.call(this, params);
 
 	this.sharingView = params.sharingView;
