@@ -51,7 +51,7 @@ ZmFilterRuleDialog = function() {
 	this._rowChangeLstnr			= new AjxListener(this, this._rowChangeListener);
 	this._opsChangeLstnr			= new AjxListener(this, this._opsChangeListener);
 	this._dateLstnr					= new AjxListener(this, this._dateListener);
-	this._plusMinusLstnr			= new AjxListener(this, this._plusMinusListener);
+	this._removeLstnr				= new AjxListener(this, this._removeListener);
 	this._browseLstnr				= new AjxListener(this, this._browseListener);
 	this._addrBookChangeLstnr		= new AjxListener(this, this._addrBookChangeListener);
 	this._importanceChangeLstnr		= new AjxListener(this, this._importanceChangeListener);
@@ -60,6 +60,10 @@ ZmFilterRuleDialog = function() {
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 	this._conditionErrorFormatter = new AjxMessageFormat(ZmMsg.filterErrorCondition);
 	this._actionErrorFormatter = new AjxMessageFormat(ZmMsg.filterErrorAction);
+	var addConditionIcon = Dwt.getElement(this._addConditionIconId);
+	var addActionIcon = Dwt.getElement(this._addActionIconId);
+	Dwt.setHandler(addConditionIcon, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._plusListener, this,true));
+	Dwt.setHandler(addActionIcon, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._plusListener, this,false));
 };
 
 ZmFilterRuleDialog.prototype = new DwtDialog;
@@ -168,6 +172,9 @@ function() {
 	this._conditionsTableId = id+"_conditions";
 	this._actionsTableId = id+"_actions";
 	this._stopCheckboxId = id+"_stop";
+	this._addConditionIconId = id+"_add_condition";
+	this._addActionIconId = id+"_add_action";
+
 
 	// content html
 	return AjxTemplate.expand("prefs.Pages#MailFilterRule", id);
@@ -374,7 +381,7 @@ function(data, test, isCondition, rowId) {
 		}
 		html[i++] = "</tr></table></td>";
 	}
-	html[i++] = this._getPlusMinusHtml(rowId, isCondition);
+	html[i++] = this._getRemoveButtonHtml(rowId, isCondition);
 	html[i++] = "</tr>";
 
 	return html.join("");
@@ -661,6 +668,7 @@ function(conf, field, options, rowData, testType, rowId) {
 		}
 		var	text = organizer ? AjxStringUtil.htmlEncode(organizer.getName(false, null, true)) : ZmMsg.browse;
 		button.setText(text);
+		button.addClassName("ZmFilterBrowse");
 		button.setData(ZmFilterRuleDialog.BROWSE_TYPE, type);
 		button.setData(ZmFilterRuleDialog.DATA, dataValue);
 		this._inputs[rowId][field] = {id: id, dwtObj: button};
@@ -936,41 +944,36 @@ function(isMainSelect, testType, field, rowData) {
 };
 
 /**
- * Returns HTML for the + and - buttons at the end of each row.
+ * Returns HTML for the close buttons at the end of each row.
  *
  * @param {String}	rowId			the ID of the row that gets the buttons
  * @param {Boolean}	isCondition		the <code>true</code>, we're adding them to a condition row
  * 
  * @private
  */
-ZmFilterRuleDialog.prototype._getPlusMinusHtml =
+ZmFilterRuleDialog.prototype._getRemoveButtonHtml =
 function(rowId, isCondition) {
 	var tabGroup = this._getCurrentTabScope();
 	var html = [];
 	var j = 0;
-	html[j++] = "<td width='1%'><table class='FilterAddRemoveButtons'><tr>";
-	var buttons = ["Plus", "Minus"];
-	for (var i = 0; i < buttons.length; i++) {
-		var b = buttons[i];
+	html[j++] = "<td width='1%'><table class='ZmFilterRemoveButtons'><tr>";
 		var button = new DwtButton({parent:this});
-		button.setImage(b);
+		button.setImage("Remove");
 		button.setData(ZmFilterRuleDialog.ROW_ID, rowId);
 		button.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
-		button.setData(ZmFilterRuleDialog.DO_ADD, (b == "Plus"));
-		button.addSelectionListener(this._plusMinusLstnr);
+		button.addSelectionListener(this._removeLstnr);
 		var id = Dwt.getNextId("TEST_");
-		this._inputs[rowId][b] = {id: id, dwtObj: button};
+		this._inputs[rowId]["Remove"] = {id: id, dwtObj: button};
 		html[j++] = "<td id='";
 		html[j++] = id;
 		html[j++] = "'></td>";
 		tabGroup.addMember(button);
-	}
 	html[j++] = "</tr></table></td>";
 	return html.join("");
 };
 
 /**
- * If there's only one row, disable its Minus button (since removing it would
+ * If there's only one row, disable its Remove button (since removing it would
  * leave the user with nothing).
  *
  * @param {Boolean}	isCondition	if <code>true</code>, we're checking a condition row
@@ -986,11 +989,11 @@ function(isCondition) {
 
 	var input = this._inputs[rows[0].id];
 	if (input) {
-		var minusButton = input["Minus"].dwtObj;
+		var removeButton = input["Remove"].dwtObj;
 		if (rows.length == 1) {
-			minusButton.setEnabled(false);
+			removeButton.setEnabled(false);
 		} else {
-			minusButton.setEnabled(true);
+			removeButton.setEnabled(true);
 		}
 	}
 };
@@ -1133,23 +1136,31 @@ function(ev) {
 };
 
 /**
- * Adds or removes a condition/action row.
+ * Adds a condition/action row.
  *
  * @param {DwtEvent}	ev		the event
- * 
+ *
  * @private
  */
-ZmFilterRuleDialog.prototype._plusMinusListener =
+ZmFilterRuleDialog.prototype._plusListener =
+function(isCondition) {
+	this._addRow(isCondition);
+	this._resetOperations(isCondition);
+};
+
+/**
+ * Removes a condition/action row.
+ *
+ * @param {DwtEvent}	ev		the event
+ *
+ * @private
+ */
+ZmFilterRuleDialog.prototype._removeListener =
 function(ev) {
 	var button = ev.item;
 	var isCondition = button.getData(ZmFilterRuleDialog.IS_CONDITION);
-	var doAdd = button.getData(ZmFilterRuleDialog.DO_ADD);
-	if (doAdd) {
-		this._addRow(isCondition);
-	} else {
-		var rowId = button.getData(ZmFilterRuleDialog.ROW_ID);
-		this._removeRow(rowId, isCondition);
-	}
+	var rowId = button.getData(ZmFilterRuleDialog.ROW_ID);
+	this._removeRow(rowId, isCondition);
 	this._resetOperations(isCondition);
 };
 
