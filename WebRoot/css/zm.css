@@ -3942,6 +3942,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:100px;
 }
 
+.ZmOptionHint {
+	@PrefRowHint@
+}
+
 .ZOptionsField INPUT[type="checkbox"] {
 	@ActiveCursor@
 }
@@ -7383,4 +7387,54 @@ input[type="radio"] + label {
 
 .ZmPrefMailComposeContent .ZmPrefMailComposeFormat {
 	@PrefMailComposeAsFormatWrapper@
+}
+
+/* Preference Import-Export interface styles */
+.ZmImportExportPage {
+	@PrefImpExtPage@
+}
+
+.ZmPrefImpExpActions .ZButton {
+	@PrefImpExpActionBtn@
+}
+
+.ZmImportExportPage .ZInlineButton .ZButtonBorder {
+	@PrefImpExpChooseFolderBtn@
+}
+
+.ZmImportExportPage .ZmDatePickerWrapper {
+	@PrefImpExpDatePickerWrapper@
+}
+
+.ZmImportExportPage .ZmDatePickerWrapper .ZDropDown {
+	@PrefImpExpDatePickerDropDown@
+}
+
+.ZmImportExportPage .ZmDatePickerWrapper .ZmSelectWidgetWrapper {
+	@PrefImpExpDatePicker@
+}
+
+.ZmImportExportPage .ZmCustomFileUploadWidget label {
+	@PrefImpExpFileUploadLabel@
+}
+
+/* Common file-upload widget styles */
+.ZmCustomFileUploadWidget {
+	@FileUploadWidget@
+}
+
+.ZmCustomFileUploadWidget > div {
+	@FileUploadWidgetContainers@
+}
+
+.ZmCustomFileUploadWidget input[type='file'] {
+	@FileUploadWidgetInput@
+}
+
+.ZmCustomFileUploadWidget label {
+	@FileUploadWidgetLabel@
+}
+
+.ZmCustomFileUploadWidget .ZmCustomFileUploadInput label {
+	@FileUploadWidgetFileLabel@
 }
