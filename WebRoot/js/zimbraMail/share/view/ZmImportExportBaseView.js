@@ -352,7 +352,6 @@ function(templateId, data) {
 		if (!views || views.length == 0) continue;
 
 		var checkbox = new ZmImportExportDataTypeCheckbox({parent:this,checked:true});
-		checkbox.setImage(ZmApp.ICON[appName]);
 		checkbox.setText(ZmMsg[ZmApp.NAME[appName]] || ZmApp.NAME[appName] || appName);
 		// NOTE: I know it's the default join string but I prefer
 		//       explicit behavior.

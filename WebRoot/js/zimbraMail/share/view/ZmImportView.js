@@ -48,6 +48,7 @@ ZmImportView = function(params) {
 			},
 			{ id: "FOLDER_BUTTON", type: "DwtButton", label: ZmMsg.browse,
 				enabled: "get('FILE')",
+				className: "ZButton ZInlineButton",
 				onclick: this._folderButton_onclick
 			},
 			{ id: "FORM" },
@@ -72,7 +73,7 @@ ZmImportView = function(params) {
 			}
 		]
 	};
-	params.id = "ZmImportView";
+	params.id = ZmImportView.ID;
 	ZmImportExportBaseView.call(this, params);
 
 	// add change listener to file input
@@ -92,6 +93,7 @@ ZmImportView.prototype.toString = function() {
 //
 // Constants
 //
+ZmImportView.ID = "ZmImportView";
 
 ZmImportView.prototype.TYPE_HINTS = {};
 ZmImportView.prototype.TYPE_HINTS[ZmImportExportController.TYPE_CSV] = ZmMsg.importFromCSVHint;
@@ -153,5 +155,12 @@ ZmImportView.prototype._handleFileChange = function(file) {
 	var type = ZmImportExportController.EXTS_TYPE[ext];
 	if (type) {
 		this.set("TYPE", type);
+	}
+
+	//show uploaded file-name in custom file-upload widget
+	var fileNameWrapper = Dwt.byId(ZmImportView.ID + "_FILE_NAME", this.getControl("FORM"));
+	if(fileNameWrapper) {
+		var uploadedFile = file && file.files && file.files[0];
+		uploadedFile && (fileNameWrapper.innerHTML = AjxStringUtil.clipFile(uploadedFile.name, 80));
 	}
 };

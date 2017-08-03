@@ -36,6 +36,7 @@
  */
 ZmImportExportPage = function(parent, section, controller) {
 	ZmPreferencesPage.apply(this, arguments);
+	this.addClassName("ZmImportExportPage");
 };
 
 ZmImportExportPage.prototype = new ZmPreferencesPage;

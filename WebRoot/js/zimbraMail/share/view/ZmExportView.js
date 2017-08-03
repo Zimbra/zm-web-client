@@ -49,6 +49,7 @@ ZmExportView = function(params) {
 				visible: "get('TYPE') == ZmImportExportController.TYPE_CSV"
 			},
 			{ id: "FOLDER_BUTTON", type: "DwtButton", label: ZmMsg.browse,
+				className: "ZButton ZInlineButton",
 				onclick: this._folderButton_onclick
 			},
 			{ id: "ADVANCED", type: "DwtCheckbox", label: ZmMsg.advancedSettings,
@@ -69,12 +70,14 @@ ZmExportView = function(params) {
 				value: isExportPeriodLimited ? today : null
 			},
 			{ id :"startMiniCalBtn", type: "DwtButton", visible: "get('ADVANCED')",
+				image:"CalendarApp",
 				menu: {type: "DwtCalendar", id: "startMiniCal", onselect: new AjxListener(this, this._dateCalSelectionListener, [true])}
 			},
 			{ id: "endDateField", type: "DwtInputField", visible: "get('ADVANCED')", onblur: AjxCallback.simpleClosure(this._dateFieldChangeListener, this, false),
 				value: isExportPeriodLimited ? today : null
 			},
 			{ id :"endMiniCalBtn", type: "DwtButton", visible: "get('ADVANCED')",
+				image:"CalendarApp",
 				menu: {type: "DwtCalendar", id: "endMiniCal", onselect: new AjxListener(this, this._dateCalSelectionListener, [false])}
 			},
 			{ id: "SKIP_META", type: "DwtCheckbox", label: ZmMsg.exportSkipMeta,
