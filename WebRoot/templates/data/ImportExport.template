@@ -6,7 +6,16 @@
 				<td class='ZOptionsSectionMain'>
 					<table role="presentation" width="100%">
 						<tr><td><div id='${id}_IMPORT_FOLDER' tabindex="100"></div></td></tr>
-						<tr><td align="right"><button id="${id}_IMPORT_BUTTON" tabindex="200" class="ZAltButton" style="display:inline-block;"></button></td></tr>
+						<tr>
+							<td>
+								<table role="presentation" width="100%" class="ZPropertySheet" cellspacing="6">
+									<tr>
+										<td class="ZOptionsLabel">&nbsp;</td>
+										<td class="ZmPrefImpExpActions"><button id="${id}_IMPORT_BUTTON" tabindex="200" class="ZAltButton"></button></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
 					</table>
 				</td>
 			</tr>
@@ -19,7 +28,16 @@
 				<td class='ZOptionsSectionMain'>
 					<table role="presentation" width="100%" >
 						<tr><td><div id='${id}_EXPORT_FOLDER' tabindex="300"></div></td></tr>
-						<tr><td align="right"><button id="${id}_EXPORT_BUTTON" tabindex="400" class="ZAltButton" style="display:inline-block;"></button></td></tr>
+						<tr>
+							<td>
+								<table role="presentation" width="100%" class="ZPropertySheet" cellspacing="6">
+									<tr>
+										<td class="ZOptionsLabel">&nbsp;</td>
+										<td class="ZmPrefImpExpActions"><button id="${id}_EXPORT_BUTTON" tabindex="400" class="ZAltButton"></button></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
 					</table>
 				</td>
 			</tr>
@@ -28,11 +46,19 @@
 </template>
 
 <template id="data.ImportExport#ImportView" class="ZmImportView">
-	<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" width=100% class='ZPropertySheet' cellspacing="0" cellpadding="0">
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.fileLabel$></td>
-			<td class="ZOptionsField" style='padding-left:0.5em;'>
+			<td class="ZOptionsField">
 				<form id="${id}_FORM" method="POST" enctype="multipart/form-data">
-					<input id="${id}_FILE" name="file" type="file" tabindex="100">
+					<div class="ZmCustomFileUploadWidget">
+						<div class="ZmCustomFileUploadInput">
+							<label for="${id}_FILE"><$=ZmMsg.uploadChooseButtonLabel$></label>
+							<input id="${id}_FILE" name="file" type="file" tabindex="100">
+						</div>
+						<div class="ZmCustomFileUploadFile">
+							<label id="${id}_FILE_NAME"></label>
+						</div>
+					</div>
 				</form>
 			</td>
 		</tr>
@@ -43,9 +69,7 @@
 		<tr id="${id}_FOLDER_row">
 			<td class="ZOptionsLabelTop"><$=ZmMsg.destinationLabel$></td>
 			<td class="ZOptionsField">
-				<table role="presentation">
-					<tr><td><button id="${id}_FOLDER_BUTTON" tabindex="300"></button></td></tr>
-				</table>
+				<button id="${id}_FOLDER_BUTTON" tabindex="300"></button>
 			</td>
 		</tr>
 		<tr id='${id}_RESOLVE_row'>
@@ -65,8 +89,8 @@
 		</tr>
 		<tr id="${id}_DATA_TYPES_row">
 			<td class="ZOptionsLabelTop"><$=ZmMsg.dataTypesLabel$></td>
-			<td class="ZOptionsField" style="padding-top: 5px;">
-				<div><$=ZmMsg.dataTypesHint$></div>
+			<td class="ZOptionsField">
+				<div class="ZmOptionHint"><$=ZmMsg.dataTypesHint$></div>
 				<div id="${id}_DATA_TYPES" tabindex="800"></div>
 			</td>
 		</tr>
@@ -74,8 +98,9 @@
 </template>
 
 <template id="data.ImportExport#ExportView" class="ZmExportView">
-	<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" width=100% cellspacing="0" cellpadding="0">
 		<$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) || appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { $>
+		<tr><td colspan="2"><div id="${id}_TYPE_HINT" class="ZmOptionHint"></div></td></tr>			
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.typeLabel$></td>
 			<td class="ZOptionsField">
 				<table role="presentation" class="ZPropertySheet">
@@ -90,15 +115,12 @@
 						<td><select id="${id}_SUBTYPE" tabindex="200"></select></td>
 					</tr>
 				</table>
-				<div id="${id}_TYPE_HINT" class="ZOptionsInfo"></div>
 			</td>
 		</tr>
 		<$ } $>
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.sourceLabel$></td>
 			<td class="ZOptionsField">
-				<table role="presentation">
-					<tr><td><button id="${id}_FOLDER_BUTTON" tabindex="300"></button></td></tr>
-				</table>
+				<button id="${id}_FOLDER_BUTTON" tabindex="300"></button>
 				<$ if (appCtxt.get(ZmSetting.OFFLINE_ENABLED)) { $>
 					<div id="${id}_IGNORE_ARCHIVE" tabindex="400"></div>
 				<$ } $>
@@ -112,8 +134,8 @@
 		</tr>
 		<tr id="${id}_DATA_TYPES_row">
 			<td class="ZOptionsLabelTop"><$=ZmMsg.dataTypesLabel$></td>
-			<td class="ZOptionsField" style="padding-top: 5px;">
-				<div><$=ZmMsg.dataTypesHint$></div>
+			<td class="ZOptionsField">
+				<div class="ZmOptionHint"><$=ZmMsg.dataTypesHint$></div>
 				<div id="${id}_DATA_TYPES" tabindex="600"></div>
 			</td>
 		</tr>
@@ -121,13 +143,13 @@
 			<td class="ZOptionsLabelTop"><$=ZmMsg.date$>:</td><$= AjxTemplate.expand("#DatePickers", data) $>
 		</tr>
 		<tr id="${id}_SEARCH_FILTER_row">
-			<td class="ZOptionsLabelTop" style="width:inherit;"><$=ZmMsg.searchFilterLabel$></td>
+			<td class="ZOptionsLabelTop"><$=ZmMsg.searchFilterLabel$></td>
 			<td class="ZOptionsField">
 				<input id="${id}_SEARCH_FILTER" length="40" hint="<$=ZmMsg.searchFilterHint$>" tabindex="700" size="40">
 			</td>
 		</tr>
 		<tr id="${id}_SKIP_META_row">
-			<td class="ZOptionsLabelTop" style="width:inherit;"><$=ZmMsg.otherLabel$></td>
+			<td class="ZOptionsLabelTop"><$=ZmMsg.otherLabel$></td>
 			<td class="ZOptionsField">
 				<span id="${id}_SKIP_META" tabindex="800"></span>
 			</td>
@@ -139,42 +161,54 @@
 	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 		<$ var count = data.count; $>
 		<$ var rows = count / 3; $>
-		<$ for (var i = 0; i < count; i++) { $>
-			<$ if ((i % 3) == 0) { $>
-				<tr>
+		<tr>
+			<$ for (var i = 0; i < count; i++) { $>
+				<td><span id="${id}_cell_<$=i$>"></span></td>
 			<$ } $>
-			<td><span id="${id}_cell_<$=i$>"></span></td>
-		<$ } $>
+		</tr>
 	</table>
 </template>
 
 <template id="data.ImportExport#DataTypeCheckbox">
-	<table role="presentation">
+	<table role="presentation" class="ZCheckboxTable">
 	  <tr>
 		<td><input id='${id}_input' name='${name}' value='${value}' type='checkbox' ${checked}></td>
-		<td><div id='${id}_image'></div></td>
-		<td><label for='${id}_input' id='${id}_text_right' class='Text' style='text-align:left'></label></td>
+		<td><label for='${id}_input' id='${id}_text_right' class='Text ZCheckboxTableRightText'></label></td>
 	  </tr>
 	</table>
 </template>
 
 <template id='data.ImportExport#DateField'>
-	<td><input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}' value='${value}'></td>
+	<input autocomplete='off' type='text' size=14 id='${id}' value='${value}'>
 </template>
 
 <template id='data.ImportExport#DatePickers'>
-	<td><table role="presentation"><tr>
-		<$= AjxTemplate.expand("#StartDate", data) $>
-		<$= AjxTemplate.expand("#EndDate", data) $>
-	</tr></table></td>
+	<td class="ZOptionsField">
+		<table role="presentation">
+			<tr>
+				<$= AjxTemplate.expand("#StartDate", data) $>
+				<$= AjxTemplate.expand("#EndDate", data) $>
+			</tr>
+		</table>
+	</td>
 </template>
 
 <template id='data.ImportExport#StartDate'>
-	<td><$=ZmMsg.startOn$>&nbsp;<$=AjxTemplate.expand("#DateField",{id:data.id+"_startDateField"})$></td>
-	<td class="miniCalendarButton" style='padding-right:10px;'><div id='${id}_startMiniCalBtn'></div></td>
+	<td><$=ZmMsg.startOn$></td>
+	<td class="ZmDatePickerWrapper">
+		<div class="ZmSelectWidgetWrapper">
+			<$=AjxTemplate.expand("#DateField",{id:data.id+"_startDateField"})$>
+			<div class='ZmSelector' id='${id}_startMiniCalBtn'></div>
+		</div>
+	</td>
 </template>
 
 <template id='data.ImportExport#EndDate'>
-	<td><$=ZmMsg.endOn$>&nbsp;<$=AjxTemplate.expand("#DateField",{id:data.id+"_endDateField"})$></td>
-	<td class="miniCalendarButton" style='padding-right:10px;'><div id='${id}_endMiniCalBtn'></div></td>
+	<td><$=ZmMsg.endOn$></td>
+	<td class="ZmDatePickerWrapper">
+		<div class="ZmSelectWidgetWrapper">
+			<$=AjxTemplate.expand("#DateField",{id:data.id+"_endDateField"})$>
+			<div class='ZmSelector' id='${id}_endMiniCalBtn'></div>
+		</div>
+	</td>
 </template>
