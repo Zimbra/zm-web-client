@@ -859,7 +859,8 @@ function(id, setup, value) {
 		maxLen:setup.maxLen,
 		hint: setup.hint,
 		label: setup.label,
-		id: "Prefs_Input_" + id
+		id: "Prefs_Input_" + id,
+		className: (setup.className || "ZmPrefInputField") + " DwtInputField" 
 	};
 	var input = new DwtInputField(params);
 	this.setFormObject(id, input);
