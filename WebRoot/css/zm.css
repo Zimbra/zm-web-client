@@ -3830,6 +3830,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding-right: 0;
 }
 
+.ZOptionsField .DwtInputField.ZmPrefInputField input[type='text'],
+.ZOptionsField input[type='text'].ZmPrefInputField {
+	@PrefInputTextControl@
+}
+
 /* Out-of-Office preference section */
 .ZmOutOfOfficeWrapper {
 	@PrefOOOWrapper@
