@@ -984,8 +984,7 @@ div.AttachmentImgContainer {
 }
 
 .Conv2Header > span {
-	display: table-cell;
-	vertical-align: middle;
+	@Conv2HeaderCells@
 }
 
 .Conv2Header .expandIcon {
