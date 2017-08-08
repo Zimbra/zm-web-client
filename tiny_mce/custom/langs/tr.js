@@ -20,7 +20,7 @@
  * All portions of the code are Copyright (C) 2014, 2016 Synacor, Inc. All Rights Reserved.
  * ***** END LICENSE BLOCK *****
  */
-tinymce.addI18n('tr_TR',{
+tinymce.addI18n("tr",{
 "Cut": "Kes",
 "Heading 5": "Ba\u015fl\u0131k 5",
 "Header 2": "\u00dcstbilgi 2",

@@ -464,7 +464,7 @@ ZmApptView.prototype._getTimeString =
 function(calItem) {
 	var sd = calItem._orig.startDate;
 	var ed = calItem._orig.endDate;
-    var tz = AjxMsg[AjxTimezone.DEFAULT] || AjxTimezone.getServerId(AjxTimezone.DEFAULT)
+    var tz = TzMsg[AjxTimezone.DEFAULT] || AjxTimezone.getServerId(AjxTimezone.DEFAULT)
 
 	if (calItem.isRecurring() && this._mode == ZmCalItem.MODE_EDIT_SERIES) {
 		sd = calItem.startDate;

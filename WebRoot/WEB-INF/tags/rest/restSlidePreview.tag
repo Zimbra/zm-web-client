@@ -82,11 +82,14 @@
 
         <!-- Resournces -->
         <jsp:include page="/public/Resources.jsp">
-            <jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys" />
+            <jsp:param name="res" value="I18nMsg,TzMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys" />
             <jsp:param name="skin" value="${skin}" />
         </jsp:include>
 
         <!-- Packages -->
+        <script type="text/javascript">
+            <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
+        </script>
         <c:set var="packages" value="Boot,DocsPreview,Debug" scope="request"/>
         <c:set var="pnames" value="${fn:split(packages,',')}" scope="request"/>
         <c:set var="pprefix" value="js" scope="request"/>

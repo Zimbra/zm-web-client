@@ -1121,9 +1121,9 @@
 
 <template id='calendar.Appointment#LocationSuggestion'>
 	<div id='${id}' class="ZmLocationSuggestion">
-		<$= data.locationName $>
+		<$= AjxStringUtil.htmlEncode(data.locationName) $>
 		<$ if (data.locationDescription) { $>
-			<br><$= data.locationDescription $>
+			<br><$= AjxStringUtil.htmlEncode(data.locationDescription) $>
 		<$ } $>
 	</div>
 </template>

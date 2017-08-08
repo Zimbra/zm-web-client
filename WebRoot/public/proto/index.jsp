@@ -38,7 +38,7 @@
 <link rel='stylesheet' type="text/css"
 	  href='<%=path%>/css/common,dwt,msgview,login,zm,spellcheck,wiki,images,skin.css?debug=true'
 >
-<script src='<%=path%>/messages/I18nMsg,AjxMsg,ZMsg,ZaMsg,ZmMsg.js?debug=true'></script>
+<script src='<%=path%>/messages/I18nMsg,TzMsg,AjxMsg,ZMsg,ZaMsg,ZmMsg.js?debug=true'></script>
 <script src='<%=path%>/js/ajax/boot/AjxEnv.js'></script>
 <script src='<%=path%>/js/ajax/boot/AjxLoader.js'></script>
 <script src='<%=path%>/js/ajax/boot/AjxPackage.js'></script>

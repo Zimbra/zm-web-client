@@ -21,7 +21,7 @@
     <c:remove var="skin" scope="session"/>
     <app:skin mailbox="${mailbox}"/>
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
-    <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
+    <fmt:setBundle basename='/messages/TzMsg' var='TzMsg' scope='request' />
 
     <c:choose>
         <c:when test="${not empty param.tz}">
@@ -166,7 +166,7 @@ action="compose" paction="view" id="${msg.id}"/>
         ${fn:escapeXml(zm:getApptDateBlurb(pageContext, tz, startDate.time, endDate.time, appt.allDay))}
         &nbsp;
         <span class='ZhCalTimeZone'>
-        <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.ID}"/>
+        <fmt:message var="displayName" bundle='${TzMsg}' key="${tz.ID}"/>
         ${fn:escapeXml(displayName)}
         </span>
     </td>
