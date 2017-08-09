@@ -662,32 +662,6 @@
         </if>
     </target>
 
-    <target name="timezones">
-        <!-- Download timezones zip -->
-        <ivy:install organisation="zimbra" module="zm-timezones" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver-zip" to="build-tmp" overwrite="true" transitive="true" type="zip" />
-
-        <unzip dest="${build.tmp.dir}/zm-timezones" overwrite="true">
-            <fileset dir="${build.tmp.dir}">
-                <include name="**/zm-timezones-*.zip"/>
-            </fileset>
-        </unzip>
-
-        <!-- Copy timezone related files to proper folders -->
-        <sync todir="${js.dir}/ajax/util">
-            <fileset dir="${build.tmp.dir}/zm-timezones/js"/>
-            <preserveintarget>
-                <include name="*.js"/>
-            </preserveintarget>
-        </sync>
-
-        <sync todir="${web.dir}/messages">
-            <fileset dir="${build.tmp.dir}/zm-timezones/messages"/>
-            <preserveintarget>
-                <include name="*.properties"/>
-            </preserveintarget>
-        </sync>
-    </target>
-
     <target name='i18n' >
         <property name='i18n.msgs.dir' value='${build.classes.dir}/messages'/>
         <property name='i18n.msgs.file' value='${i18n.msgs.dir}/I18nMsg.properties'/>
@@ -916,7 +890,7 @@
         </if>
     </target>
 
-    <target name='jam-files' depends='jquery,modernizr,tinymce,templates,timezones'>
+    <target name='jam-files' depends='jquery,modernizr,tinymce,templates'>
         <property name='jam.jsp.dir' value='${build.web.dir}/public/jsp'/>
         <mkdir dir='${build.js.dir}'/>
         <mkdir dir='${jam.jsp.dir}'/>
