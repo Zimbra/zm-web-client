@@ -2004,53 +2004,53 @@ div.CompDragArea * {
 	@TaskListViewAddNewTaskIcon@
 }
 
-.ZmTaskMultiView .DwtListView  .RowDouble {
+.ZmTaskListRowDouble.RowDouble {
 	@TaskReadingPaneRight-ListViewItem@
 }
 
-.ZmTaskMultiView .DwtListView  .RowDouble .Subject {
+.ZmTaskListRowDouble.RowDouble .Subject {
 	@TaskReadingPaneRight-ListViewItemSubject@
 }
 
-.ZmTaskMultiView .DwtListView  .RowDouble .Date {
+.ZmTaskListRowDouble.RowDouble .Date {
 	@TaskReadingPaneRight-ListViewItemDate@
 }
 
-.ZmTaskMultiView .RowDouble > table > tbody > tr > td {
+.ZmTaskListRowDouble.RowDouble > table > tbody > tr > td {
 	@TaskReadingPaneRight-ListViewItemCell@
 }
 
-.ZmTaskMultiView .RowDouble .ZmTaskListIconWrapper {
+.ZmTaskListRowDouble.RowDouble .ZmTaskListIconWrapper {
 	@TaskReadingPaneRight-ListViewItemCheckIconWrapper@
 }
 
-.ZmTaskMultiView .DwtListView  .RowDouble > table {
+.ZmTaskListRowDouble.RowDouble > table {
 	@FullHeight@
 }
 
-.ZmTaskMultiView .DwtListView  .RowDouble .TopRow {
+.ZmTaskListRowDouble.RowDouble .TopRow {
 	@TaskReadingPaneRight-ListViewItemTopRowContainer@
 }
 
-.ZmTaskMultiView .DwtListView  .RowDouble .ZmTaskProgress {
+.ZmTaskListRowDouble.RowDouble .ZmTaskProgress {
 	@TaskReadingPaneRight-ProgressBarImageWrapper@
 }
 
-.ZmTaskMultiView .DwtListView  .RowDouble .ZmTaskProgress .svg-icon,
-.ZmTaskMultiView .DwtListView  .RowDouble  .ZmTaskProgress .progress-circle {
+.ZmTaskListRowDouble.RowDouble .ZmTaskProgress .svg-icon,
+.ZmTaskListRowDouble.RowDouble  .ZmTaskProgress .progress-circle {
 	@TaskHeaderImage@
 	@TaskReadingPaneRight-ProgressBarImage@
 }
 
-.ZmTaskMultiView .DwtListView  .RowDouble  .ZmTaskProgress .tick-inside {
+.ZmTaskListRowDouble.RowDouble  .ZmTaskProgress .tick-inside {
 	@TaskReadingPaneRight-CompletedProgressBarImage@
 }
 
-.ZmTaskMultiView .DwtListView .Row-selected .ZmTaskProgress .tick-inside {
+.ZmTaskListRowDouble.Row-selected .ZmTaskProgress .tick-inside {
 	@TaskReadingPaneRight-CompletedProgressBarImage-Selected@
 }
 
-.ZmTaskMultiView .DwtListView  .RowDouble .BottomRow {
+.ZmTaskListRowDouble.RowDouble .BottomRow {
 	@TaskReadingPaneRight-BottomRowIconContainer@
 }
 
