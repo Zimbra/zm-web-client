@@ -117,7 +117,7 @@ ZmTaskListView.SORTBY_HASH[ZmSearch.FLAG_ASC] = {field:ZmItem.F_TAG, msg:"tag"};
 ZmTaskListView.SORTBY_HASH[ZmSearch.FLAG_DESC] = {field:ZmItem.F_TAG, msg:"tag"};
 
 // Consts
-ZmTaskListView.ROW_DOUBLE_CLASS	= "RowDouble";
+ZmTaskListView.ROW_DOUBLE_CLASS	= "ZmTaskListRowDouble RowDouble";
 
 ZmTaskListView._NEW_TASK_ROW_ID = "_newTaskBannerId";
 
@@ -520,7 +520,7 @@ function(htmlArr, idx, task, field, colIdx, params) {
 
 	if (field == ZmItem.F_SELECTION) {
 		var icon = params.bContained ? "CheckboxChecked" : "CheckboxUnchecked";
-		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(task, field), ["ZmTaskListIconWrapper"]);
+		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(task, field), ["ZmListIconWrapper ZmTaskListIconWrapper"]);
 
 	} else if (field == ZmItem.F_PRIORITY) {
 		htmlArr[idx++] = "<center>";
