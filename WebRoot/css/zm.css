@@ -1944,11 +1944,11 @@ div.CompDragArea * {
 	@ContactListView@
 }
 
-.ZmContactSimpleView .SimpleContact {
+.SimpleContact {
 	@ContactListItem@
 }
 
-.ZmContactSimpleView .SimpleContact > DIV {
+.SimpleContact > DIV {
 	@ContactListItemContainer@
 }
 
@@ -1961,25 +1961,25 @@ div.CompDragArea * {
 	@DragBg@
 }
 
-.ZmContactSimpleView .SimpleContact .ImgCheckboxUnchecked-svg,
-.ZmContactSimpleView .SimpleContact .ImgCheckboxChecked-svg {
+.SimpleContact .ImgCheckboxUnchecked-svg,
+.SimpleContact .ImgCheckboxChecked-svg {
 	@ContactItemCheckIcon@
 }
 
-.ZmContactSimpleView .SimpleContact .ZmContactIcon .svg-icon,
-.ZmContactSimpleView .SimpleContact .ZmContactIcon IMG {
+.SimpleContact .ZmContactIcon .svg-icon,
+.SimpleContact .ZmContactIcon IMG {
 	@ContactItemIcon@
 }
 
-.ZmContactSimpleView .SimpleContact .ZmContactName {
+.SimpleContact .ZmContactName {
 	@ContactItemName@
 }
 
-.ZmContactSimpleView .SimpleContact .ZmListFlagsWrapper {
+.SimpleContact .ZmListFlagsWrapper {
 	@ContactItemFilterList@
 }
 
-.ZmContactSimpleView .SimpleContact .ZmListFlagsWrapper DIV {
+.SimpleContact .ZmListFlagsWrapper DIV {
 	@ContactItemFilterItem@
 }
 

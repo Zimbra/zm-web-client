@@ -1036,7 +1036,7 @@ ZmContactSimpleView = function(params) {
 	params.className = "ZmContactSimpleView";
 	ZmContactsBaseView.call(this, params);
 
-	this._normalClass = DwtListView.ROW_CLASS + " SimpleContact";
+	this._normalClass = "SimpleContact " + DwtListView.ROW_CLASS;
 	this._selectedClass = [DwtListView.ROW_CLASS, DwtCssStyle.SELECTED].join("-");
 };
 
@@ -1193,12 +1193,6 @@ function(contact, params, asHtml, count) {
 		var div = this._getDiv(contact, params);
 	}
 	var folder = this._folderId && appCtxt.getById(this._folderId);
-	if (div) {
-		if (params.isDragProxy) {
-			div.style.width = "175px";
-			div.style.padding = "4px";
-		}
-	}
 
 	idx = this._getRow(htmlArr, idx, contact, params);
 
