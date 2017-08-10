@@ -7529,3 +7529,32 @@ input[type="radio"] + label {
 .ZmCustomFileUploadWidget .ZmCustomFileUploadInput label {
 	@FileUploadWidgetFileLabel@
 }
+
+/* Preference Calendar interface styles */
+.ZmCalendarPrefsPage {
+	@PrefCalendarPage@
+}
+
+.ZmPrefCalWHSetting {
+	@PrefCalWorkHours@
+}
+
+.ZmPrefCalWHSetting .ZPropertySheet > tbody > tr > td {
+	@PrefCalWorkHoursCell@
+}
+
+.ZmPrefCalWHSetting .ZmPrefCalWHRow {
+	@PrefCalWorkHoursRow@
+}
+
+.ZmPrefCalWHSetting .ZmPrefCalWHRow .ZmPrefCalWHOption {
+	@PrefCalWorkHoursOption@
+}
+
+.ZmPrefCalWHSetting .ZmPrefCalWHRow .ZmPrefCalWHValue {
+	@PrefCalWorkHoursValue@
+}
+
+.ZmPrefCalWHValue .ZmPrefCalCustomWHTable > tbody > tr > td {
+	@PrefCalCustomWHCells@
+}
