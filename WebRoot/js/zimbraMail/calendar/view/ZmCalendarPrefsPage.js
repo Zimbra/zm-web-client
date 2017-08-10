@@ -728,13 +728,13 @@ function(templateId) {
 		var dayIndex = (i + startingIndex) % AjxDateUtil.DAYS_PER_WEEK;
 		var dayOfWeek = (i + firstDayOfWeek) % AjxDateUtil.DAYS_PER_WEEK;
 
-        checkbox = new DwtCheckbox({parent:this, parentElement:(this._htmlElId + "_CAL_WORKING_DAY_" + i)});
+		checkbox = new DwtCheckbox({parent:this, parentElement:(this._htmlElId + "_CAL_WORKING_DAY_" + i)});
 		checkbox.setText(AjxDateUtil.WEEKDAY_MEDIUM[dayOfWeek]);
 		checkbox.setToolTipContent(AjxDateUtil.WEEKDAY_LONG[dayOfWeek]);
 		checkbox.setValue(dayOfWeek);
 		checkbox.setSelected(workHours[dayIndex].isWorkingDay);
 		checkbox.addSelectionListener(new AjxListener(this, this._toggleCustomTimeInput, [i, checkbox])); //toggle custom work-hours dropdown on day's selection
-        this._workDaysCheckBox.push(checkbox);
+		this._workDaysCheckBox.push(checkbox);
     }
 
     radioNormal = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_NORMAL")});
@@ -782,7 +782,7 @@ ZmWorkHours.prototype._initCustomWorkHours = function() {
         workHours,
         isCustom;
 
-    workHours = this._workHours,
+    workHours = this._workHours;
     isCustom = this._radioCustom.isSelected(); //if "custom" radio-button is selected
 
     for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
