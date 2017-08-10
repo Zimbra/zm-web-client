@@ -1505,17 +1505,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><input id='${id}_CAL_SHOW_DECLINED_MEETINGS' tabindex=0 type=checkbox></td>
 						</tr>
-						<tr><td colspan=2></td></tr>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.deleteInviteOnReplyLabel$></td>
 							<td class='ZOptionsField'><input id='${id}_DELETE_INVITE_ON_REPLY' tabindex=0 type=checkbox></td>
 						</tr>
-						<tr><td colspan=2></td></tr>
 						<tr>
-							<td class='ZOptionsLabel' id=id='${id}_CAL_INV_FORWARDING_ADDRESS_label'><$=ZmMsg.forwardInvitesToLabel$></td>
-							<td class='ZOptionsField'><$=ZmMsg.forwardInvitesTo$> <input id='${id}_CAL_INV_FORWARDING_ADDRESS' aria-labelledby='${id}_CAL_INV_FORWARDING_ADDRESS' tabindex=0></td>
+							<td class='ZOptionsLabel' id=id='${id}_CAL_INV_FORWARDING_ADDRESS_label'><$=ZmMsg.forwardInvitesTo$></td>
+							<td class='ZOptionsField'><input id='${id}_CAL_INV_FORWARDING_ADDRESS' aria-labelledby='${id}_CAL_INV_FORWARDING_ADDRESS' tabindex=0></td>
 						</tr>
-						<tr><td colspan=2></td></tr>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.apptReminderLabel$></td>
 							<td class='ZOptionsField'><select id='${id}_CAL_REMINDER_WARNING_TIME' tabindex=0></select></td>
@@ -1540,7 +1537,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 								</tr></table>
 							</td>
 						</tr>
-						<tr><td colspan=2></td></tr>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.defaultApptDuration$></td>
 							<td class='ZOptionsField'><table role="presentation"><tr><td><select id='${id}_CAL_DEFAULT_APPT_DURATION' tabindex=0></select></td><td style="padding-left:4px;"><$=ZmMsg.minutes$></td></tr></table></td>
@@ -1599,7 +1595,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		<table role="presentation" class='ZOptionsSectionTable' width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
-					<table role="presentation">
+					<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 						<tr>
 							<td colspan=2><$= AjxMessageFormat.format(ZmMsg.calPermsNote, data.domain) $></td>
 						</tr>
@@ -1666,77 +1662,91 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</td>
 		</tr>
 		<tr>
-			<td class='ZOptionsLabel'><$=ZmMsg.calendarWorkHours $></td>
+			<td class='ZOptionsLabelTop'><$=ZmMsg.calendarWorkHours $></td>
 			<td class='ZOptionsField'>
-				<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-					<tr>
-						<td id='${id}_CAL_WORKING_HOURS_NORMAL'><td>
-						<td> <$=ZmMsg.calendarWorkHoursNormal $> <td>
-						<td id='${id}_CAL_WORKING_START_TIME' tabindex=0></td>
-						<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
-						<td id='${id}_CAL_WORKING_END_TIME' tabindex=0></td>
-						<td id='${id}_CAL_WORKING_HOURS_CUSTOM'><td>
-						<td> <$=ZmMsg.calendarWorkHoursCustom $> <td>
-						<td id='${id}_CAL_CUSTOM_WORK_HOURS'></td>
-					</tr>
-				</table>
+				<div class="ZmOptionHint"><$=ZmMsg.calendarWorkHoursDisclaimer $> <$=AjxTimezone.getMediumName(appCtxt.get(ZmSetting.DEFAULT_TIMEZONE)) $> </div>
+				<div class="ZmPrefCalWHSetting">
+					<div class="ZmPrefCalWHRow">
+						<div class="ZmPrefCalWHOption">
+							<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+								<tr>
+									<td id='${id}_CAL_WORKING_HOURS_NORMAL'></td>
+									<td><$=ZmMsg.calendarWorkHoursNormal $></td>
+								</tr>
+							</table>
+						</div>
+						<div class="ZmPrefCalWHValue">
+							<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+								<tr>
+									<td id='${id}_CAL_WORKING_START_TIME' tabindex=0></td>
+									<td id='${id}_CAL_SEP_LABEL'><$=ZmMsg.calendarWorkHoursDelimiter $></td>
+									<td id='${id}_CAL_WORKING_END_TIME' tabindex=0></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<div class="ZmPrefCalWHRow">
+						<div class="ZmPrefCalWHOption">
+							<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+								<tr>
+									<td id='${id}_CAL_WORKING_HOURS_CUSTOM'></td>
+									<td><$=ZmMsg.calendarWorkHoursCustom $></td>
+								</tr>
+							</table>
+						</div>
+						<div class="ZmPrefCalWHValue">
+							<$= AjxTemplate.expand("#CustomWorkHours", { id: data.id }) $>	
+						</div>
+					</div>
+				</div>
 			</td>
-		</tr>
-		<tr>
-			<td class='ZOptionsLabel'>&nbsp;</td>
-			<td class='ZOptionsField'><$=ZmMsg.calendarWorkHoursDisclaimer $> <$=AjxTimezone.getMediumName(appCtxt.get(ZmSetting.DEFAULT_TIMEZONE)) $></td>
 		</tr>
 	</table>
 </template>
 
-<template id='prefs.Pages#CustomWorkHoursDlg'>
-<table role="presentation" class='ZPropertySheet' cellspacing='6' width=300>
+<template id='prefs.Pages#CustomWorkHours'>
+<table role="presentation" class='ZPropertySheet ZmPrefCalCustomWHTable' cellspacing='6'>
 	<tr>
-		<td id='${id}_CAL_WORKING_DAY_0' tabindex=0></td>
 		<td id='${id}_CAL_WORKING_START_TIME_0' tabindex=0></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+		<td id='${id}_CAL_SEP_LABEL_0'> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
 		<td id='${id}_CAL_WORKING_END_TIME_0' tabindex=0></td>
+		<td id='${id}_CAL_WORKING_DAY_LABEL_0' tabindex=0></td>
 	</tr>
 	<tr>
-		<td id='${id}_CAL_WORKING_DAY_1' tabindex=0></td>
 		<td id='${id}_CAL_WORKING_START_TIME_1' tabindex=0></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+		<td id='${id}_CAL_SEP_LABEL_1'> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
 		<td id='${id}_CAL_WORKING_END_TIME_1' tabindex=0></td>
+		<td id='${id}_CAL_WORKING_DAY_LABEL_1' tabindex=0></td>
 	</tr>
 	<tr>
-		<td id='${id}_CAL_WORKING_DAY_2' tabindex=0></td>
 		<td id='${id}_CAL_WORKING_START_TIME_2' tabindex=0></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+		<td id='${id}_CAL_SEP_LABEL_2'> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
 		<td id='${id}_CAL_WORKING_END_TIME_2' tabindex=0></td>
+		<td id='${id}_CAL_WORKING_DAY_LABEL_2' tabindex=0></td>
 	</tr>
 	<tr>
-		<td id='${id}_CAL_WORKING_DAY_3' tabindex=0></td>
 		<td id='${id}_CAL_WORKING_START_TIME_3' tabindex=0></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+		<td id='${id}_CAL_SEP_LABEL_3'> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
 		<td id='${id}_CAL_WORKING_END_TIME_3' tabindex=0></td>
+		<td id='${id}_CAL_WORKING_DAY_LABEL_3' tabindex=0></td>
 	</tr>
 	<tr>
-		<td id='${id}_CAL_WORKING_DAY_4' tabindex=0></td>
 		<td id='${id}_CAL_WORKING_START_TIME_4' tabindex=0></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+		<td id='${id}_CAL_SEP_LABEL_4'> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
 		<td id='${id}_CAL_WORKING_END_TIME_4' tabindex=0></td>
+		<td id='${id}_CAL_WORKING_DAY_LABEL_4' tabindex=0></td>
 	</tr>
 	<tr>
-		<td id='${id}_CAL_WORKING_DAY_5' tabindex=0></td>
 		<td id='${id}_CAL_WORKING_START_TIME_5' tabindex=0></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+		<td id='${id}_CAL_SEP_LABEL_5'> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
 		<td id='${id}_CAL_WORKING_END_TIME_5' tabindex=0></td>
+		<td id='${id}_CAL_WORKING_DAY_LABEL_5' tabindex=0></td>
 	</tr>
 	<tr>
-		<td id='${id}_CAL_WORKING_DAY_6' tabindex=0></td>
 		<td id='${id}_CAL_WORKING_START_TIME_6' tabindex=0></td>
-		<td> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
+		<td id='${id}_CAL_SEP_LABEL_6'> <$=ZmMsg.calendarWorkHoursDelimiter $> </td>
 		<td id='${id}_CAL_WORKING_END_TIME_6' tabindex=0></td>
-	</tr>
-	<tr>
-		<td colspan="4"><$=ZmMsg.calendarWorkHoursDisclaimer $>
-			<$=AjxTimezone.getMediumName(appCtxt.get(ZmSetting.DEFAULT_TIMEZONE)) $>
-		</td>
+		<td id='${id}_CAL_WORKING_DAY_LABEL_6' tabindex=0></td>
 	</tr>
 </table>
 </template>
