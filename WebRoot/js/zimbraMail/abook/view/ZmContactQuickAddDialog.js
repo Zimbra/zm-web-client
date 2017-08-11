@@ -37,7 +37,7 @@ ZmContactQuickAddDialog.prototype.constructor = ZmContactQuickAddDialog;
 
 ZmContactQuickAddDialog.prototype._contentHtml = 
 function() {   
-	var html = "<div style='width: 350px' id='CONTACT_QUICKADD_FORM'></div>";	
+	var html = "<div id='CONTACT_QUICKADD_FORM'></div>";	
 	return html;			
 };
 
