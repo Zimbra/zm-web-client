@@ -7139,6 +7139,27 @@ a.ZmLinkDisabled {
 	@ContactListPaginationLinkIcon@
 }
 
+/* Quick add contact dialog*/
+.ZmContactQuickAddDialog {
+	@ZmQuickAddContactDialog@
+}
+
+.ZmContactQuickAddDialog table.ZPropertySheet {
+	@ZmQuickAddContactDialogTable@
+}
+
+.ZmContactQuickAddDialog .ZmFieldLabelLeft {
+	@ZmQuickAddContactDialogFieldLabel@
+}
+
+.ZmContactQuickAddDialog .DwtInputField input[type="text"] {
+	@ZmQuickAddContactDialogInput@
+}
+
+.ZmContactQuickAddDialog .ZSelect > table {
+	@FullWidth@
+}
+
 /* Common Search Widget */
 .ZmSearchWidget {
 	@SearchWidget@
