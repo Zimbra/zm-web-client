@@ -315,7 +315,7 @@ function(work) {
         // we use and add a dedicated SPAN to make sure that we trigger all
         // screen readers
         var span = document.createElement('SPAN');
-        span.innerHTML = work.msg || "";
+        span.innerHTML = AjxStringUtil.htmlEncode(work.msg) || "";
 
         Dwt.removeChildren(this._textEl);
         this._textEl.appendChild(span);
