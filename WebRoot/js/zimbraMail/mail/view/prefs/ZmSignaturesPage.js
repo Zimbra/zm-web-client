@@ -376,7 +376,8 @@ function(contact) {
 	if (this._selSignature) {
 		this._selSignature.contactId = contact.id;
 	}
-	this._vcardField.value = contact.getFileAs() || contact.getFileAsNoName();
+	this._vcardField.innerText = contact.getFileAs() || contact.getFileAsNoName();
+	Dwt.setVisibility(this._vcardWrapper, true);
 };
 
 //
@@ -415,21 +416,25 @@ function(container) {
 	this._replaceControlElement(deleteEl, button);
 	this._deleteBtn = button;
 
+	// vCard Wrapper
+	this._vcardWrapper = Dwt.getElement(this._htmlElId + "_SIG_VCARD");
+
 	// vCard INPUT
-	this._vcardField = document.getElementById(this._htmlElId + "_SIG_VCARD");
+	this._vcardField = document.getElementById(this._htmlElId + "_SIG_VCARD_NAME");
 
 	// vCard BROWSE
 	var el = document.getElementById(this._htmlElId + "_SIG_VCARD_BROWSE");
 	var button = new DwtButton(this);
-	button.setText(ZmMsg.browse);
+	button.setText(ZmMsg.signatureVcardLabel);
 	button.addSelectionListener(this._handleVcardBrowseButton.bind(this));
+	button.addClassName("ZInlineButton"); //to look it like link button
 	this._replaceControlElement(el, button);
 	this._vcardBrowseBtn = button;
 
 	// vCard CLEAR
 	var el = document.getElementById(this._htmlElId + "_SIG_VCARD_CLEAR");
 	var button = new DwtButton(this);
-	button.setText(ZmMsg.clear);
+	button.setContent(AjxImg.getImageHtml("BubbleDelete"));
 	button.addSelectionListener(this._handleVcardClearButton.bind(this));
 	this._replaceControlElement(el, button);
 	this._vcardClearBtn = button;
@@ -773,7 +778,7 @@ function(skipControls, autoAdded) {
     signature._autoAdded = autoAdded;
 	signature = this._addSignature(signature, skipControls);
 	setTimeout(this._sigName.focus.bind(this._sigName), 100);
-
+	Dwt.setVisibility(this._vcardWrapper, false); //hide vCard container
 	return signature;
 };
 
@@ -880,7 +885,10 @@ function(signature, clear) {
 			vcardName = contact.getFileAs() || contact.getFileAsNoName();
 		}
 	}
-	this._vcardField.value = vcardName;
+	this._vcardField.innerText = vcardName;
+
+	//if vCard is selected, show container
+	Dwt.setVisibility(this._vcardWrapper, vcardName ? true : false);
 
     this._sigEditor.clear();
 	var editorMode = (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && signature.getContentType() === ZmMimeTable.TEXT_HTML)
@@ -1060,7 +1068,8 @@ function(ev) {
 
 ZmSignaturesPage.prototype._handleVcardClearButton =
 function(ev) {
-	this._vcardField.value = "";
+	this._vcardField.innerText = "";
+	Dwt.setVisibility(this._vcardWrapper, false);
 	if (this._selSignature) {
 		this._selSignature.contactId = null;
 	}
