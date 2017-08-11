@@ -7410,8 +7410,25 @@ input[type="radio"] + label {
 	@PrefSignatureUsageSelect@
 }
 
+/* Signature vCard styles */
 .ZmSignatureEditorWrapper .ZmSignatureVCardWrapper {
 	@PrefSignatureVCardWrapper@
+}
+
+.ZmSignatureVCardWrapper > table > tbody > tr > td > * {
+	@PrefSignatureVCardTableCell@
+}
+
+.ZmSignatureVCardWrapper .ZmSignatureVCard {
+	@PrefSignatureVCard@
+}
+
+.ZmSignatureVCardWrapper .ZmSignatureVCard .ZmSignatureVCardOp {
+	@PrefSignatureVCardOp@
+}
+
+.ZmSignatureVCardWrapper .ZmSignatureVCard .ZmSignatureVCardName {
+	@PrefSignatureVCardName@
 }
 
 .ZOptionsSectionMain .ZmPrefMailBlockMessage {
