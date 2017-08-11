@@ -3572,22 +3572,56 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmContactSearch {
-	width:500px;
+	@ContactSearchWidget@
 }
+
 .ZmContactSearch .contactSearchResultsDiv {
-	margin-top:15px;
+	@ContactSearchResultsContainer@
 }
 
 .ZmContactSearch .ZmContactSearchListView {
-	width:100%;
-	height:300px;
-	background-color:white;
+	@ContactSearchListContainer@
 }
 
 .ZmContactSearch .searchFieldHint {
-	@Text-light@
+	@ContactSearchInputFieldHint@
 }
 
+.ZmContactSearch INPUT[type="text"] {
+	@ContactSearchInputField@
+}
+
+.ZmContactSearch .Row {
+	@ContactSearchListRow@
+}
+
+.ZmContactSearch .Row-selected {
+	@ContactSearchListRowSelected@
+}
+
+.ZmContactSearch .ZmContactGroupItemContent > div {
+	@ContactSearchContactGroupItemContent@
+}
+
+.ZmContactSearch .Row div {
+	@ContactSearchListRowItems@
+}
+
+.ZmContactSearchDialog .WindowOuterContainer {
+	@ContactSearchDialogOuterContainer@
+}
+
+.ZmContactSearchTable {
+	@ContactSearchQueryWidget@
+}
+
+.ZmContactSearchButton {
+	@ContactSearchButton@
+}
+
+.ZmContactSearchListView .Row  table > tbody > tr > td {
+	@ContactSearchGroupItemTableCell@;
+}
 
 /*
  *  Autocompletion

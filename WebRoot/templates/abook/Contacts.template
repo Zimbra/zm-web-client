@@ -1109,26 +1109,26 @@
 <!------------------------------ ZmContactSearch ------------------------------>
 <!----------------------------------------------------------------------------->
 <template id='abook.Contacts#ZmContactSearch'>
-	<div id='${id}_preamble'></div>
 	<table role="presentation" width='100%'>
 		<tr>
 			<td>
-				<table role="presentation">
+				<table class='ZmContactSearchTable' role="presentation">
 					<tr>
-						<td width='20' valign='middle'><div id='${id}_searchIcon' class='ImgSearch'></div></td>
-						<td><input type='text' autocomplete='off' size='30' nowrap id='${id}_searchField'>&nbsp;</td>
-						<td id='${id}_searchButton'></td>
+						<td>
+							<input type='text' autocomplete='off' size='30' id='${id}_searchField'>
+							<span class='ZmContactSearchButton' id='${id}_searchButton'></span>
+						</td>
 					</tr>
 				</table>
 			</td>
 			<td align='right'>
 				<$ if (data.showSelect) { $>
-					<table role="presentation">
-						<tr>
-							<td class='Label nobreak'><$= ZmMsg.showNames $>&nbsp;</td>
-							<td id='${id}_folders'></td>
-						</tr>
-					</table>
+				<table role="presentation">
+					<tr>
+						<td class='Label nobreak'><$= ZmMsg.showNames $>&nbsp;</td>
+						<td id='${id}_folders'></td>
+					</tr>
+				</table>
 				<$ } $>
 			</td>
 		</tr>
