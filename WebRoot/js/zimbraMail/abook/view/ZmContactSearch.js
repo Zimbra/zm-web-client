@@ -125,8 +125,6 @@ function(ascending, firstTime, lastId, lastSortVal) {
 		}
 	}
 
-	this._searchIcon.className = "DwtWait16Icon";
-
 	// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
 //	this._chooser.sourceListView.sortingEnabled = (this._contactSource == ZmItem.CONTACT);
 
@@ -157,7 +155,6 @@ function(firstTime, result) {
 		}
 	}
 
-	this._searchIcon.className = "ImgSearch";
 	this._searchButton.setEnabled(true);
 };
 
@@ -210,16 +207,9 @@ function() {
 
 	this.getHtmlElement().innerHTML = this._contentHtml();
 
-	if (this._options.preamble) {
-		var div = document.getElementById(this._htmlElId + "_preamble");
-		div.innerHTML = this._options.preamble;
-	}
-
-	this._searchIcon = document.getElementById(this._htmlElId + "_searchIcon");
-
 	// add search button
 	this._searchButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_searchButton")});
-	this._searchButton.setText(ZmMsg.search);
+	this._searchButton.setImage("Search2");
 	this._searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
 
 	// add select menu, if needed
@@ -428,10 +418,24 @@ ZmContactSearchListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
 	headerList.push(new DwtListHeaderItem({field:ZmItem.F_TYPE, width:ZmMsg.COLUMN_WIDTH_FOLDER_CN}));
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:ZmMsg.COLUMN_WIDTH_NAME_CN}));
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email}));
-
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name}));
 	return headerList;
+};
+
+// Overriding the DwtListView.prototype.createHeaderHtml as we donot need a header, here.
+
+ZmContactSearchListView.prototype.createHeaderHtml =
+function(defaultColumnSort, isColumnHeaderTableFixed) {
+	return;
+};
+
+ZmContactSearchListView.prototype._getCellClass =
+function(item, field) {
+	if (field == ZmItem.F_TYPE) {
+		return "ZmContactGroupItemImage";
+	} else if (field == ZmItem.F_NAME) {
+		return "ZmContactGroupItemContent";
+	}
 };
 
 /**
@@ -440,11 +444,20 @@ function() {
 ZmContactSearchListView.prototype._getCellContents =
 function(htmlArr, idx, contact, field, colIdx, params) {
 	if (field == ZmItem.F_TYPE) {
-		htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon());
+		var avatarUrl = contact.getImageUrl();
+		if (avatarUrl) {
+			htmlArr[idx++] = "<div class='ZmContactIcon'>";
+			htmlArr[idx++] = "<img src='" + avatarUrl + "' alt='" + contact.getFullName() + "' />";
+			htmlArr[idx++] = "</div>";
+		} else {
+			htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon());
+		}
 	} else if (field == ZmItem.F_NAME) {
+		htmlArr[idx++] = "<div><strong>";
 		htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
-	} else if (field == ZmItem.F_EMAIL) {
+		htmlArr[idx++] = "</strong></div><div>";
 		htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getEmail());
+		htmlArr[idx++] = "</div>";
 	}
 	return idx;
 };
