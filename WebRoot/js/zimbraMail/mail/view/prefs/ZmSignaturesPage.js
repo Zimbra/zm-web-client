@@ -1172,10 +1172,13 @@ ZmVcardPicker = function(params) {
 	params = params || {};
 	params.parent = appCtxt.getShell();
 	params.title = ZmMsg.selectContact;
+	params.className = 'ZmContactSearchDialog'
 	DwtDialog.call(this, params);
 
 	this._sigPage = params.sigPage;
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
+	var okBtn = this.getButton(DwtDialog.OK_BUTTON);
+	okBtn.setText(ZmMsg.attach);
 };
 
 ZmVcardPicker.prototype = new DwtDialog;

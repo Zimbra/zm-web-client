@@ -3198,7 +3198,7 @@ ZmGrantRightsDialog = function(parent, className, callback) {
 	this._addrInputField.reparentHtmlElement(cellId);
 	this._initAutoComplete();
 	var okBtn = this.getButton(DwtDialog.OK_BUTTON);
-	okBtn.setText(ZmMsg.save);
+	okBtn.setText(ZmMsg.attach);
 };
 
 ZmGrantRightsDialog.prototype = new ZmDialog;
