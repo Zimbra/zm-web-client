@@ -1142,19 +1142,19 @@
 <template id='abook.Contacts#QuickAddPrompt'>
 	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 		<tr>
-			<td class='ZmFieldLabel'><$=ZmMsg.firstNameLabel$></td>
+			<td class='ZmFieldLabelLeft'><$=ZmMsg.firstNameLabel$></td>
 			<td><div id='${id}_FIRST_NAME'></div></td>
 		</tr>
 		<tr>
-			<td class='ZmFieldLabel'><$=ZmMsg.lastNameLabel$> </td>
+			<td class='ZmFieldLabelLeft'><$=ZmMsg.lastNameLabel$> </td>
 			<td><div id='${id}_LAST_NAME'></div></td>
 		</tr>
 		<tr>
-			<td class='ZmFieldLabel'><$=ZmMsg.emailLabel$></td>
+			<td class='ZmFieldLabelLeft'><$=ZmMsg.emailLabel$></td>
 			<td><div id='${id}_EMAIL'></div></td>
 		</tr>
 		<tr>
-			<td class='ZmFieldLabel'><$=ZmMsg.addressBookLabel$> </td>
+			<td class='ZmFieldLabelLeft'><$=ZmMsg.addressBookLabel$> </td>
 			<td><div id='${id}_ADDR_BOOK'></div></td>
 		</tr>
 	</table>

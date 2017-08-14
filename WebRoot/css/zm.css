@@ -7148,7 +7148,7 @@ a.ZmLinkDisabled {
 	@ZmQuickAddDialogTable@
 }
 
-.ZmContactQuickAddDialog .ZmFieldLabel {
+.ZmContactQuickAddDialog .ZmFieldLabelLeft {
 	@ZmQuickAddDialogFieldLabel@
 }
 
