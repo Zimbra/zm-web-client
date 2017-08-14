@@ -659,7 +659,7 @@ UL.DwtListView-Rows {
 	@Label@
 }
 .DwtDialog .Field {
-	width:290px;
+	@DialogField@
 }
 .DwtDialog TEXTAREA {
 	width:100%;
@@ -758,7 +758,6 @@ UL.DwtListView-Rows {
 /* MERGE WITH ZmFieldLabelRight ? */
 .DwtPropertySheet .Label {
 	@Label@
-	text-align:right;
 }
 .DwtPropertySheet>TABLE {
 	@PropertySheet@

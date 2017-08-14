@@ -148,6 +148,11 @@ ZmShare.ACTION_LABEL[ZmShare.EDIT]		= ZmMsg.edit;
 ZmShare.ACTION_LABEL[ZmShare.RESEND]	= ZmMsg.resend;
 ZmShare.ACTION_LABEL[ZmShare.REVOKE]	= ZmMsg.revoke;
 
+ZmShare.ACTION_ICON = {};
+ZmShare.ACTION_ICON[ZmShare.EDIT]	= "Edit";
+ZmShare.ACTION_ICON[ZmShare.RESEND]	= "MsgStatusSent";
+ZmShare.ACTION_ICON[ZmShare.REVOKE]	= "Close";
+
 // allowed permission bits
 /**
  * Defines the "read" allowed permission.

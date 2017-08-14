@@ -616,7 +616,7 @@ TEXTAREA .BannerBar * {
 /* styles for the HTML client */
 INPUT[type="text"],
 INPUT[type="password"]      {   @FieldBorder@   }
-SELECT                      {   @FieldBorder@   }
+SELECT                      {   @NativeSelect@  }
 .TabSpacer                  {   display:none;       }
 .Tab                        {   white-space:nowrap; height:30px; padding-right:5px !important;  }
 .TbTop                      {   border-width:0px 1px 1px 0px !important; padding-right:5px !important;  }
@@ -1130,5 +1130,35 @@ svg.progress-circle.tick-inside {
 
 /* Preference filter view */
 .ZmFilterRuleList .Row:last-of-type {
-    border:none;
+    border: none;
+}
+
+/*Action button container styling, matching the alignments with icons in FolderPropsDialog*/
+#FolderProperties_buttons {
+    margin-right:18px;
+}
+
+/*Resetting text transform for dialog action buttons that are inline */
+.DwtDialogButtonBar .ZInlineButton>.ZButtonTable {
+    text-transform:none;
+}
+
+/*************
+ *
+ *	DwtGrouper: Use to show groups in dialogs like ZmSharePropsDialog & ZmFolderPropsDialog
+ *
+ *************/
+
+.DwtGrouper > fieldset {
+    border: none;
+}
+
+.DwtGrouper legend {
+    font-weight: normal;
+    @FontSize-bigger@
+}
+
+.DwtDialog .Label {
+    vertical-align: middle;
+    padding-right:30px;
 }
