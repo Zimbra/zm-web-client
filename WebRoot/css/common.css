@@ -166,6 +166,11 @@ INPUT[type="password"] {
 	@InputField@
 	@InputField-normal@
 }
+
+INPUT[type="number"] {
+	@InputFieldNumber@
+}
+
 INPUT[disabled] {
 	@InputField-disabled@
 }

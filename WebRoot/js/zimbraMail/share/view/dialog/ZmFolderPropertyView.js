@@ -183,14 +183,16 @@ function(event) {
     }
 
 	if (organizer.isSystem() || organizer.isDataSource()) {
-		this._nameOutputEl.innerHTML = AjxStringUtil.htmlEncode(organizer.name);
-        Dwt.setVisible(this._nameOutputEl, true);
-        Dwt.setVisible(this._nameInputEl,  false);
+		Dwt.setVisible(this._nameInputEl,  true);
+		this._nameInputEl.value = organizer.name;
+		this._nameInputEl.disabled = true;
+		this._nameInputEl.style.cursor = "not-allowed";
 	}
 	else {
 		this._nameInputEl.value = organizer.name;
-        Dwt.setVisible(this._nameOutputEl, false);
-        Dwt.setVisible(this._nameInputEl,  true);
+		this._nameInputEl.disabled = false;
+		Dwt.setVisible(this._nameInputEl,  true);
+		this._nameInputEl.style.cursor = "text";
 	}
 
 	var hasFolderInfo = !!organizer.getToolTip();
@@ -288,14 +290,15 @@ function(response) {
 ZmFolderPropertyView.prototype._createView = function() {
 
 	// create html elements
-	this._nameOutputEl = document.createElement("SPAN");
 	this._nameInputEl = document.createElement("INPUT");
-	this._nameInputEl.style.width = "20em";
+	this._nameInputEl.setAttribute("type", "text");
+	Dwt.addClass(this._nameInputEl, "Field");
 	this._nameInputEl._dialog = this;
 	var nameElement = this._nameInputEl;
 
 	this._queryInputEl = document.createElement("INPUT");
-	this._queryInputEl.style.width = "20em";
+	this._queryInputEl.setAttribute("type", "text");
+	Dwt.addClass(this._queryInputEl, "Field");
 	this._queryInputEl._dialog = this;
 	var queryElement = this._queryInputEl;
 
@@ -309,7 +312,6 @@ ZmFolderPropertyView.prototype._createView = function() {
 	this._sizeEl = document.createElement("SPAN");
 
 	var nameEl = document.createElement("DIV");
-	nameEl.appendChild(this._nameOutputEl);
 	nameEl.appendChild(nameElement);
 
 	var queryEl = document.createElement("DIV");
@@ -335,7 +337,7 @@ ZmFolderPropertyView.prototype._createView = function() {
     if (appCtxt.isWebClientOfflineSupported) {
         this._offlineEl = document.createElement("DIV");
 		this._offlineEl.style.whiteSpace = "nowrap";
-		this._offlineEl.innerHTML = ZmMsg.offlineFolderSyncInterval;
+		this._offlineEl.innerHTML = AjxMessageFormat.format(ZmMsg.offlineFolderSyncInterval, '<input id="folderOfflineLblId" class="ZmOfflineSyncInterval" type="number" min="0" max="30">');
         this._offlineId = this._props.addProperty(ZmMsg.offlineLabel,  this._offlineEl);
     }
 
