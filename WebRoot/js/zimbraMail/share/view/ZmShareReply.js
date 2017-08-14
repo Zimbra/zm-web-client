@@ -191,7 +191,7 @@ ZmShareReply.prototype._initControl = function(params) {
 	div.appendChild(this._replyNoteEl);
 	
 	this._replyControlsEl = doc.createElement("DIV");
-	this._replyControlsEl.style.marginLeft = "1.5em";
+	this._replyControlsEl.style.marginTop = "1em";
 	this._replyControlsEl.appendChild(this._replyTypeEl);
 	this._replyControlsEl.appendChild(this._replyStandardMailNoteEl);
 	this._replyControlsEl.appendChild(div);
