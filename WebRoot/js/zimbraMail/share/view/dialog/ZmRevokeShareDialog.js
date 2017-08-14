@@ -125,7 +125,6 @@ function() {
 ZmRevokeShareDialog.prototype._createView =
 function() {
 	this._confirmMsgEl = document.createElement("DIV");
-	this._confirmMsgEl.style.fontWeight = "bold";
 	this._confirmMsgEl.style.marginBottom = "0.25em";
 	
 	var view = new DwtComposite(this);
