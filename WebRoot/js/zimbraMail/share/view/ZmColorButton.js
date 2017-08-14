@@ -28,6 +28,9 @@ ZmColorButton = function(params) {
     }
 
     DwtButton.call(this, params);
+    //to make color button visually look like select widget.
+    this.addClassName("ZSelect");
+
     var menu = new ZmColorMenu({parent:this,hideNone:params.hideNone});
     menu.addSelectionListener(new AjxListener(this, this._handleSelection));
     this.setMenu(menu);

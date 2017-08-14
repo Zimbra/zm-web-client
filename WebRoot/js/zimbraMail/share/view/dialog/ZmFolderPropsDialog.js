@@ -54,6 +54,7 @@ ZmFolderPropsDialog = function(parent, className) {
 
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
 		this.registerCallback(ZmFolderPropsDialog.ADD_SHARE_BUTTON, this._handleAddShareButton, this);
+		this.getButton(ZmFolderPropsDialog.ADD_SHARE_BUTTON).addClassName("ZInlineButton");
 	}
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._handleCancelButton));
@@ -345,6 +346,7 @@ function(displayShares, organizer) {
 	if (displayShares.length) {
 		var table = document.createElement("TABLE");
 		table.className = "ZPropertySheet";
+		table.width = "100%";
 		table.cellSpacing = "6";
 		for (var i = 0; i < displayShares.length; i++) {
 			var share = displayShares[i];
@@ -391,6 +393,7 @@ function(row, share) {
 	}
 
 	var actions = [ZmShare.EDIT, ZmShare.REVOKE, ZmShare.RESEND];
+	var iconStyle = "text-align:right";
 	var handlers = [this._handleEditShare, this._handleRevokeShare, this._handleResendShare];
 
 	for (var i = 0; i < actions.length; i++) {
@@ -404,11 +407,13 @@ function(row, share) {
             ((isAllShare || share.isPublic()) && action == ZmShare.RESEND)) { continue; }
 
 		var link = document.createElement("A");
+		Dwt.addClass(link, "ZmSharingActionLink");
 		link.href = "#";
-		link.innerHTML = ZmShare.ACTION_LABEL[action];
+		link.title = ZmShare.ACTION_LABEL[action];
+		link.innerHTML = AjxImg.getImageHtml(ZmShare.ACTION_ICON[action], iconStyle);
 
 		Dwt.setHandler(link, DwtEvent.ONCLICK, handlers[i]);
-		Dwt.associateElementWithObject(link, share);
+		Dwt.associateElementWithObject(link.childNodes[0], share);
 		this._sharesGroup.getTabGroupMember().addMember(link);
 
 		cell.appendChild(link);

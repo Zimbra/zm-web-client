@@ -6086,26 +6086,24 @@ DIV .SuggestBtn {
 	
 }
 
-.ZmFolderRetentionLabel {
-	font-weight:bold;
-	text-align:left;
-	white-space:nowrap;
+.ZmFolderRetentionLabel{
+	@FolderPropertyDialogHeadingContainer@
 }
 
-.ZmFolderPolicyAmountInput {
-	height:1.6rem;
-	margin-left:20px;
-	width:60px;
-}
-.ZmFolderPolicyUnitSelect {
-	margin-left:4px;
+.ZmFolderRetentionLabel label {
+	@FolderPropertyDialogHeading@
 }
 
-.ZmFolderPolicySelect {
-	margin-left:4px;
+.ZmFolderRetentionCheckbox {
+	@FolderPropertyDialogCheckbox@
 }
+
+INPUT[type="text"].ZmFolderPolicyAmountInput {
+	@FolderPropertyRetentionInput@
+}
+
 .ZmFolderPolicySelection {
-	width:100%;
+	@FolderPropertyPolicyContainer@
 }
 
 .ZmDialogTabViewBusy {
@@ -6114,21 +6112,15 @@ DIV .SuggestBtn {
 }
 
 .ZmFolderPropertiesDialog-container {
-	margin:-8px -8px 0px;
-	overflow:hidden;
-	width:500px;
+	@FolderPropertyDialogContainer@
 }
 
 .ZmFolderPropertiesDialog-container .ZTabBar {
 	background: @AppC@;
 }
 
-.ZmFolderPropertyView .ZHasDropDown{
-	display:inline-block;
-}
-
 .ZmFolderPropertyView {
-	margin:10px;
+	@FolderPropertyView@
 }
 
 .ZmFolderPropSharing {
