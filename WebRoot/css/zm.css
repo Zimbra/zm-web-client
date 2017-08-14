@@ -7141,19 +7141,19 @@ a.ZmLinkDisabled {
 
 /* Quick add contact dialog*/
 .ZmContactQuickAddDialog {
-	@ZmQuickAddDialog@
+	@ZmQuickAddContactDialog@
 }
 
 .ZmContactQuickAddDialog table.ZPropertySheet {
-	@ZmQuickAddDialogTable@
+	@ZmQuickAddContactDialogTable@
 }
 
 .ZmContactQuickAddDialog .ZmFieldLabelLeft {
-	@ZmQuickAddDialogFieldLabel@
+	@ZmQuickAddContactDialogFieldLabel@
 }
 
 .ZmContactQuickAddDialog .DwtInputField input[type="text"] {
-	@ZmQuickAddDialogInput@
+	@ZmQuickAddContactDialogInput@
 }
 
 .ZmContactQuickAddDialog .ZSelect > table {
