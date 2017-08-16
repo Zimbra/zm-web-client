@@ -243,16 +243,9 @@ BODY                                    {   margin:0px;     }
 .LoginScreen,
 .SplashScreen,
 .ErrorScreen {
-    position:absolute;
-    left:0px;
-    top:0px;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    @FontFamily-default@
-    @FontSize-normal@
     @LoginScreen@
 }
+
 .LoginScreen .center,
 .ErrorScreen .center {
     margin-left:-135px;
@@ -272,15 +265,13 @@ BODY                                    {   margin:0px;     }
     margin-left:-126px;
     width:250px;
 }
+
 .LoginScreen .center, .LoginScreen .center-small,
 .SplashScreen .center, .SplashScreen .center-small,
 .ErrorScreen .center, .ErrorScreen .center-small {
-    left:50%;
-    overflow:visible;
-    position:absolute;
-    top:50%;
-    z-index:11;
+    @LoginScreenCenter@
 }
+
 .LoginScreen .contentBox,
 .SplashScreen .contentBox,
 .ErrorScreen .contentBox {
