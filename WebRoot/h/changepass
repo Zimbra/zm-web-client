@@ -23,16 +23,13 @@
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
     
     <c:set var="successfullLogin" value="false"/>
-    <fmt:message var="errorMessage" key="enterNewPassword"/>
-    <c:set var="messageImage" value="dwt/ImgInformation_32.png"/>
+    <fmt:message var="newPasswordMessage" key="enterNewPassword"/>
     <c:choose>
         <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
             <fmt:message var="errorMessage" key="bothNewPasswordsMustMatch"/>
-            <c:set var="messageImage" value="dwt/ImgCritical_32.png"/>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && ((empty param.loginNewPassword) or (empty param.password) or (empty param.loginConfirmNewPassword))}">
             <fmt:message var="errorMessage" key="passwordFieldMissing"/>
-            <c:set var="messageImage" value="dwt/ImgCritical_32.png"/>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && (not empty param.loginNewPassword) && (not empty param.password) && (pageContext.request.method eq 'POST')}">
             <c:catch var="loginException">
@@ -49,7 +46,6 @@
                 <c:if test="${errorCode eq 'account.AUTH_FAILED'}">
                     <fmt:message var="errorMessage" key="account.AUTH_FAILED_passwordChangeFailed"/>
                 </c:if>
-                <c:set var="messageImage" value="dwt/ImgCritical_32.png"/>
                 <c:forEach var="arg" items="${error.arguments}">
                     <fmt:message var="errorMessage" key="${errorCode}.${arg.name}">
                         <fmt:param value="${arg.val}"/>
@@ -81,53 +77,53 @@
         onload="document.changePassForm.password.focus();"
         </c:if>>
     <div class="LoginScreen">
-        <div class="center">
+        <div class="center ZChangePassLogin">
             <div class="contentBox">
             <h1>
                 <a href="${not empty logoURL ? logoURL : 'https://www.zimbra.com'}" target="_new">
-                    <div class='ImgLoginBanner' style="margin: 20px 0 0 20px;"></div>
+                    <div class='ImgLoginBanner'></div>
                 </a>
             </h1>
-            <c:if test="${not empty errorMessage}">
-                <div id='ZLoginErrorPanel'>
+                <div id='ZLoginNewPasswordInfoPanel' class='ZChangePassLoginInfo'>
                     <table width=100%>
                         <tr>
-                            <td valign='top' width='40'>
-                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<app:imgurl value='${messageImage}'/>"/>
-                            </td>
-                            <td class='errorText'>
-                                <c:out value="${errorMessage}"/> 
+                            <td>
+                                <c:out value="${newPasswordMessage}"/>
                             </td>
                         </tr>
                     </table>
                 </div>
-            </c:if>
             <c:if test="${successfullLogin ne 'true'}">
-                <div id='ZLoginFormPanel' style="margin-left: 12%;">
+                <div id='ZLoginFormPanel'">
                     <form method='post' name="changePassForm" action="" autocomplete="off" accept-charset="utf-8">
                         <input type="hidden" name="loginOp" value="login"/>
-                        <table class="form">
+                        <table class="form" width="100%">
                             <tr>
-                                <td class='zLoginLabelContainer'><label for="oldPassword"><fmt:message key="oldPassword"/>:</label></td>
                                 <td class='zLoginFieldContainer'>
-                                    <input id="oldPassword" autocomplete="off" class='zLoginField' name='password' type='password' value="" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                    <input id="oldPassword" placeholder="<fmt:message key='oldPassword'/>" autocomplete="off" class='zLoginField' name='password' type='password' value="" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td class='zLoginLabelContainer'><label for="newPassword"><fmt:message key="newPassword"/>:</label></td>
                                 <td class='zLoginFieldContainer'>
-                                    <input id="newPassword" autocomplete="off" class='zLoginField' name='loginNewPassword' type='password' value="" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                    <input id="newPassword" placeholder="<fmt:message key='newPassword'/>" autocomplete="off" class='zLoginField' name='loginNewPassword' type='password' value="" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td class='zLoginLabelContainer'><label for="confirm"><fmt:message key="confirm"/>:</label></td>
-                                <td class='zLoginFieldContainer'>
-                                    <input id="confirm" autocomplete="off" class='zLoginField' name='loginConfirmNewPassword' type='password' value="" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                <td class='zLoginFieldContainer ZChangePassConfirm'>
+                                    <input id="confirm" placeholder="<fmt:message key='confirmNewPassword'/>" autocomplete="off" class='zLoginField' name='loginConfirmNewPassword' type='password' value="" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
                                 </td>
                             </tr>
+
+                            <c:if test="${not empty errorMessage}">
+                                <tr>
+                                    <td class='errorText'>
+                                        <c:out value="${errorMessage}"/>
+                                    </td>
+                                </tr>
+                            </c:if>
+
                             <tr>
-                                <td></td>
-                                <td><input type=submit class='zLoginButton'
+                                <td><input type=submit class='zLoginButton DwtButton'
                                                      value="<fmt:message key="changePassword"/>"/></td>
                             </tr>
                         </table>

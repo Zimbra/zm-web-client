@@ -129,6 +129,25 @@ FORM {
 	@cssShadow@:0px 0px 2px black;
 }
 
+.ZChangePassLoginInfo {
+	@ChangePassWordLoginInfoPanel@
+}
+
+.ZChangePassLoginInfo td {
+	@ChangePassWordLoginInfoPanelCell@
+}
+
+.ZChangePassLogin .errorText {
+	@ChangePassWordLoginErrorMessage@
+}
+
+.ZChangePassLogin .ZChangePassConfirm {
+	@ChangePasswordLoginConfirmCell@
+}
+
+.ZChangePassLogin input[type='submit'] {
+	@ChangePasswordSubmitButton@
+}
 
 /*DWT Buttons*/
 .DwtButton					{	@Button@ @ButtonBorder-normal@ 		}
