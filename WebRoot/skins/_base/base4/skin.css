@@ -1127,3 +1127,8 @@ svg.progress-circle.tick-inside {
 .ZmSignatureUsageOptions TD:last-of-type > .ZSelect {
 	padding-right: 0;
 }
+
+/* Preference filter view */
+.ZmFilterRuleList .Row:last-of-type {
+    border:none;
+}
