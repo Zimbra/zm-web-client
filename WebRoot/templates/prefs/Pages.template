@@ -1362,20 +1362,8 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#MailFilters'>
-	<div class="rightAlign"><$=ZmMsg.filterRuleChangesSavedImmediately$></div>
-	<$ if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) { $>
-	<div>
-		<fieldset>
-			<legend><$=ZmMsg.activityStreamFilterTitle$></legend>
-			<table role="presentation">
-				<tr>
-				<td style='padding:5px'><div id='${id}_ACTIVITY_STREAM_BUTTON'></div></td>
-				<td><$=ZmMsg.activityStreamFilterMsg$></td>
-				</tr>
-			</table>
-		</fieldset>
-	</div>
-	<$ }$>
+	<div class="prefHeader"><$= ZmMsg.filters $></div>
+	<div class="ZmOptionHint"><$=ZmMsg.filterRuleChangesSavedImmediately$></div>
 	<table role="presentation" width=100%>
 		<tr>
 			<td class='ZOptionsSectionTabView'>
@@ -1387,23 +1375,107 @@ and the container element is replaced with that control.
 			</td>
 		</tr>
 	</table>
+	<$ if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) { $>
+		<div class="prefHeader"><$=ZmMsg.activityStreamFilterTitle$></div>
+		<table role="presentation" class='ZOptionsSectionTable' width=100%>
+			<tr>
+				<td class='ZOptionsSectionMain'>
+					<table role="presentation">
+						<tr>
+							<td>
+								<$=ZmMsg.activityStreamFilterMsg$><div id='${id}_ACTIVITY_STREAM_BUTTON'></div>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	<$ }$>
 </template>
 
 <template id='prefs.Pages#MailFilter'>
 	<table role="presentation" class='ZOptionsSectionTable' width=100%>
 		<tr>
-			<td class='ZOptionsSectionMain'>
+			<td>
 				<table role="presentation" width=100%>
 					<tr>
-						<td><div id='${id}_toolbar' tabindex=0></div></td>
+						<td><div id='${id}_list' tabindex=0></div></td>
 					</tr>
 					<tr>
-						<td><div id='${id}_list' tabindex=0></div></td>
+						<td><div id='${id}_toolbar' tabindex=0></div></td>
 					</tr>
 				</table>
 			</td>
 		</tr>
 	</table>
+</template>
+
+<!-- Filter rule row template -->
+<template id='prefs.Pages#MailFilterRow'>
+	<div class="ZmPrefFilterRow" id='${id}_FILTER_ROW'>
+		<div class="ZmPrefFilterRowName">
+			<$=AjxStringUtil.htmlEncode(data.name)$>
+		</div>
+		<div class="ZmPrefFilterRowActionsWrapper">
+			<div class="ZmFilterRowActions">
+				<div class="ZmFilterRowAction">
+					<$ 
+						var moveUpButton = {
+							imageName: ZmOperation.getProp(ZmId.OP_MOVE_UP_FILTER_RULE, "image"),
+							attrStr: "id='" + data.moveUpButtonId + "' title='" + ZmMsg.filterMoveUp + "'",
+							disabled: data.disableMoveUpButton
+						};
+					$>
+					<$=AjxImg.getImageHtml(moveUpButton) $>
+				</div>
+				<div class="ZmFilterRowAction">
+					<$ 
+						var moveDownButton = {
+							imageName: ZmOperation.getProp(ZmId.OP_MOVE_DOWN_FILTER_RULE, "image"),
+							attrStr: "id='" + data.moveDownButtonId + "' title='" + ZmMsg.filterMoveDown + "'",
+							disabled: data.disableMoveDownButton
+						};
+					$>
+					<$=AjxImg.getImageHtml(moveDownButton) $>
+				</div>
+			</div>
+			<div class="ZmFilterRowActions">
+				<div class="ZmFilterRowAction">
+					<$ 
+						var editButton = {
+							imageName: ZmOperation.getProp(ZmId.OP_EDIT_FILTER_RULE, "image"),
+							attrStr: "id='" + data.editButtonId + "' title='" + ZmMsg.edit + "'"
+						};
+					$>
+					<$=AjxImg.getImageHtml(editButton) $>
+				</div>
+				<div class="ZmFilterRowAction">
+					<$ 
+						var delButton = {
+							imageName: ZmOperation.getProp(ZmId.OP_REMOVE_FILTER_RULE, "image"),
+							attrStr: "id='" + data.deleteButtonId + "' title='" + ZmMsg.del + "'"
+						};
+					$>
+					<$=AjxImg.getImageHtml(delButton) $>
+				</div>
+				<!-- bug: 42903 - disable running filters in offline for now -->
+				<$ if (!appCtxt.isOffline) { $>
+				<div class="ZmFilterRowAction">
+					<$ 
+						var runButton = {
+							imageName: ZmOperation.getProp(ZmId.OP_RUN_FILTER_RULE, "image"),
+							attrStr: "id='" + data.runButtonId + "' title='" + ZmMsg.filterRun + "'"
+						};
+					$>
+					<$=AjxImg.getImageHtml(runButton) $>
+				</div>
+				<$ } $>
+			</div>
+			<div class="ZmFilterRowActions">
+				<input type="checkbox" id='<$=data.toggleStateButtonId$>'  tabindex=0 <$= data.active ? 'checked': '' $> />
+			</div>
+		</div>
+	</div>
 </template>
 
 <!--
@@ -2308,21 +2380,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		<div style='float:left; padding-right:10px; height:50px'><$=AjxImg.getImageHtml("Warning")$></div>
 		<div><$=ZmMsg.runPriorityFilterPrompt$></div>
 	</div>
-</template>
-
-<template id='prefs.Pages#MailFilterListView'>
-	<table role="presentation" width='100%' align='center'>
-		<tr>
-			<td id='${targetDivId}' width="45%"></td>
-			<td valign='top' id='${buttonsDivId}'>
-				<div id='${transferButtonId}'	style='padding:30px 0 5px'></div>
-				<div id='${removeButtonId}'		style='padding-bottom:20px'></div>
-				<div id='${moveUpButtonId}'		style='padding-bottom:5px'></div>
-				<div id='${moveDownButtonId}'	style='padding-bottom:20px'></div>
-			</td>
-			<td id='${sourceDivId}' width="45%"></td>
-		</tr>
-	</table>
 </template>
 
 <template id='prefs.Pages#OutOfOffice'>
