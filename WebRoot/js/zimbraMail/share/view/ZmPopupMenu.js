@@ -154,7 +154,7 @@ function(id, params, htmlElId) {
 		mi.setImage(params.image);
 	}
 	if (params.text) {
-		mi.setText(params.text);
+		mi.setText(AjxStringUtil.htmlEncode(params.text));
 	}
 	if (params.shortcut) {
 		mi.setShortcut(appCtxt.getShortcutHint(this._keyMap, params.shortcut));
