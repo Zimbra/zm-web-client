@@ -1965,58 +1965,70 @@ INPUT.xform_field {
 	cursor:pointer;
 }
 
-/* ZAltButton: Alternate button style */
+/* ZAltButton: Alternate button/toolbar-button style */
 .ZAltButton { 
 	@AltButton@
 }
 
-.ZAltButton .ZButtonBorder {
+.ZAltButton .ZButtonBorder,
+.ZAltButton .ZToolbarButtonBorder {
 	@AltButtonBorder@
 	@AltButtonBorder-normal@
 }
 
-.ZAltButton.ZHover .ZButtonBorder { 
+.ZAltButton.ZHover .ZButtonBorder,
+.ZAltButton.ZHover .ZToolbarButtonBorder { 
 	@AltButtonBorder-hover@
 }
 
-.ZAltButton.ZDisabled .ZButtonBorder {
+.ZAltButton.ZDisabled .ZButtonBorder,
+.ZAltButton.ZDisabled .ZToolbarButtonBorder {
 	@AltButtonBorder-disabled@
 }
 
-.ZAltButton.ZFocused .ZButtonBorder {
+.ZAltButton.ZFocused .ZButtonBorder,
+.ZAltButton.ZFocused .ZToolbarButtonBorder {
 	@AltButtonBorder-focused@
 }
 
-.ZAltButton.ZActive .ZButtonBorder {
+.ZAltButton.ZActive .ZButtonBorder,
+.ZAltButton.ZActive .ZToolbarButtonBorder {
 	@AltButtonBorder-active@
 
 }
-.ZAltButton.ZSelected .ZButtonBorder {
+.ZAltButton.ZSelected .ZButtonBorder,
+.ZAltButton.ZSelected .ZToolbarButtonBorder {
 	@AltButtonBorder-selected@
 }
 
-.ZAltButton .ZButtonTable .ZWidgetTitle {
+.ZAltButton .ZButtonTable .ZWidgetTitle,
+.ZAltButton .ZToolbarButtonTable .ZWidgetTitle {
 	@AltButtonText@
 	@AltButtonText-normal@
 }
 
-.ZAltButton.ZHover .ZButtonTable .ZWidgetTitle {
+.ZAltButton.ZHover .ZButtonTable .ZWidgetTitle,
+.ZAltButton.ZHover .ZToolbarButtonTable .ZWidgetTitle {
 	@AltButtonText-hover@
 }
 
-.ZAltButton.ZDisabled .ZButtonTable .ZWidgetTitle {
+.ZAltButton.ZDisabled .ZButtonTable .ZWidgetTitle,
+.ZAltButton.ZDisabled .ZToolbarButtonTable .ZWidgetTitle {
 	@AltButtonText-disabled@
 }
 
-.ZAltButton.ZFocused .ZButtonTable .ZWidgetTitle {
+.ZAltButton.ZFocused .ZButtonTable .ZWidgetTitle,
+.ZAltButton.ZFocused .ZToolbarButtonTable .ZWidgetTitle {
 	@AltButtonText-focused@
 }
 
-.ZAltButton.ZActive .ZButtonTable .ZWidgetTitle {
+.ZAltButton.ZActive .ZButtonTable .ZWidgetTitle,
+.ZAltButton.ZActive .ZToolbarButtonTable .ZWidgetTitle {
 	@AltButtonText-active@
 }
 
-.ZAltButton.ZSelected .ZButtonTable .ZWidgetTitle {
+.ZAltButton.ZSelected .ZButtonTable .ZWidgetTitle,
+.ZAltButton.ZSelected .ZToolbarButtonTable .ZWidgetTitle {
 	@AltButtonText-selected@
 }
 
