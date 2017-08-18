@@ -50,6 +50,8 @@ ZmFilterRulesController = function(container, prefsApp, prefsView, parent, outgo
 	this._buttonListeners[ZmOperation.EDIT_FILTER_RULE] = new AjxListener(this, this._editListener);
 	this._buttonListeners[ZmOperation.REMOVE_FILTER_RULE] = new AjxListener(this, this._removeListener);
 	this._buttonListeners[ZmOperation.RUN_FILTER_RULE] = new AjxListener(this, this._runListener);
+	this._buttonListeners[ZmOperation.MOVE_UP_FILTER_RULE] = new AjxListener(this, this._moveUpListener);
+	this._buttonListeners[ZmOperation.MOVE_DOWN_FILTER_RULE] = new AjxListener(this, this._moveDownListener);
 	this._progressController = new ZmProgressController(container, prefsApp);
 
 	// reset community name since it gets its value from a setting
@@ -83,11 +85,10 @@ function() {
  * Initializes the controller.
  * 
  * @param	{ZmToolBar}	toolbar		the toolbar
- * @param	{ZmListView}	listView		active list view
- * @param   {ZmListView}    listView        not active list view
+ * @param	{ZmListView}	listView		list view
  */
 ZmFilterRulesController.prototype.initialize =
-function(toolbar, listView, notActiveListView) {
+function(toolbar, listView) {
 	// always reset the the rules to make sure we get the right one for the *active* account
 	this._rules = AjxDispatcher.run(this._outgoing ? "GetOutgoingFilterRules" : "GetFilterRules");
 
@@ -101,17 +102,8 @@ function(toolbar, listView, notActiveListView) {
 		}
 		this._resetOperations(toolbar, 0);
 	}
-
-	if (notActiveListView) {
-		this._notActiveListView = notActiveListView;
-		notActiveListView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
-		notActiveListView.addActionListener(new AjxListener(this, this._listActionListener));
-		this.resetListView(0);
-	}
-	
 	if (listView) {
 		this._listView = listView;
-		listView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
 		listView.addActionListener(new AjxListener(this, this._listActionListener));
 		this.resetListView(0);
 	}
@@ -128,18 +120,8 @@ function() {
 ZmFilterRulesController.prototype.getToolbarButtons =
 function() {
 	var ops = [
-		ZmOperation.ADD_FILTER_RULE,
-		ZmOperation.SEP,
-		ZmOperation.EDIT_FILTER_RULE,
-		ZmOperation.SEP,
-		ZmOperation.REMOVE_FILTER_RULE
+		ZmOperation.ADD_FILTER_RULE
 	];
-
-	// bug: 42903 - disable running filters in offline for now
-	if (!appCtxt.isOffline) {
-		ops.push(ZmOperation.SEP, ZmOperation.RUN_FILTER_RULE);
-	}
-
 	return ops;
 };
 
@@ -154,31 +136,9 @@ function(selectedIndex) {
 ZmFilterRulesController.prototype._handleResponseSetListView =
 function(selectedIndex, result) {
 	this._listView.set(result.getResponse().clone());
-	this._notActiveListView.set(result.getResponse().clone());
 	var rule = this._rules.getRuleByIndex(selectedIndex || 0);
-	if (rule && rule.active) {
+	if (rule) {
 		this._listView.setSelection(rule);
-	}
-	else if (rule) {
-		this._notActiveListView.setSelection(rule);
-	}
-};
-
-/**
- * Handles left-clicking on a rule. Double click opens up a rule for editing.
- *
- * @param	{DwtEvent}	ev		the click event
- * 
- * @private
- */
-ZmFilterRulesController.prototype._listSelectionListener =
-function(ev) {
-	var listView = this.getListView();
-	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-		this._editListener(ev);
-	} else {
-		var tb = this._filterRulesView.getToolbar();
-		this._resetOperations(tb, listView.getSelectionCount(), listView.getSelection());
 	}
 };
 
@@ -461,7 +421,7 @@ function(container, filterSel, isOutgoing) {
 /**
 * The user has agreed to delete a filter rule.
 *
-* @param rule	[ZmFilterRule]		rule to delete
+* @param  {ZmFilterRule}	rule	rule to delete
 */
 ZmFilterRulesController.prototype._deleteShieldYesCallback =
 function(rule) {
@@ -473,9 +433,9 @@ function(rule) {
 /**
 * The "Move Up" button has been pressed.
 *
-* @param	ev		[DwtEvent]		the click event
+* @param	{DwtEvent} 	ev	the click event
 */
-ZmFilterRulesController.prototype.moveUpListener =
+ZmFilterRulesController.prototype._moveUpListener =
 function(ev) {
 	var listView = this.getListView();
 	if (!listView) { return; }
@@ -487,15 +447,32 @@ function(ev) {
 /**
 * The "Move Down" button has been pressed.
 *
-* @ev		[DwtEvent]		the click event
+* @param	{DwtEvent} 	ev	the click event
 */
-ZmFilterRulesController.prototype.moveDownListener =
+ZmFilterRulesController.prototype._moveDownListener =
 function(ev) {
 	var listView = this.getListView();
 	if (!listView) { return; }
 
 	var sel = listView.getSelection();
 	this._rules.moveDown(sel[0]);
+};
+
+/**
+ * "Active" rule check-box is checked or unchecked
+ * 
+ * @param	{DwtEvent} 	ev	the click event
+ */
+ZmFilterRulesController.prototype._toggleStateListener =
+function(ev, active) {
+	var listView = this.getListView();
+	if (!listView) { return; }
+
+	var sel = listView.getSelection();
+	var rule = sel && sel[0];
+	if (rule) {
+		this._rules.setActive(rule, active);
+	}
 };
 
 /**
@@ -528,17 +505,7 @@ function(parent, numSel, sel) {
 };
 
 ZmFilterRulesController.prototype.getListView =
-function(){
-	if (this._listView && this._notActiveListView) {
-		var activeSel = this._listView.getSelection();
-		var notActiveSel = this._notActiveListView.getSelection();
-		if (!AjxUtil.isEmpty(activeSel)) {
-			return this._listView;
-		}
-		else if (!AjxUtil.isEmpty(notActiveSel)) {
-			return this._notActiveListView;
-		}
-	}
+function() {
     return this._listView;
 };
 

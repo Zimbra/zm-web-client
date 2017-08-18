@@ -3902,23 +3902,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:100%;
 }
 
-.ZOptionsSectionTabView .ZmPreferencesPage {
-	border-style:solid;
-	border-color:@darken(TabColor,20)@;
-	border-width:0px 1px 1px;
-	width:100%;
-	padding:0px;
-}
-
-.ZOptionsSectionTabView .ZOptionsSectionTable {
-	padding:0px;
-	margin:0px;
-}
-
-.ZOptionsSectionTabView .ZTabBar {
-	background-color:transparent;
-}
-
 .ZOptionsLabel,
 .ZOptionsLabelTop,
 .ZOptionsLabelNarrow,
@@ -4027,24 +4010,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZOptionsAcctName {
 	margin-right:10px;
 	white-space:nowrap;
-}
-
-.ZmFilterRulesView {
-	@ChromeBg@
-}
-
-.ZmFilterRulesView .DwtListView-Rows {
-	/*overflow:visible;*/
-	height:auto;
-	min-height:185px;
-}
-
-.ZmFilterRulesView .FilterActiveCell {
-	text-align:center;
-}
-
-.ZmFilterRulesView .DwtListView-Rows INPUT {
-	margin:1px;
 }
 
 /* Container for the set of preference pages (including tabs) */
@@ -7557,4 +7522,57 @@ input[type="radio"] + label {
 
 .ZmPrefCalWHValue .ZmPrefCalCustomWHTable > tbody > tr > td {
 	@PrefCalCustomWHCells@
+}
+
+/* Pref filter view styles */
+.ZmFilterPage {
+	@PrefFilterPage@
+}
+
+.ZmFilterPage .ZTabView {
+	@PrefFilterTabView@	
+}
+
+.ZmFilterPage .ZTabBar {
+	@PrefFilterTabBar@
+}
+
+.ZmFilterRulesView .ZToolbar {
+	@PrefFilterViewToolbar@
+}
+
+.ZmFilterRuleList {
+	@PrefFiltersList@
+}
+
+.ZmFilterRuleList .Row {
+	@PrefFiltersListRow@
+}
+
+.ZmFilterRuleList .Row.Row-selected .svg-icon {
+	@PrefFiltersListActiveRowIcons@
+}
+
+.ZmFilterRuleList .NoResults {
+	@PrefFiltersListEmpty@
+}
+
+.ZmFilterRuleList .ZmPrefFilterRow {
+	@PrefFilterRow@	
+}
+
+.ZmPrefFilterRow .ZmPrefFilterRowName {
+	@PrefFilterRowName@
+}
+
+.ZmPrefFilterRow .ZmPrefFilterRowActionsWrapper {
+	@PrefFilterRowActionsWrapper@
+}
+
+.ZmPrefFilterRow .ZmPrefFilterRowActionsWrapper .ZmFilterRowActions {
+	@PrefFilterRowActionsGroup@
+}
+
+.ZmPrefFilterRow .ZmPrefFilterRowActionsWrapper .ZmFilterRowActions .ZmFilterRowAction {
+	@PrefFilterRowAction@
 }
