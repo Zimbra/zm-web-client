@@ -36,6 +36,7 @@
  */
 ZmFilterPage = function(parent, section, controller) {
 	ZmPreferencesPage.apply(this, arguments);
+	this.addClassName("ZmFilterPage");
 };
 
 ZmFilterPage.prototype = new ZmPreferencesPage;
@@ -47,7 +48,7 @@ ZmFilterPage.prototype.toString = function () { return "ZmFilterPage"; };
 ZmFilterPage.prototype._createControls =
 function() {
 	if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) {
-		this._activityStreamsButton = new DwtButton({parent:this, parentElement: this._htmlElId+"_ACTIVITY_STREAM_BUTTON" });
+		this._activityStreamsButton = new DwtButton({parent:this, parentElement: this._htmlElId+"_ACTIVITY_STREAM_BUTTON", className: "ZButton ZInlineButton"});
 		this._activityStreamsButton.setText(ZmMsg.activityStreamSettings);
 		this._activityStreamsButton.addSelectionListener(new AjxListener(this, this._activityStreamDialog));
 	}
