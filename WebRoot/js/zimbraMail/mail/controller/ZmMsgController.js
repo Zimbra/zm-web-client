@@ -209,7 +209,7 @@ function(map) {
 
 ZmMsgController.prototype._getToolBarOps = 
 function() {
-	var list = [ZmOperation.CLOSE, ZmOperation.SEP];
+	var list = [ZmOperation.CLOSE];
 	list = list.concat(ZmMailListController.prototype._getToolBarOps.call(this));
 	return list;
 };
@@ -230,7 +230,7 @@ function() {
 
 ZmMsgController.prototype._initializeToolBar =
 function(view) {
-	var className = appCtxt.isChildWindow ? "ZmMsgViewToolBar_cw" : null;
+	var className = appCtxt.isChildWindow ? "ZToolbar ZmMsgViewToolBar_cw" : null;
 
 	ZmMailListController.prototype._initializeToolBar.call(this, view, className);
 };

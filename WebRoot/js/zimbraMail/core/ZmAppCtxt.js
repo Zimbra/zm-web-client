@@ -1594,7 +1594,7 @@ function(fullVersion, width, height, name) {
 	url[i++] = "&childId=" + this.__childWindowId;
 
     name = name || "_blank";
-	width = width || 705;
+	width = width || 750;
 	height = height || 465;
 	var args = ["height=", height, ",width=", width, ",location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no"].join("");
 	if (window.appDevMode) {
