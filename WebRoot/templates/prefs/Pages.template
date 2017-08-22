@@ -2486,9 +2486,8 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#OfflineSettings'>
-    <div style='width:475px;'>
+    <div class="ZmOfflineDialogContainer">
         <div><$=ZmMsg.offlineDescription$></div>
-        <div class='horizSep'></div>
         <div class='ZmOfflineItem'>
             <table role="presentation" class='ZRadioButtonTable'><tr>
                 <td><input id='${id}_ENABLE_OFFLINE_RADIO' type=radio name='${id}_OFFLINE_SETTING'

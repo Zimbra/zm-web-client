@@ -3739,17 +3739,20 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 /* Offline Settings */
+.ZmOfflineDialogContainer {
+	@OfflineDialogContainer@
+}
+
 .ZmOfflineItem {
-	margin:1.5em;
+	@OfflineDialogItem@
 }
 
 .ZmOfflineItem LABEL {
-	font-weight:bold;
+	@OfflineDialogLabel@
 }
 
 .ZmOfflineDetails {
-	color:#666;
-	margin-left:2em;
+	@OfflineDialogDetail@
 }
 
 .ZmOfflineSyncInterval {
