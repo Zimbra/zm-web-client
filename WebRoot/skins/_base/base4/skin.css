@@ -449,7 +449,7 @@ BODY                                    {   margin:0px;     }
 .ZToolbarButtonTable TD:first-child         {   padding-left:0;    }
 .ZToolbarButtonTable TD:last-child          {   padding-right:0;   }
 
-.ZToolbar .ZToolbarButton:not(.ZDisabled) .ZWidgetTitle                        {   color: @AltC@                }
+.ZToolbar .ZToolbarButton:not(.ZTabButton):not(.ZDisabled) .ZWidgetTitle       {   color: @AltC@                }
 .ZToolbar .ZToolbarButton.ZHasDropDown.ZHasLeftIcon .ZDropDown                 {   display: none;               }
 .ZToolbar .ZToolbarButton:not(.ZDisabled) .ZToolbarButtonTable .ZWidgetIcon    {   fill: @PrimaryBrandingColor@ }
 
@@ -754,8 +754,13 @@ we are hiding element with that class
     fill: @IconMsgUnread@;
 }
 
-.ImgCheckboxUnchecked-svg .svg-icon {
+.ImgCheckboxUnchecked-svg .svg-icon,
+.ZTreeItemCheckbox .ImgCheckboxUnchecked-svg .svg-icon {
     fill: @IconCheckboxUnchecked@;
+}
+
+.ZTreeItemCheckbox .ImgCheckboxChecked-svg .svg-icon {
+    fill: @CheckElmActiveBgColor@;
 }
 
 .Row-selected .ImgMsgUnread-svg .svg-icon,

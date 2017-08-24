@@ -702,6 +702,12 @@ ZmCalMonthView.prototype.getShortCalTitle = function(){
 	return formatter.format(this._date);
 };
 
+//Formats & returns a Full month name.
+ZmCalMonthView.prototype.getCalTitle = function(){
+	var formatter = DwtCalendar.getMonthFormatter();
+	return formatter.format(this._date);
+};
+
 ZmCalMonthView.prototype._setAllDayDivSize =
 function(allDayDiv, width) {
     Dwt.setSize(allDayDiv, width, 16 + 4); //Dwt.DEFAULT);

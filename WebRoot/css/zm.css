@@ -317,6 +317,9 @@ INPUT[type="text"]:focus, INPUT[type="password"]:focus, INPUT[type="email"]:focu
 
 .ZmNavToolBar .DwtText {white-space:nowrap;}
 
+.ZmCalendarNavToolbar .ZmNavToolBarTitle {
+	@CalendarNavToolbarTitle@
+}
 
 /* make calendar nav toolbars at least a certain size, bug:19325
 	NOTE:this is a hard-coded size, which is generally bad,
