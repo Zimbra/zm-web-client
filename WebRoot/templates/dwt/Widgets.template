@@ -371,9 +371,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
                 <$ if (data.isCheckedStyle) { $>
                     <td style="width:20px" nowrap id='${id}_checkboxCell' class="ZTreeItemCheckboxCell">
                         <div class="ZTreeItemCheckbox" id='${id}_checkbox'>
-                            <div class="ZTreeItemCheckboxImg" id='${id}_checkboxImg'>
-                                <$= AjxImg.getImageHtml("MenuCheck") $>
-                            </div>
+                            <$= AjxImg.getImageHtml("CheckboxUnchecked") $>
                         </div>
                     </td>
                 <$ } $>

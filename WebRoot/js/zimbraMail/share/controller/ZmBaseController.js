@@ -256,6 +256,9 @@ ZmBaseController.prototype._getToolBarOps 			= function() {};
 // Returns a list of secondary (non primary) toolbar operations
 ZmBaseController.prototype._getSecondaryToolBarOps 	= function() {};
 
+//Returns the index where secondary buttons action menu should be placed
+ZmBaseController.prototype._getSecondaryToolBarOpsPosition 	= function() {};
+
 // Returns a list of buttons that align to the right, like view and detach
 ZmBaseController.prototype._getRightSideToolBarOps 	= function() {};
 
@@ -308,6 +311,7 @@ function(view, className) {
 
 	var buttons = this._getToolBarOps();
 	var secondaryButtons = this._getSecondaryToolBarOps() || [];
+	var secondaryButtonsPosition = this._getSecondaryToolBarOpsPosition() || buttons.length;
 	var rightSideButtons = this._getRightSideToolBarOps() || [];
 	if (!(buttons || secondaryButtons)) { return; }
 
@@ -315,6 +319,7 @@ function(view, className) {
 		parent:				this._container,
 		buttons:			buttons,
 		secondaryButtons:	secondaryButtons,
+		secondaryButtonsPosition: secondaryButtonsPosition,
 		rightSideButtons: 	rightSideButtons,
 		overrides:          this._getButtonOverrides(buttons.concat(secondaryButtons).concat(rightSideButtons)),
 		context:			view,
