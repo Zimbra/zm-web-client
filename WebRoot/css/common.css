@@ -605,7 +605,7 @@ LI.RowDouble, LI.Row {list-style: none;}
 
 /*** TODO:  clean this the hell up ***/
 
-.Row TD.Flag, .Row TD.Attach, .Row TD.Tag, .Row TD.Icon, .Row TD.Count,
+.Row TD.Checkbox, .Row TD.Recurrence, .Row TD.Flag, .Row TD.Attach, .Row TD.Tag, .Row TD.Icon, .Row TD.Count,
 .Row-selected TD.Flag, .Row-selected TD.Attach, .Row-selected TD.Tag, .Row-selected TD.Icon, .Row-selected TD.Count,
 .Row-dragProxy TD.Flag, .Row-dragProxy TD.Attach, .Row-dragProxy TD.Tag, .Row-dragProxy TD.Icon, .Row-dragProxy TD.Count,
 .Row-selected-dragProxy TD.Flag, .Row-selected-dragProxy TD.Attach, .Row-selected-dragProxy TD.Tag, .Row-selected-dragProxy TD.Icon, .Row-selected-dragProxy TD.Count,

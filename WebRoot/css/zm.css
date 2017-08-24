@@ -2909,15 +2909,6 @@ INPUT[type="text"].InlineWidget {
 	white-space:nowrap;
 }
 
-.calendar_date_search-dateRange {
-	color:#4c4c4c;
-	font-size:16px;
-	font-weight:bold;
-	padding-right:10px;
-	text-align:right;
-	width:100%;
-}
-
 /* ??? USED? */
 .allday {
 	left:0px;
