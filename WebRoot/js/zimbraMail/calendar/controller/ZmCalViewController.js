@@ -263,9 +263,7 @@ function(viewId, startDate, skipMaintenance) {
 	} else {
         if(viewId!=ZmId.VIEW_CAL_MONTH){this._viewMgr.getView(viewId).initializeTimeScroll();}
 		this._navToolBar[ZmId.VIEW_CAL].setVisible(true);
-		var navText = viewId == ZmId.VIEW_CAL_MONTH
-			? currentView.getShortCalTitle()
-			: currentView.getCalTitle();
+		var navText = currentView.getCalTitle();
 		this._navToolBar[ZmId.VIEW_CAL].setText(navText);
 		DBG.println(AjxDebug.DBG1, "ZmCalViewController.show, skipMaintenance = " + skipMaintenance);
 		if (!skipMaintenance) {
@@ -1032,24 +1030,59 @@ function(items) {
 
 ZmCalViewController.prototype._getToolBarOps =
 function() {
-    var toolbarOptions = [
-		ZmOperation.DELETE, ZmOperation.SEP, ZmOperation.MOVE_MENU,
-		ZmOperation.TAG_MENU,
-		ZmOperation.SEP,
-		ZmOperation.PRINT_CALENDAR,
-		ZmOperation.SEP,
+	var toolbarOptions = [
+		ZmOperation.DELETE,
+		ZmOperation.MOVE_MENU,
 		ZmOperation.TODAY,
-        ZmOperation.FILLER,
-        ZmOperation.DAY_VIEW,
-        ZmOperation.WORK_WEEK_VIEW,
-        ZmOperation.WEEK_VIEW,
+		ZmOperation.FILLER,
+		ZmOperation.DAY_VIEW,
+		ZmOperation.WORK_WEEK_VIEW,
+		ZmOperation.WEEK_VIEW,
 		ZmOperation.MONTH_VIEW,
-        ZmOperation.CAL_LIST_VIEW
+		ZmOperation.CAL_LIST_VIEW
 	];
-    if( appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED) ){
-        toolbarOptions.push(ZmOperation.FB_VIEW);
-    }
-    return toolbarOptions;
+	if( appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED) ){
+		toolbarOptions.push(ZmOperation.FB_VIEW);
+	}
+	return toolbarOptions;
+};
+
+ZmCalViewController.prototype._getSecondaryToolBarOps =
+function() {
+	var list = [];
+	list.push(ZmOperation.PRINT_CALENDAR);
+	list.push(ZmOperation.TAG_MENU);
+	return list;
+};
+
+ZmCalViewController.prototype._getSecondaryToolBarOpsPosition 	=
+function() {
+	//need actions menu before operation today.
+	return 2;
+};
+
+ZmCalViewController.prototype._getButtonOverrides =
+function(buttons) {
+
+	if (!(buttons && buttons.length)) {
+		return;
+	}
+
+	var overrideOperations = [ZmOperation.DAY_VIEW,
+		ZmOperation.WORK_WEEK_VIEW,
+		ZmOperation.WEEK_VIEW,
+		ZmOperation.MONTH_VIEW,
+		ZmOperation.CAL_LIST_VIEW];
+
+	var overrides = {};
+
+	//adding unique class to calendar operations to style them as tabs.
+	for (var i = 0; i < overrideOperations.length; i++) {
+		var operationId = overrideOperations[i];
+		overrides[operationId] = {};
+		overrides[operationId].className = "ZTabButton ZToolbarButton";
+	}
+	return overrides;
 };
 
 /* This method is called from ZmListController._setup. We control when this method is called in our
@@ -1547,11 +1580,8 @@ function(date, duration, roll) {
 		{
 			this.show(ZmId.VIEW_CAL_WEEK);
 		}
-		if (ZmId.VIEW_CAL_MONTH == this._currentViewType) {
-			title = this._viewMgr.getCurrentView().getShortCalTitle();
-		}
-        if (ZmId.VIEW_CAL_FB == this._currentViewType && roll && appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
-            currentView._navDateChangeListener(date);
+		if (ZmId.VIEW_CAL_FB == this._currentViewType && roll && appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
+			currentView._navDateChangeListener(date);
 		}
 		this._navToolBar[ZmId.VIEW_CAL].setText(title);
 	}
