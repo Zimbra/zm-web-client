@@ -354,9 +354,8 @@
 </template>
 
 <template id='calendar.Calendar#ListViewSearchBar'>
-	<table role="presentation" width=100%>
+	<table role="presentation" width="100%" height="100%">
 		<tr><td id="${id}_searchBarControls"></td>
-            <td id="${id}_searchBarDate" class='calendar_date_search-dateRange'></td>
         </tr>
     </table>
 </template>

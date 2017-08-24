@@ -258,13 +258,13 @@ function(viewId, startDate, skipMaintenance) {
             this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
             break;
     }
-    if (viewId == ZmId.VIEW_CAL_LIST) {
-		this._navToolBar[ZmId.VIEW_CAL].setVisible(false);
-	} else {
-        if(viewId!=ZmId.VIEW_CAL_MONTH){this._viewMgr.getView(viewId).initializeTimeScroll();}
+	// updating navtoolbar date range.
+	var navText = currentView.getCalTitle();
+	this._navToolBar[ZmId.VIEW_CAL].setText(navText);
+
+	if (viewId !== ZmId.VIEW_CAL_LIST) {
+		if(viewId!=ZmId.VIEW_CAL_MONTH){this._viewMgr.getView(viewId).initializeTimeScroll();}
 		this._navToolBar[ZmId.VIEW_CAL].setVisible(true);
-		var navText = currentView.getCalTitle();
-		this._navToolBar[ZmId.VIEW_CAL].setText(navText);
 		DBG.println(AjxDebug.DBG1, "ZmCalViewController.show, skipMaintenance = " + skipMaintenance);
 		if (!skipMaintenance) {
 			var work = ZmCalViewController.MAINT_VIEW;
@@ -275,9 +275,9 @@ function(viewId, startDate, skipMaintenance) {
 			}
 			this._scheduleMaintenance(work);
 		}
-        if (!this.isSearchResults) {
-            this.updateTimeIndicator(viewId);
-        }
+		if (!this.isSearchResults) {
+			this.updateTimeIndicator(viewId);
+		}
 		DBG.timePt("scheduling maintenance");
 	}
 
@@ -3164,8 +3164,8 @@ function(viewId) {
 
 ZmCalViewController.prototype._setNavToolbarPosition =
 function(navToolbar, currentViewName) {
-    if(!navToolbar || !currentViewName) { return; }
-    navToolbar.setVisible(currentViewName != ZmId.VIEW_CAL_LIST);
+	if(!navToolbar || !currentViewName) { return; }
+	navToolbar._setNavigationButtonsVisibility(currentViewName != ZmId.VIEW_CAL_LIST);
 };
 
 ZmCalViewController.prototype._resetOperations =

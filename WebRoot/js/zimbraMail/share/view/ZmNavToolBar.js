@@ -49,6 +49,8 @@ ZmNavToolBar = function(params) {
 	if (hasText) {
 		this._textButton = this.getButton(ZmOperation.TEXT);
 	}
+
+	this._navigationVisible = true;
 };
 
 ZmNavToolBar.prototype = new ZmButtonToolBar;
@@ -124,3 +126,29 @@ function(id, params) {
 	params.textClassName = "ZWidgetTitle ZmNavToolBarTitle";
 	return ZmButtonToolBar.prototype.createOp.apply(this, arguments);
 };
+
+/**
+ * Sets the visibility of the navigation buttons.
+ *
+ * @param	{Boolean}	visible		set navigation buttons visible or hide
+ */
+ZmNavToolBar.prototype._setNavigationButtonsVisibility =
+function(visible) {
+	if(this._navigationVisible == visible) { return;}
+
+	var button;
+	var navButtonIds = this._getButtons();
+	for(var i=0; i< navButtonIds.length; i++) {
+		button = this.getButton(navButtonIds[i]);
+		button.setVisible(visible);
+	}
+	this._navigationVisible = visible;
+}
+
+/**
+ * Returns if navigation buttons are visible or not
+ */
+ZmNavToolBar.prototype._isNavigationVisible =
+function() {
+	return this._navigationVisible;
+}
