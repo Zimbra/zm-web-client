@@ -233,12 +233,12 @@ ZmToolBar.prototype.SEPARATOR_TEMPLATE = "share.Widgets#ZmToolBarSeparator";
  * @private
  */
 ZmToolBar.prototype._createButton =
-function(params, className) {
+function(params) {
 	var ctor = params.ctor || DwtToolBarButton;
     var button = new ctor({
 		parent:this,
 		style:params.style,
-		className:className,
+		className:params.className,
 		index:params.index,
 		id:params.id,
 		template: params.template

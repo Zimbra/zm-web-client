@@ -437,7 +437,7 @@ function(hour) {
 
 ZmCalColView.prototype._updateTitle =
 function() {
-	var dayFormatter = DwtCalendar.getDayFormatter();
+	var dayFormatter = AjxDateUtil._dateFormatNoYear;
 
 	if (this.numDays == 1) {
 		var colFormatter = DwtCalendar.getDateFormatter();
