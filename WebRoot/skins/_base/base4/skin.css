@@ -1137,6 +1137,7 @@ svg.progress-circle.tick-inside {
 /*Resetting text transform for dialog action buttons that are inline */
 .DwtDialogButtonBar .ZInlineButton>.ZButtonTable {
     text-transform:none;
+    padding-left:13px;
 }
 
 /*************
