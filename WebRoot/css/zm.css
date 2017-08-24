@@ -6672,7 +6672,7 @@ a.ZmLinkDisabled {
 
 .ZDialogButton .ZButtonTable .ZWidgetTitle {
     color: @AltC@;
-    letter-spacing: 1px;
+    @FontSize-slightly-big@
 }
 
 /* Primary button style */ 
