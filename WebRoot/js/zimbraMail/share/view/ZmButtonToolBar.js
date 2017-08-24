@@ -43,6 +43,7 @@
  * @param	{Stirng}	params.buttonClassName	the CSS class name for buttons
  * @param	{Hash}	params.overrides			a hash of overrides by op ID
  * @param	{Array}	params.secondaryButtons		a list of operation IDs
+ * @param	{int}	params.secondaryButtonsPosition		index where secondary operation action menu should be placed.
  * @param	{Array}	params.rightSideButtons		a list of operation IDs
  * @param	{constant}	params.context			the vcontextID (used to generate button IDs)
  * @param	{constant}	params.toolbarType		the toolbar type (used to generate button IDs)
@@ -84,7 +85,7 @@ ZmButtonToolBar = function(params) {
 	var secondaryOpList = ZmOperation.filterOperations(params.secondaryButtons);
 
 	if (secondaryOpList && secondaryOpList.length) {
-		this.opList.push(ZmOperation.ACTIONS_MENU);
+		this.opList.splice(params.secondaryButtonsPosition, 0, ZmOperation.ACTIONS_MENU);
 	}
 
 	var rightSideOpList = ZmOperation.filterOperations(params.rightSideButtons);
@@ -157,7 +158,10 @@ ZmButtonToolBar.prototype.toString = function() { return "ZmButtonToolBar"; };
  */
 ZmButtonToolBar.prototype.createOp =
 function(id, params) {
-	params.className = this._buttonStyle;
+	if(this._buttonStyle){
+		params.className += " " + this._buttonStyle;
+	}
+	
 	var b;
 	if (id == ZmOperation.TEXT) {
 		var id;
