@@ -1188,9 +1188,9 @@ function(list, context) {
 			}
 			cell = row.insertCell(-1);
 			if (matchTypeContact) {
-				cell.innerHTML = ("<span class='acRowTop'>" + match.name + "</span>" + "<br/>" + match.email) || "&nbsp;";
+				cell.innerHTML = ("<span class='acRowTop'>" + AjxStringUtil.htmlEncode(match.name) + "</span>" + "<br/>" + AjxStringUtil.htmlEncode(match.email)) || "&nbsp;";
 			} else {
-				cell.innerHTML = match.text || "&nbsp;";
+				cell.innerHTML = AjxStringUtil.htmlEncode(match.text) || "&nbsp;";
 			}
 			if (forgetEnabled) {
 				this._insertLinkCell(this._forgetLink, row, rowId, this._getId("Forget", i), (match.score > 0));
