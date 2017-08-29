@@ -586,7 +586,7 @@ INPUT[type="text"].search_input-expanded:focus {
 
 
 .ZmConvListFragment {
-	display: inline-block;
+	display: inline;
 }
 
 .ZmConvExpanded:not(.Row-selected),
