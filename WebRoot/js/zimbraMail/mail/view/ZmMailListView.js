@@ -85,7 +85,7 @@ ZmMailListView.SORTBY_HASH[ZmSearch.PRIORITY_DESC] = {field:ZmItem.F_PRIORITY, m
 ZmMailListView.SORTBY_HASH[ZmSearch.RCPT_ASC] = {field:ZmItem.F_TO, msg:"to"};
 ZmMailListView.SORTBY_HASH[ZmSearch.RCPT_DESC] = {field:ZmItem.F_TO, msg:"to"};
 
-
+ZmMailListView.HEADER_CLASS = "ZmMailListHeader";
 // Public methods
 
 
@@ -678,7 +678,7 @@ function(defaultColumnSort) {
 			defaultColumnSort = ZmMailListView.SORTBY_HASH[activeSortBy].field;
 		}
 		DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort, this._isMultiColumn);
-
+		Dwt.addClass(this._listColDiv, ZmMailListView.HEADER_CLASS);
 		if (rpLoc == ZmSetting.RP_RIGHT) {
 			var td = document.getElementById(this._itemCountTextTdId);
 			if (td) {
