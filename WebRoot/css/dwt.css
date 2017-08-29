@@ -488,7 +488,7 @@
 .DwtListView-Sash {
 	width:1px;
 	height:100%;
-	vertical-align:top;
+	vertical-align:middle;
 }
 
 /***
@@ -556,6 +556,10 @@ TD.DwtListView-ColumnActive {
 	@ListColHeaderText-hover@
 }
 
+/* Mail List header specific class*/
+.ZmMailListHeader {
+	@MailListHeader@
+}
 
 /***
  *		Rows (a.k.a. items) -- also look for 'rows' in common.css
@@ -600,11 +604,6 @@ UL.DwtListView-Rows {
 .DwtListView-Rows TD, .DwtMsgListMultiCol DIV {
     overflow:hidden;
     padding-left:@TextPaddingSize@;
-}
-.DwtListView-Rows TD {
-    padding-right:0px;
-}
-.DwtMsgListMultiCol DIV {
     padding-right:2px;
 }
 
