@@ -480,10 +480,10 @@
 	<tr>
 		<td class='Label'><$= ZmMsg.feedLabel $></td>
 		<td>
-			<table role="presentation">
+			<table role="presentation" class="ZPropertySheet">
 				<tr>
 					<td>
-						<input type='checkbox' id='${id}_remote' style='width:initial;' />
+						<input type='checkbox' id='${id}_remote' />
 					</td>
 					<td class='Label'>
 						<label for='${id}_remote'> ${remoteLabel} </label>
@@ -504,14 +504,16 @@
 
 <template id="share.Dialogs#ZmNewOrgDialogName">
 	<tr valign='center'>
-		<td class='Label' id ='${id}_lblName'><$= ZmMsg.nameLabel $></td>
-		<td><input autocomplete='off' type='text' class='Field' id='${id}_name' aria-labelledby='${id}_lblName' /></td>
+		<td class='Label' id ='${id}_lblName' colspan=2><$= ZmMsg.nameLabel $></td>
+	</tr>
+	<tr valign='center'>
+		<td colspan=2><input autocomplete='off' type='text' class='Field NameField' id='${id}_name' aria-labelledby='${id}_lblName' /></td>
 	</tr>
 </template>
 
 <template id="share.Dialogs#ZmNewOrgDialogColor">
 	<tr>
-		<td class='Label' id ='${id}_lblColor'><$= ZmMsg.colorLabel $></td>
+		<td class='Label ColorLabel' id ='${id}_lblColor'><$= ZmMsg.colorLabel $></td>
 		<td id='${id}_colorSelect'></td>
 	</tr>
 </template>
