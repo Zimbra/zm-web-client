@@ -155,10 +155,6 @@ BODY                                    {   margin:0px;     }
 #skin_spacing_app_chooser               {   @SkinSpacingAppChooser@     }
 #skin_border_app_chooser                {   @SkinBorderAppChooser@      }
 #skin_container_app_chooser             {
-    position:absolute;
-    width:auto;
-    height:auto;
-    z-index:1;
     @AppTabChooser@
 }
 #skin_container_app_chooser>TABLE   { @AppTabTable@     }
