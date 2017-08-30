@@ -4366,6 +4366,14 @@ HTML>BODY .appt-selected .appt_allday_body
 	@ChooseFolderDialogButtonTitle@
 }
 
+.ZmCreateNewFolderDialog .NameField {
+	@CreateNewFolderDialogNameField@
+}
+
+.ZmCreateNewFolderDialog .ColorLabel {
+	@CreateNewFolderDialogColorLabel@
+}
+
 .ZmAttachDialog .WindowOuterContainer {
 	@AttachDialogContainer@
 }
