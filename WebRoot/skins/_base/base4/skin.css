@@ -505,6 +505,11 @@ BODY                                    {   margin:0px;     }
 
 #ENDIF
 
+/* Case: When dropdown does have left icon and does not have right icon */
+.ZSelect.ZHasDropDown.ZHasText.ZHasLeftIcon:not(.ZHasRightIcon) .ZWidgetTitle {
+    padding-right: 8px;
+}
+
 #IFDEF MSIE_LOWER_THAN_9
 .ZToolbarButtonTable            {   padding: 0px @ToolbarButtonPaddingSize@;    }
 #ENDIF
