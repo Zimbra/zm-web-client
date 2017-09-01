@@ -2724,45 +2724,33 @@ INPUT[type="text"].InlineWidget {
 	@PageHeaderBg@
 }
 
-/* label for the month */
-.calendar_month_header_month {
-	@PageHeaderBg@
-	@PageHeaderText@
-	@FontSize-biggest@
-	@Label@
-	text-align:center;
-}
-
 /* day of week label for the month */
 .calendar_month_header_cells_text {
-	@PageHeaderBg@
-	@PageHeaderText@
-	@FontSize-big@
-	@SmallBoxPadding@
-	@BottomSeparator@
-	@Label@
-	text-align:center;
+	@CalendarMonthHeaderCell@
 }
 
 /* cell for each day in the month view in various states*/
 .calendar_month_cells_td {
-	@SeparatorBorder@
+	@TopSeparator@
+	@RightSeparator@
+	@BottomSeparator@
 	@NoWrap@
 	vertical-align:top;
 }
 
 .calendar_month_weekno_td {
-	@LeftSeparator@
 	@TopSeparator@
 	@BottomSeparator@
 	@NoWrap@
 	@Text-anchor@
+	@FontSize-slightly-big@
 	vertical-align:top;
 	text-align:center;
+	line-height:2;
 }
 
 .calendar_month_cells_td-selected {
-	@SelectedBg@
+	@AppBg@
 	@SeparatorBorder@
 	@NoWrap@
 	vertical-align:top;
@@ -2801,9 +2789,10 @@ INPUT[type="text"].InlineWidget {
 .calendar_month_day_label_off_month_today
 {
 	@NoWrap@
-	@FontSize-big@
+	@FontSize-slightly-big@
 	@TextPadding@
-	text-align:right;
+	text-align:left;
+	line-height:2;
 }
 
 .calendar_month_day_label_today {
@@ -2858,10 +2847,15 @@ INPUT[type="text"].InlineWidget {
 
 .calendar_month_day_item .subject {
 	padding-left:4px;
+	font-weight:bold;
 }
 
 .calendar_month_day_item .start_time {
 	padding-left:2px;
+}
+
+td.calendar_month_day_item table td {
+	padding: 2px 0;
 }
 
 .calendar_month_day_item-dnd {
