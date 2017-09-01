@@ -520,7 +520,6 @@ function() {
 	this._dayInfo = new Object();
 	this._fillers = [];
 	this._headerId = Dwt.getNextId();
-	this._titleId = Dwt.getNextId();	
 	this._daysId = Dwt.getNextId();	
 	this._bodyId = Dwt.getNextId();
 	this._weekNumBodyId = Dwt.getNextId();
@@ -550,9 +549,6 @@ function() {
 		html.append("<col id='", this._headerColId[i], "'/>");
 	}
 	html.append("</colgroup>");
-	html.append("<tr>");
-	html.append("<td colspan=7 class=calendar_month_header_month id='", this._titleId, "'></td>");
-	html.append("</tr>");
 	html.append("<tr>");
 
     // Week title to heading.
@@ -688,8 +684,6 @@ function() {
 	
 	var formatter = DwtCalendar.getMonthFormatter();
 	this._title = formatter.format(this._date);
-	var titleEl = document.getElementById(this._titleId);
-	titleEl.innerHTML = this._title;
 };
 
 ZmCalMonthView.prototype._calcDayIndex =
