@@ -1164,3 +1164,16 @@ svg.progress-circle.tick-inside {
     vertical-align: middle;
     padding-right:30px;
 }
+
+.ZmApptRecurDialog .ZmSelectWidgetWrapper .DwtInputField input[type='text'] {
+    border:none;
+}
+
+.ZmApptRecurDialog input[id^="WEEKLY_FIELD_RADIO"] {
+    margin-top:@SkinViewInnerSpacing@;
+}
+
+.ZmApptRecurDialog [id^="MONTHLY_DAY_SELECT"] .ZWidgetTitle,
+.ZmApptRecurDialog [id^="YEARLY_DAY_SELECT"] .ZWidgetTitle {
+    text-transform: capitalize;
+}
