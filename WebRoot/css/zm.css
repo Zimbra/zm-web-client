@@ -2613,15 +2613,6 @@ INPUT[type="text"].InlineWidget {
 	font-size:0px;
 }
 
-/* Separator between details and notes section of the calendar compose view*/
-.calendar_edit_view_separator {
-	@BottomSeparator@
-}
-
-.calendar_edit_notes_separator {
-	@TopSeparator@
-}
-
 .calendar_edit_field {
 	font-weight:bold;
 }
@@ -3253,20 +3244,15 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmScheduler {
 	clear:both;
-	margin-right:7px;
-}
-
-.ZmScheduler>TABLE {
-	margin:0 3px;
 }
 
 /* Colors for the free/busy blocks */		/*??? SKIN THIS ? */
-.ZmScheduler-free 			{ background-color:#F8F8F8;	}
-.ZmScheduler-busy 			{ background-color:#4AA6F1;	}
-.ZmScheduler-tentative 		{ background-color:#BAE0E3;	}
-.ZmScheduler-outOfOffice 	{ background-color:#7B5BAC;	}
-.ZmScheduler-unknown 		{ background-color:#FFF5CC;	}
-.ZmScheduler-working 		{ background-color:white;	}
+.ZmScheduler-free			{ @SchedulerFree@	}
+.ZmScheduler-busy			{ @SchedulerBusy@	}
+.ZmScheduler-tentative		{ @SchedulerTentative@	}
+.ZmScheduler-outOfOffice	{ @SchedulerOutOfOffice@	}
+.ZmScheduler-unknown		{ @SchedulerUnknown@	}
+.ZmScheduler-working		{ @SchedulerWorking@	}
 
 .ZmSchedulerPTST-needsaction 	{ color:#06C !important;	}
 .ZmSchedulerPTST-declined 		{ color:#F00 !important;	}
@@ -3310,38 +3296,40 @@ HTML>BODY .appt-selected .appt_allday_body
 	text-align:center;
 }
 
+.ZmSchedulerGridHeaderLeft {
+	@LeftSeparator@
+	@AlignLeft@
+	padding-left:@SkinViewGutterSpace@;
+}
+
+.ZmSchedulerGridHeaderLeft > div{
+	position:absolute;
+}
+
 /* Table that contains the hour labels -- scootch it to the right a little bit */
 .ZmSchedulerGridHeaderTable {
 	position:relative;
-	width:103%;
+	@LeftSeparator@
 }
 
 .ZmSchedulerGridHeaderCell {
 	@Label@
+	@Text-center@
+	@RightSeparator@
+	@FontSize-smaller@
 }
 
-.ZmSchedulerOrgIconTd {
-	@RightSeparator@
-	@LeftSeparator@
-}
-
-.ZmSchedulerViewAttendeeTd {
-	@RightSeparator@
-	@LeftSeparator@
-	@BottomSeparator@
+.ZmSchedulerAttendeeName {
+	@SchedulerAttendeeName@
 }
 
 .ZmSchedulerNameTd {
 	@FreeBusyViewGridHeight@
 	@NoWrap@
 	@RightSeparator@
-	@BottomSeparator@
-	border-top:1px solid black;
-	border-left:1px solid black;
 	background-color:white;
 	vertical-align:middle;
 	@TextCursor@
-/*	color:#AAAAAA;	*/
 }
 
 .ZmSchedulerPTSTTd {
@@ -3355,25 +3343,16 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* "All attendees" label */
 .ZmSchedulerAllLabel {
-	@FreeBusyViewGridHeight@
-	@NoWrap@
-	@SeparatorBorder@
-	@Text-disabled@
-	font-weight:bold;
-	text-align:center;
-	@InactiveCursor@
+	@SchedulerAllLabel@
 }
 
 /* input field for f/b attendees */
 .ZmSchedulerInput {
-	@FullSize@
-	border-width:0px;
-	padding-top:3px;
-	height:22px;
+	@SchedulerInput@
 }
 
 .ZmApptEditView .ZmFreeBusySchedulerView {
-	max-height: 15rem;
+	@SchedulerView@
 }
 
 .ZmTimeSuggestionPrefDialog {
@@ -3387,7 +3366,21 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZAttRole {
-	height:2rem;
+	@FreeBusyViewGridHeight@
+}
+
+.ZAttRole > .ZWidgetTable,
+.ZmSchedulerViewAttendeeTd,
+.ZmSchedulerOrgIconTd {
+	padding-left:@SchedulerViewGutterSpace@;
+}
+
+.ZmSchedulerLegendTable {
+	@SchedulerLegends@
+}
+
+.ZPropertySheet.ZmSchedulerLegendTable>TBODY>TR>TD {
+	@SchedulerLegendCell@
 }
 
 .ZmSchedulerInputDisabledTd {
@@ -3437,11 +3430,11 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmSchedulerGridDiv-start {
-	border-right:3px solid green;
+	@SchedulerGridTimeStart@
 }
 
 .ZmSchedulerGridDiv-end {
-	border-right:3px solid darkred;
+	@SchedulerGridTimeEnd@
 }
 
 /* MAKE THE RIGHT BORDER BLACK */
@@ -3485,7 +3478,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmSchedulerGridDiv-leftStart {
-	border-left:3px solid green;
+	@SchedulerGridTimeLeftStart@
 }
 
 /* marker cell in the grid (showing currently selected time) */
