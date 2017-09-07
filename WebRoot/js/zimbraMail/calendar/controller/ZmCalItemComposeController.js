@@ -356,8 +356,8 @@ function(mode) {
     }
 
 	var composeOptionBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
-	var composeOptionMenu = composeOptionBtn.getMenu();
-	var printButton = composeOptionMenu.getItemById(ZmId.OP_PRINT, ZmId.OP_PRINT);
+	var composeOptionMenu = composeOptionBtn && composeOptionBtn.getMenu();
+	var printButton = composeOptionMenu && composeOptionMenu.getItemById(ZmId.OP_PRINT, ZmId.OP_PRINT);
 	if (printButton) {
 		printButton.setEnabled(!isNew);
 	}
