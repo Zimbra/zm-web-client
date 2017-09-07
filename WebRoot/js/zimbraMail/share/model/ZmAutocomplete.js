@@ -532,7 +532,7 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 				this.groupId = match.id;
 			}
 			this.name = match.display;
-			this.text = AjxStringUtil.htmlEncode(match.display) || this.email;
+			this.text = match.display || this.email;
 			this.icon = "Group";
 		} else {
 			// Local contact, GAL contact, or distribution list
@@ -546,23 +546,23 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 						var displayName = contact && contact.getFullNameForDisplay(false);
 						this.fullAddress = "\"" + displayName + "\" <" + email.getAddress() + ">";
 						this.name = displayName;
-						this.text = AjxStringUtil.htmlEncode(this.fullAddress);
+						this.text = this.fullAddress;
 					}
 					else {
 						//we assume if we don't get contact object, its a shared contact.
 						this.fullAddress = email.toString();
 						this.name = email.getName();
 						this.email = email.getAddress();
-						this.text = AjxStringUtil.htmlEncode(this.fullAddress);
+						this.text = this.fullAddress;
 					}
 				} else {
 					this.fullAddress = email.toString();
 					this.name = email.getName();
-					this.text = AjxStringUtil.htmlEncode(match.email);
+					this.text = match.email;
 				}
 			} else {
 				this.email = match.email;
-				this.text = AjxStringUtil.htmlEncode(match.email);
+				this.text = match.email;
 			}
 			if (options && options.needItem && window.ZmContact) {
 				this.item = new ZmContact(null);

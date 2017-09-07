@@ -507,7 +507,7 @@ function(granter, grantee, sendAs,sendObo,isGrant) {
         subject = (sendAs && sendObo) ? ZmMsg.revokeRightsSubject : ZmMsg.revokeRightSubject;
     }
     subject = AjxMessageFormat.format(subject, [granter]);
-    status = AjxMessageFormat.format(status, grantee);
+    status = AjxMessageFormat.format(status, AjxStringUtil.htmlEncode(grantee));
     var text = (isGrant)?ZmMsg.delegateCreatedText : ZmMsg.delegateRevokedText;
     text = AjxMessageFormat.format(text, [permissions, grantee, granter]);
     var html = (isGrant)?ZmMsg.delegateCreatedHtml : ZmMsg.delegateRevokedHtml;
@@ -3236,7 +3236,7 @@ function(ev) {
 ZmGrantRightsDialog.prototype.setData =
 function(item){
     if (item){
-        this.setTitle(ZmMsg.editDelegatePermissions + " - " + item.user);
+        this.setTitle(ZmMsg.editDelegatePermissions + " - " + AjxStringUtil.htmlEncode(item.user));
         this._delegateEmailRow.style.display ="none";
         this._sendAs.checked = item.sendAs;
         this._sendObo.checked = item.sendOnBehalfOf;

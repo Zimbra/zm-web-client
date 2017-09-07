@@ -117,7 +117,7 @@
 			<equals arg1="${zimbra.buildinfo.type}" arg2="NETWORK" />
 		</condition>
         <property name='common.web.includes' value='${custom.web.includes},js/**,css/**'/>
-        <property name='common.web.excludes' value='${custom.web.excludes},js/*/package/**,**/AjxTimezoneData.js'/>
+        <property name='common.web.excludes' value='${custom.web.excludes},js/*/package/**'/>
         <property name='common.jsp.includes' value='${custom.jsp.includes},**'/>
         <property name='common.jsp.excludes' value='${custom.jsp.excludes}'/>
         <property name='common.img.includes' value='${custom.img.includes},**'/>
@@ -662,32 +662,6 @@
         </if>
     </target>
 
-    <target name="timezones">
-        <!-- Download timezones zip -->
-        <ivy:install organisation="zimbra" module="zm-timezones" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver-zip" to="build-tmp" overwrite="true" transitive="true" type="zip" />
-
-        <unzip dest="${build.tmp.dir}/zm-timezones" overwrite="true">
-            <fileset dir="${build.tmp.dir}">
-                <include name="**/zm-timezones-*.zip"/>
-            </fileset>
-        </unzip>
-
-        <!-- Copy timezone related files to proper folders -->
-        <sync todir="${js.dir}/ajax/util">
-            <fileset dir="${build.tmp.dir}/zm-timezones/js"/>
-            <preserveintarget>
-                <include name="*.js"/>
-            </preserveintarget>
-        </sync>
-
-        <sync todir="${web.dir}/messages">
-            <fileset dir="${build.tmp.dir}/zm-timezones/messages"/>
-            <preserveintarget>
-                <include name="*.properties"/>
-            </preserveintarget>
-        </sync>
-    </target>
-
     <target name='i18n' >
         <property name='i18n.msgs.dir' value='${build.classes.dir}/messages'/>
         <property name='i18n.msgs.file' value='${i18n.msgs.dir}/I18nMsg.properties'/>
@@ -916,7 +890,7 @@
         </if>
     </target>
 
-    <target name='jam-files' depends='jquery,modernizr,tinymce,templates,timezones'>
+    <target name='jam-files' depends='jquery,modernizr,tinymce,templates'>
         <property name='jam.jsp.dir' value='${build.web.dir}/public/jsp'/>
         <mkdir dir='${build.js.dir}'/>
         <mkdir dir='${jam.jsp.dir}'/>
@@ -1174,7 +1148,24 @@ ext = BeanUtils.cook(ext);
         <unzip dest='${webapp.dir}' src="${webapp.file}"/>
 
         <antcall target='webxml-deploy-replace'/>
+        <antcall target='timezones-deploy'/>
         <antcall target='restart-webserver'/>
+    </target>
+
+    <!-- Timezone data is packaged separately so for dev setup we need to manually copy that data -->
+    <target name='timezones-deploy' depends='resolve'>
+        <!-- Download timezones zip -->
+        <ivy:install organisation='zimbra' module='zm-timezones' revision='latest.integration' settingsRef='dev.settings' from='chain-resolver-zip' to='build-tmp' overwrite='true' transitive='true' type='zip' />
+
+        <unzip dest='${build.tmp.dir}/zm-timezones' overwrite='true'>
+            <fileset dir='${build.tmp.dir}'>
+                <include name='**/zm-timezones-*.zip' />
+            </fileset>
+        </unzip>
+
+        <!-- Deploy files to desired locations -->
+        <chmod file='${build.tmp.dir}/zm-timezones/bin/deploy-timezones' perm='a+x'/>
+        <exec executable='${build.tmp.dir}/zm-timezones/bin/deploy-timezones' />
     </target>
 
     <target name='webxml-package-replace' depends='init'>

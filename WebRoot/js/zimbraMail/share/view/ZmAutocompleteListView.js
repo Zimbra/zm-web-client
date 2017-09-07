@@ -1188,7 +1188,7 @@ function(list, context) {
 				cell.innerHTML = "&nbsp;";
 			}
 			cell = row.insertCell(-1);
-			cell.innerHTML = match.text || "&nbsp;";
+			cell.innerHTML = AjxStringUtil.htmlEncode(match.text) || "&nbsp;";
 			if (forgetEnabled) {
 				this._insertLinkCell(this._forgetLink, row, rowId, this._getId("Forget", i), (match.score > 0));
 			}

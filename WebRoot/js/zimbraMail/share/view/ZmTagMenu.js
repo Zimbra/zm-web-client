@@ -194,7 +194,7 @@ function(tagList, addRemove) {
 	var removeid = map ? (map + "_removetag"):this._htmlElId + "|REMOVETAG";
 
 	var miNew = this._menuItems[ZmTagMenu.MENU_ITEM_ADD_ID] = new DwtMenuItem({parent:this, id: addid});
-	miNew.setText(AjxStringUtil.htmlEncode(ZmMsg.newTag));
+	miNew.setText(ZmMsg.newTag);
 	miNew.setImage("NewTag");
 	miNew.setShortcut(appCtxt.getShortcutHint(this._keyMap, ZmKeyMap.NEW_TAG));
 	miNew.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_CREATE);
@@ -204,7 +204,7 @@ function(tagList, addRemove) {
 	// add static "Remove Tag" menu item
 	var miRemove = this._menuItems[ZmTagMenu.MENU_ITEM_REM_ID] = new DwtMenuItem({parent:this, id: removeid});
 	miRemove.setEnabled(false);
-	miRemove.setText(AjxStringUtil.htmlEncode(ZmMsg.removeTag));
+	miRemove.setText(ZmMsg.removeTag);
 	miRemove.setImage("DeleteTag");
 
 	var removeList = addRemove.remove;

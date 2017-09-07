@@ -148,7 +148,7 @@ function(groupNames, addRemove) {
 
 	// add static "New Contact Group" menu item
 	var miNew = this._menuItems[ZmContactGroupMenu.MENU_ITEM_ADD_ID] = new DwtMenuItem({parent:this, id: this._htmlElId + "|NEWGROUP"});
-	miNew.setText(AjxStringUtil.htmlEncode(ZmMsg.newGroup));
+	miNew.setText(ZmMsg.newGroup);
 	miNew.setImage("NewGroup");
 	if (this._newDisabled) {
 		miNew.setEnabled(false);
