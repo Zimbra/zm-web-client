@@ -930,7 +930,7 @@ function(repeatType) {
 ZmCalItemEditView.prototype._initRecurDialog =
 function(repeatType) {
 	if (!this._recurDialog) {
-		this._recurDialog = new ZmApptRecurDialog(appCtxt.getShell(), this.uid);
+		this._recurDialog = new ZmApptRecurDialog(appCtxt.getShell(), this.uid, 'ZmApptRecurDialog');
 		this._recurDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._recurOkListener));
 		this._recurDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._recurCancelListener));
 	}
