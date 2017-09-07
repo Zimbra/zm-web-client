@@ -309,14 +309,11 @@ ZmSectionLabel {
 }
 
 .ZmGraphKeyColorBox {
-	@AppBorder@
-	width:10px;
-	height:10px;
+	@SchedulerLegendBox@
 }
 
 .ZmGraphKeyColorText {
-	@Text@
-	@NoWrap@
+	@SchedulerLegendText@
 }
 
 

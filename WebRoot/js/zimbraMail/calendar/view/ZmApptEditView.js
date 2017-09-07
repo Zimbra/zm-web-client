@@ -2459,6 +2459,7 @@ function(ev) {
     if(this._schedulerOpened) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
         this._scheduleView._updateFreeBusy();
+        this._scheduleView.updateSchedulerDate(new Date(this._dateInfo.startDate));
     }
     
     if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true, true);

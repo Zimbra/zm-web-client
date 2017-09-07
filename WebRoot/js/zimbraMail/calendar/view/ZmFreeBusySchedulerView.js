@@ -263,7 +263,7 @@ function() {
 
 
     Dwt.setHandler(this._showMoreLink, DwtEvent.ONCLICK, ZmFreeBusySchedulerView._onShowMore);
-
+    this.updateSchedulerDate(this._appt.startDate);
 
 	this._rendered = true;
 };
@@ -278,6 +278,7 @@ function() {
 
 	var subs = { id:this._htmlElId, isAppt: true, showTZSelector: appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) };
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#InlineScheduleView", subs);
+	this._schedulerDateEl = this.getHtmlElement().querySelector(".ZmSchedulerGridHeaderLeft > div");
 };
 
 ZmFreeBusySchedulerView.prototype._initAutocomplete =
@@ -478,10 +479,10 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 			var dwtInputField = new DwtInputField({parent: this, type: DwtInputField.STRING, maxLen: 256});
 			dwtInputField.setDisplay(Dwt.DISPLAY_INLINE);
 			var inputEl = dwtInputField.getInputElement();
-            Dwt.setSize(inputEl, Dwt.DEFAULT, "2rem")
 			inputEl.className = "ZmSchedulerInput";
 			inputEl.id = sched.dwtInputId;
-            inputEl.style.border = "0px";
+			inputEl.style.border = "0px";
+			inputEl.placeholder = ZmMsg.addAttendee;
 			sched.attType = inputEl._attType = ZmCalBaseItem.PERSON;
 			sched.inputObj = dwtInputField;
 			if (button) {
@@ -757,6 +758,15 @@ function() {
 			this._allAttendeesSlot._coloredCells.push(row.cells[i]);
 		//}
 	}
+};
+
+ZmFreeBusySchedulerView.prototype.updateSchedulerDate =
+function(dateObj) {
+	if (!dateObj) { return; }
+
+	var dateFormatter = DwtCalendar.getDateFormatter();
+	var dateValue = dateFormatter.format(dateObj);
+	this._schedulerDateEl.innerHTML = dateValue;
 };
 
 ZmFreeBusySchedulerView.prototype.updateFreeBusy =
@@ -1440,8 +1450,8 @@ ZmFreeBusySchedulerView.prototype.resizeKeySpacer =
 function() {
     var graphKeySpacer = document.getElementById(this._htmlElId + '_graphKeySpacer');
     if(graphKeySpacer) {
-        var size = Dwt.getSize(document.getElementById(this._navToolbarId));
-        Dwt.setSize(graphKeySpacer, size.x - 6, Dwt.DEFAULT);
+        var size = Dwt.getBounds(document.getElementById(this._navToolbarId));
+        Dwt.setSize(graphKeySpacer, size.width, Dwt.DEFAULT);
     }
 };
 
