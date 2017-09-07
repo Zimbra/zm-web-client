@@ -7609,3 +7609,51 @@ input[type="radio"] + label {
 .ZmPrefFilterRow .ZmPrefFilterRowActionsWrapper .ZmFilterRowActions .ZmFilterRowAction {
 	@PrefFilterRowAction@
 }
+
+/* Custom appointment repeat dialog styles */
+.ZmApptRecurDialog {
+	@ApptRecurDialog@
+}
+
+.ZmApptRecurDialog .DwtInputField input[type='text'] {
+	@ApptRecurDialogTextInput@
+}
+
+.ZmApptRecurDialog .ZSelect > table, 
+.ZmApptRecurDialog .DwtComboBox,
+.ZmApptRecurDialog .ZmSelectWidgetWrapper {
+	@ApptRecurDialogSelectBox@
+}
+
+.ZmApptRecurDialog .ZRadioButtonTable {
+	@ApptRecurDialogRadioTable@
+}
+
+.ZmApptRecurDialog .ZmWeekDaysTable {
+	@ApptRecurDialogWeekDaysTable@
+}
+
+.ZmApptRecurDialog .ZPropertySheet > TBODY > TR > TD {
+	@ApptRecurDialogTableCell@
+}
+
+.ZmApptRecurDialog .ZmInlinePropertySheet > TBODY > TR > TD {
+	@ApptRecurDialogInlineTableCell@
+}
+
+.ZmApptRecurDialog .ZmWeekDaysTable > TBODY > TR > TD {
+	@ApptRecurDialogWeekDaysTableCell@
+}
+
+/* Clear breathing space */
+.ZmApptRecurDialog .ZPropertySheet > TBODY > TR > TD:first-of-type,
+.ZmApptRecurDialog .ZmInlinePropertySheet > TBODY > TR > TD:first-of-type,
+.ZmApptRecurDialog .ZmWeekDaysTable > TBODY > TR > TD:first-of-type {
+    padding-left: 0;
+}
+
+.ZmApptRecurDialog .ZPropertySheet > TBODY > TR > TD:last-of-type,
+.ZmApptRecurDialog .ZmInlinePropertySheet > TBODY > TR > TD:last-of-type,
+.ZmApptRecurDialog .ZmWeekDaysTable > TBODY > TR > TD:last-of-type {
+    padding-right: 0;
+}
