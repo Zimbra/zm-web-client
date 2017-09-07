@@ -16,7 +16,7 @@
     <$ var labelStyle = "width:"+(AjxEnv.isIE ? 30 : 32)+"px; overflow:visible; white-space:nowrap"; $>
     <$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
     <div id='${id}_top'>
-        <table role="presentation" width='100%' class='calendar_edit_view_separator'>
+        <table role="presentation" width='100%'>
             <tr>
             <td valign='top'>
               <table role="presentation" width=100% style='margin-top:5px;' id='${id}_table' class='ZPropertySheet' cellspacing='6'>
@@ -213,7 +213,7 @@
     </div>
 
     <!-- appointment notes -->
-    <div id='${id}_notes' style='padding:5px;' class='calendar_edit_notes_separator'></div>
+    <div id='${id}_notes' style='padding:5px;'></div>
   </div>
   <div id='${id}_suggestions' class='ZmSuggestView'> </div>
 </template>
@@ -775,38 +775,42 @@
 				<col style='width:710px' />
 			</colgroup>
 			<tr>
-				<td align='center' id='${id}_navToolbar'>&nbsp;</td>
+				<td align='center' id='${id}_navToolbar' class='ZmSchedulerGridHeaderLeft'><div></div></td>
 				<td valign=bottom>
 					<table role="presentation" width=100% class='ZmSchedulerGridHeaderTable' style='<$= AjxEnv.isIE ? "width:101%" : "" $>'>
 						<tr>
 						<$
-							for (var j = 0; j <= 24; j++) {
-								var hour = AjxDateUtil.isLocale24Hour() ? j : ((j % 12) || 12);
+							var isLocal24Hour = AjxDateUtil.isLocale24Hour();
+							for (var j = 1; j <= 24; j++) {
+								var hour = isLocal24Hour ? j : ((j % 12) || 12);
+								if (!isLocal24Hour) {
+									hour += (j < 12) ? ' AM' : ' PM';
+								}
 						$>
-								<td width=2%><div class='ZmSchedulerGridHeaderCell'><$= hour $></div></td>
+								<td width='4%'><div class='ZmSchedulerGridHeaderCell'><$= hour $></div></td>
 						<$	} $>
 						</tr>
 					</table>
 				</td>
 			</tr>
 		</table>
-		<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+		<table role="presentation" class='ZPropertySheet ZmSchedulerLegendTable' cellspacing='6'>
 			<tr>
 				<td id='${id}_graphKeySpacer'>
 					<span id='${id}_showMoreLink' class="FakeAnchor" style='display:none;'><$= ZmMsg.showMore $></span>
 				</td>
 				<td><div class='ZmGraphKeyColorBox ZmScheduler-working'></div></td>
-				<td class='ZmGraphKeyColorText' style='padding-right:1em;'><$= ZmMsg.free $></td>
+				<td class='ZmGraphKeyColorText' style='padding:0 2em 0 1em;'><$= ZmMsg.free $></td>
 				<td><div class='ZmGraphKeyColorBox ZmScheduler-free'></div></td>
-				<td class='ZmGraphKeyColorText' style='padding-right:1em;'><$= ZmMsg.nonWorking $></td>
+				<td class='ZmGraphKeyColorText' style='padding:0 2em 0 1em;'><$= ZmMsg.nonWorking $></td>
 				<td><div class='ZmGraphKeyColorBox ZmScheduler-busy'></div></td>
-				<td class='ZmGraphKeyColorText' style='padding-right:1em;'><$= ZmMsg.busy $></td>
+				<td class='ZmGraphKeyColorText' style='padding:0 2em 0 1em;'><$= ZmMsg.busy $></td>
 				<td><div class='ZmGraphKeyColorBox ZmScheduler-tentative'></div></td>
-				<td class='ZmGraphKeyColorText' style='padding-right:1em;'><$= ZmMsg.tentative $></td>
+				<td class='ZmGraphKeyColorText' style='padding:0 2em 0 1em;'><$= ZmMsg.tentative $></td>
 				<td><div class='ZmGraphKeyColorBox ZmScheduler-unknown'></div></td>
-				<td class='ZmGraphKeyColorText' style='padding-right:1em;'><$= ZmMsg.unknown $></td>
+				<td class='ZmGraphKeyColorText' style='padding:0 2em 0 1em;'><$= ZmMsg.unknown $></td>
 				<td><div class='ZmGraphKeyColorBox ZmScheduler-outOfOffice'></div></td>
-				<td class='ZmGraphKeyColorText' style='padding-right:1em;'><$= ZmMsg.outOfOffice $></td>
+				<td class='ZmGraphKeyColorText' style='padding:0 2em 0 1em;'><$= ZmMsg.outOfOffice $></td>
 			</tr>
 		</table>
 	</div>
@@ -814,11 +818,11 @@
 
 <template id='calendar.Appointment#AttendeeName'>
 	<table role="presentation" width=100%>
-		<tr>
+		<tr class="ZmSchedulerAttendeeName">
 			<$ if (data.isAllAttendees) { $>
 				<td class='ZmSchedulerAllLabel'><$=ZmMsg.allAttendees$></td>
 			<$ } else if (data.organizer || !data.isComposeMode) { $>
-				<td width=45 align=left class='<$= data.isComposeMode ? "ZmSchedulerOrgIconTd" : "ZmSchedulerViewAttendeeTd" $>' style='padding-left: 7px;'><$=AjxImg.getImageHtml("Person")$></td>
+				<td width=45 align=left class='<$= data.isComposeMode ? "ZmSchedulerOrgIconTd" : "ZmSchedulerViewAttendeeTd" $>'><$=AjxImg.getImageHtml("Person")$></td>
 			<$ } else { $>
 				<td width=50 id='${sched.dwtSelectId}'></td>
 			<$ } $>
