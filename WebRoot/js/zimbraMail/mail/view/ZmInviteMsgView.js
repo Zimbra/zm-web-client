@@ -745,7 +745,7 @@ function() {
 		buttons: inviteOps,
 		posStyle: DwtControl.STATIC_STYLE,
 		className: "ZmInviteToolBar",
-		buttonClassName: "DwtToolbarButton",
+		buttonClassName: "ZToolbarButton",
 		context: this.parent.getHTMLElId(),
 		toolbarType: ZmId.TB_INVITE
 	};
