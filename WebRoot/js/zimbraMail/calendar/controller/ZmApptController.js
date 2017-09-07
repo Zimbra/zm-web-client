@@ -65,16 +65,14 @@ function() {
 ZmApptController.prototype._createToolBar =
 function() {
 
-	var buttons = [ ZmOperation.SEND_INVITE, ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP,
-                    ZmOperation.TAG_MENU
-                    ];
-    var secondaryButtons = [ZmOperation.EDIT, ZmOperation.DUPLICATE_APPT, ZmOperation.SEP,
-                            ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD_APPT, ZmOperation.PROPOSE_NEW_TIME, ZmOperation.DELETE, ZmOperation.SEP,
-                            ZmOperation.SHOW_ORIG
-                            ];
-    if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-		buttons.push(ZmOperation.PRINT);
+	var buttons = [ ZmOperation.SEND_INVITE, ZmOperation.SAVE, ZmOperation.CANCEL ];
+	var secondaryButtons = [ZmOperation.EDIT, ZmOperation.DUPLICATE_APPT, ZmOperation.SEP,
+	                        ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD_APPT, ZmOperation.PROPOSE_NEW_TIME, ZmOperation.DELETE, ZmOperation.SEP,
+	                        ZmOperation.SHOW_ORIG, ZmOperation.SEP];
+	if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+		secondaryButtons.push(ZmOperation.PRINT);
 	}
+	secondaryButtons.push(ZmOperation.TAG_MENU);
 
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentViewId, controller:this, secondaryButtons:secondaryButtons});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, this._saveListener.bind(this));
@@ -87,6 +85,10 @@ function() {
 	this._toolbar.addSelectionListener(ZmOperation.DELETE, this._deleteListener.bind(this));
 	this._toolbar.addSelectionListener(ZmOperation.DUPLICATE_APPT, this._duplicateApptListener.bind(this));
 	this._toolbar.addSelectionListener(ZmOperation.SHOW_ORIG, this._showOrigListener.bind(this));
+    
+	//add selection listener when 'Action' dropdown button is clicked
+	var actionButton = this._toolbar.getActionsButton();
+	actionButton && actionButton.addDropDownSelectionListener(this._actionsButtonListener.bind(this));
 
 	if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
 		this._toolbar.addSelectionListener(ZmOperation.PRINT, this._printListener.bind(this));
@@ -99,7 +101,7 @@ function() {
     var tagButton = this._toolbar.getButton(ZmOperation.TAG_MENU);
 	if (tagButton) {
 		tagButton.noMenuBar = true;
-		this._setupTagMenu(this._toolbar);
+		this._setupTagMenu(this._toolbar.getActionsMenu());
 	}
 	// change default button style to toggle for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
@@ -184,7 +186,8 @@ function() {
             ZmOperation.DUPLICATE_APPT,
             ZmOperation.FORWARD_APPT,
             ZmOperation.DELETE,
-            ZmOperation.SHOW_ORIG
+            ZmOperation.SHOW_ORIG,
+            ZmOperation.PRINT
         ], false);
     }
     var tagButton = this._toolbar.getButton(ZmOperation.TAG_MENU);
@@ -402,29 +405,6 @@ function() {
         url.push("&zd=true", "&acct=", this._composeView.getApptEditView().getCalendarAccount().name);
     }
 	window.open(appContextPath + url.join(""), "_blank");
-};
-
-ZmApptController.prototype._tagButtonListener =
-function(ev) {
-	var toolbar = this.getCurrentToolbar();
-	if (ev.item.parent == toolbar) {
-		this._setTagMenu(toolbar);
-	}
-};
-
-ZmApptController.prototype._setupTagMenu =
-function(parent) {
-	if (!parent) return;
-	var tagMenu = parent.getTagMenu();
-	if (tagMenu) {
-		tagMenu.addSelectionListener(new AjxListener(this, this._tagListener));
-	}
-	if (parent instanceof ZmButtonToolBar) {
-		var tagButton = parent.getOp(ZmOperation.TAG_MENU);
-		if (tagButton) {
-			tagButton.addDropDownSelectionListener(new AjxListener(this, this._tagButtonListener));
-		}
-	}
 };
 
 ZmApptController.prototype._proposeTimeListener =
