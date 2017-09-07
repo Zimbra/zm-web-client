@@ -160,6 +160,7 @@ ZmButtonToolBar.prototype.toString = function() { return "ZmButtonToolBar"; };
 ZmButtonToolBar.prototype.createOp =
 function(id, params) {
 	if(this._buttonStyle){
+		params.className = params.className || "";
 		params.className += " " + this._buttonStyle;
 	}
 	
