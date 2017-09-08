@@ -866,137 +866,112 @@
 </template>
 
 <template id='calendar.Appointment#Tooltip'>
-	<table role="presentation" style='width:<$= data.width $>px'>
-		<tr valign='center'>
-			<td colspan='2' align='left'>
-				<div style='border-bottom:1px solid black;'>
-					<table role="presentation" style='width:100%;'>
-						<tr>
-							<td>
-							<$ if (data.cal && data.cal.link) { $>
-								<$= AjxImg.getImageHtml("GroupSchedule") $>
-							<$ } else { $>
-								<$= AjxImg.getImageHtml("Appointment") $>
-							<$ } $>
-							</td>
-							<td style='font-weight:bold;white-space:nowrap'><$= AjxStringUtil.htmlEncode(data.appt.getName()) $></td>
-						<$ if (data.appt.isException) { $>
-							<td><$= AjxImg.getImageHtml("ApptExceptionIndicator") $></td>
-						<$ } else if (data.appt.isRecurring()) { $>
-							<td><$= AjxImg.getImageHtml("ApptRecurIndicator") $></td>
-						<$ } $>
-							<td style='width:100%'></td>
-						<$ if (data.appt.otherAttendees) { $>
-							<td style='text-align:right;'><$= AjxImg.getImageHtml("ApptMeetingIndicator") $></td>
-						<$ } $>
-						</tr>
-					</table>
-				</div>
+	<table role="presentation" class='ZmAppointmentTooltip' style='width:<$= data.width $>px'>
+		<tr>
+			<td colspan='2'>
+				<h3><$= AjxStringUtil.htmlEncode(data.appt.getName()) $></h3>
 			</td>
 		</tr>
 
 	<$ if (data.cal && data.cal.getName()) { $>
-		<tr valign='top'>
-			<td align='right' style='padding-right:5px;'>
-				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.calendarLabel) $></div></b>
+		<tr>
+			<td class='ZmAppointmentTooltipLabel'>
+				<$= AjxStringUtil.htmlEncode(ZmMsg.calendarLabel) $>
 			</td>
-			<td align='left'>
-				<div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(data.cal.getName()) $></div>
+			<td class='ZmAppointmentTooltipValue'>
+				<$= AjxStringUtil.htmlEncode(data.cal.getName()) $>
 			</td>
 		</tr>
 	<$ } $>
 
 	<$ if (data.organizer) { $>
-		<tr valign='top'>
-			<td align='right' style='padding-right:5px;'>
-				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.organizerLabel) $></div></b>
+		<tr>
+			<td class='ZmAppointmentTooltipLabel'>
+				<$= AjxStringUtil.htmlEncode(ZmMsg.organizerLabel) $>
 			</td>
-			<td align='left'>
-				<div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.organizer) $></div>
+			<td class='ZmAppointmentTooltipValue'>
+				<$= AjxStringUtil.htmlEncode(data.organizer) $>
 			</td>
 		</tr>
 	<$ } $>
 
 	<$ if (data.sentBy) { $>
-		<tr valign='top'>
-			<td align='right' style='padding-right:5px;'>
-				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.sentBy) $></div></b>
+		<tr>
+			<td class='ZmAppointmentTooltipLabel'>
+				<$= AjxStringUtil.htmlEncode(ZmMsg.sentBy) $>
 			</td>
-			<td align='left'>
-				<div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.sentBy) $></div>
+			<td class='ZmAppointmentTooltipValue'>
+				<$= AjxStringUtil.htmlEncode(data.sentBy) $>
 			</td>
 		</tr>
 	<$ } $>
 
 	<$ if (!data.appt.isDraft && data.appt.otherAttendees) { $>
-		<tr valign='top'>
-			<td align='right' style='padding-right:5px;'>
-				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.myStatusLabel) $></div></b>
+		<tr>
+			<td class='ZmAppointmentTooltipLabel'>
+				<$= AjxStringUtil.htmlEncode(ZmMsg.myStatusLabel) $>
 			</td>
-			<td align='left'>
-				<div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.appt.getParticipantStatusStr()) $></div>
+			<td class='ZmAppointmentTooltipValue'>
+				<$= AjxStringUtil.htmlEncode(data.appt.getParticipantStatusStr()) $>
 			</td>
 		</tr>
 	<$ } $>
 
 	<$ if (data.when && data.when != "") { $>
-		<tr valign='top'>
-			<td align='right' style='padding-right:5px;'>
-				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.whenLabel) $></div></b>
+		<tr>
+			<td class='ZmAppointmentTooltipLabel'>
+				<$= AjxStringUtil.htmlEncode(ZmMsg.whenLabel) $>
 			</td>
-			<td align='left'>
-				<div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.when) $></div>
+			<td class='ZmAppointmentTooltipValue'>
+				<$= AjxStringUtil.htmlEncode(data.when) $>
 			</td>
 		</tr>
 	<$ } $>
 
 	<$ if (data.location && data.location != "") { $>
-		<tr valign='top'>
-			<td align='right' style='padding-right:5px;'>
-				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.locationLabel) $></div></b>
+		<tr>
+			<td class='ZmAppointmentTooltipLabel'>
+				<$= AjxStringUtil.htmlEncode(ZmMsg.locationLabel) $>
 			</td>
-			<td align='left'>
-				<div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.location) $></div>
+			<td class='ZmAppointmentTooltipValue'>
+				<$= AjxStringUtil.htmlEncode(data.location) $>
 			</td>
 		</tr>
 	<$ } $>
 
-	<tr valign='top'>
-		<td align='right' style='padding-right:5px;'>
-			<div style='font-weight:bold;white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.displayLabel) $></div>
+	<tr>
+		<td class='ZmAppointmentTooltipLabel'>
+			<$= AjxStringUtil.htmlEncode(ZmMsg.displayLabel) $>
 		</td>
-		<td align='left' nowrap>
-		<span style="float:left"><$= AjxImg.getImageHtml("showAs" + data.appt.freeBusy) $></span>
-			<span style="float:left">&nbsp;<$= AjxStringUtil.htmlEncode(ZmApptViewHelper.getShowAsOptionLabel(data.appt.freeBusy)) $></span>
+		<td class='ZmAppointmentTooltipValue'>
+			<$= AjxStringUtil.htmlEncode(ZmApptViewHelper.getShowAsOptionLabel(data.appt.freeBusy)) $>
 		</td>
 	</tr>
 
 
 	<$ if (data.appt.fragment && data.appt.fragment != "") { $>
-		<tr valign='top'>
-			<td align='right' style='padding-right:5px;'>
-				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.notesLabel) $></div></b>
+		<tr>
+			<td class='ZmAppointmentTooltipLabel'>
+				<$= AjxStringUtil.htmlEncode(ZmMsg.notesLabel) $>
 			</td>
-			<td align='left'>
+			<td class='ZmAppointmentTooltipValue'>
 				<$= AjxStringUtil.htmlEncode(data.appt.fragment) $>
 			</td>
 		</tr>
 	<$ } $>
 
 	<$ if (!data.appt.isDraft && data.appt.isOrganizer() && data.appt.otherAttendees && !data.hideAttendees) { $>
-		<tr valign='center'>
+		<tr>
 			<td colspan='2'>
-				<div class='calendar_tooltip_attendees'>
-					<$= AjxStringUtil.htmlEncode(ZmMsg.attendees) $>
-				</div>
+				<h6><$= AjxStringUtil.htmlEncode(ZmMsg.attendees) $></h6>
 			</td>
 		</tr>
 
 		<$
 			if (data.attendeesText) {
 		$>
-			<tr valign='top'>
-				<td colspan='2' align='left' style='padding-right:5px;'>
+			<tr>
+				<td colspan='2' class='ZmAppointmentTooltipLabel'>
 					<$= AjxStringUtil.htmlEncode(data.attendeesText) $>
 				</td>
 			</tr>
@@ -1006,11 +981,11 @@
 				for (var i in ptstStatus) {
 					if (!ptstStatus[i].attendees) { continue; }
 		$>
-				<tr valign='top'>
-					<td align='right' style='padding-right:5px;' nowrap>
-						<b><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(i) + "&nbsp;(&nbsp;" + ptstStatus[i].count + "&nbsp;)&nbsp;") $></b>
+				<tr>
+					<td class='ZmAppointmentTooltipLabel'>
+						<$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(i) + "&nbsp;(" + ptstStatus[i].count + ")&nbsp;") $>
 					</td>
-					<td nowrap>
+					<td class='ZmAppointmentTooltipValue'>
 						<$= AjxStringUtil.htmlEncode(ptstStatus[i].attendees) $>
 					</td>
 				</tr>
@@ -1021,11 +996,11 @@
 	$>
 
 	<$ if (appCtxt.accountList.size() > 1) { $>
-		<tr valign='top'>
-			<td align='right' style='padding-right:5px;'>
-				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.accountLabel) $></div></b>
+		<tr>
+			<td class='ZmAppointmentTooltipLabel'>
+				<$= AjxStringUtil.htmlEncode(ZmMsg.accountLabel) $>
 			</td>
-			<td align='left'>
+			<td class='ZmAppointmentTooltipValue'>
 				<$= AjxStringUtil.htmlEncode(data.appt.getFolder().account.getDisplayName()) $>
 			</td>
 		</tr>
