@@ -276,7 +276,7 @@ function(controller, callback) {
 		sentBy: sentBy,
 		when: this.getDurationText(false, false),
 		location: this.getLocation(),
-		width: "250",
+		width: "350",
 		hideAttendees: true
 	};
 

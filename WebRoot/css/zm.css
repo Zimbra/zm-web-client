@@ -2866,13 +2866,6 @@ td.calendar_month_day_item table td {
 	@MiniCalTooltip-description@
 }
 
-.calendar_tooltip_attendees {
-	border-bottom:1px solid black;
-	padding:1px;
-	white-space:nowrap;
-	font-weight:bold;
-}
-
 .suggestion_tooltip_attendee {
 	padding:3px;
 }
@@ -7655,5 +7648,34 @@ input[type="radio"] + label {
 .ZmApptRecurDialog .ZPropertySheet > TBODY > TR > TD:last-of-type,
 .ZmApptRecurDialog .ZmInlinePropertySheet > TBODY > TR > TD:last-of-type,
 .ZmApptRecurDialog .ZmWeekDaysTable > TBODY > TR > TD:last-of-type {
-    padding-right: 0;
+	padding-right: 0;
+}
+
+/* Appointment tooltip */
+.ZmAppointmentTooltip {
+	@AppointmentTooltip@
+}
+
+.ZmAppointmentTooltip * {
+	@FontSize-slightly-big@
+}
+
+.ZmAppointmentTooltip h3 {
+	@AppointmentTooltipTitle@
+}
+
+.ZmAppointmentTooltip h6 {
+	@AppointmentTooltipSubTitle@
+}
+
+.ZmAppointmentTooltip TD {
+	@AppointmentTooltipCell@
+}
+
+.ZmAppointmentTooltip TD.ZmAppointmentTooltipLabel {
+	@AppointmentTooltipLabel@
+}
+
+.ZmAppointmentTooltip TD.ZmAppointmentTooltipValue {
+	@AppointmentTooltipValue@	
 }
