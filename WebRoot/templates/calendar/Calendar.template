@@ -350,7 +350,7 @@
 
 <template id='calendar.Calendar#ReminderDialogRow'>
 	<tr id='${rowId}'>
-		<td style="max-width:350px;" valign=top>
+		<td valign=top>
 			<div id='${openLinkId}' class='ZmApptOpenLink'></div>
 			<div id='${reminderDescContainerId}'>
 			<$ if (data.durationText != "") { $>
@@ -377,23 +377,23 @@
 				<$= ZmMsg.locationLabel $> ${location}<br>
 			<$ } $>
 			</div>
-		</td>
-		<td valign=top align=right>
-			<table role="presentation" style="margin-left:15px;">
+		
+			<table role="presentation" width="100%">
 				<tr id='${actionsRowId}'>
-					<td valign=top align=right>
-						<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+					<td align=left>
+						<table role="presentation" class='ZPropertySheet' cellspacing='6' width="100%">
 							<tr>
-								<td valign=top id='${snoozeSelectInputId}' style="padding-right:0;"></td>
-								<td valign=top id='${snoozeSelectBtnId}' style="padding-left:0" width="1%"></td>
-								<td valign=top id='${snoozeBtnId}'></td>
-								<td valign=top id='${dismissBtnId}'></td>
+								<td style='white-space:nowrap; padding-left:0;' align='left' id='${deltaId}'></td>
+								<td align='left' id='${snoozeSelectInputId}' style="padding:0;"></td>
+								<td align='left' id='${snoozeSelectBtnId}' style="padding:0" width="1%"></td>
+								<td width='100%'></td>
+								<td align='right' id='${snoozeBtnId}' style="padding:0"></td>
+								<td align='right' id='${dismissBtnId}' style="padding:0"></td>
 							</tr>
 						</table>
 					</td>
 				</tr>
 				<tr>
-					<td style='white-space:nowrap;' align='right' id='${deltaId}'></td>
 				</tr>
 			</table>
 		</td>
@@ -407,15 +407,15 @@
 </template>
 
 <template id='calendar.Calendar#ReminderDialogAllSection'>
-	<table role="presentation" class='ZPropertySheet' cellspacing='6' cellpadding=0 border=0 width="100%">
+	<table role="presentation" id="${containerId}" class='ZPropertySheet' cellspacing='6' cellpadding=0 border=0 width="100%">
 		<tr>
-			<td width=100% valign=middle align=right>
+			<td id='${dismissBtnId}' class="DwtDialogButtonBar"></td>
+			<td id='${snoozeBtnId}' class="DwtDialogButtonBar"></td>
+			<td>
 				<span id='${snoozeAllLabelId}'></span>
 			</td>
-			<td valign=top id='${snoozeSelectInputId}' style="padding-right:0"></td>
-			<td valign=top id='${snoozeSelectBtnId}' style="padding-left:0"></td>
-			<td valign=top id='${snoozeBtnId}' class="DwtDialogButtonBar"></td>
-			<td valign=top id='${dismissBtnId}' class="DwtDialogButtonBar"></td>
+			<td id='${snoozeSelectInputId}' style="padding-right:0"></td>
+			<td id='${snoozeSelectBtnId}' style="padding-left:0"></td>
 		</tr>
 	</table>
 </template>
