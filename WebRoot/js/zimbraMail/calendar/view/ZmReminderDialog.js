@@ -32,9 +32,9 @@ ZmReminderDialog = function(parent, reminderController, calController, apptType)
     this._apptType = apptType;
 
 	this.ALL_APPTS = "ALL" + apptType;
-
+	this._allSectionId = "ZmReminderAllSection_" + this.ALL_APPTS;
 	// call base class
-	DwtDialog.call(this, {id:"ZmReminderDialog_" + apptType, parent:parent, standardButtons:DwtDialog.NO_BUTTONS});
+	DwtDialog.call(this, {id:"ZmReminderDialog_" + apptType, parent:parent, standardButtons:DwtDialog.NO_BUTTONS, className: "DwtDialog ZmReminderDialogContainer"});
 
 	this._reminderController = reminderController;
 	this._calController = calController;
@@ -123,7 +123,7 @@ function(list) {
 
     AjxDebug.println(AjxDebug.REMINDER, "---Reminders [" + (new Date().getTime())+ "]---");
 
-	html[idx++] = "<table style='min-width:375px'>";
+	html[idx++] = "<div class='ZmReminderDialogContent'><table>";
 	for (var i = 0; i < size; i++) {
 		var appt = list.get(i);
         if (appt.isShared() && appt.isReadOnly()) { continue; }
@@ -132,7 +132,7 @@ function(list) {
 		var data = this._apptData[uid] = {appt:appt};
 		idx = this._addAppt(html, idx, appt, data);
 	}
-	html[idx++] = "</table>";
+	html[idx++] = "</table></div>";
 
 	this._addAllSection(html, idx);
 
@@ -175,7 +175,7 @@ function(list) {
 
 	this._createButtons(this.ALL_APPTS, this.ALL_APPTS, dismissListener, openListener, snoozeListener, snoozeSelectButtonListener, snoozeSelectMenuListener);
 
-	this._updateIndividualSnoozeActionsVisibility();
+	this._updateAllSectionSnoozeActionsVisibility();
 	
 };
 
@@ -198,7 +198,22 @@ function(uid, id, dismissListener, openListener, snoozeListener, snoozeSelectBut
 		this.getTabGroupMember().addMember(openBtn);
 	}
 
-	var className = uid === this.ALL_APPTS ? "ZButton" : "DwtToolbarButton";
+	var className = "ZButton ZDialogButton ZAppointmentReminderButton";
+	var dismissBtnClassName = className + " ZPrimaryButton";
+	var snoozeLabel = ZmMsg.snooze;
+	var dismissLabel = ZmMsg.dismiss;
+	
+	if ( uid === this.ALL_APPTS) {
+		//add snooze all label.
+		var snoozeAllLabelId = this._apptData[this.ALL_APPTS].snoozeAllLabelId;
+		var allLabelSpan = document.getElementById(snoozeAllLabelId);
+		allLabelSpan.innerHTML = ZmMsg.snoozeAll;
+
+		className = "ZInlineButton ZButton";
+		dismissBtnClassName = className;
+		snoozeLabel = ZmMsg.snoozeAllLabel;
+		dismissLabel = ZmMsg.dismissAll;
+	}
 
 	// snooze input field
 	var params = {
@@ -221,13 +236,13 @@ function(uid, id, dismissListener, openListener, snoozeListener, snoozeSelectBut
 	snoozeSelectBtn.addDropDownSelectionListener(snoozeSelectButtonListener);
 
     var snoozeBtn = this._snoozeButtons[uid] = new DwtButton({id: "snoozeBtn_" + id, parent: this, className: className, parentElement: data.snoozeBtnId});
-	snoozeBtn.setText(ZmMsg.snooze);
+	snoozeBtn.setText(snoozeLabel);
 	snoozeBtn.addSelectionListener(snoozeListener);
 	snoozeBtn.apptUid = uid;
 
 	// dismiss button
-	var dismissBtn = this._dismissButtons[uid] = new DwtButton({id: "dismissBtn_" + id, parent: this, className: className, parentElement: data.dismissBtnId});
-	dismissBtn.setText(ZmMsg.dismiss);
+	var dismissBtn = this._dismissButtons[uid] = new DwtButton({id: "dismissBtn_" + id, parent: this, className: dismissBtnClassName, parentElement: data.dismissBtnId});
+	dismissBtn.setText(dismissLabel);
 	dismissBtn.addSelectionListener(dismissListener);
 	dismissBtn.apptUid = uid;
 
@@ -398,30 +413,23 @@ function(data) {
  * display the individual actions (snooze, dismiss) only if there's more than one reminder.
  * @private
  */
-ZmReminderDialog.prototype._updateIndividualSnoozeActionsVisibility =
+ZmReminderDialog.prototype._updateAllSectionSnoozeActionsVisibility =
 function() {
 	var appts = this._list.getArray();
 	if (appts.length === 0) {
 		return; //all snoozed or dismissed, nothing to do here)
 	}
-	var multiple = appts.length > 1;
-	for (var i = 0; i < appts.length; i++) {
-		var appt = appts[i];
-		var uid = appt.getUniqueId(true);
-		var data = this._apptData[uid];
-		var actionsRow = document.getElementById(data.actionsRowId);
-		actionsRow.style.display = multiple ? "block" : "none";
+	
+	var displayValue = appts.length > 1 ? "block" : "none";
+	var allSectionContainer = document.getElementById(this._allSectionId);
+	if (allSectionContainer) {
+		allSectionContainer.style.display = displayValue;
 	}
 
-	//update the all text
-	var dismissAllBtn = this._dismissButtons[this.ALL_APPTS];
-	dismissAllBtn.setText(multiple ? ZmMsg.dismissAll : ZmMsg.dismiss);
-	var snoozeAllBtn = this._snoozeButtons[this.ALL_APPTS];
-	snoozeAllBtn.setText(multiple ? ZmMsg.snoozeAllLabel : ZmMsg.snooze);
-
-	var snoozeAllLabelId = this._apptData[this.ALL_APPTS].snoozeAllLabelId;
-	var allLabelSpan = document.getElementById(snoozeAllLabelId);
-	allLabelSpan.innerHTML = multiple ? ZmMsg.snoozeAll : ZmMsg.snoozeFor;
+	//hide horizontal separator if only single appointment.
+	if(appts.length == 1) {
+		this.getHtmlElement().querySelector(".horizSep").style.display = "none";
+	}
 };
 
 
@@ -471,6 +479,7 @@ function(html, idx) {
 	data.snoozeAllLabelId = "snoozeAllLabelContainerId_" + uid;
 
 	var params = {
+		containerId: this._allSectionId,
 		rowId: data.rowId,
 		dismissBtnId: data.dismissBtnId,
 		snoozeSelectInputId: data.snoozeSelectInputId,
@@ -575,7 +584,7 @@ function(appts) {
 	for (i = 0; i < appts.length; i++) {
 		this._removeAppt(appts[i]);
 	}
-	this._updateIndividualSnoozeActionsVisibility();
+	this._updateAllSectionSnoozeActionsVisibility();
 
 };
 
