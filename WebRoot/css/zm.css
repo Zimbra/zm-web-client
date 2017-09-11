@@ -3163,28 +3163,58 @@ HTML>BODY .appt-selected .appt_allday_body
  * Reminder Dialog
  */
 
+.ZmReminderDialogContainer > div.WindowOuterContainer {
+	@ReminderDialogContainer@
+}
+
+.ZmReminderDialogContainer .DwtDialogTitle {
+	@ReminderDialogTitle@
+}
+
+.ZMReminderDialogContainer .WindowInnerContainer {
+	@ReminderDialogInnerContainer@
+}
+
+/*Content along with action buttons*/
 .ZmReminderDialog {
-	overflow:hidden;
-	width:auto; 			/*??? SIZE */
-	@BoxMargin@
-	margin-bottom:0px;
+	@ReminderDialogFullContent@
+}
+
+.ZmReminderDialog .horizSep {
+	@ReminderDialogSeparator@
+}
+
+/* Content without bottom action buttons*/
+.ZmReminderDialogContent > table {
+	@ReminderDialogContentTable@
+}
+
+.ZmReminderDialogContent {
+	@ReminderDialogContent@
+}
+
+/* Individual appointment snooze/dismiss buttons */
+.ZAppointmentReminderButton {
+	@ReminderDialogAppointmentButton@
+}
+
+.ZmReminderDialog .ZAppointmentReminderButton .ZButtonTable {
+	@DialogButton@
 }
 
 /* Overdue appt text */
 .ZmReminderOverdue {
-	@Text-important@
-	font-weight:bold;
+	@ReminderDialogText-overdue@
 }
 
 /* Appt coming soon text */
 .ZmReminderSoon {
-	@Text-important@
-	font-weight:bold;
+	@ReminderDialogText-soon@
 }
 
 /* Appt somewhere in the future */
 .ZmReminderFuture {
-
+	@ReminderDialogText-future@
 }
 
 /* ??? USE?  Label or field value */
@@ -3193,6 +3223,13 @@ HTML>BODY .appt-selected .appt_allday_body
 	text-align:right;
 }
 
+.ZmApptOpenLink {
+	@ReminderDialogApptLinkContainer@
+}
+
+.ZmApptOpenLink > span > a {
+	@ReminderDialogApptLink@
+}
 
 /*
  *	Edit appointment view (the one with the tabs)

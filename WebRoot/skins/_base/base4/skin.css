@@ -1135,8 +1135,8 @@ svg.progress-circle.tick-inside {
     margin-right:18px;
 }
 
-/*Resetting text transform for dialog action buttons that are inline */
-.DwtDialogButtonBar .ZInlineButton>.ZButtonTable {
+/*Resetting text transform for dialog action buttons that are inline for Folder PropsDialog*/
+.ZmFolderPropsDialog .DwtDialogButtonBar .ZInlineButton>.ZButtonTable {
     text-transform:none;
     padding-left:13px;
 }
@@ -1176,4 +1176,10 @@ svg.progress-circle.tick-inside {
 .ZmApptRecurDialog [id^="MONTHLY_DAY_SELECT"] .ZWidgetTitle,
 .ZmApptRecurDialog [id^="YEARLY_DAY_SELECT"] .ZWidgetTitle {
     text-transform: capitalize;
+}
+
+/* Hiding buttons section as this is not used for showing anything but takes padding space by default.*/
+#ZmReminderDialog_appt_buttons,
+#ZmReminderDialog_task_buttons {
+    display:none;
 }
