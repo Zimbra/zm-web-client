@@ -675,6 +675,14 @@ UL.DwtListView-Rows {
 	@DialogButton@
 }
 
+.DwtDialogButtonBar .ZInlineButton.ZButton > .ZButtonTable {
+	@DialogInlineButtonTable@
+}
+
+.DwtDialogButtonBar .ZInlineButton.ZButton {
+	@DialogInlineButton@
+}
+
 
 /* TODO: Rationalize this ? */
 
