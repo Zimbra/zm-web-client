@@ -2415,10 +2415,6 @@ INPUT[type="text"].InlineWidget {
 	@FullSize@
 }
 
-.ZmExternalCalendarDialog {
-    white-space: nowrap;
-}
-
 /* Outer container for all calendar display views */
 .calendar_view {
 	@FullSize@
@@ -7138,6 +7134,28 @@ a.ZmLinkDisabled {
 
 .ZmContactQuickAddDialog .ZSelect > table {
 	@FullWidth@
+}
+
+/* Add External calendar dialog */
+.ZmExternalCalendarDialog {
+	@ZmExternalCalendarDialog@
+}
+
+.ZmContactQuickAddDialog table.ZPropertySheet {
+	@ZmExternalCalendarDialogTable@
+}
+
+.ZmExternalCalendarDialog .label {
+	@ZmExternalCalendarDialogFieldLabel@
+}
+
+.ZmExternalCalendarDialog .DwtInputField input[type="text"],
+.ZmExternalCalendarDialog .DwtInputField input[type="password"] {
+	@ZmExternalCalendarDialogInput@
+}
+
+.ZmExternalCalendarDialog .ZSelect {
+	@ZmExternalCalendarDialogSelect@
 }
 
 /* Common Search Widget */

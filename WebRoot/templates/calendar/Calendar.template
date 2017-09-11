@@ -273,48 +273,28 @@
 
 <template id='calendar.Calendar#SharedCalendarDialog'>
 <div id='${id}_shareCalendarView1'>
-    <table role="presentation" width=300>
+    <table role="presentation" width=400>
         <tr>
-            <td valign=top align=right><$= ZmMsg.sourceLabel $></td>
             <td>
-                <table role="presentation" class="ZRadioButtonTable" width=100%>
+                <table role="presentation" class="ZPropertySheet">
                     <tr>
-                        <td width="5"><input type="radio" name="extCalType" id="${id}_shareRadioYahoo"></td>
-                        <td align=left><label for="${id}_shareRadioYahoo"><$= ZmMsg.sharedCalTitleYahoo $></label></td>
-                    </tr>
-                    <tr>
-                        <td width="5"><input type="radio" name="extCalType" id="${id}_shareRadioOther"></td>
-                        <td align=left><label for="${id}_shareRadioOther"><$= ZmMsg.sharedCalTitleOther $></label></td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</div>
-<div id='${id}_shareCalendarView2'>
-    <table role="presentation" width=300>
-        <tr>
-            <td>&nbsp;</td>
-            <td>
-                <table role="presentation" class="ZPropertySheet" cellspacing="6" width=100%>
-                    <tr>
-                        <td align=right width=80><$= ZmMsg.sharedCalTypeLabel $></td>
+                        <td class="label" width=80><$= ZmMsg.sharedCalTypeLabel $></td>
                         <td id="${id}_syncType"></td>
                     </tr>
                     <tr id="${id}_syncUserNameContainer">
-                        <td align=right width=80><$= ZmMsg.sharedCalUserNameLabel $></td>
+                        <td class="label" width=80><$= ZmMsg.sharedCalUserNameLabel $></td>
                         <td id="${id}_syncUserName"></td>
                     </tr>
                     <tr id="${id}_syncPasswordContainer">
-                        <td align=right width=80><$= ZmMsg.sharedCalPasswordLabel $></td>
+                        <td class="label" width=80><$= ZmMsg.sharedCalPasswordLabel $></td>
                         <td id="${id}_syncPassword"></td>
                     </tr>
                     <tr id="${id}_syncUrlContainer">
-                        <td align=right width=80><$= ZmMsg.sharedCalCalDAVServerLabel $></td>
+                        <td class="label" width=80><$= ZmMsg.sharedCalCalDAVServerLabel $></td>
                         <td id="${id}_syncUrl"></td>
                     </tr>
                     <tr id="${id}_syncIcsUrlContainer">
-                        <td align=right width=80><$= ZmMsg.sharedCalIcsUrlLabel $></td>
+                        <td class="label" width=80><$= ZmMsg.sharedCalIcsUrlLabel $></td>
                         <td id="${id}_syncIcsUrl"></td>
                     </tr>
                     <tr id="${id}_syncMsgContainer" style="display:none;">
@@ -325,7 +305,7 @@
         </tr>
     </table>
 </div>
-<div id='${id}_shareCalendarView3'>
+<div id='${id}_shareCalendarView2'>
 
 </div>
 </template>
