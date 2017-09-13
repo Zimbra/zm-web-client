@@ -714,7 +714,8 @@ function(tabGroup) {
                             this._attInputField[ZmCalBaseItem.PERSON],
                             this._showOptional,
                             this._pickerButton[ZmCalBaseItem.OPTIONAL_PERSON],
-                            this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON]]);
+                            this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON]],
+                            this._hideOptional);
     }    
     tabGroup.addMember([this._suggestTime,
                         this._pickerButton[ZmCalBaseItem.LOCATION],
@@ -723,7 +724,8 @@ function(tabGroup) {
         tabGroup.addMember([this._pickerButton[ZmCalBaseItem.EQUIPMENT],
                             this._attInputField[ZmCalBaseItem.EQUIPMENT],
                             this._showResources,
-                            this._suggestLocation]);
+                            this._suggestLocation,
+                            this._hideResources]);
     }
     tabGroup.addMember([this._startDateField,
                         this._startDateButton,
@@ -1256,19 +1258,19 @@ function(width) {
     var edvId = AjxCore.assignId(this);
     this._schButtonId = this._htmlElId + "_scheduleButton";
     this._showOptionalId = this._htmlElId + "_show_optional";
+    this._hideOptionalId = this._htmlElId + "_hide_optional";
     this._showResourcesId = this._htmlElId + "_show_resources";
+    this._hideResourcesId = this._htmlElId + "_hide_resources";
     
     this._showOptional = document.getElementById(this._showOptionalId);
+    this._hideOptional = document.getElementById(this._hideOptionalId);
     this._showResources = document.getElementById(this._showResourcesId);
+    this._hideResources = document.getElementById(this._hideResourcesId);
 
     this._schButton = document.getElementById(this._schButtonId);
     this._schButton._editViewId = edvId;
-    this._schImage = document.getElementById(this._htmlElId + "_scheduleImage");
-    this._schImage._editViewId = edvId;
     this._makeFocusable(this._schButton);
-    this._makeFocusable(this._schImage);
     Dwt.setHandler(this._schButton, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
-    Dwt.setHandler(this._schImage, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 
 	this._resourcesContainer = document.getElementById(this._htmlElId + "_resourcesContainer");
 
@@ -1445,7 +1447,7 @@ function(pickerId, listener, addrType, isForwardPicker) {
     var pickerEl = document.getElementById(pickerId);
     if (pickerEl) {
         var buttonId = Dwt.getNextId();
-        var button = new DwtButton({parent:this, id:buttonId, className: "ZButton ZPicker"});
+        var button = new DwtButton({parent:this, id:buttonId, className: "ZInlineButton"});
         if(isForwardPicker) {
             this._forwardPicker = button;
         }else {
@@ -1520,7 +1522,7 @@ function(locationExceptions, alteredLocations) {
 ZmApptEditView.prototype._toggleOptionalAttendees =
 function(forceShow) {
     this._optionalAttendeesShown = ! this._optionalAttendeesShown || forceShow;
-    this._showOptional.innerHTML = this._optionalAttendeesShown ? ZmMsg.hideOptional : ZmMsg.showOptional;
+    Dwt.setVisible(this._showOptional, !Boolean(this._optionalAttendeesShown));
     Dwt.setVisible(this._optionalAttendeesContainer, Boolean(this._optionalAttendeesShown))
 
     var inputEl = this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON].getInputElement();
@@ -1540,8 +1542,8 @@ function(forceShow) {
 
 ZmApptEditView.prototype.showResourceField =
 function(show){
-    this._showResources.innerHTML = show ? ZmMsg.hideEquipment : ZmMsg.showEquipment;
-    Dwt.setVisible(this._resourcesContainer, Boolean(show))
+    Dwt.setVisible(this._showResources, !Boolean(show));
+    Dwt.setVisible(this._resourcesContainer, Boolean(show));
     this.resize();
 };
 
@@ -1554,7 +1556,6 @@ function() {
 ZmApptEditView.prototype._closeScheduler =
 function() {
     this._schButton.innerHTML = ZmMsg.show;
-    this._schImage.className = "ImgSelectPullDownArrow";
     if(this._scheduleView) {
         this._scheduleView.setVisible(false);
         this.resize();
@@ -1572,7 +1573,6 @@ function(forceShow) {
 
     this._schedulerOpened = true;
     this._schButton.innerHTML = ZmMsg.hide;
-    this._schImage.className = "ImgSelectPullUpArrow";
 
     var scheduleView = this.getScheduleView();
 
@@ -2195,9 +2195,17 @@ function() {
 		this._makeFocusable(this._showOptional);
 		Dwt.setHandler(this._showOptional, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 	}
+	if (this._hideOptional) {
+		this._makeFocusable(this._hideOptional);
+		Dwt.setHandler(this._hideOptional, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+	}
 	if (this._showResources) {
 		this._makeFocusable(this._showResources);
 		Dwt.setHandler(this._showResources, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+	}
+	if (this._hideResources) {
+		this._makeFocusable(this._hideResources);
+		Dwt.setHandler(this._hideResources, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 	}
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmCalItemEditView._onMouseOver);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);
@@ -2216,13 +2224,23 @@ function() {
 
 	this._allDayCheckbox._editViewId = this._repeatDescField._editViewId = edvId;
 	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
-    if(this._showOptional) this._showOptional._editViewId = edvId;
-    if(this._showResources) this._showResources._editViewId = edvId;
-    if (this.GROUP_CALENDAR_ENABLED) {
-        this._suggestTime._editViewId = edvId;
-    }
-    this._suggestLocation._editViewId = edvId;
-    this._locationStatusAction._editViewId = edvId;
+	if(this._showOptional) {
+		this._showOptional._editViewId = edvId;
+	}
+	if(this._hideOptional) {
+		this._hideOptional._editViewId = edvId;
+	}
+	if(this._showResources) {
+		this._showResources._editViewId = edvId;
+	}
+	if(this._hideResources) {
+		this._hideResources._editViewId = edvId;
+	}
+	if (this.GROUP_CALENDAR_ENABLED) {
+		this._suggestTime._editViewId = edvId;
+	}
+	this._suggestLocation._editViewId = edvId;
+	this._locationStatusAction._editViewId = edvId;
 
 	var inputFields = [this._attendeesInputField, this._optAttendeesInputField,
 					   this._locationInputField, this._forwardToField, this._resourceInputField];
@@ -2859,17 +2877,17 @@ function(el) {
 
 	} else if(el.id == this._schButtonId || el.id == this._htmlElId + "_scheduleImage") {
         this._toggleInlineScheduler();
-	} else if(el.id == this._showOptionalId) {
+	} else if(el.id == this._showOptionalId || el.id == this._hideOptionalId) {
         this._toggleOptionalAttendees();
-    }else if(el.id == this._showResourcesId){
+	} else if(el.id == this._showResourcesId || el.id == this._hideResourcesId) {
         this._toggleResourcesField();
-    }else if(el.id == this._suggestTimeId){
+	} else if(el.id == this._suggestTimeId) {
         this._showTimeSuggestions();
-    }else if(el.id == this._suggestLocationId){
+	} else if(el.id == this._suggestLocationId) {
         this._showLocationSuggestions();
-    }else if(el.id == this._locationStatusActionId){
+	} else if(el.id == this._locationStatusActionId) {
         this._showLocationStatusAction();
-    }else{
+	} else {
 		ZmCalItemEditView.prototype._handleOnClick.call(this, el);
 	}
 
