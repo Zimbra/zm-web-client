@@ -447,7 +447,14 @@ BODY                                    {   margin:0px;     }
 
 .ZToolbar .ZToolbarButton:not(.ZTabButton):not(.ZDisabled) .ZWidgetTitle       {   color: @AltC@                }
 .ZToolbar .ZToolbarButton.ZHasDropDown.ZHasLeftIcon .ZDropDown                 {   display: none;               }
-.ZToolbar .ZToolbarButton:not(.ZDisabled) .ZToolbarButtonTable .ZWidgetIcon    {   fill: @PrimaryBrandingColor@ }
+
+.ZNewButton .ZToolbarButtonTable .ZDropDown .svg-icon,
+.ZToolbar .ZToolbarButton:not(.ZDisabled) .ZToolbarButtonTable .ZWidgetIcon .svg-icon,
+.ZToolbar .ZToolbarButton:not(.ZDisabled) .ZToolbarButtonTable .ZDropDown .svg-icon {   fill: @PrimaryBrandingColor@ }
+
+.ZToolbar .ZToolbarButton.ZViewMenuButton .ZToolbarButtonTable .ZDropDown .svg-icon {
+    fill:@ToolbarViewButtonDropIconColor@
+}
 
 .ZMenuItemTable TD:not(:empty)              {   padding: 0 @ToolbarButtonPaddingSize@   }
 
@@ -1182,4 +1189,16 @@ svg.progress-circle.tick-inside {
 #ZmReminderDialog_appt_buttons,
 #ZmReminderDialog_task_buttons {
     display:none;
+}
+
+.ZmLocationStatusConflict .svg-icon {
+    fill:@ApptEditLocationConflictColor@;
+}
+
+.ZmLocationStatusResolved .svg-icon {
+    fill:@ApptEditLocationResolvedColor@;   
+}
+
+.ZmApptEditView .ZmMetaPropertyTable > tbody > tr:last-of-type > td {
+    padding-bottom: 0;
 }
