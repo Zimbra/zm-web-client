@@ -3243,9 +3243,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmApptEditView .DwtCheckbox LABEL, .ZmTaskEditView .DwtCheckbox LABEL {
 	white-space:nowrap;
 }
-.ZmApptEditView .ZmFieldLabelRight .ZWidgetTitle, .ZmTaskEditView .ZmFieldLabelRight .ZWidgetTitle {
-	text-align:right;
-}
 
 .ZmApptEditView > DIV {
 	display: inline-block;
@@ -3377,7 +3374,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@SchedulerInput@
 }
 
-.ZmApptEditView .ZmFreeBusySchedulerView {
+.ZmApptEditView .ZmFreeBusySchedulerView:not(:empty) {
 	@SchedulerView@
 }
 
@@ -6067,10 +6064,6 @@ DIV .SuggestBtn {
 	color:red;
 }
 
-.ZPicker .ZButtonTable {
-	width:100%;
-}
-
 .ZmTimeSuggestionView-Column {
 	@ListColHeaderContainer@
 	@WidgetHeaderContainer@
@@ -6276,27 +6269,24 @@ INPUT[type="text"].ZmFolderPolicyAmountInput {
 	border-color:@SelC@ @darken(SelC,25)@ @darken(SelC,25)@ @SelC@;
 }
 
-
-DIV.ZmSuggestLink {
-	display:inline-block;
-	padding-right:8px;
-}
-
-
 .ZmLocationStatusValidating,
 .ZmLocationStatusConflict,
 .ZmLocationStatusResolved {
-	display:inline-block;
-	padding-right:8px;
+	@ApptEditLocationStatusMsgWrapper@
 }
-.ZmLocationStatusValidating {
-	color:black;
+
+.ZmLocationStatusValidating div[class*="Img"],
+.ZmLocationStatusConflict div[class*="Img"],
+.ZmLocationStatusResolved div[class*="Img"] {
+	@ApptEditLocationStatusIcon@
 }
+
 .ZmLocationStatusConflict {
-	color:red;
+	@ApptEditLocationStatusConflict@
 }
+
 .ZmLocationStatusResolved {
-	color:green;
+	@ApptEditLocationStatusResolved@
 }
 
 .ZmResolveLocationConflict,
@@ -7715,4 +7705,92 @@ input[type="radio"] + label {
 
 .ZmAppointmentTooltip TD.ZmAppointmentTooltipValue {
 	@AppointmentTooltipValue@	
+}
+
+/* Appointment create/edit view */
+.ZmApptEditView {
+	@ApptEditView@
+}
+
+.ZmApptEditView * {
+	@ApptEditViewElements@
+}
+
+.ZmApptEditView .ZmSchedulerGridHeaderCell {
+	@FontSize-smaller@
+}
+
+.ZmApptEditView > DIV {
+	@ApptEditViewContainer@
+}
+
+.ZmApptEditView .ZmApptEditHeader {
+	@ApptEditHeader@
+}
+
+.ZmApptEditHeader h3 {
+	@ApptEditHeaderTitle@
+}
+
+.ZmApptEditView .DwtInputField input[type='text'],
+.ZmApptEditView input[type='text'],
+.ZmApptEditView .addrBubbleContainer,
+.ZmApptEditView .addrBubbleContainer.ZFocused {
+	@ApptEditInput@
+}
+
+.ZmApptEditView .ZmApptEditContent {
+	@ApptEditContent@
+}
+
+.ZmApptEditView .ZmMetaPropertyTable > tbody > tr > td:not(:empty) {
+	@ApptEditRowCell@
+}
+
+.ZmApptEditView .ZmRowLabel {
+	@ApptEditRowLabelCell@
+}
+
+.ZmApptEditView .ZmRowLabel .ZInlineButton .ZButtonBorder {
+	width:auto;
+}
+
+.ZmApptEditView .ZmRowLabel .ZInlineButton .ZButtonTable .ZWidgetTitle {
+	@ApptEditRowPickerLabel@
+}
+
+.ZmApptEditView .ZmRowLabel .ZInlineButton.ZHover .ZButtonTable .ZWidgetTitle,
+.ZmApptEditView .ZmRowLabel .ZInlineButton.ZFocused .ZButtonTable .ZWidgetTitle,
+.ZmApptEditView .ZmRowLabel .ZInlineButton.ZActive .ZButtonTable .ZWidgetTitle,
+.ZmApptEditView .ZmRowLabel .ZInlineButton.ZSelected .ZButtonTable .ZWidgetTitle {
+	@ApptEditRowPickerLabelActive@
+}
+
+.ZmApptEditView .ZmSelectWidgetWrapper,
+.ZmApptEditView .ZSelect > TABLE {
+	@ApptEditDropDown@
+}
+
+.ZmApptEditView .ZmApptEditGroup {
+	@ApptEditFieldGroup@
+}
+
+.ZmApptEditView .ZmApptEditGroup > * {
+	@ApptEditFieldGroupItem@
+}
+
+.ZmApptEditView .ZmApptEditGroup .addrBubbleContainer {
+	border:0;
+}
+
+.ZmApptEditView .ZmApptEditGroup .ZmApptEditGroupOps {
+	@ApptEditFieldGroupOps@
+}
+
+.ZmApptEditView .ZmApptEditGroup .ZmApptEditGroupOps > * {
+	@ApptEditFieldGroupOp@
+}
+
+.ZmApptEditView .ZmApptEditSubField > *:not(:empty) {
+	@ApptEditSubField@
 }
