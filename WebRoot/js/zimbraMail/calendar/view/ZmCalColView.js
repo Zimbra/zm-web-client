@@ -721,15 +721,16 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
 		endtime:        !appt._fanoutLast && (appt._fanoutFirst || appt._fanoutNum > 0) ? "" : ZmCalBaseItem._getTTHour(appt.endDate),
 		location:       location,
 		status:         appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
-		icon:           appt.isPrivate() ? "ReadOnly" : null,
+		icon:           appt.isPrivate() ? "Private" : null,
 		tagIcon:        tagIcon,
 		hideTime:       is60,
 		showAsColor :   ZmApptViewHelper._getShowAsColorFromId(fba),
-        boxBorder:      ZmApptViewHelper.getBoxBorderFromId(fba),
-        isDraft:        appt.isDraft,
-        otherAttendees: appt.otherAttendees,
-        isException:    appt.isException,
-        isRecurring:    appt.isRecurring()
+		boxBorder:      ZmApptViewHelper.getBoxBorderFromId(fba),
+		isDraft:        appt.isDraft,
+		otherAttendees: appt.otherAttendees,
+		isException:    appt.isException,
+		isRecurring:    appt.isRecurring(),
+		borderColor:    AjxColor.deepen(AjxColor.lighten(colors.appt.bgcolor, ZmCalBaseView.bodyColorDelta))
 	};
 
 	var template,
@@ -1012,7 +1013,6 @@ function(abook) {
 	html.append("</div>");
 
 	this.getHtmlElement().innerHTML = html.toString();
-
     var func = AjxCallback.simpleClosure(ZmCalColView.__onScroll, ZmCalColView, this);
 	document.getElementById(this._bodyDivId).onscroll = func;
 	document.getElementById(this._allDayApptScrollDivId).onscroll = func;

@@ -912,6 +912,10 @@ we are hiding element with that class
     fill: @PrimaryBrandingColor@
 }
 
+.ImgApptExceptionIndicator-svg .svg-icon {
+    fill: @darkred@
+}
+
 /*Adding background for svg's with gradient via css background rule
   This can be removed once we have support for gradient's to be rendered with <use>
 */
@@ -1201,4 +1205,28 @@ svg.progress-circle.tick-inside {
 
 .ZmApptEditView .ZmMetaPropertyTable > tbody > tr:last-of-type > td {
     padding-bottom: 0;
+}
+
+/* Calendat day view split/merge toggle buttons */
+div[name='_splitBtnContainerId'] .ZWidgetTitle {
+    padding-top: @SkinViewInnerSpacing@;
+    padding-left: 11px;
+    color:#afafaf;
+    @FontSize-small@
+    @AlignLeft@
+}
+
+div[name='_mergeBtnContainerId'] .ZWidgetTitle {
+    padding-bottom: @SkinViewInnerSpacing@;
+    padding-left: 11px;
+    color:#afafaf;
+    @FontSize-small@
+    @AlignLeft@
+}
+
+/* Hover state for merge/split button titles */
+
+div[name='_splitBtnContainerId'] .ZCalToggleBtnSelected .ZWidgetTitle,
+div[name='_mergeBtnContainerId'] .ZCalToggleBtnSelected .ZWidgetTitle {
+    @Text@
 }

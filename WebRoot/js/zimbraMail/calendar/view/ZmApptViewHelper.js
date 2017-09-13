@@ -679,16 +679,17 @@ function(appt, id, controller, first, last) {
 		endtime:      (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate),
 		location:     AjxStringUtil.htmlEncode(appt.getLocation()),
 		status:       appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
-		icon:         first && appt.isPrivate() ? "ReadOnly" : null,
-        showAsColor:  first ? ZmApptViewHelper._getShowAsColorFromId(fba) : "",
-        showAsClass:  first ? "" : "appt_allday" + newState + "_name",
-        boxBorder:    ZmApptViewHelper.getBoxBorderFromId(fba),
-        borderLeft:   borderLeft,
-        borderRight:  borderRight,
-        tagIcon:      tagIcon
+		icon:         first && appt.isPrivate() ? "Private" : null,
+		showAsColor:  first ? ZmApptViewHelper._getShowAsColorFromId(fba) : "",
+		showAsClass:  first ? "" : "appt_allday" + newState + "_name",
+		boxBorder:    ZmApptViewHelper.getBoxBorderFromId(fba),
+		borderLeft:   borderLeft,
+		borderRight:  borderRight,
+		tagIcon:      tagIcon,
+		borderColor:  AjxColor.deepen(AjxColor.lighten(bodyColors.appt.bgcolor, ZmCalBaseView.bodyColorDelta))
 	};
-    ZmApptViewHelper.setupCalendarColor(last, headerColors, tagNames, subs, "headerStyle", null, 1, 1);
-    return AjxTemplate.expand("calendar.Calendar#calendar_appt_allday", subs);
+	ZmApptViewHelper.setupCalendarColor(last, headerColors, tagNames, subs, "headerStyle", null, 1, 1);
+	return AjxTemplate.expand("calendar.Calendar#calendar_appt_allday", subs);
 };
 
 ZmApptViewHelper._getShowAsColorFromId =
@@ -757,8 +758,7 @@ function(deeper, calendar, tagNames, segment) {
 
 ZmApptViewHelper.setupCalendarColor =
 function(last, colors, tagNames, templateData, colorParam, clearParam, peelTopOffset, peelRightOffset, div) {
-    // var colorCss = Dwt.createLinearGradientCss("#FFFFFF", colors.appt.bgcolor, "v");
-	var colorCss = "background-color: rgba(" + AjxColor.components(colors.appt.bgcolor) + ", 0.2)";
+    var colorCss = "background-color: " + AjxColor.lighten(colors.appt.bgcolor, ZmCalBaseView.bodyColorDelta);
     if (colorCss) {
         templateData[colorParam] = colorCss;
         if (clearParam) {
