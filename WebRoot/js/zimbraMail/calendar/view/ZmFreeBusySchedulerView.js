@@ -263,7 +263,7 @@ function() {
 
 
     Dwt.setHandler(this._showMoreLink, DwtEvent.ONCLICK, ZmFreeBusySchedulerView._onShowMore);
-    this.updateSchedulerDate(this._appt.startDate);
+    this._appt && this._appt.startDate && this.updateSchedulerDate(this._appt.startDate);
 
 	this._rendered = true;
 };
@@ -1103,7 +1103,7 @@ function(sched, attendee, index) {
         }
         else {
             var deleteButton = new DwtBorderlessButton({parent:this, className:"Label"});
-            deleteButton.setImage("Disable");
+            deleteButton.setImage("Cancel");
             deleteButton.setText("");
             deleteButton.addSelectionListener(new AjxListener(this, this._deleteAttendeeRow, [attendee.getEmail()]));
             deleteButton.getHtmlElement().style.cursor = 'pointer';

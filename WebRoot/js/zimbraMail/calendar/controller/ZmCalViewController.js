@@ -1072,7 +1072,8 @@ function(buttons) {
 		ZmOperation.WORK_WEEK_VIEW,
 		ZmOperation.WEEK_VIEW,
 		ZmOperation.MONTH_VIEW,
-		ZmOperation.CAL_LIST_VIEW];
+		ZmOperation.CAL_LIST_VIEW,
+		ZmOperation.FB_VIEW];
 
 	var overrides = {};
 
