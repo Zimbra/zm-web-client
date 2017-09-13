@@ -984,8 +984,6 @@ function() {
 		rowHeight = Math.max(rowHeight, DwtCssStyle.asPixelCount('20rem'));
 		this._notesHtmlEditor.setSize(rowWidth, rowHeight);
 	}
-
-	Dwt.setSize(this._topContainer, rowWidth, Dwt.CLEAR);
 };
 
 ZmCalItemEditView.prototype._handleRepeatDescFieldHover =
