@@ -2620,10 +2620,11 @@ INPUT[type="text"].InlineWidget {
 }
 
 .calendar_heading_day_tab {
-	border:1px solid @DarkSeparatorColor@;
-	border-left:none;
+	@RightSeparator@
+	@BottomSeparator@
 	@WidgetHeaderContainer-normal@
 	overflow:hidden;
+	box-sizing:content-box;
 }
 
 /* Separator between all-day and hourly sections */
@@ -2662,6 +2663,27 @@ INPUT[type="text"].InlineWidget {
 
 .calendar_edit_field {
 	font-weight:bold;
+}
+
+/* Day view split/merge buttons*/
+div[name='_toggleBtnContainerId'] {
+	@TopSeparator@
+	@RightSeparator@
+	@WidgetHeaderContainer-normal@
+	@Text-uppercase@
+}
+
+.ZCalToggleBtn {
+	height:2rem;
+	color:@SecondaryBrandingColor@;
+}
+
+.ZCalToggleBtnSelected {
+	font-weight:bold;
+}
+
+.ZCalToggleBtn.ZHover .ZButtonBorder {
+	background:initial;
 }
 
 /* container for the hour labels of the day grid */
@@ -2709,7 +2731,6 @@ INPUT[type="text"].InlineWidget {
 /* container for a particular time label */
 .calendar_grid_body_time_td {
 	vertical-align:top;
-	text-align:right;
 	border:none;
 }
 
@@ -2717,6 +2738,10 @@ INPUT[type="text"].InlineWidget {
 .calendar_grid_body_time_text {
 	@Label@
 	@TextPadding@
+	@TopSeparator@
+	@AlignLeft@
+	padding-top:@SkinViewInnerSpacing@;
+	margin-left:@SkinViewInnerSpacing@;
 }
 
 .calendar_listview_folder {
@@ -2778,6 +2803,7 @@ INPUT[type="text"].InlineWidget {
 
 .calendar_month_weekno_td {
 	@TopSeparator@
+	@RightSeparator@
 	@BottomSeparator@
 	@NoWrap@
 	@Text-anchor@
@@ -2950,121 +2976,108 @@ td.calendar_month_day_item table td {
 /*
  * appearance of appointments in day views -- NOTE:colors of these items are not skinned
  */
-.appt							{ 	z-index:10;	}
-.appt-selected					{ 	z-index:20; outline: none; }
+.appt { 
+	@Appt@
+}
 
-.appt-selected TD		 		{	font-weight:bold;   }
+.appt-selected {
+	@ApptSelected@
+}
 
 /* ??? USE? */
 .appt_new_tag					{	font-weight:bold;	color:#FC0;	}
 
-.appt_name						{	@SmallBoxPadding@ font-weight:bold;  }
-.appt_new_name					{	@SmallBoxPadding@	}
+.appt_name,
+.appt_new_name {
+	@ApptName@
+}
 
 .appt_30_name,
-.appt_allday_name				{	@SmallBoxPadding@ padding-top:1px; @NoWrap@	}
 .appt_30_new_name,
-.appt_allday_new_name 			{	@SmallBoxPadding@ padding-top:1px; @NoWrap@	}
+.appt_allday_name,
+.appt_allday_new_name {
+	@ApptAllDayName@
+}
 
+.appt_time {
+	@ApptTime@
+}
 
-.appt_time						{	@SmallBoxPadding@	}
-.appt_new_time					{	@SmallBoxPadding@	}
-.appt_end_time					{	@SmallBoxPadding@ color:#666; @NoWrap@	}
-.appt_location					{	@SmallBoxPadding@ color:#666; font-weight:normal;	}
-.appt_icon						{ 	position:relative; float:right;		}
+.appt_new_time {
+	@ApptTime@
+}
+
+.appt_end_time {
+	@ApptEndTime@
+}
+
+.appt_location {
+	@ApptLocation@
+}
+
+.appt_icon {
+	@ApptIcon@
+}
 
 .appt_top_sash,
 .appt_bottom_sash{
-	height:5px;
-	width:100%;
-	position:absolute;
-	font-size:2pt;
+	@ApptSash@
 }
 
 .appt_top_sash {
-	top:0px;
-	cursor:n-resize;
+	@ApptTopSash@
 }
 .appt_bottom_sash {
-	bottom:0px;
-	cursor:s-resize;
+	@ApptBottomSash@
 }
 
 .appt_body,
 .appt_30_body,
 .appt_allday_body {
-	position:relative;
-	overflow:hidden;
-	border-style:solid;
-	border-color:#A3A3A3;
-	border-width:0px;
-	@SmallRoundCorners@
-#IFDEF GECKO
-	-moz-user-select:none;
-#ENDIF
-	margin:0px 0px 0px -1px;
-}
-
-.appt_body TABLE {
-	background-color:#E5E5E5;
-	border-collapse:separate;
+	@ApptBody@
+	@DisableSelection@
 }
 
 .appt_30_body TABLE,
-.appt_allday_body TABLE {
-	
+.appt_allday_body TABLE,
+.appt_body > TABLE {
+	@ApptBodyTable@
 }
 
-.appt-selected .appt_body,
-.appt-selected .appt_30_body,
-.appt-selected .appt_allday_body {
-	/*position:relative;
-	overflow:hidden;*/
-	border: none;
-	@roundCorners(2px)@
-	@DisableSelection@
-	margin:0px -2px -2px 0px;
-}
-
-.appt-selected .appt_body TABLE,
-.appt-selected .appt_30_body TABLE,
-.appt-selected .appt_allday_body TABLE {
-	
-}
-
-.appt-selected .appt_body TD,
-.appt-selected .appt_allday_body TD,
-.appt-selected .appt_30_body TD {
-	padding-top:0px;
-	padding-left:0px;
-	padding-right:0px;
-#IFDEF GECKO
-	-moz-user-select:none;
-#ENDIF
-}
-
-/* tweak the padding for firefox so the appts don't jump when selected */
 HTML>BODY .appt-selected .appt_body TD.appt_30_name,
 HTML>BODY .appt-selected .appt_allday_body TD.appt_30_name,
 HTML>BODY .appt-selected .appt_30_body TD.appt_30_name {
-	padding-left:2px;
-	padding-top:2px;
-	padding-right:2px;
-#IFDEF GECKO
-	-moz-user-select:none;
-#ENDIF
+	@DisableSelection@
 }
 
 HTML>BODY .appt-selected .appt_body,
 HTML>BODY .appt-selected .appt_30_body,
-HTML>BODY .appt-selected .appt_allday_body
-{
-	margin-left:-1px;
-#IFDEF GECKO
-	-moz-user-select:none;
-#ENDIF
+HTML>BODY .appt-selected .appt_allday_body {
+	@DisableSelection@
 }
 
+.apt_footer_wrapper {
+	@ApptFooter@
+}
+
+.apt_footer_wrapper > DIV {
+	@ApptFooterSections@
+}
+
+.apt_meta_info_wrapper {
+	@ApptMetaInfoWrapper@
+}
+
+.apt_meta_info_wrapper > DIV {
+	@ApptMetaInfo@
+}
+
+.appt .svg-icon,
+.appt-selected .svg-icon,
+.appt DIV[class*='Img'],
+.appt-selected DIV[class*='Img'] {
+	@ApptMetaIcon@
+}
 
 /*
  *  Print view of the calendar -- note this is always black text on white
@@ -3126,7 +3139,6 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmCalDayTab{
 	height:1.909em;
-	@roundCorners(0px 0px 4px 4px)@
 	max-width:9.091em;
 	min-width:9.091em;
 	overflow:hidden;
@@ -3140,11 +3152,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* Fix for bug:66603 (Fixes bubble width problem, class resets few attributes of .ZmCalDayTab) */
 .ZmCalDayMerged {
-	max-width:none;
-	width:1px;
-	padding:0px;
-	text-indent:6px;
-	z-index:99;
+	@CalendarDayMergedTitle@
 }
 
 /* Fix for bug:66603 (Takes care of bubbles in split view, class resets min-width) */

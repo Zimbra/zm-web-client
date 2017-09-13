@@ -480,7 +480,8 @@ function(appt, tr) {
         first: appt._fanoutFirst,
         last: appt._fanoutLast,
         showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba),
-        tagIcon: tagIcon
+        tagIcon: tagIcon,
+        borderColor:  AjxColor.deepen(AjxColor.lighten(bodyColors.appt.bgcolor, ZmCalBaseView.bodyColorDelta))
     };
     ZmApptViewHelper.setupCalendarColor(true, bodyColors, tagNames, data, "headerStyle", null, 0, 0);
 
