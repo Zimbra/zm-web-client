@@ -573,100 +573,25 @@
 </template>
 
 <template id='calendar.Appointment#ZmApptQuickAddDialog'>
-    <table role="presentation" class="ZPropertySheet" cellspacing='6'>
-    <tr>
-        <td valign=top>
-            <table role="presentation" style="margin-left:25px; width:330px;" class="ZPropertySheet" cellspacing='6'>
-                <tr>
-                    <td id='${id}_subject_label' class='ZmApptTabViewPageField'><sup>*</sup><$= ZmMsg.subjectLabel $></td>
-                    <td colspan='2' id='${id}_subject'></td>
-                </tr>
-                <tr>
-                    <td id='${id}_location_label' class='ZmApptTabViewPageField'><$= ZmMsg.locationLabel $></td>
-                    <td colspan='2' id='${id}_location'></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td colspan='2'><div id='${id}_suggest_location' style="height:1.4em;" role='link' class='FakeAnchor'><$= ZmMsg.suggestALocation $></div></td>
-                </tr>
-                <tr>
-                    <td id='${id}_display_label' class='ZmApptTabViewPageField'><$= ZmMsg.displayLabel $></td>
-                    <td colspan='2'>
-                        <table role="presentation" class='ZPropertySheet' cellspacing='6' width='100%'>
-                            <tr>
-                                <td id='${id}_showAs' width='100%'></td>
-                                <td id='${id}_privacy_label' class='ZmApptTabViewPageField'><$= ZmMsg.markAs $></td>
-                                <td id='${id}_privacy'></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                <tr id='${id}_folderRow'>
-                    <td id='${id}_calendar_label' class='ZmApptTabViewPageField'><$= ZmMsg.calendarLabel $></td>
-                    <td colspan='2' id='${id}_calendar'></td>
-                </tr>
-                <tr><td colspan='3'></td></tr>
-                <tr>
-                    <td class='ZmApptTabViewPageField'><$= ZmMsg.startTimeLabel $></td>
-                    <td colspan=2>
-                        <table role="presentation">
-                            <tr>
-                                <td class="quickAddDateFld">
-									<$=AjxTemplate.expand("#DateField", {id: data.id + "_startDate", label: ZmMsg.startDate})$>
-								</td>
-                                <td class="miniCalendarButton ZmSelector" id='${id}_startMiniCal'></td>
-                                <td id='${id}_startTimeAt'><div style='margin:0 5px;'><$= ZmMsg.at $></div></td>
-                                <td id='${id}_startTime'></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                <tr>
-                    <td class='ZmApptTabViewPageField'><$= ZmMsg.endTimeLabel $></td>
-                    <td colspan='2'>
-                        <table role="presentation">
-                            <tr>
-                                <td class="quickAddDateFld">
-									<$=AjxTemplate.expand("#DateField", {id: data.id + "_endDate", label: ZmMsg.endDate})$>
-								</td>
-                                <td class="miniCalendarButton ZmSelector" id='${id}_endMiniCal'></td>
-                                <td id='${id}_endTimeAt'><div style='margin:0 5px;'><$= ZmMsg.at $></div></td>
-                                <td id='${id}_endTime'></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                <tr id="${id}_meetingInPastWarning" style="display:none">
-                    <td></td>
-                    <td>
-                        <div class="ImgInformation" style="float: left; margin: 0 0.5rem 0 0;"></div>
-                        <div id="${id}_meetingInPastWarningMessageText" style="font-size: 0.95rem;"></div>
-                    </td>
-                </tr>
-                <tr><td colspan='3'></td></tr>
-                <tr>
-                    <td class='ZmApptTabViewPageField'><$= ZmMsg.repeatLabel $></td>
-                    <td id='${id}_repeat'></td>
-                    <td><span class='ZmApptTabViewPageField' style='width:100%' id='${id}_repeatDesc'></span></td>
-                </tr>
-                <tr>
-                    <td class='ZmApptTabViewPageField'><$= ZmMsg.reminderLabel $></td>
-                    <td colspan='2'>
-                        <table role="presentation"><tr>
-                            <td colspan='2' id='${id}_reminderSelect'></td>
-                            <td><div id='${id}_reminderEmailCheckbox'></div></td>
-                            <$ if (appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)) { $>
-                                <td><div id='${id}_reminderDeviceEmailCheckbox'></div></td>
-                            <$ } $>
-                        </tr></table>
-                    </td>
-                </tr>
-            </table>
-        </td>
-        <td id='${id}_suggestions' class='ZmSuggestView' valign=top>
-            <div id='${id}_suggest_view'></div>
-        </td>
-    </tr>
+    <table role="presentation" class="ZPropertySheet">
+        <tr>
+            <td class="" colspan='3' id='${id}_subject'></td>
+        </tr>
+        <tr id="${id}_timeSelector">
+            <td id='${id}_startTime'></td>
+            <td class="TimeSeparator"><$= ZmMsg.calendarWorkHoursDelimiter $></td>
+            <td id='${id}_endTime'></td>
+        </tr>
+        <tr id='${id}_folderRow'>
+            <td id='${id}_calendar'></td>
+            <td class="MoreDetails" colspan='2' id='${id}_more_details'></td>
+        </tr>
+        <tr id="${id}_meetingInPastWarning" style="display:none">
+            <td colspan='3'>
+                <div class="ImgInformation" style="float: left; margin: 0 0.5rem 0 0;"></div>
+                <div id="${id}_meetingInPastWarningMessageText" style="font-size: 0.95rem;"></div>
+            </td>
+        </tr>
     </table>
 </template>
 
