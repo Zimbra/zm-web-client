@@ -1435,7 +1435,14 @@ function(el) {
 			height += isNaN(h) ? 0 : h;
 		}
 	}
+
 	el.style.overflow = "";
+
+	// Selenium has issues with empty style attributes, specifically in firefox, so remove it
+	if (AjxEnv.isGeckoBased && el.style.cssText.length == 0) {
+		el.removeAttribute('style');
+	}
+
 	return height;
 };
 
