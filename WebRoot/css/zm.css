@@ -2409,6 +2409,57 @@ INPUT[type="text"].InlineWidget {
  *	Calendar application
  */
 
+/* Add External calendar dialog */
+.ZmExternalCalendarDialog {
+	@ZmExternalCalendarDialog@
+}
+
+.ZmContactQuickAddDialog table.ZPropertySheet {
+	@ZmExternalCalendarDialogTable@
+}
+
+.ZmExternalCalendarDialog .label {
+	@ZmExternalCalendarDialogFieldLabel@
+}
+
+.ZmExternalCalendarDialog .DwtInputField input[type="text"],
+.ZmExternalCalendarDialog .DwtInputField input[type="password"] {
+	@ZmExternalCalendarDialogInput@
+}
+
+.ZmExternalCalendarDialog .ZSelect {
+	@ZmExternalCalendarDialogSelect@
+}
+
+/* Quick add appt dialog*/
+.ZmApptQuickAddDialog {
+	@ZmQuickAddApptDialog@
+}
+
+.ZmApptQuickAddDialog table.ZPropertySheet {
+	@ZmQuickAddApptDialogTable@
+}
+
+.ZmApptQuickAddDialog .DwtInputField input[type="text"] {
+	@ZmQuickAddApptDialogInput@
+}
+
+.ZmApptQuickAddDialog .TimeSeparator {
+	@ZmQuickAddApptDialogTimeSeparator@
+}
+
+.ZmApptQuickAddDialog .ZSelect {
+	@ZmQuickAddApptDialogSelect@
+}
+
+.ZmApptQuickAddDialog .ZSelect > table {
+	@FullWidth@
+}
+
+.ZmApptQuickAddDialog .MoreDetails {
+	@ZmQuickAddApptDialogMoreDetails@
+}
+
 /* Outer container for all of calendar (display and edit) */
 .ZmCalViewMgr {
 	@PageBg@
@@ -7154,28 +7205,6 @@ a.ZmLinkDisabled {
 
 .ZmContactQuickAddDialog .ZSelect > table {
 	@FullWidth@
-}
-
-/* Add External calendar dialog */
-.ZmExternalCalendarDialog {
-	@ZmExternalCalendarDialog@
-}
-
-.ZmContactQuickAddDialog table.ZPropertySheet {
-	@ZmExternalCalendarDialogTable@
-}
-
-.ZmExternalCalendarDialog .label {
-	@ZmExternalCalendarDialogFieldLabel@
-}
-
-.ZmExternalCalendarDialog .DwtInputField input[type="text"],
-.ZmExternalCalendarDialog .DwtInputField input[type="password"] {
-	@ZmExternalCalendarDialogInput@
-}
-
-.ZmExternalCalendarDialog .ZSelect {
-	@ZmExternalCalendarDialogSelect@
 }
 
 /* Common Search Widget */

@@ -2477,7 +2477,7 @@ function(appt, shiftKey) {
 		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 		this._quickAddDialog = new ZmApptQuickAddDialog(this._shell);
 		this._quickAddDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
-		this._quickAddDialog.addSelectionListener(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, new AjxListener(this, this._quickAddMoreListener));
+		this._quickAddDialog.setMoreDetailsListener(new AjxListener(this, this._quickAddMoreListener));
 	}
 	this._quickAddDialog.initialize(appt);
 	this._quickAddDialog.popup();
