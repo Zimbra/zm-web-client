@@ -37,7 +37,7 @@
                                    newpassword="${param.loginNewPassword}"
                                    rememberme="${param.zrememberme == '1'}"/>
                 <c:set var="successfullLogin" value="true"/>
-                <fmt:message var="errorMessage" key="passwordChangeSucceededCloseWindow"/>
+                <fmt:message var="newPasswordMessage" key="passwordChangeSucceededCloseWindow"/>
             </c:catch>
             <c:if test="${loginException != null}">
                 <zm:getException var="error" exception="${loginException}"/>
@@ -73,7 +73,8 @@
     <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
-<body <c:if test="${successfullLogin ne 'true'}">
+<body <c:if test="${
+ne 'true'}">
         onload="document.changePassForm.password.focus();"
         </c:if>>
     <div class="LoginScreen">
