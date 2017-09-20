@@ -23,7 +23,7 @@
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
     
     <c:set var="successfullLogin" value="false"/>
-    <fmt:message var="newPasswordMessage" key="enterNewPassword"/>
+    <fmt:message var="errorMessage" key="enterNewPassword"/>
     <c:choose>
         <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
             <fmt:message var="errorMessage" key="bothNewPasswordsMustMatch"/>
