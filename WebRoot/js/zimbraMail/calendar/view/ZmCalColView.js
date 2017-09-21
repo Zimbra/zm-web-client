@@ -46,7 +46,7 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
     this.workingHours = workingHours;
 
 	this.numDays = numDays || 1;
-	this._daySepWidth = 2;														// width of separator between days
+	this._daySepWidth = 1;														// width of separator between days
 	this._columns = [];
 	this._layoutMap = [];
 	this._unionBusyDivIds = [];													// div ids for layingout union
@@ -94,11 +94,11 @@ ZmCalColView._HOURS_DIV_WIDTH = parseInt(ZmMsg.COLUMN_WIDTH_HOURS); // width of 
 ZmCalColView._UNION_DIV_WIDTH = 40; // width of div holding union in sched view
 ZmCalColView._FBBAR_DIV_WIDTH = 10;
 
-ZmCalColView._ALL_DAY_SEP_HEIGHT = 5; // height of separator between all day appts and body
+ZmCalColView._ALL_DAY_SEP_HEIGHT = 3; // height of separator between all day appts and body
 
 ZmCalColView._SCROLL_PRESSURE_FUDGE = 10; // pixels for scroll pressure around top/bottom
 
-ZmCalColView._DAY_HEADING_HEIGHT = 20;
+ZmCalColView._DAY_HEADING_HEIGHT = 28;
 ZmCalColView._ALL_DAY_APPT_HEIGHT = 20;
 ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD = 3; // space between all day appt rows
 ZmCalColView._APPT_X_FUDGE = 0; // due to border stuff
@@ -512,6 +512,7 @@ function() {
 
 	var lastDay = this.numDays - 1;
     var j = 0;
+    var todayIndex = -1;
 	for (var i=0; i < 7; i++) {
         var wHrs = this.workingHours[d.getDay()];
         var isWorkingDay = wHrs && wHrs.isWorkingDay ? wHrs.isWorkingDay : false;
@@ -534,8 +535,14 @@ function() {
                 var te = document.getElementById(id);
                 if (te) {
                     te.innerHTML = this._dayTitle(d);
+                    if (day.isToday) { 
+                        te.innerHTML += "<span class='calendar_heading_day_today_txt'>" + ZmMsg.today + "</span>";
+                    }
                     this.associateItemWithElement(null, te, ZmCalBaseView.TYPE_DAY_HEADER, id, {dayIndex:j});
                     te.className = day.isToday ? 'calendar_heading_day_today' : 'calendar_heading_day';
+                }
+                if(day.isToday) {
+                    todayIndex = j;
                 }
             }
             j++;
@@ -557,6 +564,29 @@ function() {
 	var te = document.getElementById(this._headerYearId);
     if(te) {
 	    te.innerHTML = this._days[0].date.getFullYear();
+    }
+    //show vertical highlighter for selected day
+    var daySeparators = Dwt.byClassName('calendar_day_separator');
+    if(todayIndex !== -1) {
+        var idsToMatch = [this._columns[todayIndex].daySepDivId, this._columns[todayIndex].headingDaySepDivId];
+        //left side separators
+        var previousDayIndex = this._columns[todayIndex].index - 1;
+        if(previousDayIndex >= 0) {
+            //current day is not start of week
+            idsToMatch.push(this._columns[previousDayIndex].daySepDivId);
+            idsToMatch.push(this._columns[previousDayIndex].headingDaySepDivId);
+        } else {
+            //current day is start of week
+            idsToMatch.push(this._leftAllDaySepDivId);
+            idsToMatch.push(this._leftApptSepDivId);
+        }
+        daySeparators.forEach(function(node, index) {
+            Dwt.condClass(node, (idsToMatch.indexOf(node.id) !== -1), "calendar_day_selected_separator", "");
+        });
+    } else {
+        daySeparators.forEach(function(node, index) {
+            Dwt.delClass(node, "calendar_day_selected_separator");
+        });
     }
 };
 
@@ -917,7 +947,7 @@ function(abook) {
 	html.append("</div>");
 
 	// div under year
-	html.append("<div id='", this._yearAllDayDivId, "' style='position:absolute'></div>");
+	html.append("<div id='", this._yearAllDayDivId, "' style='position:absolute' class='calendar_heading_year_text'>", ZmMsg.allDay ,"</div>");
 
 	// sep between year and headings
 	html.append("<div id='", this._leftAllDaySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
@@ -1047,9 +1077,8 @@ ZmCalColView.prototype._updateTimeIndicator = function(force) {
     Dwt.setLocation(curTimeHourIndicator, curHourDiv.offsetParent.offsetLeft, currentTopPosition - 5);
     var calendarStrip = document.getElementById(this._curTimeIndicatorGridDivId);
     Dwt.setVisibility(calendarStrip,true);
-    var todayColDiv = document.getElementById(this._calendarTodayHeaderDivId);
-    if (todayColDiv && (force || this._isValidIndicatorDuration)) {
-        Dwt.setBounds(calendarStrip, todayColDiv.offsetLeft, currentTopPosition, todayColDiv.offsetWidth, null);
+    if (force || this._isValidIndicatorDuration) {
+        Dwt.setBounds(calendarStrip, 0, currentTopPosition, "100%", null);
     } else {
 		Dwt.setVisibility(calendarStrip,false);
 	}
@@ -1705,7 +1734,7 @@ function(refreshApptLayout) {
 	// horiz separator between all day appts and grid
 	this._setBounds(this._allDaySepDivId, 0, (this._hideAllDayAppt ? ZmCalColView._DAY_HEADING_HEIGHT : allDayScrollHeight), width, ZmCalColView._ALL_DAY_SEP_HEIGHT);
 
-	var bodyY =  (this._hideAllDayAppt ? ZmCalColView._DAY_HEADING_HEIGHT : allDayScrollHeight) + ZmCalColView._ALL_DAY_SEP_HEIGHT +  (AjxEnv.isIE ? 0 : 2);
+	var bodyY =  (this._hideAllDayAppt ? ZmCalColView._DAY_HEADING_HEIGHT : allDayScrollHeight) + ZmCalColView._ALL_DAY_SEP_HEIGHT;
 
 	this._bodyDivHeight = height - bodyY;
 
@@ -1718,7 +1747,7 @@ function(refreshApptLayout) {
 	// div for scrolling grid
 	this._setBounds(this._bodyDivId, bodyX, bodyY, this._bodyDivWidth, this._bodyDivHeight);
 
-	this._setBounds(this._apptBodyDivId, 0, -1, this._apptBodyDivWidth, this._apptBodyDivHeight);
+	this._setBounds(this._apptBodyDivId, 0, 0, this._apptBodyDivWidth, this._apptBodyDivHeight);
 
 	if (this._scheduleMode) {
 		//heading
@@ -2943,8 +2972,10 @@ function(data) {
 
 ZmCalColView.prototype.toggleAllDayAppt =
 function(hide) {
-	var apptScroll = document.getElementById(this._allDayApptScrollDivId);
-	Dwt.setVisible(apptScroll, !hide);
+    var apptScroll = document.getElementById(this._allDayApptScrollDivId); //all day appointments
+    var allDayTxtNode = Dwt.byId(this._yearAllDayDivId); //all day text
+    Dwt.setVisible(apptScroll, !hide);
+    Dwt.setVisible(allDayTxtNode, !hide);
     var sash = document.getElementById(this._allDaySepSashDivId);
     if(hide) {
         Dwt.addClass(sash, 'closed');
