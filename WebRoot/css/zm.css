@@ -2543,7 +2543,6 @@ INPUT[type="text"].InlineWidget {
 	font-size:0px;
 	height:4px;
 	line-height:0px;
-	margin:-3px;
 	position:static;
 }
 
@@ -2583,13 +2582,7 @@ INPUT[type="text"].InlineWidget {
 
 /* Year label */
 .calendar_heading_year_text {
-	@Label@
-	padding-top:@TextPaddingSize@;
-	position:absolute;
-	left:0px;
-	overflow:hidden;
-	vertical-align:middle;
-	text-align:center;
+	@CalendarHeadingYearText@
 }
 
 /* day label in various states */
@@ -2597,26 +2590,23 @@ INPUT[type="text"].InlineWidget {
 .calendar_heading_day-selected,
 .calendar_heading_day_today,
 .calendar_heading_day_today-selected {
-	@Label@
-	@FullSize@
-	padding-top:@TextPaddingSize@;
-	text-align:center;
-	vertical-align:middle;
+	@CalendarHeadingDay@
 }
 
 .calendar_heading_day-selected {
-	@SelectedBg@
+	@CalendarHeadingDaySelected@
 }
 
 .calendar_heading_day_today {
-	@Text-today@
-	font-weight:bold;
+	@CalendarHeadingDayToday@
+}
+
+.calendar_heading_day_today_txt {
+	@CalendarHeadingDayTodayTxt@
 }
 
 .calendar_heading_day_today-selected {
-	@SelectedBg@
-	@Text-today@
-	font-weight:bold;
+	@CalendarHeadingDayTodaySelectedTxt@
 }
 
 .calendar_heading_day_tab {
@@ -2632,7 +2622,6 @@ INPUT[type="text"].InlineWidget {
 	@HSashSize@
 	@CalendarSeparatorBg@
 	@ActiveCursor@
-	@CalendarBottomSeparator@
 }
 
 /* Separator between all-day and hourly sections */
@@ -2659,6 +2648,10 @@ INPUT[type="text"].InlineWidget {
 .calendar_day_separator {
 	@CalendarSeparatorBg@
 	font-size:0px;
+}
+
+.calendar_day_selected_separator {
+	@CalendarSeparatorSelectedBg@
 }
 
 .calendar_edit_field {
