@@ -989,12 +989,11 @@ UL.DwtListView-Rows {
 }
 
 .DwtCalendarWeekNo {
-	@Text-anchor@
+	@MiniCalWeekNo@
 }
 
 .DwtCalendarWeekNoTitle {
-	@MiniCalDOWBg@
-	@Text-anchor@
+	@MiniCalWeekNoTitle@
 }
 
 #IFNDEF MSIE
@@ -1060,7 +1059,7 @@ UL.DwtListView-Rows {
 }
 
 .DwtMenu .DwtCalendar {
-	width:170px;
+	@MenuCalendar@
 }
 
 .menuOverview {
