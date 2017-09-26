@@ -3431,7 +3431,27 @@ HTML>BODY .appt-selected .appt_allday_body {
 }
 
 .ZmTimeSuggestionPrefDialog {
-    max-width: 700px;
+	@TimeSuggestionPrefDialog@
+}
+
+.ZmTimeSuggestionPrefDialog table.ZPropertySheet {
+	@TimeSuggestionPrefDialogTable@
+}
+
+.ZmTimeSuggestionPrefDialog .ZPropertySheet > TBODY > TR > TD {
+	padding: 0px;
+}
+
+.ZmTimeSuggestionPrefDialog .title {
+	@TimeSuggestionPrefDialogTitle@
+}
+
+.ZmTimeSuggestionPrefDialog .ZmFieldLabelLeft {
+	@TimeSuggestionPrefDialogInputLabel@
+}
+
+.ZmTimeSuggestionPrefDialog input[type='text'] {
+	@TimeSuggestionPrefDialogInputField@
 }
 
 /* Make disabled inputs still readable in scheduler view */
@@ -6123,12 +6143,6 @@ DIV .SuggestBtn {
 
 .ReminderInput-focused {
 	@FocusBorder@
-}
-
-.SuggestionPrefTitle {
-	@Text@
-	border-bottom:1px solid @TxtC@;
-	font-weight:bold;
 }
 
 .Icon{
