@@ -190,8 +190,8 @@
 										<td colspan="2">
 											<table role="presentation" width=100% class="ZmApptEditTimeWrapper">
 												<colgroup>
-													<col width='50%'>
-													<col width='50%'>
+													<col width='60%'>
+													<col width='40%'>
 												</colgroup>
 												<tr>
 													<td valign='top'>
@@ -332,17 +332,19 @@
 <template id='calendar.Appointment#SuggestionsView'>
 	<div id='${id}_suggest_container' class='ZmSuggestContainer'>
 		<div class='ZmSuggestHeader'>
-			<div id='${id}_suggestion_name'			class='ZmSuggestLabel'>&nbsp;</div>
-			<div id='${id}_suggest_options_image'	class='ZmSuggestOptionsButton'>
-				<$=AjxImg.getImageHtml("Options")$>
-			</div>
-			<div id='${id}_suggest_close'			class='ZmSuggestCloseButton'>
-				<$=AjxImg.getImageHtml("CloseGray")$>
+			<div id='${id}_suggestion_name' class='ZmSuggestLabel'>&nbsp;</div>
+			<div class="ZmSuggestActions">
+				<div id='${id}_suggest_options_image' class='ZmSuggestOptionsButton'>
+					<$=AjxImg.getImageHtml("MoreVertical")$>
+				</div>
+				<div id='${id}_suggest_close' class='ZmSuggestCloseButton'>
+					<$=AjxImg.getImageHtml("CloseGray")$>
+				</div>
 			</div>
 		</div>
 		<div class='ZmSuggestBody'>
-			<div id='${id}_suggest_minical'			class='ZmSuggestMiniCal'></div>
-			<div id='${id}_suggest_view'			class='ZmSuggestResults'></div>
+			<div id='${id}_suggest_minical' class='ZmSuggestMiniCal'></div>
+			<div id='${id}_suggest_view' class='ZmSuggestResults'></div>
 		</div>
 	</div>
 </template>
@@ -1121,17 +1123,30 @@
 
 
 <template id='calendar.Appointment#TimeSuggestion'>
-	<table role="presentation" id='${id}' width="100%" class="Row ZPropertySheet" cellspacing="6">
-		<tr>
-			<td width="16" ><$= AjxImg.getImageHtml(data.attendeeImage) $></td>
-			<td><$= data.timeLabel $></td>
-		<$ if (data.totalLocations > 0) { $>
-			<td align="right" width="20" id='${id}_loc'><span class="FakeAnchor"><$= data.locationCountStr
-			$></span></td>
-			<td width="16"><$= AjxImg.getImageHtml(data.locationImage) $></td>
-		<$ } $>
-		</tr>
-	</table>
+	<div id='${id}' class="Row">
+		<table role="presentation" class="ZmSuggestRowTable" width="100%">
+			<tr>
+				<td align='left'>
+					<div class='ZmSuggestRowIcon'>
+							<$= AjxImg.getImageHtml(data.attendeeImage) $>
+					</div>
+					<div class='ZmSuggestRowLabel'>
+							<$= data.timeLabel $>
+					</div>
+				</td>
+				<$ if (data.totalLocations > 0) { $>
+					<td align='right'>
+						<div class='ZmSuggestRowIcon'>
+								<$= AjxImg.getImageHtml(data.locationImage) $>
+						</div>
+						<div class='ZmSuggestRowLabel'>
+							<span class="FakeAnchor"><$= data.locationCountStr $></span>
+						</div>
+					</td>
+				<$ } $>
+			</tr>
+		</table>
+	</div>
 </template>
 
 <template id='calendar.Appointment#LocationSuggestion'>
@@ -1178,26 +1193,22 @@
 
 <template id='calendar.Appointment#TimeSuggestion-Loading'>
 	<div class='SuggestionMessage'>
-		<div class='DwtWait32Icon'></div>
-		<div style='margin-top:1em;'><$= ZmMsg.searching $></div>
+		<$= AjxImg.getImageHtml("Loader") $>
+		<div><$= ZmMsg.searching $></div>
 	</div>
 </template>
 
 <template id='calendar.Appointment#LocationSuggestion-Warning'>
-	<div class="ZmLocationSuggestionWarning">
-		<div class="ZmLocationSuggestionWarningImage">
-			<$= AjxImg.getImageHtml("Warning_12") $>
-		</div>
-		<div class="ZmLocationSuggestionWarningText">
-			<$= ZmMsg.locationSuggestionWarning $>
-		</div>
+	<div class='SuggestionMessage'>
+		<$= AjxImg.getImageHtml("Warning") $>
+		<div><$= ZmMsg.locationSuggestionWarning $></div>
 	</div>
 </template>
 
 <template id='calendar.Appointment#AlternateLocation-Loading'>
 	<div class='SuggestionMessage'>
-		<div class='DwtWait32Icon'></div>
-		<div style='margin-top:1em;'><$= ZmMsg.loadingAlternateLocations $></div>
+		<$= AjxImg.getImageHtml("Loader") $>
+		<div><$= ZmMsg.loadingAlternateLocations $></div>
 	</div>
 </template>
 
