@@ -216,43 +216,42 @@
 
 <template id='calendar.Calendar#PrintDialog'>
 	<div id='${id}_printDialogContainer'>
-	    <table role="presentation" align=center width=600>
+	    <table role="presentation" align=center width=700>
             <tr>
-                <td width=30% valign=top><div id='${id}_calTreeContainer' style="margin-right:5px;"></div></td>
+                <td width=30% valign=top style='height:1px'><div id='${id}_calTreeContainer' style="margin-right:8px;height:100%;"></div></td>
                 <td width=70% valign=top>
                     <div id='${id}_printErrorMsgContainer'></div>
                     <div id='${id}_printOptionsContainer'>
                         <table role="presentation" class="ZPropertySheet" cellspacing="6">
                             <tr>
                                 <td width=25><input checked value='sel_date' type='radio' id='${id}_selDateRadio' name='${id}_selDateRange'></td>
-                                <td width=80><label for='${id}_selDateRadio'> <$= ZmMsg.calPrintSelDate $></label></td>
+                                <td width=100><label for='${id}_selDateRadio'> <$= ZmMsg.calPrintSelDate $></label></td>
                                 <td id='${id}_selDateContainer'></td>
                                 <td>&nbsp;</td>
                                 <td id='${id}_todayButtonContainer'></td>
-                            </tr>
+                        </tr>
                             <tr>
                                 <td width=25><input value="date_range" type='radio' id='${id}_dateRangeRadio' name='${id}_selDateRange'></td>
                                 <td width=80><label for='${id}_dateRangeRadio'><$= ZmMsg.calPrintDateRange $></label></td>
                                 <td id='${id}_dateRangeFromContainer'></td>
-                                <td>&nbsp; <$= ZmMsg.calPrintTo $> &nbsp;</td>
+                                <td><$= ZmMsg.calPrintTo $></td>
                                 <td id='${id}_dateRangeToContainer'></td>
                             </tr>
                         </table>
-                        <div class="horizSep"></div>
+                        <div class="horizSep" style="margin:10px 0"></div>
                         <table role="presentation" class="ZPropertySheet" cellspacing="6" width=100%>
-                            <tr style='display:block;'>
-                                <td align=right width=111><$= ZmMsg.calPrintView $></td>
+                            <tr>
+                                <td align=left width=131><$= ZmMsg.calPrintView $></td>
                                 <td colspan=4><div id='${id}_printViewContainer'></div></td>
                             </tr>
-                            <tr id='${id}_hoursContainer' style='display:block;'>
-                                <td align=right width=111><$= ZmMsg.calPrintHours $></td>
+                            <tr id='${id}_hoursContainer'>
+                                <td align=left width=131><$= ZmMsg.calPrintHours $></td>
                                 <td id='${id}_fromHoursContainer'></td>
-                                <td>&nbsp; <$= ZmMsg.calPrintTo $> &nbsp;</td>
-                                <td id='${id}_toHoursContainer'></td>
-                                <td></td>
+                                <td><$= ZmMsg.calPrintTo $></td>
+                                <td align=right colspan=2 id='${id}_toHoursContainer' style='padding-right:0'></td>
                             </tr>
-                            <tr style='display:block;'>
-                                <td align=right valign=top width=111><$= ZmMsg.calPrintOptions $></td>
+                            <tr>
+                                <td align=left valign=top width=131><$= ZmMsg.calPrintOptions $></td>
                                 <td colspan=4>
                                     <table role="presentation" class="ZCheckboxTable" width=100%>
                                         <tr id='${id}_workDaysOnlyContainer'>
