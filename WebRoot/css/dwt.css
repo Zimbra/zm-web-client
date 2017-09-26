@@ -1854,6 +1854,7 @@ INPUT.xform_field {
 .ZToolbarButton:focus,
 .ZSelect:focus,
 .ZAddNewMenuItem:focus,
+.DwtCalendar:focus,
 .ZFocused.DwtCheckbox INPUT:focus,
 .ZFocused.DwtRadioButton INPUT:focus {
 	@NoFocusOutline@
