@@ -38,12 +38,14 @@ ZmCalPrintDialog = function(params) {
     var print = new DwtDialog_ButtonDescriptor(ZmCalPrintDialog.PRINT_BUTTON, ZmMsg.print, DwtDialog.ALIGN_RIGHT);
     var cancel = new DwtDialog_ButtonDescriptor(ZmCalPrintDialog.PRINT_CANCEL_BUTTON, ZmMsg.cancel, DwtDialog.ALIGN_RIGHT);
     var parent = params.parent || appCtxt.getShell();
-	ZmDialog.call(this, {parent:parent, standardButtons:[DwtDialog.NO_BUTTONS], extraButtons: [print, cancel]});
+    ZmDialog.call(this, {parent:parent, standardButtons:[DwtDialog.NO_BUTTONS], extraButtons: [cancel, print], className: "DwtDialog ZmCalPrintDialog"});
 
-	this.setButtonListener(ZmCalPrintDialog.PRINT_BUTTON, new AjxListener(this, this._printButtonListener));
-	this.setButtonListener(ZmCalPrintDialog.PRINT_CANCEL_BUTTON, new AjxListener(this, this._printCancelButtonListener));
+    this.getButton(ZmCalPrintDialog.PRINT_BUTTON).addClassName("ZPrimaryButton");
+
+    this.setButtonListener(ZmCalPrintDialog.PRINT_BUTTON, new AjxListener(this, this._printButtonListener));
+    this.setButtonListener(ZmCalPrintDialog.PRINT_CANCEL_BUTTON, new AjxListener(this, this._printCancelButtonListener));
     this.setTitle(ZmMsg.printCalendar);
-	this.setContent(this._setHtml());
+    this.setContent(this._setHtml());
     this._createControls();
     this._setViewOptions();
 };
@@ -144,7 +146,7 @@ function() {
         radioListener = AjxCallback.simpleClosure(this._setSelectedDateRadioListener, this);
     this._selDate = new ZmDateInput(this, this._htmlElId + "_selDate", this._htmlElId + "_selDateContainer");
 
-    this._todayButton = new DwtButton({parent:this, parentElement:this._htmlElId + "_todayButtonContainer"});
+    this._todayButton = new DwtButton({parent:this, parentElement:this._htmlElId + "_todayButtonContainer", className: "ZButton ZInlineButton"});
     this._todayButton.setText(ZmMsg.today);
     this._todayButton.addSelectionListener(new AjxListener(this, this._setDateToToday))
 
@@ -265,7 +267,7 @@ function(ev) {
 
 
     Dwt.setDisplay(includeMiniCalContainer, Dwt.DISPLAY_BLOCK);
-    Dwt.setDisplay(hoursContainer, Dwt.DISPLAY_BLOCK);
+    Dwt.setDisplay(hoursContainer, Dwt.DISPLAY_TABLE_ROW);
     this._resetCheckboxes(false);
 
     switch(val) {
@@ -513,7 +515,6 @@ function(id) {
 
     this._dateInputField = new DwtInputField(params);
     var timeInputEl = this._dateInputField.getInputElement();
-    Dwt.setSize(timeInputEl, "80px", "2rem");
     timeInputEl.typeId = this.id;
 };
 

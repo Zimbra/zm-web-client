@@ -1210,6 +1210,14 @@ svg.progress-circle.tick-inside {
     padding-right:30px;
 }
 
+.DwtDialog .horizSep {
+    display:none;
+}
+
+.DwtDialog .DwtTreeItemLevel1ChildDiv {
+    border-bottom:none;
+}
+
 .ZmApptRecurDialog .ZmSelectWidgetWrapper .DwtInputField input[type='text'] {
     border:none;
 }
@@ -1263,4 +1271,9 @@ div[name='_mergeBtnContainerId'] .ZWidgetTitle {
 div[name='_splitBtnContainerId'] .ZCalToggleBtnSelected .ZWidgetTitle,
 div[name='_mergeBtnContainerId'] .ZCalToggleBtnSelected .ZWidgetTitle {
     @Text@
+}
+
+/* Today Inline button for Calendar Print Dialog */
+.ZmCalPrintDialog td[id$="todayButtonContainer"] .ZWidgetTitle {
+    @AlignLeft@
 }

@@ -3143,6 +3143,16 @@ HTML>BODY .appt-selected .appt_allday_body {
 	top:4px;
 }
 
+/* Print dialog for calendar */
+
+.ZmCalPrintDialog .ZCheckboxTable input[type="checkbox"] {
+	@CalPrintDialogCheckbox@
+}
+
+.ZmCalPrintDialog .dialogOverview {
+	@CalPrintDialogItemInnerContainer@
+}
+
 /* Fix for bug:66603 (Fixes bubble width problem, class resets few attributes of .ZmCalDayTab) */
 .ZmCalDayMerged {
 	@CalendarDayMergedTitle@
