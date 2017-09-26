@@ -1213,56 +1213,63 @@
 </template>
 
 <template id='calendar.Appointment#TimeLocationPreference'>
-    <table role="presentation" id="${id}_timepref" class="ZPropertySheet" cellspacing="6" style='margin-bottom:1em;'>
+    <table role="presentation" id="${id}_timepref" class="ZPropertySheet">
         <tbody>
         <tr>
-            <td class="SuggestionPrefTitle" colspan="3"><$= ZmMsg.timePreferences $></td>
+            <td class="title" colspan="3"><$= ZmMsg.timePreferences $></td>
         </tr>
         <tr>
-            <td class="ZmFieldLabelRight"><$= ZmMsg.suggestionTimes $>:</td>
-            <td align="right"><input type="checkbox" id="${id}_my_working_hrs_pref"></td>
-            <td width="100%">
+            <td class="ZmFieldLabelLeft"><$= ZmMsg.suggestionTimes $>:</td>
+            <td width="100%" colspan="2">
+                <input type="checkbox" id="${id}_my_working_hrs_pref">
                 <label for="${id}_my_working_hrs_pref"><$= ZmMsg.schedulerPrefMyWorkingHours $></label>
             </td>
         </tr>
         <tr>
             <td>&nbsp;</td>
-            <td align="right"><input type="checkbox" id="${id}_others_working_hrs_pref"></td>
-            <td width="100%">
+            <td width="100%" colspan="2">
+                <input type="checkbox" id="${id}_others_working_hrs_pref">
                 <label for="${id}_others_working_hrs_pref"><$= ZmMsg.schedulerPrefOtherWorkingHours $></label>
             </td>
         </tr>
         <tr>
-            <td class="ZmFieldLabelRight"><$= ZmMsg.recurrence $>:</td>
+            <td class="ZmFieldLabelLeft"><$= ZmMsg.recurrence $>:</td>
             <td align="right" id='${id}_recurrence'></td>
-            <td width="100%"><$= ZmMsg.calculateAvailability $></td>
+            <td width="100%" style="padding-left: 8px;"><$= ZmMsg.calculateAvailability $></td>
         </tr>
         </tbody>
     </table>
 
     <$ if (appCtxt.get(ZmSetting.GAL_ENABLED)) { $>
-    <table role="presentation" id="${id}_locationpref" class="ZPropertySheet" cellspacing="6">
+    <table role="presentation" id="${id}_locationpref" class="ZPropertySheet">
         <tbody>
         <tr>
-            <td class="SuggestionPrefTitle" colspan="5"><$= ZmMsg.locationPreferences $></td>
+            <td class="title" colspan="2"><$= ZmMsg.locationPreferences $></td>
         </tr>
         <tr>
-            <td class='ZmFieldLabelRight'><$= ZmMsg._name $>:</td>
-            <td><input type="text" id="${id}_name" nowrap="" size="30" autocomplete="off"></td>
-            <td class='ZmFieldLabelRight' style='padding-left:2em;'><$= ZmMsg.site $>:</td>
-            <td><input type="text" id="${id}_site" nowrap="" size="30" autocomplete="off"></td>
+            <td class='ZmFieldLabelLeft'><$= ZmMsg._name $>:</td>
+            <td><input type="text" id="${id}_name" nowrap="" size=50 autocomplete="off"></td>
         </tr>
         <tr>
-            <td class='ZmFieldLabelRight'><$= ZmMsg.minimumCapacity $>:</td>
-            <td><input type="text" id="${id}_capacity" nowrap="" size="30" autocomplete="off"></td>
-            <td class='ZmFieldLabelRight' style='padding-left:2em;'><$= ZmMsg.building $>:</td>
-            <td><input type="text" id="${id}_building" nowrap="" size="30" autocomplete="off"></td>
+            <td class='ZmFieldLabelLeft'><$= ZmMsg.minimumCapacity $>:</td>
+            <td><input type="text" id="${id}_capacity" nowrap="" size=50 autocomplete="off"></td>
         </tr>
         <tr>
-            <td class='ZmFieldLabelRight'><$= ZmMsg.description $>:</td>
-            <td><input type="text" id="${id}_desc" nowrap="" size="30" autocomplete="off"></td>
-            <td class='ZmFieldLabelRight' style='padding-left:2em;'><$= ZmMsg.floor $>:</td>
-            <td><input type="text" id="${id}_floor" nowrap="" size="30" autocomplete="off"></td>
+            <td class='ZmFieldLabelLeft'><$= ZmMsg.description $>:</td>
+            <td><input type="text" id="${id}_desc" nowrap="" size=50 autocomplete="off"></td>
+        </tr>
+        <tr>
+            <td class='ZmFieldLabelLeft'><$= ZmMsg.site $>:</td>
+            <td><input type="text" id="${id}_site" nowrap="" size=50 autocomplete="off"></td>
+        </tr>
+        
+        <tr>
+            <td class='ZmFieldLabelLeft'><$= ZmMsg.building $>:</td>
+            <td><input type="text" id="${id}_building" nowrap="" size=50 autocomplete="off"></td>
+        </tr>
+        <tr>
+            <td class='ZmFieldLabelLeft'><$= ZmMsg.floor $>:</td>
+            <td><input type="text" id="${id}_floor" nowrap="" size=50 autocomplete="off"></td>
         </tr>
         </tbody>
     </table>
