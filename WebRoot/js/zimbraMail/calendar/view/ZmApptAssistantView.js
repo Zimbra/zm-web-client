@@ -393,8 +393,7 @@ ZmApptAssistantView.prototype._resetSize = function() {
     var insets = Dwt.getInsets(this._suggestionsView);
 
     var width = bounds.width - insets.left - insets.right;
-    var height = (bounds.height - Dwt.getOuterSize(this._suggestMinical).y -
-                  Dwt.getOuterSize(header).y);
+    var height = (bounds.height - Dwt.getSize(this._suggestMinical).y - Dwt.getSize(header).y);
 
     Dwt.setSize(this._suggestionsView, width, height);
 };

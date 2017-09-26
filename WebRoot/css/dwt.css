@@ -1026,11 +1026,6 @@ UL.DwtListView-Rows {
 	@MiniCalDay-selected@
 }
 
-.ZmScheduleAssistantView .DwtCalendar .DwtCalendarDay-selected {
-	@MiniCalButton@
-	@MiniCalDay-sched-selected@
-}
-
 .DwtCalendarDay-today {
 	@MiniCalButton@
 	@MiniCalButton-today@
@@ -1047,15 +1042,27 @@ UL.DwtListView-Rows {
 }
 
 .DwtCalendarDay-green {
-	background-color:#80C095;
+	background-color:@MiniCalDayAvailableColor@;
 }
 
 .DwtCalendarDay-red {
-	background-color:#EC8080;
+	background-color:@MiniCalDayBusyColor@;
 }
 
 .DwtCalendarDay-orange {
-	background-color:#FFBB80;
+	background-color:@MiniCalDayTentativeColor@;
+}
+
+.DwtCalendarDay-grey.DwtCalendarDay-green {
+	background-color:@hexToRGBA(MiniCalDayAvailableColor,50)@;
+}
+
+.DwtCalendarDay-grey.DwtCalendarDay-red {
+	background-color:@hexToRGBA(MiniCalDayBusyColor,50)@;
+}
+
+.DwtCalendarDay-grey.DwtCalendarDay-orange {
+	background-color:@hexToRGBA(MiniCalDayTentativeColor,50)@;
 }
 
 .DwtMenu .DwtCalendar {
