@@ -223,7 +223,7 @@ function(item, id, ev) {
 
 ZmTimeSuggestionView.prototype._createLocationsMenu =
 function(item) {
-    var menu = this._locationsMenu = new ZmPopupMenu(this, null, null, this._controller);  
+    var menu = this._locationsMenu = new ZmPopupMenu(this, 'ActionMenu ZHideCheckIconMenuType', null, this._controller);  
     var listener = new AjxListener(this, this._locationsMenuListener);
 
     var location, name, locationObj;
@@ -399,7 +399,6 @@ function(hdrKey, item) {
         var htmlArr = [];
         var idx = 0;
         htmlArr[idx++] = "<table width=100% class='ZmTimeSuggestionView-Column ";
-        htmlArr[idx++] =  this._getHeaderColor(item);        
         htmlArr[idx++] = "'><tr>";
         htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label'>";
         htmlArr[idx++] = AjxMessageFormat.format(ZmMsg.availableCount, [item.availableUsers, this._totalUsers]);

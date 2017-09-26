@@ -916,6 +916,40 @@ we are hiding element with that class
     fill: @darkred@
 }
 
+.ZmSuggestView .ZmSuggestHeader div[class*='Img'] .svg-icon {
+	fill:@white@;
+	opacity:0.7;
+}
+
+.ZmSuggestView .ZmSuggestHeader div[class*='Img']:hover .svg-icon {
+	opacity:1;
+}
+
+.ImgAttendeeGreen-svg .svg-icon {
+	fill:@MiniCalDayAvailableColor@;
+}
+
+.ImgAttendeeOrange-svg .svg-icon {
+	fill:@MiniCalDayTentativeColor@;
+}
+
+.ImgAttendeeRed-svg .svg-icon {
+	fill:@MiniCalDayBusyColor@;
+}
+
+.ImgLocationGreen-svg .svg-icon,
+.ImgLocationRed-svg .svg-icon,
+.ImgLocationOrange-svg .svg-icon {
+	fill:#777;
+}
+
+.Row:hover .ImgLocationGreen-svg .svg-icon,
+.Row-selected .ImgLocationGreen-svg .svg-icon,
+.Row-selected .ImgLocationRed-svg .svg-icon,
+.Row-selected .ImgLocationOrange-svg .svg-icon {
+	fill:@TxtC@;
+}
+
 /*Adding background for svg's with gradient via css background rule
   This can be removed once we have support for gradient's to be rendered with <use>
 */

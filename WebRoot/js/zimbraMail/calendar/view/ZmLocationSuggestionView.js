@@ -104,7 +104,8 @@ function(itemDiv, ev) {
 
 ZmLocationSuggestionView.prototype._setNoResultsHtml =
 function() {
-    var	div = document.createElement("div");
+    var div = document.createElement("div");
+    Dwt.addClass(div, 'NoSuggestions');
     var elText = document.createTextNode(ZmMsg.noLocations);
     div.appendChild(elText);
     this._addRow(div);
