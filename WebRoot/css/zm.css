@@ -6071,10 +6071,11 @@ DIV .SuggestBtn {
 .SuggestionMessage,
 .NoResults,
 .NoSuggestions {
-	@FontSize-big@
-	color:@TxtC@;
-	padding:5em 1em 1em;
-	text-align:center;
+	@SuggestViewStatusMessage@
+}
+
+.SuggestionMessage div[class*='Img'] {
+	@SuggestViewStatusMessageIcon@
 }
 
 .ZmListViewTableNoResultsContainer .NoResults {
@@ -6114,12 +6115,6 @@ DIV .SuggestBtn {
 }
 .DeviceCodeUnconfirmed {
 	color:red;
-}
-
-.ZmTimeSuggestionView-Column {
-	@ListColHeaderContainer@
-	@WidgetHeaderContainer@
-	border-top:0px;
 }
 
 .ReminderInput INPUT{
@@ -6223,16 +6218,7 @@ INPUT[type="text"].ZmFolderPolicyAmountInput {
 }
 
 .ZmSuggestView {
-	position:absolute;
-	top:5px;
-	right:18px;
-	background-color:@darken(AppC,20)@;
-	border-color:@darken(AppC,30)@;
-	border-style:solid;
-	border-width:1px;
-	vertical-align:top;
-	width:180px;
-	margin: 0px 8px 8px 0px;
+	@SuggestView@
 }
 
 .DwtDialog .ZmSuggestView {
@@ -6240,41 +6226,36 @@ INPUT[type="text"].ZmFolderPolicyAmountInput {
 	padding:0px;
 }
 
-.ZmSuggestContainer {
-	position:relative;
+.ZmScheduleAssistantView {
+	@SuggestViewContainer@
 }
 
 .ZmSuggestHeader {
-	background-color:@lighten(AppC,33)@;
-	border:1px solid white;
-	color:@TxtC@;
-	font-weight:bold;
-	height:1.8em;
-	margin-bottom:1px;
-	position:relative;
+	@SuggestViewHeader@
 }
 
-.ZmSuggestLabel,
-.ZmSuggestOptionsButton,
-.ZmSuggestCloseButton {
-	position:absolute;
-	top:2px;
+.ZmSuggestHeader > div {
+	@SuggestViewHeaderContainer@
 }
 
-.ZmSuggestLabel {
-	left:5px;
-	overflow:hidden;
-	right:40px;
-	text-align:left;
-	white-space:nowrap;
+.ZmSuggestHeader .ZmSuggestActions {
+	@SuggestViewHeaderActions@
 }
 
-.ZmSuggestOptionsButton {
-	right:22px;
+.ZmSuggestHeader .ZmSuggestActions > div {
+	@SuggestViewHeaderActionsOp@
 }
 
-.ZmSuggestCloseButton {
-	right:3px;
+.ZmSuggestView .ZmSuggestLabel {
+	@SuggestLabel@
+}
+
+.ZmSuggestView .ZmSuggestOptionsButton {
+	@SuggestOptionsButton@
+}
+
+.ZmSuggestView .ZmSuggestCloseButton {
+	@SuggestCloseButton@
 }
 
 .ZmSuggestOptionsButton DIV,
@@ -6283,8 +6264,7 @@ INPUT[type="text"].ZmFolderPolicyAmountInput {
 .ZmSuggestBody {}
 
 .ZmSuggestMiniCal {
-	border-bottom:1px solid @darken(AppC,30)@;
-	margin-bottom:3px;
+	@SuggestMiniCal@
 }
 
 .ZmSuggestResults {
@@ -6296,11 +6276,56 @@ INPUT[type="text"].ZmFolderPolicyAmountInput {
 
 .ZmSuggestResults .DwtListView {
 	border-width:0px;
+	background: inherit;
 }
 
-.ZmSuggestResults .Row:hover .FakeAnchor,  /* accounts for lack of .Row-hover state class */
-.ZmSuggestResults .Row-selected .FakeAnchor {
-	text-decoration:underline;
+.ZmSuggestResults .DwtListView .Row {
+	@SuggestRow@
+}
+
+.ZmSuggestResults .DwtListView .Row TD,
+.ZmSuggestResults .DwtListView .Row DIV {
+	@SuggestRowText@
+}
+
+.ZmSuggestResults .DwtListView .Row:hover,
+.ZmSuggestResults .DwtListView .Row.Row-selected {
+	@SuggestRowSelected@
+}
+
+.ZmSuggestResults .DwtListView .Row.Row-selected TD,
+.ZmSuggestResults .DwtListView .Row.Row-selected DIV {
+	@SuggestRowSelectedText@
+}
+
+.ZmSuggestResults .ZmSuggestRowTable {
+	@SuggestRowItemTable@
+}
+
+.ZmSuggestResults .ZmSuggestRowTable TD {
+	@SuggestRowItemTableCell@
+}
+
+.ZmSuggestResults .ZmSuggestRowTable TD > DIV {
+	@SuggestRowItemTableCellContent@
+}
+
+.ZmSuggestResults .ZmSuggestRowTable TD .ZmSuggestRowIcon {
+	@SuggestRowItemTableCellIcon@
+}
+
+.ZmSuggestResults .ZmSuggestRowTable TD .ZmSuggestRowLabel,
+.ZmSuggestResults .ZmSuggestRowTable TD .ZmSuggestRowLabel .FakeAnchor {
+	@SuggestRowItemTableCellLabel@
+}
+
+.ZmSuggestResults .Row:hover .ZmSuggestRowTable TD .FakeAnchor,
+.ZmSuggestResults .Row-selected .ZmSuggestRowTable TD .FakeAnchor {
+	@Text-anchor-hover@
+}
+
+.ZmSuggestResults .ZmTimeSuggestionView-Column .DwtListHeaderItem-label {
+	@SuggestResultHeader@
 }
 
 .ZmSuggestLocationList {
@@ -7823,4 +7848,9 @@ input[type="radio"] + label {
 
 .ZmApptEditView .ZmApptEditSubField > *:not(:empty) {
 	@ApptEditSubField@
+}
+
+.ZmApptEditView .ZCheckboxTable .ZCheckboxTableRightText,
+.ZmApptEditView .ZCheckboxTable .ZCheckboxTableRightText {
+	@NoWrap@
 }
