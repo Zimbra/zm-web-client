@@ -132,7 +132,8 @@ function(ev) {
     var div = this.getTargetItemDiv(ev);
     if (div) {
         var item = this.getItemFromElement(div);
-        if(item) {
+        //show tooltip only if there is additional data
+        if(item && (item.description || item.contactMail || item.capacity)) {
             tooltip = AjxTemplate.expand("calendar.Appointment#LocationSuggestionTooltip",
                         {name:        item.name,
                          description: item.description,
@@ -141,12 +142,5 @@ function(ev) {
                         });
         }
     }
-    var consoleText = tooltip;
-    if (!consoleText) {
-        consoleText = "None";
-    } else if(consoleText.length > 15) {
-        consoleText = consoleText.substring(0, 15) + '...';
-    }
-    console.log("getToolTipContent, div = " + (div ? div.id : "null") + ", text = " + consoleText);
     return tooltip;
 };
