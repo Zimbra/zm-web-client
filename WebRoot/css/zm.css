@@ -6359,15 +6359,12 @@ INPUT[type="text"].ZmFolderPolicyAmountInput {
 }
 
 .ZmLocationSuggestion {
-	@ActiveCursor@
-	background-color:@AppC@;
-	border:1px solid @darken(AppC,10)@;
-	margin:4px;
-	padding:2px 4px;
+	@SuggestLocationRow@
 }
 
+.ZmLocationSuggestion:hover,
 .ZmLocationSuggestion.Row-selected {
-	border-color:@SelC@ @darken(SelC,25)@ @darken(SelC,25)@ @SelC@;
+	@SuggestLocationSelected@
 }
 
 .ZmLocationStatusValidating,
@@ -6424,14 +6421,18 @@ INPUT[type="text"].ZmFolderPolicyAmountInput {
 .ZmResolveConflictList {
 	width:400px;
 }
+
 .ZmResolveNoLocationSelect {
 	border-top:1px solid @darken(AppC,50)@;
 }
+
 .ZmLocationSuggestionTooltip {
 	white-space:nowrap;
 }
+
 .ZmLocationTooltipTitle {
 	font-weight:bold;
+	margin-bottom:@SkinViewInnerSpacing@
 }
 
 .FakeAnchor, a:link, a:visited {
