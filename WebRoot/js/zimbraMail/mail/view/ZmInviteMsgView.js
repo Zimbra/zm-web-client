@@ -771,11 +771,11 @@ function() {
 		button.setMenu(menu);
 	}
 
-	this._respondOnBehalfLabel = new DwtControl({parent:tb.parent});
+	this._respondOnBehalfLabel = new DwtControl({parent:tb});
 	// tb.addFiller();
 
 	// folder picker
-	this._inviteMoveSelect = new DwtSelect({parent:tb.parent});
+	this._inviteMoveSelect = new DwtSelect({parent:tb});
 	this._inviteMoveSelect.setVisible(false); //by default hide it. bug 74254
 
 	return tb;
