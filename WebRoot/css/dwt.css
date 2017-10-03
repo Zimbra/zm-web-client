@@ -570,6 +570,7 @@ TD.DwtListView-ColumnActive {
 	position:relative;
 	overflow:auto;
 	@FullSize@
+	background-color: @AppC@;
 }
 
 
