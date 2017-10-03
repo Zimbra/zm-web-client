@@ -674,6 +674,12 @@ LI.RowDouble, LI.Row {list-style: none;}
 	@TreeHeaderText@
 }
 
+.overviewHeader .overviewHeader-Text .ZButton {
+	/* This is needed as ZButton height (ButtonHeight) is 36px so it is actually pushing height of Tree header (TreeHeaderContainer)
+	 to become 37px instead of 36px (including bottom border of 1px) */
+	height: auto;
+}
+
 .overviewHeader .imageCell {
 	@TreeHeaderImageCell@
 }
