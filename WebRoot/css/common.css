@@ -521,6 +521,7 @@ html[data-istwofactorsetuppage] .VeilOverlay TABLE {
 
 .Row							{	@ListItemContainer-normal@			}
 
+.RowEven						{	@ListItemContainer-normal@			}
 .RowOdd							{	@ListItemContainer-alt@			}
 
 /* selected row styles */
