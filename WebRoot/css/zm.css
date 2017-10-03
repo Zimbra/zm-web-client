@@ -6078,6 +6078,10 @@ DIV .SuggestBtn {
 	color:black;
 }
 
+.ZmCalListViewSearchBar {
+	@CalendarListViewSearchBar@
+}
+
 .ZmCalListViewSearchBar .DwtCompositeCell {
 	white-space:nowrap;
 }
