@@ -1710,7 +1710,8 @@ INPUT.xform_field {
 
 /* ??? NECESSARY ? */
 .DwtChooserListView {
-	@ListBg@	@ListBorder@
+	@ListBg@
+	@ListBorder@
 	@BoxMargin@
 }
 
