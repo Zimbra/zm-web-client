@@ -1277,3 +1277,8 @@ div[name='_mergeBtnContainerId'] .ZCalToggleBtnSelected .ZWidgetTitle {
 .ZmCalPrintDialog td[id$="todayButtonContainer"] .ZWidgetTitle {
     @AlignLeft@
 }
+
+.ZmApptQuickAddDialog .ZSelect .ZWidgetTitle {
+    max-width: 1px;
+    @OverflowEllipsis@
+}
