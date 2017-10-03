@@ -797,13 +797,12 @@ UL.DwtListView-Rows {
 
 /* Outer container for the confirmation dialog */
 .DwtConfirmDialog {
-	max-width:400px;
+	max-width:70%;
 }
 
 /* Font for confirmation dialogs ('Are you sure you want to delete?') */
 .DwtConfirmDialogQuestion {
 	@FontSize-big@
-	@BoxMargin@
 }
 
 
