@@ -644,7 +644,6 @@ SELECT                      {   @NativeSelect@  }
 .ZAppTabBorder .ZLeftIcon DIV       { display:none; }
 
 /*Temporary overrides that need to move to skin properties*/
-/*.DwtListView-ColHeader            { height:1.8rem; height:19px;                   }*/
 .RowDouble                          { height:auto; padding-top:0px;         }
 .RowDouble .TopRow                  { margin:6px 0px 0px; }
 .RowDouble .ZmMsgListExpand         { margin-left:-2px; margin-right:2px; }
