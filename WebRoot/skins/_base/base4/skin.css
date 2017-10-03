@@ -1185,10 +1185,6 @@ svg.progress-circle.tick-inside {
     padding-left:13px;
 }
 
-.ZmCalListViewSearchBar .DwtText {
-    font-weight: bold;
-}
-
 /*************
  *
  *	DwtGrouper: Use to show groups in dialogs like ZmSharePropsDialog & ZmFolderPropsDialog
