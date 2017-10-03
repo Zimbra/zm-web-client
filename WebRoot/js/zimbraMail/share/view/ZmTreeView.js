@@ -398,11 +398,11 @@ function(params) {
 		if ((org.nId == ZmOrganizer.ID_ROOT) && child.link && addSep) {
 			params.treeNode.addSeparator();
 			addSep = false;
-		} else if(child.parent.id == ZmOrganizer.ID_ROOT && child.parent.type == ZmOrganizer.FOLDER && !child.link && !child._systemName && addSepForUserFolders) {
-            // Add Separator before rendering user folders at root level
-            params.treeNode.addSeparator();
-            addSepForUserFolders = false;
-        }
+		} else if(child.parent.id == ZmOrganizer.ID_ROOT && child.parent.type == ZmOrganizer.FOLDER && child.type == ZmOrganizer.FOLDER && !child.link && !child._systemName && addSepForUserFolders) {
+			// Add Separator before rendering user folders at root level
+			params.treeNode.addSeparator();
+			addSepForUserFolders = false;
+		}
 
 		this._addNew(parentNode, child, null, params.noTooltips, params.omit);
 		numItems++;
