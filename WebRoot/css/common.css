@@ -590,6 +590,8 @@ LI.RowDouble, LI.Row {list-style: none;}
 .Row-selected-dragProxy DIV,
 .Row-selected-disabled DIV 		{	@ListItemText-selected@	}
 
+.Row-altSelected TD,
+.Row-altSelected DIV 			{	@ListItemText-sel-alt@	}
 /* .Row-matched TD			 	{ 	@ListItemText-matched@				} */
 
 .Row-focused TD 				{	@ListItemText-focused@			}
