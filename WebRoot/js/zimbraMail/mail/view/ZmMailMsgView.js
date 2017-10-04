@@ -62,9 +62,9 @@ ZmMailMsgView = function(params) {
     this._attachmentLinkIdToFileNameMap = null;
 	this._bubbleParams = {};
 
-	if (this._controller && this._controller._checkKeepReading) {
+	/*if (this._controller && this._controller._checkKeepReading) {
 		Dwt.setHandler(this.getHtmlElement(), DwtEvent.ONSCROLL, ZmDoublePaneController.handleScroll);
-	};
+	};*/
 
 	this._tabGroupMember = new DwtTabGroup("ZmMailMsgView");
 	this._headerTabGroup = new DwtTabGroup("ZmMailMsgView (header)");
@@ -2841,7 +2841,7 @@ function() {
 	return this._controller.isZmMsgController ? ctlrViewId : [ctlrViewId, ZmId.VIEW_MSG].join("_");
 };
 
-ZmMailMsgView.prototype._keepReading =
+/*ZmMailMsgView.prototype._keepReading =
 function(check) {
 	var cont = this.getHtmlElement();
 	var contHeight = Dwt.getSize(cont).y;
@@ -2853,7 +2853,7 @@ function(check) {
 		return true;
 	}
 	return false;
-};
+};*/
 
 ZmMailMsgView.prototype._getIframeTitle = function() {
 	return AjxMessageFormat.format(ZmMsg.messageTitle, this._msg.subject);

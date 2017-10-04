@@ -90,9 +90,9 @@ function(actionCode, ev) {
 	DBG.println(AjxDebug.DBG3, "ZmTradController.handleKeyAction");
 
 	switch (actionCode) {
-		case ZmKeyMap.KEEP_READING:
+		/*case ZmKeyMap.KEEP_READING:
 			return this._keepReading(false, ev);
-			break;
+			break;*/
 
 		default:
 			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
@@ -130,7 +130,7 @@ function(view) {
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);
 };
 
-ZmTradController.prototype._keepReading = 
+/*ZmTradController.prototype._keepReading = 
 function(check, ev) {
 	
 	if (!this.isReadingPaneOn() || !this._itemViewCurrent()) { return false; }
@@ -149,7 +149,7 @@ function(check, ev) {
 		}
 	}
 	return result;
-};
+};*/
 
 ZmTradController.prototype._showConvListener =
 function() {

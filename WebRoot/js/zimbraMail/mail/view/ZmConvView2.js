@@ -136,9 +136,9 @@ function() {
 	 // label our control after the subject element
 	this.setAttribute('aria-labelledby', this._header._convSubjectId);
 
-	if (this._controller && this._controller._checkKeepReading) {
+	/*if (this._controller && this._controller._checkKeepReading) {
 		Dwt.setHandler(this._messagesDiv, DwtEvent.ONSCROLL, ZmDoublePaneController.handleScroll);
-	}
+	}*/
 
 	this._initialized = true;
 };
@@ -572,7 +572,7 @@ function() {
 // Scrolls to show the user something new. If the current msg view isn't completely visible,
 // scroll to show the next page. Otherwise, scroll the next expanded msg view to the top.
 // Returns true if scrolling was done.
-ZmConvView2.prototype._keepReading =
+/*ZmConvView2.prototype._keepReading =
 function(check) {
 
 	if (!(this._msgViewList && this._msgViewList.length)) { return false; }
@@ -628,7 +628,7 @@ function(check) {
 	}
 	
 	return false;
-};
+};*/
 
 // Returns the next or previous msg view based on the given msg view.
 ZmConvView2.prototype._getSiblingMsgView = function(curMsgView, next) {
@@ -2020,9 +2020,9 @@ function(expanded) {
 
 	if (this._expanded) {
 		this._createBubbles();
-		if (this._controller._checkKeepReading) {
+		/*if (this._controller._checkKeepReading) {
 			this._controller._checkKeepReading();
-		}
+		}*/
 		this._lastCollapsed = false;
 	}
 

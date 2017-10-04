@@ -228,9 +228,9 @@ function(actionCode, ev) {
 			}
 			break;
 		
-		case ZmKeyMap.KEEP_READING:
+		/*case ZmKeyMap.KEEP_READING:
 			return this._keepReading(false, ev);
-			break;
+			break;*/
 
 		// these are for quick reply
 		case ZmKeyMap.SEND:
@@ -265,7 +265,7 @@ function(actionCode) {
 	}
 };
 
-ZmConvListController.prototype._keepReading =
+/*ZmConvListController.prototype._keepReading =
 function(check, ev) {
 
 	if (!this.isReadingPaneOn() || !this._itemViewCurrent()) { return false; }
@@ -315,7 +315,7 @@ function(check, ev) {
 		this._checkKeepReading();
 	}
 	return result;
-};
+};*/
 
 /**
  * Override to handle paging among msgs within an expanded conv.

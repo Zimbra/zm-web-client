@@ -112,7 +112,7 @@ function(item, oldValue) {
 			$(row).addClass(newCssClass);
 		}
 	}
-	this._controller._checkKeepReading();
+	//this._controller._checkKeepReading();
 };
 
 ZmMailListView.prototype.set =
