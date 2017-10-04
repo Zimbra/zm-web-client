@@ -50,7 +50,7 @@ ZmDoublePaneController = function(container, mailApp, type, sessionId, searchRes
 	}
 	
 	this._listSelectionShortcutDelayAction = new AjxTimedAction(this, this._listSelectionTimedAction);
-	this._listeners[ZmOperation.KEEP_READING] = this._keepReadingListener.bind(this);
+	//this._listeners[ZmOperation.KEEP_READING] = this._keepReadingListener.bind(this);
 };
 
 ZmDoublePaneController.prototype = new ZmMailListController;
@@ -255,7 +255,7 @@ function() {
 	if (appCtxt.isChildWindow) {
 		return list;
 	}
-	list.push(ZmOperation.KEEP_READING);
+	//list.push(ZmOperation.KEEP_READING);
 	list.push(ZmOperation.VIEW_MENU);
 	return list;
 };
@@ -499,7 +499,7 @@ function(parent, num) {
 
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && num == 1 && !isDraft));
 	parent.enable(ZmOperation.TEXT, true);
-	parent.enable(ZmOperation.KEEP_READING, this._keepReading(true));
+	//parent.enable(ZmOperation.KEEP_READING, this._keepReading(true));
 
 	if (appCtxt.isWebClientOffline()) {
 		parent.enable(
@@ -523,9 +523,9 @@ function(parent, num) {
 
 ZmDoublePaneController.prototype._resetOperation = 
 function(parent, op, num) {
-	if (parent && op == ZmOperation.KEEP_READING) {
+	/*if (parent && op == ZmOperation.KEEP_READING) {
 		parent.enable(ZmOperation.KEEP_READING, this._keepReading(true));
-	}
+	}*/
 };
 
 // top level view means this view is allowed to get shown when user clicks on 
@@ -751,7 +751,7 @@ function(items, destinationFolder, attrs, isShiftKey) {
 	ZmMailListController.prototype._doMove.apply(this, arguments);
 };
 
-ZmDoublePaneController.prototype._keepReadingListener =
+/*ZmDoublePaneController.prototype._keepReadingListener =
 function(ev) {
 	this.handleKeyAction(ZmKeyMap.KEEP_READING, ev);
 };
@@ -763,9 +763,9 @@ ZmDoublePaneController.prototype._checkKeepReading =
 function() {
 	// done on timer so item view has had change to lay out and resize
 	setTimeout(this._resetOperation.bind(this, this._toolbar[this._currentViewId], ZmOperation.KEEP_READING), 250);
-};
+};*/
 
-ZmDoublePaneController.handleScroll =
+/*ZmDoublePaneController.handleScroll =
 function(ev) {
 	var target = DwtUiEvent.getTarget(ev);
 	var messagesView = DwtControl.findControl(target);
@@ -773,7 +773,7 @@ function(ev) {
 	if (controller && controller._checkKeepReading) {
 		controller._checkKeepReading();
 	}
-};
+};*/
 
 ZmDoublePaneController.prototype._dragListener =
 function(ev) {
