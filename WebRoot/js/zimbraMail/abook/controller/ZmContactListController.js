@@ -631,6 +631,7 @@ function(view, firstTime) {
 		if (!menu) {
 			menu = new ZmPopupMenu(btn);
 			btn.setMenu(menu);
+			btn.addClassName("ZViewMenuButton");
 			for (var i = 0; i < ZmContactListController.VIEWS.length; i++) {
 				var id = ZmContactListController.VIEWS[i];
 				var mi = menu.createMenuItem(id, {image:ZmContactListController.ICON[id],

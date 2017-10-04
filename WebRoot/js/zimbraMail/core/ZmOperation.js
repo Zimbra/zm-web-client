@@ -219,7 +219,7 @@ function() {
     ZmOperation.registerOp(ZmId.OP_UNDELETE, {textKey:"undelete", tooltipKey:"undelete", image:"MoveToFolder"});
     ZmOperation.registerOp(ZmId.OP_UNMUTE_CONV, {textKey:"unmuteConv", tooltipKey:"unmuteConvTooltip", image:"Unmute", shortcut:ZmKeyMap.MUTE_UNMUTE_CONV});
 	ZmOperation.registerOp(ZmId.OP_VIEW, {textKey:"view", image:"SplitView"});
-	ZmOperation.registerOp(ZmId.OP_VIEW_MENU, {tooltipKey:"viewTooltip", textKey:"view", textPrecedence:80, showImageInToolbar: true, showTextInToolbar: true});
+	ZmOperation.registerOp(ZmId.OP_VIEW_MENU, {tooltipKey:"viewTooltip", textKey:"view", textPrecedence:80, showImageInToolbar: false, showTextInToolbar: true});
 	ZmOperation.registerOp(ZmId.OP_ZIMLET, {image:"ZimbraIcon"});
 
 	// invites - needed for both Mail and Calendar
