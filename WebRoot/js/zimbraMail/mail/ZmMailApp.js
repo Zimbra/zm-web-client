@@ -884,7 +884,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_INC_NONE, {textKey:"includeMenuNone"});
 	ZmOperation.registerOp(ZmId.OP_INC_SMART, {textKey:"includeMenuSmart"});
 	ZmOperation.registerOp(ZmId.OP_INCLUDE_HEADERS, {textKey:"includeHeaders"});
-	ZmOperation.registerOp(ZmId.OP_KEEP_READING, {textKey:"keepReading", tooltipKey:"keepReadingTooltip", shortcut:ZmKeyMap.KEEP_READING});
+	//ZmOperation.registerOp(ZmId.OP_KEEP_READING, {textKey:"keepReading", tooltipKey:"keepReadingTooltip", shortcut:ZmKeyMap.KEEP_READING});
 	ZmOperation.registerOp(ZmId.OP_MARK_READ, {textKey:"markAsRead", shortcut:ZmKeyMap.MARK_READ});
 	ZmOperation.registerOp(ZmId.OP_MARK_UNREAD, {textKey:"markAsRead", shortcut:ZmKeyMap.MARK_UNREAD,image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_FLAG, {textKey:"flag", shortcut:ZmKeyMap.FLAG}, ZmSetting.FLAGGING_ENABLED);

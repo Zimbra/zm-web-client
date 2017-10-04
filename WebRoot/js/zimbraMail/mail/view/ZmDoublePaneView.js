@@ -164,7 +164,7 @@ function() {
 ZmDoublePaneView.prototype.setItem =
 function(item, force, dontFocus) {
 	this._itemView.set(item, force);
-	this._controller._checkKeepReading();
+	//this._controller._checkKeepReading();
  };
 
 ZmDoublePaneView.prototype.clearItem =
