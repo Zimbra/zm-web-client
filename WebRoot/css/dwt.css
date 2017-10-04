@@ -2115,7 +2115,7 @@ INPUT.xform_field {
 
 .ZmMailMsgView .ZToolbar	{ @ToolbarContainer@	}
 
-.ZToolbarTable				{ position: relative; }
+.ZToolbarTable				{  }
 .ZToolbarPrefix				{ width:.5em; }
 .ZToolbarSuffix				{ width:100%; }
 
