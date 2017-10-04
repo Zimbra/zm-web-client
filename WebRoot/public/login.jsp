@@ -188,7 +188,7 @@
                         <c:choose>
                             <c:when test="${client eq 'socialfox'}">
                                     <c:set var="sbURL" value="/public/launchSidebar.jsp"/>
-                                    <c:redirect url="${sbURL}">
+                                    <c:redirect url="${zm:buildRedirectURL(pageContext, sbURL)}">
                                         <c:forEach var="p" items="${paramValues}">
                                             <c:forEach var='value' items='${p.value}'>
                                                 <c:set var="testKey" value=",${p.key},"/>
@@ -202,7 +202,7 @@
                             <c:when test="${client eq 'advanced'}">
                                 <c:choose>
                                     <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
-                                        <c:redirect url="/">
+                                        <c:redirect url="${zm:buildRedirectURL(pageContext, '/')}">
                                             <c:forEach var="p" items="${paramValues}">
                                                 <c:forEach var='value' items='${p.value}'>
                                                     <c:set var="testKey" value=",${p.key},"/>
@@ -222,7 +222,7 @@
                                 </c:choose>
                             </c:when>
                             <c:when test="${client eq 'standard'}">
-                                <c:redirect url="/h/search">
+                                <c:redirect url="${zm:buildRedirectURL(pageContext, '/h/search')}">
                                     <c:param name="mesg" value='welcome'/>
                                     <c:param name="init" value='true'/>
                                     <c:if test="${not empty param.app}">
@@ -240,7 +240,7 @@
                             </c:when>
                             <c:when test="${client eq 'mobile'}">
                                 <c:set var="mobURL" value="/m/zmain"/>
-                                <c:redirect url="${mobURL}">
+                                <c:redirect url="${zm:buildRedirectURL(pageContext, mobURL)}">
                                     <c:forEach var="p" items="${paramValues}">
                                         <c:forEach var='value' items='${p.value}'>
                                         <c:set var="testKey" value=",${p.key},"/>
@@ -252,7 +252,8 @@
                                 </c:redirect>
                             </c:when>
                             <c:when test="${client eq 'touch'}">
-                                <c:redirect url="${param.dev eq '1' ? '/tdebug' : '/t'}">
+                                <c:set var="touchURL" value="${param.dev eq '1' ? '/tdebug' : '/t'}"/>
+                                <c:redirect url="${zm:buildRedirectURL(pageContext, touchURL)}">
                                     <c:forEach var="p" items="${paramValues}">
                                         <c:forEach var='value' items='${p.value}'>
                                             <c:set var="testKey" value=",${p.key},"/>
