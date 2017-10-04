@@ -236,6 +236,11 @@ BODY                                    {   margin:0px;     }
 #ZSplashPanel                           {   @SplashOuterBorder@     }
 #ZSplashBodyContainer                   {   @SplashInnerBorder@     }
 
+.console_inset_app_l {
+	/* 1 more than Dwt.Z_VIEW, this is required to make sure sash between folder tree and mail list is draggable properly */
+	z-index: 301 !important;
+}
+
 .LoginScreen,
 .SplashScreen,
 .ErrorScreen {
