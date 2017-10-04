@@ -1190,6 +1190,7 @@ function(view, firstTime) {
 		if (!menu) {
 			menu = new ZmPopupMenu(btn);
 			btn.setMenu(menu);
+			btn.addClassName("ZViewMenuButton");
 
             this._setupPreviewPaneMenu(menu, btn);
 		}

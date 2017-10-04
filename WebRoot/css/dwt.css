@@ -2160,9 +2160,9 @@ INPUT.xform_field {
 .ZActive	.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-active@		}
 .ZSelected	.ZToolbarButtonTable .ZWidgetTitle	{							@ToolbarButtonText-selected@	}
 
-.ZToolbarButton.ZViewMenuButton	.ZToolbarButtonTable		                {       @ToolbarViewButtonContainer@       }
-.ZToolbarButton.ZViewMenuButton .ZToolbarButtonTable TD.ZWidgetTitle			{ 		@Text-light@ 		               }
-.ZToolbarButton.ZViewMenuButton	.ZToolbarButtonTable  TD.ZDropDown 			{		@ToolbarViewButtonDropIcon@ 	   }
+.ZToolbar 	.ZToolbarButton.ZViewMenuButton	.ZToolbarButtonTable						{		@ToolbarViewButtonContainer@		}
+.ZToolbar 	.ZToolbarButton.ZViewMenuButton .ZToolbarButtonTable TD.ZWidgetTitle		{ 		@Text-light@						}
+.ZToolbar 	.ZToolbarButton.ZViewMenuButton	.ZToolbarButtonTable TD.ZDropDown 			{		@ToolbarViewButtonDropIcon@			}
 
 /***************
  *
