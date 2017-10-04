@@ -694,7 +694,11 @@ SELECT                      {   @NativeSelect@  }
 .Row-selected .ZmConvListFrom,
 .Row-selected .ZmMsgListColFrom,
 .Row-selected .ZmConvListSubject,
-.Row-selected .ZmConvListNumMsgs{
+.Row-selected .ZmConvListNumMsgs,
+.Row-altSelected .ZmConvListFrom,
+.Row-altSelected .ZmMsgListColFrom,
+.Row-altSelected .ZmConvListSubject,
+.Row-altSelected .ZmConvListNumMsgs {
     @Text-contrast@
 }
 
