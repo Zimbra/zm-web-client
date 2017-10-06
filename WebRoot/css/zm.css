@@ -84,13 +84,6 @@ INPUT[type="text"]:focus, INPUT[type="password"]:focus, INPUT[type="email"]:focu
 
 /* Dwt-created elements that have their ID set so we can tweak them specifically here */
 
-/* MOVE TO SKIN ??? */
-#ZmTagColorMenu {
-	width:100px;	/* ??? SIZE */
-	height:22px;
-}
-
-
 /*
  * Banner - shows username, quota bar
  *			(enlarges, turns green when angry)
@@ -4391,76 +4384,6 @@ HTML>BODY .appt-selected .appt_allday_body {
 	@FolderChooserTree@
 }
 
-/* ZmChooseFolderDialog and ZmPickTagDialog */
-
-#ChooseFolderDialog {
-	@ChooseFolderDialog@
-}
-
-#ChooseFolderDialog .WindowOuterContainer {
-	@ChooseFolderDialogContainer@
-}
-
-.ChooserDialog {
-	@ChooserDialogBody@
-}
-
-.ChooserDialog .DwtInputField {
-	@ChooserDialogInputContainer@
-}
-
-.ChooserDialog .DwtInputField input[type=text] {
-	@ChooserDialogInputField@
-}
-
-.ChooserDialog .overview {
-	@ChooserDialogItemContainer@
-}
-
-.ChooserDialog .dialogOverview {
-	@ChooserDialogItemInnerContainer@
-}
-
-.ChooserDialog .DwtTreeItem {
-	@ChooserDialogItem@
-}
-
-.ChooserDialog .DwtTreeItemLevel1ChildDiv {
-	padding-left:0px;
-}
-
-.ChooserDialog .ImgContactsFolder-svg .svg-icon {
-	fill:@IconChooseFolder@
-}
-
-.ChooserDialog .DwtTreeItem .ImgEmailedContacts-svg .svg-icon {
-	fill:@IconChooseFolder@
-}
-
-.ChooserDialog .DwtTreeItem .ImgNodeExpanded-svg .svg-icon {
-	fill:@SecondaryBrandingColor@
-}
-
-.ChooserDialog .DwtTreeItem-Control .DwtTreeItem-selected {
-	@ChooserDialogItemSelected@
-}
-
-#ChooseFolderDialog #ChooseFolderDialog_buttons {
-	@ChooseFolderDialogButtonContainer@
-}
-
-#ChooseFolderDialog .ZDialogButton .ZButtonTable .ZWidgetTitle {
-	@ChooseFolderDialogButtonTitle@
-}
-
-.ZmCreateNewFolderDialog .NameField {
-	@CreateNewFolderDialogNameField@
-}
-
-.ZmCreateNewFolderDialog .ColorLabel {
-	@CreateNewFolderDialogColorLabel@
-}
-
 .ZmAttachDialog .WindowOuterContainer {
 	@AttachDialogContainer@
 }
@@ -5673,7 +5596,6 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .BriefcaseTabBox {
 	@TreeContainer@
-	@NormalInsetBorder@
 }
 .BriefcaseList {
 	margin-left:5px;
@@ -7877,4 +7799,42 @@ input[type="radio"] + label {
 .ZmApptEditView .ZCheckboxTable .ZCheckboxTableRightText,
 .ZmApptEditView .ZCheckboxTable .ZCheckboxTableRightText {
 	@NoWrap@
+}
+
+/* Dialog property sheet */
+.ZmDialogPropertySheet {
+	@DialogPropertySheet@
+}
+
+.ZmDialogPropertySheet > TBODY > TR > TD {
+	@DialogPropertySheetCell@
+}
+
+.ZmDialogPropertySheet > TBODY > TR > TD.Label-Full {
+	@DialogPropertySheetCellLabel@
+}
+
+/* Create New Folder/Move folder Dialog styles */
+.ChooserDialog {
+	@OrganizerDialogBody@
+}
+
+.ChooserDialog .dialogOverview {
+	@OrganizerOverview@
+}
+
+.ChooserDialog .dialogOverview .dialogOverviewHeader {
+	@OrganizerOverviewHeader@
+}
+
+.ChooserDialog .dialogOverview .dialogOverviewHeader > table {
+	@OrganizerOverviewHeaderTable@
+}
+
+.ChooserDialog .DwtInputField input[type=text] {
+	@OrganizerDialogInputText@
+}
+
+.dialogOverviewHeader.DwtTreeItem-Text:not(:empty) {
+	@OrganizerOverviewHeaderText@
 }

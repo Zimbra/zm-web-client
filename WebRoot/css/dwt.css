@@ -247,10 +247,10 @@
 	@TreeItemSpacing@
 }
 
-.DwtTreeItem .imageCell,
-.DwtTreeItem-selected .imageCell,
-.DwtTreeItem-selected-focused .imageCell,
-.DwtTreeItem-actioned .imageCell {
+.DwtTreeItem .imageCell:not(:empty),
+.DwtTreeItem-selected .imageCell:not(:empty),
+.DwtTreeItem-selected-focused .imageCell:not(:empty),
+.DwtTreeItem-actioned .imageCell:not(:empty) {
 	white-space:nowrap;	/* ??? */
 	@ImagePadding@
 }
@@ -614,7 +614,7 @@ UL.DwtListView-Rows {
 
 /* Outer container (div) for the entire dialog.
 	Class "WindowOuterBorder[-light]" is also applied to this element */
-.DwtDialog	{	}
+.DwtDialog	{	@Dialog@ }
 
 .WindowOuterContainer 		{		@WindowOuterBorder@				}
 .WindowInnerContainer 		{		@WindowInnerBorder@				}
@@ -656,7 +656,7 @@ UL.DwtListView-Rows {
 
 /* ??? SHOTGUNS */
 .DwtDialog .Label {
-	@Label@
+	@DialogLabel@
 }
 .DwtDialog .Field {
 	@DialogField@

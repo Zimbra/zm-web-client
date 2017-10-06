@@ -183,12 +183,22 @@
 
 
 <template id='share.Widgets#ZmChooseFolderDialog'>
-	<div class='ChooserDialog'>
-		<span id='${id}_folderDescDivId' style='margin: 0; margin-bottom: 2px'></span>
-		<div><$= ZmMsg.chooserDescription $></div>
-		<div id='${id}_inputDivId'></div>
-		<div class='overview' id='${id}_folderTreeDivId'></div>
-	</div>
+	<table class='ChooserDialog ZmDialogPropertySheet' role="presentation">
+		<tbody>
+			<tr>
+				<td><span id='${id}_folderDescDivId'></span></td>
+			</tr>
+			<tr>
+				<td class="Label-Full"><$= ZmMsg.chooserDescription $></td>
+			</tr>
+			<tr>
+				<td><div id='${id}_inputDivId'></div></td>
+			</tr>
+			<tr>
+				<td><div class='overview' id='${id}_folderTreeDivId'></div></td>
+			</tr>
+		</tbody>
+	</table>
 </template>
 
 <template id='share.Widgets#ZmChooseAccountDialog'>
@@ -207,11 +217,19 @@
 </template>
 
 <template id='share.Widgets#ZmPickTagDialog'>
-	<div class='ChooserDialog'>
-		<div style='width:300px'><$= ZmMsg.chooserDescription $></div>
-		<div id='${id}_inputDivId'></div>
-		<div style='background-color:white; width:100%; overflow:auto' id='${id}_tagTreeDivId'></div>
-	</div>
+	<table class='ChooserDialog ZmDialogPropertySheet' role="presentation">
+		<tbody>
+			<tr>
+				<td class="Label-Full"><$= ZmMsg.chooserDescription $></td>
+			</tr>
+			<tr>
+				<td><div id='${id}_inputDivId'></div></td>
+			</tr>
+			<tr>
+				<td><div class='overview' id='${id}_tagTreeDivId'></div></td>
+			</tr>
+		</tbody>
+	</table>
 </template>
 
 <template id='share.Widgets#ZmDebugLogDialog'>
