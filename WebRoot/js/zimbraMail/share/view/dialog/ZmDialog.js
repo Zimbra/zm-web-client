@@ -174,7 +174,7 @@ function(params, forceSingle) {
 		if (!ovContainer) {
 			var overviewParams = {
 				overviewClass:	"dialogOverviewContainer",
-				headerClass:	"DwtTreeItem",
+				headerClass:	"dialogOverviewHeader DwtTreeItem",
 				noTooltips:		true,
 				treeStyle:		params.treeStyle,
 				treeIds:		params.treeIds,
@@ -205,7 +205,7 @@ function(params, forceSingle) {
 		var ovParams = {
 			overviewId:		overviewId,
 			overviewClass:	params.overviewClass || "dialogOverview",
-			headerClass:	"DwtTreeItem",
+			headerClass:	"dialogOverviewHeader DwtTreeItem",
 			noTooltips:		true,
 			treeStyle:		params.treeStyle,
 			dynamicWidth:	params.dynamicWidth,

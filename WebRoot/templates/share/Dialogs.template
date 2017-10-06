@@ -400,21 +400,33 @@
 </template>
 
 <template id="share.Dialogs#ZmNewTagDialog">
-	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+	<table role="presentation" class='ZmDialogPropertySheet'>
 		<tr>
-			<td class='Label'><$= ZmMsg.tagName $>:</td>
-			<$ if (appCtxt.multiAccounts) { $>
-				<td class='Label'><$= ZmMsg.colorLabel $></td>
-				<td class='Label'><$= ZmMsg.accountLabel $></td>
-			<$ } $>
+			<td class='Label-Full' colspan="2"><$= ZmMsg.tagName $>:</td>
 		</tr>
 		<tr>
-			<td>
-				<input type=text autocomplete=OFF id='${id}_name' />
+			<td colspan="2">
+				<input type=text autocomplete=OFF id='${id}_name' class="Field"/>
 			</td>
-			<td id='${id}_tagColor' style="padding-right:16px;"></td>
-			<td id='${id}_account'></td>
 		</tr>
+		<tr>
+			<td class="Label">
+				<$= ZmMsg.colorLabel $>
+			</td>
+			<td>
+				<div id='${id}_tagColor'></div>
+			</td>
+		</tr>
+		<$ if (appCtxt.multiAccounts) { $>
+		<tr>
+			<td class='Label'>
+				<$= ZmMsg.accountLabel $>
+			</td>
+			<td>
+				<div id='${id}_account'></div>
+			</td>
+		</tr>
+		<$ } $>
 	</table>
 </template>
 
@@ -480,13 +492,13 @@
 	<tr>
 		<td class='Label'><$= ZmMsg.feedLabel $></td>
 		<td>
-			<table role="presentation" class="ZPropertySheet">
+			<table role="presentation" class="ZCheckboxTable">
 				<tr>
 					<td>
 						<input type='checkbox' id='${id}_remote' />
 					</td>
 					<td class='Label'>
-						<label for='${id}_remote'> ${remoteLabel} </label>
+						<label for='${id}_remote' class="ZCheckboxTableRightText"> ${remoteLabel} </label>
 					</td>
 				</tr>
 			</table>
@@ -504,7 +516,7 @@
 
 <template id="share.Dialogs#ZmNewOrgDialogName">
 	<tr valign='center'>
-		<td class='Label' id ='${id}_lblName' colspan=2><$= ZmMsg.nameLabel $></td>
+		<td class='Label Label-Full' id ='${id}_lblName' colspan=2><$= ZmMsg.nameLabel $></td>
 	</tr>
 	<tr valign='center'>
 		<td colspan=2><input autocomplete='off' type='text' class='Field NameField' id='${id}_name' aria-labelledby='${id}_lblName' /></td>
@@ -533,10 +545,14 @@
 <template id="share.Dialogs#ZmNewCalDialogFreeBusy">
 	<tr>
 		<td colspan=2>
-			<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-				<tr valign='center'>
-					<td style='width:2em;'><input type='checkbox' id='${id}_excludeFbCheckbox' /></td>
-					<td class='Label'><label for='${id}_excludeFbCheckbox'> <$= ZmMsg.excludeFromFreeBusy $> </label></td>
+			<table role="presentation" class="ZCheckboxTable">
+				<tr>
+					<td>
+						<input type='checkbox' id='${id}_excludeFbCheckbox' />
+					</td>
+					<td class='Label'>
+						<label for='${id}_excludeFbCheckbox' class="ZCheckboxTableRightText"> <$= ZmMsg.excludeFromFreeBusy $> </label>
+					</td>
 				</tr>
 			</table>
 		</td>
