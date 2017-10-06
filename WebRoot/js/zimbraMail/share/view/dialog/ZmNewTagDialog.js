@@ -84,7 +84,7 @@ function(ev) {
 ZmNewTagDialog.prototype._setTagColorMenu =
 function() {
 	var fieldId = this._htmlElId + "_tagColor";
-	this._colorButton = new DwtButton({parent:this, parentElement:fieldId, id:"ZmTagColorMenu"});
+	this._colorButton = new DwtButton({parent:this, parentElement:fieldId, id:"ZmTagColorMenu", className:"ZButton ZSelect"});
 	this._colorButton.noMenuBar = true;
 
 	var menu = ZmOperation.addColorMenu(this._colorButton, true);

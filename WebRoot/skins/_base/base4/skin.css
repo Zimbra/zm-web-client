@@ -1209,11 +1209,6 @@ svg.progress-circle.tick-inside {
     @FontSize-bigger@
 }
 
-.DwtDialog .Label {
-    vertical-align: middle;
-    padding-right:30px;
-}
-
 .DwtDialog .horizSep {
     display:none;
 }
