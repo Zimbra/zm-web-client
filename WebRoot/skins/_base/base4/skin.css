@@ -330,6 +330,7 @@ BODY                                    {   margin:0px;     }
 .LoginScreen .Footer-small,
 .SplashScreen .Footer-small {
     bottom:0px;
+    left:0px;
     position:absolute;
     text-align:center;
     width:100%;
