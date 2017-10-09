@@ -687,7 +687,7 @@ function() {
 		buttons: [ZmOperation.ACCEPT_PROPOSAL, ZmOperation.DECLINE_PROPOSAL],
 		posStyle: DwtControl.STATIC_STYLE,
 		className: "ZmCounterToolBar",
-		buttonClassName: "DwtToolbarButton",
+		buttonClassName: "ZToolbarButton",
 		context: this.mode,
 		toolbarType: ZmId.TB_COUNTER
 	};
