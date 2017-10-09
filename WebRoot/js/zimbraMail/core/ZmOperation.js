@@ -191,8 +191,8 @@ function() {
     ZmOperation.registerOp(ZmId.OP_SEND_FB_ICS, {textKey:"sendICSLink", tooltipKey:"freeBusyLinkTooltip"});
     ZmOperation.registerOp(ZmId.OP_SEND_FB_ICS_EVENT, {textKey:"sendICSEventLink", tooltipKey:"freeBusyLinkTooltip"});
     ZmOperation.registerOp(ZmId.OP_SHARE, {textKey:"share", tooltipKey:"shareTooltip"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_SHARE_ACCEPT, {textKey:"acceptShare", image:"Check"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_SHARE_DECLINE, {textKey:"declineShare", image:"Cancel"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SHARE_ACCEPT, {textKey:"acceptShare", image:"Check", showImageInToolbar: true, showTextInToolbar: true}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SHARE_DECLINE, {textKey:"declineShare", image:"Cancel", showImageInToolbar: true, showTextInToolbar: true}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SUBSCRIBE_APPROVE, {textKey:"dlApprove", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_SUBSCRIBE_REJECT, {textKey:"dlReject", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_FOLDER, {textKey:"shareFolder"});
