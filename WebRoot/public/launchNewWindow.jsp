@@ -210,7 +210,13 @@ delete text;
 			// use main window's debug object
 			window.DBG = window.opener.DBG;
 		}
+
 		ZmNewWindow.run();
+
+		// Inititialize svg4everybody for IE11
+		if(AjxEnv.isModernIE && !AjxEnv.isMSEdge && svg4everybody) {
+			svg4everybody();
+		}
 	}
 	AjxCore.addOnloadListener(launch);
 	AjxCore.addOnunloadListener(ZmNewWindow.unload);
