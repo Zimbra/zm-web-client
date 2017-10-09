@@ -1203,7 +1203,7 @@ ZmConvReplyView.prototype._initializeToolbar = function() {
 			buttons:			buttons,
 			overrides:			overrides,
 			posStyle:			DwtControl.STATIC_STYLE,
-			buttonClassName:	"DwtToolbarButton",
+			buttonClassName:	"ZToolbarButton",
 			context:			ZmId.VIEW_CONV2,
 			toolbarType:		ZmId.TB_REPLY
 		};

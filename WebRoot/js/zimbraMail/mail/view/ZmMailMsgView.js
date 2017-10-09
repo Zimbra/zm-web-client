@@ -437,7 +437,7 @@ function(buttonIds, toolbarType, listener) {
 		buttons: buttonIds,
 		posStyle: DwtControl.STATIC_STYLE,
 		className: "ZmShareToolBar",
-		buttonClassName: "DwtToolbarButton",
+		buttonClassName: "ZToolbarButton",
 		context: this._mode,
 		toolbarType: toolbarType
 	};
