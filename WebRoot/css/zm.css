@@ -7819,20 +7819,20 @@ input[type="radio"] + label {
 	@OrganizerDialogBody@
 }
 
+.ChooserDialog .DwtInputField input[type=text] {
+	@OrganizerDialogInputText@
+}
+
 .ChooserDialog .dialogOverview {
 	@OrganizerOverview@
 }
 
-.ChooserDialog .dialogOverview .dialogOverviewHeader {
+.dialogOverview .dialogOverviewHeader {
 	@OrganizerOverviewHeader@
 }
 
-.ChooserDialog .dialogOverview .dialogOverviewHeader > table {
+.dialogOverview .dialogOverviewHeader > table {
 	@OrganizerOverviewHeaderTable@
-}
-
-.ChooserDialog .DwtInputField input[type=text] {
-	@OrganizerDialogInputText@
 }
 
 .dialogOverviewHeader.DwtTreeItem-Text:not(:empty) {
