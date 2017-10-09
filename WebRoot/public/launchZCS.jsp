@@ -489,6 +489,11 @@ delete text;
 			virtualAcctDomain:virtualAcctDomain
 		};
 		ZmZimbraMail.run(params);
+
+		// Inititialize svg4everybody for IE11
+		if(AjxEnv.isModernIE && !AjxEnv.isMSEdge && svg4everybody) {
+			svg4everybody();
+		}
 		
 		delete virtualAcctDomain;
 	}

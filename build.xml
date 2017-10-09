@@ -94,6 +94,10 @@
     <property name="jquery.version" value="1.11.0"/>
     <property name="jquery.dir" value="${build.js.dir}/ajax/3rdparty/jquery"/>
 
+    <!-- SVG4Everybody INTEGRATION -->
+    <property name="svg4everybody.version" value="2.1.8"/>
+    <property name="svg4everybody.dir" value="${build.js.dir}/ajax/3rdparty/svg4everybody"/>
+
     <!-- Paths and Filesets -->
 
     <!-- pseudo-fileset so that targets that rely on it don't fail -->
@@ -279,7 +283,7 @@
         <delete dir="${build.tmp.dir}"/>
     </target>
 
-    <target name='sync' depends='resolve,copy-ajax,jquery,modernizr,tinymce,templates'>
+    <target name='sync' depends='resolve,copy-ajax,jquery,svg4everybody,modernizr,tinymce,templates'>
         <!-- NOTE: Keep order in sync with list of war filesets. -->
         <copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
             <fileset refid="webinf.fileset" />
@@ -912,7 +916,7 @@
         </if>
     </target>
 
-    <target name='jam-files' depends='jquery,modernizr,tinymce,templates'>
+    <target name='jam-files' depends='jquery,svg4everybody,modernizr,tinymce,templates'>
         <property name='jam.jsp.dir' value='${build.web.dir}/public/jsp'/>
         <mkdir dir='${build.js.dir}'/>
         <mkdir dir='${jam.jsp.dir}'/>
@@ -1217,6 +1221,7 @@ ext = BeanUtils.cook(ext);
         <delete dir='${build.dir}'/>
         <delete dir='${customer.build.dir}'/>
         <delete dir='${web.dir}/jquery'/>
+        <delete dir='${web.dir}/svg4everybody'/>
         <delete dir='${web.dir}/modernizr'/>
         <delete dir='${web.dir}/yui'/>
         <delete dir='${web.dir}/js/ajax'/>
@@ -1592,6 +1597,19 @@ ext = BeanUtils.cook(ext);
 
     <target name="jquery">
         <copy todir='${jquery.dir}' file='${web.dir}/jquery/${jquery.version}/jquery.js' verbose='${sync.verbose}'/>
+    </target>
+
+    <target name="svg4everybody" depends="resolve">
+        <!-- Download library jar file -->
+        <ivy:install organisation='org.webjars.npm' module='svg4everybody' revision='${svg4everybody.version}' settingsRef='dev.settings' from='chain-resolver' to='build-tmp' overwrite='true' transitive='true' />
+
+        <unzip dest='${build.tmp.dir}/svg4everybody' overwrite='true'>
+            <fileset dir='${build.tmp.dir}'>
+                <include name='svg4everybody-${svg4everybody.version}.jar' />
+            </fileset>
+        </unzip>
+
+        <copy tofile='${svg4everybody.dir}/svg4everybody.js' file='${build.tmp.dir}/svg4everybody/META-INF/resources/webjars/svg4everybody/${svg4everybody.version}/dist/svg4everybody.js' verbose='${sync.verbose}'/>
     </target>
 
     
