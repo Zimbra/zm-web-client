@@ -122,6 +122,7 @@ AjxPackage.require("ajax.dwt.widgets.DwtChooser");
 AjxPackage.require("ajax.dwt.widgets.DwtTimeSelect");
 
 AjxPackage.require("ajax.3rdparty.jquery.jquery");
+AjxPackage.require("ajax.3rdparty.svg4everybody.svg4everybody");
 
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
