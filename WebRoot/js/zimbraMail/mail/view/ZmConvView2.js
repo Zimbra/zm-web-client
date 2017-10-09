@@ -1016,6 +1016,10 @@ function() {
 	if (!conv) { return; }
 	var numMsgs = conv.numMsgs || (conv.msgs && conv.msgs.size());
 	if (!numMsgs) { return; }
+
+	// For only one message, don't show count
+	if(numMsgs == 1) { return; }
+
 	var info = AjxMessageFormat.format(ZmMsg.messageCount, numMsgs);
 	var numUnread = conv.getNumUnreadMsgs();
 	if (numUnread) {
