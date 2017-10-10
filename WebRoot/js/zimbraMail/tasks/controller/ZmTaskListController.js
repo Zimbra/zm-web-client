@@ -422,17 +422,15 @@ function() {
 ZmTaskListController.prototype._getToolBarOps =
 function() {
 	var toolbarOps =  [];
-	toolbarOps.push(ZmOperation.EDIT,
-			ZmOperation.SEP,
-			ZmOperation.DELETE,
-			ZmOperation.MOVE_MENU,
-			ZmOperation.SEP,
-			ZmOperation.SEP,
-            ZmOperation.MARK_AS_COMPLETED,
-            ZmOperation.SEP,
-            ZmOperation.CLOSE
-            );
-	
+	toolbarOps.push(
+		ZmOperation.EDIT,
+		ZmOperation.DELETE,
+		ZmOperation.MOVE_MENU,
+		ZmOperation.MARK_AS_COMPLETED,
+		ZmOperation.SEP,
+		ZmOperation.CLOSE
+	);
+
 	return toolbarOps;
 };
 
