@@ -106,7 +106,7 @@ BODY                                    {   margin:0px;     }
 #skin_spacing_search,
 #skin_spacing_people_search             {   @AppTabHeight@  }
 #skin_container_search                  {   @SkinSearchHeight@ }
-#skin_container_search .svg-icon         {   fill: initial; opacity: 1;  }
+#skin_container_search .svg-icon         {   fill: @SVGIconDefaultColor@; opacity: 1;  }
 
 #skin_container_search .ZmSearchToolbar {   @SkinSearchToolbar@         }
 #skin_container_search .ZButton         {   @SkinSearchHeight@ border-right: 1px solid @hexToRGBA(SecondaryBrandingColor, 17)@;  }
