@@ -65,8 +65,6 @@ ZmContactSplitView.prototype.isZmContactSplitView = true
 ZmContactSplitView.prototype.toString = function() { return "ZmContactSplitView"; };
 
 // Consts
-ZmContactSplitView.ALPHABET_HEIGHT = 35;
-
 ZmContactSplitView.NUM_DL_MEMBERS = 10;	// number of distribution list members to show initially
 
 ZmContactSplitView.LIST_MIN_WIDTH = 100;
