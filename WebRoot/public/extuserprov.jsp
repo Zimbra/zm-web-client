@@ -21,9 +21,12 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<!DOCTYPE html>
+
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <%@ include file="setResourceBundle.jsp" %>
+
 <html>
 
 <c:set var="client" value="${param.client}"/>
@@ -64,24 +67,18 @@
 
 			<form action="/service/extuserprov/" method="post" onsubmit="return checkPasswords();">
 
-			<div id="ZLoginErrorPanel" style="${not empty validationErrorCode ? 'display:block': 'display:none'}">
-				<table>
-					<tr>
-						<td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
-						<td id="errorMessage">
-							<c:if test="${not empty validationErrorCode}"> 
-								<fmt:message bundle="${zhmsg}" key='${validationErrorCode}'/>
-							</c:if>
-						</td>
-					</tr>
-				</table>
-			</div>
-
 			<table class="form">
 				<c:choose>
 				<c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
+					<c:if test="${not empty validationErrorCode}">
+						<tr id="ZLoginErrorPanel">
+							<td id="errorMessage">
+								<fmt:message bundle="${zhmsg}" key="${validationErrorCode}"/>
+							</td>
+						</tr>
+					</c:if>
 					<tr>
-						<td colspan="2">
+						<td>
 							<div class="LaunchButton">
 								<input type="submit" value="<fmt:message key="launch"/>" >
 							</div>
@@ -90,21 +87,31 @@
 				</c:when>
 				<c:otherwise>
 					<tr>
-						<td><label for="displayname"><fmt:message key="displayName"/>:</label></td>
-						<td><input id="displayname" class="zLoginField" name="displayname" type="text" value="${fn:escapeXml(param.displayname)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+						<td>
+							<input id="displayname" class="zLoginField" name="displayname" type="text" value="${fn:escapeXml(param.displayname)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" placeholder="<fmt:message key="displayName" />" />
+						</td>
 					</tr>
 					<tr>
-						<td><label for="password"><fmt:message key="password"/>:</label></td>
-						<td><input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+						<td>
+							<input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" placeholder="<fmt:message key="password" />" />
+						</td>
 					</tr>
-					<tr id="confirmPassword" style="display:none">
-						<td><label for="password2"><fmt:message key="confirm"/>:</label></td>
-						<td><input id="password2" class="zLoginField" name="password2" type="password" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+					<tr id="confirmPassword">
+						<td>
+							<input id="password2" class="zLoginField" name="password2" type="password" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" placeholder="<fmt:message key="confirm"/>"/>
+						</td>
+					</tr>
+					<tr id="ZLoginErrorPanel" style="${not empty validationErrorCode ? 'display: table-row': 'display: none'}">
+						<td id="errorMessage">
+							<c:if test="${not empty validationErrorCode}">
+								<fmt:message bundle="${zhmsg}" key="${validationErrorCode}"/>
+							</c:if>
+						</td>
 					</tr>
 					<tr>
-						<td>&nbsp;</td>
 						<td style="text-align:right">
-							<input type="submit" class="zLoginButton" value="<fmt:message key="register"/>" style="float:left;"/>
+							<input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="register" />"/>
+						</td>
 					</tr>
 				</c:otherwise>
 				</c:choose>
@@ -132,7 +139,6 @@
 		</div>
 	</div>
 <script>
-	document.getElementById("confirmPassword").style.display= "table-row";
 	function checkPasswords() {
 		var password = document.getElementById("password").value;
 		var password2 = document.getElementById("password2").value;
@@ -147,8 +153,9 @@
 			document.getElementById("errorMessage").innerHTML = bothPassMustMatch;
 			isError = true;
 		}
-		if (isError)
-			document.getElementById("ZLoginErrorPanel").style.display = "block";
+		if (isError) {
+			document.getElementById("ZLoginErrorPanel").style.display = "table-row";
+		}
 		return !isError;
 	}
 </script>
