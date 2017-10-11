@@ -654,6 +654,10 @@ UL.DwtListView-Rows {
 	@DialogBodyText@
 }
 
+.DwtDialogBody .DwtListHeaderItem-label {
+	@FontSize-normal@
+}
+
 /* ??? SHOTGUNS */
 .DwtDialog .Label {
 	@DialogLabel@
