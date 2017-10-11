@@ -7838,3 +7838,94 @@ input[type="radio"] + label {
 .dialogOverviewHeader.DwtTreeItem-Text:not(:empty) {
 	@OrganizerOverviewHeaderText@
 }
+
+/* Find locations/equipment dialog */
+.ZmAttendeePicker_EQUIPMENT,
+.ZmAttendeePicker_LOCATION {
+	@AttendeePickerDialog@
+}
+
+.ZmAttendeePicker_EQUIPMENT .DwtChooserListView,
+.ZmAttendeePicker_LOCATION .DwtChooserListView {
+	@AttendeePickerChooserList@
+}
+
+.ZmAttendeePickerSectionTitle {
+	@AttendeePickerSectionTitle@
+}
+
+.ZmAttendeePickerFilterWrapper {
+	@AttendeePickerFilterWrapper@
+}
+
+.ZmAttendeePickerFilterWrapper > .ZPropertySheet {
+	@AttendeePickerFilterWrapperTable@
+}
+
+.ZmAttendeePickerFilterWrapper > .ZPropertySheet > tbody > tr > td {
+	@AttendeePickerFilterWrapperCell@
+}
+
+.ZmAttendeePickerFilterWrapper > .ZPropertySheet > tbody > tr:first-of-type > td {
+	padding-top:0;
+}
+
+.ZmAttendeePickerFilterWrapper > .ZPropertySheet > tbody > tr:last-of-type > td {
+	padding-bottom:0;
+}
+
+.ZmAttendeePickerFilterWrapper > .ZPropertySheet > tbody > tr > td:first-of-type {
+	padding-left:0;
+}
+
+.ZmAttendeePickerFilterWrapper > .ZPropertySheet > tbody > tr > td:last-of-type {
+	padding-right:0;
+}
+
+.ZmAttendeePickerFilterWrapper > .ZPropertySheet > tbody > tr > td.ZmSearchFieldCell {
+	@AttendeePickerFilterSearchFieldCell@
+}
+
+.ZmAttendeePickerFilterWrapper > .ZPropertySheet > tbody > tr > td.ZmSearchButtonCell {
+	@AttendeePickerFilterSearchButtonCell@
+}
+
+.ZmAttendeePickerFilterWrapper .DwtInputField input[type='text'] {
+	@AttendeePickerFilterWrapperInput@
+}
+
+.ZmAttendeePickerFilterWrapper .ZSearchButton {
+	@AttendeePickerFilterSearchButton@
+}
+
+.ZmAttendeePickerSearchResults {
+	@AttendeePickerSearchResultsWrapper@
+}
+
+.ZmAttendeePickerSelectedResults {
+	@AttendeePickerSelectedResultsWrapper@
+}
+
+.ZmAttendeePickerActionButtons {
+	@AttendeePickerActionButtonsWrapper@
+}
+
+.ZmAttendeePickerActionButtons .ZPropertySheet > tbody > tr > td {
+	padding:0;
+}
+
+.ZmAttendeePickerActionButtons .ZWidget {
+	@AttendeePickerActionButtonWidget@
+}
+
+.ZmAttendeePickerActionButtons .ZWidget .ZButtonTable {
+	@AttendeePickerActionButton@
+}
+
+.ZmAttendeePickerPagination {
+	@AttendeePickerPagination@
+}
+
+.ZmAttendeePickerPagination > table {
+	@AttendeePickerPaginationTable@
+}

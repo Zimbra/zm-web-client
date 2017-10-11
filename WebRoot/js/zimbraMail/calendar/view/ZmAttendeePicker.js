@@ -43,7 +43,8 @@ ZmAttendeePicker = function(editView, attendees, controller, type, dateInfo) {
     DwtDialog.call(this, {
         parent: appCtxt.getShell(),
         title:  ZmAttendeePicker.TOP_LEGEND[type],
-        id:     [ 'ZmAttendeePicker', type ].join('_')
+        id:     [ 'ZmAttendeePicker', type ].join('_'),
+        className: [ 'ZmAttendeePicker', type ].join('_') + " DwtDialog"
     });
 
 	this._attendees = attendees;
@@ -182,7 +183,7 @@ ZmAttendeePicker.ICON[ZmCalBaseItem.PERSON]					= appContextPath+"/img/hiRes/cal
 ZmAttendeePicker.ICON[ZmCalBaseItem.LOCATION]				= appContextPath+"/img/hiRes/calendar/Location.gif";
 ZmAttendeePicker.ICON[ZmCalBaseItem.EQUIPMENT]				= appContextPath+"/img/hiRes/calendar/Resource.gif";
 
-ZmAttendeePicker.CHOOSER_HEIGHT = 300;
+ZmAttendeePicker.CHOOSER_HEIGHT = 380;
 
 
 ZmAttendeePicker.prototype = new DwtDialog;
@@ -313,22 +314,6 @@ function() {
 	return true;
 };
 
-/**
- * Enables/disables multiple locations.
- *
- * @param {Boolean}	enable		if <code>true</code>, allow multiple locations
- */
-ZmAttendeePicker.prototype.enableMultipleLocations =
-function(enable) {
-	if (this._multLocsCheckboxId) {
-		var cb = document.getElementById(this._multLocsCheckboxId);
-		if (cb.checked != enable) {
-			cb.checked = enable;
-			this._chooser.setSelectStyle(cb.checked ? DwtChooser.MULTI_SELECT : DwtChooser.SINGLE_SELECT, true);
-            this.resize(); // force resize to adjust chooser layout
-		}
-	}
-};
 
 ZmAttendeePicker.prototype._loadSettings = function(){
 
@@ -382,19 +367,11 @@ function() {
 	var html = [];
 	var i = 0;
 
-	html[i++] = "<fieldset";
-	if (AjxEnv.isMozilla) {
-		html[i++] = " style='border:1px dotted #555'";
-	}
-	html[i++] = "><legend style='color:#555555' id='" + this._searchTableId + "_legend'>";
-	html[i++] = ZmAttendeePicker.TOP_LEGEND[this.type];
-	html[i++] = "</legend>";
-
-	html[i++] = "<div style='margin-top:10px' id='";
+	html[i++] = "<div class='ZmAttendeePickerFilterWrapper' id='";
 	html[i++] = this._searchTableId;
 	html[i++] = "'>";
 
-	html[i++] = "<table class='ZPropertySheet' cellspacing='6'><tr>";
+	html[i++] = "<table class='ZPropertySheet'><tbody>";
 
 	for (var j = 0; j < fields.length; j++) {
 		var isEven = ((j % 2) == 0);
@@ -402,54 +379,55 @@ function() {
 			html[i++] = "<tr>";
 		}
 		var sf = fields[j];
-        var addButton = (j == 1 || (this.type == ZmCalBaseItem.LOCATION && j === 0 && j === fields.length-1 ) );
-		var addMultLocsCheckbox = (this.type == ZmCalBaseItem.LOCATION && j == fields.length - 1);
-		i = this._getSearchFieldHtml(sf, html, i, addButton, addMultLocsCheckbox);
-		if (!isEven || j == fields.length - 1) {
-            this._prevButtonId = Dwt.getNextId();
-            this._nextButtonId = Dwt.getNextId();
-            html[i++] = "<td>&nbsp;</td>";
-            html[i++] = "<td id='";
-            html[i++] = this._prevButtonId;
-            html[i++] = "'></td><td id='";
-            html[i++] = this._nextButtonId;
-            html[i++] = "'></td>";
+		var addButton = (j == 1 || (this.type == ZmCalBaseItem.LOCATION && j === 0 && j === fields.length-1 ) );
+		i = this._getSearchFieldHtml(sf, html, i, addButton);
+		if (!isEven) {
+			if(!addButton) {
+				html[i++] = "<td>&nbsp;</td>";
+			}
 			html[i++] = "</tr>";
 		}
 	}
 
-	html[i++] = "</table></div>";
+	html[i++] = "</tbody></table></div>";
 
 	// placeholder for the chooser's source list view
-	html[i++] = "<div id='";
+	html[i++] = "<div class='ZmAttendeePickerSearchResults' id='";
 	html[i++] = this._chooserSourceListViewDivId;
 	html[i++] = "'></div>";
-	html[i++] = "</fieldset>";
+
+	//placeholder for source list pagination
+	this._prevButtonId = Dwt.getNextId();
+	this._nextButtonId = Dwt.getNextId();
+	html[i++] = "<div class='ZmAttendeePickerPagination'>";
+	html[i++] = "<table class='ZPropertySheet' role='presentation'><tbody>";
+	html[i++] = "<tr><td id='";
+	html[i++] = this._prevButtonId;
+	html[i++] = "'></td><td id='";
+	html[i++] = this._nextButtonId;
+	html[i++] = "'></td></tr>";
+	html[i++] = "</tbody></table>";
+	html[i++] = "</div>";
 
 	// placeholder for the chooser's buttons
-	html[i++] = "<div id='";
+	html[i++] = "<div class='ZmAttendeePickerActionButtons' id='";
 	html[i++] = this._chooserButtonsDivId;
 	html[i++] = "'></div>";
 
-	html[i++] = "<fieldset";
-	if (AjxEnv.isMozilla) {
-		html[i++] = " style='border: 1px dotted #555555'";
-	}
-	html[i++] = "><legend style='color:#555555'>";
+	html[i++] = "<h6 class='ZmAttendeePickerSectionTitle'>";
 	html[i++] = ZmAttendeePicker.BOTTOM_LEGEND[this.type];
-	html[i++] = "</legend>";
+	html[i++] = "</h6>";
 
 	// placeholder for the chooser's target list view
-	html[i++] = "<div id='";
+	html[i++] = "<div class='ZmAttendeePickerSelectedResults' id='";
 	html[i++] = this._chooserTargetListViewDivId;
 	html[i++] = "'></div>";
-	html[i++] = "</fieldset>";
 
 	this.setContent(html.join(""));
 };
 
 ZmAttendeePicker.prototype._getSearchFieldHtml =
-function(id, html, i, addButton, addMultLocsCheckbox) {
+function(id, html, i, addButton) {
 	if (id == ZmAttendeePicker.SF_SOURCE) {
 		// no need for source select if not more than one choice to choose from
 		this.showSelect = false;
@@ -471,49 +449,20 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 			html[i++] = "<td>&nbsp;</td>";
 		}
 	} else {
-		html[i++] = "<td class='ZmFieldLabelRight'>";
-		html[i++] = ZmMsg[ZmAttendeePicker.SF_LABEL[id]];
-		html[i++] = ":</td><td>";
-		html[i++] = "<input type='text' autocomplete='off' size=30 nowrap id='";
+		html[i++] = "<td class='ZmSearchFieldCell'>";
+		html[i++] = "<div class='DwtInputField'><input type='text' autocomplete='off' size=30 nowrap id='";
 		html[i++] = this._searchFieldIds[id];
-		html[i++] = "' />";
+		html[i++] = "' placeholder='";
+		html[i++] = ZmMsg[ZmAttendeePicker.SF_LABEL[id]];
+		html[i++] = "' /></div>";
 		html[i++] = "</td>";
 	}
 
 	if (addButton) {
 		this._searchBtnTdId	= Dwt.getNextId();
-		html[i++] = "<td id='";
+		html[i++] = "<td class='ZmSearchButtonCell' id='";
 		html[i++] = this._searchBtnTdId;
 		html[i++] = "'></td>";
-	}
-	if (addMultLocsCheckbox) {
-		this._multLocsCheckboxId = Dwt.getNextId();
-        var fields = ZmAttendeePicker.SETTINGS_SEARCH_FIELDS[this.type] || ZmAttendeePicker.SEARCH_FIELDS[this.type];
-        if (fields.length === 1) {
-            html[i++] = "<tr>";
-        }
-        else if (fields.length === 2) {
-            html[i++] = "<tr>";
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-        }
-        if (fields.length % 2 === 1) {
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-        }
-		html[i++] = "<td><table><tr><td>";
-		html[i++] = "<input type='checkbox' id='";
-		html[i++] = this._multLocsCheckboxId;
-		html[i++] = "' /></td><td class='ZmFieldLabelLeft'><label for='";
-		html[i++] = this._multLocsCheckboxId;
-		html[i++] = "'>";
-		html[i++] = ZmMsg.allowMultipleLocations;
-		html[i++] = "</label></td></tr></table></td>";
 	}
 
     if (appCtxt.isOffline && this.type == ZmCalBaseItem.PERSON) {
@@ -527,8 +476,8 @@ function() {
 	// add search button
 	if (this._searchBtnTdId) {
 		var element = document.getElementById(this._searchBtnTdId);
-		var searchButton = this._searchButton = new DwtButton({parent:this});
-		searchButton.setText(ZmMsg.search);
+		var searchButton = this._searchButton = new DwtButton({parent:this, className:'ZSearchButton ZButton'});
+		searchButton.setImage("Search2");
 		searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
 		element.appendChild(searchButton.getHtmlElement());
 		// attendees tab: search button enabled only if there is search field input
@@ -566,7 +515,7 @@ function() {
     var width = this.getSize().x;
 	// add chooser
 	this._chooser = new ZmApptChooser(this);
-    this._chooserWidth = width - 50;
+    this._chooserWidth = width;
     this._chooser.resize(this._chooserWidth, ZmAttendeePicker.CHOOSER_HEIGHT);
     
 	var chooserSourceListViewDiv = document.getElementById(this._chooserSourceListViewDivId);
@@ -590,10 +539,6 @@ function() {
 		}
 	}
 
-	if (this._multLocsCheckboxId) {
-		var cb = document.getElementById(this._multLocsCheckboxId);
-		cb.onclick = AjxCallback.simpleClosure(this._handleMultiLocsCheckbox, this);
-	}
 };
 
 ZmAttendeePicker.prototype._addTabGroupMembers =
@@ -670,10 +615,6 @@ ZmAttendeePicker.prototype._setAttendees =
 function() {
 	var attendees = this._attendees[this.type].getArray();
 	if (attendees.length) {
-		if (this.type == ZmCalBaseItem.LOCATION && attendees.length > 1) {
-			this.enableMultipleLocations(true);
-			this.resize();
-		}
 		this._chooser.setItems(attendees, DwtChooserListView.TARGET);
 	}
 	else {
@@ -939,13 +880,6 @@ function(ev) {
 	return true;
 };
 
-ZmAttendeePicker.prototype._handleMultiLocsCheckbox =
-function(ev) {
-	var cb = DwtUiEvent.getTarget(ev);
-	this._chooser.setSelectStyle(cb.checked ? DwtChooser.MULTI_SELECT : DwtChooser.SINGLE_SELECT, true);
-
-	this.resize(); // force resize to adjust chooser layout
-};
 
 // *********************
 
@@ -961,9 +895,8 @@ function(ev) {
  * @private
  */
 ZmApptChooser = function(parent, buttonInfo) {
-	var selectStyle = (parent.type == ZmCalBaseItem.LOCATION) ? DwtChooser.SINGLE_SELECT : null;
 	DwtChooser.call(this, {parent: parent, buttonInfo: buttonInfo, layoutStyle: DwtChooser.VERT_STYLE,
-						   mode: DwtChooser.MODE_MOVE, selectStyle: selectStyle, allButtons: true});
+						   mode: DwtChooser.MODE_MOVE, allButtons: true, buttonClassName: 'ZAltButton'});
 };
 
 ZmApptChooser.prototype = new DwtChooser;
