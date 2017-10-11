@@ -490,12 +490,17 @@ if (application.getInitParameter("offlineMode") != null) {
                         <table class="form">
                         <c:choose>
                             <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
+                                <c:if test="${errorCode != null}">
+                                    <tr id="ZLoginErrorPanel">
+                                        <td><c:out value="${errorMessage}"/></td>
+                                    </tr>
+                                </c:if>
                                 <tr>
-                                <td colspan="2">
-                                <div class="LaunchButton">
-                                <input type="submit" value="<fmt:message key="launch"/>" >
-                                </div>
-                                </td>
+                                    <td>
+                                        <div class="LaunchButton">
+                                            <input type="submit" value="<fmt:message key="launch"/>" >
+                                        </div>
+                                    </td>
                                 </tr>
                             </c:when>
                             <c:otherwise>
