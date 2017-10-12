@@ -1282,3 +1282,13 @@ div[name='_mergeBtnContainerId'] .ZCalToggleBtnSelected .ZWidgetTitle {
     max-width: 1px;
     @OverflowEllipsis@
 }
+
+/* Show dropdown icon for send later menu */
+.ZToolbar .ZmSendMenu.ZToolbarButton.ZHasDropDown.ZHasLeftIcon .ZDropDown {
+    display: table-cell;
+}
+
+/* Hide icons for send later dropdown menu */
+.ZmSendDropdown .ZMenuItemTable .ZWidgetIcon {
+    display: none;
+}

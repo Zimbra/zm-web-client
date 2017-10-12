@@ -1278,7 +1278,8 @@ function() {
 
 	var button = tb.getButton(ZmOperation.SEND_MENU);
 	if (button) {
-		var menu = new ZmPopupMenu(button, null, null, this);
+		button.addClassName("ZmSendMenu");
+		var menu = new ZmPopupMenu(button, "ZmSendDropdown", null, this);
 		var sendItem = menu.createMenuItem(ZmOperation.SEND, ZmOperation.defineOperation(ZmOperation.SEND));
 		sendItem.addSelectionListener(this._listeners[ZmOperation.SEND]);
 		var sendLaterItem = menu.createMenuItem(ZmOperation.SEND_LATER, ZmOperation.defineOperation(ZmOperation.SEND_LATER));
