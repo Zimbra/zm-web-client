@@ -412,16 +412,25 @@ function() {
 
 	// form for creating a new share
 	var options = [];
-	var orgTypes = [ZmOrganizer.FOLDER, ZmOrganizer.CALENDAR, ZmOrganizer.ADDRBOOK, 
-					ZmOrganizer.TASKS, ZmOrganizer.BRIEFCASE];
+	var orgTypes = [
+		{type: ZmOrganizer.FOLDER},
+		{type: ZmOrganizer.CALENDAR, setting: ZmSetting.CALENDAR_ENABLED},
+		{type: ZmOrganizer.ADDRBOOK},
+		{type: ZmOrganizer.TASKS, setting: ZmSetting.TASKS_ENABLED},
+		{type: ZmOrganizer.BRIEFCASE, setting: ZmSetting.BRIEFCASE_ENABLED}
+	];
 	var orgKey = {};
 	orgKey[ZmOrganizer.FOLDER]		= "mailFolder";
 	orgKey[ZmOrganizer.TASKS]		= "tasksFolder";
 	orgKey[ZmOrganizer.BRIEFCASE]	= "briefcase";
 	for (var i = 0; i < orgTypes.length; i++) {
-		var orgType = orgTypes[i];
-		if (orgType) {
+		var orgType = orgTypes[i].type;
+		var setting = orgTypes[i].setting;
+
+		// Only add option when feature is enabled
+		if (orgType && (!setting || appCtxt.get(setting))) {
 			var key = orgKey[orgType] || ZmOrganizer.MSG_KEY[orgType];
+
 			options.push({id: orgType, value: orgType, label: ZmMsg[key]});
 		}
 	}
