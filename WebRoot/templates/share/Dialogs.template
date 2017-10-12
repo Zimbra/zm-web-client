@@ -594,29 +594,44 @@
 
 <!-- time selection dialog template -->
 <template id='share.Dialogs#ZmTimeDialog'>
-	<div id='${id}_description' style='padding:3px 3px 10px;'>${description}</div>
-	<table role="presentation" class='ZPropertySheet' cellspacing='6' width='330'>
-		<tr>
-			<td class='ZmFieldLabelRight'>${label}:</td>
-			<td>
-				<table role="presentation">
-					<tr>
-						<td><$=AjxTemplate.expand("#DateField",{id:data.id+"_date"})$></td>
-						<td id='${id}_miniCal' class="miniCalendarButton" style='padding-right:1em;'></td>
-						<td id='${id}_time'></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-		<tr>
-			<td class='ZmFieldLabelRight'><$= ZmMsg.selectTimezoneLabel $></td>
-			<td id='${id}_tzSelect'></td>
-		</tr>
+	<table role="presentation" class='ZmDialogPropertySheet'>
+		<tbody>
+			<tr>
+				<td colspan="2">
+					<div id='${id}_description'>${description}</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="Label">${label}:</td>
+				<td>
+					<table role="presentation" class='ZmMetaPropertyTable' width='100%'>
+						<colgroup>
+							<col style="width:50%;">
+						</colgroup>
+						<tbody>
+							<tr>
+								<td>
+									<div class="ZmSelectWidgetWrapper">
+										<$=AjxTemplate.expand("#DateField",{id:data.id+"_date"})$>
+										<div class="ZmSelector" id='${id}_miniCal'></div>
+									</div>
+								</td>
+								<td id='${id}_time'></td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td class="Label"><$= ZmMsg.selectTimezoneLabel $></td>
+				<td id='${id}_tzSelect'></td>
+			</tr>
+		</tbody>
 	</table>
 </template>
 
 <template id='share.Dialogs#DateField'>
-	<input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}' value='${value}'>
+	<input autocomplete='off' type='text' size=14 id='${id}' value='${value}'>
 </template>
 
 <template id="share.Dialogs#UploadDialog">
