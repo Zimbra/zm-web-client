@@ -2177,7 +2177,6 @@ INPUT.xform_field {
 .ZSelectAutoSizingContainer					{	height:2rem; width:auto;	}		/* TODO: SIZE ASSUMPTION! */
 
 .ZSelect									{	@Select@		@SelectSpacing@			}
-DIV.ZSelect									{	@SelectInline@		}
 .ZSelect .ZWidgetIcon:not(:empty)			{	@SelectIcon@		}
 .ZSelect .ZWidgetTitle						{	@SelectTitle@		}
 .ZSelect .ZButtonBorder						{	@SelectBorder@		}
