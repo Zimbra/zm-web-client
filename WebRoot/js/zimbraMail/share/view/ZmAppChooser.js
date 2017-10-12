@@ -145,16 +145,16 @@ function(){
  */
 ZmAppChooser.prototype._setMoreButtonVisibility =
 function(display){
-        this._moreTabsBtn.setVisible(display);
+    this._moreTabsBtn.setVisible(display);
 
-        if (display !== false) {
-            var moreBtnContainerEl = this._moreTabsBtn.getHtmlElement().parentNode;
-            while (this._isTabOverflow(moreBtnContainerEl)){
-                //hide last visible tab if more button overFlow's
-                var lastVisibleTab = this.getLastVisibleTab();
-                lastVisibleTab && lastVisibleTab.setVisible(false);
-            }
+    if (display !== false) {
+        var moreBtnContainerEl = this._moreTabsBtn.getHtmlElement().parentNode;
+        while (this._isTabOverflow(moreBtnContainerEl)){
+            //hide last visible tab if more button overFlow's
+            var lastVisibleTab = this.getLastVisibleTab();
+            lastVisibleTab && lastVisibleTab.setVisible(false);
         }
+    }
 };
 
 /**
@@ -195,7 +195,7 @@ function() {
 ZmAppChooser.SPACER								= "spacer";
 ZmAppChooser.B_HELP								= "Help";
 ZmAppChooser.B_LOGOUT							= "Logout";
-ZmAppChooser.OPTIONS							   = "Options";
+ZmAppChooser.OPTIONS							= "Options";
 
 ZmApp.CHOOSER_SORT[ZmAppChooser.SPACER]			= 160;
 ZmApp.CHOOSER_SORT[ZmAppChooser.B_HELP]			= 170;
@@ -238,9 +238,7 @@ function(listener) {
  */
 ZmAppChooser.prototype._checkTabOverflowAdd =
 function(button) {
-    var display = "none";
     if (this._isTabOverflow(button.getHtmlElement())){
-        display = "";
         button.setVisible(false);
         this._setMoreButtonVisibility(true);
     }
@@ -311,17 +309,17 @@ ZmAppChooser.prototype._checkTabOverflowDelete =
 function(){
     if(this._moreTabsBtn.getVisible()) {
         var firstHiddenTab = this.getFirstHiddenTab();
-        var spaceForTab = true;
         var moreBtnContainerEl = this._moreTabsBtn.getHtmlElement().parentNode;
 
-        while (spaceForTab && firstHiddenTab) {
+        while (firstHiddenTab) {
             firstHiddenTab.setVisible(true);
             var isMoreOverflow = this._isTabOverflow(moreBtnContainerEl);
             if (isMoreOverflow) {
-                spaceForTab = false;
                 firstHiddenTab && firstHiddenTab.setVisible(false);
-            }
-            else {
+
+                // Don't have more space to show hidden tabs, break the loop
+                break;
+            } else {
                 firstHiddenTabId = firstHiddenTab.getData(Dwt.KEY_ID);
                 this._deletedButtons.push(firstHiddenTabId);
                 firstHiddenTab = this.getFirstHiddenTab();
@@ -472,6 +470,25 @@ function(id) {
 
 	this._selectedId = id;
 };
+
+/**
+ * @private
+ */
+ZmAppChooser.prototype.adjustSize =
+function() {
+	// Check if we need to re-adjust more menu items based on available width
+
+	// Hide visible buttons if available space is reduced
+	this._setMoreButtonVisibility(true);
+
+	// Show hidden buttons if available space is increased
+	this._checkTabOverflowDelete();
+
+	// Check if we want to show more button or not
+	if (!this.getFirstHiddenTab()) {
+		this._moreTabsBtn.setVisible(false);
+	}
+}
 
 /**
  * @private
