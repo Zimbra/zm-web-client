@@ -480,10 +480,10 @@ function(workingHours) {
 	var endTime = workingHrs.endTime[0];
 	var minTimeFrame = startTime/100;
 	var maxTimeFrame = endTime/100;
-	
-	this.hoursLabelNodeList.forEach(function(node, index){
-		Dwt.condClass(node, index >= minTimeFrame && index < maxTimeFrame, "ZActive", "ZDisabled");
-	});
+
+	for(var index = 0, len = this.hoursLabelNodeList.length; index < len; index++) {
+		Dwt.condClass(this.hoursLabelNodeList[index], index >= minTimeFrame && index < maxTimeFrame, "ZActive", "ZDisabled");
+	}
 };
 
 ZmCalDayTabView.prototype.layoutWorkingHours =
