@@ -666,7 +666,7 @@ UL.DwtListView-Rows {
 	@DialogField@
 }
 .DwtDialog TEXTAREA {
-	width:100%;
+	@DialogTextArea@
 }
 .DwtDialogBody TD {
 	/* @Label-wrap@ */
@@ -2201,6 +2201,10 @@ DIV.ZSelect									{	@SelectInline@		}
 
 .ZSelectPseudoItem							{	padding:0px 17px 6px; visibility:hidden;	}
 
+.ZSelect.ZSelectFullWidth,
+.ZSelect.ZSelectFullWidth > table {
+	@FullWidth@
+}
 
 /***************
  *

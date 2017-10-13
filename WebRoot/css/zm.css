@@ -7929,3 +7929,8 @@ input[type="radio"] + label {
 .ZmAttendeePickerPagination > table {
 	@AttendeePickerPaginationTable@
 }
+
+/* Decline share dialog */
+.ZmDeclineShareDialog {
+	@DeclineShareDialog@
+}
