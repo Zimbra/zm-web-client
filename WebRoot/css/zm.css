@@ -7934,3 +7934,25 @@ input[type="radio"] + label {
 .ZmDeclineShareDialog {
 	@DeclineShareDialog@
 }
+
+/* Redirect dialog styles */
+#RedirectDialog {
+	@RedirectDialog@
+}
+
+#RedirectDialog .ZmComposeToFieldWrapper .ZButton,
+#RedirectDialog .ZmComposeToFieldWrapper .ZButton .ZButtonTable {
+	@RedirectDialogButton@
+}
+
+#RedirectDialog .ZmComposeToFieldWrapper .ZButton .ZButtonBorder .ZWidgetTitle {
+	@RedirectDialogButtonText@
+}
+
+#RedirectDialog .ZmComposeToFieldWrapper .ZButton.ZHover .ZButtonBorder {
+	@RedirectDialogButtonHover@
+}
+
+#RedirectDialog .ZmComposeToFieldWrapper .ZButton.ZHover .ZButtonBorder .ZWidgetTitle {
+	@RedirectDialogButtonHoverText@
+}
