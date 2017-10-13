@@ -511,11 +511,13 @@
 <template id='mail.Message#RedirectDialog'>
 	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap;" $>
 	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden;" $>
-	<table role="presentation" width=500 class="ZPropertySheet" cellspacing="6">
-		<$= AjxTemplate.expand("#To_Recipient", data) $>
-		<tr>
-			<td align=right valign=top colspan=3><$= ZmMsg.redirectExplanation $></td>
-		</tr>
+	<table role="presentation" class='ZmDialogPropertySheet'>
+		<tbody>
+			<tr>
+				<td colspan="3"><$= ZmMsg.redirectExplanation $></td>
+			</tr>
+			<$= AjxTemplate.expand("#To_Recipient", data) $>
+		</tbody>
 	</table>
 </template>
 

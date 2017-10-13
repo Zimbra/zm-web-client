@@ -657,6 +657,11 @@ UL.DwtListView-Rows {
 	@FontSize-normal@
 }
 
+.DwtDialogBody .addrBubbleContainer,
+.DwtDialogBody .attBubbleContainer {
+	@DialogAddressInputField@
+}
+
 /* ??? SHOTGUNS */
 .DwtDialog .Label {
 	@DialogLabel@
