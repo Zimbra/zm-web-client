@@ -82,6 +82,8 @@ ZmShareReply._LABELS[ZmShareReply.NONE]		= ZmMsg.sendNoMailAboutShare;
 ZmShareReply._LABELS[ZmShareReply.STANDARD] = ZmMsg.sendStandardMailAboutShare;
 ZmShareReply._LABELS[ZmShareReply.QUICK]	= ZmMsg.sendStandardMailAboutSharePlusNote;
 
+ZmShareReply.ELEMENT_SPACING = "16px";
+
 // Public methods
 
 /**
@@ -167,7 +169,8 @@ ZmShareReply.prototype._initControl = function(params) {
 	this._replyType = new DwtSelect({
 		parent:   this,
 		id:       "ZmShareReplySelect",
-		legendId: params.legendId
+		legendId: params.legendId,
+		className: "ZSelect ZSelectFullWidth"
 	});
     var options = params.options || ZmShareReply.DEFAULT_OPTIONS;
     this.setReplyOptions(options);
@@ -175,23 +178,22 @@ ZmShareReply.prototype._initControl = function(params) {
 
 	var doc = document;
 	this._replyTypeEl = doc.createElement("DIV");
-	this._replyTypeEl.style.paddingBottom = "0.5em";
 	this._replyTypeEl.appendChild(this._replyType.getHtmlElement());
 	
 	this._replyStandardMailNoteEl = doc.createElement("DIV");
-	this._replyStandardMailNoteEl.style.paddingBottom = "0.125em";
-	this._replyStandardMailNoteEl.style.width = "30em";
 	this._makeFocusable(this._replyStandardMailNoteEl);
 	this._replyStandardMailNoteEl.innerHTML = ZmMsg.sendMailAboutShareNote;
+	this._replyStandardMailNoteEl.style.marginTop = ZmShareReply.ELEMENT_SPACING;
 	
 	var div = doc.createElement("DIV");
 	this._replyNoteEl = doc.createElement("TEXTAREA");
 	this._replyNoteEl.cols = 50;
 	this._replyNoteEl.rows = 4;
+	this._replyNoteEl.style.marginTop = ZmShareReply.ELEMENT_SPACING;
 	div.appendChild(this._replyNoteEl);
 	
 	this._replyControlsEl = doc.createElement("DIV");
-	this._replyControlsEl.style.marginTop = "1em";
+	this._replyControlsEl.style.marginTop = ZmShareReply.ELEMENT_SPACING;
 	this._replyControlsEl.appendChild(this._replyTypeEl);
 	this._replyControlsEl.appendChild(this._replyStandardMailNoteEl);
 	this._replyControlsEl.appendChild(div);

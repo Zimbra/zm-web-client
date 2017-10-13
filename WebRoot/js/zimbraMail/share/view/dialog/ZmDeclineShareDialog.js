@@ -44,8 +44,7 @@ ZmDeclineShareDialog = function(parent, className) {
 
 	// create controls
 	this._confirmMsgEl = document.createElement("DIV");
-	this._confirmMsgEl.style.fontWeight = "bold";
-	this._confirmMsgEl.style.marginBottom = "0.25em";
+	this._confirmMsgEl.style.marginBottom = ZmDeclineShareDialog.ELEMENT_SPACING;
 	this._reply = new ZmShareReply(this);
 
 	// create view
@@ -62,6 +61,8 @@ ZmDeclineShareDialog = function(parent, className) {
 
 ZmDeclineShareDialog.prototype = new DwtDialog;
 ZmDeclineShareDialog.prototype.constructor = ZmDeclineShareDialog;
+
+ZmDeclineShareDialog.ELEMENT_SPACING = "16px";
 
 // Public methods
 
