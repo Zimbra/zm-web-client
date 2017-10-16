@@ -152,7 +152,12 @@ function(display){
         while (this._isTabOverflow(moreBtnContainerEl)){
             //hide last visible tab if more button overFlow's
             var lastVisibleTab = this.getLastVisibleTab();
-            lastVisibleTab && lastVisibleTab.setVisible(false);
+            if(lastVisibleTab) {
+                lastVisibleTab.setVisible(false);
+            } else {
+                // If there is no visible tab available then break the loop
+                break;
+            }
         }
     }
 };
