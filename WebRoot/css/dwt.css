@@ -634,7 +634,6 @@ UL.DwtListView-Rows {
 .DwtDialogTitle {
 	@WindowTitleText@
 	@WindowTitleText-normal@
-	@NoWrap@
 	vertical-align:top;
 	@MoveCursor@
 }
