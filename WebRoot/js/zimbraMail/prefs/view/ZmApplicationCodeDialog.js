@@ -41,13 +41,15 @@ ZmApplicationCodeDialog = function(appPasscodeCallback) {
 		parent : appCtxt.getShell(),
 		title : ZmMsg.twoStepAuthAddAppCode,
 		standardButtons : [DwtDialog.NO_BUTTONS],
-		extraButtons : [nextButton, cancelButton]
+		extraButtons : [cancelButton, nextButton]
 	};
 	DwtDialog.call(this, params);
 	this.setContent(this._contentHtml());
 	this._createControls();
 	this._setAllowSelection();
 	this.appPasscodeCallback = appPasscodeCallback;
+
+	this.getButton(ZmApplicationCodeDialog.NEXT_BUTTON).addClassName("ZPrimaryButton");
 };
 
 ZmApplicationCodeDialog.prototype = new DwtDialog;
@@ -126,6 +128,7 @@ function() {
 	this.setButtonEnabled(ZmApplicationCodeDialog.NEXT_BUTTON, false);
 	this.setButtonVisible(ZmApplicationCodeDialog.NEXT_BUTTON, true);
 	this.getButton(ZmApplicationCodeDialog.CANCEL_BUTTON).setText(ZmMsg.cancel);
+	this.getButton(ZmApplicationCodeDialog.CANCEL_BUTTON).delClassName("ZPrimaryButton");
 };
 
 ZmApplicationCodeDialog.prototype._createAppSpecificPassword =
@@ -146,6 +149,7 @@ function(appName, result) {
 	Dwt.show(this._appPassCode);
 	this.setButtonVisible(ZmApplicationCodeDialog.NEXT_BUTTON, false);
 	this.getButton(ZmApplicationCodeDialog.CANCEL_BUTTON).setText(ZmMsg.close);
+	this.getButton(ZmApplicationCodeDialog.CANCEL_BUTTON).addClassName("ZPrimaryButton");
 	this.appPasscodeCallback && this.appPasscodeCallback();
 };
 

@@ -42,11 +42,13 @@ ZmOneTimeCodesDialog = function(params) {
 		parent : appCtxt.getShell(),
 		title : ZmMsg.twoStepAuthOneTimeCodesTitle,
 		standardButtons: [DwtDialog.NO_BUTTONS],
-		extraButtons : [generateNewCodesButton, printButton, closeButton]
+		extraButtons : [generateNewCodesButton, closeButton, printButton]
 	};
 	DwtDialog.call(this, newParams);
 	this.setContent(this._contentHtml());
 	this._setAllowSelection();
+
+	this.getButton(ZmOneTimeCodesDialog.PRINT_BUTTON).addClassName("ZPrimaryButton");
 };
 
 ZmOneTimeCodesDialog.prototype = new DwtDialog;
