@@ -7692,16 +7692,29 @@ input[type="radio"] + label {
 }
 
 /* Dialog property sheet */
-.ZmDialogPropertySheet {
+.ZmDialogPropertySheet,
+.ZmDialogPropertySheet > TABLE {
 	@DialogPropertySheet@
 }
 
-.ZmDialogPropertySheet > TBODY > TR > TD {
+.ZmDialogPropertySheet > TBODY > TR > TD,
+.ZmDialogPropertySheet > TABLE > TBODY > TR > TD {
 	@DialogPropertySheetCell@
 }
 
-.ZmDialogPropertySheet > TBODY > TR > TD.Label-Full {
+.ZmDialogPropertySheet > TBODY > TR > TD.Label-Full,
+.ZmDialogPropertySheet > TABLE > TBODY > TR > TD.Label-Full {
 	@DialogPropertySheetCellLabel@
+}
+
+.ZmDialogPropertySheet > TBODY > TR:first-of-type > TD,
+.ZmDialogPropertySheet > TABLE > TBODY > TR:first-of-type > TD {
+	padding-top:0;
+}
+
+.ZmDialogPropertySheet > TBODY > TR:last-of-type > TD,
+.ZmDialogPropertySheet > TABLE > TBODY > TR:last-of-type > TD {
+	padding-bottom:0;
 }
 
 /* Create New Folder/Move folder Dialog styles */
@@ -7818,6 +7831,15 @@ input[type="radio"] + label {
 
 .ZmAttendeePickerPagination > table {
 	@AttendeePickerPaginationTable@
+}
+
+/* Accept share dialog */
+.ZmAcceptShareDialog {
+	@AcceptShareDialog@
+}
+
+.ZmAcceptShareDialog .DwtInputField {
+	@DialogInputField@
 }
 
 /* Decline share dialog */
