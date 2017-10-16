@@ -1009,6 +1009,11 @@ div.ImgLoader-view {
     margin-left: -100%;
 }
 
+.DwtDragProxy .DwtTreeItem {
+    padding-left:@SkinViewInnerSpacing@;
+    margin-left:0;
+}
+
 .DwtTreeItemLevel1ChildDiv {
     padding-left: @SkinWrapperPadding@
 }
@@ -1291,4 +1296,9 @@ div[name='_mergeBtnContainerId'] .ZCalToggleBtnSelected .ZWidgetTitle {
 /* Hide icons for send later dropdown menu */
 .ZmSendDropdown .ZMenuItemTable .ZWidgetIcon {
     display: none;
+}
+
+/* Set title width of organizer dialog same as it's body */
+#ChooseFolderDialog .DwtDialogTitle {
+    width:@OrganizerDialogWidth@
 }
