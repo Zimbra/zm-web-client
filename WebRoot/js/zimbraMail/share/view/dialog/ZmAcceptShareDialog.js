@@ -60,6 +60,9 @@ ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_VIEWER]	= ZmMsg.acceptShareDetailsView
 ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_MANAGER]	= ZmMsg.acceptShareDetailsManager;
 ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_ADMIN]	= ZmMsg.acceptShareDetailsAdmin;
 
+ZmAcceptShareDialog.ELEMENT_SPACING = "16px";
+ZmAcceptShareDialog.ELEMENT_SPACING_SM = "8px";
+
 // Public methods
 
 /**
@@ -81,7 +84,7 @@ function(share, fromAddr) {
 		ZmAcceptShareDialog._ACTIONS[role]   // TODO: Be able to generate custom perms list
 	];
 	this._detailsEl.innerHTML = this._detailsFormatter.format(params);
-	this._questionEl.innerHTML = "<b>" + ZmMsg.acceptShareQuestion + "</b>";
+	this._questionEl.innerHTML = ZmMsg.acceptShareQuestion;
 
 	var namePart = share.grantor.name || (share.grantor.email && share.grantor.email.substr(0, share.grantor.email.indexOf('@')));
 	this._nameEl.value = ZmShare.getDefaultMountpointName(namePart, share.link.name);
@@ -154,23 +157,23 @@ function() {
 	var view = new DwtComposite(this);
 
 	this._headerEl = document.createElement("DIV");
-	this._headerEl.style.marginBottom = "0.5em";
+	this._headerEl.style.marginBottom = ZmAcceptShareDialog.ELEMENT_SPACING;
 	this._detailsEl = document.createElement("DIV");
-	this._detailsEl.style.marginBottom = "1em";
+	this._detailsEl.style.marginBottom = ZmAcceptShareDialog.ELEMENT_SPACING;
 	this._detailsEl.id = "ZmAcceptShare_details";
 	this._questionEl = document.createElement("DIV");
-	this._questionEl.style.marginBottom = "0.5em";
+	this._questionEl.style.marginBottom = ZmAcceptShareDialog.ELEMENT_SPACING_SM;
 	this._questionEl.id = "ZmAcceptShare_questions";
 	this._nameEl = document.createElement("INPUT");
-	this._nameEl.style.width = "20em";
+	this._nameEl.type = "text";
+	this._nameEl.className = "DwtInputField";
 	this._nameEl.id = "ZmAcceptShare_name";
 	var nameElement = this._nameEl;
 
 	this._color = new ZmColorButton({parent:this, id: "ZmAcceptShare_color"});
 
-	var props = this._propSheet = new DwtPropertySheet(view);
+	var props = this._propSheet = new DwtPropertySheet(view, "ZmDialogPropertySheet");
 	var propsEl = props.getHtmlElement();
-	propsEl.style.marginBottom = "0.5em";
 	propsEl.id = "ZmAcceptShare_props";
 	props.addProperty(ZmMsg.nameLabel, nameElement);
 	props.addProperty(ZmMsg.colorLabel, this._color);
@@ -178,10 +181,10 @@ function() {
 	this._reply = new ZmShareReply(view);
 
 	var settings = document.createElement("DIV");
-	settings.style.marginLeft = "1.5em";
 	settings.id = "ZmAcceptShare_settings";
 	settings.appendChild(propsEl);
-	settings.appendChild(this._reply.getHtmlElement());	
+	settings.appendChild(this._reply.getHtmlElement());
+	settings.style.marginBottom = ZmAcceptShareDialog.ELEMENT_SPACING_SM;
 
 	var el = view.getHtmlElement();
 	el.appendChild(this._headerEl);
