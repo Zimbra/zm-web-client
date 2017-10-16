@@ -468,21 +468,24 @@ if (application.getInitParameter("offlineMode") != null) {
 				</c:choose>
                 <c:choose>
                     <c:when test="${totpAuthRequired || errorCode eq 'account.TWO_FACTOR_AUTH_FAILED'}">
-                        <table class="form" id="totpTable" style="height:140px;width:350px;">
+                        <table class="form" id="totpTable">
                             <tbody>
                                 <tr>
-                                    <td><label for="totpcode"><fmt:message key="twoFactorAuthCodeLabel"/>:</label></td>
-                                    <td><input id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" style="margin-right:20px" autocomplete="off"></td>
-                                    <td class="submitTD"><input type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton"></td>
+                                    <td colspan="${authResult.trustedDevicesEnabled eq true ? 2 : 1}">
+                                        <input id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocomplete="off" placeholder='<fmt:message key="twoFactorAuthCodeLabel"/>'>
+                                    </td>
                                 </tr>
-                                <c:if test="${authResult.trustedDevicesEnabled eq true}">
-                                    <tr style="vertical-align:top">
-                                        <td/>
-                                        <td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">
-                                        <label for="trustedDevice"><fmt:message key="${mobileSupported || touchSupported ? 'twoFactorAuthTrustDevice' : 'twoFactorAuthTrustComputer'}"/></label>
-                                        </td>
-                                    </tr>
-                                </c:if>
+                                <tr>
+                                    <c:if test="${authResult.trustedDevicesEnabled eq true}">
+		                                <td>
+		                                    <input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">
+		                                    <label for="trustedDevice"><fmt:message key="${mobileSupported || touchSupported ? 'twoFactorAuthTrustDevice' : 'twoFactorAuthTrustComputer'}"/></label>
+		                                </td>
+                                    </c:if>
+                                    <td class="submitTD" colspan="${authResult.trustedDevicesEnabled eq true ? 2 : 1}">
+                                        <input type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton">
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </c:when>

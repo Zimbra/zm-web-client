@@ -6458,39 +6458,33 @@ RBC, RTC {
 
 /* Two-Factor Setup dialog start*/
 .ZmTwoFactorSetup {
-	width:475px;
-	height:180px;
+	@TwoFactorSetupDialog@
+}
+
+.ZmTwoFactorSetupSubLabel {
+	@TwoFactorSetupDialogSubLabel@
 }
 
 .ZmTwoFactorSetupContainer {
-	margin:20px;
-	text-align:center;
+	@TwoFactorSetupDialogContainer@
 }
 
 .ZmTwoFactorSetupContainer label {
-	display:inline-block;
-	margin:10px;
+	@TwoFactorSetupDialogLabel@
 }
 
-.ZmTwoFactorSetupContainer SPAN.email-key, .ZmAppPasscode {
-	padding:10px;
-	font-weight:bold;
-	background-color:#FFE599;
-	letter-spacing: 3px;
-	display:inline-block;
-	margin:10px
+.ZmTwoFactorSetupContainer input {
+	@TwoFactorSetupDialogInput@
+}
+
+.ZmTwoFactorSetupContainer .email-key {
+	@TwoFactorSetupDialogEmailKey@
 }
 
 .ZmTwoFactorSetupError {
-	color:#990000;
-	font-weight:bold;
+	@TwoFactorSetupDialogError@
 }
 /* Two-Factor Setup dialog end*/
-
-.ZmAppNameError {
-	margin-left:157px;
-	text-align:left;
-}
 
 a.ZmLinkDisabled {
 	pointer-events:none;
@@ -6498,27 +6492,43 @@ a.ZmLinkDisabled {
 	@Text-disabled@
 }
 
+/* Two-Factor appplication code dialog start */
+.ZmTwoFactorAppCode {
+	@TwoFactorAppCodeDialog@
+}
+
+.ZmTwoFactorAppCodeContainer {
+	@TwoFactorAppCodeContainer@
+}
+
+.ZmTwoFactorAppCodeContainer label {
+	@TwoFactorAppCodeLabel@
+}
+
+.ZmTwoFactorAppCodeContainer input {
+	@TwoFactorAppCodeInput@
+}
+
+.ZmTwoFactorAppCode .ZmAppPasscode {
+	@TwoFactorAppCodePassCode@
+}
+/* Two-Factor appplication code dialog end */
+
 /* One-times Codes dialog start */
 .ZmOneTimeCodes {
-	width:450px;
-	min-height:240px;
-	max-height:300px;
-	overflow:auto;
+	@TwoFactorOneTimeCodeDialog@
 }
 
 .ZmOneTimeCodes OL {
-	list-style-type: none;
+	@TwoFactorOneTimeCodeList@
 }
 
 .ZmOneTimeCodes LI {
-	margin: 15px 15px 15px 45px;
-	width: 120px;
-	float: left;
+	@TwoFactorOneTimeCodeListItem@
 }
 
 .ZmOneTimeCodes LI SPAN {
-	letter-spacing: 3px;
-	font-weight: bold;
+	@TwoFactorOneTimeCodeListItemText@
 }
 /* One-times Codes dialog end */
 
