@@ -37,7 +37,7 @@ ZmTwoFactorSetupDialog = function(params) {
 	this.twoStepAuthEnabledCallback = params.twoStepAuthEnabledCallback;
 	// this.isFromLoginPage will be true if ZmTwoFactorSetupDialog is created from TwoFactorSetup.jsp, which is forwarded from login.jsp file.
 	this.isFromLoginPage = params.isFromLoginPage;
-	var previousButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, ZmMsg.previous, DwtDialog.ALIGN_RIGHT, this._previousButtonListener.bind(this));
+	var previousButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, ZmMsg.previous, DwtDialog.ALIGN_LEFT, this._previousButtonListener.bind(this));
 	var beginSetupButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.BEGIN_SETUP_BUTTON, ZmMsg.twoStepAuthBeginSetup, DwtDialog.ALIGN_RIGHT, this._beginSetupButtonListener.bind(this));
 	var nextButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.NEXT_BUTTON, ZmMsg.next, DwtDialog.ALIGN_RIGHT, this._nextButtonListener.bind(this));
 	var finishButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.FINISH_BUTTON, ZmMsg.twoStepAuthSuccessFinish, DwtDialog.ALIGN_RIGHT, this._finishButtonListener.bind(this));
@@ -47,12 +47,16 @@ ZmTwoFactorSetupDialog = function(params) {
 		parent : shell,
 		title : ZmMsg.twoStepAuthSetup,
 		standardButtons : [DwtDialog.NO_BUTTONS],
-		extraButtons : [previousButton, beginSetupButton, nextButton, finishButton, cancelButton]
+		extraButtons : [previousButton, cancelButton, nextButton, beginSetupButton, finishButton]
 	};
 	DwtDialog.call(this, newParams);
 	this.setContent(this._contentHtml());
 	this._createControls();
 	this._setAllowSelection();
+
+	this.getButton(ZmTwoFactorSetupDialog.BEGIN_SETUP_BUTTON).addClassName("ZPrimaryButton");
+	this.getButton(ZmTwoFactorSetupDialog.NEXT_BUTTON).addClassName("ZPrimaryButton");
+	this.getButton(ZmTwoFactorSetupDialog.FINISH_BUTTON).addClassName("ZPrimaryButton");
 };
 
 ZmTwoFactorSetupDialog.prototype = new DwtDialog;

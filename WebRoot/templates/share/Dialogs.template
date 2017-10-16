@@ -713,24 +713,24 @@
 	<div class="ZmTwoFactorSetup">
 		<div id='${id}_description'><p><$=ZmMsg.twoStepAuthDescription$></p></div>
 		<div id='${id}_password'>
-			<h4><$=ZmMsg.twoStepAuthPassword$></h4>
+			<div class="ZmTwoFactorSetupSubLabel"><$=ZmMsg.twoStepAuthPassword$></div>
 			<p><$=ZmMsg.twoStepAuthPasswordDescription$> "<span>${username}</span>".</p>
+			<p id='${id}_password_error' style="display:none;" class="ZmTwoFactorSetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></p>
 			<div class="ZmTwoFactorSetupContainer">
-				<div id='${id}_password_error' style="display:none;margin-left:163px;" class="ZmTwoFactorSetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></div>
 				<label for="${id}_password_input"><$=ZmMsg.passwordLabel$></label>
 				<input type="password" id="${id}_password_input" autocomplete="off"/>
 			</div>
 		</div>
 		<div id='${id}_authentication'>
-			<h4><$=ZmMsg.twoStepAuthApp$></h4>
-			<div><$=ZmMsg.twoStepAuthAppDescription$></div>
-			<div style="margin:15px;">
+			<div class="ZmTwoFactorSetupSubLabel"><$=ZmMsg.twoStepAuthApp$></div>
+			<p><$=ZmMsg.twoStepAuthAppDescription$></p>
+			<div style="margin: 10px 0px;">
 				<a href="<$=ZmMsg.twoStepAuthAppURL$>" target="_blank" title="<$=ZmMsg.twoStepAuthAppURL$>"><$=ZmMsg.twoStepAuthAppURL$></a>
 			</div>
-			<div><$=ZmMsg.twoStepAuthAppFooter$></div>
+			<p><$=ZmMsg.twoStepAuthAppFooter$></p>
 		</div>
 		<div id='${id}_email'>
-			<h4><$=ZmMsg.twoStepAuthEmail$></h4>
+			<div class="ZmTwoFactorSetupSubLabel"><$=ZmMsg.twoStepAuthEmail$></div>
 			<p><$=ZmMsg.twoStepAuthEmailDescription$></p>
 			<div class="ZmTwoFactorSetupContainer">
 				<span id="${id}_email_key" class="email-key"></span>
@@ -738,11 +738,11 @@
 		</div>
 		<div id='${id}_code'>
 			<div id='${id}_code_description'>
-				<h4><$=ZmMsg.twoStepAuthCode$></h4>
+				<div class="ZmTwoFactorSetupSubLabel"><$=ZmMsg.twoStepAuthCode$></div>
 				<p><$=ZmMsg.twoStepAuthCodeDescription$></p>
 			</div>
 			<div id='${id}_code_error' style="display:none;">
-				<h4 class="ZmTwoFactorSetupError"><$=ZmMsg.twoStepAuthCodeError$></h4>
+				<div class="ZmTwoFactorSetupSubLabel ZmTwoFactorSetupError"><$=ZmMsg.twoStepAuthCodeError$></div>
 				<p><$=ZmMsg.twoStepAuthCodeErrorDescription$></p>
 			</div>
 			<div class="ZmTwoFactorSetupContainer">
@@ -751,7 +751,7 @@
 			</div>
 		</div>
 		<div id='${id}_success'>
-			<h4><$=ZmMsg.twoStepAuthSuccess$></h4>
+			<div class="ZmTwoFactorSetupSubLabel"><$=ZmMsg.twoStepAuthSuccess$></div>
 			<p><$=ZmMsg.twoStepAuthSuccessDescription$></p>
 		</div>
 	</div>
