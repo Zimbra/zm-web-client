@@ -783,7 +783,28 @@ we are hiding element with that class
 
 .Row-selected .ImgMsgUnread-svg .svg-icon,
 .Row-selected .ImgCheckboxChecked-svg .svg-icon,
-.Row-selected .ImgCheckboxUnchecked-svg .svg-icon
+.Row-selected .ImgCheckboxUnchecked-svg .svg-icon,
+.Row-selected .ImgNodeCollapsed-svg .svg-icon,
+.Row-selected .ImgNodeExpanded-svg .svg-icon,
+.Row-selected .ImgAttachment-svg .svg-icon,
+.Row-selected .ImgMsgStatusSent-svg .svg-icon,
+.Row-selected .ImgMsgStatusForward-svg .svg-icon,
+.Row-selected .ImgMsgStatusRead-svg .svg-icon,
+.Row-selected .ImgMsgStatusReply-svg .svg-icon,
+.Row-selected .ImgAppointment-svg .svg-icon,
+.Row-selected .ImgCalInviteDeclined-svg .svg-icon,
+.Row-selected .ImgCalInviteAccepted-svg .svg-icon,
+.Row-selected .ImgCalInviteTentative-svg .svg-icon,
+.Row-selected .ImgApptRecur-svg .svg-icon
+{
+    fill: @IconSelectionListItem@
+}
+
+.Row-selected .ImgMsgRead-svg .svg-icon {
+    fill: @IconMsgSelectedRead@
+}
+
+.ZmWhiteBlackList .Row-selected .ImgCancel-svg .svg-icon
 {
     fill: @IconSelectionListItem@
 }
