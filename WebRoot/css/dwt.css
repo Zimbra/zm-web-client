@@ -890,51 +890,35 @@ UL.DwtListView-Rows {
 
 /* Container for the entire color picker, inside the menu */
 .DwtColorPicker {
+	@ColorPicker@
 }
-
 
 .DwtColorPicker .Colors {
-	position:relative;
-	height:12px;
-	clear:both;
+	@ColorPickerColorsRow@
 }
 
+.DwtColorPickerLabel .Color,
+.DwtColorPickerButton .Color,
 .DwtColorPicker .Color {
-	display:inline;
-	float:left;
-	width:12px;
-	height:11px;
-	margin-right:1px;
-	border:1px solid black;
-	border-top:none;
+	@ColorPickerColor@;
 }
 
-.DwtColorPicker .First .Color {
-	border-top:1px solid black;
+.DwtColorPicker .Color:first-of-type {
+	margin-left: 0;
+}
+
+.DwtColorPicker .Color:last-of-type {
+	margin-right: 0;
 }
 
 .DwtColorPicker .Colors .ZHover {
-	width:10px;
-	border-left-width:2px;
-	border-right-width:2px;
+	@ColorPickerColorActive@
 }
 
 .DwtColorPicker .Text {
-	clear:both;
-	margin:4px 0px;
+	@ColorPickerText@
 }
 
-.DwtColorPickerButton .Color {
-	width:12px;
-	height:11px;
-	border:1px solid black !important;
-}
-
-.DwtColorPickerLabel .Color {
-	width:12px;
-	height:11px;
-	border:1px solid black !important;
-}
 /* ??? USED? */
 .DwtResizeGripper {
 	border:none;
