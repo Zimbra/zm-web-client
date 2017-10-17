@@ -609,14 +609,10 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#DwtColorPickerButton' class='ZWidget'>
-	<table role="presentation" class='ZWidgetTable ZMenuItemTable ZMenuItemBorder'>
+	<table role="presentation" class='ZWidgetTable'>
 		<tr>
-			<td><div id='${id}_color' class='Color'></div></td>
-			<td id='${id}_title' class='ZWidgetTitle'
-			<$ if (AjxEnv.isIE) { $>
-				style='width:auto;'
-			<$ } $>
-			></td>
+			<td><div id='${id}_color' class='Color' style="margin-right:4px;"></div></td>
+			<td id='${id}_title' class='ZWidgetTitle'></td>
 		</tr>
 	</table>
 </template>

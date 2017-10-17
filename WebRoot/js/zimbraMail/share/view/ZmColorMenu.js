@@ -166,6 +166,7 @@ ZmColorMenu.prototype._getMoreColorMenu = function() {
 
 ZmMoreColorMenu = function(params) {
     params.style = DwtMenu.COLOR_PICKER_STYLE;
+    params.className = "DwtColorPickerMenu DwtMenu";
     DwtMenu.call(this, params);
     this._colorPicker = new DwtColorPicker({parent:this,hideNoFill:params.hideNoFill});
     this._colorPicker.getData = this.__DwtColorPicker_getData; // HACK
