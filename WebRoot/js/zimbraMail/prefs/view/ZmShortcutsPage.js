@@ -361,6 +361,8 @@ ZmShortcutsPanel = function() {
 	DwtControl.call(this, {parent:appCtxt.getShell(), className:className, posStyle:Dwt.ABSOLUTE_STYLE});
 
 	this._createHtml();
+	this._createControls();
+	this._adjustSize();
 
 	this._tabGroup = new DwtTabGroup(this.toString());
 	this._tabGroup.addMember(this);
@@ -413,28 +415,50 @@ ZmShortcutsPanel.prototype._createHtml = function() {
 	var contentId = [this._htmlElId, "content"].join("_");
 	var html = [];
 	var i = 0;
+
 	html[i++] = "<div class='ShortcutsPanelHeader' id='" + headerId + "'>";
-	html[i++] = "<div class='title' role='header' aria-level='2'>" + ZmMsg.keyboardShortcuts + "</div>";
-	// set up HTML to create two columns using floats
 	html[i++] = "<div class='container' id='" + containerId + "'>";
-	html[i++] = "<div class='description'>" + ZmMsg.shortcutsCurrent + "</div>";
-	html[i++] = "<div class='actions'>";
-	html[i++] = "<span class='link' onclick='ZmShortcutsPanel.closeCallback();'>" + ZmMsg.close + "</span>";
+	html[i++] = "<div class='title' role='header' aria-level='2'>" + ZmMsg.keyboardShortcuts + "</div>";
+	html[i++] = "<div class='actions'><table role='presentation' class='ZPropertySheet'><tr>";
 	if (!appCtxt.isChildWindow) {
-		html[i++] = "<br /><span class='link' onclick='ZmShortcutsPanel.newWindowCallback();'>" + ZmMsg.newWindow + "</span>";
+		html[i++] = "<td id='" + this._htmlElId + "_ACTION_NEWWINDOW'></td>";
+		html[i++] = "<td id='" + this._htmlElId + "_ACTION_CLOSE'></td>";
 	}
-	html[i++] = "</div></div></div>";
-	html[i++] = "<hr />";
-	html[i++] = "<div id='" + contentId + "' style='overflow:auto;width: 100%;'></div>";
+	html[i++] = "</tr></table></div></div>";
+	html[i++] = "<div class='description'>" + ZmMsg.shortcutsCurrent + "</div>";
+	html[i++] = "</div>";
+	html[i++] = "<div class='ShortcutsPanelSeperator'></div>";
+	html[i++] = "<div class='ShortcutsPanelContent' id='" + contentId + "'></div>";
 
 	this.getHtmlElement().innerHTML = html.join("");
+
 	this._headerDiv = document.getElementById(headerId);
 	this._contentDiv = document.getElementById(contentId);
+};
+
+ZmShortcutsPanel.prototype._adjustSize =
+function() {
 	var headerHeight = Dwt.getSize(this._headerDiv).y;
-	var containerHeight = Dwt.getSize(containerId).y;
-	var h = this.getSize().y - headerHeight - containerHeight;
-	Dwt.setSize(this._contentDiv, Dwt.DEFAULT, h - 20);
+	var h = this.getSize().y - headerHeight;
+	Dwt.setSize(this._contentDiv, Dwt.DEFAULT, h - 1);
 	this.setZIndex(Dwt.Z_DIALOG);
+};
+
+ZmShortcutsPanel.prototype._createControls =
+function() {
+	if (!appCtxt.isChildWindow) {
+		var button = new DwtButton({parent: appCtxt.getShell(), style: DwtLabel.IMAGE_LEFT});
+		button.setImage("Close");
+		var buttonDiv = document.getElementById(this._htmlElId + "_ACTION_CLOSE");
+		buttonDiv.appendChild(button.getHtmlElement());
+		button.addSelectionListener(new AjxListener(this, ZmShortcutsPanel.closeCallback));
+
+		button = new DwtButton({parent: appCtxt.getShell(), style: DwtLabel.IMAGE_LEFT});
+		button.setImage("OpenInNewWindow");
+		buttonDiv = document.getElementById(this._htmlElId + "_ACTION_NEWWINDOW");
+		buttonDiv.appendChild(button.getHtmlElement());
+		button.addSelectionListener(new AjxListener(this, ZmShortcutsPanel.newWindowCallback));
+	}
 };
 
 ZmShortcutsPanel.closeCallback =
@@ -448,7 +472,7 @@ function() {
 
 ZmShortcutsPanel.newWindowCallback =
 function() {
-	var newWinObj = appCtxt.getNewWindow(false, 820, 650);
+	var newWinObj = appCtxt.getNewWindow(false, 1000, 800);
 	if (newWinObj) {
 		newWinObj.command = "shortcuts";
 		newWinObj.params = {cols:ZmShortcutsPanel.INSTANCE._cols};
