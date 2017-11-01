@@ -471,12 +471,12 @@ ZmShareSearchDialog.prototype._createHtmlFromTemplate = function(templateId, dat
         form: {
             template: this.CONTENT_TEMPLATE,
             items: [
-                { id: "FILTER", type: "DwtInputField", hint: ZmMsg.sharedFoldersFilterHint,
+                { id: "FILTER", type: "DwtInputField",
                     onchange: "this.parent._filterResults()"
                 },
                 { id: "TREE", type: "ZmShareTreeView", style: DwtTree.CHECKEDITEM_STYLE },
                 { id: "EMAIL", type: "DwtInputField", hint: ZmMsg.sharedFoldersUserSearchHint },
-                { id: "SEARCH", type: "DwtButton", label: ZmMsg.searchInput,
+                { id: "SEARCH", type: "DwtButton", image: "Search",
                     enabled: "get('EMAIL')", onclick: "this.parent._doUserSearch(get('EMAIL'))"
                 },
                 { id: "APP", type: "DwtSelect",  items: this._getAppOptions(), onchange: "this.parent._filterResults()"
