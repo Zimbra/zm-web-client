@@ -1311,3 +1311,8 @@ div[name='_mergeBtnContainerId'] .ZCalToggleBtnSelected .ZWidgetTitle {
     padding:0;
     @Text-link@
 }
+
+/* Hide empty cells */
+.ZmShareTreeView .DwtTreeItem TD:empty {
+    display: none !important; /* has to use !important to override inline styles */
+}
