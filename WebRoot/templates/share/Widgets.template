@@ -286,19 +286,41 @@
 </template>
 
 <template id="share.Widgets#ZmShareSearchView">
-    <div class="FilterTree" style="width:300px;">
-        <div id="${id}_FILTER" tabindex="100"></div>
-        <div id="${id}_TREE" tabindex="200"></div>
-    </div>
-    <table role="presentation" width="100%" class="ZPropertySheet" cellspacing="6">
-        <tr><td><$=ZmMsg.sharedFoldersFindLabel$></td>
-            <td><div id="${id}_EMAIL" tabindex="300"></div></td>
-            <td><div id="${id}_SEARCH" tabindex="400"></div></td>
-        </tr>
-        <tr><td><$=ZmMsg.includeLabel$>:</td>
-            <td colspan='2'><div id="${id}_APP" tabindex="500"></div></td>
-        </tr>
-    </table>
+	<table class='ChooserDialog ZmDialogPropertySheet' role="presentation">
+		<tbody>
+			<tr>
+				<td class="Label-Full" colspan="2"><$= ZmMsg.sharedFoldersFilterHint $></td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div id="${id}_FILTER" tabindex="100"></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div class="dialogOverview">
+						<div id="${id}_TREE" tabindex="200"></div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div class="ZmSearchWidget">
+						<div class='ZmSearchWidgetInput' >
+							<div id="${id}_EMAIL" tabindex="300"></div>
+						</div>
+						<div class="ZmSearchWidgetButton">
+							<div id="${id}_SEARCH" tabindex="400"></div>
+						</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="Label"><$=ZmMsg.includeLabel$>:</td>
+				<td><div id="${id}_APP" tabindex="500"></div></td>
+			</tr>
+		</tbody>
+	</table>
 </template>
 
 <template id="share.Widgets#ZmAddressInputField">

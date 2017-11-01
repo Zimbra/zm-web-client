@@ -5931,27 +5931,6 @@ DIV .SuggestBtn {
 	@PrefSharingViewActionIcon@
 }
 
-.ZmShareSearchView {
-	margin:4px;
-}
-
-.ZmShareSearchView .ZHasDropDown {
-	display:inline-block;
-}
-
-.ZmShareSearchDialog .FilterTree {
-	@TreeContainer@
-	@NormalInsetBorder@
-	@BoxPadding@
-}
-.ZmShareSearchDialog .FilterTree INPUT {
-	width:99%;
-	margin-bottom:4px;
-}
-.ZmShareSearchDialog .ZmShareTreeView {
-	height:140px;
-}
-
 .DeviceCodeConfirmed {
 	color:green;
 }
@@ -7090,6 +7069,13 @@ a.ZmLinkDisabled {
 
 .ZmSearchWidget .ZmSearchWidgetInput {
 	@SearchWidgetInput@
+}
+
+.ZmDialogPropertySheet .ZmSearchWidget .DwtInputField input[type='text'],
+.ZmDialogPropertySheet .ZmSearchWidget input[type='text'],
+.ZmSearchWidget .DwtInputField input[type='text'],
+.ZmSearchWidget input[type='text'] {
+	@SearchWidgetInput2@
 }
 
 .ZmSearchWidget .ZmSearchWidgetButton {
