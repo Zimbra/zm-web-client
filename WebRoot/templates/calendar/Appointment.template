@@ -818,10 +818,10 @@
 						<tr>
 						<$
 							var isLocal24Hour = AjxDateUtil.isLocale24Hour();
-							for (var j = 1; j <= 24; j++) {
+							for (var j = 0; j < 24; j++) {
 								var hour = isLocal24Hour ? j : ((j % 12) || 12);
 								if (!isLocal24Hour) {
-									hour += (j < 12) ? ' AM' : ' PM';
+									hour += ' ' + (j < 12 ? I18nMsg.periodAm : I18nMsg.periodPm);
 								}
 						$>
 								<td width='4%'><div class='ZmSchedulerGridHeaderCell'><$= hour $></div></td>
