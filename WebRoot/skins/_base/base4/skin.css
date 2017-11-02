@@ -196,8 +196,8 @@ BODY                                    {   margin:0px;     }
 
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar           {   @ToolbarButtonHeight@     }
-#skin_container_app_top_toolbar         {   @SkinBorderAppToolbar@ width:auto; padding-left:@SashSize@; padding-right:@SkinWrapperPadding@ }
-#skin_container_app_new_button          {   @SkinBorderAppToolbar@ width:@TreeStartWidth@; }
+#skin_container_app_top_toolbar         {   @SkinBorderAppToolbar@ width:auto; padding-left:@SashSize@; }
+#skin_container_app_new_button          {   @SkinBorderAppToolbar@ width: 10px; }
 
 
 /** App  **/

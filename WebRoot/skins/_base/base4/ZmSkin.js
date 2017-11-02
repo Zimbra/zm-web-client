@@ -55,7 +55,7 @@ ZmSkin.hints = {
     newButton:      { containers: ["skin_td_new_button"] },
     tree:           { minWidth: "@TreeMinWidth@", maxWidth: "@TreeMaxWidth@",
                       containers: ["skin_td_tree","skin_td_tree_app_sash"],
-                      resizeContainers : ["skin_td_tree", "skin_container_app_new_button"]
+                      resizeContainers : ["skin_td_tree", "skin_container_app_new_button_filler"]
                     },
     
     topToolbar:     { containers: "skin_spacing_app_top_toolbar" },
