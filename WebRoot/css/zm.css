@@ -295,15 +295,15 @@ INPUT[type="text"]:focus, INPUT[type="password"]:focus, INPUT[type="email"]:focu
 	@InlineToolbarContainer@
 }
 
-.ZmInviteToolBar .ZToolbarButton.REPLY_ACCEPT .ZWidgetIcon {
+.ZmInviteToolBar .ZToolbarButton.REPLY_ACCEPT .ZWidgetIcon .svg-icon {
     fill: @IconCalInviteAccepted@;
 }
 
-.ZmInviteToolBar .ZToolbarButton.REPLY_TENTATIVE .ZWidgetIcon {
+.ZmInviteToolBar .ZToolbarButton.REPLY_TENTATIVE .ZWidgetIcon .svg-icon {
    fill: @IconCalInviteTentative@;
 }
 
-.ZmInviteToolBar .ZToolbarButton.REPLY_DECLINE .ZWidgetIcon {
+.ZmInviteToolBar .ZToolbarButton.REPLY_DECLINE .ZWidgetIcon .svg-icon {
     fill: @IconCalInviteDeclined@;
 }
 
@@ -5612,6 +5612,10 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	@ContactEditImageBadge@
 }
 
+.ZmEditContactImageBadge .svg-icon {
+	@ContactEditImageBadgeIcon@
+}
+
 .ZmEditContactView .inputElement,
 .ZmEditContactView .inputElementChild:not(:empty) {
 	@ContactEditInputElement@
@@ -6984,6 +6988,10 @@ a.ZmLinkDisabled {
 
 .ZmGroupAddMemberBtn .ZButton {
 	@GroupAddMemberBtn@
+}
+
+.ZmGroupAddMemberBtn .ZButton .svg-icon {
+	@GroupAddMemberBtnSVGIcon@
 }
 
 .ZmGroupAddMemberBtn .ZButton.ZFocused,

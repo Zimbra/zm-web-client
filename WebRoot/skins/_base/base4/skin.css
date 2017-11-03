@@ -88,7 +88,7 @@ BODY                                    {   margin:0px;     }
 #skin_spacing_top_row > .skin_table     {   border-collapse: separate;  }
 #skin_spacing_top_row .DwtLinkButtonDropDownArrowRow    {   background-color:@SkinTopRowColor@;     }
 #skin_spacing_top_row .ZmMoreTabs       {   @SkinTopRowMore@   }
-#skin_spacing_top_row .svg-icon         {   fill: @AppC@; opacity: 0.7;   }
+#skin_spacing_top_row .svg-icon         {   fill: @hexToRGBA(AppC, 70)@;   }
 #skin_spacing_top_row .ZAppTab.ZHover .svg-icon,
 #skin_spacing_top_row .ZToolbarButton.ZHover .svg-icon   {   opacity: 1;   }
 
@@ -106,7 +106,7 @@ BODY                                    {   margin:0px;     }
 #skin_spacing_search,
 #skin_spacing_people_search             {   @AppTabHeight@  }
 #skin_container_search                  {   @SkinSearchHeight@ }
-#skin_container_search .svg-icon         {   fill: @SVGIconDefaultColor@; opacity: 1;  }
+#skin_container_search .svg-icon        {   fill: @SVGIconDefaultColor@;  }
 
 #skin_container_search .ZmSearchToolbar {   @SkinSearchToolbar@         }
 #skin_container_search .ZButton         {   @SkinSearchHeight@ border-right: 1px solid @hexToRGBA(SecondaryBrandingColor, 17)@;  }
@@ -816,7 +816,7 @@ we are hiding element with that class
 
 .ZmHtmlEditor .ImgEditorDrag-svg .svg-icon {
     background-color: @AppC@;
-    fill: @TxtC@;
+    fill: @SVGIconDefaultColor@;
     width: 38px;
     height: 38px;
     @opacity(40)@;
@@ -956,7 +956,7 @@ we are hiding element with that class
 .Row-selected .ImgLocationGreen-svg .svg-icon,
 .Row-selected .ImgLocationRed-svg .svg-icon,
 .Row-selected .ImgLocationOrange-svg .svg-icon {
-	fill:@TxtC@;
+	fill: @SVGIconDefaultColor@;
 }
 
 /*Adding background for svg's with gradient via css background rule
