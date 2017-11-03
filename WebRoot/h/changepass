@@ -23,7 +23,7 @@
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
     
     <c:set var="successfullLogin" value="false"/>
-    <fmt:message var="newPasswordMessage" key="enterNewPassword"/>
+    <fmt:message var="infoMessage" key="enterNewPassword"/>
     <c:choose>
         <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
             <fmt:message var="errorMessage" key="bothNewPasswordsMustMatch"/>
@@ -37,7 +37,7 @@
                                    newpassword="${param.loginNewPassword}"
                                    rememberme="${param.zrememberme == '1'}"/>
                 <c:set var="successfullLogin" value="true"/>
-                <fmt:message var="errorMessage" key="passwordChangeSucceededCloseWindow"/>
+                <fmt:message var="infoMessage" key="passwordChangeSucceededCloseWindow"/>
             </c:catch>
             <c:if test="${loginException != null}">
                 <zm:getException var="error" exception="${loginException}"/>
@@ -88,7 +88,7 @@
                     <table width=100%>
                         <tr>
                             <td>
-                                <c:out value="${newPasswordMessage}"/>
+                                <c:out value="${infoMessage}"/>
                             </td>
                         </tr>
                     </table>
@@ -123,8 +123,7 @@
                             </c:if>
 
                             <tr>
-                                <td><input type=submit class='zLoginButton DwtButton'
-                                                     value="<fmt:message key="changePassword"/>"/></td>
+                                <td><input type=submit class='zLoginButton DwtButton' value="<fmt:message key="changePassword"/>"/></td>
                             </tr>
                         </table>
                     </form>
