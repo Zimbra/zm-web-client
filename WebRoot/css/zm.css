@@ -4369,15 +4369,56 @@ HTML>BODY .appt-selected .appt_allday_body {
  */
 /* ??? USE? */
 .ZmSharePropsDialog {
-#IFDEF MSIE
-	width:388px;
-#ENDIF
+	@ShareDialog@
 }
 
-.ZmSharePropsDialog .GrouperLabel {
-	font-weight:normal;
-	font-size:10pt;
-	color:#666;
+.ZmSharePropsDialog .ZmShareDialogSection:not(:empty) {
+	@ShareDialogSection@
+}
+
+.ZmSharePropsDialog .ZmShareDialogSection:last-of-type {
+	margin-bottom: 0;
+}
+
+.ZmSharePropsDialog .ZmShareDialogSection > TABLE {
+	@ShareDialogTable@
+}
+
+.ZmSharePropsDialog .ZmShareDialogSection > TABLE TD.Label {
+	@ShareDialogTableLabel@
+}
+
+.ZmSharePropsDialog .ZmShareDialogSection .ZCheckboxTable > TBODY > TR > TD,
+.ZmSharePropsDialog .ZmShareDialogSection .ZRadioButtonTable > TABLE > TBODY > TR > TD {
+	@ShareDialogRadioTableCell@
+}
+
+.ZmSharePropsDialog .ZmShareDialogSection .ZCheckboxTable > TBODY > TR:last-of-type > TD,
+.ZmSharePropsDialog .ZmShareDialogSection .ZRadioButtonTable > TABLE > TBODY > TR:last-of-type > TD {
+	padding-bottom:0;
+}
+
+.ZmSharePropsDialog .ZmShareDialogSection .ZCheckboxTable > TBODY > TR > TD:last-of-type,
+.ZmSharePropsDialog .ZmShareDialogSection .ZRadioButtonTable > TABLE > TBODY > TR > TD:last-of-type {
+	padding-right:0;
+}
+
+.ZmSharePropsDialog .ZmShareDialogSection .ZCheckboxTable INPUT[type="checkbox"],
+.ZmSharePropsDialog .ZmShareDialogSection .ZRadioButtonTable INPUT[type="radio"] {
+	margin:0;
+	padding:0;
+}
+
+.ZmSharePropsDialog .ZmShareDialogSection .ZmShareDialogGranteeTable {
+	@ShareDialogGranteeTable@
+}
+
+.ZmSharePropsDialog .ZmShareDialogSection .ZmShareDialogGranteeTable > TBODY > TR > TD {
+	@ShareDialogGranteeTableCell@
+}
+
+.ZmSharePropsDialog .ZmShareDialogSection .ZmShareDialogGranteeTable > TBODY > TR:last-of-type > TD {
+	margin-bottom: 0;
 }
 
 .DwtMenu .ZmFolderChooser .OverviewTree {
