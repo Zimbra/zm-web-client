@@ -2338,7 +2338,7 @@ function(parent, num) {
 	}
 
 	var search = appCtxt.getCurrentSearch();
-	if (appCtxt.multiAccounts && num > 1 && search && search.isMultiAccount()) {
+	if (appCtxt.isChildWindow || (appCtxt.multiAccounts && num > 1 && search && search.isMultiAccount())) {
 		parent.enable(ZmOperation.TAG_MENU, false);
 	}
 
