@@ -218,7 +218,7 @@
 	<div id='${id}_printDialogContainer'>
 	    <table role="presentation" align=center width=700>
             <tr>
-                <td width=30% valign=top style='height:1px'><div id='${id}_calTreeContainer' style="margin-right:8px;height:100%;"></div></td>
+                <td width=30% valign=top><div id='${id}_calTreeContainer' style="margin-right:8px;height:100%;"></div></td>
                 <td width=70% valign=top>
                     <div id='${id}_printErrorMsgContainer'></div>
                     <div id='${id}_printOptionsContainer'>
