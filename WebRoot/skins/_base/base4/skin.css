@@ -983,10 +983,6 @@ div.ImgLoader-view {
 }
 
 /* Invite toolbar styling adjustment */
-.ZmInviteToolBar .ZToolbarTable .ZToolbarFiller {
-    display: none;
-}
-
 .ZmInviteToolBar .ZToolbarTable TD > div {
    display: inline-block;
 }

@@ -737,6 +737,7 @@ function() {
 		ZmOperation.REPLY_ACCEPT,
 		ZmOperation.REPLY_TENTATIVE,
 		ZmOperation.REPLY_DECLINE,
+		ZmOperation.FILLER,
 		ZmOperation.PROPOSE_NEW_TIME
 	];
 
@@ -757,7 +758,7 @@ function() {
 
 		tb.addSelectionListener(id, listener);
 
-		if (id == ZmOperation.PROPOSE_NEW_TIME) { continue; }
+		if (id == ZmOperation.PROPOSE_NEW_TIME || id == ZmOperation.FILLER) { continue; }
 
 		var button = tb.getButton(id);
 		button.addClassName(id);
@@ -772,7 +773,6 @@ function() {
 	}
 
 	this._respondOnBehalfLabel = new DwtControl({parent:tb});
-	// tb.addFiller();
 
 	// folder picker
 	this._inviteMoveSelect = new DwtSelect({parent:tb});
