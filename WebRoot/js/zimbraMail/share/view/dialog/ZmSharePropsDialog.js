@@ -169,7 +169,6 @@ function(mode, object, share) {
 	// operations.
 	this._props.setPropertyVisible(this._shareWithOptsId, true);
 	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, true);
-	this._props.setPropertyVisible(this._shareWithBreakId, true);
 
 	//this._passwordButton.setVisible(!isNewShare);
 	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
@@ -211,11 +210,10 @@ function(mode, object, share) {
 
 	this._populateUrls();
 
-    DwtDialog.prototype.popup.call(this);
+	//reparent reply interface to proper DOM widget
+	this._reply.reparentHtmlElement(this._replyId);
 
-	var size = this.getSize();
-	Dwt.setSize(this._granteeInput, 0.6*size.x);
-	//Dwt.setSize(this._passwordInput.getInputElement(), 0.6*size.x);
+	DwtDialog.prototype.popup.call(this);
 
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 	if (isNewShare) {
@@ -245,17 +243,18 @@ function() {
 	}
 	var url = AjxStringUtil.htmlEncode(restUrl).replace(/&amp;/g,'%26');
 	var text = url;
-	if (text.length > 50) {
-		var length = text.length - 50;
+	var textCharLength = 40;
+	if (text.length > textCharLength) {
+		var length = text.length - textCharLength;
 		var index = (text.length - length) / 2;
 		text = text.substr(0, index) + "..." + text.substr(index + length);
 	}
 
 	var proto = (location.protocol === ZmSetting.PROTO_HTTPS) ? "webcals:" : "webcal:";
-    var webcalURL = proto + url.substring((url.indexOf("//")));
-    var webcalText = webcalURL;
-    if (webcalText.length > 50) {
-		var length = webcalText.length - 50;
+	var webcalURL = proto + url.substring((url.indexOf("//")));
+	var webcalText = webcalURL;
+	if (webcalText.length > textCharLength) {
+		var length = webcalText.length - textCharLength;
 		var index = (webcalText.length - length) / 2;
 		webcalText = webcalText.substr(0, index) + "..." + webcalText.substr(index + length);
 	}
@@ -277,13 +276,13 @@ function() {
 			].join("");
 		} else if (this._object.type == ZmOrganizer.TASKS) {
 			this._urlEl.innerHTML = [
-				"<div style='padding-left:2em;'>",
+				"<div>",
 					'<a target=_new id="SharePropsURL" href="',url,'.ics">',text,".ics</a>",
 				"</div>"
 			].join("");
 		} else {
 			this._urlEl.innerHTML = [
-				"<div style='padding-left:2em;'>",
+				"<div>",
 					'<a target=_new id="SharePropsURL" href="',url,'">',text,"</a>",
 				"</div>"
 			].join("");
@@ -660,8 +659,7 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
     }
 	this._props.setPropertyVisible(this._shareWithOptsId, !isPublicShare);
 	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
-	this._props.setPropertyVisible(this._shareWithBreakId, !isPublicShare);
-    this._setAutoComplete(isGuestShare);
+	this._setAutoComplete(isGuestShare);
 
 	if (!isUserShare) {
 		this._viewerRadioEl.checked = true;
@@ -704,7 +702,9 @@ ZmSharePropsDialog.prototype._createView = function() {
 	var permissionId = Dwt.getNextId();
 
 	var shareWithRadioName = this._htmlElId + "_shareWith";
-	var shareWith = new DwtPropertySheet(this, null, null, DwtPropertySheet.RIGHT);
+	var shareWith = new DwtPropertySheet(this, "ZRadioButtonTable", null, DwtPropertySheet.RIGHT);
+	shareWith._labelCssClass = ""; //don't apply 'Label' class for this nested table
+	shareWith._valueCssClass = ""; //don't apply 'Field' class for this nested table
 	var shareWithProperties = [], sw, label, value, swRadioId;
 	for (var i = 0; i < ZmSharePropsDialog.SHARE_WITH.length; i++) {
 		sw = ZmSharePropsDialog.SHARE_WITH[i];
@@ -716,6 +716,7 @@ ZmSharePropsDialog.prototype._createView = function() {
 
 	this._shareWithOptsProps = new DwtPropertySheet(this);
 	this._shareWithOptsProps.addProperty(ZmMsg.emailLabel, this._grantee);
+	this._shareWithOptsProps._tableEl.className = "ZmShareDialogGranteeTable";
 
 	var otherHtml = [
 		"<table class='ZCheckboxTable'>",
@@ -728,10 +729,11 @@ ZmSharePropsDialog.prototype._createView = function() {
 		"</table>"
 	].join("");
 
-	this._props = new DwtPropertySheet(view);
+	this._props = new DwtPropertySheet(view, "ZmShareDialogSection");
+	this._props._tableEl.className = "ZmDialogPropertySheet";
 	this._props.addProperty(ZmMsg.nameLabel, "<span id='" + nameId + "'></span>");
-    this._props.addProperty(ZmMsg.typeLabel, "<span id='" + typeId + "'></span>");
-    this._markReadId = this._props.addProperty(ZmMsg.sharingDialogMarkReadLabel, "<span id='" + markReadValueId + "'></span>");
+	this._props.addProperty(ZmMsg.typeLabel, "<span id='" + typeId + "'></span>");
+	this._markReadId = this._props.addProperty(ZmMsg.sharingDialogMarkReadLabel, "<span id='" + markReadValueId + "'></span>");
 	var shareWithId = this._props.addProperty(ZmMsg.shareWithLabel, shareWith);
 	var otherId = this._props.addProperty(ZmMsg.otherLabel, otherHtml);
 
@@ -751,15 +753,22 @@ ZmSharePropsDialog.prototype._createView = function() {
 
 	// XXX: for now, we are hiding this property for simplicity's sake
 	this._props.setPropertyVisible(otherId, false);
-	this._shareWithBreakId = this._props.addProperty("", "<HR>");
 	this._shareWithOptsId = this._props.addProperty("", this._shareWithOptsProps);
 
 	// add role group
+	this._rolesGroup = new DwtComposite(view, 'ZmShareDialogSection');
+
 	var idx = 0;
 	var html = [];
-	html[idx++] = "<table class='ZRadioButtonTable'>";
-
-	this._rolesGroup = new DwtGrouper(view);
+	html[idx++] = "<table class='ZmDialogPropertySheet'>";
+	html[idx++] = "<tbody>";
+	html[idx++] = "<tr>";
+	html[idx++] = "<td class='Label'>";
+	html[idx++] = ZmMsg.role;
+	html[idx++] = "</td>";
+	html[idx++] = "<td class='Field'>";
+	html[idx++] = "<div class='ZRadioButtonTable'>";
+	html[idx++] = "<table>";
 
 	var roleRadioName = this._htmlElId + "_role";
 	var roles = [ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER, ZmShare.ROLE_ADMIN];
@@ -767,56 +776,92 @@ ZmSharePropsDialog.prototype._createView = function() {
 		var role = roles[i],
 			rowId = 'ShareRole_Row_' + role,
 			radioId = 'ShareRole_' + role,
-			labelId = 'LblShareRole_' + role,
-			legendId = this._rolesGroup._labelEl.id,
-			labelledBy = [ legendId, labelId ].join(' ');
+			labelId = 'LblShareRole_' + role;
 
 		html[idx++] = "<tr id='" + rowId + "'>";
-        html[idx++] = "<td style='padding-left:10px; vertical-align:top;'>";
-		html[idx++] = "<input type='radio' name='" + roleRadioName + "' value='" + role + "' id='" + radioId + "' aria-labelledby='" + labelledBy + "'>";
-        html[idx++] = "</td>";
-		html[idx++] = "<td style='font-weight:bold; padding:0 0.5em 0 .25em;'>";
+		html[idx++] = "<td>";
+		html[idx++] = "<input type='radio' name='" + roleRadioName + "' value='" + role + "' id='" + radioId + "' aria-labelledby='" + labelId + "'>";
+		html[idx++] = "</td>";
+		html[idx++] = "<td>";
 		html[idx++] = "<label id='" + labelId + "' for='"+radioId+"' >";
-		html[idx++] = ZmShare.getRoleName(role);
+		html[idx++] = ZmShare.getRoleName(role) + " (" + ZmShare.getRoleActions(role) + ")";
 		html[idx++] = "</label>"
 		html[idx++] = "</td>";
-		html[idx++] = "<td style='white-space:nowrap'>";
-		html[idx++] = ZmShare.getRoleActions(role);
-		html[idx++] = "</td></tr>";
+		html[idx++] = "</tr>";
 	}
-
+	html[idx++] = "</table>";
+	html[idx++] = "</div>";
+	html[idx++] = "</td>";
+	html[idx++] = "</tr>";
+	html[idx++] = "</tbody>";
 	html[idx++] = "</table>";
 
-	this._rolesGroup.setLabel(ZmMsg.role);
 	this._rolesGroup.setContent(html.join(""));
 
-	this._privatePermission = new DwtPropertySheet(view);
+	this._privatePermission = new DwtPropertySheet(view, "ZmShareDialogSection");
+	this._privatePermission._tableEl.className = "ZmDialogPropertySheet";
 	this._privatePermission._vAlign = "middle";
-	this._privatePermission.addProperty("<input type='checkbox' id='" + permissionId + "'/>",  "<label for='" + permissionId + "' >" +  ZmMsg.privatePermission +  "</label>");
+	var privateHtml = [
+		"<table class='ZCheckboxTable'>",
+			"<tr>",
+				"<td>",
+					"<input type='checkbox' id='",permissionId,"' checked>",
+				"</td>",
+				"<td>","<label for='", permissionId,  "'>" , ZmMsg.privatePermission, "</label>", "</td>",
+			"</tr>",
+		"</table>"
+	].join("");
+	this._privatePermission.addProperty("",privateHtml);
 	this._privateEl = document.getElementById(permissionId);
 	Dwt.setHandler(this._privateEl, DwtEvent.ONCLICK, ZmSharePropsDialog._handleEdit);
 	Dwt.associateElementWithObject(this._privateEl, this);
 
 	// add message group
-	this._messageGroup = new DwtGrouper(view);
-	this._messageGroup.setLabel(ZmMsg.message);
+	this._messageGroup = new DwtComposite(view, "ZmShareDialogSection");
+	var idx = 0;
+	var html = [];
+	html[idx++] = "<table class='ZmDialogPropertySheet'>";
+	html[idx++] = "<tbody>";
+	html[idx++] = "<tr>";
+	html[idx++] = "<td class='Label' style='padding-top:8px;'>";
+	html[idx++] = ZmMsg.message;
+	html[idx++] = "</td>";
+	this._replyId = Dwt.getNextId();
+	html[idx++] = "<td id='"+this._replyId+"' class='Field'>";
 	this._reply = new ZmShareReply({
 		parent:     view,
-		legendId:   this._messageGroup._labelEl.id
+		legendId:   this._messageGroup._htmlElId
 	});
-	this._messageGroup.setView(this._reply);
+	html[idx++] = "</td>";
+	html[idx++] = "</tr>";
+	html[idx++] = "</tbody>";
+	html[idx++] = "</table>";
+	this._messageGroup.setContent(html.join(""));
 
 	// add url group
 	var urlHtml = [
 		"<div>",
-			"<div style='margin-bottom:.25em'>",ZmMsg.shareUrlInfo,"</div>",
-			"<div style='cursor:text' id='",urlId,"'></div>",
+			"<div style='margin-bottom:8px;'>",ZmMsg.shareUrlInfo,"</div>",
+			"<div style='cursor:text;white-space:nowrap;' id='",urlId,"'></div>",
 		"</div>"
 	].join("");
 
-	this._urlGroup = new DwtGrouper(view);
-	this._urlGroup.setLabel(ZmMsg.url);
-	this._urlGroup.setContent(urlHtml);
+	this._urlGroup = new DwtComposite(view, "ZmShareDialogSection");
+	var idx = 0;
+	var html = [];
+	html[idx++] = "<table class='ZmDialogPropertySheet'>";
+	html[idx++] = "<tbody>";
+	html[idx++] = "<tr>";
+	html[idx++] = "<td class='Label'>";
+	html[idx++] = ZmMsg.url;
+	html[idx++] = "</td>";
+	html[idx++] = "<td class='Field'>";
+	html[idx++] = urlHtml;
+	html[idx++] = "</td>";
+	html[idx++] = "</tr>";
+	html[idx++] = "</tbody>";
+	html[idx++] = "</table>";
+	this._urlGroup.setContent(html.join(""));
 	this._urlGroup._setAllowSelection();
 
 	// save information elements
