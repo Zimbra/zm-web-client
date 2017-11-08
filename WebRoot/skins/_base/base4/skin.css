@@ -959,6 +959,10 @@ we are hiding element with that class
 	fill: @SVGIconDefaultColor@;
 }
 
+.addrBubbleHolder .addrBubbleOp .svg-icon {
+	fill: #fff;
+}
+
 /*Adding background for svg's with gradient via css background rule
   This can be removed once we have support for gradient's to be rendered with <use>
 */
@@ -1315,4 +1319,8 @@ div[name='_mergeBtnContainerId'] .ZCalToggleBtnSelected .ZWidgetTitle {
 /* Hide empty cells */
 .ZmShareTreeView .DwtTreeItem TD:empty {
     display: none !important; /* has to use !important to override inline styles */
+}
+
+.ZmSharePropsDialog .ZmShareDialogSection .ZmShareReply > div {
+    margin-top:0 !important; /* has to use !important to override inline styles */
 }
