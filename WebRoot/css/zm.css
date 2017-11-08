@@ -7896,6 +7896,10 @@ input[type="radio"] + label {
 	@DeclineShareDialog@
 }
 
+.ZmRevokeShareDialog {
+	@RevokeShareDialog@
+}
+
 /* Redirect dialog styles */
 #RedirectDialog {
 	@RedirectDialog@
