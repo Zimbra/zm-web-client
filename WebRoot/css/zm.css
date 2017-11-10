@@ -3742,12 +3742,13 @@ HTML>BODY .appt-selected .appt_allday_body {
 	padding:1px 5px;
 }
 
+.acRow-selected TD,
 .acRow TD {
 	@AutoCompleteListItemText@
 }
 
 .ZmAutocompleteListView TD.AutocompleteMatchIcon {
-	width:20px;
+	@AutoCompleteListItemIcon@
 }
 
 /* not sure that these pseudoclasses will work in IE6 */

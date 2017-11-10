@@ -97,11 +97,8 @@ function(list, contact) {
 		row.className = this._origClass;
 		selectId = row.id = this._selectAllRowId = this._getId("Row", "selectAll");
 		var cell = row.insertCell(-1);
-		cell.className = "AutocompleteMatchIcon";
-		cell.innerHTML = AjxImg.getImageHtml("Blank16");
-		cell = row.insertCell(-1);
 		var text = numMembers ? ZmMsg.selectAllMembers : ZmMsg.noMembers;
-		cell.innerHTML = AjxMessageFormat.format(text, [numMembers]);
+		cell.innerHTML = "<span class='acRowTop'>" + AjxMessageFormat.format(text, [numMembers]) + "</span>";
 	}
 
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
@@ -132,14 +129,6 @@ function(table, match, rowId) {
 		row.className = this._origClass;
 		row.id = rowId;
 		var cell = row.insertCell(-1);
-		cell.className = "AutocompleteMatchIcon";
-		if (match.icon) {
-			cell.innerHTML = (match.icon.indexOf('Dwt') != -1) ? ["<div class='", match.icon, "'></div>"].join("") :
-																  AjxImg.getImageHtml(match.icon);
-		} else {
-			cell.innerHTML = "&nbsp;";
-		}
-		cell = row.insertCell(-1);
 		cell.innerHTML = match.text || "&nbsp;";
 	}
 };
