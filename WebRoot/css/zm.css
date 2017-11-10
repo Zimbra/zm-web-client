@@ -7647,6 +7647,12 @@ input[type="radio"] + label {
 	@AppointmentTooltipValue@	
 }
 
+.ZmAppointmentTooltip TD.ZmAppointmentTooltipValue ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
 /* Appointment create/edit view */
 .ZmApptEditView {
 	@ApptEditView@

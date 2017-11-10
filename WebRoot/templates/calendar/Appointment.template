@@ -1009,7 +1009,15 @@
 		$>
 			<tr>
 				<td colspan='2' class='ZmAppointmentTooltipLabel'>
-					<$= AjxStringUtil.htmlEncode(data.attendeesText) $>
+					<$ 
+						var attendees = data.attendeesText;
+						attendees = attendees.split(",");
+					$>
+					<ul>
+						<$ for (var i = 0; i < attendees.length; i++) { $>
+							<li><$= AjxStringUtil.htmlEncode(attendees[i]); $></li>
+						<$ } $>
+					</ul>
 				</td>
 			</tr>
 		<$
@@ -1023,7 +1031,15 @@
 						<$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(i) + "&nbsp;(" + ptstStatus[i].count + ")&nbsp;") $>
 					</td>
 					<td class='ZmAppointmentTooltipValue'>
-						<$= AjxStringUtil.htmlEncode(ptstStatus[i].attendees) $>
+						<$ 
+							var attendees = ptstStatus[i].attendees;
+							attendees = attendees.split(",");
+						$>
+						<ul>
+							<$ for (var i = 0; i < attendees.length; i++) { $>
+								<li><$= AjxStringUtil.htmlEncode(attendees[i]); $></li>
+							<$ } $>
+						</ul>
 					</td>
 				</tr>
 		<$

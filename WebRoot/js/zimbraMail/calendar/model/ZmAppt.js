@@ -332,7 +332,7 @@ function(ptstHashKey) {
 ZmAppt.prototype.getAttendeeToolTipString =
 function(val) {
 	var str;
-	var maxLimit = 10;
+	var maxLimit = 3;
 	if (val && val.length > maxLimit) {
 		var origLength = val.length;
 		var newParts = val.splice(0, maxLimit);
