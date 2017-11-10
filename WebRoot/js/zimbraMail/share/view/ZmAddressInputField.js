@@ -1555,10 +1555,10 @@ function(params) {
 		var addr = params.email || params.address;
 		var expandLinkId = id + "_expand";
 		var expandLink = 'ZmAddressBubble.expandBubble("' + id + '","' + addr + '");';
-		var expandLinkText = AjxImg.getImageHtml("BubbleExpand", "", "id='" + expandLinkId + "' onclick='" + expandLink + "'");
+		var expandLinkText = AjxImg.getImageHtml("NodeExpanded", "", "id='" + expandLinkId + "' onclick='" + expandLink + "'");
 	}
 	//wrap into container
-	expandLinkText = expandLinkText ? expandLinkText = "<span class='addrBubbleOp'>" + expandLinkText + "</span>" : "";
+	expandLinkText = expandLinkText ? expandLinkText = "<span style='padding-left:0;'>" + expandLinkText + "</span>" : "";
 
 	if (params.canRemove) {
 		var removeLinkId = id + "_remove";

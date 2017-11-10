@@ -981,6 +981,7 @@ we are hiding element with that class
 	fill: @SVGIconDefaultColor@;
 }
 
+.ZmSignatureVCardWrapper .ZmSignatureVCard .ZmSignatureVCardOp .svg-icon,
 .addrBubbleHolder .addrBubbleOp .svg-icon {
 	fill: #fff;
 }
