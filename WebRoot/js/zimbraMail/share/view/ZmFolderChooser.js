@@ -159,7 +159,8 @@ function(params) {
 ZmFolderChooser.prototype._setOverview =
 function(params, forceSingle) {
 	params.overviewClass = "menuOverview";
-	params.dynamicWidth = true;
+	//make folder chooser of fixed width
+	//params.dynamicWidth = true;
 
 	var overview = ZmDialog.prototype._setOverview.call(this, params, forceSingle); //reuse from ZmDialog
 
