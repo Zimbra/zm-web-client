@@ -385,6 +385,7 @@ function(calItem) {
 	var equipment = calItem.getAttendeesText(ZmCalBaseItem.EQUIPMENT, true);
 	var isException = calItem._orig.isException;
 	var dateStr = this._getTimeString(calItem);
+	var startDate = calItem._orig.startDate;
 
 	this._clearBubbles();
 	var reqAttendees = this._getAttendeesByRoleCollapsed(calItem.getAttendees(ZmCalBaseItem.PERSON), ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED);
@@ -418,6 +419,7 @@ function(calItem) {
 		location:       location,
 		equipment:      equipment,
 		isException:    isException,
+		startDate:      startDate,
 		dateStr:        dateStr,
         isAttendees:    hasAttendees,
         reqAttendees:   reqAttendees,

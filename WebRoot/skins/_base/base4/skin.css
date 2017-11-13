@@ -985,6 +985,18 @@ we are hiding element with that class
 	fill: #fff;
 }
 
+.ImgEventAvailable-svg .svg-icon {
+    fill: @IconCalInviteAccepted@;
+}
+
+.ImgEventTentative-svg .svg-icon {
+    fill: @IconCalInviteTentative@;
+}
+
+.ImgEventBusy-svg .svg-icon {
+    fill: @IconCalInviteDeclined@;
+}
+
 /*Adding background for svg's with gradient via css background rule
   This can be removed once we have support for gradient's to be rendered with <use>
 */

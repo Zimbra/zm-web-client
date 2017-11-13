@@ -924,10 +924,7 @@ div.AttachmentImgContainer {
 }
 
 .InvResponseBar {
-	background-color:@darken(AppC,25)@;
-	border-bottom:1px solid white;
-	border-top:1px solid @darken(AppC,50)@;
-	padding:0px 5px 2px;
+	@AppContainerBg@;
 }
 
 
