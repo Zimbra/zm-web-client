@@ -4,6 +4,9 @@
     <property name="ajax.src.dir" location="${ajax.dir}/src" />
     <property name="ajax.build.dir" location="${ajax.dir}/build" />
 
+    <property name="timezones.dir" location="../zm-timezones" />
+    <property name="timezones.build.dir" location="${timezones.dir}/build" />
+
     <!-- Properties -->
     <dirname property="this.zwc.basedir" file="${ant.file.zm-web-client}" />
 
@@ -1153,19 +1156,22 @@ ext = BeanUtils.cook(ext);
     </target>
 
     <!-- Timezone data is packaged separately so for dev setup we need to manually copy that data -->
-    <target name='timezones-deploy' depends='resolve'>
-        <!-- Download timezones zip -->
-        <ivy:install organisation='zimbra' module='zm-timezones' revision='latest.integration' settingsRef='dev.settings' from='chain-resolver-zip' to='build-tmp' overwrite='true' transitive='true' type='zip' />
+    <target name='timezones-deploy'>
+        <mkdir dir="${build.tmp.dir}/zm-timezones"/>
 
+        <!-- Get timezones zip -->
         <unzip dest='${build.tmp.dir}/zm-timezones' overwrite='true'>
-            <fileset dir='${build.tmp.dir}'>
-                <include name='**/zm-timezones-*.zip' />
+            <fileset dir='${timezones.build.dir}'>
+                <include name='zm-timezones-*.zip' />
             </fileset>
         </unzip>
 
         <!-- Deploy files to desired locations -->
         <chmod file='${build.tmp.dir}/zm-timezones/bin/deploy-timezones' perm='a+x'/>
         <exec executable='${build.tmp.dir}/zm-timezones/bin/deploy-timezones' />
+
+        <!-- Delete tmp folder -->
+        <delete dir="${build.tmp.dir}/zm-timezones"/>
     </target>
 
     <target name='webxml-package-replace' depends='init'>
