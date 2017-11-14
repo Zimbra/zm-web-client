@@ -747,12 +747,14 @@ function(deeper, calendar, tagNames, segment) {
     var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
     var calColor = deeper ? colors.deeper[segment] : colors.standard[segment];
     var apptColor = calColor;
-    if (tagNames && (tagNames.length == 1)) {
-		var tagList = appCtxt.getAccountTagList(calendar);
+    //disable highlighting of appointment according to tag color
+    //see:https://jira.corp.synacor.com/browse/ZCS-3496 and 
+    // if (tagNames && (tagNames.length == 1)) {
+    // 	var tagList = appCtxt.getAccountTagList(calendar);
 
-        var tag = tagList.getByNameOrRemote(tagNames[0]);
-        if(tag){apptColor = { bgcolor: tag.getColor() };}
-    }
+    //     var tag = tagList.getByNameOrRemote(tagNames[0]);
+    //     if(tag){apptColor = { bgcolor: tag.getColor() };}
+    // }
     return {calendar:calColor, appt:apptColor};
 };
 
