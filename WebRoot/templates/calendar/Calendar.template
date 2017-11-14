@@ -26,9 +26,14 @@
 				<td class='appt${newState}_time'>
                     ${starttime}
                 </td>
+                <$ if (data.tagIcon) { $>
+                    <td align='right' width=16px style='padding:1px 5px 0 0;'>
+                        <div id='${id}_tag'><$= AjxImg.getImageHtml(data.tagIcon) $></div>
+                    </td>
+                <$ } $>
 			</tr>
 			<tr valign=top>
-				<td style='height:100%'>
+				<td style='height:100%' colspan="2">
 					<div class='appt${newState}_name'>${name}</div>
 					<$ if (data.location) { $>
 						${location}
@@ -36,7 +41,7 @@
 				</td>
 			</tr>	
 			<tr>
-                <td>
+                <td colspan="2">
                     <div class="apt_footer_wrapper">
                         <$ if(!data.hideTime) {$>
                             <div class=appt_end_time id='${id}_et'>${endtime}</div>
@@ -54,17 +59,6 @@
                                 <$ } else if (data.isRecurring) { $>
                                     <div><$= AjxImg.getImageHtml("ApptRecurIndicator") $></div>
                                 <$ } $>
-                                <$ if (data.tagIcon) { $>
-                                    <div id='${id}_tag'><$= AjxImg.getImageHtml(data.tagIcon) $></div>
-                                <$ } $>
-                                <$ if (data.peelIcon) { $>
-                                    <div id='${id}_peel'>
-                                        <$= AjxImg.getImageHtml('PeelSpacer', "width:16") $>
-                                        <div style='position:absolute;z-index:1;top:${peelTop}px;right:${peelRight}px;'>
-                                            <$= AjxImg.getImageHtml(data.peelIcon, "width:16") $>
-                                        </div>
-                                    </div>
-                                <$ } $>
                                 <$ if(data.isDraft) { $>
                                     <div><$= AjxImg.getImageHtml("ApptEdit") $></div>
                                 <$ } $>
@@ -79,16 +73,8 @@
 
 <template id='calendar.Calendar#calendar_tag_icon'>
     <$ if (data.tagIcon) { $>
-        <td id='${id}_tag' width=16px style='padding-right:5px;'>
+        <td id='${id}_tag' width=16px style='padding:1px 5px 0 0;'>
             <$= AjxImg.getImageHtml(data.tagIcon, "width:16") $>
-        </td>
-    <$ } $>
-    <$ if (data.peelIcon) { $>
-        <td id='${id}_peel' width=12 valign="top">
-            <$= AjxImg.getImageHtml('PeelSpacer', "width:12") $>
-            <div style='position:absolute;z-index:1;top:${peelTop}px;right:${peelRight}px;'>
-                <$= AjxImg.getImageHtml(data.peelIcon, "width:12") $>
-            </div>
         </td>
     <$ } $>
 </template>
@@ -126,16 +112,8 @@
 					<td valign=top width=16><$= AjxImg.getImageHtml(data.icon, "width:16") $></td>
 				<$ } $>
                 <$ if (data.tagIcon) { $>
-					<td valign=top width=16  style='padding-right:3px;'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></td>
+					<td valign=top width=16  style='padding:1px 5px 0 0;'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></td>
 				<$ } $>
-                <$ if (data.peelIcon) { $>
-                    <td width=12>
-                        <$= AjxImg.getImageHtml('PeelSpacer', "width:16") $>
-                    </td>
-                    <div style='position:absolute;top:1;right:1;'>
-                        <$= AjxImg.getImageHtml(data.peelIcon, "width:16") $>
-                    </div>
-                <$ } $>
             </tr>
 		</table>
 	</div>
