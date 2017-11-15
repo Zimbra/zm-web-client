@@ -4082,10 +4082,6 @@ HTML>BODY .appt-selected .appt_allday_body {
 	@OptionsItemsListRow@
 }
 
-.ZOptionsItemsListView .Row:last-of-type {
-	@OptionsItemsListLastRow@
-}
-
 .ZOptionsItemsListView .Row TD {
 	@OptionsItemsListRowCell@
 }
@@ -4103,10 +4099,6 @@ HTML>BODY .appt-selected .appt_allday_body {
 	min-height:1.6rem;
 #ENDIF
 	overflow:visible;
-}
-
-.ZOptionsItemsListView .Row-selected TD {
-	@OptionsItemsListRowCellSelected@
 }
 
 .ZOptionsOfflineAccts {
@@ -4342,26 +4334,12 @@ HTML>BODY .appt-selected .appt_allday_body {
  * Dumpster dialog
  */
 .ZmDumpsterDialog {
-	height:300px;
+	@DumpsterDialog@
 }
 
-.ZmDumpsterDialog .DwtDialogBody {
-	width:450px;
+.ZmDumpsterDialog .DwtListView {
+	@DumpsterDialogListView@
 }
-
-.ZmDumpsterDialog-toolbar {
-	@ToolbarBg@
-	border-bottom:1px solid @darken(AltC, 25)@;
-}
-
-.ZmDumpsterDialog .DwtListView-Rows {
-	height:278px;
-}
-
-.ZmDumpsterDialog .DumpsterSearchInput INPUT {
-	width:200px;
-}
-
 
 /*
  *	Share properties dialog

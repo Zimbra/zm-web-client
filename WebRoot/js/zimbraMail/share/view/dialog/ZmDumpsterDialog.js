@@ -42,11 +42,12 @@ ZmDumpsterDialog = function(parent, className) {
 		parent: parent,
 		className: (className || "ZmDumpsterDialog"),
 		title: ZmMsg.recoverDeletedItems,
-		standardButtons: [DwtDialog.CANCEL_BUTTON]
+		standardButtons: [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]
 	};
 	ZmDialog.call(this, params);
 
 	this.getButton(DwtDialog.CANCEL_BUTTON).setText(ZmMsg.close);
+	this.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.recoverTo);
 
 	this._controller = new ZmDumpsterListController(this);
 };
@@ -67,7 +68,6 @@ function(searchFor, types) {
 
 	ZmDialog.prototype.popup.call(this);
 };
-
 
 ZmDumpsterDialog.prototype.runSearchQuery =
 function(query) {
@@ -105,20 +105,12 @@ function() {
 	return AjxTemplate.expand("share.Widgets#ZmDumpsterDialog", {id:this._htmlElId});
 };
 
-ZmDumpsterDialog.prototype._listSelectionListener =
-function(ev) {
-	var sel = this._listview.getSelection() || [];
-	this._toolbar.enableAll((sel.length > 0));
-};
-
 ZmDumpsterDialog.prototype._handleInputFieldKeyDown =
 function(ev) {
 	if (ev.keyCode == 13 || ev.keyCode == 3) {
 		this._controller._searchListener();
 	}
 };
-
-
 
 ZmDumpsterDialog.prototype._resetTabFocus =
 function(){
@@ -146,9 +138,7 @@ function(listener) {
 	var params = {parent:this, parentElement:el, id: "searchDumpsterButton"};
 
 	var button = this._searchButton = new DwtButton(params);
-	el.style.paddingLeft="4px";
-
-	button.setText(ZmMsg.search);
+	button.setImage("Search");
 	button.addSelectionListener(listener);
 };
 
@@ -157,6 +147,14 @@ function() {
 	return this._inputField.getValue();
 };
 
+ZmDumpsterDialog.prototype._okButtonListener = function() {
+	//check if list item is selected
+	var listView = this._controller.getListView();
+	if(!listView || listView.getSelectionCount() == 0) {
+		return;
+	}
+	this._controller._moveListener();
+}
 
 /**
  * Listview showing deleted items
@@ -173,13 +171,15 @@ ZmDumpsterListView = function(parent, controller) {
 		view: this._getViewId(),
 		headerList: this._getHeaderList(),
 		type: this._getType(),
-		parentElement: (parent._htmlElId + "_listview")
+		parentElement: (parent._htmlElId + "_listview"),
+		className: "ZOptionsItemsListView DwtListView"
 	};
 	this._type = this._getType();
 
 	ZmListView.call(this, params);
 
 	this._listChangeListener = new AjxListener(this, this._changeListener);
+	this.setScrollStyle(DwtControl.SCROLL); // auto scroll
 };
 
 ZmDumpsterListView.prototype = new ZmListView;
@@ -222,6 +222,11 @@ ZmDumpsterListView.createView = function(view, parent, controller) {
 	}
 };
 
+ZmDumpsterListView.prototype._changeListener = function(ev) {
+	ZmListView.prototype._changeListener.call(this, ev);
+	var dialog = this.getController && this.getController()._container;
+	dialog && dialog.getButton(DwtDialog.OK_BUTTON).setEnabled(this.getSelectionCount() > 0);
+}
 
 /**
  * Listview showing deleted mail items
@@ -568,6 +573,8 @@ function() {
 	if (currentView) {
 		currentView.removeAll();
 	}
+	//disable `Recover To` button
+	this._container.getButton(DwtDialog.OK_BUTTON).setEnabled(false);
 };
 
 ZmDumpsterListController.prototype._createNewView =
@@ -597,29 +604,10 @@ function() {
 	dialog._initializeSearchBar(this._searchListener.bind(this));
 };
 
-
-ZmDumpsterListController.prototype._initializeToolBar =
-function(view) {
-	if (this._toolbar[view]) { return; }
-
-	var overrides = {};
-	overrides[ZmOperation.MOVE] = {showImageInToolbar: false,
-								   showTextInToolbar : true,
-								   textKey: "recoverTo"};
-	var tbParams = {
-		parent:        this._container,
-		className:     "ZmDumpsterDialog-toolbar",
-		buttons:       [ZmOperation.MOVE],
-		overrides:     overrides,
-		posStyle:      Dwt.RELATIVE_STYLE,
-		context:       view,
-		controller:    this,
-		parentElement: (this._container._htmlElId + "_toolbar")
-	};
-	var tb = this._toolbar[view] = new ZmButtonToolBar(tbParams);
-	tb.addSelectionListener(ZmOperation.MOVE, new AjxListener(this, this._moveListener));
-
-};
+ZmDumpsterListController.prototype._getToolBarOps =
+function() {
+	return [];
+}
 
 ZmDumpsterListController.prototype._doMove =
 function(items, folder, attrs, isShiftKey) {
@@ -660,3 +648,9 @@ function(dlg) {
 	params.omit = omit;
 	return params;
 };
+
+ZmDumpsterListController.prototype._listSelectionListener =
+function(ev) {
+	var listView = this.getListView();
+	this._container.getButton(DwtDialog.OK_BUTTON).setEnabled(listView.getSelectionCount() > 0);
+}
