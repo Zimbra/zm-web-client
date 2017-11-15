@@ -653,7 +653,7 @@ SELECT                      {   @NativeSelect@  }
 /*Temporary overrides that need to move to skin properties*/
 .RowDouble                          { height:auto; padding-top:0px;         }
 .RowDouble .TopRow                  { margin:6px 0px 0px; }
-.RowDouble .ZmMsgListExpand         { margin-left:-2px; margin-right:2px; }
+.RowDouble .ZmMsgListExpand         { margin-left:-4px; margin-top:-4px; }
 .RowDouble .BottomRow               { margin:0px 0px 6px;   }
 .Row-matched, .RowDouble-matched,
 .RowDouble-matched .ZmListFlagsWrapper,
@@ -713,6 +713,10 @@ SELECT                      {   @NativeSelect@  }
 .Unread .ZmConvListSubject,
 .Unread .ZmConvListFrom {
     @Text-unread@
+}
+
+.ZmConvListFrom {
+    @FontSize-big@
 }
 
 .ZToolbarTable .vertSep             { border-color:@ToolbarSeparatorColor@;     }
