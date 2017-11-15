@@ -238,14 +238,27 @@
 </template>
 
 <template id='share.Widgets#ZmDumpsterDialog'>
-	<table role="presentation">
-		<tr>
-			<td id='${id}_inputContainerId' class="DumpsterSearchInput"></td>
-			<td id='${id}_searchButtonContainerId'></td>
-		</tr>
+	<table class='ZmDialogPropertySheet' role="presentation">
+		<tbody>
+			<tr>
+				<td>
+					<div class="ZmSearchWidget">
+						<div class='ZmSearchWidgetInput' >
+							<div id='${id}_inputContainerId' class="DumpsterSearchInput"></div>
+						</div>
+						<div class="ZmSearchWidgetButton">
+							<div id='${id}_searchButtonContainerId'></div>
+						</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div id='${id}_listview'></div>
+				</td>
+			</tr>
+		</tbody>
 	</table>
-	<div id='${id}_toolbar'></div>
-	<div id='${id}_listview'></div>
 </template>
 
 <template id='share.Widgets#ZmShareProxyToolTip'>
