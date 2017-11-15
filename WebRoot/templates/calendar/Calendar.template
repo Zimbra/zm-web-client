@@ -194,7 +194,7 @@
 
 <template id='calendar.Calendar#PrintDialog'>
 	<div id='${id}_printDialogContainer'>
-	    <table role="presentation" align=center width=700>
+	    <table role="presentation" align=center width=700 style="overflow:hidden;">
             <tr>
                 <td width=30% valign=top><div id='${id}_calTreeContainer' style="margin-right:8px;height:100%;"></div></td>
                 <td width=70% valign=top>
@@ -216,7 +216,6 @@
                                 <td id='${id}_dateRangeToContainer'></td>
                             </tr>
                         </table>
-                        <div class="horizSep" style="margin:10px 0"></div>
                         <table role="presentation" class="ZPropertySheet" cellspacing="6" width=100%>
                             <tr>
                                 <td align=left width=131><$= ZmMsg.calPrintView $></td>
