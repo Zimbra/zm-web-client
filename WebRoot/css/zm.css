@@ -7925,3 +7925,17 @@ input[type="radio"] + label {
 #RedirectDialog .ZmComposeToFieldWrapper .ZButton.ZHover .ZButtonBorder .ZWidgetTitle {
 	@RedirectDialogButtonHoverText@
 }
+
+/* Rotate animation keyframe */
+@keyframes spin {
+    0% {
+      @transform@: rotate(0deg);
+    }
+    100% {
+      @transform@: rotate(360deg);
+    }
+}
+
+.ZmSpinElement {
+    animation: spin 400ms linear infinite;
+}
