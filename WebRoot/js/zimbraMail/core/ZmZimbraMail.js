@@ -970,6 +970,15 @@ ZmZimbraMail.prototype._refreshListener =
 function() {
 	if (!appCtxt.isWebClientOffline()) {
 		this.runAppFunction("runRefresh");
+		//show spinner when refresh button is clicked
+		var refreshIcon = appCtxt.refreshButton && appCtxt.refreshButton._getIconEl && appCtxt.refreshButton._getIconEl();
+		if(!refreshIcon) {
+			return;
+		}
+		Dwt.addClass(refreshIcon, "ZmSpinElement");
+		setTimeout(function(){
+			Dwt.delClass(refreshIcon, "ZmSpinElement");
+		}, 1500);
 	}
 };
 
