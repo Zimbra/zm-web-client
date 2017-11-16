@@ -1411,6 +1411,7 @@ div.AttachmentImgContainer {
 /* ??? SHOTGUN */
 .ZmComposeView TD {
 	@Text@
+	@FontSize-slightly-big@
 }
 
 /* ??? USE? */
@@ -5681,7 +5682,6 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .ZmEditContactViewAddress .DwtInputField TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField INPUT[type="text"] {
-	@FontSize-normal@
 	@FixBoxModel@
 }
 
