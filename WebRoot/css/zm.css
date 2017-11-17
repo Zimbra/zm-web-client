@@ -749,6 +749,7 @@ INPUT[type="text"].search_input-expanded:focus {
 .ZmMailMsgView .InvHeaderDiv .LabelColName,
 .ZmMailMsgCapsuleView .InvHeaderDiv .LabelColName {
 	@FontSize-big@
+	vertical-align: top;
 }
 
 .InvHeaderTable {
@@ -889,6 +890,11 @@ div.AttachmentImgContainer {
 .ZmMailMsgView .LabelColValue, 
 .ZmMailMsgCapsuleView .LabelColValue {
 	@MailMsgHeaderValue@
+}
+
+.ZmMailMsgView .LabelColValue .ZSelect, 
+.ZmMailMsgCapsuleView .LabelColValue .ZSelect{
+	height: auto;
 }
 
 .ZmMailMsgView .SubjectCol {
@@ -1260,7 +1266,6 @@ div.AttachmentImgContainer {
 .MsgHeaderTable .info .ZWidgetTable .ZWidgetTitle,
 .InvHeaderDiv .ZWidgetTable .ZWidgetTitle {
     font-size: 1.18rem;
-    line-height: 1.27;
     padding: 0;
 }
 
