@@ -189,11 +189,11 @@ function () {
 
 ZmAppCtxt.prototype.setZimbraMail = function(zimbraMail) {
 	this._zimbraMail = zimbraMail;
-}
+};
 
 ZmAppCtxt.prototype.getZimbraMail = function() {
 	return this._zimbraMail;
-}
+};
 
 /**
  * Sets the application controller.
@@ -1205,7 +1205,7 @@ ZmAppCtxt.prototype.isSpellCheckerAvailable = function () {
 	}
 
 	return this._spellCheckAvailable;
-}
+};
 
 /**
  * Gets the identity collection.
@@ -1865,7 +1865,7 @@ ZmAppCtxt.prototype.updateOfflineAppt = function(msgId, field, value, nullData, 
 			}
 		}
 	}
-}
+};
 
 /**
  * Gets the task manager.
@@ -1918,7 +1918,7 @@ function(keyMap, shortcut) {
 			var list = text.split(/;\s*/);
 			var sc = list[0];	// use first shortcut in list
 			if (!sc) { return null; }
-			sc = sc.replace(/\b[A-Z]\b/g, function(let) { return let.toLowerCase(); });
+			sc = sc.replace(/\b[A-Z]\b/g, function(st) { return st.toLowerCase(); });
 			text = [" [", sc.replace(",", ""), "]"].join("");
 		} else {
 			var key = [keyMap, "INHERIT"].join(".");
