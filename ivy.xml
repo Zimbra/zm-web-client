@@ -16,7 +16,7 @@
         <dependency org="com.sun.xml.stream.buffer" name="streambuffer" rev="2.2.6"/>
         <dependency org="commons-cli" name="commons-cli" rev="1.2"/>
         <dependency org="gifencoder" name="gifencoder" rev="0.9"/>
-        <dependency org="com.yahoo.platform.yui" name="yuicompressor" rev="2.4.2-zimbra"/>
+        <dependency org="com.yahoo.platform.yui" name="yuicompressor" rev="2.4.8"/>
         <dependency org="rhino" name="js" rev="1.6R7"/>
         <dependency org="org.apache.mina" name="mina-core" rev="2.0.4"/>
         <dependency org="zimbra" name="zm-soap" rev="latest.integration"/>
