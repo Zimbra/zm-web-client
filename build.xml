@@ -51,7 +51,6 @@
     <property name='img.dir' value='${web.dir}/img'/>
 
     <property name='webinf.dir' value='${web.dir}/WEB-INF'/>
-    <property name='webinf.lib.dir' value='${webinf.dir}/lib'/>
 
     <!-- output dirs relative to application being built -->
     <property name='build.dir' value='${zwc.basedir}/build'/>
@@ -84,26 +83,19 @@
     <property name="compress.ext" value='.zgz'/>
     <property name='compresserror.ext' value='.err'/>
 
-    <!-- ZIMBRA FIREFOX EXTENSION -->
-    <property name="ffext.jarfile" value="zimbradnd.jar"/>
-    <property name="ffext.xpifile" value="ZimbraDnD.xpi"/>
-    <property name="ffext.build.dir" location="ffext/build"/>
-    <property name="ffext.src.dir" value="ffext/src/zimbradnd"/>
+    <!-- THIRDPARTY INTEGRATION -->
+    <property name="3rdparty.dir" value="${build.js.dir}/ajax/3rdparty" />
+
+    <property name="modernizr.version" value="2.8.3"/>
+    <property name="yui.version" value="2.7.0"/>
+    <property name="jquery.version" value="1.11.0"/>
 
     <!-- TINY_MCE INTEGRATION -->
     <property name="tinymce.version" value="4.2.6"/>
-    <property name='tinymce.dir' value='${build.js.dir}/ajax/3rdparty/tinymce'/>
+    <property name='tinymce.dir' value='${3rdparty.dir}/tinymce'/>
     <property name='tinymce.root.dir' value='tiny_mce' />
     <property name='tinymce.js.dir' value='${tinymce.root.dir}/tinymce-${tinymce.version}/js/tinymce' />
     <property name="tinymce.custom.dir" value="tiny_mce/custom"/>
-
-    <!-- MODERNIZR INTEGRATION -->
-    <property name="modernizr.version" value="2.6.1"/>
-    <property name="modernizr.dir" value="${build.js.dir}/ajax/3rdparty/modernizr"/>
-
-    <!-- jQuery INTEGRATION -->
-    <property name="jquery.version" value="1.11.0"/>
-    <property name="jquery.dir" value="${build.js.dir}/ajax/3rdparty/jquery"/>
 
     <!-- Paths and Filesets -->
 
@@ -171,7 +163,6 @@
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**,test/**'/>
     </target>
 
-    <!-- add build-ajax in dependency once zm-ajax built script is ivy based -->
     <target name="war"
             depends="init,images,styles,settings,copy-ajax,jam-files,compress"
             description="Builds all dependencies and assembles the war file.">
@@ -179,51 +170,30 @@
     </target>
 
     <target name="copy-ajax">
-        <sync todir="${js.dir}">
+        <sync todir="${build.js.dir}">
             <fileset dir="${ajax.dir}/${js.dir}"/>
             <preserveintarget>
                 <include name="**"/>
             </preserveintarget>
         </sync>
 
-        <sync todir="${web.dir}/keys">
+        <sync todir="${build.dir}/keys">
             <fileset dir="${ajax.dir}/${web.dir}/keys"/>
             <preserveintarget>
                 <include name="**"/>
             </preserveintarget>
         </sync>
 
-        <sync todir="${web.dir}/messages">
+        <sync todir="${build.dir}/messages">
             <fileset dir="${ajax.dir}/${web.dir}/messages"/>
                 <preserveintarget>
             <include name="**"/>
             </preserveintarget>
         </sync>
 
-        <sync todir="${web.dir}/jquery">
-            <fileset dir="${ajax.dir}/${web.dir}/jquery"/>
-            <preserveintarget>
-                <include name="**"/>
-            </preserveintarget>
-        </sync>
-
-        <sync todir="${web.dir}/modernizr">
-            <fileset dir="${ajax.dir}/${web.dir}/modernizr"/>
-            <preserveintarget>
-                <include name="**"/>
-            </preserveintarget>
-        </sync>
-
-        <sync todir="${web.dir}/yui">
-            <fileset dir="${ajax.dir}/${web.dir}/yui"/>
-            <preserveintarget>
-                <include name="**"/>
-            </preserveintarget>
-        </sync>
-    </target>
-
-    <target name="build-ajax">
-        <ant dir="${ajax.dir}" target="jar" inheritAll="false"/>
+        <antcall target="jquery" />
+        <antcall target="modernizr" />
+        <antcall target="yui" />
     </target>
 
     <target name="assemble-war" depends="webxml-package-replace, resolve" description="Assembles the war file.  Assumes that all dependencies have been built.  Octopus/ZimbraWebClient/build.xml calls the war target, modifies files in ZimbraWebClient/build, and then calls this target.">
@@ -252,6 +222,7 @@
             <classes refid="overlay.src.props.fileset" />
             <classes refid="src.props.fileset" />
             <classes refid="overlay.messages.fileset" />
+            <classes refid="ajax.messages.fileset" />
             <classes refid="messages.fileset" />
 
             <lib dir="${build.tmp.dir}" includes="*.jar"/>
@@ -280,7 +251,7 @@
         <delete dir="${build.tmp.dir}"/>
     </target>
 
-    <target name='sync' depends='resolve,copy-ajax,jquery,modernizr,tinymce,templates'>
+    <target name='sync' depends='resolve,copy-ajax,tinymce,templates'>
         <!-- NOTE: Keep order in sync with list of war filesets. -->
         <copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
             <fileset refid="webinf.fileset" />
@@ -291,6 +262,7 @@
         <copy todir='${webapp.dir}/WEB-INF/classes' verbose='${sync.verbose}'>
             <fileset refid="src.props.fileset" />
             <fileset refid="overlay.src.props.fileset" />
+            <fileset refid="ajax.messages.fileset" />
             <fileset refid="messages.fileset" />
             <fileset refid="overlay.messages.fileset" />
             <fileset dir='${build.classes.dir}' excludes='**/build/**'/>
@@ -414,6 +386,7 @@
                  dir='${overlay.dir}/${img.dir}' includes='${img.includes}' excludes='${img.excludes}' />
 
         <fileset id="messages.fileset" dir='${web.dir}' includes='messages/**,keys/**' />
+        <fileset id="ajax.messages.fileset" dir='${build.dir}' includes='messages/**,keys/**' />
         <fileset id="overlay.messages.fileset" erroronmissingdir="false"
                  dir='${overlay.dir}/${web.dir}' includes='messages/**,keys/**' />
 
@@ -430,6 +403,7 @@
                  dir='${overlay.dir}/${template.dir}' includes='**/*.template' />
 
         <fileset id="package.fileset" dir='${js.dir}' includes='${jam.includes}' excludes='${jam.excludes}' />
+        <fileset id="ajax.package.fileset" dir='${build.js.dir}' includes='${jam.includes}' excludes='${jam.excludes}' />
         <fileset id="overlay.package.fileset" erroronmissingdir="false"
                  dir='${overlay.dir}/${js.dir}' includes='${jam.includes}' excludes='${jam.excludes}' />
 
@@ -892,13 +866,14 @@
         </if>
     </target>
 
-    <target name='jam-files' depends='jquery,modernizr,tinymce,templates'>
+    <target name='jam-files' depends='tinymce,templates'>
         <property name='jam.jsp.dir' value='${build.web.dir}/public/jsp'/>
         <mkdir dir='${build.js.dir}'/>
         <mkdir dir='${jam.jsp.dir}'/>
 
         <copy todir='${build.js.dir}' flatten='true'>
             <fileset refid='package.fileset' />
+            <fileset refid='ajax.package.fileset' />
             <fileset refid='overlay.package.fileset' />
             <fileset refid='customer.package.fileset' />
         </copy>
@@ -1044,7 +1019,7 @@ ext = BeanUtils.cook(ext);
 	    />
 
         <!-- copying yui jar file in build/tmp directory. -->
-        <ivy:install organisation="com.yahoo.platform.yui" module="yuicompressor" revision="2.4.2-zimbra" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="com.yahoo.platform.yui" module="yuicompressor" revision="2.4.8" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
 
         <!-- minimize js, prepend copyright, compress -->
         <for param="var">
@@ -1074,8 +1049,8 @@ ext = BeanUtils.cook(ext);
                         <echo>Minimizing to @{var}${jsmin.ext}</echo>
 	                    <try>
 	                        <block>
-		                        <java jar="${build.tmp.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true"
-		                              output="${build.dir}/yui-compress.out" >
+		                        <java jar="${build.tmp.dir}/yuicompressor-2.4.8.jar" fork="true" failonerror="true"
+		                              output="${build.dir}/yui-compress.out">
                                     <!-- Add error="@{var}${compresserror.ext}" in java task if *.err files need to be generated. -->
 		                            <arg value="--line-break"/>
 		                            <arg value="0"/>
@@ -1099,7 +1074,11 @@ ext = BeanUtils.cook(ext);
                         <echo>Prepending Copyright to @{var}${license.ext}</echo>
                         <concat destfile="@{var}${license.ext}" fixlastline="true">
                             <header filtering="no" trimleading="yes">
-                                /* Copyright (C) 2005-2009 Zimbra Inc. http://www.zimbra.com/ */
+                                /* 
+                                 * Zimbra Collaboration Suite Web Client
+                                 * Copyright (C) 2004-2017 Synacor, Inc.
+                                 * https://www.zimbra.com/license
+                                 */
                             </header>
                             <fileset file='@{var}${jsmin.ext}'/>
                         </concat>
@@ -1126,7 +1105,7 @@ ext = BeanUtils.cook(ext);
 		<for list="${files}" param="filename">
 			<sequential>
 				<echo>Testing file: @{filename}</echo>
-				<java jar="${build.tmp.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true">
+				<java jar="${build.tmp.dir}/yuicompressor-2.4.8.jar" fork="true" failonerror="true">
 				    <arg value="--line-break"/>
 				    <arg value="0"/>
 				    <arg value="--type"/>
@@ -1200,23 +1179,6 @@ ext = BeanUtils.cook(ext);
     <target name='clean' depends='customer-init'>
         <delete dir='${build.dir}'/>
         <delete dir='${customer.build.dir}'/>
-        <delete dir='${web.dir}/jquery'/>
-        <delete dir='${web.dir}/modernizr'/>
-        <delete dir='${web.dir}/yui'/>
-        <delete dir='${web.dir}/js/ajax'/>
-        <delete dir='${web.dir}/js/zimbra'/>
-        <delete>
-            <fileset dir="${web.dir}/keys">
-                <include name="AjxKeys*.properties"/>
-            </fileset>
-        </delete>
-        <delete>
-            <fileset dir="${web.dir}/messages">
-                <include name="AjxMsg*.properties"/>
-                <include name="I18nMsg*.properties"/>
-                <include name="TzMsg*.properties"/>
-            </fileset>
-        </delete>
     </target>
 
 	<!-- JavaScript API Documentation Tasks -->
@@ -1392,16 +1354,6 @@ ext = BeanUtils.cook(ext);
         <exec executable="zmmailboxdctl">
             <arg value="restart"/>
         </exec>
-    </target>
-
-    <!-- ZIMBRA FIREFOX EXTENSION -->
-    <target name="ffext-reset-the-world">
-        <delete dir="${ffext.build.dir}"/>
-        <mkdir dir="${ffext.build.dir}/chrome"/>
-        <copy file="${ffext.src.dir}/chrome.manifest" todir="${ffext.build.dir}"/>
-        <copy file="${ffext.src.dir}/install.rdf" todir="${ffext.build.dir}"/>
-        <zip destfile="${ffext.build.dir}/chrome/${ffext.jarfile}" basedir="${ffext.src.dir}/chrome/zimbradnd"/>
-        <zip destfile="${ffext.build.dir}/${ffext.xpifile}" basedir="${ffext.build.dir}"/>
     </target>
 
     <!-- JSP PRECOMPILE STUFF -->
@@ -1583,21 +1535,51 @@ ext = BeanUtils.cook(ext);
         </if>
     </target>
 
-    <target name="modernizr">
-        <copy todir='${modernizr.dir}' file='${web.dir}/modernizr/${modernizr.version}/modernizr.js' verbose='${sync.verbose}'/>
+    <!-- JQUERY Library -->
+    <target name="jquery" depends="resolve">
+        <ivy:install organisation="org.webjars" module="jquery" revision="${jquery.version}" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" />
+
+        <unzip src="${build.tmp.dir}/jquery-${jquery.version}.jar" dest="${build.tmp.dir}/jquery" overwrite="true" />
+
+        <copy todir="${3rdparty.dir}/jquery">
+            <fileset dir="${build.tmp.dir}/jquery/META-INF/resources/webjars/jquery/${jquery.version}" />
+        </copy>
     </target>
 
-    <target name="jquery">
-        <copy todir='${jquery.dir}' file='${web.dir}/jquery/${jquery.version}/jquery.js' verbose='${sync.verbose}'/>
+    <!-- MODERNIZR Library -->
+    <target name="modernizr" depends="resolve">
+        <ivy:install organisation="org.webjars" module="modernizr" revision="${modernizr.version}" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" />
+
+        <unzip src="${build.tmp.dir}/modernizr-${modernizr.version}.jar" dest="${build.tmp.dir}/modernizr" overwrite="true" />
+
+        <copy todir="${3rdparty.dir}/modernizr">
+            <fileset dir="${build.tmp.dir}/modernizr/META-INF/resources/webjars/modernizr/${modernizr.version}" />
+        </copy>
     </target>
 
-   <target name="pkg" depends="clean-pkg, prod-war, jspc.build">
-      <exec dir="." executable="./pkg-builder.pl" failonerror="true"/>
-   </target>
+    <!-- YUI Library -->
+    <target name="yui" depends="resolve">
+        <ivy:install organisation="com.yahoo.platform.yui" module="yui" revision="${yui.version}" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="zip" />
 
-   <target name="clean-pkg">
-      <delete dir="build/dist"/>
-      <delete dir="build/stage"/>
-   </target>
-    
+        <unzip src="${build.tmp.dir}/yui-${yui.version}.zip" dest="${build.tmp.dir}" overwrite="true" />
+
+        <!-- Copy to js/ajax/3rdparty as webclient is using it from there -->
+        <copy todir="${3rdparty.dir}/yui">
+            <fileset dir="${build.tmp.dir}/yui" />
+        </copy>
+
+        <!-- Copy to root folder as well, as it is used by html client -->
+        <copy todir="${build.web.dir}/yui/${yui.version}">
+            <fileset dir="${build.tmp.dir}/yui" />
+        </copy>
+    </target>
+
+    <target name="pkg" depends="clean-pkg, prod-war, jspc.build">
+        <exec dir="." executable="./pkg-builder.pl" failonerror="true"/>
+    </target>
+
+    <target name="clean-pkg">
+        <delete dir="build/dist"/>
+        <delete dir="build/stage"/>
+    </target>
 </project>
