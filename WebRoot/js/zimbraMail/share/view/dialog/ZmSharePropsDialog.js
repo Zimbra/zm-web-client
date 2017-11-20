@@ -214,6 +214,7 @@ function(mode, object, share) {
 	this._reply.reparentHtmlElement(this._replyId);
 
 	DwtDialog.prototype.popup.call(this);
+	Dwt.setLocation(this.getHtmlElement(), Dwt.DEFAULT, 10);
 
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 	if (isNewShare) {
