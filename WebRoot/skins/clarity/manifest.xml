@@ -20,6 +20,8 @@
  * ***** END LICENSE BLOCK *****
 -->
     <common>
+    </common>
+    <advanced>
         <substitutions>
             <file>../_base/base4/skin.properties</file>
             <file>skin.properties</file>
@@ -27,8 +29,6 @@
         <css>
             <file>../_base/base4/skin.css</file>
         </css>
-    </common>
-    <advanced>
         <script>
             <file>../_base/base4/ZmSkin.js</file>
         </script>
@@ -40,10 +40,13 @@
     <standard>
         <substitutions>
             <file>../_base/base3/skin.properties</file>
+            <file>../_deprecated/harmony/skin.properties</file>
         </substitutions>
         <css>
             <file>../../css/zhtml.css</file>
             <file>../_base/base3/zhtml.css</file>
+            <file>../_base/base3/skin.css</file>
+            <file>../_deprecated/harmony/skin.css</file>
         </css>
     </standard>
 </skin>
