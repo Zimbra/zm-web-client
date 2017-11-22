@@ -922,28 +922,6 @@ we are hiding element with that class
     @FileTypeCal@
 }
 
-/* Chat icons*/
-
-.Img_ImSmallAvailable-svg .svg-icon {
-    fill: @IconImSmallAvailable@;
-}
-
-.Img_ImSmallInvisble-svg .svg-icon {
-    fill: @IconImSmallInvisble@;
-}
-
-.Img_ImSmallUnavailable-svg .svg-icon {
-    fill: @IconImSmallUnavailable@;
-}
-
-.Img_ImSmallAway-svg .svg-icon {
-    fill: @IconImSmallAway@;
-}
-
-.Img_ImSmallDnD-svg .svg-icon {
-    fill: @IconImDnD@;
-}
-
 .newTaskBanner .ImgAdd-svg .svg-icon {
     fill: @PrimaryBrandingColor@
 }
