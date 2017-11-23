@@ -401,48 +401,8 @@ ZmAutocomplete.prototype._checkCache =
 			if (list !== null) {
 				return list;
 			}
-			if (str.length <= 1) {
-				return null;
-			}
 
-			// bug 58913: don't do client-side substring matching since the server matches on
-			// fields that are not returned in the results
 			return null;
-
-			// forward matching: if we have complete results for a beginning part of this
-			// string, we can cull those down to results for this string
-			var tmp = str;
-			while (tmp && !list) {
-				tmp = tmp.slice(0, -1); // remove last character
-				DBG.println("ac", "checking cache for " + tmp);
-				cache = this._getCachedResults(tmp, acType, true, account);
-				list = cache && cache.list;
-				if (list && list.length == 0) {
-					// substring had no matches, so this string has none
-					DBG.println("ac", "Found empty results for substring " + tmp);
-					return list;
-				}
-			}
-
-			var list1 = [];
-			if (list && list.length) {
-				// found a substring that we've already done matching for, so we just need
-				// to narrow those results
-				DBG.println("ac", "working forward from '" + tmp + "'");
-				// test each of the substring's matches to see if it also matches this string
-				for (var i = 0; i < list.length; i++) {
-					var match = list[i];
-					if (match.matches(str)) {
-						list1.push(match);
-					}
-				}
-			} else {
-				return null;
-			}
-
-			this._cacheResults(str, acType, list1, false, false, cache, account);
-
-			return list1;
 		};
 
 /**
