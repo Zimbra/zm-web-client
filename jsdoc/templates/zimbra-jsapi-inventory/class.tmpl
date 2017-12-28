@@ -1,0 +1,44 @@
+{
+	"constructor": {
+		<if test="!data.isBuiltin() && (data.isNamespace || data.is('CONSTRUCTOR'))">
+			"isPrivate": <if test="data.isPrivate">true<else />false</if>,
+			"isInner": <if test="data.isInner">true<else />false</if>,
+			"name": "{+data.alias+}",
+			"signature": "{+ makeSignature(data.params) +}"
+		</if>
+	},
+	"properties": [
+		<if test="data.properties.length">
+			{! var idx=0; !}
+			{! var ownProperties = data.properties.filter(function($){return $.memberOf == data.alias && !$.isNamespace}).sort(makeSortby("name")); !}
+			<if test="ownProperties.length">
+				<for each="member" in="ownProperties">
+			{
+			"isPrivate": <if test="member.isPrivate">true<else />false</if>,
+			"isInner": <if test="member.isInner">true<else />false</if>,
+			"isStatic": <if test="member.isStatic">true<else />false</if>,
+			"isConstant": <if test="member.isConstant">true<else />false</if>,
+			"name": "<if test="member.isStatic && member.memberOf != '_global_'">{+member.memberOf+}.</if>{+member.name+}"
+			}{! idx++; !}<if test="idx < data.properties.length">,</if>
+				</for>
+			</if>
+		</if>
+	],
+	"methods": [
+		<if test="data.methods.length">
+			{! var idx=0; !}
+			{! var ownMethods = data.methods.filter(function($){return $.memberOf == data.alias  && !$.isNamespace}).sort(makeSortby("name")); !}
+			<if test="ownMethods.length">
+				<for each="member" in="ownMethods">
+			{
+			"isPrivate": <if test="member.isPrivate">true<else />false</if>,
+			"isInner": <if test="member.isInner">true<else />false</if>,
+			"isStatic": <if test="member.isStatic">true<else />false</if>,
+			"name": "<if test="member.isStatic && member.memberOf != '_global_'">{+member.memberOf+}.</if>{+member.name+}",
+			"signature": "{+makeSignature(member.params)+}"
+			}{! idx++; !}<if test="idx < data.methods.length">,</if>
+				</for>
+			</if>
+		</if>
+	]
+}

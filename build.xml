@@ -36,8 +36,10 @@
     <property name='taglib.dir' value='${this.zwc.basedir}/../zm-taglib'/>
     <property name='taglib.build.dir' value='${taglib.dir}/build'/>
 
-    <property name='lib.dir' value='${this.zwc.basedir}/jars'/>
-    <property name="jsdoctoolkit.dir" location="${lib.dir}/jsdoc-toolkit-2.3.0" />
+    <property name="jsdoctoolkit.version" value="2.4.0"/>
+    <property name="jsdoctoolkit.dir" location="${build.tmp.dir}/jsdoc_toolkit-${jsdoctoolkit.version}/jsdoc-toolkit" />
+    <property name="jsdoc.dir" location="${this.zwc.basedir}/jsdoc" />
+    <property name="jsdoc.templates.dir" location="${jsdoc.dir}/templates" />
 
     <!-- NOTE: These dirs need to stay RELATIVE paths for overlay purposes! -->
     <property name="src.dir" value="src" />
@@ -1222,24 +1224,37 @@ ext = BeanUtils.cook(ext);
 
 	<!-- JavaScript API Documentation Tasks -->
 	<target name="clean-jsapi-zimbra-doc" >
-        <delete dir="${build.jsapi-zimbra-doc.dir}"/>
-        <delete file="${jsapi-zimbra-doc.file}"/>
+		<delete file="${build.tmp.dir}"/>
+
+		<delete dir="${build.jsapi-zimbra-doc.dir}"/>
+		<delete file="${jsapi-zimbra-doc.file}"/>
 	</target>
 
 	<target name="clean-jsapi-inventory" >
-        <delete dir="${build.jsapi-inventory.dir}"/>
-        <delete file="${jsapi-inventory.file}"/>
+		<delete file="${build.tmp.dir}"/>
+
+		<delete dir="${build.jsapi-inventory.dir}"/>
+		<delete file="${jsapi-inventory.file}"/>
 	</target>
 
 	<target name="clean-jsapi-changelog" >
-        <delete dir="${build.jsapi-changelog.dir}"/>
-        <delete file="${jsapi-changelog.file}"/>
+		<delete file="${build.tmp.dir}"/>
+
+		<delete dir="${build.jsapi-changelog.dir}"/>
+		<delete file="${jsapi-changelog.file}"/>
 	</target>
 
-	<target name="generate-jsapi-zimbra-doc" depends="clean-jsapi-zimbra-doc">
+	<target name="jsdoc">
+		<mkdir dir="${build.tmp.dir}"/>
+		<get src="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/jsdoc-toolkit/jsdoc_toolkit-${jsdoctoolkit.version}.zip" dest="${build.tmp.dir}"/>
+
+		<unzip src="${build.tmp.dir}/jsdoc_toolkit-${jsdoctoolkit.version}.zip" dest="${build.tmp.dir}" overwrite="true" />
+	</target>
+
+	<target name="generate-jsapi-zimbra-doc" depends="clean-jsapi-zimbra-doc,jsdoc,copy-ajax">
 	  <java jar="${jsdoctoolkit.dir}/jsrun.jar" fork="true" failonerror="true">
 	    <arg value="${jsdoctoolkit.dir}/app/run.js"/>
-	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-doc"/>
+	    <arg value="-t=${jsdoc.templates.dir}/zimbra-jsapi-doc"/>
 	    <arg value="-d=${build.jsapi-zimbra-doc.dir}"/>
 	    <arg value="-r=4"/>
 	    <arg value="${js.dir}/ajax"/>
@@ -1257,7 +1272,7 @@ ext = BeanUtils.cook(ext);
 	  </java>
 	</target>
 
-	<target name="generate-jsapi-inventory" depends="clean-jsapi-inventory,init">
+	<target name="generate-jsapi-inventory" depends="clean-jsapi-inventory,init,jsdoc,copy-ajax">
         <mkdir dir="${build.jsapi-inventory.dir}"/>
         <echo file="${build.jsapi-inventory.dir}/manifest.json">
 {
@@ -1268,7 +1283,7 @@ ext = BeanUtils.cook(ext);
         </echo>
 	  <java jar="${jsdoctoolkit.dir}/jsrun.jar" fork="true" failonerror="true">
 	    <arg value="${jsdoctoolkit.dir}/app/run.js"/>
-	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-inventory"/>
+	    <arg value="-t=${jsdoc.templates.dir}/zimbra-jsapi-inventory"/>
 	    <arg value="-d=${build.jsapi-inventory.dir}"/>
 	    <arg value="-r=4"/>
 	    <arg value="-s"/>
@@ -1286,35 +1301,32 @@ ext = BeanUtils.cook(ext);
 	    <arg value="${js.dir}/zimbraMail/tasks"/>
 	  </java>
 	</target>
-	
-	<target name="generate-jsapi-changelog" depends="package-jsapi-inventory">
+
+	<target name="generate-jsapi-changelog" depends="clean-jsapi-changelog,resolve,package-jsapi-inventory">
         <mkdir dir="${build.jsapi-changelog.dir}"/>
 		<copy todir="${build.jsapi-changelog.dir}">
-			<fileset dir="${jsdoctoolkit.dir}/templates/zimbra-jsapi-changelog">
+			<fileset dir="${jsdoc.templates.dir}/zimbra-jsapi-changelog">
 				<exclude name="**/*.ftl"/>
 			</fileset>
 		</copy>
 		<java classname="com.zimbra.jsapi.JsChangeLogUtil" classpathref="class.path" fork="true" failonerror="true">
 			<arg line="-output ${build.jsapi-changelog.dir}"/>
-		    <arg line="-template ${jsdoctoolkit.dir}/templates/zimbra-jsapi-changelog"/>
-		    <arg line="-baseline.inventory ${docs.dir}/jsapi/jsapi-inventory.zip"/>
+		    <arg line="-template ${jsdoc.templates.dir}/zimbra-jsapi-changelog"/>
+		    <arg line="-baseline.inventory ${jsdoc.dir}/jsapi-inventory.zip"/>
 		    <arg line="-current.inventory ${jsapi-inventory.file}"/>
 		</java>
 	</target>
-		
+
 	<target name="package-jsapi-zimbra-doc" depends="generate-jsapi-zimbra-doc">
-		<zip destfile="${jsapi-zimbra-doc.file}"
-		       basedir="${build.jsapi-zimbra-doc.dir}" />
+		<zip destfile="${jsapi-zimbra-doc.file}" basedir="${build.jsapi-zimbra-doc.dir}" />
 	</target>
 
 	<target name="package-jsapi-inventory" depends="generate-jsapi-inventory">
-		<zip destfile="${jsapi-inventory.file}"
-		       basedir="${build.jsapi-inventory.dir}" />
+		<zip destfile="${jsapi-inventory.file}" basedir="${build.jsapi-inventory.dir}" />
 	</target>
 
 	<target name="package-jsapi-changelog" depends="generate-jsapi-changelog">
-		<zip destfile="${jsapi-changelog.file}"
-		       basedir="${build.jsapi-changelog.dir}" />
+		<zip destfile="${jsapi-changelog.file}" basedir="${build.jsapi-changelog.dir}" />
 	</target>
 
     <!-- image tasks -->
