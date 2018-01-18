@@ -320,6 +320,9 @@ hr{
 .ZhACBCc {
     z-index: 9030;
 }
+.ZhACAttach {
+    z-index: 9020;
+}
 
 .Flag:before {
     content:"|>";
