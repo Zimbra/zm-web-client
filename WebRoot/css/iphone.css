@@ -501,6 +501,9 @@ form {
 .ZhACBCc {
     z-index: 9030;
 }
+.ZhACAttach {
+    z-index: 9020;
+}
 .prev_button, .mid_button, .next_button {
     border: 0px !important;
     margin: 0px !important;
