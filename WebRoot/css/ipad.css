@@ -1600,6 +1600,10 @@ span.aleft > div:first-child, .contactHeader {
     z-index: 9030;
 }
 
+.ZhACAttach {
+    z-index: 9020;
+}
+
 .yui-ac-bcd .left{
 	border-bottom: none !important;
 }
