@@ -132,6 +132,12 @@
                 <app:status><fmt:message key="draftSavedSuccessfully"/></app:status>
                 <c:set var="needComposeView" value="${true}"/>
             </c:when>
+            <c:when test="${uploader.isLimitExceeded}">
+                <c:set var="statusClass" scope="request" value="StatusCritical"/>
+                <c:set var="uploadError" scope="request" value="${true}"/>
+                <fmt:message var="errorMsg" key="zclient.UPLOAD_SIZE_LIMIT_EXCEEDED"/>
+                <c:set var="statusMessage" scope="request" value="${errorMsg}"/>
+            </c:when>
         </c:choose>
     </c:if>
 </mo:handleError>
