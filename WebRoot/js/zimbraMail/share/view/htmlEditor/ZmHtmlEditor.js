@@ -772,7 +772,7 @@ function(id, autoFocus) {
 	var plugins = [
 		"zemoticons",
 		"table", "directionality", "textcolor", "lists", "advlist",
-		"link", "hr", "charmap", "code", "image"
+		"link", "hr", "charmap", "code", "image", "autolink"
 	];
 
 	if (this._attachmentCallback) {
@@ -819,7 +819,7 @@ function(id, autoFocus) {
 		object_resizing : true,
         font_formats : fonts.join(";"),
         fontsize_formats : AjxMsg.fontSizes || '',
-		convert_urls : false,
+		convert_urls : true,
 		verify_html : false,
 		browser_spellcheck : true,
         content_css : appContextPath + '/css/tinymce-content.css?v=' + cacheKillerVersion,
