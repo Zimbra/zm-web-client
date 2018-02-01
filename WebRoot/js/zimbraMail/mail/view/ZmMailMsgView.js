@@ -1854,7 +1854,7 @@ ZmMailMsgView.prototype._renderMessageBody1 = function(params, part) {
             }
             else {
                 // this can happen if a message only has an HTML part and the user wants to view mail as text
-                content = "<div style='white-space:pre-wrap;'>" + AjxStringUtil.convertHtml2Text(content) + "</div>"
+                content = "<div style='white-space:pre-wrap;'>" + AjxStringUtil.htmlEncode(AjxStringUtil.convertHtml2Text(content)) + "</div>"
             }
         }
 
