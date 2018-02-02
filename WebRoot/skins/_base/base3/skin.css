@@ -605,7 +605,7 @@ SELECT						{	@FieldBorder@	}
 .TopRow .ImgNodeExpanded			{ padding:0px; }
 .ZmMsgListColTag 					{ padding:0px 2px 0px 3px; vertical-align:middle; }
 .BottomRow .ZmMsgListColTag 		{ margin-right:3px; }
-.ZmMsgListDate						{ position:absolute; right:0px; text-align:right; width:75px; width:6.8rem;}
+.ZmMsgListDate						{ position:absolute; right:0px; text-align:right; }
 .ZmMsgListColSelection, .ZmMsgListColFlag, .ZmMsgListColTag, .ZmMsgListColAccount,
 .ZmMsgListColStatus, .ZmMsgListColMute, .ZmMsgListColRead, .ZmMsgListColAttachment, .ZmMsgListColExpand
 {
