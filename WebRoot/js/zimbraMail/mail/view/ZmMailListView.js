@@ -318,7 +318,8 @@ function(htmlArr, idx, item, field, colIdx, params, classes) {
 		idx = this._getImageHtml(htmlArr, idx, item.getAccount().getIcon(), this._getFieldId(item, field), classes);
 	} 
 	else if (field == ZmItem.F_DATE) {
-		var date = AjxDateUtil.computeDateStr(params.now || new Date(), item.date);
+		var displayTime = appCtxt.get(ZmSetting.DISPLAY_TIME_IN_MAIL_LIST);
+		var date = AjxDateUtil.computeDateStr(params.now || new Date(), item.date, displayTime);
 		htmlArr[idx++] = "<div id='";
 		htmlArr[idx++] = this._getFieldId(item, field);
 		htmlArr[idx++] = "' ";
@@ -447,7 +448,8 @@ function() {
 		this._headerInit[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true, cssClass:"ZmMsgListColSubject"};
 		this._headerInit[ZmItem.F_FOLDER]		= {text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true, cssClass:"ZmMsgListColFolder"};
 		this._headerInit[ZmItem.F_SIZE]			= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, sortable:ZmItem.F_SIZE, resizeable:true, cssClass:"ZmMsgListColSize"};
-		this._headerInit[ZmItem.F_DATE]			= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true, cssClass:"ZmMsgListColDate"};
+		var column_width_date = appCtxt.get(ZmSetting.DISPLAY_TIME_IN_MAIL_LIST) ? ZmMsg.COLUMN_WIDTH_DATE_TIME : ZmMsg.COLUMN_WIDTH_DATE;
+		this._headerInit[ZmItem.F_DATE]			= {text:ZmMsg.received, width:column_width_date, sortable:ZmItem.F_DATE, resizeable:true, cssClass:"ZmMsgListColDate"};
 		this._headerInit[ZmItem.F_SORTED_BY]	= {text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY, resizeable:false};
 	}
 };
