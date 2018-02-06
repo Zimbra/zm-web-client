@@ -689,18 +689,18 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
 	var location = appt.getLocation();
 	location = location && location.length && !is60 ? "<div class='appt_location'>" + AjxStringUtil.htmlEncode(appt.getLocation()) + "</div>" : null;
 
-	if (is30 || isAllDay) {
-		apptName = isAllDay ? apptName : appt.getDurationText(true, true) + " - " + apptName;
-		if (this.view !== ZmId.VIEW_CAL_DAY) {
-			// fit as much of appt name as we can in one row, use ... if we have to truncate
-			var apptBounds = this._getBoundsForAppt(appt),
-				apptWidth = apptBounds && apptBounds.width;
+    if (is30 || isAllDay) {
+        apptName = isAllDay ? apptName : appt.getDurationText(true, true) + " - " + apptName;
+        if (this.view !== ZmId.VIEW_CAL_DAY) {
+            // fit as much of appt name as we can in one row, use ... if we have to truncate
+            var apptBounds = this._getBoundsForAppt(appt),
+                apptWidth = apptBounds && apptBounds.width;
 
-			if (apptWidth > 30) {
-				apptName = AjxStringUtil.fitString(apptName, apptWidth - 15);
-			}
-		}
-	}
+            if (apptWidth > 30) {
+                apptName = AjxStringUtil.fitString(apptName, apptWidth - 15);
+            }
+        }
+    }
 
 	var tagNames  = appt.getVisibleTags(),
 		tagIcon = appt.getTagImageFromNames(tagNames);
