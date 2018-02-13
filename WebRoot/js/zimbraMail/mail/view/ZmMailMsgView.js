@@ -2286,7 +2286,7 @@ function(params) {
 	html[i++] = !params.noUnderline ? "style='text-decoration:underline' " : "";
 	html[i++] = params.blankTarget ? "target='_blank' " : "";
 	var href = params.href || (params.jsHref && "javascript:;");
-	html[i++] = href ? "href='" + href + "' " : "";
+	html[i++] = href ? "href='" + AjxStringUtil.htmlEncode(href) + "' " : "";
     html[i++] = params.download ? (" download='"+(params.downloadLabel||"") + "'") : "";
 	if (params.isRfc822) {
 		html[i++] = " onclick='ZmMailMsgView.rfc822Callback(\"";
