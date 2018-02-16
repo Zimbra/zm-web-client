@@ -286,6 +286,7 @@ function() {
 				ZmSetting.DEDUPE_MSG_TO_SELF,
                 ZmSetting.DEDUPE_MSG_ENABLED,
 				ZmSetting.DISPLAY_EXTERNAL_IMAGES,
+				ZmSetting.DISPLAY_TIME_IN_MAIL_LIST,
 				ZmSetting.GET_MAIL_ACTION,
 				ZmSetting.INITIAL_SEARCH,
 				ZmSetting.MAIL_BLACKLIST,
@@ -397,6 +398,11 @@ function() {
 
 	ZmPref.registerPref("DISPLAY_EXTERNAL_IMAGES", {
 		displayName:		ZmMsg.showExternalImages,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("DISPLAY_TIME_IN_MAIL_LIST", {
+		displayName:		ZmMsg.displayTimeInMailList,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
