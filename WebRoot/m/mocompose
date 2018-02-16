@@ -169,6 +169,13 @@
             <input class="Textarea" autocorrect="off" autocomplete="OFF" id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" name="bcc"><br/><div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
         </div>
     </span>
+</div><div class="tr ${classForNextRow}">
+    <span class="label td"><label for="attachFiles"><fmt:message key="attachLabel"/></label></span>
+    <span class="td value">
+        <div class="ZhAC ZhACAttach">
+             <input id="attachFiles" type="file" name="fileUpload" multiple>
+        </div>
+    </span>
 </div></div></div>
 <div class="View"><div class="tbl"><div class="tr cmp_sub_row">
     <span class='label td nb'><label for="subjectField"><fmt:message key="subjectLabel"/> </label></span>
@@ -242,9 +249,9 @@
         url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
         displayName="${part.displayName}"
         contentType="${part.contentType}"
-        checked="${compose.checkedAttachmentNames[part.partName]}"
+        checked="${compose.checkedAttachmentNames[part.partName] != null or (part.isMssage and not empty compose.messageAttachments)}"
         displaySize="${zm:displaySize(pageContext,part.size)}"
-        value="${part.partName}" name="originalAttachment"/>
+        value="${part.partName},${true}" name="originalAttachment"/>
     <c:set var="firstAttachment" value="${false}"/>
 </c:forEach>
 </div></c:if>
@@ -304,8 +311,9 @@ if(window != parent){
 }
 </c:set>${dbg ? js : zm:yuiCompress(js, 'js')}</script>
 </c:if>
+<script type="text/javascript">AC("toField","toContainer");AC("ccField","ccContainer");AC("bccField","bccContainer");</script>
 <c:if test="${empty param.isinframe and empty requestScope.compAction}">
-	<script type="text/javascript">AC("toField","toContainer");AC("ccField","ccContainer");AC("bccField","bccContainer");
+    <script type="text/javascript">
 //  bug:99598 - workaround for an iOS8 bug, do not auto focus for iOS devices
     if (!/iPad|iPhone|iPod/g.test(navigator.userAgent)) {
         $('${param.op eq 'reply' || param.op eq 'replyAll' ? 'bodyField' : 'toField'}').focus();
