@@ -642,75 +642,77 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
 		}
 	}
 
-    var isAllDay = appt.isAllDayEvent();
+	var isAllDay = appt.isAllDayEvent();
 	if (isAllDay) {
 		var dataId = appt.getUniqueId();
 		var startTime = availableStartTime || Math.max(appt.getStartTime(), this._timeRangeStart);
 
 		this._allDayAppts[dataId] = {
-		    appt:       appt,
+			appt:       appt,
 			startTime:  startTime
 		};
 		this._allDayApptsList.push(appt);
 	}
 
 	var apptWidth = 10,
-	    apptHeight = 10,
-	    apptX = 0,
-	    apptY = 0,
-	    layout = this._layoutMap[this._getItemId(appt)];
+		apptHeight = 10,
+		apptX = 0,
+		apptY = 0,
+		layout = this._layoutMap[this._getItemId(appt)];
 
 	// set up DIV
 	var div = document.createElement("div");
 
-    Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
-    Dwt.setCursor(div, 'default');
+	Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
+	Dwt.setCursor(div, 'default');
 	Dwt.setSize(div, apptWidth, apptHeight);
 	if (layout) {
 		div.style.left = apptX + 'px';
 		div.style.top = apptY + 'px';
 	}
 	div.className = this._getStyle();
-    if (this.view === ZmId.VIEW_CAL_FB) {
-        Dwt.setScrollStyle(div, Dwt.CLIP);
-    }
+	if (this.view === ZmId.VIEW_CAL_FB) {
+		Dwt.setScrollStyle(div, Dwt.CLIP);
+	}
 
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
 
 	var isNew = (appt.ptst === ZmCalBaseItem.PSTATUS_NEEDS_ACTION),
-	    id = this._getItemId(appt),
-	    calendar = appCtxt.getById(appt.folderId),
-	    isRemote = Boolean(calendar.url),
-	    is30 = appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR,
-	    is60 = appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HOUR,
+		id = this._getItemId(appt),
+		calendar = appCtxt.getById(appt.folderId),
+		isRemote = Boolean(calendar.url),
+		is30 = appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR,
+		is60 = appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HOUR,
 		apptName = AjxStringUtil.htmlEncode(appt.getName());
 
 	// normalize location
 	var location = appt.getLocation();
 	location = location && location.length && !is60 ? "<div class='appt_location'>" + AjxStringUtil.htmlEncode(appt.getLocation()) + "</div>" : null;
 
-	if ((is30 || isAllDay) && this.view !== ZmId.VIEW_CAL_DAY) {
-        // fit as much of appt name as we can in one row, use ... if we have to truncate
-        apptName = isAllDay ? apptName : appt.getDurationText(true, true) + " - " + apptName;
-        var apptBounds = this._getBoundsForAppt(appt),
-            apptWidth = apptBounds && apptBounds.width;
+	if (is30 || isAllDay) {
+		apptName = isAllDay ? apptName : appt.getDurationText(true, true) + " - " + apptName;
+		if (this.view !== ZmId.VIEW_CAL_DAY) {
+			// fit as much of appt name as we can in one row, use ... if we have to truncate
+			var apptBounds = this._getBoundsForAppt(appt),
+				apptWidth = apptBounds && apptBounds.width;
 
-        if (apptWidth > 30) {
-            apptName = AjxStringUtil.fitString(apptName, apptWidth - 15);
-        }
+			if (apptWidth > 30) {
+				apptName = AjxStringUtil.fitString(apptName, apptWidth - 15);
+			}
+		}
 	}
 
-    var tagNames  = appt.getVisibleTags(),
-        tagIcon = appt.getTagImageFromNames(tagNames);
+	var tagNames  = appt.getVisibleTags(),
+		tagIcon = appt.getTagImageFromNames(tagNames);
 
-    // If the tag icon is returned blank image reset the tag icon
-    if (tagIcon === "Blank_16") {
-        tagIcon = "";
-    }
+	// If the tag icon is returned blank image reset the tag icon
+	if (tagIcon === "Blank_16") {
+		tagIcon = "";
+	}
 
-    var colors = ZmApptViewHelper.getApptColor(isNew, calendar, tagNames, "body"),
-	    bodyStyle = ZmCalBaseView._toColorsCss(colors.appt),
-        fba = isNew ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
+	var colors = ZmApptViewHelper.getApptColor(isNew, calendar, tagNames, "body"),
+		bodyStyle = ZmCalBaseView._toColorsCss(colors.appt),
+		fba = isNew ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
 
 	var subs = {
 		id:             id,
@@ -725,62 +727,62 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
 		tagIcon:        tagIcon,
 		hideTime:       is60,
 		showAsColor :   ZmApptViewHelper._getShowAsColorFromId(fba),
-        boxBorder:      ZmApptViewHelper.getBoxBorderFromId(fba),
-        isDraft:        appt.isDraft,
-        otherAttendees: appt.otherAttendees,
-        isException:    appt.isException,
-        isRecurring:    appt.isRecurring()
+		boxBorder:      ZmApptViewHelper.getBoxBorderFromId(fba),
+		isDraft:        appt.isDraft,
+		otherAttendees: appt.otherAttendees,
+		isException:    appt.isException,
+		isRecurring:    appt.isRecurring()
 	};
 
 	var template,
-        colorParam,
-        clearParam,
-        bs;
+		colorParam,
+		clearParam,
+		bs;
 
 	if (appt.isAllDayEvent()) {
-        colorParam = "headerStyle";
+		colorParam = "headerStyle";
 		template = "calendar_appt_allday";
 		if (!this.isStartInView(appt._orig)) {
-            bs = "border-left:none;";
-        }
+			bs = "border-left:none;";
+		}
 		if (!this.isEndInView(appt._orig)) {
-            bs += "border-right:none;";
-        }
+			bs += "border-right:none;";
+		}
 		if (bs) {
-            subs.bodyStyle = bs;
-        }
+			subs.bodyStyle = bs;
+		}
 	}
-    else if (this.view == ZmId.VIEW_CAL_FB) {
-        template = "calendar_fb_appt";
-    }
-    else if (is30) {
-        colorParam = "headerStyle";
+	else if (this.view == ZmId.VIEW_CAL_FB) {
+		template = "calendar_fb_appt";
+	}
+	else if (is30) {
+		colorParam = "headerStyle";
 		template = "calendar_appt_30";
 	}
-    else if (appt._fanoutNum > 0) {
-        colorParam = "bodyStyle";
+	else if (appt._fanoutNum > 0) {
+		colorParam = "bodyStyle";
 		template   = "calendar_appt_bottom_only";
 	}
-    else {
-        colorParam = "bodyStyle";
-        clearParam = "headerStyle";
+	else {
+		colorParam = "bodyStyle";
+		clearParam = "headerStyle";
 		template   = "calendar_appt";
 	}
-    // Currently header/bodyStyles are only used for coloring.  Replace with a gradient
-    // if supported by the browser
-    ZmApptViewHelper.setupCalendarColor(true, colors, tagNames, subs, colorParam, clearParam, 1, 1);
+	// Currently header/bodyStyles are only used for coloring.  Replace with a gradient
+	// if supported by the browser
+	ZmApptViewHelper.setupCalendarColor(true, colors, tagNames, subs, colorParam, clearParam, 1, 1);
 
 	div.innerHTML = AjxTemplate.expand("calendar.Calendar#" + template, subs);
 
-    // Set opacity on the table element that is colored with the gradient.  Needed for IE
-    var tableEl = Dwt.getDescendant(div, id + "_tableBody"),
-        opacity = ZmCalBaseView.getApptOpacity(appt);
-    if (tableEl) {
-        Dwt.setOpacity(tableEl, opacity);
-    }
-    else {
-        Dwt.setOpacity(div, opacity);
-    }
+	// Set opacity on the table element that is colored with the gradient.  Needed for IE
+	var tableEl = Dwt.getDescendant(div, id + "_tableBody"),
+		opacity = ZmCalBaseView.getApptOpacity(appt);
+	if (tableEl) {
+		Dwt.setOpacity(tableEl, opacity);
+	}
+	else {
+		Dwt.setOpacity(div, opacity);
+	}
 
 	// if (we can edit this appt) then create sash....
 	if (!appt.isReadOnly() && !appt.isAllDayEvent() && !isRemote && this.view !== ZmId.VIEW_CAL_FB) {
