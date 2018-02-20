@@ -144,5 +144,10 @@
             </script>
         </c:if>
     </c:if>
-    
+
+    <c:if test="${not empty mailbox.attrs.zimbraCustomAppBanner}">
+    <style type="text/css">
+        .ImgAppBanner { background-image: url(${zm:cook(mailbox.attrs.zimbraCustomAppBanner[0])}); !IMPORTANT }
+    </style>
+    </c:if>
 </head>
