@@ -1,6 +1,8 @@
 <%@ page buffer="8kb" session="true" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.*,javax.naming.*,com.zimbra.client.ZAuthResult" %>
 <%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
+<%@ page import="java.util.regex.Pattern" %>
+<%@ page import="java.util.regex.Matcher" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -525,5 +527,18 @@ delete text;
     AjxCore.addOnunloadListener(ZmZimbraMail.unload);
 </script>
 </div>
+<%
+    String regex = "\"zimbraCustomAppBanner\":\"(.*?)\"";
+    Pattern p = Pattern.compile(regex);
+    Matcher m = p.matcher(getInfoJSON);
+    if(m.find()) {
+        pageContext.setAttribute("bannerURL", m.group(1));
+    }
+%>
+<c:if test="${ not empty bannerURL }">
+<style type="text/css">
+    .ImgAppBanner { background-image: url(${zm:cook(bannerURL)}); !IMPORTANT }
+</style>
+</c:if>
 </body>
 </html>
