@@ -1587,7 +1587,7 @@ ZmBaseController.prototype._handleLoadContactListener = function() {
 		}
 	} else {
 		var contact = cc._createNewContact(this._actionEv);
-		contact.setAttr(ZmContact.F_email, AjxStringUtil.parseMailtoLink(contact.getAttr(ZmContact.F_email)).to);
+		contact.attr.email = AjxStringUtil.parseMailtoLink(contact.attr.email).to;
 		cc.show(contact, true);
 	}
 	if (appCtxt.isChildWindow) {
