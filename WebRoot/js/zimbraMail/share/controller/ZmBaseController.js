@@ -1515,7 +1515,8 @@ ZmBaseController.prototype._searchListener = function(addrType, isToolbar, ev) {
 	}
 
 	if (name) {
-        var ac = window.parentAppCtxt || window.appCtxt;
+		name = AjxStringUtil.parseMailtoLink(name).to;
+		var ac = window.parentAppCtxt || window.appCtxt;
 		var srchCtlr = ac.getSearchController();
 		if (addrType === AjxEmailAddress.FROM) {
 			srchCtlr.fromSearch(name);
@@ -1537,6 +1538,7 @@ ZmBaseController.prototype._composeListener = function(ev, addr) {
 		email = addr && addr.toString();
 
 	if (email) {
+		email = AjxStringUtil.parseMailtoLink(email).to;
 		AjxDispatcher.run("Compose", {
 			action:         ZmOperation.NEW_MESSAGE,
 			inNewWindow:    this._app._inNewWindow(ev),
@@ -1577,6 +1579,7 @@ ZmBaseController.prototype._handleLoadContactListener = function() {
 		}
 	} else {
 		var contact = cc._createNewContact(this._actionEv);
+		contact.attr.email = AjxStringUtil.parseMailtoLink(contact.attr.email).to;
 		cc.show(contact, true);
 	}
 	if (appCtxt.isChildWindow) {
