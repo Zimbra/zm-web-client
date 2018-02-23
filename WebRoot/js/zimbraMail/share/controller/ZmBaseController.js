@@ -1383,9 +1383,11 @@ ZmBaseController.prototype._loadContactForMenu = function(menu, address, ev, imI
 		return;
 	}
 
+	email = AjxStringUtil.parseMailtoLink(email).to;
 	// first check if contact is cached, and no server call is needed
 	var contact = contactsApp.getContactByEmail(email);
 	if (contact) {
+		address.setAddress(AjxStringUtil.parseMailtoLink(address.getAddress()).to);
 		this._handleResponseGetContact(menu, address, ev, imItem, contact);
 		return;
 	}
