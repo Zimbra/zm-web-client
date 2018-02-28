@@ -1682,7 +1682,9 @@ ZmMailListController.prototype._filterListener =
 function(isAddress, rule) {
 
 	if (isAddress) {
-		this._handleResponseFilterListener(rule, this._actionEv.address);
+		var address = this._actionEv.address.isAjxEmailAddress ? this._actionEv.address : new AjxEmailAddress(this._actionEv.address);
+		address.setAddress(AjxStringUtil.parseMailtoLink(address.getAddress()).to);
+		this._handleResponseFilterListener(rule, address);
 	}
 	else {
 		this._getLoadedMsg(null, this._handleResponseFilterListener.bind(this, rule));
