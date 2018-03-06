@@ -479,7 +479,7 @@ function(ev) {
         var acctName = item.getAccount().name;
         url+="&acct=" + acctName ;
     }
-    window.open(appContextPath+url, "_blank");
+    window.open(window.appContextPath+url, "_blank");
 };
 
 ZmMsgController.prototype._subscribeResponseHandler =

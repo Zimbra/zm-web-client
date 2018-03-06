@@ -777,7 +777,7 @@ function(convNode) {
 			var section = convNode.meta[i].section;
 			this.meta[section] = {};
 			this.meta[section]._attrs = {};
-			for (a in convNode.meta[i]._attrs) {
+			for (var a in convNode.meta[i]._attrs) {
 				this.meta[section]._attrs[a] = convNode.meta[i]._attrs[a];
 			}
 		}

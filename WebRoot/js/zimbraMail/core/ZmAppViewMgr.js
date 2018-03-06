@@ -310,8 +310,8 @@ function(viewId, components, show, app) {
 			if (this._sashSupported){
 				comp.registerCallback(this._appTreeSashCallback, this);
 				if (appCtxt.get(ZmSetting.FOLDER_TREE_SASH_WIDTH)) {
-					var newWidth =  appCtxt.get(ZmSetting.FOLDER_TREE_SASH_WIDTH);
-					var oldWidth = skin.getTreeWidth();
+					var newWidth = appCtxt.get(ZmSetting.FOLDER_TREE_SASH_WIDTH);
+					var oldWidth = window.skin.getTreeWidth();
 					this._appTreeSashCallback(newWidth - oldWidth);
 				}
 			}
@@ -384,7 +384,7 @@ ZmAppViewMgr.prototype.showSkinElement =
 function(cid, show, noReflow) {
 	if (this._hasSkin) {
 		DBG.println("avm", (show ? "SHOW " : "HIDE ") + "SKIN element for: " + cid);
-		skin.show(cid, show, noReflow);
+		window.skin.show(cid, show, noReflow);
 	}
 };
 
@@ -1408,7 +1408,7 @@ function(delta) {
 	if (!window.skin) { return; }
 
 	// ask skin for width of tree, rather than hard-coding name of tree div here
-	var currentWidth = skin.getTreeWidth();
+	var currentWidth = window.skin.getTreeWidth();
 	if (currentWidth === null) { return 0; }
 
 	DBG.println(AjxDebug.DBG3, "************ sash callback **************");
@@ -1435,7 +1435,7 @@ function(delta) {
 	// tell skin to resize the tree to keep the separation of tree/skin clean
 	var newTreeWidth = currentWidth + delta;
 
-	skin.setTreeWidth(newTreeWidth);
+	window.skin.setTreeWidth(newTreeWidth);
 
 	// call fitAll() on timeout, so we dont get into a problem w/ sash movement code
 	var me = this;

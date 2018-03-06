@@ -166,7 +166,7 @@ function(parent, op, isSupported) {
 
 ZmTreeController.prototype._enableRecoverDeleted =
 function (parent, isTrash) {
-	op = parent.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
+	var op = parent.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
 	if (!op) {
 		return;
 	}

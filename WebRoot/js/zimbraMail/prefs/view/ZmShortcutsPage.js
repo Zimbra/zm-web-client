@@ -107,7 +107,7 @@ function() {
 
 	var html = [], i = 0;
 	html[i++] = "<html><head>";
-	html[i++] = "<link href='" + appContextPath + "/css/zm.css' rel='stylesheet' type='text/css' />";
+	html[i++] = "<link href='" + window.appContextPath + "/css/zm.css' rel='stylesheet' type='text/css' />";
 	html[i++] = "</head><body>";
 	html[i++] = "<div class='ShortcutsPrintHeader'>" + ZmMsg.keyboardShortcuts + "</div>";
 
@@ -195,7 +195,7 @@ ZmShortcutList.prototype._renderShortcuts = function(cols) {
 	var html = [];
 	var i = 0;
 	html[i++] = "<div class='ZmShortcutList'>";
-	for (j = 0; j < cols.length; j++) {
+	for (var j = 0; j < cols.length; j++) {
 		i = this._getKeysHtml(cols[j], html, i);
 	}
 	html[i++] = "</div>";

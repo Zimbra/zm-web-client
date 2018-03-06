@@ -89,11 +89,12 @@ ZmNotificationsPage.prototype.showMe = function() {
 	if (initialize && this._form.getControl("DEVICE_EMAIL_REGION") != null) {
 		var locid = window.appRequestLocaleId ? "&locid=" + window.appRequestLocaleId : "";
 		var includes = [
-			[   appContextPath,
+			[
+				window.appContextPath,
 				"/res/ZmSMS.js",
-				"?v=",cacheKillerVersion,
+				"?v=",window.cacheKillerVersion,
 				locid,
-				appDevMode ? "&debug=1" : ""
+				window.appDevMode ? "&debug=1" : ""
 			].join("")
 		];
 		var baseurl = null;

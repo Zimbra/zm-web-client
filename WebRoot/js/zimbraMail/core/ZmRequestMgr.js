@@ -893,7 +893,7 @@ function(params, reqId) {
 			"id=",iframe.id,"-form ",
 			"target=",iframe.id,"-iframe ",
 			"method=POST ",
-			"action='https://",loc.hostname,port,appContextPath,"/public/secureRequest.jsp'",
+			"action='https://",loc.hostname,port,window.appContextPath,"/public/secureRequest.jsp'",
 		">",
 			"<input type=hidden name=reqId value='",reqId,"'>",
 			"<textarea name=data>",

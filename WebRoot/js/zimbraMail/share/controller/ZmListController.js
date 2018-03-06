@@ -658,7 +658,7 @@ function(search, offset) {
 		offset = offset ? offset : parseInt(search.getAttribute("offset"));
 		this._list.cache(offset, newList);
 	} else {
-		this._list = search.getResults(type);
+		this._list = search.getResults(search);
 	}
 };
 

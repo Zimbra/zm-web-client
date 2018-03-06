@@ -150,7 +150,7 @@ ZmUploadConflictDialog._handleViewTheirs = function(event) {
 		"resizable,scrollbars,status,toolbar"
 	].join("");
 
-	var win = open(winurl, winname, winfeatures);
+	var win = window.open(winurl, winname, winfeatures);
 };
 
 ZmUploadConflictDialog._handleLinkOver = function(event) {

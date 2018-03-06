@@ -103,11 +103,11 @@ function() {
 	// XXX: DO NOT MOVE THIS LINE
 	// redefine ZmSetting from parent window since it loses this info.
 	window.parentAppCtxt = winOpener.appCtxt;
-	appCtxt.setSettings(parentAppCtxt.getSettings());
-	appCtxt.isOffline = parentAppCtxt.isOffline;
-	appCtxt.multiAccounts = parentAppCtxt.multiAccounts;
-    appCtxt.sendAsEmails = parentAppCtxt.sendAsEmails;
-    appCtxt.sendOboEmails = parentAppCtxt.sendOboEmails;
+	appCtxt.setSettings(window.parentAppCtxt.getSettings());
+	appCtxt.isOffline = window.parentAppCtxt.isOffline;
+	appCtxt.multiAccounts = window.parentAppCtxt.multiAccounts;
+    appCtxt.sendAsEmails = window.parentAppCtxt.sendAsEmails;
+    appCtxt.sendOboEmails = window.parentAppCtxt.sendOboEmails;
     window.ZmSetting = winOpener.ZmSetting;
 
 	ZmOperation.initialize();
@@ -217,7 +217,7 @@ function() {
 	this._createEnabledApps(apps);
 
 	// inherit parent's identity collection
-	var parentPrefsApp = parentAppCtxt.getApp(ZmApp.MAIL);
+	var parentPrefsApp = window.parentAppCtxt.getApp(ZmApp.MAIL);
     if (parentPrefsApp) {
         appCtxt.getApp(ZmApp.MAIL)._identityCollection = parentPrefsApp.getIdentityCollection();
     }
@@ -236,7 +236,7 @@ function() {
     
 	// setup zimlets, Load it first becoz.. zimlets has to get processed first.
 	if (target) {
-		var allzimlets = parentAppCtxt.get(ZmSetting.ZIMLETS);
+		var allzimlets = window.parentAppCtxt.get(ZmSetting.ZIMLETS);
 		allzimlets = allzimlets || [];
 		var zimletArray = this._settings._getCheckedZimlets(allzimlets);
 		if (this._hasZimletsForTarget(zimletArray, target)) {
@@ -266,7 +266,7 @@ function() {
 	var params = window.newWindowParams;
 
 	var rootTg = appCtxt.getRootTabGroup();
-	var startupFocusItem;
+	var startupFocusItem, target;
 
 	//I null composeCtlrSessionId so it's not kept from irrelevant sessions from parent window.
 	// (since I set it in every compose session, in ZmMailApp.prototype.compose).
@@ -370,14 +370,14 @@ function(zimletArray, target) {
  */
 ZmNewWindow.prototype._getUserProps =
 function() {
-	var userPropsArray = parentAppCtxt.get(ZmSetting.USER_PROPS);
+	var userPropsArray = window.parentAppCtxt.get(ZmSetting.USER_PROPS);
 
 	// default to original user props
 	userPropsArray = userPropsArray ? [].concat(userPropsArray) : [];
 
 	// current user props take precedence, if available
-	var zimletHash = parentAppCtxt.getZimletMgr().getZimletsHash();
-	var zimletArray = parentAppCtxt.get(ZmSetting.ZIMLETS);
+	var zimletHash = window.parentAppCtxt.getZimletMgr().getZimletsHash();
+	var zimletArray = window.parentAppCtxt.get(ZmSetting.ZIMLETS);
 	for (var i = 0; i < zimletArray.length; i++) {
 		var zname = zimletArray[i].zimlet[0].name;
 		var zimlet = zimletHash[zname];

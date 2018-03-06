@@ -447,7 +447,9 @@ ZmAccountsPage.prototype._setDelegateSendPrefs =
 function(grants) {
     var ace = grants._data.GetRightsResponse && grants._data.GetRightsResponse.ace;
     var userRights = [];
-    var right = user = node = null;
+    var right = null,
+        user = null,
+        node = null;
     var res = new AjxVector();
     if (!ace){
         this._dlSelectionListener(false);
@@ -988,7 +990,7 @@ function(useDefaults) {
 		this._accounts.add(ZmAccountsPage.__createProxy(persona), null, true);
 	}
     var signatureLinkElement = Dwt.getElement(this._htmlElId + "_External_Signatures_Link");
-    Dwt.setHandler(signatureLinkElement, DwtEvent.ONCLICK, function(){skin.gotoPrefs("SIGNATURES")});
+    Dwt.setHandler(signatureLinkElement, DwtEvent.ONCLICK, function(){window.skin.gotoPrefs("SIGNATURES")});
 	// initialize list view
 	this._accounts.sort(ZmAccountsPage.__ACCOUNT_COMPARATOR);
 	var account = this._accounts.get(0);

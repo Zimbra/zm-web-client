@@ -238,7 +238,7 @@ function(prefSearchCallback, metadataResponse) {
     this._prefs = {};
 
     var objPrefs = metadataResponse.getResponse().BatchResponse.GetMailboxMetadataResponse[0].meta[0]._attrs;
-    for (name in objPrefs) {
+    for (var name in objPrefs) {
         if(name && objPrefs[name]) {
             this._prefs[name] = objPrefs[name];
             this.setPreferenceFieldValue(name, this._prefs[name]);

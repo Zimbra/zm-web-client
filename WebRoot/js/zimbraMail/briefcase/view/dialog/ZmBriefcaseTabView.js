@@ -204,7 +204,7 @@ ZmBriefcaseTabView.prototype.showBriefcaseTreeView =
 function() {
 
     //Force create deferred folders if not created
-    var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+    var aCtxt = appCtxt.isChildWindow ? window.parentAppCtxt : window.appCtxt;
     var briefcaseApp = aCtxt.getApp(ZmApp.BRIEFCASE);
     briefcaseApp._createDeferredFolders();
 

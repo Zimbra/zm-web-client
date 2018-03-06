@@ -1441,7 +1441,7 @@ function(ev) {
 		if (curView) {
 			curView.offset = 0;
 		}
-		ctlr._resetNavToolBarButtons(view);
+		ctlr._resetNavToolBarButtons();
 	}
 	else if (isCurrentList && ctlr && ctlr._currentSearch &&
 			 (ev.event == ZmEvent.E_MOVE || (ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME]))

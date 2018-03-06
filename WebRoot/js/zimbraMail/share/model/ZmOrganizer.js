@@ -784,7 +784,7 @@ function() {
  */
 ZmOrganizer.prototype.getSyncUrl =
 function() {
-	return url;
+	//return url;
 };
 
 /**
@@ -1511,7 +1511,7 @@ function(obj, details) {
 		if (obj.acl.grant && obj.acl.grant.length) {
 			AjxDispatcher.require("Share");
 			for (var i = 0; i < obj.acl.grant.length; i++) {
-				share = ZmShare.createFromJs(this, obj.acl.grant[i]);
+				var share = ZmShare.createFromJs(this, obj.acl.grant[i]);
 				this.addShare(share);
 			}
 		}

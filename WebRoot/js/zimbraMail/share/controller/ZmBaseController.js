@@ -715,7 +715,7 @@ function(summary, actionLogItem, showToastOnParentWindow) {
 	if (!summary) {
 		return;
 	}
-	var ctxt = showToastOnParentWindow ? parentAppCtxt : appCtxt;
+	var ctxt = showToastOnParentWindow ? window.parentAppCtxt : appCtxt;
 	var actionController = ctxt.getActionController();
 	var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 	if (undoLink && actionController) {

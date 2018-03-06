@@ -81,7 +81,7 @@
     <property name='nodebug.ext' value='.nodebug'/>
     <property name="jsmin.ext" value='.min'/>
     <property name="compress.ext" value='.zgz'/>
-    <property name='compresserror.ext' value='.err'/>
+    <property name='compressoutput.ext' value='.out'/>
 
     <!-- THIRDPARTY INTEGRATION -->
     <property name="3rdparty.dir" value="${build.js.dir}/ajax/3rdparty" />
@@ -125,7 +125,7 @@
         <property name='common.jam.excludes' value='${custom.jam.excludes},'/>
         <property name='common.build.web.includes' value='${custom.build.web.includes},**'/>
         <property name='common.build.web.excludes'
-                  value='${custom.build.web.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}'/>
+                  value='${custom.build.web.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext},js/*${compressoutput.ext}'/>
         <property name='common.webinf.includes' value='${custom.webinf.includes},**'/>
         <property name='common.webinf.excludes' value='${custom.webinf.excludes},web.*,lib/**'/>
     </target>
@@ -1021,8 +1021,8 @@ ext = BeanUtils.cook(ext);
 
 	    />
 
-        <!-- copying yui jar file in build/tmp directory. -->
-        <ivy:install organisation="com.yahoo.platform.yui" module="yuicompressor" revision="2.4.8" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <!-- copying closure compiler jar file in build/tmp directory. -->
+        <ivy:install organisation="com.google.javascript" module="closure-compiler" revision="v20180204" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
 
         <!-- minimize js, prepend copyright, compress -->
         <for param="var">
@@ -1052,18 +1052,18 @@ ext = BeanUtils.cook(ext);
                         <echo>Minimizing to @{var}${jsmin.ext}</echo>
 	                    <try>
 	                        <block>
-		                        <java jar="${build.tmp.dir}/yuicompressor-2.4.8.jar" fork="true" failonerror="true"
-		                              output="${build.dir}/yui-compress.out">
-                                    <!-- Add error="@{var}${compresserror.ext}" in java task if *.err files need to be generated. -->
-		                            <arg value="--line-break"/>
-		                            <arg value="0"/>
-		                            <arg value="--type"/>
-		                            <arg value="js"/>
-		                            <arg value="-o"/>
-		                            <arg value="@{var}${jsmin.ext}"/>
-		                            <arg value="@{var}${nodebug.ext}"/>
-                                    <arg value="--verbose"/>
-		                        </java>
+                                <java jar="${build.tmp.dir}/closure-compiler-v20180204.jar" fork="true" failonerror="true"
+                                    output="@{var}${compressoutput.ext}">
+                                    <arg value="--warning_level"/>
+                                    <arg value="VERBOSE"/>
+                                    <!-- @TODO for now we will match compilation level with what yuicompressor was doing, in future we can improve it to have advanced level compilation level -->
+                                    <arg value="--compilation_level"/>
+                                    <arg value="WHITESPACE_ONLY"/>
+                                    <arg value="--js_output_file"/>
+                                     <arg value="@{var}${jsmin.ext}"/>
+                                    <arg value="--js"/>
+                                    <arg value="@{var}${nodebug.ext}"/>
+                                </java>
 	                        </block>
 		                    <catch>
 			                    <antcall target='compress-test-files'>
@@ -1079,7 +1079,7 @@ ext = BeanUtils.cook(ext);
                             <header filtering="no" trimleading="yes">
                                 /* 
                                  * Zimbra Collaboration Suite Web Client
-                                 * Copyright (C) 2004-2017 Synacor, Inc.
+                                 * Copyright (C) 2004-2018 Synacor, Inc.
                                  * https://www.zimbra.com/license
                                  */
                             </header>
@@ -1108,14 +1108,13 @@ ext = BeanUtils.cook(ext);
 		<for list="${files}" param="filename">
 			<sequential>
 				<echo>Testing file: @{filename}</echo>
-				<java jar="${build.tmp.dir}/yuicompressor-2.4.8.jar" fork="true" failonerror="true">
-				    <arg value="--line-break"/>
-				    <arg value="0"/>
-				    <arg value="--type"/>
-				    <arg value="js"/>
-				    <arg value="-o"/>
+				<java jar="${build.tmp.dir}/closure-compiler-v20180204.jar" fork="true" failonerror="true">
+				    <arg value="--js_output_file"/>
 				    <arg value="${build.dir}/yui-compress.test" />
+				    <arg value="--js"/>
 				    <arg value="@{filename}"/>
+				    <arg value="--compilation_level"/>
+                    <arg value="WHITESPACE_ONLY"/>
 				</java>
 			</sequential>
 		</for>

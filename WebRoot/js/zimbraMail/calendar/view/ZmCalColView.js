@@ -1248,9 +1248,10 @@ function() {
 //		DBG.timePt("_computeApptLayout: computeMaxCol "+i, false);
 	}
 	
-	delete layoutsAllDay;
-	delete layoutsDayMap;
-	delete layoutCheck;
+	// closure compiler ERROR - variables, functions, and arguments cannot be deleted in strict mode
+	// delete layoutsAllDay;
+	// delete layoutsDayMap;
+	// delete layoutCheck;
 	//DBG.timePt("_computeApptLayout: end", false);
 };
 
@@ -1612,13 +1613,13 @@ ZmCalColView.prototype._calcColWidth =
 function(bodyWidth, numCols, horzScroll) {
 //	var sbwfudge = (AjxEnv.isIE ? 1 : 0) + (horzScroll ? 0 : Dwt.SCROLLBAR_WIDTH);
 	var sbwfudge = 0;
-	return dayWidth = Math.floor((bodyWidth-sbwfudge)/numCols) - (this._daySepWidth == 1 ? 0 : 1);
+	return Math.floor((bodyWidth-sbwfudge)/numCols) - (this._daySepWidth == 1 ? 0 : 1);
 };
 
 ZmCalColView.prototype._calcMinBodyWidth =
 function(width, numCols) {
 	//return minWidth = (ZmCalColView.MIN_COLUMN_WIDTH * numCols) + (this._daySepWidth == 1 ? 0 : 1);
-	return minWidth = (ZmCalColView.MIN_COLUMN_WIDTH  + (this._daySepWidth == 1 ? 0 : 1)) * numCols;
+	return (ZmCalColView.MIN_COLUMN_WIDTH  + (this._daySepWidth == 1 ? 0 : 1)) * numCols;
 };
 
 ZmCalColView.prototype._layout =
@@ -2968,7 +2969,7 @@ function(appt,div) {
 		layout.bounds = this._getBoundsForAppt(layout.appt);
 		if (!layout.bounds) { return; }
 
-		apptWidthPercent = ZmCalColView._getApptWidthPercent(layout.maxcol+1);
+		var apptWidthPercent = ZmCalColView._getApptWidthPercent(layout.maxcol+1);
 		var w = Math.floor(layout.bounds.width*apptWidthPercent);
 		var xinc = layout.maxcol ? ((layout.bounds.width - w) / layout.maxcol) : 0; // n-1
 		var x = xinc * layout.col + (layout.bounds.x);

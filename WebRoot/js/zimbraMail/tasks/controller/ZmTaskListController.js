@@ -1006,7 +1006,7 @@ function(ev) {
 		var acctName = appCtxt.getById(folderId).getAccount().name;
 		url.push("&acct=", acctName);
 	}
-	window.open([appContextPath, url.join(""), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)].join(""), "_blank");
+	window.open([window.appContextPath, url.join(""), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)].join(""), "_blank");
 };
 
 ZmTaskListController.prototype._markAsCompletedListener = 
@@ -1052,7 +1052,7 @@ function(ev) {
 		var acctName = appCtxt.getById(folderId).getAccount().name;
 		url.push("&acct=", acctName);
 	}
-	window.open([appContextPath, url.join(""), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)].join(""), "_blank");
+	window.open([window.appContextPath, url.join(""), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)].join(""), "_blank");
 };
 
 ZmTaskListController.prototype._setViewContents =

@@ -1318,7 +1318,7 @@ function(attr, isBatchMode, isAutoCreate, result) {
 	if (isBatchMode) { return; }
 
 	var resp = result.getResponse().CreateContactResponse;
-	cn = resp ? resp.cn[0] : null;
+	var cn = resp ? resp.cn[0] : null;
 	var id = cn ? cn.id : null;
 	if (id) {
 		this._fileAs = null;

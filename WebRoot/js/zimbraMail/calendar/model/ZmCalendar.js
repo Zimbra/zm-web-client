@@ -75,8 +75,7 @@ function(params) {
 ZmCalendar._handleErrorCreate =
 function(params, ex) {
 	if (params.url && (ex.code == ZmCsfeException.SVC_PARSE_ERROR)) {
-		msg = AjxMessageFormat.format(ZmMsg.calFeedInvalid, params.url);
-		ZmOrganizer._showErrorMsg(msg);
+		ZmOrganizer._showErrorMsg(AjxMessageFormat.format(ZmMsg.calFeedInvalid, params.url));
 		return true;
 	}
 	return ZmOrganizer._handleErrorCreate(params, ex);
@@ -114,7 +113,7 @@ function(exclude, callback, errorCallback, batchCmd) {
 ZmCalendar.prototype.setChecked = 
 function(checked, batchCmd) {
 	if (this.isChecked == checked) { return; }
-	this.checkAction(checkAction, batchCmd);
+	this.checkAction(checked, batchCmd);
 };
 
 ZmCalendar.prototype.checkAction = 
@@ -292,7 +291,7 @@ function(acct, noRemote) {
 	}
 
 	// if server doesn't tell us what URL to use, do our best to generate
-	url = this._generateRestUrl(acct);
+	var url = this._generateRestUrl(acct);
 	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);
 
 	return url;

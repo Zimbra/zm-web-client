@@ -1121,7 +1121,8 @@ function(parent, buttonId, buttonListener, menuSelectionListener) {
 
 	// reparent and cleanup
 	reminderButton.reparentHtmlElement(buttonId);
-	delete buttonId;
+	// closure compiler ERROR - variables, functions, and arguments cannot be deleted in strict mode
+	//delete buttonId;
 
 	return reminderButton;
 };

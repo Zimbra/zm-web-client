@@ -161,7 +161,7 @@ function(files, conflicts) {
             }
 
             if(this._saveClose){
-                parentAppCtxt.setStatusMsg(ZmMsg.savedDoc, ZmStatusView.LEVEL_INFO);
+                window.parentAppCtxt.setStatusMsg(ZmMsg.savedDoc, ZmStatusView.LEVEL_INFO);
                 window.close();
             } else {
                 appCtxt.setStatusMsg(ZmMsg.savedDoc, ZmStatusView.LEVEL_INFO);

@@ -43,7 +43,7 @@
 ZmCalItemView = function(parent, posStyle, controller, id) {
 	if (arguments.length == 0) return;
 
-	params = {parent: parent, posStyle: posStyle, controller: controller};
+	var params = {parent: parent, posStyle: posStyle, controller: controller};
 	if (id) {
 		params.id = id;
 	}

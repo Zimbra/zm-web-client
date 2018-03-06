@@ -193,7 +193,7 @@ function() {
         var acctName = this._composeView._calItem.getAccount().name;
         url.push("&acct=", acctName);
     }
-	window.open([appContextPath, url.join(""), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)].join(""), "_blank");
+	window.open([window.appContextPath, url.join(""), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)].join(""), "_blank");
 };
 
 ZmTaskController.prototype.closeView = function() {

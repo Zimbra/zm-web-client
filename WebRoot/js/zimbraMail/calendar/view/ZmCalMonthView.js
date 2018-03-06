@@ -338,7 +338,7 @@ function() {
     this._apptSets = new Object();;
 	for (var i=0; i < 6; i++)	 {
 		for (var j=0; j < 7; j++)	 {
-			day = this._days[i*7+j];
+			var day = this._days[i*7+j];
 			if (day.allDayAppts)	delete day.allDayAppts;
 			if (day.appts) delete day.appts;
 		}
@@ -808,7 +808,7 @@ function() {
         Dwt.setSize(wk, 15, Dwt.DEFAULT);
     }
 
-	colWidth = Math.floor(w / (this._showWeekNumber ? 8 : 7)) - 1; // Divide by 8 columns.
+	var colWidth = Math.floor(w / (this._showWeekNumber ? 8 : 7)) - 1; // Divide by 8 columns.
 
 	var fdow = this.firstDayOfWeek();
 	for (var i=0; i < 7; i++) {
@@ -1492,7 +1492,7 @@ function(data) {
             allDayDiv = data.apptEl || this._getAllDayDiv(data.appt, i);
             if ((iDay >= 0) && (iDay < this.numDays)) {
                 // Initially onscreen div
-                day = this._days[iDay];
+                var day = this._days[iDay];
                 this._calculateOffsetY(data, allDayDiv, day.week);
                 if (data.numDays > 1) {
                     if (i == 0) {

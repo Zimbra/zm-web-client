@@ -173,7 +173,7 @@ function(ev) {
 	url = AjxUtil.formatUrl(query);
 
 	if (url) {
-		window.open(appContextPath+AjxStringUtil.urlEncode(url), "_blank");
+		window.open(window.appContextPath+AjxStringUtil.urlEncode(url), "_blank");
 	}
 };
 

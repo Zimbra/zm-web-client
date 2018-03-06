@@ -845,7 +845,7 @@ function() {
 	this.registerSetting("CLIENT_DATETIME",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildDateTime@"});
 	this.registerSetting("CLIENT_RELEASE",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildRelease@"});
 	this.registerSetting("CLIENT_VERSION",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildVersion@"});
-	this.registerSetting("CONFIG_PATH",						{type:ZmSetting.T_CONFIG, defaultValue:appContextPath + "/js/zimbraMail/config"});
+	this.registerSetting("CONFIG_PATH",						{type:ZmSetting.T_CONFIG, defaultValue: window.appContextPath + "/js/zimbraMail/config"});
 	this.registerSetting("CSFE_EXPORT_URI",					{type:ZmSetting.T_CONFIG});
 	this.registerSetting("CSFE_MSG_FETCHER_URI",			{type:ZmSetting.T_CONFIG});
 	this.registerSetting("CSFE_SERVER_URI",					{type:ZmSetting.T_CONFIG});
@@ -853,7 +853,7 @@ function() {
 	this.registerSetting("CSFE_ATTACHMENT_UPLOAD_URI",		{type:ZmSetting.T_CONFIG});
 	this.registerSetting("DEV",								{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("FORCE_CAL_OFF",					{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("HELP_URI",						{name:"zimbraHelpAdvancedURL", type:ZmSetting.T_CONFIG, defaultValue:appContextPath + ZmMsg.helpURI});
+	this.registerSetting("HELP_URI",						{name:"zimbraHelpAdvancedURL", type:ZmSetting.T_CONFIG, defaultValue: window.appContextPath + ZmMsg.helpURI});
 	this.registerSetting("HTTP_PORT",						{type:ZmSetting.T_CONFIG, defaultValue:ZmSetting.HTTP_DEFAULT_PORT});
 	this.registerSetting("HTTPS_PORT",						{type:ZmSetting.T_CONFIG, defaultValue:ZmSetting.HTTPS_DEFAULT_PORT});
 	this.registerSetting("INSTANT_NOTIFY_INTERVAL",			{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:500}); // milliseconds
@@ -866,7 +866,7 @@ function() {
 	this.registerSetting("SHOW_SCRIPT_ERRORS",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("TIMEOUT",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:30}); // seconds
 	this.registerSetting("USE_XML",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("SMIME_HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:appContextPath + ZmMsg.smimeHelpURI});
+	this.registerSetting("SMIME_HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:window.appContextPath + ZmMsg.smimeHelpURI});
 
 	// DOMAIN SETTINGS
 	this.registerSetting("CHANGE_PASSWORD_URL",				{type:ZmSetting.T_CONFIG});
@@ -1022,7 +1022,7 @@ function() {
 	this.registerSetting("IDENTITIES",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("INITIALLY_SEARCH_GAL",			{name:"zimbraPrefGalSearchEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("LIST_VIEW_COLUMNS",				{name:"zimbraPrefListViewColumns", type:ZmSetting.T_PREF, dataType:ZmSetting.D_HASH, isImplicit:true});
-	this.registerSetting("LOCALE_NAME",						{name:"zimbraPrefLocale", type:ZmSetting.T_PREF, defaultValue:appRequestLocaleId, isGlobal:true});
+	this.registerSetting("LOCALE_NAME",						{name:"zimbraPrefLocale", type:ZmSetting.T_PREF, defaultValue: window.appRequestLocaleId, isGlobal:true});
 	this.registerSetting("SHOW_SELECTION_CHECKBOX",			{name:"zimbraPrefShowSelectionCheckbox", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
 	// PAGE_SIZE: number of items to fetch for virtual paging; also used for number of msgs in one page of a conv
 	this.registerSetting("PAGE_SIZE",						{name: "zimbraPrefItemsPerVirtualPage", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:50, isGlobal:true});

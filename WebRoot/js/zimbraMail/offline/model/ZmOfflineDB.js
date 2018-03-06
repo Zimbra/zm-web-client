@@ -982,7 +982,7 @@ function(search, objectStoreName, formatter, callback, errorCallback, indexName,
 		}
 		if (range == null) {
 			errorCallback && errorCallback();
-			AjxDebug.println(AjxDebug.OFFLINE, "ZmOfflineDB.doIndexSearch : Exception : " + e);
+			AjxDebug.println(AjxDebug.OFFLINE, "ZmOfflineDB.doIndexSearch range is null");
 		} else {
 			if (onlyKeys) {
 				var request = index.openKeyCursor(range);

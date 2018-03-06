@@ -570,7 +570,6 @@ function() {
 	for (var i = 0; i < ZmMyComputerTabViewPage.SHOW_NO_ATTACHMENTS; i++) {
 		this._addAttachmentField();
 	}
-	delete i;
 };
 
 ZmMyComputerTabViewPage.prototype._focusAttEl =

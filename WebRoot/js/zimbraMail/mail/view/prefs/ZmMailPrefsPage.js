@@ -279,7 +279,7 @@ function() {
 			accountsText.replaceElement(link);
 			accountsText._setEventHdlrs([DwtEvent.ONCLICK]);
 			accountsText.addListener(DwtEvent.ONCLICK,
-									 skin.gotoPrefs.bind(skin, "ACCOUNTS"));
+									 skin.gotoPrefs.bind(window.skin, "ACCOUNTS"));
 		}
 	}
 

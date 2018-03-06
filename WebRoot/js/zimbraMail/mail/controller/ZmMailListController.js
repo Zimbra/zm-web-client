@@ -1778,7 +1778,7 @@ function(msg) {
 		msg = msg.cloneOf;
 	}
 	var w = appCtxt.isChildWindow ? window.opener : window;
-    var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+    var aCtxt = appCtxt.isChildWindow ? window.parentAppCtxt : appCtxt;
 	w.AjxDispatcher.require(["TasksCore", "Tasks"]);
     aCtxt.getApp(ZmApp.TASKS).newTaskFromMailItem(msg, new Date());
 	if (appCtxt.isChildWindow) {
@@ -2118,7 +2118,7 @@ function(ev) {
         var acctName = items[0].getAccount().name;
         url+="&acct=" + acctName ;
     }
-    window.open(appContextPath+url, "_blank");
+    window.open(window.appContextPath+url, "_blank");
 };
 
 ZmMailListController.prototype._editListener =

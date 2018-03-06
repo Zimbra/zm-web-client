@@ -1136,7 +1136,7 @@ function(canvasData, url, x, y) {
 	    case "window":
 		var browserUrl = url;
 		if (browserUrl == null)
-			browserUrl = appContextPath+"/public/blank.html";
+			browserUrl = window.appContextPath+"/public/blank.html";
 		var contentObject = this.xmlObj("contentObject");
         if(contentObject && !canvasData.width && contentObject.onClick ) {
             if(contentObject.onClick.canvas.props == "")

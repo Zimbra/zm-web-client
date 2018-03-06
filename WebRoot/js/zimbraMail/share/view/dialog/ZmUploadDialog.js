@@ -225,7 +225,7 @@ function(files, uploadForm, folder) {
         docFiles: files
     }
 
-	var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+	var aCtxt = appCtxt.isChildWindow ? window.parentAppCtxt : appCtxt;
 	var briefcaseApp = aCtxt.getApp(ZmApp.BRIEFCASE);
     var callback =  briefcaseApp.uploadSaveDocs.bind(briefcaseApp, null, uploadParams);
 

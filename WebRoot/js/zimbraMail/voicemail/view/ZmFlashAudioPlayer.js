@@ -104,10 +104,10 @@ function(soundUrl, autoPlay) {
     }
     var autoPlayStr = autoPlay ? "&amp;autoplay=1": "";
     var html = ["<object id= 'zm_flash_player' type=\"application/x-shockwave-flash\" ",
-    "data=" + appContextPath + "/public/flash/player_mp3_maxi.swf ",
+    "data=" + window.appContextPath + "/public/flash/player_mp3_maxi.swf ",
     "width=\"200\" height=\"17\">",
     "<param name=\"movie\" ",
-    "value=" + appContextPath + "\"/public/flash/player_mp3_maxi.swf\" />",
+    "value=" + window.appContextPath + "\"/public/flash/player_mp3_maxi.swf\" />",
     "<param name=\"bgcolor\" value=\"#ffffff\" />",
     "<param name=\"FlashVars\" value=\"mp3=",
     AjxStringUtil.urlComponentEncode(soundUrl),

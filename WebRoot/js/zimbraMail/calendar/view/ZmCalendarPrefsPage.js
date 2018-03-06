@@ -433,7 +433,7 @@ function(value) {
             this._workHoursControl.setDaysChanged(false);
             var cd = appCtxt.getYesNoMsgDialog();
             cd.reset();
-            cd.registerCallback(DwtDialog.YES_BUTTON, this._newWorkHoursYesCallback, this, [skin, cd]);
+            cd.registerCallback(DwtDialog.YES_BUTTON, this._newWorkHoursYesCallback, this, [window.skin, cd]);
             cd.setMessage(ZmMsg.workingDaysRestart, DwtMessageDialog.WARNING_STYLE);
             cd.popup();
         }

@@ -1799,7 +1799,7 @@ function(params) {
 		var resp = appCtxt.getAppController().sendRequest(newParams);
 		if (!resp) { return; } // bug fix #9154
 		if (params.toastMessage) {
-			parentAppCtxt.setStatusMsg(params.toastMessage); //show on parent window since this is a child window, since we close this child window on accept/decline/etc
+			window.parentAppCtxt.setStatusMsg(params.toastMessage); //show on parent window since this is a child window, since we close this child window on accept/decline/etc
 		}
 
 		if (resp.SendInviteReplyResponse) {
@@ -2355,7 +2355,7 @@ function(msgNode) {
 			var section = msgNode.meta[i].section;
 			this.meta[section] = {};
 			this.meta[section]._attrs = {};
-			for (a in msgNode.meta[i]._attrs) {
+			for (var a in msgNode.meta[i]._attrs) {
 				this.meta[section]._attrs[a] = msgNode.meta[i]._attrs[a];
 			}
 		}

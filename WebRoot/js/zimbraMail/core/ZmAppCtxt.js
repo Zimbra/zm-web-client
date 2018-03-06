@@ -322,7 +322,7 @@ function(settings, account) {
 ZmAppCtxt.prototype.get = function(id, key, account) {
 
     //use parentAppCtxt in case of new window
-    var context = this.isChildWindow ? parentAppCtxt : this;
+    var context = this.isChildWindow ? window.parentAppCtxt : this;
 
 	// for offline, global settings always come from the "local" parent account
 	var acct = (context.multiAccounts && ZmSetting.IS_GLOBAL[id])
@@ -371,7 +371,7 @@ function(appName) {
  */
 ZmAppCtxt.prototype.getCurrentAppName =
 function() {
-	var context = this.isChildWindow ? parentAppCtxt : this;
+	var context = this.isChildWindow ? window.parentAppCtxt : this;
 	return context._appController.getActiveApp();
 };
 /**
@@ -1148,7 +1148,7 @@ function(shell) {
 ZmAppCtxt.prototype.getActiveAccount =
 function() {
 	return this.isChildWindow
-		? parentAppCtxt.accountList.activeAccount
+		? window.parentAppCtxt.accountList.activeAccount
 		: this.accountList.activeAccount;
 };
 
@@ -1264,7 +1264,7 @@ function() {
 ZmAppCtxt.prototype.getTree =
 function(type, account) {
 	if (this.isChildWindow) {
-		return parentAppCtxt.getTree(type, account);
+		return window.parentAppCtxt.getTree(type, account);
 	}
 
 	var al = this.accountList;
@@ -1387,7 +1387,7 @@ function() {
 	if (!this._uploadManagerIframeId) {
 		var iframeId = Dwt.getNextId();
 		var html = [ "<iframe name='", iframeId, "' id='", iframeId,
-			     "' src='", (AjxEnv.isIE && location.protocol == "https:") ? appContextPath+"/public/blank.html" : "javascript:\"\"",
+			     "' src='", (AjxEnv.isIE && location.protocol == "https:") ? window.appContextPath+"/public/blank.html" : "javascript:\"\"",
 			     "' style='position: absolute; top: 0; left: 0; visibility: hidden'></iframe>" ];
 		var div = document.createElement("div");
 		div.innerHTML = html.join("");
@@ -1407,7 +1407,7 @@ function(force, retryOnError) {
 			var cookieValue = localOfflineBrowserKey + "_" + new Date().getTime();
 			AjxCookie.setCookie(document, "ZM_OFFLINE_KEY", cookieValue, false, "/");
 		}
-		var manifestURL = appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
+		var manifestURL = window.appContextPath + "/appcache/images,common,dwt,msgview,login,zm,spellcheck,skin.appcache?";
         var urlParams = [];
         urlParams.push("v=" + window.cacheKillerVersion);
         urlParams.push("debug=" + window.appDevMode);
@@ -1576,9 +1576,9 @@ function(fullVersion, width, height, name) {
 	url[i++] = "//";
 	url[i++] = location.hostname;
 	url[i++] = (!location.port || location.port == "80") ? "" : (":" + location.port);
-	url[i++] = appContextPath;
+	url[i++] = window.appContextPath;
 	url[i++] = "/public/launchNewWindow.jsp?skin=";
-	url[i++] = appCurrentSkin;
+	url[i++] = window.appCurrentSkin;
 	url[i++] = "&localeId=";
 	url[i++] = AjxEnv.DEFAULT_LOCALE || "";
 	if (fullVersion) {
@@ -1810,7 +1810,7 @@ ZmAppCtxt.prototype.notifyZimlets =
 function(event, args, options) {
 	this.notifySkin(event, args, options); // Also notify skin
 
-	var context = this.isChildWindow ? parentAppCtxt : this;
+	var context = this.isChildWindow ? window.parentAppCtxt : this;
 
 	if (options && options.noChildWindow && this.isChildWindow) { return false; }
 
@@ -1832,7 +1832,7 @@ function(zimletName, event, args, options) {
 
 ZmAppCtxt.prototype.notifySkin =
 function(event, args, options) {
-	var context = this.isChildWindow ? parentAppCtxt : this;
+	var context = this.isChildWindow ? window.parentAppCtxt : this;
 	if (options && options.noChildWindow && this.isChildWindow) { return; }
 	try {
 		return window.skin && AjxUtil.isFunction(window.skin.handleNotification) && window.skin.handleNotification(event, args);
@@ -1956,7 +1956,7 @@ function(ev) {
     		var isHttp	= appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_HTTP;
     		var proto	= isHttp ? ZmSetting.PROTO_HTTP : ZmSetting.PROTO_HTTPS;
     		var port	= appCtxt.get(isHttp ? ZmSetting.HTTP_PORT : ZmSetting.HTTPS_PORT);
-    		var path	= appContextPath+"/h/changepass";
+    		var path	= window.appContextPath+"/h/changepass";
 
     		var publicUrl = appCtxt.get(ZmSetting.PUBLIC_URL);
     		if (publicUrl) {
@@ -1966,7 +1966,7 @@ function(ev) {
     			proto = switchMode ? proto : parts.protocol;
     			port = switchMode ? port : parts.port;
     		}
-			var qsArgs = {skin: appCurrentSkin};
+			var qsArgs = {skin: window.appCurrentSkin};
     		url = AjxUtil.formatUrl({protocol: proto, port: port, path: path, qsReset: true, qsArgs: qsArgs});
     	}
 

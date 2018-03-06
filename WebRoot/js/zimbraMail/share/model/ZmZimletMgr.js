@@ -613,7 +613,7 @@ function(zimletArray, zimletNames, isJS) {
         }
         for (var i = 0; i < zimlets.length; i++) {
             var zimlet = zimlets[i].zimlet[0];
-            includes.push([appContextPath, "/res/", zimlet.name, ".js", query, locid].join(""));
+            includes.push([window.appContextPath, "/res/", zimlet.name, ".js", query, locid].join(""));
         }
     }
 
@@ -647,7 +647,7 @@ function(zimletArray, zimletNames, isJS) {
 		}
 		includes.unshift([
 			"/service/zimlet/res/Zimlets-nodev_all",
-			(isJS ? (".js" + appExtension) : ".css"),
+			(isJS ? (".js" + window.appExtension) : ".css"),
 			(languageId ? "?language=" + languageId : ""),
 			(countryId ? "&country=" + countryId : ""),
 			(cosId ? "&cosId=" + cosId : "")  // For an explanation of why we add cosId here, please see bug #58979

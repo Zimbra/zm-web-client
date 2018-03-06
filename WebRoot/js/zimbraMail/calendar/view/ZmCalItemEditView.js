@@ -776,7 +776,7 @@ function(width) {
         // NOTE: We can't query the section name based on the pref id
         // NOTE: because that info won't be available until the first time
         // NOTE: prefs app is launched.
-        this._reminderConfigure.getHtmlElement().onclick = AjxCallback.simpleClosure(skin.gotoPrefs, skin, "NOTIFICATIONS");
+        this._reminderConfigure.getHtmlElement().onclick = AjxCallback.simpleClosure(window.skin.gotoPrefs, window.skin, "NOTIFICATIONS");
         this._reminderConfigure.replaceElement(document.getElementById(this._htmlElId+"_reminderConfigure"));
 		this._setEmailReminderControls();
 	    var settings = appCtxt.getSettings();

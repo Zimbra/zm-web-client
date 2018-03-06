@@ -380,7 +380,7 @@ function(pref, value, list) {
 ZmPref.addOOOVacationExternalPrefToList = function(list, aPrefName, aNewPrefValue){
     var lastPrefValue = appCtxt.get(aPrefName);     // prefvalue before saving ..
     if (lastPrefValue !== aNewPrefValue) {          // donot add pref to list if pref value is not changed
-        prefToAdd = appCtxt.getSettings().getSetting(aPrefName);
+        var prefToAdd = appCtxt.getSettings().getSetting(aPrefName);
         prefToAdd.setValue(aNewPrefValue);
         list.push(prefToAdd);
     }

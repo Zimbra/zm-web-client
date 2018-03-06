@@ -1294,9 +1294,9 @@ function(clickedEl, ev) {
 
     //bug:67455 request permission for desktop notifications
     if(window.webkitNotifications && appCtxt.get(ZmSetting.MAIL_NOTIFY_TOASTER)){
-        var perm = webkitNotifications.checkPermission();
+        var perm = window.webkitNotifications.checkPermission();
         if(perm == 1){
-           webkitNotifications.requestPermission(function(){});
+           window.webkitNotifications.requestPermission(function(){});
         }
         //else if(perm == 2) ){ /*ignore when browser has disabled notifications*/ }
     }

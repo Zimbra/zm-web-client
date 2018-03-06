@@ -58,12 +58,12 @@ UtAjxXslt.transformToDom = function() {
 		'<company>Columbia</company><price>10.90</price><year>1985</year></cd></catalog>';
 	if (window.DOMParser)
 	{
-		parser=new DOMParser();
+		var parser=new DOMParser();
 		xmlDoc=parser.parseFromString(xml,"text/xml");
 	}
 	else // Internet Explorer
 	{
-		xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+		var xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
 		xmlDoc.async=false;
 		xmlDoc.loadXML(xml);
 	}

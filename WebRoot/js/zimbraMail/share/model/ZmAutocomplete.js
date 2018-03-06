@@ -301,7 +301,7 @@ ZmAutocomplete.prototype.forget =
 			var jsonObj = {RankingActionRequest:{_jsns:"urn:zimbraMail"}};
 			jsonObj.RankingActionRequest.action = {op:"delete", email:addr};
 			var respCallback = this._handleResponseForget.bind(this, callback);
-			var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+			var aCtxt = appCtxt.isChildWindow ? window.parentAppCtxt : appCtxt;
 			aCtxt.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 		};
 
@@ -309,7 +309,7 @@ ZmAutocomplete.prototype._handleResponseForget =
 		function(callback) {
 			appCtxt.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
 			if (appCtxt.isChildWindow) {
-				parentAppCtxt.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
+				window.parentAppCtxt.clearAutocompleteCache(ZmAutocomplete.AC_TYPE_CONTACT);
 			}
 			if (callback) {
 				callback();

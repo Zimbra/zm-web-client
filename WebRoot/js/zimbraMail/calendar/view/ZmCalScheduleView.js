@@ -35,7 +35,7 @@ function() {
 
 ZmCalScheduleView.prototype._apptMouseDownAction =
 function(ev, apptEl) {
-    appt = this.getItemFromElement(apptEl);
+    var appt = this.getItemFromElement(apptEl);
     if (appt.isAllDayEvent()) {
         return false;
     } else {

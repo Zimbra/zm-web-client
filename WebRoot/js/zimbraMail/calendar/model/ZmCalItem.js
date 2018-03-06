@@ -1402,7 +1402,7 @@ function(message) {
 			if (iframe && iframe.parentNode) {
 				iframe.parentNode.removeChild(iframe);
 			}
-			delete dwtIframe;
+			dwtIframe = null;
 		}
 
         // create two more mp's for text and html content types

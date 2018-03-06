@@ -143,7 +143,9 @@ function(params) {
 
         req.onreadystatechange = this._handleUploadResponse.bind(this, req, fileName, params);
         req.send(file);
-        delete req;
+
+        // closure compiler ERROR - variables, functions, and arguments cannot be deleted in strict mode
+        //delete req;
     } catch(exp) {
         DBG.println("Error while uploading file: "  + fileName);
         DBG.println("Exception: "  + exp);

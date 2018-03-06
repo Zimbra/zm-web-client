@@ -445,7 +445,7 @@ ZmApptQuickAddDialog.prototype._handleConfigureClick = function() {
     // NOTE: We can't query the section name based on the pref id
     // NOTE: because that info won't be available until the first time
     // NOTE: prefs app is launched.
-    skin.gotoPrefs("NOTIFICATIONS");
+    window.skin.gotoPrefs("NOTIFICATIONS");
 };
 
 ZmApptQuickAddDialog.prototype._initAutocomplete =
@@ -743,7 +743,8 @@ function(location, locationStr) {
     this._locationField.setValue(locationStr);
     if (this._useAcAddrBubbles) {
         this._locationField.clear();
-        this._locationField.addBubble({address:locationStr, match:match, skipNotify:true});
+        //this._locationField.addBubble({address:locationStr, match:match, skipNotify:true});
+        this._locationField.addBubble({address:locationStr, match:undefined, skipNotify:true});
     }
     this._locations.push(location);
 };

@@ -429,9 +429,9 @@ function() {
     params[i++] = "&tz=";
     params[i++] = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
     params[i++] = "&skin=";
-    params[i++] = appCurrentSkin;
+    params[i++] = window.appCurrentSkin;
 
-    printURL = appContextPath + params.join("");
+    printURL = window.appContextPath + params.join("");
     return printURL;
 };
 

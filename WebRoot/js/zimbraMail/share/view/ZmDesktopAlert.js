@@ -104,7 +104,7 @@ function(title, message, sticky) {
     // It's a little ugly though.
     // change for bug#67359: Broken notification image in chrome browser
     // //var icon = window.favIconUrl;
-	var icon = skin.hints.notificationBanner;
+	var icon = window.skin.hints.notificationBanner;
     var popup = window.webkitNotifications.createNotification(icon, title, message);
     popup.show();
 	popup.onclick = function() {popup.cancel();};
@@ -153,7 +153,7 @@ ZmDesktopAlert.prototype._doRequestPermission = function(msgDialog, requestCallb
 }
 
 ZmDesktopAlert.prototype._showNotification = function(title, message, sticky) {
-	var icon = skin.hints.notificationBanner;
+	var icon = window.skin.hints.notificationBanner;
 
 	var popup = new Notification(title, { body: message, icon: icon});
 	//popup.show();

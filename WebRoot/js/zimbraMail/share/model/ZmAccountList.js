@@ -421,12 +421,13 @@ function(settings, obj) {
 ZmAccountList.prototype.resetTrees =
 function() {
 	for (var i = 0; i < this.visibleAccounts.length; i++) {
-		for (var type in trees) {
+		// trees not defined ?
+		/*for (var type in trees) {
 			var tree = trees[type];
 			if (tree && tree.reset) {
 				tree.reset();
 			}
-		}
+		}*/
 	}
 };
 

@@ -276,7 +276,7 @@ function(rule, isCondition, tableId, rowData, tabGroup) {
 			if (!ZmFilterRule.checkPreconditions(ZmFilterRule.ACTIONS[actionIndex]) && actionIndex != ZmFilterRule.A_FORWARD) { continue; }
 		}
 
-		for (j = 0; j < data.length; j++) {
+		for (var j = 0; j < data.length; j++) {
 			var rowId = Dwt.getNextId();
 			this._enterTabScope(rowId);
 			try {
@@ -1217,7 +1217,7 @@ function(ev) {
 		var cancelCallback = new AjxCallback(this, function(){target.checked = false;});
 		if (active) {
 			var outgoingFilterController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
-			if (outgoingFilterContrller) {
+			if (outgoingFilterController) {
 				outgoingFilterController.handleBeforeFilterChange(null, cancelCallback);
 			}
 		}

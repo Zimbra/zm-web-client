@@ -562,6 +562,7 @@ function(buf, i, isHtml, isEdit) {
 	var orig = this._orig || this;
 	var s = this.startDate;
 	var e = this.endDate;
+	var params;
 
 	if (this.viewMode == ZmCalItem.MODE_DELETE_INSTANCE) {
 		s = this.getUniqueStartDate();
@@ -632,7 +633,7 @@ function(buf, i, isHtml, isEdit) {
 					orig._recurrence.repeatMonthlyDayList != this._recurrence.repeatMonthlyDayList ||
 					orig._recurrence.repeatYearlyMonthsList != this._recurrence.repeatYearlyMonthsList;
 		}
-		params = [ ZmMsg.recurrence, ":", this._recurrence.getBlurb(), modified ? ZmMsg.apptModifiedStamp : "" ];
+		var params = [ ZmMsg.recurrence, ":", this._recurrence.getBlurb(), modified ? ZmMsg.apptModifiedStamp : "" ];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}

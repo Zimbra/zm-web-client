@@ -192,7 +192,7 @@ ZmOffline.prototype._initStaticResources =
 function() {
 	ZmOffline.refreshStatusIcon(true);
 	var staticURLs = [];
-	var cssUrl = ["/css/msgview.css?v=", cacheKillerVersion, "&locale=", window.appRequestLocaleId, "&skin=", window.appCurrentSkin].join("");
+	var cssUrl = ["/css/msgview.css?v=", window.cacheKillerVersion, "&locale=", window.appRequestLocaleId, "&skin=", window.appCurrentSkin].join("");
 	staticURLs.push({url : cssUrl, storeInLocalStorage : true, appendCacheKillerVersion : false});
 	staticURLs.push({url : "/img/large.png"});
 	staticURLs.push({url : "/img/large/ImgPerson_48.png"});
@@ -213,9 +213,9 @@ function(staticURLs, cachedURL, response) {
 	}
 	if (staticURLs && staticURLs.length > 0) {
 		var staticURL = staticURLs.shift();
-		var url = appContextPath + staticURL.url;
+		var url = window.appContextPath + staticURL.url;
 		if (staticURL.appendCacheKillerVersion !== false) {
-			staticURL.url = url = url + "?v=" + cacheKillerVersion;
+			staticURL.url = url = url + "?v=" + window.cacheKillerVersion;
 		}
 		var callback = this._cacheStaticResources.bind(this, staticURLs, staticURL);
 		AjxRpc.invoke(null, url, null, callback, true);
@@ -235,7 +235,7 @@ function() {
 		cacheSignatureImages();
 	}
 	else {
-		var url = appContextPath + "/js/ajax/3rdparty/tinymce/langs/" + tinyMCELocale + ".js";
+		var url = window.appContextPath + "/js/ajax/3rdparty/tinymce/langs/" + tinyMCELocale + ".js";
 		AjxRpc.invoke(null, url, null, cacheSignatureImages, true);
 	}
 };

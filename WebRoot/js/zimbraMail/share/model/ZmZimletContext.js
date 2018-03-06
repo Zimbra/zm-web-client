@@ -64,7 +64,7 @@ ZmZimletContext = function(id, zimlet) {
 	this.version = zimlet.version;
 	this.label = zimlet.label;
 	this.includes = this.json.zimlet.include || [];
-	this.includes.push([appContextPath, "/messages/", this.name, ".js?v=", cacheKillerVersion].join(""));
+	this.includes.push([window.appContextPath, "/messages/", this.name, ".js?v=", window.cacheKillerVersion].join(""));
 	this.includeCSS = this.json.zimlet.includeCSS;
 
 	if (zimlet.serverExtension && zimlet.serverExtension[0].hasKeyword) {
@@ -156,8 +156,8 @@ ZmZimletContext.prototype.constructor = ZmZimletContext;
 //
 ZmZimletContext.RE_ARRAY_ELEMENTS = /^(dragSource|include|includeCSS|menuItem|param|property|resource|portlet)$/;
 ZmZimletContext.APP = {
-	contextPath: appContextPath,
-	currentSkin: appCurrentSkin
+	contextPath: window.appContextPath,
+	currentSkin: window.appCurrentSkin
 };
 
 // NOTE: I have no idea why these regexes start with (^|[^\\]). But
@@ -482,7 +482,7 @@ function(menu) {
 		return;
 	
 	var items = menu.getMenuItems();
-	for (menuId in items) {
+	for (var menuId in items) {
 		var item = items[menuId];
 		if (item.id != null || item.id != "")
 			item.addSelectionListener(this._handleMenuItemSelected);
@@ -684,7 +684,7 @@ function(obj) {
    var messages = [].concat(obj);
    var transformedObjects = [];
    
-   for(x = 0; x < messages.length; x++) {
+   for(var x = 0; x < messages.length; x++) {
        var type = messages[x].toString();
        transformedObjects[x] = (ZmZimletContext._zmObjectTransformers[type]) ? ZmZimletContext._zmObjectTransformers[type](messages[x]) : messages[x];
    }

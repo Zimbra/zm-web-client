@@ -165,6 +165,7 @@ function() {
 				if (this._streamHash[c]) {
 					if (isNegative && (c == ZmFilterRule.TEST_ADDRBOOK || c == ZmFilterRule.TEST_ME)) {
 						var header = AjxUtil.isArray(conditions[c]) && conditions[c][i].header;
+						var value;
 						if (c == ZmFilterRule.TEST_ADDRBOOK) {
 							value = ZmFilterRule.C_FROM;
 						}

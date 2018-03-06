@@ -178,9 +178,9 @@ ZmAttendeePicker.BOTTOM_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.apptEquipment;
 
 // images for the bottom fieldset legend
 ZmAttendeePicker.ICON = {};
-ZmAttendeePicker.ICON[ZmCalBaseItem.PERSON]					= appContextPath+"/img/hiRes/calendar/ApptMeeting.gif";
-ZmAttendeePicker.ICON[ZmCalBaseItem.LOCATION]				= appContextPath+"/img/hiRes/calendar/Location.gif";
-ZmAttendeePicker.ICON[ZmCalBaseItem.EQUIPMENT]				= appContextPath+"/img/hiRes/calendar/Resource.gif";
+ZmAttendeePicker.ICON[ZmCalBaseItem.PERSON]					= window.appContextPath+"/img/hiRes/calendar/ApptMeeting.gif";
+ZmAttendeePicker.ICON[ZmCalBaseItem.LOCATION]				= window.appContextPath+"/img/hiRes/calendar/Location.gif";
+ZmAttendeePicker.ICON[ZmCalBaseItem.EQUIPMENT]				= window.appContextPath+"/img/hiRes/calendar/Resource.gif";
 
 ZmAttendeePicker.CHOOSER_HEIGHT = 300;
 

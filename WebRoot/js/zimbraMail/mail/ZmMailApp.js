@@ -2078,11 +2078,11 @@ ZmMailApp.prototype._setFavIcon =
 function(unread) {
     var url;
     if (unread == 0) {
-        url = [appContextPath, "/img/logo/favicon.ico"].join("");
+        url = [window.appContextPath, "/img/logo/favicon.ico"].join("");
     } else if (unread > 9) {
-        url = [appContextPath,"/img/logo/favicon_plus.ico"].join("");
+        url = [window.appContextPath,"/img/logo/favicon_plus.ico"].join("");
     } else {
-        url = [appContextPath, "/img/logo/favicon_", unread, ".ico"].join("");
+        url = [window.appContextPath, "/img/logo/favicon_", unread, ".ico"].join("");
     }
     Dwt.setFavIcon(url);
 };

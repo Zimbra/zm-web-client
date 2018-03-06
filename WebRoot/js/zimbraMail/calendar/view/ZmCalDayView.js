@@ -107,7 +107,7 @@ function(ev) {
 
 ZmCalDayView.prototype._apptMouseDownAction =
 function(ev, apptEl) {
-    appt = this.getItemFromElement(apptEl);
+    var appt = this.getItemFromElement(apptEl);
     if (appt.isAllDayEvent()) {
         return false;
     } else {
@@ -892,8 +892,9 @@ function() {
 //		DBG.timePt("_computeApptLayout: computeMaxCol "+i, false);
 	}
 
-	delete layoutsAllDay;
-	delete layoutsDayMap;
-	delete layoutCheck;
+	// closure compiler ERROR - variables, functions, and arguments cannot be deleted in strict mode
+	// delete layoutsAllDay;
+	// delete layoutsDayMap;
+	// delete layoutCheck;
 	//DBG.timePt("_computeApptLayout: end", false);
 };

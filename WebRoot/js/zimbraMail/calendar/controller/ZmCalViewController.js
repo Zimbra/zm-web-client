@@ -1781,7 +1781,7 @@ function(ev) {
     }
     url = url.join("");
 
-    window.open(appContextPath+url, "_blank");
+    window.open(window.appContextPath+url, "_blank");
 };
 
 ZmCalViewController.prototype._deleteListener =

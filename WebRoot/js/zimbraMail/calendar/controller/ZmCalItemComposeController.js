@@ -137,7 +137,7 @@ function() {
 		}
 	} catch(ex) {
 		var msg = AjxUtil.isString(ex) ?
-			AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, errorMsg) :
+			AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, ex) :
 			ZmMsg.errorSaving;
 
 		appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);

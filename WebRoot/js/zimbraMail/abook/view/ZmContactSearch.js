@@ -238,7 +238,7 @@ function() {
 
 	var listDiv = document.getElementById(this._htmlElId + "_results");
 	if (listDiv) {
-		params = {parent:this, parentElement:listDiv, options:this._options};
+		var params = {parent:this, parentElement:listDiv, options:this._options};
 		this._listView = this._controller._listView = new ZmContactSearchListView(params);
 	}
 

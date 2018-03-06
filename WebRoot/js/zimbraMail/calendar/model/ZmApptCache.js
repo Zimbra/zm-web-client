@@ -824,7 +824,7 @@ function(searchResp, params) {
 				var folderId = folderIds[i];
 				var apptList = new ZmApptList();
 				apptList.loadFromSummaryJs(folder2List[folderId]);
-                list = this.createCaches(apptList, params, folderId);
+                var list = this.createCaches(apptList, params, folderId);
                 params.resultList.push(list);
 			}
 		}

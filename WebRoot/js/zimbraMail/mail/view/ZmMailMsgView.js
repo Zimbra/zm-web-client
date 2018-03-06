@@ -1116,7 +1116,7 @@ function(params) {
 	
 		if (!ZmMailMsgView._CSS) {
 			// Make a synchronous request for the CSS. Should we do this earlier?
-			var cssUrl = [appContextPath, "/css/msgview.css?v=", cacheKillerVersion, "&locale=", window.appRequestLocaleId, "&skin=", window.appCurrentSkin].join("");
+			var cssUrl = [window.appContextPath, "/css/msgview.css?v=", window.cacheKillerVersion, "&locale=", window.appRequestLocaleId, "&skin=", window.appCurrentSkin].join("");
 			if (AjxEnv.supported.localstorage) {
 				ZmMailMsgView._CSS = localStorage.getItem(cssUrl);
 			}
@@ -2767,7 +2767,7 @@ function(msgId, partId, name) {
 
 	// force create deferred folders if not created
 	AjxDispatcher.require("BriefcaseCore");
-	var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+	var aCtxt = appCtxt.isChildWindow ? window.parentAppCtxt : appCtxt;
 	var briefcaseApp = aCtxt.getApp(ZmApp.BRIEFCASE);
 	briefcaseApp._createDeferredFolders();
 
@@ -2785,7 +2785,7 @@ function(msgId, partId, name) {
 
 	// force create deferred folders if not created
 	AjxDispatcher.require(["MailCore", "CalendarCore"]);
-	var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+	var aCtxt = appCtxt.isChildWindow ? window.parentAppCtxt : appCtxt;
 	var calApp = aCtxt.getApp(ZmApp.CALENDAR);
 	calApp._createDeferredFolders();
 

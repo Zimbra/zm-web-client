@@ -607,7 +607,7 @@ function(ev) {
         this.dragDeselect(div);
 		appCtxt.getCurrentController()._doMove(data, dropFolder.folder);
 	} else if (ev.action == DwtDropEvent.DRAG_LEAVE) {
-		view.dragDeselect(div);
+		this.dragDeselect(div);
 	} else if (ev.action == DwtDropEvent.DRAG_OP_CHANGED) {
 		// nothing
 	}

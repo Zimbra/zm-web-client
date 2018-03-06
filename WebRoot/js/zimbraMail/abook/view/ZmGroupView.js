@@ -680,7 +680,7 @@ function() {
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 		if (appCtxt.multiAccounts) {
-			var acct = object.account || appCtxt.accountList.mainAccount;
+			var acct = appCtxt.accountList.mainAccount;
 			this._acAddrSelectList.setActiveAccount(acct);
 		}
 	}
@@ -835,7 +835,7 @@ function() {
 	
 	this._searchRow = {};
 	for (var rowId in rowMap) {
-		row = Dwt.byId(rowMap[rowId]);
+		var row = Dwt.byId(rowMap[rowId]);
 		if (row) this._searchRow[rowId] = row;
 	}
 	this._updateSearchRows(this._searchInSelect && this._searchInSelect.getValue() || ZmContactsApp.SEARCHFOR_CONTACTS);

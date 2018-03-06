@@ -401,7 +401,7 @@ function() {
     if (appCtxt.isOffline) {
         url.push("&zd=true", "&acct=", this._composeView.getApptEditView().getCalendarAccount().name);
     }
-	window.open(appContextPath + url.join(""), "_blank");
+	window.open(window.appContextPath + url.join(""), "_blank");
 };
 
 ZmApptController.prototype._tagButtonListener =

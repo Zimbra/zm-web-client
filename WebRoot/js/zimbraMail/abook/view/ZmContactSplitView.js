@@ -1145,6 +1145,7 @@ function(ev) {
 ZmContactSimpleView.prototype._layout =
 function() {
 	// explicitly remove each child (setting innerHTML causes mem leak)
+	var cDiv;
 	while (this._parentEl.hasChildNodes()) {
 		cDiv = this._parentEl.removeChild(this._parentEl.firstChild);
 		this._data[cDiv.id] = null;

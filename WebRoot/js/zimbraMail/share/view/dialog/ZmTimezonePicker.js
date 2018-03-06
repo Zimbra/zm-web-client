@@ -175,7 +175,7 @@ function() {
 
 ZmTimezonePicker.prototype._okButtonListener =
 function(ev) {
-	DwtDialog.prototype._buttonListener.call(this, ev, results);
+	DwtDialog.prototype._buttonListener.call(this, ev);
 };
 
 ZmTimezonePicker.prototype._enterListener =

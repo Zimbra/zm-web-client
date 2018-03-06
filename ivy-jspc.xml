@@ -18,7 +18,6 @@
         <dependency org="commons-httpclient" name="commons-httpclient" rev="3.1"/>
         <dependency org="commons-codec" name="commons-codec" rev="1.7"/>
         <dependency org="org.json" name="json" rev="20090211" />
-        <dependency org="com.yahoo.platform.yui" name="yuicompressor" rev="2.4.8"/>
         <dependency org="zimbra" name="zm-ajax" rev="latest.integration"/>
         <dependency org="zimbra" name="zm-common" rev="latest.integration"/>
         <dependency org="zimbra" name="zm-client" rev="latest.integration"/>

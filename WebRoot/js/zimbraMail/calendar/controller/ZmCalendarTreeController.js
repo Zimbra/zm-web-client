@@ -554,7 +554,7 @@ function(ev, treeView, overviewId) {
 		ev.event == ZmEvent.E_DELETE ||
 		(ev.event == ZmEvent.E_MODIFY && fields[ZmOrganizer.F_FLAGS]))
 	{
-		var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+		var aCtxt = appCtxt.isChildWindow ? window.parentAppCtxt : appCtxt;
 		var controller = aCtxt.getApp(ZmApp.CALENDAR).getCalController();
 		controller._updateCheckedCalendars();
 

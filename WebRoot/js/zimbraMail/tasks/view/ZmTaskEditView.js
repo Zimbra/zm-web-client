@@ -753,7 +753,7 @@ function(isEnabled) {
 
 ZmTaskEditView.prototype._setRemindersConfigureEnabled = function(enabled) {
 	this._reminderConfigure.setEnabled(enabled);
-    this._reminderConfigure.getHtmlElement().onclick = enabled ? AjxCallback.simpleClosure(skin.gotoPrefs, skin, "NOTIFICATIONS") : null;
+    this._reminderConfigure.getHtmlElement().onclick = enabled ? AjxCallback.simpleClosure(window.skin.gotoPrefs, window.skin, "NOTIFICATIONS") : null;
 };
 
 //

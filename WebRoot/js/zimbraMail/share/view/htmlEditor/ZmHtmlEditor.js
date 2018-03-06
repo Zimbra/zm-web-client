@@ -569,7 +569,7 @@ ZmHtmlEditor.prototype.initTinyMCEEditor = function(params) {
 	if (!window.tinyMCE) {
         window.tinyMCEPreInit = {};
         window.tinyMCEPreInit.suffix = '';
-        window.tinyMCEPreInit.base = appContextPath + ZmHtmlEditor.TINY_MCE_PATH; // SET PATH TO TINYMCE HERE
+        window.tinyMCEPreInit.base = window.appContextPath + ZmHtmlEditor.TINY_MCE_PATH; // SET PATH TO TINYMCE HERE
         // Tell TinyMCE that the page has already been loaded
         window.tinyMCE_GZ = {};
         window.tinyMCE_GZ.loaded = true;
@@ -741,7 +741,7 @@ function(id, autoFocus) {
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
-	tinymce.baseURL = appContextPath + ZmHtmlEditor.TINY_MCE_PATH;
+	tinymce.baseURL = window.appContextPath + ZmHtmlEditor.TINY_MCE_PATH;
 
 	if (tinymce.EditorManager) {
 		tinymce.EditorManager.baseURI = new tinymce.util.URI(urlParts.protocol + "://" + urlParts.authority + tinymce.baseURL);
@@ -822,7 +822,7 @@ function(id, autoFocus) {
 		convert_urls : true,
 		verify_html : false,
 		browser_spellcheck : true,
-        content_css : appContextPath + '/css/tinymce-content.css?v=' + cacheKillerVersion,
+        content_css : window.appContextPath + '/css/tinymce-content.css?v=' + window.cacheKillerVersion,
         dialog_type : "modal",
         forced_root_block : "div",
         width: "100%",
@@ -860,7 +860,7 @@ ZmHtmlEditor.prototype.onPaste = function(ev) {
 
     var items = ((ev.clipboardData &&
                   (ev.clipboardData.items || ev.clipboardData.files)) ||
-                 (window.clipboardData && clipboardData.files)),
+                 (window.clipboardData && window.clipboardData.files)),
         item = items && items[0],
         file, name, type,
         view;
@@ -2029,7 +2029,7 @@ function(words, keepModeDiv) {
 	// having the data, this function will parse the DOM and replace
 	// occurrences of the misspelled words with <span
 	// class="ZM-SPELLCHECK-MISSPELLED">word</span>
-	rec = function(node) {
+	var rec = function(node) {
 		switch (node.nodeType) {
 			case 1: /* ELEMENT */
 				for (var i = node.firstChild; i; i = rec(i)) {}
@@ -2163,7 +2163,7 @@ function(path) {
 		style.id = path;
 		style.rel = "stylesheet";
 		style.type = "text/css";
-		var style_url = appContextPath + path + "?v=" + cacheKillerVersion;
+		var style_url = window.appContextPath + path + "?v=" + window.cacheKillerVersion;
 		if (AjxEnv.isGeckoBased || AjxEnv.isSafari) {
 			style_url = document.baseURI.replace(
 					/^(https?:\x2f\x2f[^\x2f]+).*$/, "$1") + style_url;

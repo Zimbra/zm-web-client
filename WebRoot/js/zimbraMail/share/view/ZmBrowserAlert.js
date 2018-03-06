@@ -76,8 +76,8 @@ function(altTitle) {
 	this.altTitle = altTitle || ZmMsg.newMessage;
 	if (!this._clientHasFocus) {
 		if (!this._favIcon) {
-			this._favIcon = appContextPath + "/img/logo/favicon.ico";
-			this._blankIcon = appContextPath + "/img/logo/blank.ico";
+			this._favIcon = window.appContextPath + "/img/logo/favicon.ico";
+			this._blankIcon = window.appContextPath + "/img/logo/blank.ico";
 		}
 		this._startLoop();
 	}

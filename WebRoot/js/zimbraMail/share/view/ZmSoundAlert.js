@@ -82,7 +82,7 @@ function(soundFile) {
 	this._lastTime = time;
 
 	soundFile = soundFile || "/public/sounds/im/alert.wav";
-	var url = appContextPath + soundFile;
+	var url = window.appContextPath + soundFile;
 
 	var html;
 	if (this.html5AudioEnabled) {

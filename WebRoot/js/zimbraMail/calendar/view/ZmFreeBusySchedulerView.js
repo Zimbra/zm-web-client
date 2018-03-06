@@ -1253,7 +1253,8 @@ function(dateInfo) {
 	this._updateFreeBusy();
 
 	// finally, update the appt tab view page w/ new date(s)
-	if(this.isComposeMode) this._editView.updateDateField(AjxDateUtil.simpleComputeDateStr(sd), AjxDateUtil.simpleComputeDateStr(ed));
+	// Below line was giving error in closure compiler: ERROR - variable sd is undeclared
+	//if(this.isComposeMode) this._editView.updateDateField(AjxDateUtil.simpleComputeDateStr(sd), AjxDateUtil.simpleComputeDateStr(ed));
 };
 
 ZmFreeBusySchedulerView.prototype.setDateBorder =
@@ -1365,7 +1366,7 @@ function(status, slots, table, sched) {
 				endIdx = ZmFreeBusySchedulerView.FREEBUSY_NUM_CELLS - 1;
 			}
 
-			for (j = startIdx; j <= endIdx; j++) {
+			for (var j = startIdx; j <= endIdx; j++) {
 				if (row.cells[j]) {
 					if (status != ZmFreeBusySchedulerView.STATUS_UNKNOWN) {
 						this._allAttendees[j] = this._allAttendees[j] + 1;
@@ -1415,7 +1416,7 @@ function(status, slots) {
             endIdx = ZmFreeBusySchedulerView.FREEBUSY_NUM_CELLS - 1;
         }
 
-        for (j = startIdx; j <= endIdx; j++) {
+        for (var j = startIdx; j <= endIdx; j++) {
             if (status != ZmFreeBusySchedulerView.STATUS_UNKNOWN) {
                 this._allAttendees[j] = this._allAttendees[j] + 1;
                 this.updateAllAttendeeCellStatus(j, status);

@@ -1026,7 +1026,7 @@ function(ev) {
 		var acctName = appCtxt.getById(folderId).getAccount().name;
 		url += "&acct=" + acctName ;
 	}
-	window.open(appContextPath+url, "_blank");
+	window.open(window.appContextPath+url, "_blank");
 };
 
 /**
@@ -1069,7 +1069,7 @@ function(ev) {
 		var acctName = appCtxt.getById(folderId).getAccount().name;
 		url += "&acct=" + acctName ;
 	}
-	window.open(appContextPath+url, "_blank");
+	window.open(window.appContextPath+url, "_blank");
 };
 
 

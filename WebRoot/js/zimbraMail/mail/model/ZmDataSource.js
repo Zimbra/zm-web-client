@@ -476,7 +476,6 @@ ZmDataSource.getProviderForHost =
 function(host) {
 	var providers = ZmDataSource.getProviders();
 	for (var id in providers) {
-		hasProviders = true;
 		var provider = providers[id];
 		if (provider.host == host) {
 			return provider;

@@ -1556,7 +1556,6 @@ function(attachment, controller) {
         var reqObj = req;
         req.onreadystatechange = AjxCallback.simpleClosure(this._handleUploadResponse, this, reqObj, controller);
         req.sendAsBinary(binary.readBytes(binary.available()));
-        delete req;
     }catch(ex) {
         DBG.println("exception in handling attachment: " + attachment);
         DBG.println(ex);
@@ -2296,8 +2295,8 @@ function() {
 ZmZimbraMail.ONLINE_HELP_URL = "https://help.zimbra.com/?";
 ZmZimbraMail.NEW_FEATURES_URL = "https://www.zimbra.com/products/whats_new.html?";
 
-ZmZimbraMail.DEFAULT_CONTACT_ICON = appContextPath + "/img/large/ImgPerson_48.png?v=" + window.cacheKillerVersion;
-ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL = appContextPath + "/img/large/ImgPerson_32.png?v=" + window.cacheKillerVersion;
+ZmZimbraMail.DEFAULT_CONTACT_ICON = window.appContextPath + "/img/large/ImgPerson_48.png?v=" + window.cacheKillerVersion;
+ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL = window.appContextPath + "/img/large/ImgPerson_32.png?v=" + window.cacheKillerVersion;
 
 /**
 * Adds a "help" submenu.
@@ -2768,7 +2767,7 @@ function(ev, relogin) {
 		window.platform.icon().title = null;
 	}
     var urlParams = {
-                path:appContextPath,
+                path: window.appContextPath,
                 qsArgs: {
                         loginOp: relogin ? 'relogin' : 'logout'
                     }
@@ -2847,7 +2846,7 @@ function(url) {
 ZmZimbraMail.standardHtmlLinkCallback =
 function() {
 	var urlParams = {
-		path: appContextPath,
+		path: window.appContextPath,
 		qsArgs: {
 			client: "standard"
 		}
