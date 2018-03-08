@@ -55,7 +55,6 @@ AjxPackage.require("ajax.dwt.widgets.DwtMessageComposite");
 
 AjxPackage.require("ajax.util.AjxDateUtil");
 AjxPackage.require("ajax.util.AjxPluginDetector");
-AjxPackage.require("ajax.3rdparty.clipboard");
 AjxPackage.require("ajax.util.AjxClipboard");
 AjxPackage.require("ajax.util.AjxSHA1");
 
