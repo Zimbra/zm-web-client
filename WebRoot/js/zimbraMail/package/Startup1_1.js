@@ -121,8 +121,6 @@ AjxPackage.require("ajax.dwt.widgets.DwtOptionDialog");
 AjxPackage.require("ajax.dwt.widgets.DwtChooser");
 AjxPackage.require("ajax.dwt.widgets.DwtTimeSelect");
 
-AjxPackage.require("ajax.3rdparty.jquery.jquery");
-
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeException");

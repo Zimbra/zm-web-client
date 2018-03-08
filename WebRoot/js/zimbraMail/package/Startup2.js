@@ -27,7 +27,6 @@ AjxPackage.require("ajax.util.AjxBuffer");
 AjxPackage.require("ajax.xslt.AjxXslt");
 AjxPackage.require("ajax.util.AjxSHA1");
 AjxPackage.require("ajax.util.AjxPluginDetector");
-AjxPackage.require("ajax.3rdparty.clipboard");
 AjxPackage.require("ajax.util.AjxClipboard");
 AjxPackage.require("ajax.dwt.events.DwtDateRangeEvent");
 AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
