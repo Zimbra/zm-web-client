@@ -328,7 +328,7 @@
 <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
 </script>
 <%
-	String allPackages = "Startup1_1,Startup1_2";
+	String allPackages = "JQuery,Startup1_1,Startup1_2";
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
             extraPackages = "Startup2,MailCore,Mail,ContactsCore,CalendarCore,Calendar,CalendarAppt,Contacts,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,Voicemail";

@@ -2,7 +2,6 @@
     <import file="../zm-zcs/ant-global.xml"/>
     <property name="ajax.dir" location="../zm-ajax" />
     <property name="ajax.src.dir" location="${ajax.dir}/src" />
-    <property name="ajax.build.dir" location="${ajax.dir}/build" />
 
     <property name="timezones.dir" location="../zm-timezones" />
     <property name="timezones.build.dir" location="${timezones.dir}/build" />
@@ -34,7 +33,6 @@
 
     <!-- zm-taglib -->
     <property name='taglib.dir' value='${this.zwc.basedir}/../zm-taglib'/>
-    <property name='taglib.build.dir' value='${taglib.dir}/build'/>
 
     <property name="jsdoctoolkit.version" value="2.4.0"/>
     <property name="jsdoctoolkit.dir" location="${build.tmp.dir}/jsdoc_toolkit-${jsdoctoolkit.version}/jsdoc-toolkit" />
@@ -81,6 +79,7 @@
     <property name='nodebug.ext' value='.nodebug'/>
     <property name="jsmin.ext" value='.min'/>
     <property name="compress.ext" value='.zgz'/>
+    <property name='compressoutput.ext' value='.out'/>
     <property name='compresserror.ext' value='.err'/>
 
     <!-- THIRDPARTY INTEGRATION -->
@@ -88,7 +87,7 @@
 
     <property name="modernizr.version" value="2.8.3"/>
     <property name="yui.version" value="2.7.0"/>
-    <property name="jquery.version" value="1.11.0"/>
+    <property name="jquery.version" value="3.3.1-1"/>
 
     <!-- TINY_MCE INTEGRATION -->
     <property name="tinymce.version" value="4.2.6"/>
@@ -125,7 +124,7 @@
         <property name='common.jam.excludes' value='${custom.jam.excludes},'/>
         <property name='common.build.web.includes' value='${custom.build.web.includes},**'/>
         <property name='common.build.web.excludes'
-                  value='${custom.build.web.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}'/>
+                  value='${custom.build.web.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext},js/*${compressoutput.ext}'/>
         <property name='common.webinf.includes' value='${custom.webinf.includes},**'/>
         <property name='common.webinf.excludes' value='${custom.webinf.excludes},web.*,lib/**'/>
     </target>
@@ -134,7 +133,7 @@
         <property name='deploy.app' value='zimbra'/>
         <property name='skins.dir' value='${web.dir}/skins'/>
         <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/2.7.0/**,qunit/**'/>
-        <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**'/>
+        <property name='web.excludes' value='${common.web.excludes}'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
         <property name='img.includes' value='${common.img.includes}'/>
@@ -142,7 +141,7 @@
         <property name='template.includes' value='${common.template.includes}'/>
         <property name='template.excludes' value='${common.template.excludes},admin/**'/>
         <property name='jam.includes' value='${common.jam.includes}'/>
-        <property name='jam.excludes' value='${common.jam.excludes},**/zimbraAdmin/**'/>
+        <property name='jam.excludes' value='${common.jam.excludes}'/>
         <property name='build.web.includes' value='${common.build.web.includes}'/>
         <property name='build.web.excludes' value='${common.build.web.excludes}'/>
         <property name='webinf.includes' value='${common.webinf.includes}'/>
@@ -229,6 +228,7 @@
 
             <!-- files from build tree -->
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
+            <!-- zipfileset dir='${build.web.dir}' includes='js/Modernizr_all.js${jsmin.ext}' / -->
 			<zipfileset dir='${build.web.dir}' includes='js/Boot_all.js${jsmin.ext}' />
 
             <!-- primary files from source trees -->
@@ -726,7 +726,6 @@
 		<!-- delete output files if files changed -->
 		<dependset>
 			<srcfileset dir='${srcdir}' includes='*/**' />
-			<srcfileset dir='${ajax.build.dir}' includes='**/img/*.class' />
 			<targetfileset dir='${destdir}' includes='${build.css.file}*.css,${build.css.file}*.js' />
 		</dependset>
 		<!-- merge images, if needed -->
@@ -910,7 +909,6 @@
 
         <packagedependset>
             <srcdependslist dir='.' files='${depends.file}'/>
-            <srcfileset dir='${ajax.build.dir}' includes='**/PackageJammerTask.class'/>
             <targetfilelist dir='.' files='${jam.file}'/>
             <targetfilelist dir='.' files='${jsp.file}'/>
         </packagedependset>
@@ -934,6 +932,10 @@
             </not>
             <then>
                 <condition property='wrap' value='false' else='true'>
+                    <!-- or>
+                        <equals arg1='${arg}' arg2='Boot'/>
+                        <equals arg1='${arg}' arg2='Modernizr'/>
+                    </or -->
                     <equals arg1='${arg}' arg2='Boot'/>
                 </condition>
 
@@ -1015,7 +1017,6 @@ ext = BeanUtils.cook(ext);
 	    <taskdef name="try"
 	             classname="com.zimbra.webClient.build.TryTask"
 	             classpathref="class.path"
-
 	    />
 
         <!-- copying yui jar file in build/tmp directory. -->
@@ -1046,31 +1047,45 @@ ext = BeanUtils.cook(ext);
                             <substitution expression=" "/>
                             <fileset file="@{var}${nodebug.ext}"/>
                         </replaceregexp>
-                        <echo>Minimizing to @{var}${jsmin.ext}</echo>
-	                    <try>
-	                        <block>
-		                        <java jar="${build.tmp.dir}/yuicompressor-2.4.8.jar" fork="true" failonerror="true"
-		                              output="${build.dir}/yui-compress.out">
-                                    <!-- Add error="@{var}${compresserror.ext}" in java task if *.err files need to be generated. -->
-		                            <arg value="--line-break"/>
-		                            <arg value="0"/>
-		                            <arg value="--type"/>
-		                            <arg value="js"/>
-		                            <arg value="-o"/>
-		                            <arg value="@{var}${jsmin.ext}"/>
-		                            <arg value="@{var}${nodebug.ext}"/>
-                                    <arg value="--verbose"/>
-		                        </java>
-	                        </block>
-		                    <catch>
-			                    <antcall target='compress-test-files'>
-				                    <param name='filename' value='@{var}${depends.ext}' />
-			                    </antcall>
-		                    </catch>
-		                    <finally>
-			                    <!-- do nothing -->
-		                    </finally>
-	                    </try>
+                        <if>
+                            <or>
+                                <equals arg1="@{var}" arg2="${build.js.dir}/JQuery_all.js" />
+                                <!-- equals arg1="@{var}" arg2="${build.js.dir}/Modernizr_all.js" / -->
+                                <equals arg1="@{var}" arg2="${build.js.dir}/Clipboard_all.js" />
+                            </or>
+                            <!-- we will not minify thirdparty libraries -->
+                            <then>
+                                <echo>Copying thirdparty library file to @{var}${jsmin.ext}</echo>
+                                <copy tofile="@{var}${jsmin.ext}" file="@{var}"/>
+                            </then>
+                            <else>
+                                <try>
+                                    <block>
+                                        <echo>Minifying file to @{var}${jsmin.ext}</echo>
+                                        <java jar="${build.tmp.dir}/yuicompressor-2.4.8.jar" fork="true" failonerror="true"
+                                              output="@{var}${compressoutput.ext}">
+                                            <!-- Add error="@{var}${compresserror.ext}" in java task if *.err files need to be generated. -->
+                                            <arg value="--line-break"/>
+                                            <arg value="0"/>
+                                            <arg value="--type"/>
+                                            <arg value="js"/>
+                                            <arg value="-o"/>
+                                            <arg value="@{var}${jsmin.ext}"/>
+                                            <arg value="@{var}${nodebug.ext}"/>
+                                            <arg value="--verbose"/>
+                                        </java>
+                                    </block>
+                                    <catch>
+                                        <antcall target='compress-test-files'>
+                                            <param name='filename' value='@{var}${depends.ext}' />
+                                        </antcall>
+                                    </catch>
+                                    <finally>
+                                        <!-- do nothing -->
+                                    </finally>
+                                </try>
+                            </else>
+                        </if>
                         <echo>Prepending Copyright to @{var}${license.ext}</echo>
                         <concat destfile="@{var}${license.ext}" fixlastline="true">
                             <header filtering="no" trimleading="yes">
@@ -1542,7 +1557,14 @@ ext = BeanUtils.cook(ext);
         <unzip src="${build.tmp.dir}/jquery-${jquery.version}.jar" dest="${build.tmp.dir}/jquery" overwrite="true" />
 
         <copy todir="${3rdparty.dir}/jquery">
-            <fileset dir="${build.tmp.dir}/jquery/META-INF/resources/webjars/jquery/${jquery.version}" />
+            <fileset dir="${build.tmp.dir}/jquery/META-INF/resources/webjars/jquery/${jquery.version}" includes="*.js" excludes="webjars-requirejs.js" />
+            <scriptmapper language="javascript">
+                // replace dots with underscores in JS file names, retaining the suffix
+                if (/\.js$/.test(source)) {
+                  source = source.substr(0, source.length - 3).replace(/\./g, '_') + '.js';
+                }
+                self.addMappedName(source);
+            </scriptmapper>
         </copy>
     </target>
 
@@ -1553,7 +1575,14 @@ ext = BeanUtils.cook(ext);
         <unzip src="${build.tmp.dir}/modernizr-${modernizr.version}.jar" dest="${build.tmp.dir}/modernizr" overwrite="true" />
 
         <copy todir="${3rdparty.dir}/modernizr">
-            <fileset dir="${build.tmp.dir}/modernizr/META-INF/resources/webjars/modernizr/${modernizr.version}" />
+            <fileset dir="${build.tmp.dir}/modernizr/META-INF/resources/webjars/modernizr/${modernizr.version}" includes="*.js" />
+            <scriptmapper language="javascript">
+                // replace dots with underscores in JS file names, retaining the suffix
+                if (/\.js$/.test(source)) {
+                  source = source.substr(0, source.length - 3).replace(/\./g, '_') + '.js';
+                }
+                self.addMappedName(source);
+            </scriptmapper>
         </copy>
     </target>
 
