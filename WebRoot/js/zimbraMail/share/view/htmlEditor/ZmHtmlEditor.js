@@ -160,11 +160,12 @@ function() {
 	var x = bounds.width, y = bounds.height;
 
     //Subtracting editor toolbar heights
-    AjxUtil.foreach(Dwt.byClassName('mce-toolbar-grp',
-                                    editor.getContainer()),
-                    function(elem) {
-                        y -= Dwt.getSize(elem).y;
-                    });
+    AjxUtil.foreach(
+        Dwt.byClassName('mce-toolbar-grp', editor.getContainer()),
+        function(elem) {
+            y -= Dwt.getSize(elem).y;
+        }
+    );
 
     // on Firefox, the toolbar is detected as unreasonably large during load;
     // so start the timer for small sizes -- even in small windows, the toolbar
@@ -1089,8 +1090,6 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
         tinymceEvent.bind(doc, 'dragover', this._onDragOver.bind(this, dnd));
         tinymceEvent.bind(doc, 'drop', this._onDrop.bind(this, dnd));
     }
-
-	this._overrideTinyMCEMethods();
 
     obj._editorInitialized = true;
 
@@ -2580,45 +2579,6 @@ ZmHtmlEditor.prototype._setupTabGroup = function(mainTabGroup) {
 		modeTabGroup.addMember(this.getContentField());
 	}
 	mainTabGroup.addMember(modeTabGroup);
-};
-
-/**
- Overriding TinyMCE's default show and hide methods of floatpanel and panelbutton. Notifying ZmHtmlEditor about the menu's show and hide events (useful for hiding the menu when mousdedown event happens outside the editor)
- **/
-ZmHtmlEditor.prototype._overrideTinyMCEMethods = function() {
-	var tinymceUI = tinymce.ui;
-	if (!tinymceUI) {
-		return;
-	}
-
-	var floatPanelPrototype = tinymceUI.FloatPanel && tinymceUI.FloatPanel.prototype;
-	if (floatPanelPrototype) {
-
-		var tinyMCEShow = floatPanelPrototype.show;
-		floatPanelPrototype.show = function() {
-			tinyMCEShow.apply(this, arguments);
-			ZmHtmlEditor.onShowMenu(this);
-		};
-
-		var tinyMCEHide = floatPanelPrototype.hide;
-		floatPanelPrototype.hide = function() {
-			tinyMCEHide.apply(this, arguments);
-			ZmHtmlEditor.onHideMenu(this);
-		};
-	}
-
-	var panelButtonPrototype = tinymceUI.PanelButton && tinymceUI.PanelButton.prototype;
-	if (panelButtonPrototype) {
-		var tinyMCEShowPanel = panelButtonPrototype.showPanel;
-		panelButtonPrototype.showPanel = function() {
-			var isPanelExist = this.panel;
-			tinyMCEShowPanel.apply(this, arguments);
-			//when isPanelExist is true, floatPanelPrototype.show method will be called which will call ZmHtmlEditor.onShowMenu method.
-			if (!isPanelExist) {
-				ZmHtmlEditor.onShowMenu(this.panel);
-			}
-		}
-	}
 };
 
 // Returns true if the user is inserting a Tab into the editor (rather than moving focus)
