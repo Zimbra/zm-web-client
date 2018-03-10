@@ -527,6 +527,13 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <td><label for="password"><fmt:message key="password"/>:</label></td>
                                 <td><input id="password" autocomplete="off" class="zLoginField" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
                                 </tr>
+								<tr>
+									<td>&nbsp;</td>
+									<td><img src="/service/captcha" name="imageName" width="150" />
+									<img src="data:image/png;base64,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" width="20" height="20" style="cursor:pointer;vertical-align:bottom;" onClick="reloadImage()" />
+									</td>
+								</tr>
+
                                 <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
                                     <tr>
                                     <td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
@@ -679,6 +686,12 @@ function onLoad() {
     }
 	if (${totpAuthRequired} && loginForm.totpcode) {
         loginForm.totpcode.focus();
+	}
+}
+function reloadImage()
+{
+	if (document.images) {
+		document.images['imageName'].src = '/service/captcha?' + Date.parse(new Date().toString());
 	}
 }
 </script>
