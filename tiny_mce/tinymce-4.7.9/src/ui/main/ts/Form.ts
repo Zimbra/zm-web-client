@@ -65,17 +65,25 @@ export default Container.extend({
 
     // Wrap any labeled items in FormItems
     items.each(function (ctrl) {
-      let formItem;
+      let formItem, inputId;
       const label = ctrl.settings.label;
 
       if (label) {
+        inputId = ctrl._id;
+
+        // point to the INPUTs of comboxes
+        // see the corresbonding TODO in ComboBox.ts
+        if (ctrl.subinput) {
+          inputId += '-' + ctrl.ariaTarget;
+        }
+
         formItem = new FormItem(Tools.extend({
           items: {
             type: 'label',
             id: ctrl._id + '-l',
             text: label,
             flex: 0,
-            forId: ctrl._id,
+            forId: inputId,
             disabled: ctrl.disabled()
           }
         }, self.settings.formItemDefaults));

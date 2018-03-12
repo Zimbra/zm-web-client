@@ -194,6 +194,9 @@ function addRemove(add, ctrl) {
 
 const FloatPanel = Panel.extend({
   Mixins: [Movable, Resizable],
+  Defaults: {
+    wrapFocus: true
+  },
 
   /**
    * Constructs a new control instance with the specified settings.

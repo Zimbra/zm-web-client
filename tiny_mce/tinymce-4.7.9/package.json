@@ -27,8 +27,7 @@
     "@ephox/katamari": "latest",
     "@ephox/sand": "latest",
     "@ephox/snooker": "latest",
-    "@ephox/sugar": "latest",
-    "grunt-cli": "^1.2.0"
+    "@ephox/sugar": "latest"
   },
   "devDependencies": {
     "@ephox/agar": "latest",
@@ -37,6 +36,7 @@
     "@ephox/swag": "latest",
     "awesome-typescript-loader": "^3.4.1",
     "grunt": "~1.0.1",
+    "grunt-cli": "^1.2.0",
     "grunt-contrib-clean": "~1.1.0",
     "grunt-contrib-copy": "~1.0.0",
     "grunt-contrib-less": "~1.4.0",

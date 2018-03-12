@@ -104,7 +104,8 @@ const createToolbars = function (editor, size) {
       classes: 'toolbar-grp',
       ariaRoot: true,
       ariaRemember: true,
-      items: toolbars
+      items: toolbars,
+      ignoreTab: true
     };
   }
 };
