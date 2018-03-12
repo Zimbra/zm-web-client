@@ -1,0 +1,19 @@
+From 87cdb80f62200a911ed40cdd6a4d7fdfc740233f Mon Sep 17 00:00:00 2001
+From: Dan Villiom Podlaski Christiansen <dchristiansen@zimbra.com>
+Date: Mon, 13 Oct 2014 12:21:13 +0200
+Subject: [PATCH] add grunt-cli to list of dependancies
+
+This allows a single 'npm install' to install everything required to
+build TinyMCE.
+---
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/package.json tinymce-4.7.9/package.json
+--- /tmp/zimbra/tinymce-4.7.9/package.json	2018-02-27 07:36:50.000000000 -0500
++++ tinymce-4.7.9/package.json	2018-03-12 04:56:52.131348695 -0400
+@@ -36,6 +36,7 @@
+     "@ephox/swag": "latest",
+     "awesome-typescript-loader": "^3.4.1",
+     "grunt": "~1.0.1",
++    "grunt-cli": "^1.2.0",
+     "grunt-contrib-clean": "~1.1.0",
+     "grunt-contrib-copy": "~1.0.0",
+     "grunt-contrib-less": "~1.4.0",
