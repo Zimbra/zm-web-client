@@ -90,7 +90,7 @@
     <property name="jquery.version" value="3.3.1-1"/>
 
     <!-- TINY_MCE INTEGRATION -->
-    <property name="tinymce.version" value="4.2.6"/>
+    <property name="tinymce.version" value="4.7.9"/>
     <property name='tinymce.dir' value='${3rdparty.dir}/tinymce'/>
     <property name='tinymce.root.dir' value='tiny_mce' />
     <property name='tinymce.js.dir' value='${tinymce.root.dir}/tinymce-${tinymce.version}/js/tinymce' />
@@ -1052,9 +1052,10 @@ ext = BeanUtils.cook(ext);
                         </replaceregexp>
                         <if>
                             <or>
-                                <equals arg1="@{var}" arg2="${build.js.dir}/JQuery_all.js" />
                                 <!-- equals arg1="@{var}" arg2="${build.js.dir}/Modernizr_all.js" / -->
+                                <equals arg1="@{var}" arg2="${build.js.dir}/JQuery_all.js" />
                                 <equals arg1="@{var}" arg2="${build.js.dir}/Clipboard_all.js" />
+                                <equals arg1="@{var}" arg2="${build.js.dir}/TinyMCE_all.js" />
                             </or>
                             <!-- we will not minify thirdparty libraries -->
                             <then>
@@ -1421,12 +1422,63 @@ ext = BeanUtils.cook(ext);
         </delete>
     </target>
 
+    <!-- target to minify our custom plugins for tinymce -->
+    <target name="tinymce_minify" depends="resolve">
+        <mkdir dir="${build.tmp.dir}"/>
+
+        <property name="compress.includes" value="**/plugin.js,localeconv.js" />
+        <fileset id="js-includes" dir="${tinymce.custom.dir}" includes="${compress.includes}" />
+
+        <!-- copying yui jar file in build/tmp directory. -->
+        <ivy:install organisation="com.yahoo.platform.yui" module="yuicompressor" revision="2.4.8" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+
+        <for param="var">
+            <path>
+                <fileset refid="js-includes"/>
+            </path>
+            <sequential>
+                <propertyregex property="destfile" input="@{var}" regexp="(.*)\.js" replace="\1_min.js" override="true" />
+                <var name="file.uptodate" unset="true" />
+
+                <if>
+                    <available file="${destfile}"/>
+                    <then>
+                        <uptodate property="file.uptodate" srcfile="@{var}" targetfile="${destfile}" />
+                    </then>
+                </if>
+
+                <if>
+                    <not>
+                        <equals arg1="${file.uptodate}" arg2="true" />
+                    </not>
+                    <then>
+                        <echo>Minifying file to ${destfile}</echo>
+                        <java jar="${build.tmp.dir}/yuicompressor-2.4.8.jar" fork="true" failonerror="true">
+                            <!-- Add error="@{var}${compresserror.ext}" in java task if *.err files need to be generated. -->
+                            <arg value="--line-break"/>
+                            <arg value="0"/>
+                            <arg value="--type"/>
+                            <arg value="js"/>
+                            <arg value="-o"/>
+                            <arg value="${destfile}"/>
+                            <arg value="@{var}"/>
+                        </java>
+                    </then>
+                </if>
+            </sequential>
+        </for>
+
+        <!-- Delete tmp folder created with ivy-->
+        <delete dir="${build.tmp.dir}"/>
+    </target>
+
     <target name="get-tinymce-version">
         <echo message="${tinymce.version}" />
     </target>
 
     <target name="build-tinymce">
         <exec executable="make" dir="${tinymce.root.dir}" failonerror="true" />
+        <antcall target="tinymce_minify" />
     </target>
 
     <target name="tinymce">
@@ -1450,7 +1502,7 @@ ext = BeanUtils.cook(ext);
                  includes="*.js"/>
 
         <uptodate targetfile="${tinymce.locale.file}"
-		          property="tinymce.locales.uptodate">
+                  property="tinymce.locales.uptodate">
             <srcresources>
                 <fileset refid="tinymce.locales.ref" />
             </srcresources>
@@ -1473,8 +1525,7 @@ ext = BeanUtils.cook(ext);
                 </pathconvert>
 
                 <echo file="${tinymce.dir}/locales.js"
-					  message='tinyMCE.locale_list = ["en", "${tinymce.locales}"];'
-                      />
+                      message='tinyMCE.locale_list = ["en", "${tinymce.locales}"];' />
             </then>
         </if>
 
@@ -1499,7 +1550,7 @@ ext = BeanUtils.cook(ext);
                 <echo message="Generating ${tinymce.emoticon.file}" />
 
                 <script language="javascript">
-		    load("nashorn:mozilla_compat.js");
+                    load("nashorn:mozilla_compat.js");
                     importClass(org.apache.tools.ant.util.Base64Converter);
                     importClass(java.nio.charset.StandardCharsets);
                     importClass(java.nio.file.Files);

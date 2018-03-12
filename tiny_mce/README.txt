@@ -81,4 +81,4 @@ When they do, rename the old version to the new, update 'tinymce.version' in
 
   $ make reset
 
-Take care to ensure that Perforce tracks added and removed files correctly.
+Take care to ensure that Git tracks added and removed files correctly and commit them.
