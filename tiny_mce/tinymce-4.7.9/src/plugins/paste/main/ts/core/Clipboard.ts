@@ -361,7 +361,9 @@ const registerEventHandlers = (editor: Editor, pasteBin: PasteBin, pasteFormat: 
     }
 
     // Not a keyboard paste prevent default paste and try to grab the clipboard contents using different APIs
-    if (!isKeyBoardPaste) {
+    // Don't prevent the default if there is no clipboard content (See Bug 97552), and its not IE (which
+    // will crash on trying the default).
+    if (!isKeyBoardPaste && (Env.ie || (Object.keys(clipboardContent).length !== 0))) {
       e.preventDefault();
     }
 
