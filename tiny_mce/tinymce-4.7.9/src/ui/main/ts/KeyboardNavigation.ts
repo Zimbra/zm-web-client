@@ -227,6 +227,8 @@ export default function (settings) {
    * @private
    * @param {Number} dir Direction to move in positive means forward, negative means backwards.
    * @param {Array} elements Optional array of elements to move within defaults to the current navigation roots elements.
+   *
+   * @return {Boolean} Whether focus moved.
    */
   function moveFocus(dir, elements?) {
     let idx = -1;
@@ -241,7 +243,14 @@ export default function (settings) {
     }
 
     idx += dir;
+
+    if (!navigationRoot.settings.wrapFocus && (idx < 0 || idx >= elements.length)) {
+      return false;
+    }
+
     navigationRoot.lastAriaIndex = moveFocusToIndex(idx, elements);
+
+    return true;
   }
 
   /**
@@ -319,8 +328,13 @@ export default function (settings) {
       if (elm) {
         elm.focus();
       }
+
+      return true;
     } else {
-      moveFocus(e.shiftKey ? -1 : 1);
+      const navigationRoot = getNavigationRoot(),
+        ignoreTab = navigationRoot && navigationRoot.settings.ignoreTab;
+
+      return !ignoreTab ? moveFocus(e.shiftKey ? -1 : 1) : false;
     }
   }
 
@@ -330,7 +344,7 @@ export default function (settings) {
    * @private
    */
   function cancel() {
-    focusedControl.fire('cancel');
+    return focusedControl.fire('cancel');
   }
 
   /**
@@ -382,7 +396,14 @@ export default function (settings) {
         break;
 
       case 27: // DOM_VK_ESCAPE
-        cancel();
+        const cancelEv = cancel();
+        if (cancelEv.isDefaultPrevented()) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        if (cancelEv.isPropagationStopped()) {
+          e.stopPropagation();
+        }
         break;
 
       case 14: // DOM_VK_ENTER
@@ -392,8 +413,10 @@ export default function (settings) {
         break;
 
       case 9: // DOM_VK_TAB
-        tab(e);
-        e.preventDefault();
+        if (tab(e) !== false) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
         break;
     }
   });

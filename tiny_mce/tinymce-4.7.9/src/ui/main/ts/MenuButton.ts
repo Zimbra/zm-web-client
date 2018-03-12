@@ -10,7 +10,6 @@
 
 import Factory from 'tinymce/core/api/ui/Factory';
 import Button from './Button';
-import MenuBar from './MenuBar';
 
 /**
  * Creates a new menu button.
@@ -99,6 +98,7 @@ const MenuButton = Button.extend({
       self.menu.on('cancel', function (e) {
         if (e.control.parent() === self.menu) {
           e.stopPropagation();
+          e.preventDefault();
           self.focus();
           self.hideMenu();
         }
@@ -187,7 +187,12 @@ const MenuButton = Button.extend({
 
     icon = self.settings.icon ? prefix + 'ico ' + prefix + 'i-' + icon : '';
 
-    self.aria('role', self.parent() instanceof MenuBar ? 'menuitem' : 'button');
+    const parentrolemap = {
+      buttongroup: 'button',
+      toolbar: 'button',
+      menubar: 'menuitem'
+    };
+    self.aria('role', parentrolemap[self.parent().type] || 'combobox');
 
     return (
       '<div id="' + id + '" class="' + self.classes + '" tabindex="-1" aria-labelledby="' + id + '">' +

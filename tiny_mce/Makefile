@@ -68,6 +68,7 @@ diff: build
 
 define applypatch
 	$(PATCH) -p1 -d $(TINYMCEDIR) < $1
+
 endef
 
 #
@@ -77,7 +78,7 @@ patch:
 	$(RM) $(TINYMCEDIR)
 	$(CURL) -fL $(TINYMCE_URL) | $(TAR) zxC $(dir $(TINYMCEDIR))
 
-	$(foreach p, $(wildcard patches/*.diff), $(call applypatch,$p))
+	$(foreach p, $(sort $(wildcard patches/*.diff)), $(call applypatch,$p))
 
 #
 # fetch TinyMCE anew and rebuild it
