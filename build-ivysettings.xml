@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivysettings>
+<settings defaultResolver="chain-resolver" />
+  <caches defaultCacheDir="${dev.home}/.ivy2/cache"/>
+  <resolvers>
+    <chain name="chain-resolver" returnFirst="true">
+      <filesystem name="local">
+        <artifact pattern= "${dev.home}/.zcs-deps/[organisation]/[module]/[module]-[revision].[ext]" />
+        <artifact pattern= "${dev.home}/.zcs-deps/[organisation]-[revision].[ext]" />
+        <artifact pattern= "${dev.home}/.zcs-deps/[organisation].[ext]" />
+      </filesystem>
+      <ibiblio name="maven" m2compatible="true" usepoms="false"/>
+      <url name="zimbra">
+        <artifact pattern="https://files.zimbra.com/repository/[module]/[artifact]-[revision].[ext]" />
+        <artifact pattern="https://files.zimbra.com/repository/[module]/[artifact].[ext]" />
+        <artifact pattern="https://files.zimbra.com/repository/[organisation]/[module]/[module]-[revision].[ext]" />
+      </url>
+      <ibiblio name="maven-redhat" root="https://maven.repository.redhat.com/ga/" pattern="[organisation]/[module]/[revision]/[module]-[revision].[ext]"/>
+      <ibiblio name="alfresco" root="https://artifacts.alfresco.com/nexus/content/groups/public/" m2compatible="true"/>
+    </chain>
+    <chain name="chain-resolver-zip" returnFirst="true">
+      <filesystem name="local">
+        <!-- ivy:install with zip artifacts was failing some times so had to add this line to fix it -->
+        <!-- http://grokbase.com/t/ant/ivy-user/086ct4mr6h/newbie-cant-resolve-zip-files -->
+        <ivy pattern= "${dev.home}/.zcs-deps/[organisation]/[module]/[module]-[revision].xml" />
+        <artifact pattern= "${dev.home}/.zcs-deps/[organisation]/[module]/[module]-[revision].[ext]" />
+        <artifact pattern= "${dev.home}/.zcs-deps/[organisation]-[revision].[ext]" />
+        <artifact pattern= "${dev.home}/.zcs-deps/[organisation].[ext]" />
+      </filesystem>
+    </chain>
+    <!-- 'build-tmp' resolver is not part of the chain and is used only for packaging war files -->
+    <filesystem name="build-tmp">
+      <artifact pattern="${build.tmp.dir}/[module]-[revision].[ext]" />
+    </filesystem>
+    <filesystem name="build-dist">
+      <artifact pattern="${dist.dir}/[module]-[revision].[ext]" />
+    </filesystem>
+  </resolvers>
+  <modules>
+    <module organisation="xerces" name="xercesImpl" revision="2.9.1-patch-01" resolver="maven-redhat"/>
+  </modules>
+</ivysettings>

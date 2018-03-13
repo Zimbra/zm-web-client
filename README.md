@@ -25,8 +25,7 @@ These dependencies are resolved through ivy and then used for compilation & pack
 ### Prerequisites
 
 - Create .zcs-deps folder in home directory
-- Clone [zimbra-package-stub](https://github.com/Zimbra/zimbra-package-stub) at same level. 
-- Clone [zm-zcs](https://github.com/Zimbra/zm-zcs) at same level. 
+- Clone [zm-build](https://github.com/Zimbra/zm-build) at same level. 
 - All the dependency repositories are cloned at the same level.
 - zm-mailbox, zm-taglib & zm-ajax are built and jar outs are published to ivy.
 - ant is available on command line.

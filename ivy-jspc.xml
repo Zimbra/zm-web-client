@@ -5,6 +5,7 @@
     <info organisation="zimbra" module="zm-web-client" status="integration">
     </info>
     <dependencies>
+        <dependency org="ant-contrib" name="ant-contrib" rev="1.0b3" />
         <dependency org="org.mortbay.jasper" name="apache-el" rev="8.0.20.M0"/>
         <dependency org="org.mortbay.jasper" name="apache-jsp" rev="8.0.20.M0"/>
         <dependency org="org.eclipse.jetty.orbit" name="org.eclipse.jdt.core" rev="3.8.2.v20130121"/>
