@@ -57,7 +57,7 @@ var help = (function () {
   };
   var never = constant(false);
   var always = constant(true);
-  var $_8v2yxkaqjeo9p5qd = {
+  var $_dheqauaqjepc6j69 = {
     noop: noop,
     noarg: noarg,
     compose: compose,
@@ -73,8 +73,8 @@ var help = (function () {
     always: always
   };
 
-  var never$1 = $_8v2yxkaqjeo9p5qd.never;
-  var always$1 = $_8v2yxkaqjeo9p5qd.always;
+  var never$1 = $_dheqauaqjepc6j69.never;
+  var always$1 = $_dheqauaqjepc6j69.always;
   var none = function () {
     return NONE;
   };
@@ -117,7 +117,7 @@ var help = (function () {
       toArray: function () {
         return [];
       },
-      toString: $_8v2yxkaqjeo9p5qd.constant('none()')
+      toString: $_dheqauaqjepc6j69.constant('none()')
     };
     if (Object.freeze)
       Object.freeze(me);
@@ -393,7 +393,7 @@ var help = (function () {
   var last = function (xs) {
     return xs.length === 0 ? Option.none() : Option.some(xs[xs.length - 1]);
   };
-  var $_7s25hbaojeo9p5pk = {
+  var $_3h4eivaojepc6j4g = {
     map: map,
     each: each,
     eachr: eachr,
@@ -518,13 +518,13 @@ var help = (function () {
       action: 'Find (if searchreplace plugin activated)'
     }
   ];
-  var $_223cgsasjeo9p5qh = { shortcuts: shortcuts };
+  var $_9ax30dasjepc6j6j = { shortcuts: shortcuts };
 
   var makeTab = function () {
     var makeAriaLabel = function (shortcut) {
       return 'aria-label="Action: ' + shortcut.action + ', Shortcut: ' + shortcut.shortcut.replace(/Ctrl/g, 'Control') + '"';
     };
-    var shortcutLisString = $_7s25hbaojeo9p5pk.map($_223cgsasjeo9p5qh.shortcuts, function (shortcut) {
+    var shortcutLisString = $_3h4eivaojepc6j4g.map($_9ax30dasjepc6j6j.shortcuts, function (shortcut) {
       return '<tr data-mce-tabstop="1" tabindex="-1" ' + makeAriaLabel(shortcut) + '>' + '<td>' + I18n.translate(shortcut.action) + '</td>' + '<td>' + shortcut.shortcut + '</td>' + '</tr>';
     }).join('');
     return {
@@ -537,7 +537,7 @@ var help = (function () {
         }]
     };
   };
-  var $_ecfp5yanjeo9p5p4 = { makeTab: makeTab };
+  var $_dfg7efanjepc6j36 = { makeTab: makeTab };
 
   var keys = function () {
     var fastKeys = Object.keys;
@@ -614,7 +614,7 @@ var help = (function () {
   var size = function (obj) {
     return values(obj).length;
   };
-  var $_78cgsbavjeo9p5r8 = {
+  var $_607qu9avjepc6j7o = {
     bifilter: bifilter,
     each: each$1,
     map: objectMap,
@@ -638,7 +638,7 @@ var help = (function () {
   var removeFromEnd = function (str, numChars) {
     return str.substring(0, str.length - numChars);
   };
-  var $_9v7p17axjeo9p5rs = {
+  var $_acq7niaxjepc6j98 = {
     addToStart: addToStart,
     addToEnd: addToEnd,
     removeFromStart: removeFromStart,
@@ -657,7 +657,7 @@ var help = (function () {
   var tail = function (str) {
     return str === '' ? Option.none() : Option.some(str.substring(1));
   };
-  var $_7o2nfrayjeo9p5ru = {
+  var $_bij6ijayjepc6j9f = {
     first: first,
     last: last$1,
     head: head$1,
@@ -683,23 +683,23 @@ var help = (function () {
     });
   };
   var removeLeading = function (str, prefix) {
-    return startsWith(str, prefix) ? $_9v7p17axjeo9p5rs.removeFromStart(str, prefix.length) : str;
+    return startsWith(str, prefix) ? $_acq7niaxjepc6j98.removeFromStart(str, prefix.length) : str;
   };
   var removeTrailing = function (str, prefix) {
-    return endsWith(str, prefix) ? $_9v7p17axjeo9p5rs.removeFromEnd(str, prefix.length) : str;
+    return endsWith(str, prefix) ? $_acq7niaxjepc6j98.removeFromEnd(str, prefix.length) : str;
   };
   var ensureLeading = function (str, prefix) {
-    return startsWith(str, prefix) ? str : $_9v7p17axjeo9p5rs.addToStart(str, prefix);
+    return startsWith(str, prefix) ? str : $_acq7niaxjepc6j98.addToStart(str, prefix);
   };
   var ensureTrailing = function (str, prefix) {
-    return endsWith(str, prefix) ? str : $_9v7p17axjeo9p5rs.addToEnd(str, prefix);
+    return endsWith(str, prefix) ? str : $_acq7niaxjepc6j98.addToEnd(str, prefix);
   };
   var contains$1 = function (str, substr) {
     return str.indexOf(substr) !== -1;
   };
   var capitalize = function (str) {
-    return $_7o2nfrayjeo9p5ru.head(str).bind(function (head) {
-      return $_7o2nfrayjeo9p5ru.tail(str).map(function (tail) {
+    return $_bij6ijayjepc6j9f.head(str).bind(function (head) {
+      return $_bij6ijayjepc6j9f.tail(str).map(function (tail) {
         return head.toUpperCase() + tail;
       });
     }).getOr(str);
@@ -719,7 +719,7 @@ var help = (function () {
   var rTrim = function (str) {
     return str.replace(/\s+$/g, '');
   };
-  var $_eemadqawjeo9p5rm = {
+  var $_duilrcawjepc6j8j = {
     supplant: supplant,
     startsWith: startsWith,
     removeLeading: removeLeading,
@@ -912,11 +912,11 @@ var help = (function () {
       name: 'Word Count'
     }
   ];
-  var $_2benrdazjeo9p5rw = { urls: urls };
+  var $_64c0tgazjepc6j9i = { urls: urls };
 
-  var makeLink = $_8v2yxkaqjeo9p5qd.curry($_eemadqawjeo9p5rm.supplant, '<a href="${url}" target="_blank" rel="noopener">${name}</a>');
+  var makeLink = $_dheqauaqjepc6j69.curry($_duilrcawjepc6j8j.supplant, '<a href="${url}" target="_blank" rel="noopener">${name}</a>');
   var maybeUrlize = function (editor, key) {
-    return $_7s25hbaojeo9p5pk.find($_2benrdazjeo9p5rw.urls, function (x) {
+    return $_3h4eivaojepc6j4g.find($_64c0tgazjepc6j9i.urls, function (x) {
       return x.key === key;
     }).fold(function () {
       var getMetadata = editor.plugins[key].getMetadata;
@@ -929,12 +929,12 @@ var help = (function () {
     });
   };
   var getPluginKeys = function (editor) {
-    var keys = $_78cgsbavjeo9p5r8.keys(editor.plugins);
-    return editor.settings.forced_plugins === undefined ? keys : $_7s25hbaojeo9p5pk.filter(keys, $_8v2yxkaqjeo9p5qd.not($_8v2yxkaqjeo9p5qd.curry($_7s25hbaojeo9p5pk.contains, editor.settings.forced_plugins)));
+    var keys = $_607qu9avjepc6j7o.keys(editor.plugins);
+    return editor.settings.forced_plugins === undefined ? keys : $_3h4eivaojepc6j4g.filter(keys, $_dheqauaqjepc6j69.not($_dheqauaqjepc6j69.curry($_3h4eivaojepc6j4g.contains, editor.settings.forced_plugins)));
   };
   var pluginLister = function (editor) {
     var pluginKeys = getPluginKeys(editor);
-    var pluginLis = $_7s25hbaojeo9p5pk.map(pluginKeys, function (key) {
+    var pluginLis = $_3h4eivaojepc6j4g.map(pluginKeys, function (key) {
       return '<li>' + maybeUrlize(editor, key) + '</li>';
     });
     var count = pluginLis.length;
@@ -972,7 +972,7 @@ var help = (function () {
       ]
     };
   };
-  var $_7ue0xfaujeo9p5qt = { makeTab: makeTab$1 };
+  var $_9r7sp0aujepc6j70 = { makeTab: makeTab$1 };
 
   var EditorManager = tinymce.util.Tools.resolve('tinymce.EditorManager');
 
@@ -1002,7 +1002,7 @@ var help = (function () {
       }
     ];
   };
-  var $_g75jiyb0jeo9p5s0 = { makeRow: makeRow };
+  var $_7owp8lb0jepc6j9r = { makeRow: makeRow };
 
   var open = function (editor, pluginUrl) {
     return function () {
@@ -1011,10 +1011,10 @@ var help = (function () {
         bodyType: 'tabpanel',
         layout: 'flex',
         body: [
-          $_ecfp5yanjeo9p5p4.makeTab(),
-          $_7ue0xfaujeo9p5qt.makeTab(editor)
+          $_dfg7efanjepc6j36.makeTab(),
+          $_9r7sp0aujepc6j70.makeTab(editor)
         ],
-        buttons: $_g75jiyb0jeo9p5s0.makeRow(),
+        buttons: $_7owp8lb0jepc6j9r.makeRow(),
         onPostRender: function () {
           var title = this.getEl('title');
           title.innerHTML = '<img src="' + pluginUrl + '/img/logo.png" alt="TinyMCE Logo" style="display: inline-block; width: 200px; height: 50px">';
@@ -1022,30 +1022,30 @@ var help = (function () {
       });
     };
   };
-  var $_8gymhuamjeo9p5ow = { open: open };
+  var $_xqgf5amjepc6j26 = { open: open };
 
   var register = function (editor, pluginUrl) {
-    editor.addCommand('mceHelp', $_8gymhuamjeo9p5ow.open(editor, pluginUrl));
+    editor.addCommand('mceHelp', $_xqgf5amjepc6j26.open(editor, pluginUrl));
   };
-  var $_4hskhcaljeo9p5os = { register: register };
+  var $_84nuuvaljepc6j1w = { register: register };
 
   var register$1 = function (editor, pluginUrl) {
     editor.addButton('help', {
       icon: 'help',
-      onclick: $_8gymhuamjeo9p5ow.open(editor, pluginUrl)
+      onclick: $_xqgf5amjepc6j26.open(editor, pluginUrl)
     });
     editor.addMenuItem('help', {
       text: 'Help',
       icon: 'help',
       context: 'help',
-      onclick: $_8gymhuamjeo9p5ow.open(editor, pluginUrl)
+      onclick: $_xqgf5amjepc6j26.open(editor, pluginUrl)
     });
   };
-  var $_6erojwb2jeo9p5s2 = { register: register$1 };
+  var $_219jmhb2jepc6j9u = { register: register$1 };
 
   PluginManager.add('help', function (editor, pluginUrl) {
-    $_6erojwb2jeo9p5s2.register(editor, pluginUrl);
-    $_4hskhcaljeo9p5os.register(editor, pluginUrl);
+    $_219jmhb2jepc6j9u.register(editor, pluginUrl);
+    $_84nuuvaljepc6j1w.register(editor, pluginUrl);
     editor.shortcuts.add('Alt+0', 'Open help dialog', 'mceHelp');
   });
   function Plugin () {
