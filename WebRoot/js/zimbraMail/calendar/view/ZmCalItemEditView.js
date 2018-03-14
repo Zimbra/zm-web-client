@@ -53,11 +53,6 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, 
 	this.setScrollStyle(DwtControl.SCROLL);
 	this._rendered = false;
 
-	var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
-	var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
-	this._composeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
-		? Dwt.HTML : Dwt.TEXT;
-
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
 	this._calendarOrgs = {};
@@ -120,6 +115,21 @@ function(calItem, mode, isDirty, apptComposeMode) {
 
     this._calItem = calItem;
 	this._isDirty = isDirty;
+
+	var isSavedinHTML = false,
+		notesHtmlPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML);
+
+	if (calItem.notesTopPart) { //Already existing appointment
+		var pattern = /<([A-Z][A-Z0-9]*)\b[^>]*>(.*?)<\/\1>/ig; // improved regex to parse html tags
+		if (notesHtmlPart && notesHtmlPart.match(pattern)) {
+			isSavedinHTML = true;
+		}
+	}
+	else if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) === ZmSetting.COMPOSE_HTML)) {
+		isSavedinHTML = true;
+	}
+
+    this.setComposeMode(isSavedinHTML ? Dwt.HTML : Dwt.TEXT);
 
 	var firstTime = !this._rendered;
 	this.createHtml();
@@ -238,9 +248,12 @@ function() {
 ZmCalItemEditView.prototype.setComposeMode =
 function(composeMode) {
 	this._composeMode = composeMode || this._composeMode;
-    this._notesHtmlModeFirstTime = !this._notesHtmlEditor.isHtmlModeInited();
-	this._notesHtmlEditor.setMode(this._composeMode, true);
-	this.resize();
+
+	if(this._notesHtmlEditor) {
+		this._notesHtmlModeFirstTime = !this._notesHtmlEditor.isHtmlModeInited();
+		this._notesHtmlEditor.setMode(this._composeMode, true);
+		this.resize();
+	}
 };
 
 ZmCalItemEditView.prototype.reEnableDesignMode =
