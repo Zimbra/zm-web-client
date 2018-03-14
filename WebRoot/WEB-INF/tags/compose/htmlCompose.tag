@@ -153,6 +153,7 @@ var myEditor;
             toolbar_items_size: 'small',
             toolbar : toolbarbuttons.join(' '),
             font_formats : fonts.join(";"),
+            fontsize_formats : "<fmt:message bundle='${AjxMsg}' key="fontSizes"/>" || '',
             statusbar : false,
             menubar : false,
             convert_urls : false,

@@ -1078,10 +1078,6 @@ ZmHtmlEditor.prototype.onInit = function(ev) {
         });
     }
 
-    // must be assigned on init, to ensure that our handlers are called after
-    // in TinyMCE's in 'FormatControls.js'.
-    ed.on('nodeChange', obj.onNodeChange.bind(obj));
-
     ed.on('open', ZmHtmlEditor.onPopupOpen);
     if (view && view.toString() === "ZmComposeView" && ZmDragAndDrop.isSupported()) {
         var dnd = view._dnd;
@@ -1162,62 +1158,6 @@ ZmHtmlEditor.prototype.__getEditorControl = function(type, tooltip) {
 
 	return ed ? finditem(ed.theme.panel) : null;
 };
-
-ZmHtmlEditor.prototype.onNodeChange = function(event) {
-	// Firefox fires NodeChange events whether the editor is visible or not
-	if (this._mode !== Dwt.HTML) {
-		return;
-	}
-
-	// update the font size box -- TinyMCE only checks for it on SPANs
-	var fontsizebtn = this.__getEditorControl('listbox', 'Font Sizes');
-	var found = false;
-
-	var normalize = function(v) {
-		return Math.round(DwtCssStyle.asPixelCount(v));
-	};
-
-	for (var i = 0; !found && i < event.parents.length; i++) {
-		var element = event.parents[i];
-		if (element.nodeType === Node.ELEMENT_NODE) {
-			var fontsize = normalize(DwtCssStyle.getProperty(element, 'font-size'));
-			if (fontsize !== -1) {
-				for (var j = 0; !found && j < fontsizebtn._values.length; j++) {
-					var value = fontsizebtn._values[j].value;
-
-					if (normalize(value) === fontsize) {
-						fontsizebtn.value(value);
-						found = true;
-					}
-				}
-			}
-		}
-	}
-
-	// update the font family box -- TinyMCE only checks for it on SPANs
-	var fontfamilybtn = this.__getEditorControl('listbox', 'Font Family');
-	var found = false;
-
-	var normalize = function(v) {
-		return v.replace(/,\s+/g, ',').replace(/[\'\"]/g, '');
-	};
-
-	for (var i = 0; !found && i < event.parents.length; i++) {
-		var element = event.parents[i];
-		if (element.nodeType === Node.ELEMENT_NODE) {
-			var fontfamily = normalize(DwtCssStyle.getProperty(element, 'font-family'));
-			for (var j = 0; !found && j < fontfamilybtn._values.length; j++) {
-				var value = fontfamilybtn._values[j].value;
-
-				if (normalize(value) === fontfamily) {
-					fontfamilybtn.value(value);
-					found = true;
-				}
-			}
-		}
-	}
-};
-
 
 /*
 **   TinyMCE will fire onBeforeExecCommand before executing all commands
@@ -1314,8 +1254,10 @@ ZmHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
 	textarea = this.getContentField();
 	textarea.setAttribute('aria-hidden', !Dwt.getVisible(textarea));
 
-    this._setupTabGroup();
-    this._resetSize();
+	if(this._editorInitialized) {
+		this._setupTabGroup();
+		this._resetSize();
+	}
 };
 
 ZmHtmlEditor.prototype.getContentField =
@@ -2459,39 +2401,6 @@ ZmHtmlEditor.prototype._settingChangeListener = function(ev) {
         }
     }
     editor.nodeChanged && editor.nodeChanged();//update the toolbar state
-};
-
-/**
- * This will be fired after every tinymce menu open. Listen for outside events happening in ZCS
- *
- * @param {menu} tinymce menu object
- */
-ZmHtmlEditor.onShowMenu =
-function(menu) {
-    if (menu && menu._visible) {
-        var omemParams = {
-            id:					"ZmHtmlEditor" + menu._id,
-            elementId:			menu._id,
-            outsideListener:	menu.hide.bind(menu)
-        };
-        appCtxt.getOutsideMouseEventMgr().startListening(omemParams);
-    }
-};
-
-/**
- * This will be fired after every tinymce menu hide. Removing the outside event listener registered in onShowMenu
- *
- * @param {menu} tinymce menu object
- */
-ZmHtmlEditor.onHideMenu =
-function(menu) {
-    if (menu && !menu._visible) {
-        var omemParams = {
-            id:					"ZmHtmlEditor" + menu._id,
-            elementId:			menu._id
-        };
-        appCtxt.getOutsideMouseEventMgr().stopListening(omemParams);
-    }
 };
 
 /*
