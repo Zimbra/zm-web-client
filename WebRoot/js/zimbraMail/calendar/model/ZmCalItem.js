@@ -1152,6 +1152,8 @@ function(message, viewMode) {
         this.location = message.invite.getLocation();
         this.seq = message.invite.getSequenceNo();
         this.allDayEvent = message.invite.isAllDayEvent();
+        this.rgb = message.invite.getRGB();
+        this.color = message.invite.getColor();
         if(message.invite.id) {
             this.invId = this.id + "-" + message.invite.id;
         }
@@ -2302,6 +2304,8 @@ function(request, attachmentId, notifyList, accountName) {
 			}
 		}
 	}
+	// Appointment color
+	this._addColorRgbToRequest(comp);
 
 	return {'inv': inv, 'm': m };
 };
@@ -2541,6 +2545,14 @@ function(m, cancel) {
 	}
 };
 
+/**
+ * @private
+ */
+ZmCalItem.prototype._addColorRgbToRequest =
+function(comp) {
+	comp.color = this.color;
+	comp.rgb = this.rgb;
+}
 
 /**
  * Gets a string representation of the invite content.
