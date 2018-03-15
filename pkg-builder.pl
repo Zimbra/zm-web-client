@@ -120,7 +120,6 @@ sub stage_zimbra_admin_common($)
    cpy_file("build/WebRoot/img/offline.gif", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
    cpy_file("build/WebRoot/img/offline.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
    cpy_file("build/WebRoot/img/offline2.gif", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
-   cpy_file("build/WebRoot/img/offline3.gif", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
    cpy_file("build/WebRoot/img/partners.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
    cpy_file("build/WebRoot/img/startup.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
    cpy_file("build/WebRoot/img/table.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
