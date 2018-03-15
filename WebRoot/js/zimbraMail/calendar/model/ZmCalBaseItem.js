@@ -59,7 +59,9 @@ ZmCalBaseItem = function(type, list, id, folderId) {
 	this.ptst = null; // participant status
 	this.status = ZmCalendarApp.STATUS_CONF;
 	this._reminderMinutes = 0;
-	this.otherAttendees = false;	
+	this.otherAttendees = false;
+	this.color = null;
+	this.rgb = null;
 };
 
 ZmCalBaseItem.prototype = new ZmItem;
@@ -448,6 +450,8 @@ function(calItemNode, instNode) {
 	
 	this.otherAttendees = this._getAttr(calItemNode, instNode, "otherAtt");
 	this.location = this._getAttr(calItemNode, instNode, "loc");
+	this.rgb = this._getAttr(calItemNode, instNode, "rgb");
+	this.color = this._getAttr(calItemNode, instNode, "color");
 };
 
 /**
