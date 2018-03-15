@@ -179,13 +179,14 @@
                     <td></td>
                     <td colspan='2'><div id='${id}_reminderEmailCheckbox'></div></td>
                 </tr>
+                <tr>
+                     <td class='ZmFieldLabelRight' id='${id}_colorLabel'><$= ZmMsg.colorLabel $></td>
+                     <td id='${id}_color'></td>
                 <$ if (appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)) { $>
-                    <tr><td colspan='2'></td>
                         <td></td>
                         <td colspan='2'><div id='${id}_reminderDeviceEmailCheckbox'></div></td>
-                    </tr>
                 <$ } $>
-
+                </tr>
                 <tr id='${id}_attachment_container' style="display:none;">
                 </tr>
 
@@ -490,7 +491,15 @@
                 </tr>
                 <tr id='${id}_folderRow'>
                     <td id='${id}_calendar_label' class='ZmApptTabViewPageField'><$= ZmMsg.calendarLabel $></td>
-                    <td colspan='2' id='${id}_calendar'></td>
+                    <td colspan='2'>
+                        <table role="presentation" class="ZPropertySheet" width="100%">
+                            <tr>
+                                <td id='${id}_calendar' width='100%'></td>
+                                <td id='${id}_colorLabel' class='ZmApptTabViewPageField'><$= ZmMsg.colorLabel $></td>
+                                <td id='${id}_color'></td>
+                            </tr>
+                        </table>
+                    </td>
                 </tr>
                 <tr><td colspan='3'></td></tr>
                 <tr>
