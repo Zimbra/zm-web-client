@@ -584,6 +584,10 @@ function(calItem, mode) {
 		// We show warning for past meeting creation only when the application calendar. Task also uses the same function.
 		ZmApptViewHelper.warnIfApptStartingInPast(calItem.startDate, this._htmlElId, this._allDayCheckbox.checked);
 	}
+	// ZmTaskEditView doesn't have the function
+	if (this._setColorButton) {
+		this._setColorButton(calItem);
+	}
 };
 
 ZmCalItemEditView.prototype.adjustReminderValue =

@@ -749,8 +749,13 @@ function(list, role) {
 };
 
 ZmApptViewHelper.getApptColor =
-function(deeper, calendar, tagNames, segment) {
-    var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
+function(deeper, calendar, tagNames, segment, appt) {
+    var color;
+    if (appt && (appt.rgb || (appt.color && appt.color != ZmOrganizer.C_NONE))) {
+        colors = ZmCalBaseView._getColors(appt.rgb || ZmOrganizer.COLOR_VALUES[appt.color]);
+    } else {
+        colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
+    }
     var calColor = deeper ? colors.deeper[segment] : colors.standard[segment];
     var apptColor = calColor;
     if (tagNames && (tagNames.length == 1)) {
