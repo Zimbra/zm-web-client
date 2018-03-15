@@ -1107,6 +1107,30 @@ function(compNum) {
 	return "";
 };
 
+/**
+ * Gets the color
+ *
+ * @param	{int}	compNum		the component number
+ * @return {String}	the color value
+ */
+ZmInvite.prototype.getColor =
+function(compNum) {
+	var cn = compNum || 0;
+	return this.components[cn].color;
+};
+
+/**
+ * Gets the RGB
+ *
+ * @param	{int}	compNum		the component number
+ * @return {String}	the rgb string
+ */
+ZmInvite.prototype.getRGB =
+function(compNum) {
+	var cn = compNum || 0;
+	return this.components[cn].rgb;
+};
+
 ZmInvite.prototype.getChanges =
 function(compNum) {
 	var cn = compNum || 0;

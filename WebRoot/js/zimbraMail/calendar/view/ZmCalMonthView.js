@@ -464,9 +464,9 @@ function(appt, tr) {
     var tagNames  = appt.getVisibleTags();
     var tagIcon = appt.getTagImageFromNames(tagNames);
 
-    var headerColors = ZmApptViewHelper.getApptColor(needsAction, calendar, tagNames, "header");
+    var headerColors = ZmApptViewHelper.getApptColor(needsAction, calendar, tagNames, "header", appt);
     var headerStyle  = ZmCalBaseView._toColorsCss(headerColors.appt);
-    var bodyColors   = ZmApptViewHelper.getApptColor(needsAction, calendar, tagNames, "body");
+    var bodyColors   = ZmApptViewHelper.getApptColor(needsAction, calendar, tagNames, "body", appt);
     var bodyStyle    = ZmCalBaseView._toColorsCss(bodyColors.appt);
 
 
