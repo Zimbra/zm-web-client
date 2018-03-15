@@ -121,6 +121,7 @@ function(appt) {
 	this._repeatDescField.innerHTML = "";
 	this._origFormValue = this._formValue();
 	this._locations = [];
+	this._colorButton.setValue(ZmOrganizer.C_NONE);
 
 	// Warn the user if trying to schedule an appointment in the past.
 	ZmApptViewHelper.warnIfApptStartingInPast(appt.startDate, this._htmlElId);
@@ -175,6 +176,7 @@ function() {
             appt.addReminderAction(ZmCalItem.ALARM_DEVICE_EMAIL);
         }
     }
+	this._setColorRgbForSave(appt);
 
 	return appt;
 };
@@ -312,6 +314,9 @@ function() {
 	this._folderSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_calendar"), label: ZmMsg.calendar});
 	this._folderSelect.setAttribute('aria-labelledby', this._htmlElId + "_calendar_label");
 	this._folderSelect.addChangeListener(new AjxListener(this, this._privacyListener));
+
+	this._color = document.getElementById(this._htmlElId + "_color");
+	this._setAppointmentColorMenu(this._color);
 
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
@@ -759,3 +764,28 @@ ZmApptQuickAddDialog.prototype.getFreeBusyExcludeInfo =
 function(emailAddr){
     return null;
 };
+
+ZmApptQuickAddDialog.prototype._setAppointmentColorMenu =
+function(element) {
+	this._colorButton = new ZmColorButton({parent: this, parentElement: element, hideNone: false});
+	this._colorButton.setImage("CalendarFolder");
+	this._colorButton.setValue(ZmOrganizer.C_NONE);
+}
+
+ZmApptQuickAddDialog.prototype._setColorButton =
+function(appt) {
+	var color = appt.color || appt.rgb || ZmOrganizer.C_NONE;
+	this._colorButton.setValue(color);
+}
+
+ZmApptQuickAddDialog.prototype._setColorRgbForSave =
+function(appt) {
+       var color = this._colorButton.getValue();
+       if (ZmOrganizer.getStandardColorNumber(color) === -1) {
+               appt.color = null;
+               appt.rgb = color;
+       } else {
+               appt.color = color;
+               appt.rgb = null;
+       }
+}
