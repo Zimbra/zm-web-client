@@ -249,8 +249,7 @@ ZmCalItemEditView.prototype.setComposeMode =
 function(composeMode) {
 	this._composeMode = composeMode || this._composeMode;
 
-	if(this._notesHtmlEditor) {
-		this._notesHtmlModeFirstTime = !this._notesHtmlEditor.isHtmlModeInited();
+	if(this._notesHtmlEditor && this._notesHtmlEditor._editorInitialized) {
 		this._notesHtmlEditor.setMode(this._composeMode, true);
 		this.resize();
 	}
