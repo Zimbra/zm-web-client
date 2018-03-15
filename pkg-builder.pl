@@ -94,6 +94,7 @@ sub stage_zimbra_webclient_war($)
    System("cp -r WebRoot/templates $stage_base_dir/opt/zimbra/conf/templates");
    System("cp -r @{[getcwd()]}/build/dist/jetty/work $stage_base_dir/opt/zimbra/jetty_base/work/");
    cpy_file( "WebRoot/WEB-INF/jetty-env.xml", "$stage_base_dir/opt/zimbra/jetty_base/etc/zimbra-jetty-env.xml.in");
+   System("cat build/WebRoot/WEB-INF/web.xml | sed -e '/REDIRECTBEGIN/ s/\$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' > $stage_base_dir/opt/zimbra/jetty_base/etc/zimbra.web.xml.in");   
    return ["."];
 }
 sub stage_zimbra_admin_common($)
