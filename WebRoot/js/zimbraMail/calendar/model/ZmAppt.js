@@ -201,6 +201,8 @@ function(appt) {
     if (appt.isRecurring()) {
         newAppt._recurrence = appt.getRecurrence();
     }
+	newAppt.color = appt.color;
+	newAppt.rgb = appt.rgb;
 
     return newAppt;
 };
