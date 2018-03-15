@@ -891,6 +891,7 @@ function(calItem) {
     // Only used for the save
     calItem.alteredLocations   = this._alteredLocations;
 
+	this._setColorRgbForSave(calItem);
 	return calItem;
 };
 
@@ -1312,6 +1313,8 @@ function(width) {
 	this._showAsSelect.setAttribute('aria-label', ZmMsg.showAs);
 
     this._privateCheckbox = document.getElementById(this._htmlElId + "_privateCheckbox");
+    this._color = document.getElementById(this._htmlElId + "_color");
+	this._setAppointmentColorMenu(this._color);
 
 	// time DwtTimeSelect
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
@@ -2301,6 +2304,7 @@ function(type, attribs){
                 vals.push(this._reminderEmailCheckbox.isSelected());
                 vals.push(this._reminderDeviceEmailCheckbox.isSelected());
             }
+            vals.push(this._colorButton.getValue());            //Color
             break;
 
        case ZmApptEditView.CHANGES_SIGNIFICANT:
@@ -3079,3 +3083,27 @@ function() {
     this.setLocationStatus(ZmApptEditView.LOCATION_STATUS_UNDEFINED, locationConflict);
 }
 
+ZmApptEditView.prototype._setAppointmentColorMenu =
+function(element) {
+	this._colorButton = new ZmColorButton({parent: this, parentElement: element, hideNone: false});
+	this._colorButton.setImage("CalendarFolder");
+	this._colorButton.setValue(ZmOrganizer.C_NONE);
+}
+
+ZmApptEditView.prototype._setColorButton =
+function(calItem) {
+	var color = calItem.color || calItem.rgb || ZmOrganizer.C_NONE;
+	this._colorButton.setValue(color);
+}
+
+ZmApptEditView.prototype._setColorRgbForSave =
+function(calItem) {
+	var color = this._colorButton.getValue();
+	if (ZmOrganizer.getStandardColorNumber(color) === -1) {
+		calItem.color = null;
+		calItem.rgb = color;
+	} else {
+		calItem.color = color;
+		calItem.rgb = null;
+	}
+}
