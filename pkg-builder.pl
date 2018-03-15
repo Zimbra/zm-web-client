@@ -27,10 +27,8 @@ sub cpy_file($$)
    my $des_file = shift;
 
    my $des_dir = dirname($des_file);
-
    make_path($des_dir)
      if ( !-d $des_dir );
-
    Die("copy '$src_file' -> '$des_file' failed!")
      if ( !copy( $src_file, $des_file ) );
 }
@@ -71,6 +69,17 @@ my %PKG_GRAPH = (
       file_list  => ['/opt/zimbra/*'],
       stage_fun  => sub { &stage_zimbra_webclient_war(@_); },
    },
+   "zimbra-admin-common" => {
+      summary    => "Zimbra Admin Common",
+      version    => "1.0.0",
+      revision   => 1,
+      hard_deps  => [],
+      soft_deps  => [],
+      other_deps => ["zimbra-store-components"],
+      replaces   => ["zimbra-store"],
+      file_list  => ['/opt/zimbra/*'],
+      stage_fun  => sub { &stage_zimbra_admin_common(@_); },
+   },
 
 );
 
@@ -85,6 +94,53 @@ sub stage_zimbra_webclient_war($)
    System("cp -r WebRoot/templates $stage_base_dir/opt/zimbra/conf/templates");
    System("cp -r @{[getcwd()]}/build/dist/jetty/work $stage_base_dir/opt/zimbra/jetty_base/work/");
    cpy_file( "WebRoot/WEB-INF/jetty-env.xml", "$stage_base_dir/opt/zimbra/jetty_base/etc/zimbra-jetty-env.xml.in");
+   return ["."];
+}
+sub stage_zimbra_admin_common($)
+{
+   my $stage_base_dir = shift;
+   make_path("$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   make_path("$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/templates/abook");
+   make_path("$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/templates/calendar");
+   make_path("$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/WEB-INF/classes/messages");
+   System("cp -f -r WebRoot/img/animated $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img/");
+   System("cp -f -r WebRoot/img/dwt $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img/");
+   cpy_file("build/WebRoot/img/arrows.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/deprecated.gif", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/deprecated2.gif", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/deprecated3.gif", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/docelements.gif", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/docquicktables.gif", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/dwt.gif", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/dwt.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/flags.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/large.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/mail.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/oauth.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/offline.gif", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/offline.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/offline2.gif", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/offline3.gif", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/partners.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/startup.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/table.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/voicemail.gif", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/img/voicemail.png", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
+   cpy_file("build/WebRoot/public/jsp/TinyMCE.jsp", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/public/jsp/TinyMCE.jsp");
+   cpy_file("build/WebRoot/public/jsp/XForms.jsp", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/public/jsp/XForms.jsp");
+   cpy_file("WebRoot/public/access.jsp", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/public/");
+   cpy_file("WebRoot/public/authorize.jsp", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/public/");
+   cpy_file("WebRoot/public/launchSidebar.jsp", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/public/");
+   cpy_file("WebRoot/public/setResourceBundle.jsp", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/public/");
+   cpy_file("WebRoot/public/TwoFactorSetup.jsp", "$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/public/");
+   System("cp -f -r WebRoot/public/proto $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/public/");
+   System("cp -f -r WebRoot/public/flash $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/public/");
+   System("cp -f -r WebRoot/public/sounds $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/public/");
+   System("cp -f -r WebRoot/public/tmp $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/public/");
+   System("cp -f build/WebRoot/templates/abook/*.properties $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/templates/abook/");
+   System("cp -f build/WebRoot/templates/calendar/*.properties $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/templates/calendar/");
+   System("cp -f WebRoot/messages/Z*.* $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/WEB-INF/classes/messages/");
+   System("cp -f WebRoot/messages/A*.* $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/WEB-INF/classes/messages/");
    return ["."];
 }
 
