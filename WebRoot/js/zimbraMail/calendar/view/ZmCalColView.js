@@ -710,7 +710,7 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
 		tagIcon = "";
 	}
 
-	var colors = ZmApptViewHelper.getApptColor(isNew, calendar, tagNames, "body"),
+	var colors = ZmApptViewHelper.getApptColor(isNew, calendar, tagNames, "body", appt),
 		bodyStyle = ZmCalBaseView._toColorsCss(colors.appt),
 		fba = isNew ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
 
