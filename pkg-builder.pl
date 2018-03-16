@@ -75,7 +75,7 @@ my %PKG_GRAPH = (
       hard_deps  => [],
       soft_deps  => [],
       other_deps => ["zimbra-store-components"],
-      replaces   => ["zimbra-store"],
+      replaces   => ["zimbra-store, zimbra-mbox-admin-console-war"],
       file_list  => ['/opt/zimbra/*'],
       stage_fun  => sub { &stage_zimbra_mbox_admin_common(@_); },
    },
