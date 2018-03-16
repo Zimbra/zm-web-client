@@ -57,8 +57,7 @@ sub git_timestamp_from_dirs($)
 
 
 my %PKG_GRAPH = (
-
-   "zimbra-webclient-war" => {
+   "zimbra-mbox-webclient-war" => {
       summary    => "Zimbra WebClient War",
       version    => "1.0.0",
       revision   => 1,
@@ -67,9 +66,9 @@ my %PKG_GRAPH = (
       other_deps => ["zimbra-store-components"],
       replaces   => ["zimbra-store"],
       file_list  => ['/opt/zimbra/*'],
-      stage_fun  => sub { &stage_zimbra_webclient_war(@_); },
+      stage_fun  => sub { &stage_zimbra_mbox_webclient_war(@_); },
    },
-   "zimbra-admin-common" => {
+   "zimbra-mbox-admin-common" => {
       summary    => "Zimbra Admin Common",
       version    => "1.0.0",
       revision   => 1,
@@ -78,13 +77,13 @@ my %PKG_GRAPH = (
       other_deps => ["zimbra-store-components"],
       replaces   => ["zimbra-store"],
       file_list  => ['/opt/zimbra/*'],
-      stage_fun  => sub { &stage_zimbra_admin_common(@_); },
+      stage_fun  => sub { &stage_zimbra_mbox_admin_common(@_); },
    },
 
 );
 
 
-sub stage_zimbra_webclient_war($)
+sub stage_zimbra_mbox_webclient_war($)
 {
    my $stage_base_dir = shift;
    make_path("$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbra");
@@ -97,7 +96,7 @@ sub stage_zimbra_webclient_war($)
    System("cat build/WebRoot/WEB-INF/web.xml | sed -e '/REDIRECTBEGIN/ s/\$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' > $stage_base_dir/opt/zimbra/jetty_base/etc/zimbra.web.xml.in");   
    return ["."];
 }
-sub stage_zimbra_admin_common($)
+sub stage_zimbra_mbox_admin_common($)
 {
    my $stage_base_dir = shift;
    make_path("$stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/img");
