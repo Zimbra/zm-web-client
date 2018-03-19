@@ -33,7 +33,10 @@
 <fmt:setTimeZone value="${timezone}"/>
 <c:set var="folder" value="${zm:getFolder(pageContext, appt.folderId)}"/>
 <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
-<c:if test="${empty color}"><c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}"/></c:if>
+<c:set var="apptColor" value="${not empty appt.color ? appt.rgbColorValue : appt.rgb}"/>
+<c:set var="folderColor" value="${not empty folder.rgb ? folder.rgb : colorMsg}"/>
+<c:set var="color" value="${not empty apptColor ? apptColor : folderColor}"/>
+<c:if test="${empty color}"><c:set var="color" value="${zm:lightenColor(not empty apptColor ? apptColor : folderColor)}"/></c:if>
 <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
 <c:set var="fbashowAsColor" value="${'ZmScheduler-U'}"/>
 <c:choose>
