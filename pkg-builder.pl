@@ -139,7 +139,6 @@ sub stage_zimbra_mbox_admin_common($)
    System("cp -f build/WebRoot/templates/abook/*.properties $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/templates/abook/");
    System("cp -f build/WebRoot/templates/calendar/*.properties $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/templates/calendar/");
    System("cp -f WebRoot/messages/Z*.* $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/WEB-INF/classes/messages/");
-   System("cp -f WebRoot/messages/A*.* $stage_base_dir/opt/zimbra/jetty_base/webapps/zimbraAdmin/WEB-INF/classes/messages/");
    return ["."];
 }
 

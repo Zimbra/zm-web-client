@@ -23,7 +23,6 @@ NPM = npm --loglevel error --color false
 GRUNT = $(NPMBINDIR)/grunt --no-color
 TAR = tar
 ANT = ant -emacs
-P4 = p4
 PATCH = patch
 DIFF = diff -aur
 
@@ -46,7 +45,7 @@ all: build
 #
 build:
 	cd $(TINYMCEDIR) && $(NPM) install
-	cd $(TINYMCEDIR) && $(GRUNT) minify
+	cd $(TINYMCEDIR) && $(GRUNT)
 
 #
 # remove anything that shouldn't be checked into Perforce, such as build
@@ -67,6 +66,11 @@ diff: build
 	$(DIFF) -x node_modules $(TMPDIR)/$(TINYMCEDIR) $(TINYMCEDIR) | $(TEE) work.diff
 	@$(RM) TINYMCEDIR=$(TMPDIR)/$(TINYMCEDIR)
 
+define applypatch
+	$(PATCH) -p1 -d $(TINYMCEDIR) < $1
+
+endef
+
 #
 # fetch TinyMCE anew and reapply patches
 #
@@ -74,12 +78,7 @@ patch:
 	$(RM) $(TINYMCEDIR)
 	$(CURL) -fL $(TINYMCE_URL) | $(TAR) zxC $(dir $(TINYMCEDIR))
 
-define applypatch
-	$(PATCH) -p1 -d $(TINYMCEDIR) < $1
-
-endef
-
-	$(foreach p, $(wildcard patches/*.diff), $(call applypatch,$p))
+	$(foreach p, $(sort $(wildcard patches/*.diff)), $(call applypatch,$p))
 
 #
 # fetch TinyMCE anew and rebuild it
@@ -88,5 +87,3 @@ reset:
 	$(MAKE) patch
 	$(MAKE) build
 	$(MAKE) clean
-
-	-$(P4) reconcile $(TINYMCEDIR)/...
