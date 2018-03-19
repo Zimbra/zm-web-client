@@ -27,7 +27,11 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <fmt:setTimeZone value="${timezone}"/>
-<c:set var="color" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/>
+<c:if test="${(not empty appt.color) and (appt.color ne '0')}">
+    <c:set var="apptColorStyle" value="${zm:getFolderStyleColor(appt.color, 'appointment')}"/>
+</c:if>
+<c:set var="folderColorStyle" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/>
+<c:set var="color" value="${not empty apptColorStyle ? apptColorStyle : folderColorStyle}"/>
 <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
 <fmt:message var="noSubject" key="noSubject"/>
 <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>

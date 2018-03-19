@@ -84,8 +84,17 @@
 
     <c:set var="folder" value="${zm:getFolder(pageContext, empty message ? 10 : message.folderId)}"/>
 
-</app:handleError>
+    <c:choose>
+        <c:when test="${not empty compose.rgb}">
+            <c:set var="apptColor" value="${compose.rgb}"/>
+        </c:when>
+        <c:when test="${(not empty compose.color) and (compose.color ne '0')}">
+            <c:set var="apptColor" value="${compose.rgbColorValue}"/>
+            <c:set var="apptColorName" value="${compose.colorName}"/>
+        </c:when>
+    </c:choose>
 
+</app:handleError>
 <app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='calendar' calendars="true" minical="true" context="${null}" keys="false" date="${requestScope.dateContext}" tags="true"
      onload="var e=document.getElementById('subject'); if (e) e.focus();">
     <c:set var="toolbar">
@@ -186,7 +195,9 @@
                         </tr>
                     </c:if>
                     <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
-                        <tr style='background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}'>
+                        <c:set var="folderColor" value="${not empty folder.rgb ? folder.rgb : colorMsg}"/>
+                        <c:set var="color" value="${zm:lightenColor(not empty apptColor ? apptColor : folderColor)}"/>
+                        <tr style='background-color:${color}'>
                             <td colspan=2 class='ZhBottomSep'>
                                 <table width="100%">
                                     <tr class='apptHeaderRow'>
@@ -247,6 +258,22 @@
                                                                         <option <c:if test="${compose.classProp eq 'PUB'}">selected </c:if> value="PUB"><fmt:message key="public"/>
                                                                         <option <c:if test="${compose.classProp eq 'PRI'}">selected </c:if> value="PRI"><fmt:message key="private"/>
                                                                         <%--<option <c:if test="${compose.classProp eq 'CON'}">selected </c:if> value="CON"><fmt:message key="confidential"/>--%>
+                                                                    </select>
+                                                                </td>
+                                                                <td style="padding-left:15px" nowrap align="right"><label for="appointmentColor"><fmt:message key="color"/>:</label></td>
+                                                                <td style="padding-left:5px">
+                                                                <td>
+                                                                    <select name="appointmentColor">
+                                                                        <option value="<fmt:message key="colorNone"/>"/><fmt:message key="none"/>
+                                                                        <option <c:if test="${apptColorName eq 'blue'}">selected</c:if> value="<fmt:message key="colorBlue"/>"/><fmt:message key="blue"/>
+                                                                        <option <c:if test="${apptColorName eq 'cyan'}">selected</c:if> value="<fmt:message key="colorCyan"/>"/><fmt:message key="cyan"/>
+                                                                        <option <c:if test="${apptColorName eq 'green'}">selected</c:if> value="<fmt:message key="colorGreen"/>"/><fmt:message key="green"/>
+                                                                        <option <c:if test="${apptColorName eq 'purple'}">selected</c:if> value="<fmt:message key="colorPurple"/>"/><fmt:message key="purple"/>
+                                                                        <option <c:if test="${apptColorName eq 'red'}">selected</c:if> value="<fmt:message key="colorRed"/>"/><fmt:message key="red"/>
+                                                                        <option <c:if test="${apptColorName eq 'yellow'}">selected</c:if> value="<fmt:message key="colorYellow"/>"/><fmt:message key="yellow"/>
+                                                                        <option <c:if test="${apptColorName eq 'pink'}">selected</c:if> value="<fmt:message key="colorPink"/>"/><fmt:message key="pink"/>
+                                                                        <option <c:if test="${apptColorName eq 'gray'}">selected</c:if> value="<fmt:message key="colorGray"/>"/><fmt:message key="gray"/>
+                                                                        <option <c:if test="${apptColorName eq 'orange'}">selected</c:if> value="<fmt:message key="colorOrange"/>"/><fmt:message key="orange"/>
                                                                     </select>
                                                                 </td>
                                                             </tr>

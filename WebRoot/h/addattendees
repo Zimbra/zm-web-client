@@ -571,5 +571,6 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
         <input type="hidden" name="repeatEndCount" value="${fn:escapeXml(compose.repeatEndCount)}"/>
         <input type="hidden" name="repeatEndDate" value="${fn:escapeXml(compose.repeatEndDate)}"/>
         <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+        <input type="hidden" name="appointmentColor" value="${fn:escapeXml(compose.rgbColorValue)}"/>
 </form>
 </app:view>
