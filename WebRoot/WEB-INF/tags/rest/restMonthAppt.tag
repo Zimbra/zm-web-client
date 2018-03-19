@@ -26,6 +26,9 @@
 <%@ taglib prefix="rest" uri="com.zimbra.restclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
+<c:if test="${(not empty appt.color) and (appt.color ne '0') and (empty param.color)}">
+    <c:set var="color" value="${zm:getFolderStyleColor(appt.color, 'appointment')}"/>
+</c:if>
 
 <c:choose>
     <c:when test="${not appt.isFromFreeBusy}">
