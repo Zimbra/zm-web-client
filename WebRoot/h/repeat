@@ -451,5 +451,6 @@
         <input type="hidden" name="${orig.key}" value="${fn:escapeXml(orig.value)}"/>
     </c:forEach>
     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+    <input type="hidden" name="appointmentColor" value="${fn:escapeXml(compose.rgbColorValue)}"/>
 </form>
 </app:view>
