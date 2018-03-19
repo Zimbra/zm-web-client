@@ -41,6 +41,9 @@
 
 <c:set var="appt" value="${invite.component}"/>
 <c:set var="color" value="${zm:getFolderStyleColor(requestScope.itemColor, 'appointment')}"/>
+<c:if test="${(not empty appt.color) and (appt.color ne '0') and (empty param.color)}">
+    <c:set var="color" value="${zm:getFolderStyleColor(appt.color, 'appointment')}"/>
+</c:if>
 <c:if test="${empty theBody and appt.isNoBlob}">
     <c:if test="${!empty appt.descriptionHtml}">
         <c:set var="theBody" value="${appt.descriptionHtml}"/>

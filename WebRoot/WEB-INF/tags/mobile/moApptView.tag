@@ -43,6 +43,9 @@
     <c:set var="readOnly" value="${apptFolder.isMountPoint or apptFolder.isFeed}"/>
     <c:set var="isWritable" value="${not apptFolder.isMountPoint or apptFolder.isAppointmentMoveTarget}"/>
     <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+    <c:if test="${(not empty invite.component) and (not empty invite.component.color) and (invite.component.color ne '0')}">
+        <c:set var="apptColorStyle" value="${zm:getFolderStyleColor(invite.component.color, 'appointment')}"/>
+    </c:if>
     <zm:currentResultUrl var="currentUrl" value="${context_url}" context="${context}"/>
 
 </mo:handleError>
@@ -69,7 +72,7 @@
                                 inviteReplyAllDay="${isInstance and invite.component.allDay ? '1' : ''}"/>
                     <%-- <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/> --%>
                 <c:if test="${empty sessionScope.calendar}">
-                <div class="roundness View ${apptFolder.styleColor}Bg" style="padding: 5px;">
+                <div class="roundness View ${not empty apptColorStyle ? apptColorStyle : apptFolder.styleColor}Bg" style="padding: 5px;">
                 <span class="label"><fmt:message
                         key="calendarLabel"/></span> ${zm:getFolderName(pageContext,apptFolder.id)}
                 </div><br>
