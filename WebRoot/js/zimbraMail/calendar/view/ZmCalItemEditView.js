@@ -129,7 +129,7 @@ function(calItem, mode, isDirty, apptComposeMode) {
 		isSavedinHTML = true;
 	}
 
-    this.setComposeMode(isSavedinHTML ? Dwt.HTML : Dwt.TEXT);
+	this.setComposeMode(isSavedinHTML ? Dwt.HTML : Dwt.TEXT);
 
 	var firstTime = !this._rendered;
 	this.createHtml();
@@ -249,7 +249,7 @@ ZmCalItemEditView.prototype.setComposeMode =
 function(composeMode) {
 	this._composeMode = composeMode || this._composeMode;
 
-	if(this._notesHtmlEditor && this._notesHtmlEditor._editorInitialized) {
+	if(this._notesHtmlEditor) {
 		this._notesHtmlEditor.setMode(this._composeMode, true);
 		this.resize();
 	}
