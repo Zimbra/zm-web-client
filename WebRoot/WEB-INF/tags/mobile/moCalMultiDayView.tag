@@ -145,7 +145,17 @@
                             </div>
                         </c:if>
                         <div class='zo_cal_listi' onclick='return zClickLink("a${id}")'>
-                            <span class="${zm:getFolder(pageContext,appt.folderId).styleColor}${appt.partStatusNeedsAction ? '' : 'Bg'} roundness">&nbsp;&nbsp;</span>
+                            <c:choose>
+                                <c:when test="${(not empty appt.color) and (appt.color ne '0')}">
+                                    <c:set var="apptColorStyle" value="${zm:getFolderStyleColor(appt.color, 'appointment')}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:set var="apptColorStyle" value=""/>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:set var="folderColorStyle" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/>
+                            <c:set var="color" value="${not empty apptColorStyle ? apptColorStyle : folderColorStyle}"/>
+                            <span class="${color}${appt.partStatusNeedsAction ? '' : 'Bg'} roundness">&nbsp;&nbsp;</span>
                             <span class='zo_cal_listi_time'>
                             <c:choose>
                                 <c:when test="${appt.allDay}">
