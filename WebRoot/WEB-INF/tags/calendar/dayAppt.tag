@@ -29,7 +29,9 @@
 <fmt:setTimeZone value="${timezone}"/>
 <c:set var="folder" value="${zm:getFolder(pageContext,appt.folderId)}"/>
 <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
-<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : colorMsg)}"/>
+<c:set var="apptColor" value="${not empty appt.color ? appt.rgbColorValue : appt.rgb}"/>
+<c:set var="folderColor" value="${not empty folder.rgb ? folder.rgb : colorMsg}"/>
+<c:set var="color" value="${zm:lightenColor(not empty apptColor ? apptColor : folderColor)}"/>
 <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
 <fmt:message var="noSubject" key="noSubject"/>
 <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>

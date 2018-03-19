@@ -318,6 +318,28 @@
     </div>
     </div>
 </c:if>                            
+    <div class="View"><div class="tbl"><div class="tr">
+        <span class="td label"><c:if test="${param.st ne 'newtask'}"><fmt:message key="color"/>:</c:if></span>
+        <span class="td value" style="padding:0px; text-align:left;">
+            <c:set var="apptColorName" value="${appt.colorName}"/>
+            <select name="appointmentColor" id="appointmentColor">
+                <optgroup">
+                    <option value="<fmt:message key="colorNone"/>"><fmt:message key="none"/></option>
+                    <option value="<fmt:message key="colorBlue"/>" ${apptColorName eq 'blue' ? 'selected=selected' : ''}><fmt:message key="blue"/></option>
+                    <option value="<fmt:message key="colorCyan"/>" ${apptColorName eq 'cyan' ? 'selected=selected' : ''}><fmt:message key="cyan"/></option>
+                    <option value="<fmt:message key="colorGreen"/>" ${apptColorName eq 'green' ? 'selected=selected' : ''}><fmt:message key="green"/></option>
+                    <option value="<fmt:message key="colorPurple"/>" ${apptColorName eq 'purple' ? 'selected=selected' : ''}><fmt:message key="purple"/></option>
+                    <option value="<fmt:message key="colorRed"/>" ${apptColorName eq 'red' ? 'selected=selected' : ''}><fmt:message key="red"/></option>
+                    <option value="<fmt:message key="colorYellow"/>" ${apptColorName eq 'yellow' ? 'selected=selected' : ''}><fmt:message key="yellow"/></option>
+                    <option value="<fmt:message key="colorPink"/>" ${apptColorName eq 'pink' ? 'selected=selected' : ''}><fmt:message key="pink"/></option>
+                    <option value="<fmt:message key="colorGray"/>" ${apptColorName eq 'gray' ? 'selected=selected' : ''}><fmt:message key="gray"/></option>
+                    <option value="<fmt:message key="colorOrange"/>" ${apptColorName eq 'orange' ? 'selected=selected' : ''}><fmt:message key="orange"/></option>
+                </optgroup>
+            </select>
+        </span>
+    </div>
+    </div>
+    </div>
 <div id="apt_dtls_div">
 <c:if test="${param.st ne 'newtask'}">
 <div class="View" style="overflow:visible"><div class="tbl"><div class="tr">
