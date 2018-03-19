@@ -142,11 +142,19 @@
                                                     <c:if test="${count lt 3}">
                                                     <tr><td>
                                                         <fmt:message var="noSubject" key="noSubject"/>
-                                                        <c:set var="color" value=""/>
+                                                        <c:choose>
+                                                            <c:when test="${(not empty appt.color) and (appt.color ne '0')}">
+                                                                <c:set var="apptColorStyle" value="${zm:getFolderStyleColor(appt.color, 'appointment')}"/>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <c:set var="apptColorStyle" value=""/>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                        <c:set var="folderColorStyle" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/>
+                                                        <c:set var="color" value="${not empty apptColorStyle ? apptColorStyle : folderColorStyle}"/>
                                                         <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
                                                         <mo:calendarUrl appt="${appt}" var="apptUrl" view="month"/>
                                                         <fmt:setTimeZone value="${timezone}"/>
-                                                        <c:if test="${empty color}"><c:set var="color" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/></c:if>
                                                         <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
                                                         <c:set var="fbashowAsColor" value="${'ZmScheduler-U'}"/>
                                                         <c:choose>

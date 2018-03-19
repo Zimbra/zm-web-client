@@ -56,6 +56,10 @@
     </c:otherwise>
 </c:choose>
 
+<c:if test="${(not empty appt.color) and (appt.color ne '0') and (empty param.color)}">
+    <c:set var="color" value="${zm:getFolderStyleColor(appt.color, 'appointment')}"/>
+</c:if>
+
 <c:if test="${selected}">
     <table width="100%" style="height:100%;" border="0" cellspacing="0" cellpadding="0">
         <tr>
