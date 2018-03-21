@@ -17,7 +17,7 @@
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,login_csrf,captchaInput,captchaId,"/>
+<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,g-recaptcha-response,"/>
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -587,23 +587,13 @@ if (application.getInitParameter("offlineMode") != null) {
                                 </tr>
 
                                 <c:if test="${errorCode eq 'account.NEED_CAPTCHA' || errorCode eq 'account.INVALID_CAPTCHA'}">
-                                    <tr>
-                                        <td><label for="captchaLabel"><fmt:message key="captcha"/>:</label></td>
-                                        <td><input id="captchaInput" autocomplete="off" class="zLoginField" name="captchaInput"  placeholder="<fmt:message key="captchaPlaceholderText"/>" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" /></td>
-                                    </tr>
-                                    <tr>
-                                        <td>&nbsp;</td>
-                                        <td>
-                                            <c:import var = "captchaId" url = "${varCaptchaApiUrl}/getCaptchaId"/>
-                                            <input id="captchaId" name="captchaId" type="hidden" value="${captchaId}" size="20" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
-                                            <div style="background-color: #F8F8F8;float: left;width: 70%;height: 50px;" align="left">
-                                               <img src="<c:url value='${varCaptchaApiUrl}/captcha/${captchaId}.png'/>" width="150" height="50" name="captchaImage" alt="image" />
-                                            </div>
-                                            <div>
-                                               <img src="img/refresh_captcha.png" width="20" height="20" style="cursor:pointer;vertical-align:bottom; margin-top: 30px;" onClick="reloadImage()" />
-                                           </div>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>
+                                        <script src='https://www.google.com/recaptcha/api.js'></script>
+                                        <div class="g-recaptcha" data-sitekey="6LdfLE0UAAAAACc89_s1Zw88Hm5_XI5kp-5wimfi"></div>
+                                    </td>
+                                </tr>
                                 </c:if>
 
                                 <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
