@@ -17,7 +17,7 @@
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,login_csrf,"/>
+<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,login_csrf,,g-recaptcha-response,"/>
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -315,6 +315,12 @@
 	<c:if test="${errorCode eq 'account.AUTH_FAILED' and not empty param.virtualacctdomain}">
 		<fmt:message bundle="${zhmsg}" var="errorMessage" key="account.EXTERNAL_AUTH_FAILED"/>
 	</c:if>
+    <c:if test="${errorCode eq 'account.NEED_CAPTCHA'}">
+        <fmt:message bundle="${zmsg}" var="errorMessage" key="account.AUTH_FAILED"/>
+    </c:if>
+    <c:if test="${errorCode eq 'account.INVALID_CAPTCHA'}">
+        <fmt:message bundle="${zmsg}" var="errorMessage" key="account.INVALID_CAPTCHA"/>
+    </c:if>
     <c:if test="${errorCode eq 'account.TWO_FACTOR_SETUP_REQUIRED'}">
         <c:url value="TwoFactorSetup.jsp" var="twoFactorSetupURL">
             <c:param name="userName" value="${fullUserName}"/>
@@ -566,6 +572,17 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <td><label for="password"><fmt:message key="password"/>:</label></td>
                                 <td><input id="password" autocomplete="off" class="zLoginField" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
                                 </tr>
+
+                                <c:if test="${errorCode eq 'account.NEED_CAPTCHA' || errorCode eq 'account.INVALID_CAPTCHA'}">
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>
+                                        <script src='https://www.google.com/recaptcha/api.js'></script>
+                                        <div class="g-recaptcha" data-sitekey="6LdfLE0UAAAAACc89_s1Zw88Hm5_XI5kp-5wimfi"></div>
+                                    </td>
+                                </tr>
+                                </c:if>
+
                                 <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
                                     <tr>
                                     <td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
