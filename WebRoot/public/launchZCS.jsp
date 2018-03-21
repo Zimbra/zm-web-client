@@ -470,8 +470,14 @@ delete text;
                     </c:when>
                     <c:otherwise>
                         <%--Multi value domain attribute--%>
-                        <c:set var="infoArray" value="${fn:join(info.value, '\", \"')}"/>
-                        ["${infoArray}"]
+                        [
+                        <c:forEach var="infoItem" varStatus="infoStatus" items="${info.value}">
+                            "${zm:jsEncode(infoItem)}"
+                            <c:if test="${not infoStatus.last}">
+                                ,
+                            </c:if>
+                        </c:forEach>
+                        ]
                     </c:otherwise>
                     </c:choose>
             </c:forEach>

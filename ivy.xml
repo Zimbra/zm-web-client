@@ -25,5 +25,8 @@
         <dependency org="zimbra" name="zm-client" rev="latest.integration"/>
         <dependency org="zimbra" name="zm-store" rev="latest.integration"/>
         <dependency org="zimbra" name="zm-taglib" rev="latest.integration"/>
+        <!-- Required for documentation generator -->
+        <dependency org="org.json" name="json" rev="20070829"/>
+        <dependency org="org.freemarker" name="freemarker" rev="2.3.19"/>
     </dependencies>
 </ivy-module>
