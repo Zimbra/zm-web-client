@@ -249,7 +249,6 @@ function(msg){
  */
 ZmMailListDateGroup.prototype._isYesterday =
 function(msg) {
-    var todayTzOffset, yesterdayTzOffset, deltaTzOffset;
     if (msg) {
         var d = this._getDateFromMsg(msg, true);
         var today = new Date();
