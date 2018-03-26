@@ -250,10 +250,15 @@ function(msg){
 ZmMailListDateGroup.prototype._isYesterday =
 function(msg) {
     if (msg) {
-        var today = this._getToday();
+        var d = this._getDateFromMsg(msg, true);
+        var today = new Date();
+        var todayTzOffset = today.getTimezoneOffset();
         var yesterday = new Date();
         yesterday.setTime(today.getTime() - AjxDateUtil.MSEC_PER_DAY);
-        var d = this._getDateFromMsg(msg, true);
+        var yesterdayTzOffset = yesterday.getTimezoneOffset();
+        var deltaTzOffset = todayTzOffset - yesterdayTzOffset;
+        yesterday.setTime(yesterday.getTime() - (deltaTzOffset * 60000));
+        yesterday.setHours(0, 0, 0, 0);
         if (d) {
             return yesterday.getTime() == d.getTime();
         }
