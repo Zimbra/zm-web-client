@@ -1342,7 +1342,13 @@ ZmBaseController.prototype._getBubbleActionMenuOps = function() {
 
 // Copies address text from the active bubble to the clipboard.
 ZmBaseController.prototype._clipCopy = function(clip) {
-	clip.setText(this._actionEv.address + AjxEmailAddress.SEPARATOR);
+	if ((this._actionEv.item && this._actionEv.item.isAddressBubble) || this._actionEv.address instanceof AjxEmailAddress) {
+		clip.setText(this._actionEv.address + AjxEmailAddress.SEPARATOR);
+	} else if (this._actionEv.address) {
+		clip.setText(AjxStringUtil.parseMailtoLink(this._actionEv.address).to + AjxEmailAddress.SEPARATOR);
+	} else {
+		clip.setText(AjxEmailAddress.SEPARATOR);
+	}
 };
 
 ZmBaseController.prototype._clipCopyComplete = function(clip) {
