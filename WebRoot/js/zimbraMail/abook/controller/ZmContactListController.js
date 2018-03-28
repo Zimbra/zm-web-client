@@ -930,7 +930,8 @@ function(ev) {
 			}
 		}
 		else {
-			var addr = new AjxEmailAddress(contact.getEmail(), AjxEmailAddress.TO, contact.getFullName());
+			var email = AjxStringUtil.parseMailtoLink(contact.getEmail()).to;
+			var addr = new AjxEmailAddress(email, AjxEmailAddress.TO, contact.getFullName());
 			emailStr += addr.toString() + AjxEmailAddress.SEPARATOR;
 		}
     }
