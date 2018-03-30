@@ -5,36 +5,28 @@ Subject: [PATCH] Use the combobox role for menu buttons located elsewhere than
  menus.
 
 ---
- js/tinymce/classes/ui/MenuButton.js | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/js/tinymce/classes/ui/MenuButton.js b/js/tinymce/classes/ui/MenuButton.js
-index c5dbc38..fdece50 100644
---- a/js/tinymce/classes/ui/MenuButton.js
-+++ b/js/tinymce/classes/ui/MenuButton.js
-@@ -17,9 +17,8 @@
-  */
- define("tinymce/ui/MenuButton", [
- 	"tinymce/ui/Button",
--	"tinymce/ui/Factory",
--	"tinymce/ui/MenuBar"
--], function(Button, Factory, MenuBar) {
-+	"tinymce/ui/Factory"
-+], function(Button, Factory) {
- 	"use strict";
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/MenuButton.ts tinymce-4.7.9/src/ui/main/ts/MenuButton.ts
+--- /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/MenuButton.ts	2018-03-12 06:17:32.202425508 -0400
++++ tinymce-4.7.9/src/ui/main/ts/MenuButton.ts	2018-03-12 06:14:14.755685797 -0400
+@@ -10,7 +10,6 @@
  
- 	// TODO: Maybe add as some global function
-@@ -176,7 +175,12 @@ define("tinymce/ui/MenuButton", [
+ import Factory from 'tinymce/core/api/ui/Factory';
+ import Button from './Button';
+-import MenuBar from './MenuBar';
  
- 			icon = self.settings.icon ? prefix + 'ico ' + prefix + 'i-' + icon : '';
+ /**
+  * Creates a new menu button.
+@@ -188,7 +187,12 @@
  
--			self.aria('role', self.parent() instanceof MenuBar ? 'menuitem' : 'button');
-+			var parentrolemap = {
-+				buttongroup: 'button',
-+				toolbar: 'button',
-+				menubar: 'menuitem'
-+			};
-+			self.aria('role', parentrolemap[self.parent().type] || 'combobox');
+     icon = self.settings.icon ? prefix + 'ico ' + prefix + 'i-' + icon : '';
  
- 			return (
- 				'<div id="' + id + '" class="' + self.classes + '" tabindex="-1">' +
+-    self.aria('role', self.parent() instanceof MenuBar ? 'menuitem' : 'button');
++    const parentrolemap = {
++      buttongroup: 'button',
++      toolbar: 'button',
++      menubar: 'menuitem'
++    };
++    self.aria('role', parentrolemap[self.parent().type] || 'combobox');
+ 
+     return (
+       '<div id="' + id + '" class="' + self.classes + '" tabindex="-1" aria-labelledby="' + id + '">' +
