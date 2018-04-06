@@ -14,7 +14,7 @@
         <dependency org="org.eclipse.jetty.toolchain" name="jetty-schemas" rev="3.1"/>
         <dependency org="javax.servlet" name="javax.servlet-api" rev="3.1.0"/>
         <dependency org="javax.mail" name="javax.mail-api" rev="1.4.5"/>
-        <dependency org="com.google.guava" name="guava" rev="13.0.1"/>
+        <dependency org="com.google.guava" name="guava" rev="23.0"/>
         <dependency org="commons-httpclient" name="commons-httpclient" rev="3.1"/>
         <dependency org="commons-codec" name="commons-codec" rev="1.7"/>
         <dependency org="org.json" name="json" rev="20090211" />
