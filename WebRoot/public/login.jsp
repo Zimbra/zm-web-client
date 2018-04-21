@@ -217,10 +217,10 @@
                                         </c:redirect>
                                     </c:when>
                                     <c:when test="${not empty param.skipLoginHistory}">
-	                                    <jsp:forward page="/public/launchZCS.jsp"/>
+                                        <jsp:forward page="/public/launchZCS.jsp"/>
                                     </c:when>
                                     <c:otherwise>
-	                                    <jsp:forward page="/public/login_history.jsp"/>
+                                        <jsp:forward page="/public/login_history.jsp"/>
                                     </c:otherwise>
                                 </c:choose>
                             </c:when>
