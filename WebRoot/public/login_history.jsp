@@ -101,5 +101,5 @@ hr {
 </div>
 </div>
 <hr/>
-<h3><a href="/?skipLoginHistory=true">Proceed to Dashboard</a> &nbsp; | &nbsp; <a href="/?skipLoginHistory=true">View Details</a></h3>
+<h3><a href="/?skipLoginHistory=true">Proceed to Dashboard</a> &nbsp; | &nbsp; <a href="#">View Details</a></h3>
 </div>
