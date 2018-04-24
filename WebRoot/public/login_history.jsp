@@ -1,16 +1,12 @@
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
-<%@ page import="com.zimbra.cs.taglib.ZJspSession"%>
-<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
-<fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
 <html>
 <head>
 
@@ -36,40 +32,15 @@
  * If not, see <https://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 -->
-<c:set var="client" value="${param.client}"/>
-    <c:set var="useStandard" value="${not (ua.isFirefox3up or ua.isGecko1_9up or ua.isIE9up or ua.isSafari4Up or ua.isChrome or ua.isModernIE)}"/>
-    <c:if test="${empty client}">
-        <%-- set client select default based on user agent. --%>
-        <c:choose>
-            <c:when test="${touchSupported}">
-                <c:set var="client" value="${touchLoginPageExists ? 'touch' : 'mobile'}"/>
-            </c:when>
-            <c:when test="${mobileSupported}">
-                <c:set var="client" value="mobile"/>
-            </c:when>
-            <c:when test="${useStandard}">
-                <c:set var="client" value="standard"/>
-            </c:when>
-            <c:otherwise>
-                <c:set var="client" value="preferred"/>
-            </c:otherwise>
-        </c:choose>
-    </c:if>
-    <c:set var="smallScreen" value="${client eq 'mobile' or client eq 'socialfox'}"/>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title><fmt:message key="zimbraLoginHistory"/></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <link rel="stylesheet" type="text/css" href="<c:url value='/css/common,login-history,zhtml,skin.css'>
-        <c:param name="skin"    value="${skin}" />
-        <c:param name="v"       value="${version}" />
+    <link rel="stylesheet" type="text/css" href="<c:url value='/css/login-history.css'>
         <c:if test="${not empty param.debug}">
             <c:param name="debug" value="${param.debug}" />
-        </c:if>
-        <c:if test="${not empty param.customerDomain}">
-            <c:param name="customerDomain"  value="${param.customerDomain}" />
         </c:if>
     </c:url>">
 </head>
