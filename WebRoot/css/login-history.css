@@ -1,0 +1,23 @@
+
+hr {
+    width: 50%;
+}
+
+.divTable {
+    display: table;
+    width: 50%;
+}
+.divTableRow {
+    background-color: #F2F2F2;
+    display: table-row;
+}
+
+.divTableCell {
+    border: 1px solid #999999;
+    display: table-cell;
+    padding: 3px 10px;
+}
+
+.divTableBody {
+    display: table-row-group;
+}
