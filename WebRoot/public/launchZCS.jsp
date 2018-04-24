@@ -330,7 +330,7 @@
 <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
 </script>
 <%
-	String allPackages = "Startup1_1,Startup1_2";
+	String allPackages = "JQuery,Startup1_1,Startup1_2";
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
             extraPackages = "Startup2,MailCore,Mail,ContactsCore,CalendarCore,Calendar,CalendarAppt,Contacts,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,Voicemail";
@@ -472,8 +472,14 @@ delete text;
                     </c:when>
                     <c:otherwise>
                         <%--Multi value domain attribute--%>
-                        <c:set var="infoArray" value="${fn:join(info.value, '\", \"')}"/>
-                        ["${infoArray}"]
+                        [
+                        <c:forEach var="infoItem" varStatus="infoStatus" items="${info.value}">
+                            "${zm:jsEncode(infoItem)}"
+                            <c:if test="${not infoStatus.last}">
+                                ,
+                            </c:if>
+                        </c:forEach>
+                        ]
                     </c:otherwise>
                     </c:choose>
             </c:forEach>

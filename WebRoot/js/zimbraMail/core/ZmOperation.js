@@ -551,7 +551,7 @@ function(parent) {
 /**
  * Adds a contact group menu for creating a contacts from the contact list
  * @param {DwtComposite}    parent  parent widget (a toolbar or action menu)
- * @return {ZmActionMenu) the menu
+ * @return {ZmActionMenu} the menu
  */
 ZmOperation.addContactGroupMenu =
 function(parent) {

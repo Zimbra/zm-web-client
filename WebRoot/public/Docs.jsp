@@ -148,7 +148,7 @@ If not, see <https://www.gnu.org/licenses/>.
     </script>
     <%
 
-        String packages = "Ajax,Startup1_1,Startup1_2,Startup2,Docs";
+        String packages = "JQuery,Ajax,Startup1_1,Startup1_2,Startup2,Docs";
 
         String pprefix = isDevMode && !isCoverage ? "public/jsp" : "js";
         String psuffix = isDevMode && !isCoverage ? ".jsp" : "_all.js";

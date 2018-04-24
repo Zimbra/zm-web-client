@@ -1,0 +1,27 @@
+
+{
+	"classes":
+			[
+{! var idx=0; !}
+<for each="thisClass" in="data">
+
+{!
+		if (thisClass.alias != "_global_") {
+			var filePath = thisClass.srcFile;
+			var path = filePath.split("/");
+			
+			path[path.length-1] = thisClass.alias;
+			path = path.slice(2);
+			path = path.join(".");
+!}
+	{
+		"className": "{+thisClass.alias+}",
+		"package": "{+path+}",
+		"link": "symbols/{+thisClass.alias+}.json"
+	}{! idx++; !}<if test="idx < data.length">,</if>
+{!
+		}
+!}
+</for>
+			]
+}

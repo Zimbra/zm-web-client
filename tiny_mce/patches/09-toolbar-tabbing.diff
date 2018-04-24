@@ -1,36 +1,35 @@
-diff -aur -x node_modules /var/folders/sy/trjn_sh97wq_4pr5f1x7h2k40000gq/T//tinymce-4.1.6/js/tinymce/classes/ui/KeyboardNavigation.js tinymce-4.1.6/js/tinymce/classes/ui/KeyboardNavigation.js
---- /var/folders/sy/trjn_sh97wq_4pr5f1x7h2k40000gq/T//tinymce-4.1.6/js/tinymce/classes/ui/KeyboardNavigation.js	2015-03-13 11:49:18.000000000 -0700
-+++ tinymce-4.1.6/js/tinymce/classes/ui/KeyboardNavigation.js	2015-03-13 11:46:17.000000000 -0700
-@@ -322,7 +322,10 @@
- 
- 				return true;
- 			} else {
--				return moveFocus(e.shiftKey ? -1 : 1);
-+				var navigationRoot = getNavigationRoot(),
-+					ignoreTab = navigationRoot && navigationRoot.settings.ignoreTab;
-+
-+				return !ignoreTab ? moveFocus(e.shiftKey ? -1 : 1) : false;
- 			}
- 		}
- 
-@@ -414,4 +417,4 @@
- 			focusFirst: focusFirst
- 		};
- 	};
--});
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/themes/modern/main/ts/ui/Toolbar.ts tinymce-4.7.9/src/themes/modern/main/ts/ui/Toolbar.ts
+--- /tmp/zimbra/tinymce-4.7.9/src/themes/modern/main/ts/ui/Toolbar.ts	2018-02-27 07:36:50.000000000 -0500
++++ tinymce-4.7.9/src/themes/modern/main/ts/ui/Toolbar.ts	2018-03-12 09:00:30.999944210 -0400
+@@ -104,7 +104,8 @@
+       classes: 'toolbar-grp',
+       ariaRoot: true,
+       ariaRemember: true,
+-      items: toolbars
++      items: toolbars,
++      ignoreTab: true
+     };
+   }
+ };
+@@ -112,4 +113,4 @@
+ export default {
+   createToolbar,
+   createToolbars
+-};
 \ No newline at end of file
-+});
-diff -aur -x node_modules /var/folders/sy/trjn_sh97wq_4pr5f1x7h2k40000gq/T//tinymce-4.1.6/js/tinymce/themes/modern/theme.js tinymce-4.1.6/js/tinymce/themes/modern/theme.js
---- /var/folders/sy/trjn_sh97wq_4pr5f1x7h2k40000gq/T//tinymce-4.1.6/js/tinymce/themes/modern/theme.js	2014-10-08 02:01:50.000000000 -0700
-+++ tinymce-4.1.6/js/tinymce/themes/modern/theme.js	2015-03-13 11:47:13.000000000 -0700
-@@ -175,7 +175,8 @@
- 				classes: "toolbar-grp",
- 				ariaRoot: true,
- 				ariaRemember: true,
--				items: toolbars
-+				items: toolbars,
-+				ignoreTab: true
- 			};
- 		}
- 	}
-Only in tinymce-4.1.6/js/tinymce/themes/modern: theme.min.js
++};
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts
+--- /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts	2018-03-12 09:04:04.944885403 -0400
++++ tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts	2018-03-12 08:57:22.439014086 -0400
+@@ -331,7 +331,10 @@
+ 
+       return true;
+     } else {
+-      return moveFocus(e.shiftKey ? -1 : 1);
++      const navigationRoot = getNavigationRoot(),
++        ignoreTab = navigationRoot && navigationRoot.settings.ignoreTab;
++
++      return !ignoreTab ? moveFocus(e.shiftKey ? -1 : 1) : false;
+     }
+   }
+ 

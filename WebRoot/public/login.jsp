@@ -1,6 +1,7 @@
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
+<%@ page import="java.util.UUID" %>
 <%@ page import="com.zimbra.cs.taglib.ZJspSession"%>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -110,11 +111,29 @@
 		<c:when test="${(param.loginOp eq 'login') && !(empty fullUserName) && !(empty param.password) && (pageContext.request.method eq 'POST')}">
 			<c:choose>
 				<c:when test="${!empty cookie.ZM_TEST}">
-                    <zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
-							varAuthResult="authResult"
-							newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
-                            trustedDeviceToken="${cookie.ZM_TRUST_TOKEN.value}"
-							requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"/>
+					<!-- CSRF check for login page -->
+					<c:choose>
+						<c:when test="${(not empty param.login_csrf) && (param.login_csrf eq cookie.ZM_LOGIN_CSRF.value)}">
+							<zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
+								varAuthResult="authResult" newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
+								trustedDeviceToken="${cookie.ZM_TRUST_TOKEN.value}"
+								requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"/>
+
+							<%
+								// Delete cookie
+								Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
+								csrfCookie.setMaxAge(0);
+								response.addCookie(csrfCookie);
+
+								pageContext.setAttribute("login_csrf", "");
+							%>
+						</c:when>
+						<c:otherwise>
+							<!-- on failure of csrf show error to user -->
+							<c:set var="errorCode" value="unknownError"/>
+							<fmt:message var="errorMessage" key="unknownError"/>
+						</c:otherwise>
+					</c:choose>
 					<%-- continue on at not empty authResult test --%>
 				</c:when>
 				<c:otherwise>
@@ -127,11 +146,21 @@
             <%-- try and use existing cookie if possible --%>
 			<c:set var="authtoken" value="${not empty param.zauthtoken ? param.zauthtoken : cookie.ZM_AUTH_TOKEN.value}"/>
 			<c:if test="${not empty authtoken}">
-				<zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}" twoFactorCode="${not empty param.totpcode ? param.totpcode : ''}"
-						varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-						rememberme="${param.zrememberme == '1'}" trustedDevice="${param.ztrusteddevice == 1}"
-						requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}"
-                        importData="true" csrfTokenSecured="true"/>
+				<zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
+					twoFactorCode="${not empty param.totpcode ? param.totpcode : ''}"
+					varRedirectUrl="postLoginUrl" varAuthResult="authResult"
+					rememberme="${param.zrememberme == '1'}" trustedDevice="${param.ztrusteddevice == 1}"
+					requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}"
+					importData="true" csrfTokenSecured="true"/>
+
+				<%
+					// Delete cookie
+					Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
+					csrfCookie.setMaxAge(0);
+					response.addCookie(csrfCookie);
+
+					pageContext.setAttribute("login_csrf", "");
+				%>
 				<%-- continue on at not empty authResult test --%>
 			</c:if>
 		</c:otherwise>
@@ -377,6 +406,15 @@ if (application.getInitParameter("offlineMode") != null) {
 	Cookie testCookie = new Cookie("ZM_TEST", "true");
 	testCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
 	response.addCookie(testCookie);
+
+	String csrfToken = UUID.randomUUID().toString();
+	Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", csrfToken);
+	csrfCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
+	csrfCookie.setHttpOnly(true);
+	response.addCookie(csrfCookie);
+
+	pageContext.setAttribute("login_csrf", csrfToken);
+
 	//Add the no-cache headers to ensure that the login page is never served from cache
 	response.addHeader("Vary", "User-Agent");
 	response.setHeader("Expires", "-1");
@@ -471,6 +509,7 @@ if (application.getInitParameter("offlineMode") != null) {
 					<c:otherwise>
 								<form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
 								<input type="hidden" name="loginOp" value="login"/>
+								<input type="hidden" name="login_csrf" value="${login_csrf}"/>
 
 								<c:if test="${totpAuthRequired || errorCode eq 'account.TWO_FACTOR_AUTH_FAILED'}">
 									<!-- if user has selected remember me in login page and we are showing totp screen to user, then we need to maintain value of that flag as after successfull two factor authentication we will have to rewrite ZM_AUTH_TOKEN with correct expires headers -->

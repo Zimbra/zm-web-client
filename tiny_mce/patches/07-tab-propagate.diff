@@ -16,98 +16,96 @@ We handle this by only letting tab keys propagate when unhandled; in
 order to prevent toolbars from becoming tab sinks, we also add a
 notion of controls that wrap focus. The latter currently applies to
 all float panels.
----
- js/tinymce/classes/ui/FloatPanel.js         |  5 ++++-
- js/tinymce/classes/ui/KeyboardNavigation.js | 15 ++++++++++++++-
- js/tinymce/classes/ui/Window.js             |  1 +
- 3 files changed, 19 insertions(+), 2 deletions(-)
 
-diff --git a/js/tinymce/classes/ui/FloatPanel.js b/js/tinymce/classes/ui/FloatPanel.js
-index ad278df..53d0f7e 100644
---- a/js/tinymce/classes/ui/FloatPanel.js
-+++ b/js/tinymce/classes/ui/FloatPanel.js
-@@ -192,6 +192,9 @@ define("tinymce/ui/FloatPanel", [
+---
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/FloatPanel.ts tinymce-4.7.9/src/ui/main/ts/FloatPanel.ts
+--- /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/FloatPanel.ts	2018-02-27 07:36:50.000000000 -0500
++++ tinymce-4.7.9/src/ui/main/ts/FloatPanel.ts	2018-03-12 07:46:26.591154178 -0400
+@@ -194,6 +194,9 @@
  
- 	var FloatPanel = Panel.extend({
- 		Mixins: [Movable, Resizable],
-+		Defaults: {
-+			wrapFocus: true
-+		},
+ const FloatPanel = Panel.extend({
+   Mixins: [Movable, Resizable],
++  Defaults: {
++    wrapFocus: true
++  },
  
- 		/**
- 		 * Constructs a new control instance with the specified settings.
-@@ -405,4 +408,4 @@ define("tinymce/ui/FloatPanel", [
- 	}
+   /**
+    * Constructs a new control instance with the specified settings.
+@@ -413,4 +416,4 @@
+   }
+ }
  
- 	return FloatPanel;
--});
+-export default FloatPanel;
 \ No newline at end of file
-+});
-diff --git a/js/tinymce/classes/ui/KeyboardNavigation.js b/js/tinymce/classes/ui/KeyboardNavigation.js
-index bd9e0d2..eda0b0a 100644
---- a/js/tinymce/classes/ui/KeyboardNavigation.js
-+++ b/js/tinymce/classes/ui/KeyboardNavigation.js
-@@ -227,6 +227,8 @@ define("tinymce/ui/KeyboardNavigation", [
- 		 * @private
- 		 * @param {Number} dir Direction to move in positive means forward, negative means backwards.
- 		 * @param {Array} elements Optional array of elements to move within defaults to the current navigation roots elements.
-+		 *
-+		 * @return {Boolean} Whether focus moved.
- 		 */
- 		function moveFocus(dir, elements) {
- 			var idx = -1, navigationRoot = getNavigationRoot();
-@@ -240,7 +242,14 @@ define("tinymce/ui/KeyboardNavigation", [
- 			}
++export default FloatPanel;
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts
+--- /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts	2018-03-12 08:12:32.566455214 -0400
++++ tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts	2018-03-12 07:54:38.539865819 -0400
+@@ -227,6 +227,8 @@
+    * @private
+    * @param {Number} dir Direction to move in positive means forward, negative means backwards.
+    * @param {Array} elements Optional array of elements to move within defaults to the current navigation roots elements.
++   *
++   * @return {Boolean} Whether focus moved.
+    */
+   function moveFocus(dir, elements?) {
+     let idx = -1;
+@@ -241,7 +243,14 @@
+     }
  
- 			idx += dir;
+     idx += dir;
 +
-+			if (!navigationRoot.settings.wrapFocus && (idx < 0 || idx >= elements.length)) {
-+				return false;
-+			}
++    if (!navigationRoot.settings.wrapFocus && (idx < 0 || idx >= elements.length)) {
++      return false;
++    }
 +
- 			navigationRoot.lastAriaIndex = moveFocusToIndex(idx, elements);
+     navigationRoot.lastAriaIndex = moveFocusToIndex(idx, elements);
 +
-+			return true;
- 		}
++    return true;
+   }
  
- 		/**
-@@ -318,8 +327,10 @@ define("tinymce/ui/KeyboardNavigation", [
- 				if (elm) {
- 					elm.focus();
- 				}
+   /**
+@@ -319,8 +328,10 @@
+       if (elm) {
+         elm.focus();
+       }
 +
-+				return true;
- 			} else {
--				moveFocus(e.shiftKey ? -1 : 1);
-+				return moveFocus(e.shiftKey ? -1 : 1);
- 			}
- 		}
++      return true;
+     } else {
+-      moveFocus(e.shiftKey ? -1 : 1);
++      return moveFocus(e.shiftKey ? -1 : 1);
+     }
+   }
  
-@@ -380,6 +391,7 @@ define("tinymce/ui/KeyboardNavigation", [
- 					var cancelEv = cancel();
- 					if (cancelEv.isDefaultPrevented()) {
- 						e.preventDefault();
-+						e.stopPropagation();
- 					}
- 					if (cancelEv.isPropagationStopped()) {
- 						e.stopPropagation();
-@@ -395,6 +407,7 @@ define("tinymce/ui/KeyboardNavigation", [
- 				case 9: // DOM_VK_TAB
- 					if (tab(e) !== false) {
- 						e.preventDefault();
-+						e.stopPropagation();
- 					}
- 					break;
- 			}
-diff --git a/js/tinymce/classes/ui/Window.js b/js/tinymce/classes/ui/Window.js
-index 9856f77..e7f72a5 100644
---- a/js/tinymce/classes/ui/Window.js
-+++ b/js/tinymce/classes/ui/Window.js
-@@ -105,6 +105,7 @@ define("tinymce/ui/Window", [
- 			layout: 'flex',
- 			containerCls: 'panel',
- 			role: 'dialog',
-+			ariaRoot: true,
- 			callbacks: {
- 				submit: function() {
- 					this.fire('submit', {data: this.toJSON()});
+@@ -385,6 +396,7 @@
+         const cancelEv = cancel();
+         if (cancelEv.isDefaultPrevented()) {
+           e.preventDefault();
++          e.stopPropagation();
+         }
+         if (cancelEv.isPropagationStopped()) {
+           e.stopPropagation();
+@@ -398,8 +410,10 @@
+         break;
+ 
+       case 9: // DOM_VK_TAB
+-        tab(e);
+-        e.preventDefault();
++        if (tab(e) !== false) {
++          e.preventDefault();
++          e.stopPropagation();
++        }
+         break;
+     }
+   });
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/Window.ts tinymce-4.7.9/src/ui/main/ts/Window.ts
+--- /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/Window.ts	2018-03-12 08:12:32.570455225 -0400
++++ tinymce-4.7.9/src/ui/main/ts/Window.ts	2018-03-12 07:52:02.703579510 -0400
+@@ -121,6 +121,7 @@
+     layout: 'flex',
+     containerCls: 'panel',
+     role: 'dialog',
++    ariaRoot: true,
+     callbacks: {
+       submit () {
+         this.fire('submit', { data: this.toJSON() });
