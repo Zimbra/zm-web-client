@@ -20,7 +20,7 @@
 %>
 
 <%
-    Locale locale = request.getLocale();
+    Locale locale;
     String localeId = getParameter(request, "lang", "en_US");
     localeId = localeId.replaceAll("[^A-Za-z_]","");
     localeId = BeanUtils.cook(localeId);
