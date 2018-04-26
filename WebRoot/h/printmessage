@@ -38,7 +38,12 @@ ${zm:clearMessageCache(mailbox)}
 <div class='ZhCallListPrintView'>
 <table cellpadding="0" cellspacing="5"  width="100%">
 	<tr>
+		<c:if test="${mailbox.attrs.zimbraEmailPrintoutHeader[0] eq 'TRUE'}">
 		<td><b><fmt:message key="zimbraTitle"/></b></td>
+		</c:if>
+		<c:if test="${mailbox.attrs.zimbraEmailPrintoutHeader[0] eq 'FALSE'}">
+		<td><b></b></td>
+		</c:if>
         <c:set var="mailboxName" value="${(not empty param.acct ? param.acct : mailbox.name)}" />
         <td nowrap width='1%'><c:if test="${mailboxName ne 'local@host.local'}"><b>${fn:escapeXml(mailboxName)}</b></c:if></td>
 	</tr>
