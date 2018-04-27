@@ -97,7 +97,7 @@ sub stage_zimbra_mbox_webclient_war($)
    System("cp -r WebRoot/templates $stage_base_dir/opt/zimbra/conf/");
    System("cp -r @{[getcwd()]}/build/dist/jetty/work $stage_base_dir/opt/zimbra/jetty_base/");
    cpy_file( "WebRoot/WEB-INF/jetty-env.xml", "$stage_base_dir/opt/zimbra/jetty_base/etc/zimbra-jetty-env.xml.in");
-   System("cat build/web.xml | sed -e '/REDIRECTBEGIN/ s/\$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' > $stage_base_dir/opt/zimbra/jetty_base/etc/zimbra.web.xml.in");   
+   System("cat build/web.xml | sed -e '/REDIRECTBEGIN/ s/\$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' > $stage_base_dir/opt/zimbra/jetty_base/etc/zimbra.web.xml.in");
    return ["."];
 }
 
@@ -129,6 +129,26 @@ sub make_package($)
       "--pkg-summary=$pkg_info->{summary}",
       "--pkg-post-install-script=scripts/postinst.sh"
    );
+   if ( $pkg_info->{dir_list} )
+   {
+      foreach my $expr ( @{ $pkg_info->{dir_list} } )
+      {
+         push( @cmd, "--pkg-installs=$expr" );
+      }
+   }
+   if ( $pkg_info->{file_list} )
+   {
+      foreach my $expr ( @{ $pkg_info->{file_list} } )
+      {
+         print "stage_base_dir = $stage_base_dir\n";
+         print "expr = $expr\n";
+
+         my $dir_expr = "$stage_base_dir$expr";
+
+         foreach my $entry (`find $dir_expr -type f`)
+         {
+            chomp($entry);
+            $entry =~ s@$stage_base_dir@@;
 
    if ( $pkg_info->{dir_list} )	
    {
