@@ -97,6 +97,18 @@ my %PKG_GRAPH = (
                      '/opt/zimbra/jetty_base/etc/zimbra.web.xml.in'],
       stage_fun  => sub { &stage_zimbra_mbox_webclient_war(@_); },
    },
+   "zimbra-mbox-admin-common" => {
+      summary    => "Zimbra Admin Common",
+      version    => "1.0.0",
+      revision   => 1,
+      hard_deps  => [],
+      soft_deps  => [],
+      other_deps => ["zimbra-store-components"],
+      replaces   => ["zimbra-store, zimbra-mbox-admin-console-war"],
+      dir_list  => ['/opt/zimbra/*'],
+      stage_fun  => sub { &stage_zimbra_mbox_admin_common(@_); },
+   },
+
 );
 
 
@@ -110,7 +122,7 @@ sub stage_zimbra_mbox_webclient_war($)
    System("cp -r WebRoot/templates $stage_base_dir/opt/zimbra/conf/");
    System("cp -r @{[getcwd()]}/build/dist/jetty/work $stage_base_dir/opt/zimbra/jetty_base/");
    cpy_file( "WebRoot/WEB-INF/jetty-env.xml", "$stage_base_dir/opt/zimbra/jetty_base/etc/zimbra-jetty-env.xml.in");
-   System("cat build/web.xml | sed -e '/REDIRECTBEGIN/ s/\$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' > $stage_base_dir/opt/zimbra/jetty_base/etc/zimbra.web.xml.in");   
+   System("cat build/web.xml | sed -e '/REDIRECTBEGIN/ s/\$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' > $stage_base_dir/opt/zimbra/jetty_base/etc/zimbra.web.xml.in");
    return ["."];
 }
 
@@ -140,17 +152,14 @@ sub make_package($)
       "--pkg-version=$pkg_info->{_version_ts}",
       "--pkg-release=$pkg_info->{revision}",
       "--pkg-summary=$pkg_info->{summary}",
-      "--pkg-post-install-script=scripts/postinst.sh"
    );
-
-   if ( $pkg_info->{dir_list} )	
+   if ( $pkg_info->{dir_list} )
    {
       foreach my $expr ( @{ $pkg_info->{dir_list} } )
       {
          push( @cmd, "--pkg-installs=$expr" );
       }
    }
-
    if ( $pkg_info->{file_list} )
    {
       foreach my $expr ( @{ $pkg_info->{file_list} } )
@@ -169,7 +178,6 @@ sub make_package($)
          }
       }
    }
-
    push( @cmd, @{ [ map { "--pkg-replaces=$_"; } @{ $pkg_info->{replaces} } ] } )                                                              if ( $pkg_info->{replaces} );
    push( @cmd, @{ [ map { "--pkg-depends=$_"; } @{ $pkg_info->{other_deps} } ] } )                                                             if ( $pkg_info->{other_deps} );
    push( @cmd, @{ [ map { "--pkg-depends=$_ (>= $PKG_GRAPH{$_}->{version})"; } @{ $pkg_info->{soft_deps} } ] } )                               if ( $pkg_info->{soft_deps} );
