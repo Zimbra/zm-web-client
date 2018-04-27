@@ -1,46 +1,23 @@
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
+<%@ page import="java.util.UUID" %>
 <%@ page import="com.zimbra.cs.taglib.ZJspSession"%>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<%@ page import='java.util.Locale' %>
-<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
 <app:skinAndRedirect />
-<%!
-    static String getParameter(HttpServletRequest request, String pname, String defValue) {
-        String value = request.getParameter(pname);
-        return value != null ? value : defValue;
-    }
-%>
-
-<%
-    Locale locale;
-    String localeId = getParameter(request, "lang", "en_US");
-    localeId = localeId.replaceAll("[^A-Za-z_]","");
-    localeId = BeanUtils.cook(localeId);
-    int index = localeId.indexOf("_");
-    if (index == -1) {
-      locale = new Locale(localeId);
-    } else {
-      String language = localeId.substring(0, index);
-      String country = localeId.substring(localeId.length() - 2);
-      locale = new Locale(language, country);
-    }
-    pageContext.setAttribute("locale", locale);
-%>
-<fmt:setLocale value='${locale}' scope='request' />
+<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,g-recaptcha-response,"/>
+<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,login_csrf,g-recaptcha-response,"/>
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -82,7 +59,6 @@
 
 <%
     // Touch client exists only in network edition
-
     Boolean touchLoginPageExists = (Boolean) application.getAttribute("touchLoginPageExists");
     if(touchLoginPageExists == null) {
         try {
@@ -134,11 +110,28 @@
 		<c:when test="${(param.loginOp eq 'login') && !(empty fullUserName) && !(empty param.password) && (pageContext.request.method eq 'POST')}">
 			<c:choose>
 				<c:when test="${!empty cookie.ZM_TEST}">
-                    <zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
-							varAuthResult="authResult"
-							newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
-                            trustedDeviceToken="${cookie.ZM_TRUST_TOKEN.value}"
-							requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"/>
+					<!-- CSRF check for login page -->
+					<c:choose>
+						<c:when test="${(not empty param.login_csrf) && (param.login_csrf eq cookie.ZM_LOGIN_CSRF.value)}">
+							<zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
+								varAuthResult="authResult" newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
+								trustedDeviceToken="${cookie.ZM_TRUST_TOKEN.value}"
+								requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"/>
+
+							<%
+								// Delete cookie
+								Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
+								csrfCookie.setMaxAge(0);
+								response.addCookie(csrfCookie);
+								pageContext.setAttribute("login_csrf", "");
+							%>
+						</c:when>
+						<c:otherwise>
+							<!-- on failure of csrf show error to user -->
+							<c:set var="errorCode" value="unknownError"/>
+							<fmt:message var="errorMessage" key="unknownError"/>
+						</c:otherwise>
+					</c:choose>
 					<%-- continue on at not empty authResult test --%>
 				</c:when>
 				<c:otherwise>
@@ -151,11 +144,20 @@
             <%-- try and use existing cookie if possible --%>
 			<c:set var="authtoken" value="${not empty param.zauthtoken ? param.zauthtoken : cookie.ZM_AUTH_TOKEN.value}"/>
 			<c:if test="${not empty authtoken}">
-				<zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}" twoFactorCode="${not empty param.totpcode ? param.totpcode : ''}"
-						varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-						rememberme="${param.zrememberme == '1'}" trustedDevice="${param.ztrusteddevice == 1}"
-						requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}"
-                        importData="true" csrfTokenSecured="true"/>
+				<zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
+					twoFactorCode="${not empty param.totpcode ? param.totpcode : ''}"
+					varRedirectUrl="postLoginUrl" varAuthResult="authResult"
+					rememberme="${param.zrememberme == '1'}" trustedDevice="${param.ztrusteddevice == 1}"
+					requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}"
+					importData="true" csrfTokenSecured="true"/>
+
+				<%
+					// Delete cookie
+					Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
+					csrfCookie.setMaxAge(0);
+					response.addCookie(csrfCookie);
+					pageContext.setAttribute("login_csrf", "");
+				%>
 				<%-- continue on at not empty authResult test --%>
 			</c:if>
 		</c:otherwise>
@@ -401,12 +403,17 @@ if (application.getInitParameter("offlineMode") != null) {
 	Cookie testCookie = new Cookie("ZM_TEST", "true");
 	testCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
 	response.addCookie(testCookie);
+	String csrfToken = UUID.randomUUID().toString();
+	Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", csrfToken);
+	csrfCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
+	csrfCookie.setHttpOnly(true);
+	response.addCookie(csrfCookie);
+	pageContext.setAttribute("login_csrf", csrfToken);
 	//Add the no-cache headers to ensure that the login page is never served from cache
 	response.addHeader("Vary", "User-Agent");
 	response.setHeader("Expires", "-1");
 	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
 	response.setHeader("Pragma", "no-cache");
-
 	// Prevent IE from ever going into compatibility/quirks mode.
 	response.setHeader("X-UA-Compatible", "IE=edge");
 %>
@@ -495,6 +502,7 @@ if (application.getInitParameter("offlineMode") != null) {
 					<c:otherwise>
 								<form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
 								<input type="hidden" name="loginOp" value="login"/>
+								<input type="hidden" name="login_csrf" value="${login_csrf}"/>
 
 								<c:if test="${totpAuthRequired || errorCode eq 'account.TWO_FACTOR_AUTH_FAILED'}">
 									<!-- if user has selected remember me in login page and we are showing totp screen to user, then we need to maintain value of that flag as after successfull two factor authentication we will have to rewrite ZM_AUTH_TOKEN with correct expires headers -->
@@ -663,7 +671,6 @@ if (application.getInitParameter("offlineMode") != null) {
 		<div class="decor2"></div>
 	</div>
 <script>
-
 <jsp:include page="/js/skin.js">
 	<jsp:param name="templates" value="false" />
 	<jsp:param name="client" value="advanced" />
@@ -673,7 +680,6 @@ var link = document.getElementById("bannerLink");
 if (link) {
 	link.href = skin.hints.banner.url;
 }
-
 <c:if test="${smallScreen && ua.isIE}">		/*HACK FOR IE*/
 	var resizeLoginPanel = function(){
 		var panelElem = document.getElementById('ZLoginPanel');
@@ -682,7 +688,6 @@ if (link) {
 	resizeLoginPanel();
 	if(window.attachEvent){ window.attachEvent("onresize",resizeLoginPanel);}
 </c:if>
-
 // show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
 function clientChange(selectValue) {
 	var useStandard = ${useStandard ? 'true' : 'false'};
@@ -691,7 +696,6 @@ function clientChange(selectValue) {
 	if (div)
 	div.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
 }
-
 // if they have JS, write out a "what's this?" link that shows the message below
 function showWhatsThis() {
 	var anchor = document.getElementById('ZLoginWhatsThisAnchor'),
@@ -700,7 +704,6 @@ function showWhatsThis() {
     tooltip.style.display = doHide ? "none" : "block";
     anchor.setAttribute("aria-expanded", doHide ? "false" : "true");
 }
-
 function onLoad() {
 	var loginForm = document.loginForm;
 	if (loginForm.username) {

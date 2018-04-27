@@ -2,6 +2,7 @@
 <%@ page import="java.util.*,javax.naming.*,com.zimbra.client.ZAuthResult" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
+<%@ page import="java.util.UUID" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -16,7 +17,7 @@
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,loginConfirmNewPassword,loginErrorCode,username,password,zrememberme,zlastserver,client,customerDomain"/>
+<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,loginConfirmNewPassword,loginErrorCode,username,password,zrememberme,zlastserver,client,customerDomain,login_csrf"/>
 <c:set var="prefsToFetch" value="zimbraPrefSkin,zimbraPrefClientType,zimbraPrefLocale,zimbraPrefMailItemsPerPage,zimbraPrefGroupMailBy,zimbraPrefAdvancedClientEnforceMinDisplay"/>
 <c:set var="attrsToFetch" value="zimbraFeatureMailEnabled,zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled,zimbraFeatureMailUpsellEnabled,zimbraFeatureContactsUpsellEnabled,zimbraFeatureCalendarUpsellEnabled,zimbraFeatureVoiceUpsellEnabled,zimbraFeatureConversationsEnabled"/>
 
@@ -50,12 +51,30 @@
 			    	<c:set var="fullUserName" value="${param.username}"/>
 			    </c:otherwise>
 		    </c:choose>
-		    <c:choose>
-	        	<c:when test="${!empty cookie.ZM_TEST}">
-		            <zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-		                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
-		                      prefs="${prefsToFetch}" attrs="${attrsToFetch}"
-							  requestedSkin="${param.skin}"/>
+			<c:choose>
+				<c:when test="${!empty cookie.ZM_TEST}">
+					<!-- CSRF check for login page -->
+					<c:choose>
+						<c:when test="${(not empty param.login_csrf) && (param.login_csrf eq cookie.ZM_LOGIN_CSRF.value)}">
+							<zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
+								varAuthResult="authResult" newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
+								prefs="${prefsToFetch}" attrs="${attrsToFetch}"
+								requestedSkin="${param.skin}"/>
+
+							<%
+								// Delete cookie
+								Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
+								csrfCookie.setMaxAge(0);
+								response.addCookie(csrfCookie);
+								pageContext.setAttribute("login_csrf", "");
+							%>
+						</c:when>
+						<c:otherwise>
+							<!-- on failure of csrf show error to user -->
+							<c:set var="errorCode" value="unknownError"/>
+							<fmt:message var="errorMessage" key="unknownError"/>
+						</c:otherwise>
+					</c:choose>
 		            <%-- continue on at not empty authResult test --%>
 		    	</c:when>
 		        <c:otherwise>
@@ -68,15 +87,23 @@
 	        <%-- try and use existing cookie if possible --%>
 	        <c:set var="authtoken" value="${not empty param.zauthtoken ? param.zauthtoken : cookie.ZM_AUTH_TOKEN.value}"/>
 	        <c:if test="${not empty authtoken}">
-	            <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
-	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-	                      rememberme="${param.zrememberme == '1'}"
-                          prefs="${prefsToFetch}" attrs="${attrsToFetch}"
-						  requestedSkin="${param.skin}"/>
-	            <%-- continue on at not empty authResult test --%>
-	        </c:if>
-	    </c:otherwise>
-    </c:choose>
+				<zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
+					varRedirectUrl="postLoginUrl" varAuthResult="authResult"
+					rememberme="${param.zrememberme == '1'}"
+					prefs="${prefsToFetch}" attrs="${attrsToFetch}"
+					requestedSkin="${param.skin}"/>
+
+				<%
+					// Delete cookie
+					Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
+					csrfCookie.setMaxAge(0);
+					response.addCookie(csrfCookie);
+					pageContext.setAttribute("login_csrf", "");
+				%>
+				<%-- continue on at not empty authResult test --%>
+			</c:if>
+		</c:otherwise>
+	</c:choose>
 </c:catch>
 <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 <c:set var="mailServiceURL" value="${protocolMode}:\/\/${domainInfo.attrs.zimbraPublicServiceHostname}"/>
@@ -135,6 +162,12 @@ if (application.getInitParameter("offlineMode") != null)  {
 	Cookie testCookie = new Cookie("ZM_TEST", "true");
 	testCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
 	response.addCookie(testCookie);
+	String csrfToken = UUID.randomUUID().toString();
+	Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", csrfToken);
+	csrfCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
+	csrfCookie.setHttpOnly(true);
+	response.addCookie(csrfCookie);
+	pageContext.setAttribute("login_csrf", csrfToken);
 %>
 
 
@@ -167,7 +200,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 		<c:param name="v"		value="${version}" />
 		<c:if test="${not empty param.customerDomain}">
 			<c:param name="customerDomain"	value="${param.customerDomain}" />
-		</c:if>	
+		</c:if>
 	</c:url>">
 	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 	<c:if test="${empty favIconUrl}">
@@ -218,6 +251,8 @@ if (application.getInitParameter("offlineMode") != null)  {
                             <div id="ZLoginFormPanel">
                                 <form method="post" name="loginForm" action="${formActionUrl}">
                                     <input type="hidden" name="loginOp" value="login"/>
+                                    <input type="hidden" name="login_csrf" value="${login_csrf}"/>
+
                                     <table width="100%" cellpadding="4">
                                         <tr>
                                             <td class="zLoginLabelContainer"><label for="username"><fmt:message key="username"/>:</label></td>
@@ -277,7 +312,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 													<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
                                                     <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
 												</select>
-												
+
 												<script TYPE="text/javascript">
 													// show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
 													function clientChange(selectValue) {
@@ -286,13 +321,13 @@ if (application.getInitParameter("offlineMode") != null)  {
                                                         var div = document.getElementById("ZLoginUnsupported");
 														div.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
 													}
-												
+
 													// if they have JS, write out a "what's this?" link that shows the message below
 													function showWhatsThis() {
                                                         var div = document.getElementById("ZLoginWhatsThis");
 														div.style.display = (it.style.display == "block" ? "none" : "block");
 													}
-													
+
 													function onLoad() {
 														document.loginForm.username.focus();
 														clientChange("${zm:cook(client)}");

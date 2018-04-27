@@ -65,7 +65,23 @@ my %PKG_GRAPH = (
       soft_deps  => [],
       other_deps => ["zimbra-store-components"],
       replaces   => ["zimbra-store"],
-      file_list  => ['/opt/zimbra/*'],
+      dir_list   => ['/opt/zimbra/conf/templates/*',
+                     '/opt/zimbra/jetty_base/webapps/zimbra/META-INF/*',
+                     '/opt/zimbra/jetty_base/webapps/zimbra/WEB-INF/*',
+                     '/opt/zimbra/jetty_base/webapps/zimbra/h/*',
+                     '/opt/zimbra/jetty_base/webapps/zimbra/img/*',
+                     '/opt/zimbra/jetty_base/webapps/zimbra/js/*',
+                     '/opt/zimbra/jetty_base/webapps/zimbra/m/*',
+                     '/opt/zimbra/jetty_base/webapps/zimbra/qunit/*',
+                     '/opt/zimbra/jetty_base/webapps/zimbra/skins/*',
+                     '/opt/zimbra/jetty_base/webapps/zimbra/templates/*',
+                     '/opt/zimbra/jetty_base/webapps/zimbra/yui/*',
+                     '/opt/zimbra/jetty_base/work/zimbra/*'
+                    ],
+      file_list  => ['/opt/zimbra/jetty_base/webapps/zimbra/public/*',
+                     '/opt/zimbra/jetty_base/webapps/zimbra/css/*',
+                     '/opt/zimbra/jetty_base/etc/zimbra-jetty-env.xml.in',
+                     '/opt/zimbra/jetty_base/etc/zimbra.web.xml.in'],
       stage_fun  => sub { &stage_zimbra_mbox_webclient_war(@_); },
    },
    "zimbra-mbox-admin-common" => {
@@ -76,7 +92,7 @@ my %PKG_GRAPH = (
       soft_deps  => [],
       other_deps => ["zimbra-store-components"],
       replaces   => ["zimbra-store, zimbra-mbox-admin-console-war"],
-      file_list  => ['/opt/zimbra/*'],
+      dir_list  => ['/opt/zimbra/*'],
       stage_fun  => sub { &stage_zimbra_mbox_admin_common(@_); },
    },
 
@@ -93,7 +109,7 @@ sub stage_zimbra_mbox_webclient_war($)
    System("cp -r WebRoot/templates $stage_base_dir/opt/zimbra/conf/");
    System("cp -r @{[getcwd()]}/build/dist/jetty/work $stage_base_dir/opt/zimbra/jetty_base/");
    cpy_file( "WebRoot/WEB-INF/jetty-env.xml", "$stage_base_dir/opt/zimbra/jetty_base/etc/zimbra-jetty-env.xml.in");
-   System("cat build/web.xml | sed -e '/REDIRECTBEGIN/ s/\$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' > $stage_base_dir/opt/zimbra/jetty_base/etc/zimbra.web.xml.in");   
+   System("cat build/web.xml | sed -e '/REDIRECTBEGIN/ s/\$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' > $stage_base_dir/opt/zimbra/jetty_base/etc/zimbra.web.xml.in");
    return ["."];
 }
 sub stage_zimbra_mbox_admin_common($)
@@ -169,9 +185,32 @@ sub make_package($)
       "--pkg-version=$pkg_info->{_version_ts}",
       "--pkg-release=$pkg_info->{revision}",
       "--pkg-summary=$pkg_info->{summary}",
-      "--pkg-install=/opt/zimbra/*"
    );
+   if ( $pkg_info->{dir_list} )
+   {
+      foreach my $expr ( @{ $pkg_info->{dir_list} } )
+      {
+         push( @cmd, "--pkg-installs=$expr" );
+      }
+   }
+   if ( $pkg_info->{file_list} )
+   {
+      foreach my $expr ( @{ $pkg_info->{file_list} } )
+      {
+         print "stage_base_dir = $stage_base_dir\n";
+         print "expr = $expr\n";
 
+         my $dir_expr = "$stage_base_dir$expr";
+
+         foreach my $entry (`find $dir_expr -type f`)
+         {
+            chomp($entry);
+            $entry =~ s@$stage_base_dir@@;
+
+            push( @cmd, "--pkg-installs=$entry" );
+         }
+      }
+   }
    push( @cmd, @{ [ map { "--pkg-replaces=$_"; } @{ $pkg_info->{replaces} } ] } )                                                              if ( $pkg_info->{replaces} );
    push( @cmd, @{ [ map { "--pkg-depends=$_"; } @{ $pkg_info->{other_deps} } ] } )                                                             if ( $pkg_info->{other_deps} );
    push( @cmd, @{ [ map { "--pkg-depends=$_ (>= $PKG_GRAPH{$_}->{version})"; } @{ $pkg_info->{soft_deps} } ] } )                               if ( $pkg_info->{soft_deps} );
