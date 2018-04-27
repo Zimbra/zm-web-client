@@ -8,40 +8,16 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<%@ page import='java.util.Locale' %>
-<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
 <app:skinAndRedirect />
-<%!
-    static String getParameter(HttpServletRequest request, String pname, String defValue) {
-        String value = request.getParameter(pname);
-        return value != null ? value : defValue;
-    }
-%>
-
-<%
-    Locale locale;
-    String localeId = getParameter(request, "lang", "en_US");
-    localeId = localeId.replaceAll("[^A-Za-z_]","");
-    localeId = BeanUtils.cook(localeId);
-    int index = localeId.indexOf("_");
-    if (index == -1) {
-      locale = new Locale(localeId);
-    } else {
-      String language = localeId.substring(0, index);
-      String country = localeId.substring(localeId.length() - 2);
-      locale = new Locale(language, country);
-    }
-    pageContext.setAttribute("locale", locale);
-%>
-<fmt:setLocale value='${locale}' scope='request' />
+<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,g-recaptcha-response,"/>
+<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,login_csrf,g-recaptcha-response,"/>
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -83,7 +59,6 @@
 
 <%
     // Touch client exists only in network edition
-
     Boolean touchLoginPageExists = (Boolean) application.getAttribute("touchLoginPageExists");
     if(touchLoginPageExists == null) {
         try {
@@ -144,15 +119,13 @@
 							<zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
 								varAuthResult="authResult" newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
 								trustedDeviceToken="${cookie.ZM_TRUST_TOKEN.value}"
-								requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"
-								attrs="zimbraFeatureConversationsEnabled" />
+								requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"/>
 
 							<%
 								// Delete cookie
 								Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
 								csrfCookie.setMaxAge(0);
 								response.addCookie(csrfCookie);
-
 								pageContext.setAttribute("login_csrf", "");
 							%>
 						</c:when>
@@ -179,15 +152,13 @@
 					varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 					rememberme="${param.zrememberme == '1'}" trustedDevice="${param.ztrusteddevice == 1}"
 					requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}"
-					importData="true" csrfTokenSecured="true"
-					attrs="zimbraFeatureConversationsEnabled" />
+					importData="true" csrfTokenSecured="true"/>
 
 				<%
 					// Delete cookie
 					Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
 					csrfCookie.setMaxAge(0);
 					response.addCookie(csrfCookie);
-
 					pageContext.setAttribute("login_csrf", "");
 				%>
 				<%-- continue on at not empty authResult test --%>
@@ -435,21 +406,17 @@ if (application.getInitParameter("offlineMode") != null) {
 	Cookie testCookie = new Cookie("ZM_TEST", "true");
 	testCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
 	response.addCookie(testCookie);
-
 	String csrfToken = UUID.randomUUID().toString();
 	Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", csrfToken);
 	csrfCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
 	csrfCookie.setHttpOnly(true);
 	response.addCookie(csrfCookie);
-
 	pageContext.setAttribute("login_csrf", csrfToken);
-
 	//Add the no-cache headers to ensure that the login page is never served from cache
 	response.addHeader("Vary", "User-Agent");
 	response.setHeader("Expires", "-1");
 	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
 	response.setHeader("Pragma", "no-cache");
-
 	// Prevent IE from ever going into compatibility/quirks mode.
 	response.setHeader("X-UA-Compatible", "IE=edge");
 %>
@@ -716,7 +683,6 @@ if (application.getInitParameter("offlineMode") != null) {
 		<div class="decor2"></div>
 	</div>
 <script>
-
 <jsp:include page="/js/skin.js">
 	<jsp:param name="templates" value="false" />
 	<jsp:param name="client" value="advanced" />
@@ -726,7 +692,6 @@ var link = document.getElementById("bannerLink");
 if (link) {
 	link.href = skin.hints.banner.url;
 }
-
 <c:if test="${smallScreen && ua.isIE}">		/*HACK FOR IE*/
 	var resizeLoginPanel = function(){
 		var panelElem = document.getElementById('ZLoginPanel');
@@ -735,7 +700,6 @@ if (link) {
 	resizeLoginPanel();
 	if(window.attachEvent){ window.attachEvent("onresize",resizeLoginPanel);}
 </c:if>
-
 // show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
 function clientChange(selectValue) {
 	var useStandard = ${useStandard ? 'true' : 'false'};
@@ -744,7 +708,6 @@ function clientChange(selectValue) {
 	if (div)
 	div.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
 }
-
 // if they have JS, write out a "what's this?" link that shows the message below
 function showWhatsThis() {
 	var anchor = document.getElementById('ZLoginWhatsThisAnchor'),
@@ -753,20 +716,6 @@ function showWhatsThis() {
     tooltip.style.display = doHide ? "none" : "block";
     anchor.setAttribute("aria-expanded", doHide ? "false" : "true");
 }
-
-function forgotPassword() {
-	var accountInput = document.getElementById("username").value;
-	var queryParams = encodeURI("account=" + accountInput);
-	var url = "/public/PasswordRecovery.jsp?" + location.search;
-
-	if (accountInput !== '') {
-		url += (location.search !== '' ? '&' : '') + encodeURI("account=" + accountInput);
-	}
-
-	window.location.href = url;
-}
-
-
 function onLoad() {
 	var loginForm = document.loginForm;
 	if (loginForm.username) {
