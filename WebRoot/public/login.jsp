@@ -8,34 +8,10 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<%@ page import='java.util.Locale' %>
-<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
 <app:skinAndRedirect />
-<%!
-    static String getParameter(HttpServletRequest request, String pname, String defValue) {
-        String value = request.getParameter(pname);
-        return value != null ? value : defValue;
-    }
-%>
-
-<%
-    Locale locale;
-    String localeId = getParameter(request, "lang", "en_US");
-    localeId = localeId.replaceAll("[^A-Za-z_]","");
-    localeId = BeanUtils.cook(localeId);
-    int index = localeId.indexOf("_");
-    if (index == -1) {
-      locale = new Locale(localeId);
-    } else {
-      String language = localeId.substring(0, index);
-      String country = localeId.substring(localeId.length() - 2);
-      locale = new Locale(language, country);
-    }
-    pageContext.setAttribute("locale", locale);
-%>
-<fmt:setLocale value='${locale}' scope='request' />
+<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
@@ -83,7 +59,6 @@
 
 <%
     // Touch client exists only in network edition
-
     Boolean touchLoginPageExists = (Boolean) application.getAttribute("touchLoginPageExists");
     if(touchLoginPageExists == null) {
         try {
@@ -444,7 +419,6 @@ if (application.getInitParameter("offlineMode") != null) {
 	response.setHeader("Expires", "-1");
 	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
 	response.setHeader("Pragma", "no-cache");
-
 	// Prevent IE from ever going into compatibility/quirks mode.
 	response.setHeader("X-UA-Compatible", "IE=edge");
 %>
@@ -708,7 +682,6 @@ if (application.getInitParameter("offlineMode") != null) {
 		<div class="decor2"></div>
 	</div>
 <script>
-
 <jsp:include page="/js/skin.js">
 	<jsp:param name="templates" value="false" />
 	<jsp:param name="client" value="advanced" />
@@ -718,7 +691,6 @@ var link = document.getElementById("bannerLink");
 if (link) {
 	link.href = skin.hints.banner.url;
 }
-
 <c:if test="${smallScreen && ua.isIE}">		/*HACK FOR IE*/
 	var resizeLoginPanel = function(){
 		var panelElem = document.getElementById('ZLoginPanel');
@@ -727,7 +699,6 @@ if (link) {
 	resizeLoginPanel();
 	if(window.attachEvent){ window.attachEvent("onresize",resizeLoginPanel);}
 </c:if>
-
 // show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
 function clientChange(selectValue) {
 	var useStandard = ${useStandard ? 'true' : 'false'};
@@ -736,7 +707,6 @@ function clientChange(selectValue) {
 	if (div)
 	div.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
 }
-
 // if they have JS, write out a "what's this?" link that shows the message below
 function showWhatsThis() {
 	var anchor = document.getElementById('ZLoginWhatsThisAnchor'),
