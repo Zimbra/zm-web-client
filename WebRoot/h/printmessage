@@ -38,7 +38,7 @@ ${zm:clearMessageCache(mailbox)}
 <div class='ZhCallListPrintView'>
 <table cellpadding="0" cellspacing="5"  width="100%">
 	<tr>
-		<td><b><fmt:message key="zimbraTitle"/></b></td>
+		<td><b><c:if test="${mailbox.attrs.zimbraEmailPrintoutHeaderEnabled[0] eq 'TRUE'}"><fmt:message key="zimbraTitle"/></c:if></b></td>
         <c:set var="mailboxName" value="${(not empty param.acct ? param.acct : mailbox.name)}" />
         <td nowrap width='1%'><c:if test="${mailboxName ne 'local@host.local'}"><b>${fn:escapeXml(mailboxName)}</b></c:if></td>
 	</tr>
@@ -88,8 +88,8 @@ ${zm:clearMessageCache(mailbox)}
 			<app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" timezone="${tz}"/>
 		</td>
 	</tr>
-    </table>    
-</c:if>    
+    </table>
+</c:if>
 </c:forEach>
 </div>
 <c:if test="${empty messageIds}">
@@ -107,7 +107,7 @@ ${zm:clearMessageCache(mailbox)}
 	table.Msg img {
         max-width: 100%;
     }
-	
+
     /* span, p td or div will honour parent's styling if these elements have their own styling that will get applied else will fallback to defaultPrintFontSize */
     *[style*="font"] > span, *[style*="font"] > p, *[style*="font"] > td, *[style*="font"] > div {
         font-family: inherit;
