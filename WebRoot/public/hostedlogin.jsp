@@ -164,11 +164,13 @@ if (application.getInitParameter("offlineMode") != null)  {
 	Cookie testCookie = new Cookie("ZM_TEST", "true");
 	testCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
 	response.addCookie(testCookie);
+
 	String csrfToken = UUID.randomUUID().toString();
 	Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", csrfToken);
 	csrfCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
 	csrfCookie.setHttpOnly(true);
 	response.addCookie(csrfCookie);
+
 	pageContext.setAttribute("login_csrf", csrfToken);
 %>
 
