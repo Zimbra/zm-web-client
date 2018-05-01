@@ -684,8 +684,8 @@ if (application.getInitParameter("offlineMode") != null) {
 		<div class="decor2"></div>
 	</div>
 <script>
-<jsp:include page="/js/skin.js">
 
+<jsp:include page="/js/skin.js">
 	<jsp:param name="templates" value="false" />
 	<jsp:param name="client" value="advanced" />
 	<jsp:param name='servlet-path' value='/js/skin.js' />
