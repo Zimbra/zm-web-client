@@ -123,7 +123,7 @@
 								requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"
 								attrs="zimbraFeatureConversationsEnabled" />
 
-                                                       <%
+							<%
 								// Delete cookie
 								Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
 								csrfCookie.setMaxAge(0);
