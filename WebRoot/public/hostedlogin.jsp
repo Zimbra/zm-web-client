@@ -69,6 +69,7 @@
 								Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
 								csrfCookie.setMaxAge(0);
 								response.addCookie(csrfCookie);
+
 								pageContext.setAttribute("login_csrf", "");
 							%>
 						</c:when>
@@ -101,6 +102,7 @@
 					Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
 					csrfCookie.setMaxAge(0);
 					response.addCookie(csrfCookie);
+
 					pageContext.setAttribute("login_csrf", "");
 				%>
 				<%-- continue on at not empty authResult test --%>
@@ -203,7 +205,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 		<c:param name="v"		value="${version}" />
 		<c:if test="${not empty param.customerDomain}">
 			<c:param name="customerDomain"	value="${param.customerDomain}" />
-		</c:if> 
+		</c:if>  
 	</c:url>">
 	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 	<c:if test="${empty favIconUrl}">
