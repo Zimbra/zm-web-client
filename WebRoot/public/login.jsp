@@ -143,7 +143,7 @@
 								trustedDeviceToken="${cookie.ZM_TRUST_TOKEN.value}"
 								requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"/>
 
-                                                       <%
+							<%
 								// Delete cookie
 								Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
 								csrfCookie.setMaxAge(0);
@@ -182,6 +182,7 @@
 					Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
 					csrfCookie.setMaxAge(0);
 					response.addCookie(csrfCookie);
+
 					pageContext.setAttribute("login_csrf", "");
 				%>
 				<%-- continue on at not empty authResult test --%>
