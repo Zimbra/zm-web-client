@@ -84,6 +84,7 @@
 
 <%
     // Touch client exists only in network edition
+
     Boolean touchLoginPageExists = (Boolean) application.getAttribute("touchLoginPageExists");
     if(touchLoginPageExists == null) {
         try {
@@ -148,6 +149,7 @@
 								Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
 								csrfCookie.setMaxAge(0);
 								response.addCookie(csrfCookie);
+
 								pageContext.setAttribute("login_csrf", "");
 							%>
 						</c:when>
@@ -428,17 +430,21 @@ if (application.getInitParameter("offlineMode") != null) {
 	Cookie testCookie = new Cookie("ZM_TEST", "true");
 	testCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
 	response.addCookie(testCookie);
+
 	String csrfToken = UUID.randomUUID().toString();
 	Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", csrfToken);
 	csrfCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
 	csrfCookie.setHttpOnly(true);
 	response.addCookie(csrfCookie);
+
 	pageContext.setAttribute("login_csrf", csrfToken);
+
 	//Add the no-cache headers to ensure that the login page is never served from cache
 	response.addHeader("Vary", "User-Agent");
 	response.setHeader("Expires", "-1");
 	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
 	response.setHeader("Pragma", "no-cache");
+
 	// Prevent IE from ever going into compatibility/quirks mode.
 	response.setHeader("X-UA-Compatible", "IE=edge");
 %>
@@ -697,6 +703,7 @@ if (application.getInitParameter("offlineMode") != null) {
 	</div>
 <script>
 <jsp:include page="/js/skin.js">
+
 	<jsp:param name="templates" value="false" />
 	<jsp:param name="client" value="advanced" />
 	<jsp:param name='servlet-path' value='/js/skin.js' />
@@ -705,6 +712,7 @@ var link = document.getElementById("bannerLink");
 if (link) {
 	link.href = skin.hints.banner.url;
 }
+
 <c:if test="${smallScreen && ua.isIE}">		/*HACK FOR IE*/
 	var resizeLoginPanel = function(){
 		var panelElem = document.getElementById('ZLoginPanel');
@@ -713,6 +721,7 @@ if (link) {
 	resizeLoginPanel();
 	if(window.attachEvent){ window.attachEvent("onresize",resizeLoginPanel);}
 </c:if>
+
 // show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
 function clientChange(selectValue) {
 	var useStandard = ${useStandard ? 'true' : 'false'};
@@ -721,6 +730,7 @@ function clientChange(selectValue) {
 	if (div)
 	div.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
 }
+
 // if they have JS, write out a "what's this?" link that shows the message below
 function showWhatsThis() {
 	var anchor = document.getElementById('ZLoginWhatsThisAnchor'),
@@ -729,6 +739,7 @@ function showWhatsThis() {
     tooltip.style.display = doHide ? "none" : "block";
     anchor.setAttribute("aria-expanded", doHide ? "false" : "true");
 }
+
 function onLoad() {
 	var loginForm = document.loginForm;
 	if (loginForm.username) {
