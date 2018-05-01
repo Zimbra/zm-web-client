@@ -204,7 +204,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 		<c:param name="v"		value="${version}" />
 		<c:if test="${not empty param.customerDomain}">
 			<c:param name="customerDomain"	value="${param.customerDomain}" />
-		</c:if>
+		</c:if> 
 	</c:url>">
 	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 	<c:if test="${empty favIconUrl}">
@@ -316,7 +316,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 													<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
                                                     <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
 												</select>
-
+                                                                                               
 												<script TYPE="text/javascript">
 													// show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
 													function clientChange(selectValue) {
@@ -325,13 +325,13 @@ if (application.getInitParameter("offlineMode") != null)  {
                                                         var div = document.getElementById("ZLoginUnsupported");
 														div.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
 													}
-
+                                                                                               
 													// if they have JS, write out a "what's this?" link that shows the message below
 													function showWhatsThis() {
                                                         var div = document.getElementById("ZLoginWhatsThis");
 														div.style.display = (it.style.display == "block" ? "none" : "block");
 													}
-
+                                                                                                       
 													function onLoad() {
 														document.loginForm.username.focus();
 														clientChange("${zm:cook(client)}");
