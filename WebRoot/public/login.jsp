@@ -41,7 +41,6 @@
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-
 <c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,login_csrf,g-recaptcha-response,"/>
 
 <%-- get useragent --%>
@@ -702,8 +701,8 @@ if (application.getInitParameter("offlineMode") != null) {
 		<div class="decor2"></div>
 	</div>
 <script>
-<jsp:include page="/js/skin.js">
 
+<jsp:include page="/js/skin.js">
 	<jsp:param name="templates" value="false" />
 	<jsp:param name="client" value="advanced" />
 	<jsp:param name='servlet-path' value='/js/skin.js' />
