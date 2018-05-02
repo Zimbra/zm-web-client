@@ -156,7 +156,7 @@
 <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
 </script>
 <%
-	String packages = "NewWindow_1,NewWindow_2";
+	String packages = "JQuery,NewWindow_1,NewWindow_2";
 
     String extraPackages = request.getParameter("packages");
     if (extraPackages != null) packages += ","+BeanUtils.cook(extraPackages);

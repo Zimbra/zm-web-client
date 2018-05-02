@@ -11,37 +11,41 @@ This change ensures the for attribute value matches the id attribute
 of the INPUT field, but adding explicit support for the trick used by
 comboboxes for pointing to their INPUT element.
 ---
- js/tinymce/classes/ui/Form.js | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/js/tinymce/classes/ui/Form.js b/js/tinymce/classes/ui/Form.js
-index 53be651..b04a222 100644
---- a/js/tinymce/classes/ui/Form.js
-+++ b/js/tinymce/classes/ui/Form.js
-@@ -67,16 +67,24 @@ define("tinymce/ui/Form", [
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/Form.ts tinymce-4.7.9/src/ui/main/ts/Form.ts
+--- /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/Form.ts	2018-02-27 07:36:50.000000000 -0500
++++ tinymce-4.7.9/src/ui/main/ts/Form.ts	2018-03-12 05:47:55.359847177 -0400
+@@ -65,17 +65,25 @@
  
- 			// Wrap any labeled items in FormItems
- 			items.each(function(ctrl) {
--				var formItem, label = ctrl.settings.label;
-+				var formItem, inputId, label = ctrl.settings.label;
+     // Wrap any labeled items in FormItems
+     items.each(function (ctrl) {
+-      let formItem;
++      let formItem, inputId;
+       const label = ctrl.settings.label;
  
- 				if (label) {
-+					inputId = ctrl._id;
+       if (label) {
++        inputId = ctrl._id;
 +
-+					// point to the INPUTs of comboxes
-+					// see the corresbonding TODO in ComboBox.js
-+					if (ctrl.subinput) {
-+						inputId += '-' + ctrl.ariaTarget;
-+					}
++        // point to the INPUTs of comboxes
++        // see the corresbonding TODO in ComboBox.ts
++        if (ctrl.subinput) {
++          inputId += '-' + ctrl.ariaTarget;
++        }
 +
- 					formItem = new FormItem(Tools.extend({
- 						items: {
- 							type: 'label',
- 							id: ctrl._id + '-l',
- 							text: label,
- 							flex: 0,
--							forId: ctrl._id,
-+							forId: inputId,
- 							disabled: ctrl.disabled()
- 						}
- 					}, self.settings.formItemDefaults));
+         formItem = new FormItem(Tools.extend({
+           items: {
+             type: 'label',
+             id: ctrl._id + '-l',
+             text: label,
+             flex: 0,
+-            forId: ctrl._id,
++            forId: inputId,
+             disabled: ctrl.disabled()
+           }
+         }, self.settings.formItemDefaults));
+@@ -154,4 +162,4 @@
+     self.on('show', recalcLabels);
+     recalcLabels();
+   }
+-});
+\ No newline at end of file
++});

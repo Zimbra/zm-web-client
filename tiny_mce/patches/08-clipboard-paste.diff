@@ -1,15 +1,21 @@
-diff -aur -x node_modules /var/folders/sy/trjn_sh97wq_4pr5f1x7h2k40000gq/T//tinymce-4.1.6/js/tinymce/plugins/paste/classes/Clipboard.js tinymce-4.1.6/js/tinymce/plugins/paste/classes/Clipboard.js
---- /var/folders/sy/trjn_sh97wq_4pr5f1x7h2k40000gq/T//tinymce-4.1.6/js/tinymce/plugins/paste/classes/Clipboard.js	2014-10-08 02:01:50.000000000 -0700
-+++ tinymce-4.1.6/js/tinymce/plugins/paste/classes/Clipboard.js	2015-03-09 11:38:01.000000000 -0700
-@@ -472,7 +472,9 @@
- 				}
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/plugins/paste/main/ts/core/Clipboard.ts tinymce-4.7.9/src/plugins/paste/main/ts/core/Clipboard.ts
+--- /tmp/zimbra/tinymce-4.7.9/src/plugins/paste/main/ts/core/Clipboard.ts	2018-02-27 07:36:50.000000000 -0500
++++ tinymce-4.7.9/src/plugins/paste/main/ts/core/Clipboard.ts	2018-03-12 08:48:54.423633425 -0400
+@@ -361,7 +361,9 @@
+     }
  
- 				// Not a keyboard paste prevent default paste and try to grab the clipboard contents using different APIs
--				if (!isKeyBoardPaste) {
-+				// Don't prevent the default if there is no clipboard content (See Bug 97552), and its not IE (which
-+				// will crash on trying the default).
-+				if (!isKeyBoardPaste && (Env.ie || (Object.keys(clipboardContent).length !== 0))) {
- 					e.preventDefault();
- 				}
+     // Not a keyboard paste prevent default paste and try to grab the clipboard contents using different APIs
+-    if (!isKeyBoardPaste) {
++    // Don't prevent the default if there is no clipboard content (See Bug 97552), and its not IE (which
++    // will crash on trying the default).
++    if (!isKeyBoardPaste && (Env.ie || (Object.keys(clipboardContent).length !== 0))) {
+       e.preventDefault();
+     }
  
-Only in tinymce-4.1.6/js/tinymce/themes/modern: theme.min.js
+@@ -469,4 +471,4 @@
+   getDataTransferItems,
+   hasHtmlOrText,
+   hasContentType
+-};
+\ No newline at end of file
++};

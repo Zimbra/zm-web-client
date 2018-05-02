@@ -1,0 +1,29 @@
+From: Saket Patel <saket.patel@synacor.com>
+Date: Mon, 12 Mar 2018 14:20:00 +05:30
+Subject: [PATCH] remove build directory from gitignored files
+
+This allows committing built js files which are used by webclient build script.
+
+---
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/.gitignore tinymce-4.7.9/.gitignore
+--- /tmp/zimbra/tinymce-4.7.9/.gitignore	2018-02-27 07:36:50.000000000 -0500
++++ tinymce-4.7.9/.gitignore	2018-03-13 03:11:24.242244685 -0400
+@@ -21,7 +21,6 @@
+ .project
+ coverage
+ node_modules
+-js/**/*
+ imagemanager
+ filemanager
+ mcmanager
+@@ -30,10 +29,8 @@
+ a11ychecker
+ codemirror
+ mentions
+-*.min.js
+ *.dev.js
+ *.full.js
+-*.min.css
+ *.dev.less
+ **/dist
+ **/scratch

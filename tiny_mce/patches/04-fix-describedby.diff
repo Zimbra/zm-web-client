@@ -4,19 +4,15 @@ Date: Tue, 20 Jan 2015 14:13:33 +0100
 Subject: [PATCH] The aria-describedby attribute should point to Window titles.
 
 ---
- js/tinymce/classes/ui/Window.js | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/js/tinymce/classes/ui/Window.js b/js/tinymce/classes/ui/Window.js
-index 3738ad6..9856f77 100644
---- a/js/tinymce/classes/ui/Window.js
-+++ b/js/tinymce/classes/ui/Window.js
-@@ -166,7 +166,7 @@ define("tinymce/ui/Window", [
- 				self.close();
- 			});
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/Window.ts tinymce-4.7.9/src/ui/main/ts/Window.ts
+--- /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/Window.ts	2018-03-12 05:42:02.004290037 -0400
++++ tinymce-4.7.9/src/ui/main/ts/Window.ts	2018-03-12 05:38:34.779819234 -0400
+@@ -184,7 +184,7 @@
+       self.close();
+     });
  
--			self.aria('describedby', self.describedBy || self._id + '-none');
-+			self.aria('describedby', self.describedBy || self._id + '-title');
- 			self.aria('label', settings.title);
- 			self._fullscreen = false;
- 		},
+-    self.aria('describedby', self.describedBy || self._id + '-none');
++    self.aria('describedby', self.describedBy || self._id + '-title');
+     self.aria('label', settings.title);
+     self._fullscreen = false;
+   },

@@ -141,7 +141,7 @@
 </jsp:include>
 <jsp:include page="Boot.jsp"/>
 <%
-    String allPackages = "Startup1_1,Startup1_2";
+    String allPackages = "JQuery,Startup1_1,Startup1_2";
     String[] pnames = allPackages.split(",");
     for (String pname : pnames) {
         String pageurl = "/js/" + pname + "_all.js";

@@ -1,0 +1,79 @@
+From bb3ff2a099e999f99020961febb7a9d1c9aed518 Mon Sep 17 00:00:00 2001
+From: Dan Villiom Podlaski Christiansen <dchristiansen@zimbra.com>
+Date: Tue, 20 Jan 2015 14:11:21 +0100
+Subject: [PATCH] Don't propagate escape when dismissing menus and windows.
+
+---
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts
+--- /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts	2018-02-27 07:36:50.000000000 -0500
++++ tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts	2018-03-12 05:10:06.815799510 -0400
+@@ -330,7 +330,7 @@
+    * @private
+    */
+   function cancel() {
+-    focusedControl.fire('cancel');
++    return focusedControl.fire('cancel');
+   }
+ 
+   /**
+@@ -382,7 +382,13 @@
+         break;
+ 
+       case 27: // DOM_VK_ESCAPE
+-        cancel();
++        const cancelEv = cancel();
++        if (cancelEv.isDefaultPrevented()) {
++          e.preventDefault();
++        }
++        if (cancelEv.isPropagationStopped()) {
++          e.stopPropagation();
++        }
+         break;
+ 
+       case 14: // DOM_VK_ENTER
+@@ -406,4 +412,4 @@
+   return {
+     focusFirst
+   };
+-}
+\ No newline at end of file
++}
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/MenuButton.ts tinymce-4.7.9/src/ui/main/ts/MenuButton.ts
+--- /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/MenuButton.ts	2018-02-27 07:36:50.000000000 -0500
++++ tinymce-4.7.9/src/ui/main/ts/MenuButton.ts	2018-03-12 05:14:47.076699079 -0400
+@@ -99,6 +99,7 @@
+       self.menu.on('cancel', function (e) {
+         if (e.control.parent() === self.menu) {
+           e.stopPropagation();
++          e.preventDefault();
+           self.focus();
+           self.hideMenu();
+         }
+@@ -273,4 +274,4 @@
+   }
+ });
+ 
+-export default MenuButton;
+\ No newline at end of file
++export default MenuButton;
+diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/Window.ts tinymce-4.7.9/src/ui/main/ts/Window.ts
+--- /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/Window.ts	2018-02-27 07:36:50.000000000 -0500
++++ tinymce-4.7.9/src/ui/main/ts/Window.ts	2018-03-12 05:11:33.586892219 -0400
+@@ -178,7 +178,9 @@
+       }
+     });
+ 
+-    self.on('cancel', function () {
++    self.on('cancel', function (e) {
++      e.preventDefault();
++      e.stopPropagation();
+       self.close();
+     });
+ 
+@@ -496,4 +498,4 @@
+ 
+ handleWindowResize();
+ 
+-export default Window;
+\ No newline at end of file
++export default Window;

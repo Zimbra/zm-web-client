@@ -2,7 +2,6 @@
     <import file="../zm-zcs/ant-global.xml"/>
     <property name="ajax.dir" location="../zm-ajax" />
     <property name="ajax.src.dir" location="${ajax.dir}/src" />
-    <property name="ajax.build.dir" location="${ajax.dir}/build" />
 
     <property name="timezones.dir" location="../zm-timezones" />
     <property name="timezones.build.dir" location="${timezones.dir}/build" />
@@ -34,10 +33,11 @@
 
     <!-- zm-taglib -->
     <property name='taglib.dir' value='${this.zwc.basedir}/../zm-taglib'/>
-    <property name='taglib.build.dir' value='${taglib.dir}/build'/>
 
-    <property name='lib.dir' value='${this.zwc.basedir}/jars'/>
-    <property name="jsdoctoolkit.dir" location="${lib.dir}/jsdoc-toolkit-2.3.0" />
+    <property name="jsdoctoolkit.version" value="2.4.0"/>
+    <property name="jsdoctoolkit.dir" location="${build.tmp.dir}/jsdoc_toolkit-${jsdoctoolkit.version}/jsdoc-toolkit" />
+    <property name="jsdoc.dir" location="${this.zwc.basedir}/jsdoc" />
+    <property name="jsdoc.templates.dir" location="${jsdoc.dir}/templates" />
 
     <!-- NOTE: These dirs need to stay RELATIVE paths for overlay purposes! -->
     <property name="src.dir" value="src" />
@@ -49,7 +49,6 @@
     <property name='img.dir' value='${web.dir}/img'/>
 
     <property name='webinf.dir' value='${web.dir}/WEB-INF'/>
-    <property name='webinf.lib.dir' value='${webinf.dir}/lib'/>
 
     <!-- output dirs relative to application being built -->
     <property name='build.dir' value='${zwc.basedir}/build'/>
@@ -80,28 +79,22 @@
     <property name='nodebug.ext' value='.nodebug'/>
     <property name="jsmin.ext" value='.min'/>
     <property name="compress.ext" value='.zgz'/>
+    <property name='compressoutput.ext' value='.out'/>
     <property name='compresserror.ext' value='.err'/>
 
-    <!-- ZIMBRA FIREFOX EXTENSION -->
-    <property name="ffext.jarfile" value="zimbradnd.jar"/>
-    <property name="ffext.xpifile" value="ZimbraDnD.xpi"/>
-    <property name="ffext.build.dir" location="ffext/build"/>
-    <property name="ffext.src.dir" value="ffext/src/zimbradnd"/>
+    <!-- THIRDPARTY INTEGRATION -->
+    <property name="3rdparty.dir" value="${build.js.dir}/ajax/3rdparty" />
+
+    <property name="modernizr.version" value="2.8.3"/>
+    <property name="yui.version" value="2.7.0"/>
+    <property name="jquery.version" value="3.3.1-1"/>
 
     <!-- TINY_MCE INTEGRATION -->
-    <property name="tinymce.version" value="4.2.6"/>
-    <property name='tinymce.dir' value='${build.js.dir}/ajax/3rdparty/tinymce'/>
+    <property name="tinymce.version" value="4.7.9"/>
+    <property name='tinymce.dir' value='${3rdparty.dir}/tinymce'/>
     <property name='tinymce.root.dir' value='tiny_mce' />
     <property name='tinymce.js.dir' value='${tinymce.root.dir}/tinymce-${tinymce.version}/js/tinymce' />
     <property name="tinymce.custom.dir" value="tiny_mce/custom"/>
-
-    <!-- MODERNIZR INTEGRATION -->
-    <property name="modernizr.version" value="2.6.1"/>
-    <property name="modernizr.dir" value="${build.js.dir}/ajax/3rdparty/modernizr"/>
-
-    <!-- jQuery INTEGRATION -->
-    <property name="jquery.version" value="1.11.0"/>
-    <property name="jquery.dir" value="${build.js.dir}/ajax/3rdparty/jquery"/>
 
     <!-- Paths and Filesets -->
 
@@ -131,7 +124,7 @@
         <property name='common.jam.excludes' value='${custom.jam.excludes},'/>
         <property name='common.build.web.includes' value='${custom.build.web.includes},**'/>
         <property name='common.build.web.excludes'
-                  value='${custom.build.web.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}'/>
+                  value='${custom.build.web.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext},js/*${compressoutput.ext}'/>
         <property name='common.webinf.includes' value='${custom.webinf.includes},**'/>
         <property name='common.webinf.excludes' value='${custom.webinf.excludes},web.*,lib/**'/>
     </target>
@@ -140,7 +133,7 @@
         <property name='deploy.app' value='zimbra'/>
         <property name='skins.dir' value='${web.dir}/skins'/>
         <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/2.7.0/**,qunit/**'/>
-        <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**'/>
+        <property name='web.excludes' value='${common.web.excludes}'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
         <property name='img.includes' value='${common.img.includes}'/>
@@ -148,7 +141,7 @@
         <property name='template.includes' value='${common.template.includes}'/>
         <property name='template.excludes' value='${common.template.excludes},admin/**'/>
         <property name='jam.includes' value='${common.jam.includes}'/>
-        <property name='jam.excludes' value='${common.jam.excludes},**/zimbraAdmin/**'/>
+        <property name='jam.excludes' value='${common.jam.excludes}'/>
         <property name='build.web.includes' value='${common.build.web.includes}'/>
         <property name='build.web.excludes' value='${common.build.web.excludes}'/>
         <property name='webinf.includes' value='${common.webinf.includes}'/>
@@ -169,7 +162,6 @@
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**,test/**'/>
     </target>
 
-    <!-- add build-ajax in dependency once zm-ajax built script is ivy based -->
     <target name="war"
             depends="init,images,styles,settings,copy-ajax,jam-files,compress"
             description="Builds all dependencies and assembles the war file.">
@@ -177,60 +169,36 @@
     </target>
 
     <target name="copy-ajax">
-        <sync todir="${js.dir}">
+        <sync todir="${build.js.dir}">
             <fileset dir="${ajax.dir}/${js.dir}"/>
             <preserveintarget>
                 <include name="**"/>
             </preserveintarget>
         </sync>
 
-        <sync todir="${web.dir}/keys">
+        <sync todir="${build.dir}/keys">
             <fileset dir="${ajax.dir}/${web.dir}/keys"/>
             <preserveintarget>
                 <include name="**"/>
             </preserveintarget>
         </sync>
 
-        <sync todir="${web.dir}/messages">
+        <sync todir="${build.dir}/messages">
             <fileset dir="${ajax.dir}/${web.dir}/messages"/>
                 <preserveintarget>
             <include name="**"/>
             </preserveintarget>
         </sync>
 
-        <sync todir="${web.dir}/jquery">
-            <fileset dir="${ajax.dir}/${web.dir}/jquery"/>
-            <preserveintarget>
-                <include name="**"/>
-            </preserveintarget>
-        </sync>
-
-        <sync todir="${web.dir}/modernizr">
-            <fileset dir="${ajax.dir}/${web.dir}/modernizr"/>
-            <preserveintarget>
-                <include name="**"/>
-            </preserveintarget>
-        </sync>
-
-        <sync todir="${web.dir}/yui">
-            <fileset dir="${ajax.dir}/${web.dir}/yui"/>
-            <preserveintarget>
-                <include name="**"/>
-            </preserveintarget>
-        </sync>
-    </target>
-
-    <target name="build-ajax">
-        <ant dir="${ajax.dir}" target="jar" inheritAll="false"/>
+        <antcall target="jquery" />
+        <antcall target="modernizr" />
+        <antcall target="yui" />
     </target>
 
     <target name="assemble-war" depends="webxml-package-replace, resolve" description="Assembles the war file.  Assumes that all dependencies have been built.  Octopus/ZimbraWebClient/build.xml calls the war target, modifies files in ZimbraWebClient/build, and then calls this target.">
         <mkdir dir='${build.war.dir}'/>
 
-        <ivy:install organisation="zimbra" module="zm-soap" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
-        <ivy:install organisation="zimbra" module="zm-client" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="zimbra" module="zm-taglib" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
-        <ivy:install organisation="zimbra" module="zm-store" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="zimbra" module="zm-ajax" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="org.glassfish.gmbal" module="gmbal-api-only" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="javax.xml.bind" module="jaxb-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
@@ -253,12 +221,14 @@
             <classes refid="overlay.src.props.fileset" />
             <classes refid="src.props.fileset" />
             <classes refid="overlay.messages.fileset" />
+            <classes refid="ajax.messages.fileset" />
             <classes refid="messages.fileset" />
 
             <lib dir="${build.tmp.dir}" includes="*.jar"/>
 
             <!-- files from build tree -->
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
+            <!-- zipfileset dir='${build.web.dir}' includes='js/Modernizr_all.js${jsmin.ext}' / -->
 			<zipfileset dir='${build.web.dir}' includes='js/Boot_all.js${jsmin.ext}' />
 
             <!-- primary files from source trees -->
@@ -281,7 +251,7 @@
         <delete dir="${build.tmp.dir}"/>
     </target>
 
-    <target name='sync' depends='resolve,copy-ajax,jquery,modernizr,tinymce,templates'>
+    <target name='sync' depends='resolve,copy-ajax,tinymce,templates'>
         <!-- NOTE: Keep order in sync with list of war filesets. -->
         <copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
             <fileset refid="webinf.fileset" />
@@ -292,15 +262,13 @@
         <copy todir='${webapp.dir}/WEB-INF/classes' verbose='${sync.verbose}'>
             <fileset refid="src.props.fileset" />
             <fileset refid="overlay.src.props.fileset" />
+            <fileset refid="ajax.messages.fileset" />
             <fileset refid="messages.fileset" />
             <fileset refid="overlay.messages.fileset" />
             <fileset dir='${build.classes.dir}' excludes='**/build/**'/>
         </copy>
 
-        <ivy:install organisation="zimbra" module="zm-soap" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
-        <ivy:install organisation="zimbra" module="zm-client" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="zimbra" module="zm-taglib" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
-        <ivy:install organisation="zimbra" module="zm-store" revision="latest.integration" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="org.glassfish.gmbal" module="gmbal-api-only" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="javax.xml.bind" module="jaxb-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="com.sun.xml.bind" module="jaxb-impl" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
@@ -415,6 +383,7 @@
                  dir='${overlay.dir}/${img.dir}' includes='${img.includes}' excludes='${img.excludes}' />
 
         <fileset id="messages.fileset" dir='${web.dir}' includes='messages/**,keys/**' />
+        <fileset id="ajax.messages.fileset" dir='${build.dir}' includes='messages/**,keys/**' />
         <fileset id="overlay.messages.fileset" erroronmissingdir="false"
                  dir='${overlay.dir}/${web.dir}' includes='messages/**,keys/**' />
 
@@ -431,6 +400,7 @@
                  dir='${overlay.dir}/${template.dir}' includes='**/*.template' />
 
         <fileset id="package.fileset" dir='${js.dir}' includes='${jam.includes}' excludes='${jam.excludes}' />
+        <fileset id="ajax.package.fileset" dir='${build.js.dir}' includes='${jam.includes}' excludes='${jam.excludes}' />
         <fileset id="overlay.package.fileset" erroronmissingdir="false"
                  dir='${overlay.dir}/${js.dir}' includes='${jam.includes}' excludes='${jam.excludes}' />
 
@@ -753,7 +723,6 @@
 		<!-- delete output files if files changed -->
 		<dependset>
 			<srcfileset dir='${srcdir}' includes='*/**' />
-			<srcfileset dir='${ajax.build.dir}' includes='**/img/*.class' />
 			<targetfileset dir='${destdir}' includes='${build.css.file}*.css,${build.css.file}*.js' />
 		</dependset>
 		<!-- merge images, if needed -->
@@ -893,13 +862,14 @@
         </if>
     </target>
 
-    <target name='jam-files' depends='jquery,modernizr,tinymce,templates'>
+    <target name='jam-files' depends='tinymce,templates'>
         <property name='jam.jsp.dir' value='${build.web.dir}/public/jsp'/>
         <mkdir dir='${build.js.dir}'/>
         <mkdir dir='${jam.jsp.dir}'/>
 
         <copy todir='${build.js.dir}' flatten='true'>
             <fileset refid='package.fileset' />
+            <fileset refid='ajax.package.fileset' />
             <fileset refid='overlay.package.fileset' />
             <fileset refid='customer.package.fileset' />
         </copy>
@@ -936,7 +906,6 @@
 
         <packagedependset>
             <srcdependslist dir='.' files='${depends.file}'/>
-            <srcfileset dir='${ajax.build.dir}' includes='**/PackageJammerTask.class'/>
             <targetfilelist dir='.' files='${jam.file}'/>
             <targetfilelist dir='.' files='${jsp.file}'/>
         </packagedependset>
@@ -960,6 +929,10 @@
             </not>
             <then>
                 <condition property='wrap' value='false' else='true'>
+                    <!-- or>
+                        <equals arg1='${arg}' arg2='Boot'/>
+                        <equals arg1='${arg}' arg2='Modernizr'/>
+                    </or -->
                     <equals arg1='${arg}' arg2='Boot'/>
                 </condition>
 
@@ -1041,11 +1014,10 @@ ext = BeanUtils.cook(ext);
 	    <taskdef name="try"
 	             classname="com.zimbra.webClient.build.TryTask"
 	             classpathref="class.path"
-
 	    />
 
         <!-- copying yui jar file in build/tmp directory. -->
-        <ivy:install organisation="com.yahoo.platform.yui" module="yuicompressor" revision="2.4.2-zimbra" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="com.yahoo.platform.yui" module="yuicompressor" revision="2.4.8" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
 
         <!-- minimize js, prepend copyright, compress -->
         <for param="var">
@@ -1072,35 +1044,54 @@ ext = BeanUtils.cook(ext);
                             <substitution expression=" "/>
                             <fileset file="@{var}${nodebug.ext}"/>
                         </replaceregexp>
-                        <echo>Minimizing to @{var}${jsmin.ext}</echo>
-	                    <try>
-	                        <block>
-		                        <java jar="${build.tmp.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true"
-		                              output="${build.dir}/yui-compress.out" >
-                                    <!-- Add error="@{var}${compresserror.ext}" in java task if *.err files need to be generated. -->
-		                            <arg value="--line-break"/>
-		                            <arg value="0"/>
-		                            <arg value="--type"/>
-		                            <arg value="js"/>
-		                            <arg value="-o"/>
-		                            <arg value="@{var}${jsmin.ext}"/>
-		                            <arg value="@{var}${nodebug.ext}"/>
-                                    <arg value="--verbose"/>
-		                        </java>
-	                        </block>
-		                    <catch>
-			                    <antcall target='compress-test-files'>
-				                    <param name='filename' value='@{var}${depends.ext}' />
-			                    </antcall>
-		                    </catch>
-		                    <finally>
-			                    <!-- do nothing -->
-		                    </finally>
-	                    </try>
+                        <if>
+                            <or>
+                                <!-- equals arg1="@{var}" arg2="${build.js.dir}/Modernizr_all.js" / -->
+                                <equals arg1="@{var}" arg2="${build.js.dir}/JQuery_all.js" />
+                                <equals arg1="@{var}" arg2="${build.js.dir}/Clipboard_all.js" />
+                                <equals arg1="@{var}" arg2="${build.js.dir}/TinyMCE_all.js" />
+                            </or>
+                            <!-- we will not minify thirdparty libraries -->
+                            <then>
+                                <echo>Copying thirdparty library file to @{var}${jsmin.ext}</echo>
+                                <copy tofile="@{var}${jsmin.ext}" file="@{var}"/>
+                            </then>
+                            <else>
+                                <try>
+                                    <block>
+                                        <echo>Minifying file to @{var}${jsmin.ext}</echo>
+                                        <java jar="${build.tmp.dir}/yuicompressor-2.4.8.jar" fork="true" failonerror="true"
+                                              output="@{var}${compressoutput.ext}">
+                                            <!-- Add error="@{var}${compresserror.ext}" in java task if *.err files need to be generated. -->
+                                            <arg value="--line-break"/>
+                                            <arg value="0"/>
+                                            <arg value="--type"/>
+                                            <arg value="js"/>
+                                            <arg value="-o"/>
+                                            <arg value="@{var}${jsmin.ext}"/>
+                                            <arg value="@{var}${nodebug.ext}"/>
+                                            <arg value="--verbose"/>
+                                        </java>
+                                    </block>
+                                    <catch>
+                                        <antcall target='compress-test-files'>
+                                            <param name='filename' value='@{var}${depends.ext}' />
+                                        </antcall>
+                                    </catch>
+                                    <finally>
+                                        <!-- do nothing -->
+                                    </finally>
+                                </try>
+                            </else>
+                        </if>
                         <echo>Prepending Copyright to @{var}${license.ext}</echo>
                         <concat destfile="@{var}${license.ext}" fixlastline="true">
                             <header filtering="no" trimleading="yes">
-                                /* Copyright (C) 2005-2009 Zimbra Inc. http://www.zimbra.com/ */
+                                /* 
+                                 * Zimbra Collaboration Suite Web Client
+                                 * Copyright (C) 2004-2017 Synacor, Inc.
+                                 * https://www.zimbra.com/license
+                                 */
                             </header>
                             <fileset file='@{var}${jsmin.ext}'/>
                         </concat>
@@ -1127,7 +1118,7 @@ ext = BeanUtils.cook(ext);
 		<for list="${files}" param="filename">
 			<sequential>
 				<echo>Testing file: @{filename}</echo>
-				<java jar="${build.tmp.dir}/yuicompressor-2.4.2-zimbra.jar" fork="true" failonerror="true">
+				<java jar="${build.tmp.dir}/yuicompressor-2.4.8.jar" fork="true" failonerror="true">
 				    <arg value="--line-break"/>
 				    <arg value="0"/>
 				    <arg value="--type"/>
@@ -1201,45 +1192,41 @@ ext = BeanUtils.cook(ext);
     <target name='clean' depends='customer-init'>
         <delete dir='${build.dir}'/>
         <delete dir='${customer.build.dir}'/>
-        <delete dir='${web.dir}/jquery'/>
-        <delete dir='${web.dir}/modernizr'/>
-        <delete dir='${web.dir}/yui'/>
-        <delete dir='${web.dir}/js/ajax'/>
-        <delete dir='${web.dir}/js/zimbra'/>
-        <delete>
-            <fileset dir="${web.dir}/keys">
-                <include name="AjxKeys*.properties"/>
-            </fileset>
-        </delete>
-        <delete>
-            <fileset dir="${web.dir}/messages">
-                <include name="AjxMsg*.properties"/>
-                <include name="I18nMsg*.properties"/>
-                <include name="TzMsg*.properties"/>
-            </fileset>
-        </delete>
     </target>
 
 	<!-- JavaScript API Documentation Tasks -->
 	<target name="clean-jsapi-zimbra-doc" >
-        <delete dir="${build.jsapi-zimbra-doc.dir}"/>
-        <delete file="${jsapi-zimbra-doc.file}"/>
+		<delete file="${build.tmp.dir}"/>
+
+		<delete dir="${build.jsapi-zimbra-doc.dir}"/>
+		<delete file="${jsapi-zimbra-doc.file}"/>
 	</target>
 
 	<target name="clean-jsapi-inventory" >
-        <delete dir="${build.jsapi-inventory.dir}"/>
-        <delete file="${jsapi-inventory.file}"/>
+		<delete file="${build.tmp.dir}"/>
+
+		<delete dir="${build.jsapi-inventory.dir}"/>
+		<delete file="${jsapi-inventory.file}"/>
 	</target>
 
 	<target name="clean-jsapi-changelog" >
-        <delete dir="${build.jsapi-changelog.dir}"/>
-        <delete file="${jsapi-changelog.file}"/>
+		<delete file="${build.tmp.dir}"/>
+
+		<delete dir="${build.jsapi-changelog.dir}"/>
+		<delete file="${jsapi-changelog.file}"/>
 	</target>
 
-	<target name="generate-jsapi-zimbra-doc" depends="clean-jsapi-zimbra-doc">
+	<target name="jsdoc">
+		<mkdir dir="${build.tmp.dir}"/>
+		<get src="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/jsdoc-toolkit/jsdoc_toolkit-${jsdoctoolkit.version}.zip" dest="${build.tmp.dir}"/>
+
+		<unzip src="${build.tmp.dir}/jsdoc_toolkit-${jsdoctoolkit.version}.zip" dest="${build.tmp.dir}" overwrite="true" />
+	</target>
+
+	<target name="generate-jsapi-zimbra-doc" depends="clean-jsapi-zimbra-doc,jsdoc,copy-ajax">
 	  <java jar="${jsdoctoolkit.dir}/jsrun.jar" fork="true" failonerror="true">
 	    <arg value="${jsdoctoolkit.dir}/app/run.js"/>
-	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-doc"/>
+	    <arg value="-t=${jsdoc.templates.dir}/zimbra-jsapi-doc"/>
 	    <arg value="-d=${build.jsapi-zimbra-doc.dir}"/>
 	    <arg value="-r=4"/>
 	    <arg value="${js.dir}/ajax"/>
@@ -1257,7 +1244,7 @@ ext = BeanUtils.cook(ext);
 	  </java>
 	</target>
 
-	<target name="generate-jsapi-inventory" depends="clean-jsapi-inventory,init">
+	<target name="generate-jsapi-inventory" depends="clean-jsapi-inventory,init,jsdoc,copy-ajax">
         <mkdir dir="${build.jsapi-inventory.dir}"/>
         <echo file="${build.jsapi-inventory.dir}/manifest.json">
 {
@@ -1268,7 +1255,7 @@ ext = BeanUtils.cook(ext);
         </echo>
 	  <java jar="${jsdoctoolkit.dir}/jsrun.jar" fork="true" failonerror="true">
 	    <arg value="${jsdoctoolkit.dir}/app/run.js"/>
-	    <arg value="-t=${jsdoctoolkit.dir}/templates/zimbra-jsapi-inventory"/>
+	    <arg value="-t=${jsdoc.templates.dir}/zimbra-jsapi-inventory"/>
 	    <arg value="-d=${build.jsapi-inventory.dir}"/>
 	    <arg value="-r=4"/>
 	    <arg value="-s"/>
@@ -1286,35 +1273,32 @@ ext = BeanUtils.cook(ext);
 	    <arg value="${js.dir}/zimbraMail/tasks"/>
 	  </java>
 	</target>
-	
-	<target name="generate-jsapi-changelog" depends="package-jsapi-inventory">
+
+	<target name="generate-jsapi-changelog" depends="clean-jsapi-changelog,resolve,package-jsapi-inventory">
         <mkdir dir="${build.jsapi-changelog.dir}"/>
 		<copy todir="${build.jsapi-changelog.dir}">
-			<fileset dir="${jsdoctoolkit.dir}/templates/zimbra-jsapi-changelog">
+			<fileset dir="${jsdoc.templates.dir}/zimbra-jsapi-changelog">
 				<exclude name="**/*.ftl"/>
 			</fileset>
 		</copy>
 		<java classname="com.zimbra.jsapi.JsChangeLogUtil" classpathref="class.path" fork="true" failonerror="true">
 			<arg line="-output ${build.jsapi-changelog.dir}"/>
-		    <arg line="-template ${jsdoctoolkit.dir}/templates/zimbra-jsapi-changelog"/>
-		    <arg line="-baseline.inventory ${docs.dir}/jsapi/jsapi-inventory.zip"/>
+		    <arg line="-template ${jsdoc.templates.dir}/zimbra-jsapi-changelog"/>
+		    <arg line="-baseline.inventory ${jsdoc.dir}/jsapi-inventory.zip"/>
 		    <arg line="-current.inventory ${jsapi-inventory.file}"/>
 		</java>
 	</target>
-		
+
 	<target name="package-jsapi-zimbra-doc" depends="generate-jsapi-zimbra-doc">
-		<zip destfile="${jsapi-zimbra-doc.file}"
-		       basedir="${build.jsapi-zimbra-doc.dir}" />
+		<zip destfile="${jsapi-zimbra-doc.file}" basedir="${build.jsapi-zimbra-doc.dir}" />
 	</target>
 
 	<target name="package-jsapi-inventory" depends="generate-jsapi-inventory">
-		<zip destfile="${jsapi-inventory.file}"
-		       basedir="${build.jsapi-inventory.dir}" />
+		<zip destfile="${jsapi-inventory.file}" basedir="${build.jsapi-inventory.dir}" />
 	</target>
 
 	<target name="package-jsapi-changelog" depends="generate-jsapi-changelog">
-		<zip destfile="${jsapi-changelog.file}"
-		       basedir="${build.jsapi-changelog.dir}" />
+		<zip destfile="${jsapi-changelog.file}" basedir="${build.jsapi-changelog.dir}" />
 	</target>
 
     <!-- image tasks -->
@@ -1385,16 +1369,6 @@ ext = BeanUtils.cook(ext);
         </exec>
     </target>
 
-    <!-- ZIMBRA FIREFOX EXTENSION -->
-    <target name="ffext-reset-the-world">
-        <delete dir="${ffext.build.dir}"/>
-        <mkdir dir="${ffext.build.dir}/chrome"/>
-        <copy file="${ffext.src.dir}/chrome.manifest" todir="${ffext.build.dir}"/>
-        <copy file="${ffext.src.dir}/install.rdf" todir="${ffext.build.dir}"/>
-        <zip destfile="${ffext.build.dir}/chrome/${ffext.jarfile}" basedir="${ffext.src.dir}/chrome/zimbradnd"/>
-        <zip destfile="${ffext.build.dir}/${ffext.xpifile}" basedir="${ffext.build.dir}"/>
-    </target>
-
     <!-- JSP PRECOMPILE STUFF -->
     <property name="jspc.src.dir" value="${build.dir}/WebRoot" />
     <property name="jspc.build.dir" value="${build.dist.dir}/jetty/work/zimbra/jsp" />
@@ -1442,12 +1416,63 @@ ext = BeanUtils.cook(ext);
         </delete>
     </target>
 
+    <!-- target to minify our custom plugins for tinymce -->
+    <target name="tinymce_minify" depends="resolve">
+        <mkdir dir="${build.tmp.dir}"/>
+
+        <property name="compress.includes" value="**/plugin.js,localeconv.js" />
+        <fileset id="js-includes" dir="${tinymce.custom.dir}" includes="${compress.includes}" />
+
+        <!-- copying yui jar file in build/tmp directory. -->
+        <ivy:install organisation="com.yahoo.platform.yui" module="yuicompressor" revision="2.4.8" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+
+        <for param="var">
+            <path>
+                <fileset refid="js-includes"/>
+            </path>
+            <sequential>
+                <propertyregex property="destfile" input="@{var}" regexp="(.*)\.js" replace="\1_min.js" override="true" />
+                <var name="file.uptodate" unset="true" />
+
+                <if>
+                    <available file="${destfile}"/>
+                    <then>
+                        <uptodate property="file.uptodate" srcfile="@{var}" targetfile="${destfile}" />
+                    </then>
+                </if>
+
+                <if>
+                    <not>
+                        <equals arg1="${file.uptodate}" arg2="true" />
+                    </not>
+                    <then>
+                        <echo>Minifying file to ${destfile}</echo>
+                        <java jar="${build.tmp.dir}/yuicompressor-2.4.8.jar" fork="true" failonerror="true">
+                            <!-- Add error="@{var}${compresserror.ext}" in java task if *.err files need to be generated. -->
+                            <arg value="--line-break"/>
+                            <arg value="0"/>
+                            <arg value="--type"/>
+                            <arg value="js"/>
+                            <arg value="-o"/>
+                            <arg value="${destfile}"/>
+                            <arg value="@{var}"/>
+                        </java>
+                    </then>
+                </if>
+            </sequential>
+        </for>
+
+        <!-- Delete tmp folder created with ivy-->
+        <delete dir="${build.tmp.dir}"/>
+    </target>
+
     <target name="get-tinymce-version">
         <echo message="${tinymce.version}" />
     </target>
 
     <target name="build-tinymce">
         <exec executable="make" dir="${tinymce.root.dir}" failonerror="true" />
+        <antcall target="tinymce_minify" />
     </target>
 
     <target name="tinymce">
@@ -1471,7 +1496,7 @@ ext = BeanUtils.cook(ext);
                  includes="*.js"/>
 
         <uptodate targetfile="${tinymce.locale.file}"
-		          property="tinymce.locales.uptodate">
+                  property="tinymce.locales.uptodate">
             <srcresources>
                 <fileset refid="tinymce.locales.ref" />
             </srcresources>
@@ -1494,8 +1519,7 @@ ext = BeanUtils.cook(ext);
                 </pathconvert>
 
                 <echo file="${tinymce.dir}/locales.js"
-					  message='tinyMCE.locale_list = ["en", "${tinymce.locales}"];'
-                      />
+                      message='tinyMCE.locale_list = ["en", "${tinymce.locales}"];' />
             </then>
         </if>
 
@@ -1520,7 +1544,7 @@ ext = BeanUtils.cook(ext);
                 <echo message="Generating ${tinymce.emoticon.file}" />
 
                 <script language="javascript">
-		    load("nashorn:mozilla_compat.js");
+                    load("nashorn:mozilla_compat.js");
                     importClass(org.apache.tools.ant.util.Base64Converter);
                     importClass(java.nio.charset.StandardCharsets);
                     importClass(java.nio.file.Files);
@@ -1574,13 +1598,65 @@ ext = BeanUtils.cook(ext);
         </if>
     </target>
 
-    <target name="modernizr">
-        <copy todir='${modernizr.dir}' file='${web.dir}/modernizr/${modernizr.version}/modernizr.js' verbose='${sync.verbose}'/>
+    <!-- JQUERY Library -->
+    <target name="jquery" depends="resolve">
+        <ivy:install organisation="org.webjars" module="jquery" revision="${jquery.version}" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" />
+
+        <unzip src="${build.tmp.dir}/jquery-${jquery.version}.jar" dest="${build.tmp.dir}/jquery" overwrite="true" />
+
+        <copy todir="${3rdparty.dir}/jquery">
+            <fileset dir="${build.tmp.dir}/jquery/META-INF/resources/webjars/jquery/${jquery.version}" includes="*.js" excludes="webjars-requirejs.js" />
+            <scriptmapper language="javascript">
+                // replace dots with underscores in JS file names, retaining the suffix
+                if (/\.js$/.test(source)) {
+                  source = source.substr(0, source.length - 3).replace(/\./g, '_') + '.js';
+                }
+                self.addMappedName(source);
+            </scriptmapper>
+        </copy>
     </target>
 
-    <target name="jquery">
-        <copy todir='${jquery.dir}' file='${web.dir}/jquery/${jquery.version}/jquery.js' verbose='${sync.verbose}'/>
+    <!-- MODERNIZR Library -->
+    <target name="modernizr" depends="resolve">
+        <ivy:install organisation="org.webjars" module="modernizr" revision="${modernizr.version}" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" />
+
+        <unzip src="${build.tmp.dir}/modernizr-${modernizr.version}.jar" dest="${build.tmp.dir}/modernizr" overwrite="true" />
+
+        <copy todir="${3rdparty.dir}/modernizr">
+            <fileset dir="${build.tmp.dir}/modernizr/META-INF/resources/webjars/modernizr/${modernizr.version}" includes="*.js" />
+            <scriptmapper language="javascript">
+                // replace dots with underscores in JS file names, retaining the suffix
+                if (/\.js$/.test(source)) {
+                  source = source.substr(0, source.length - 3).replace(/\./g, '_') + '.js';
+                }
+                self.addMappedName(source);
+            </scriptmapper>
+        </copy>
     </target>
 
-    
+    <!-- YUI Library -->
+    <target name="yui" depends="resolve">
+        <ivy:install organisation="com.yahoo.platform.yui" module="yui" revision="${yui.version}" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="zip" />
+
+        <unzip src="${build.tmp.dir}/yui-${yui.version}.zip" dest="${build.tmp.dir}" overwrite="true" />
+
+        <!-- Copy to js/ajax/3rdparty as webclient is using it from there -->
+        <copy todir="${3rdparty.dir}/yui">
+            <fileset dir="${build.tmp.dir}/yui" />
+        </copy>
+
+        <!-- Copy to root folder as well, as it is used by html client -->
+        <copy todir="${build.web.dir}/yui/${yui.version}">
+            <fileset dir="${build.tmp.dir}/yui" />
+        </copy>
+    </target>
+
+    <target name="pkg" depends="clean-pkg, prod-war, jspc.build">
+        <exec dir="." executable="./pkg-builder.pl" failonerror="true"/>
+    </target>
+
+    <target name="clean-pkg">
+        <delete dir="build/dist"/>
+        <delete dir="build/stage"/>
+    </target>
 </project>

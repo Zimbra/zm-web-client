@@ -79,7 +79,7 @@
                 </span>
             </td>
             <td align="right">
-                <app:calendarUrl var="monthUrl" view="month" timezone="${timezone}" rawdate="${currentDay}"/>
+                <app:calendarUrl var="monthUrl" zoom="${null}" view="month" timezone="${timezone}" rawdate="${currentDay}"/>
                 <a href="${fn:escapeXml(monthUrl)}"><app:img src="common/ImgCancel.png" alt="close"/></a>
             </td>
         </tr>
