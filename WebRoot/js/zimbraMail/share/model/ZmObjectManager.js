@@ -71,6 +71,7 @@ ZmObjectManager.URL = "url";
 ZmObjectManager.PHONE = "phone";
 ZmObjectManager.DATE = "date";
 ZmObjectManager.ADDRESS = "address";
+ZmObjectManager.TITLE = "title";
 
 // Allows callers to pass in a current date
 ZmObjectManager.ATTR_CURRENT_DATE = "currentDate";

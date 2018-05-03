@@ -793,7 +793,7 @@ function(data) {
 		var list1 = [];
 		var len = Math.min(list.length, ZmContactSplitView.NUM_DL_MEMBERS);
 		for (var i = 0; i < len; i++) {
-			list1.push(data.findObjects ? data.findObjects(list[i], ZmObjectManager.EMAIL) : list[i]);
+			list1.push(data.findObjects ? data.findObjects(list[i], true, ZmObjectManager.EMAIL) : list[i]);
 		}
 		if (canExpand) {
 			if (!data.expandDL) {
@@ -817,7 +817,7 @@ function(data) {
 			for (var i = 0, len = list.length; i < len; i++) {
 				itemData.value = list[i];
 				if (data.findObjects) {
-					itemData.value = data.findObjects(itemData.value, ZmObjectManager.EMAIL);
+					itemData.value = data.findObjects(itemData.value, true, ZmObjectManager.EMAIL);
 				}
 				itemData.html = [];
 				lv._getImageHtml(itemData.html, 0, itemData.first ? "NodeExpanded" : null, id);
@@ -856,9 +856,9 @@ function(data) {
 			itemListData.imageUrl = contact.getImageUrl();
 			itemListData.defaultImageUrl = ZmZimbraMail.DEFAULT_CONTACT_ICON;
 			itemListData.imgClassName = contact.getIconLarge();
-			itemListData.email = data.findObjects(contact.getEmail(), ZmObjectManager.EMAIL, true);
-			itemListData.title = data.findObjects(contact.getAttr(ZmContact.F_jobTitle), ZmObjectManager.TITLE, true);
-			itemListData.phone = data.findObjects(contact.getPhone(), ZmObjectManager.PHONE, true);
+			itemListData.email = data.findObjects(contact.getEmail(), true, ZmObjectManager.EMAIL);
+			itemListData.title = data.findObjects(contact.getAttr(ZmContact.F_jobTitle), true, ZmObjectManager.TITLE);
+			itemListData.phone = data.findObjects(contact.getPhone(), true, ZmObjectManager.PHONE);
 			var isPhonetic = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
 			var fullnameHtml = contact.getFullNameForDisplay(isPhonetic);
 			if (!isPhonetic) {
@@ -868,7 +868,7 @@ function(data) {
 		}
 		else {
 			itemListData.imgClassName = "PersonInline_48";
-			itemListData.email = data.findObjects(member.value, ZmObjectManager.EMAIL, true);
+			itemListData.email = data.findObjects(member.value, true, ZmObjectManager.EMAIL);
 		}
 		html.push(AjxTemplate.expand("abook.Contacts#SplitView_group", itemListData));
 	}
