@@ -604,13 +604,20 @@ if (application.getInitParameter("offlineMode") != null) {
                                 </tr>
 
                                 <c:if test="${errorCode eq 'account.NEED_CAPTCHA' || errorCode eq 'account.INVALID_CAPTCHA'}">
-                                <tr>
-                                    <td>&nbsp;</td>
-                                    <td>
-                                        <script src='https://www.google.com/recaptcha/api.js'></script>
-                                        <div class="g-recaptcha" data-sitekey="6LdfLE0UAAAAACc89_s1Zw88Hm5_XI5kp-5wimfi"></div>
-                                    </td>
-                                </tr>
+								<tr>
+								<td><label for="captchaLabel"><fmt:message key="captcha"/>:</label></td>
+								<td><input id="captchaInput" autocomplete="off" class="zLoginField" name="captchaInput"  placeholder="Please enter captcha code here" type="text" value="" size="40" maxlength="${d
+								omainInfo.webClientMaxInputBufferLength}" /></td>
+								</tr>
+								<tr>
+								<td>&nbsp;</td>
+								<td>
+								<c:import var = "captchaId" url = "http://web02.anahar.dev.opal.synacor.com:8666/getCaptchaId"/>
+								<input id="captchaId" name="captchaId" type="hidden" value="${captchaId}" size="20" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+								<img src="<c:url value='http://web02.anahar.dev.opal.synacor.com:8666/captcha/${captchaId}.png'/>" width="150" height="50" name="imageName" alt="image" />
+								</td>
+								</tr>
+								<b/tr>
                                 </c:if>
 
                                 <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
