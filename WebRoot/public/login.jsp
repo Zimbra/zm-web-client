@@ -611,10 +611,10 @@ if (application.getInitParameter("offlineMode") != null) {
 									<tr>
 										<td>&nbsp;</td>
 										<td>
-											<c:set var="hosturl" value="http://web02.anahar.dev.opal.synacor.com:8666"/>
-											<c:import var = "captchaId" url = "${hosturl}/getCaptchaId"/>
+											<c:set var="captcha_api_url" value="http://web02.anahar.dev.opal.synacor.com:8666"/>
+											<c:import var = "captchaId" url = "${captcha_api_url}/getCaptchaId"/>
 											<input id="captchaId" name="captchaId" type="hidden" value="${captchaId}" size="20" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
-											<img src="<c:url value='${hosturl}/captcha/${captchaId}.png'/>" width="150" height="50" name="imageName" alt="image" />
+											<img src="<c:url value='${captcha_api_url}/captcha/${captchaId}.png'/>" width="150" height="50" name="imageName" alt="image" />
 										</td>
 									</tr>
                                 </c:if>
