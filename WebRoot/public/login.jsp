@@ -349,7 +349,7 @@
         <fmt:message bundle="${zmsg}" var="errorMessage" key="account.AUTH_FAILED"/>
     </c:if>
     <c:if test="${errorCode eq 'account.INVALID_CAPTCHA'}">
-        <fmt:message bundle="${zmsg}" var="errorMessage" key="account.INVALID_CAPTCHA"/>
+        <fmt:message var="errorMessage" key="account.INVALID_CAPTCHA"/>
     </c:if>
     <c:if test="${errorCode eq 'account.TWO_FACTOR_SETUP_REQUIRED'}">
         <c:url value="TwoFactorSetup.jsp" var="twoFactorSetupURL">
@@ -614,7 +614,7 @@ if (application.getInitParameter("offlineMode") != null) {
 											<c:set var="captcha_api_url" value="http://web02.anahar.dev.opal.synacor.com:8666"/>
 											<c:import var = "captchaId" url = "${captcha_api_url}/getCaptchaId"/>
 											<input id="captchaId" name="captchaId" type="hidden" value="${captchaId}" size="20" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
-											<div width="150" height="50" style="background-color: #F8F8F8">
+											<div width="237" height="50" style="background-color: #F8F8F8" align="center">
 												<img src="<c:url value='${captcha_api_url}/captcha/${captchaId}.png'/>" width="150" height="50" name="imageName" alt="image" />
 											</div>
 										</td>
