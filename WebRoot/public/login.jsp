@@ -614,7 +614,9 @@ if (application.getInitParameter("offlineMode") != null) {
 											<c:set var="captcha_api_url" value="http://web02.anahar.dev.opal.synacor.com:8666"/>
 											<c:import var = "captchaId" url = "${captcha_api_url}/getCaptchaId"/>
 											<input id="captchaId" name="captchaId" type="hidden" value="${captchaId}" size="20" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
-											<img src="<c:url value='${captcha_api_url}/captcha/${captchaId}.png'/>" width="150" height="50" name="imageName" alt="image" />
+											<div width="150" height="50" background-color="#F8F8F8">
+												<img src="<c:url value='${captcha_api_url}/captcha/${captchaId}.png'/>" width="150" height="50" name="imageName" alt="image" />
+											</div>
 										</td>
 									</tr>
                                 </c:if>
