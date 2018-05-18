@@ -41,7 +41,7 @@
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,login_csrf,g-recaptcha-response,"/>
+<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,login_csrf,captchaInput,captchaId,"/>
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
