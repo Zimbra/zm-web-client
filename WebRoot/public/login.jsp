@@ -349,7 +349,7 @@
         <fmt:message bundle="${zmsg}" var="errorMessage" key="account.AUTH_FAILED"/>
     </c:if>
     <c:if test="${errorCode eq 'account.INVALID_CAPTCHA'}">
-        <fmt:message var="errorMessage" key="account.INVALID_CAPTCHA"/>
+        <fmt:message bundle="${zmsg}" var="errorMessage" key="account.INVALID_CAPTCHA"/>
     </c:if>
     <c:if test="${errorCode eq 'account.TWO_FACTOR_SETUP_REQUIRED'}">
         <c:url value="TwoFactorSetup.jsp" var="twoFactorSetupURL">
