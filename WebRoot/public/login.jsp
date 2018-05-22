@@ -45,6 +45,10 @@
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
+
+<%-- get captcha api endpoint --%>
+<zm:getCaptchaApiUrl varCaptchaApiUrl="varCaptchaApiUrl"/>
+
 <c:set var="touchSupported" value="${ua.isIos6_0up or ua.isAndroid4_0up}"/>
 <c:set var="mobileSupported" value="${ua.isMobile && ((ua.isOsWindows && (ua.isWindowsPhone || not ua.isWindowsNT))
                                                         || (ua.isOsBlackBerry)
@@ -611,11 +615,10 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <tr>
                                         <td>&nbsp;</td>
                                         <td>
-                                            <c:set var="captcha_api_url" value="http://web02.anahar.dev.opal.synacor.com:8666"/>
-                                            <c:import var = "captchaId" url = "${captcha_api_url}/getCaptchaId"/>
+                                            <c:import var = "captchaId" url = "${varCaptchaApiUrl}/getCaptchaId"/>
                                             <input id="captchaId" name="captchaId" type="hidden" value="${captchaId}" size="20" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
                                             <div width="237" height="50" style="background-color: #F8F8F8" align="center">
-                                               <img src="<c:url value='${captcha_api_url}/captcha/${captchaId}.png'/>" width="150" height="50" name="imageName" alt="image" />
+                                               <img src="<c:url value='${varCaptchaApiUrl}/captcha/${captchaId}.png'/>" width="150" height="50" name="imageName" alt="image" />
                                             </div>
                                         </td>
                                     </tr>
