@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2009, 2010, 2011, 2012, 2013, 2014, 2016 Synacor, Inc.
+ * Copyright (C) 2006, 2007, 2009, 2010, 2011, 2012, 2013, 2014, 2016, 2017, 2018 Synacor, Inc.
  *
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ HTML {
 
 BODY {
 	@ChromeBg@
+	font-family:Helvetica Neue, Helvetica, Arial, sans-serif; font-weight: 200;
 	@FullSize@
 	margin:0px;
 }
@@ -230,4 +231,39 @@ FORM {
 }
 .Footer-small #ZLoginNotice {
 	display:none;
+}
+
+.header {
+    position: absolute; top: 0; background-color: #fff; width: 100%; padding: 0 0 1rem 0;
+}
+
+.header IMG {
+    height: 75px; width: 225px; padding: 0 0 0 1rem; margin: 0 0 0 1rem;
+}
+
+.header .menu {
+    position: absolute; font-size: 1.5rem; color: #000; ; font-weight: 200; right: 0; bottom: 17%;
+}
+
+.menu SPAN {
+    padding: 0 2rem 0 0;
+}
+
+.menu a:hover {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.pmBanner .pmImage {
+    padding-top: 7rem; width: 100%; height: auto; float: left;
+}
+
+.pmBanner .govUtilities {
+    padding: 9rem 0 0 4rem; float: left;
+    display: none;
+}
+
+.govUtilities IMG {
+    padding: 0 1rem 0 0;
+    cursor: pointer;
 }
