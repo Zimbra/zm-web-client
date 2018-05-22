@@ -606,7 +606,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <c:if test="${errorCode eq 'account.NEED_CAPTCHA' || errorCode eq 'account.INVALID_CAPTCHA'}">
                                     <tr>
                                         <td><label for="captchaLabel"><fmt:message key="captcha"/>:</label></td>
-                                        <td><input id="captchaInput" autocomplete="off" class="zLoginField" name="captchaInput"  placeholder="Please enter captcha code here" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" /></td>
+                                        <td><input id="captchaInput" autocomplete="off" class="zLoginField" name="captchaInput"  placeholder="Please enter CAPTCHA code here" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" /></td>
                                     </tr>
                                     <tr>
                                         <td>&nbsp;</td>
