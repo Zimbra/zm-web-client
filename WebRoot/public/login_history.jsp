@@ -5,7 +5,31 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
-<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+<%@ page import='java.util.Locale' %>
+<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
+<%!
+    static String getParameter(HttpServletRequest request, String pname, String defValue) {
+        String value = request.getParameter(pname);
+        return value != null ? value : defValue;
+    }
+%>
+
+<%
+    Locale locale;
+    String localeId = getParameter(request, "lang", "en_US");
+    localeId = localeId.replaceAll("[^A-Za-z_]","");
+    localeId = BeanUtils.cook(localeId);
+    int index = localeId.indexOf("_");
+    if (index == -1) {
+      locale = new Locale(localeId);
+    } else {
+      String language = localeId.substring(0, index);
+      String country = localeId.substring(localeId.length() - 2);
+      locale = new Locale(language, country);
+    }
+    pageContext.setAttribute("locale", locale);
+%>
+<fmt:setLocale value='${locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <html>
 <head>
