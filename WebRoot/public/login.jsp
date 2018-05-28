@@ -788,11 +788,11 @@ function onLoad() {
      xhttp.onreadystatechange = function() {
      if (this.readyState == 4 && this.status == 200) {
         this.captcha_id = this.responseText;
+        document.images['imageName'].src = '${varCaptchaApiUrl}/captcha/${captcha_id}.png';
       }
     };
     xhttp.open("GET", "${varCaptchaApiUrl}/getCaptchaId", true);
     xhttp.send();
-    document.images['imageName'].src = '${varCaptchaApiUrl}/captcha/${captcha_id}.png';
 }
 </script>
 </body>
