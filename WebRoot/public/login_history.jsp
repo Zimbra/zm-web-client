@@ -74,7 +74,7 @@
 <div class="divTable" style="border: 1px solid #000;" >
     <div class="divTableBody">
     <div class="divTableRow">
-        <div class="divTableCell">&nbsp;Sr. No</div>
+        <div class="divTableCell">&nbsp;<fmt:message key="zimbraLoginHistorySrNo"/></div>
         <div class="divTableCell">&nbsp;<fmt:message key="zimbraLoginHistoryGeoLocationIP"/></div>
         <div class="divTableCell">&nbsp;<fmt:message key="zimbraLoginHistoryTimestamp"/></div>
     </div>
