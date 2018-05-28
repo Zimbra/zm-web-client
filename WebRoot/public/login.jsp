@@ -786,12 +786,12 @@ function onLoad() {
      var xhttp = new XMLHttpRequest();
      var captcha_id;
      xhttp.onreadystatechange = function() {
-     if (this.readyState == 4 && this.status == 200) {
+     if (this.readyState == 4 && this.status == 200 && this.responseText != null && this.responseText != "") {
         this.captcha_id = this.responseText;
-        document.images['imageName'].src = '${varCaptchaApiUrl}/captcha/${captcha_id}.png';
+        document.images['imageName'].src = '${varCaptchaApiUrl}/captcha/' + this.captcha_id + '.png';
       }
     };
-    xhttp.open("GET", "${varCaptchaApiUrl}/getCaptchaId", true);
+    xhttp.open("GET", "/public/captcha_proxy.jsp", true);
     xhttp.send();
 }
 </script>
