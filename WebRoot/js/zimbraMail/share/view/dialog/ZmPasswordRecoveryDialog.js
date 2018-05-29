@@ -99,7 +99,6 @@ ZmPasswordRecoveryDialog.prototype._contentHtml = function() {
 	this._resetPasswordErrorDivId = id + "_reset_password_error";
 	this._passwordResetSuccessDivId = id + "_password_reset_success";
 	this._divIdArray = [this._getRecoveryAccountDivId, this._requestCodeDivId, this._validateCodeDivId, this._codeSuccessDivId, this._resetPasswordDivId, this._passwordResetSuccessDivId];
-//	this._requestCodeDescription = id + "_request_code_description";
 	return AjxTemplate.expand("share.Dialogs#ZmPasswordRecovery", {id : id, accountInput : this.accountInput});
 };
 
@@ -158,7 +157,6 @@ ZmPasswordRecoveryDialog.prototype.reset = function() {
 	Dwt.hide(this._resetPasswordDivId);
 	Dwt.hide(this._resetPasswordErrorDivId);
 	Dwt.hide(this._passwordResetSuccessDivId);
-//	Dwt.hide(this._requestCodeDescription);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.CANCEL_BUTTON, true);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.PREVIOUS_BUTTON, false);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.BEGIN_SETUP_BUTTON, true);
@@ -284,7 +282,6 @@ ZmPasswordRecoveryDialog.prototype._resetHandleKeyUp = function(ev) {
 
 ZmPasswordRecoveryDialog.prototype._codeInputCheck = function() {
 	var codeInput = this._codeInput.value;
-	console.log("codeInput: ", codeInput);
 	this.setButtonEnabled(ZmPasswordRecoveryDialog.NEXT_BUTTON, !!codeInput);
 };
 
@@ -356,5 +353,6 @@ function(currentDivId, result) {
 		*/
 	}
 };
+
 
 

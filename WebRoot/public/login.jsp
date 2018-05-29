@@ -584,6 +584,10 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <input id="remember" value="1" type="checkbox" name="zrememberme" />
                                     <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label>
                                 </c:if>
+                                <script TYPE="text/javascript">
+                                    document.write("<a href='#' onclick='forgotPassword();' id='ZLoginForgotPassword' aria-controls='ZLoginForgotPassword' aria-expanded='false'><fmt:message key='forgotPassword'/></a>");
+                                </script>
+
                                 <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
                                 </td>
                                 </tr>
