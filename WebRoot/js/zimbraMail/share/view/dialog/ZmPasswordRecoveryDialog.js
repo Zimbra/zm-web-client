@@ -29,7 +29,6 @@
  * @extends	DwtDialog
  */
 ZmPasswordRecoveryDialog = function(params) {
-	//console.log("PARAMS: ", params);
 	this.accountInput = params.accountInput || "";
 	this.isFromLoginPage = params.isFromLoginPage;
 
