@@ -2,7 +2,7 @@
  * ***** BEGIN LICENSE BLOCK *****
  *
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2015, 2016 Synacor, Inc.
+ * Copyright (C) 2018 Synacor, Inc.
  *
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,9 @@
  * The Initial Developer of the Original Code is Zimbra, Inc.  All rights to the Original Code were
  * transferred by Zimbra, Inc. to Synacor, Inc. on September 14, 2015.
  *
- * All portions of the code are Copyright (C) 2015, 2016 Synacor, Inc. All Rights Reserved.
+ * All portions of the code are Copyright (C) 2018 Synacor, Inc. All Rights Reserved.
  *
  * ***** END LICENSE BLOCK *****
- */
-/**
- * Created by administrator on 04/05/15.
  */
 
 AjxPackage.require("ajax.core.AjxException");

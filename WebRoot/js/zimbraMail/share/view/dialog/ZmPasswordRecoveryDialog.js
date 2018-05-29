@@ -22,17 +22,14 @@
  */
 
 /**
- * Creates a dialog for Two factor initial setup
+ * Creates a dialog for Password Recovery initial setup
  * @constructor
  * @class
- * @author  Hem Aravind
  *
  * @extends	DwtDialog
  */
 ZmPasswordRecoveryDialog = function(params) {
-	console.log("PARAMSPARAMS: ", params);
 	this.accountInput = params.accountInput || "";
-	// this.isFromLoginPage will be true if ZmPasswordRecoveryDialog is created from TwoFactorSetup.jsp, which is forwarded from login.jsp file.
 	this.isFromLoginPage = params.isFromLoginPage;
 
 	var beginSetupButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.BEGIN_SETUP_BUTTON,
