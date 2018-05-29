@@ -780,14 +780,13 @@ function onLoad() {
 	}
 }
 
- function reloadImage() {
-     var xhttp = new XMLHttpRequest();
-     var captcha_id;
-     xhttp.onreadystatechange = function() {
-     if (this.readyState == 4 && this.status == 200 && this.responseText != null && this.responseText != "") {
-        this.captcha_id = this.responseText;
-        document.images['captchaImage'].src = '${varCaptchaApiUrl}/captcha/' + this.captcha_id + '.png';
-      }
+function reloadImage() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200 && this.responseText != null && this.responseText != "") {
+            document.getElementById('captchaId').value = (this.responseText).trim();
+            document.images['captchaImage'].src = '${varCaptchaApiUrl}/captcha/' + (this.responseText).trim() + '.png';
+        }
     };
     xhttp.open("GET", "/public/captcha_proxy.jsp", true);
     xhttp.send();
