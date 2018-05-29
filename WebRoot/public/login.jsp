@@ -584,6 +584,10 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <input id="remember" value="1" type="checkbox" name="zrememberme" />
                                     <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label>
                                 </c:if>
+                                <script TYPE="text/javascript">
+                                    document.write("<a href='#' onclick='forgotPassword();' id='ZLoginForgotPassword' aria-controls='ZLoginForgotPassword' aria-expanded='false'><fmt:message key='forgotPassword'/></a>");
+                                </script>
+
                                 <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
                                 </td>
                                 </tr>
@@ -692,6 +696,13 @@ function showWhatsThis() {
     tooltip.style.display = doHide ? "none" : "block";
     anchor.setAttribute("aria-expanded", doHide ? "false" : "true");
 }
+
+function forgotPassword() {
+	var accountInput = document.getElementById("username").value;
+	var queryParams = encodeURI("account=" + accountInput);
+	window.location.href = "/public/PasswordRecovery.jsp?" + queryParams;
+}
+
 
 function onLoad() {
 	var loginForm = document.loginForm;
