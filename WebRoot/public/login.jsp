@@ -617,9 +617,12 @@ if (application.getInitParameter("offlineMode") != null) {
                                         <td>
                                             <c:import var = "captchaId" url = "${varCaptchaApiUrl}/getCaptchaId"/>
                                             <input id="captchaId" name="captchaId" type="hidden" value="${captchaId}" size="20" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
-                                            <div width="237" height="50" style="background-color: #F8F8F8" align="center">
-                                               <img src="<c:url value='${varCaptchaApiUrl}/captcha/${captchaId}.png'/>" width="150" height="50" name="imageName" alt="image" />
+                                            <div style="background-color: #F8F8F8;float: left;width: 70%;height: 50px;" align="left">
+                                               <img src="<c:url value='${varCaptchaApiUrl}/captcha/${captchaId}.png'/>" width="150" height="50" name="captchaImage" alt="image" />
                                             </div>
+                                            <div>
+                                               <img src="img/refresh_captcha.png" width="20" height="20" style="cursor:pointer;vertical-align:bottom; margin-top: 30px;" onClick="reloadImage()" />
+                                           </div>
                                         </td>
                                     </tr>
                                 </c:if>
@@ -777,6 +780,19 @@ function onLoad() {
 	if (${totpAuthRequired} && loginForm.totpcode) {
         loginForm.totpcode.focus();
 	}
+}
+
+ function reloadImage() {
+     var xhttp = new XMLHttpRequest();
+     var captcha_id;
+     xhttp.onreadystatechange = function() {
+     if (this.readyState == 4 && this.status == 200 && this.responseText != null && this.responseText != "") {
+        this.captcha_id = this.responseText;
+        document.images['captchaImage'].src = '${varCaptchaApiUrl}/captcha/' + this.captcha_id + '.png';
+      }
+    };
+    xhttp.open("GET", "/public/captcha_proxy.jsp", true);
+    xhttp.send();
 }
 </script>
 </body>
