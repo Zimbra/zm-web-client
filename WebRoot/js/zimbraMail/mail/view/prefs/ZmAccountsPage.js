@@ -318,6 +318,23 @@ function(params) {
 	this._oneTimeCodesDialog.popup();
 };
 
+/*
+ZmAccountsPage.prototype._requestRecoveryEmail =
+function(user, sendAs, sendObo) {
+    if (sendAs || sendObo){
+        this._handleDelegateRights(user, sendAs, sendObo, true, true);
+    }
+};
+
+ZmAccountsPage.prototype._handleAddRecoveryEmailButton =
+function() {
+    var callback = this._grantDelegateRights.bind(this);
+    var dlg = this.getGrantRightsDlg(callback);
+    dlg.setData();
+    dlg.popup();
+};
+*/
+
 ZmAccountsPage.prototype.getGrantRightsDlg =
 function(callback) {
 
@@ -368,8 +385,8 @@ function(user, sendAs, sendObo, isGrant, refresh) {
 	batchCmd.run();
 };
 
- ZmAccountsPage.prototype._handleDelegateRightsCallback =
- function(user, sendAs, sendObo, isGrant, refresh, result){
+ZmAccountsPage.prototype._handleDelegateRightsCallback =
+function(user, sendAs, sendObo, isGrant, refresh, result){
      var email = user;
      if (isGrant){
         var response = result.getResponse();
@@ -777,6 +794,19 @@ function() {
 	}
 };
 
+ZmAccountsPage.prototype.setAccountPasswordRecovery =
+function() {
+    var addRecoveryEmailButtonDiv = document.getElementById(this._htmlElId+"_ADD_RECOVERY_EMAIL");
+	if (addRecoveryEmailButtonDiv) {
+		var button = new DwtButton({parent:this, id:"addRecoveryEmailBtn"});
+		button.setText("Add Recovery Email"); //button.setText(ZmMsg.addRecoveryEmail);
+		button.setEnabled(true);
+		button.addSelectionListener(new AjxListener(this, this._handleAddRecoveryEmailButton));
+		button.replaceElement(addRecoveryEmailButtonDiv);
+		this.addRecoveryEmailButton = button;
+	}
+}
+
 ZmAccountsPage.prototype.setAccountDelegates =
 function() {
     var delegatesEl =   document.getElementById(this._htmlElId+"_DELEGATE_RIGHTS");
@@ -995,7 +1025,8 @@ function(useDefaults) {
 	this._resetAccountListView(account);
 	this.setAccount(account);
 	this.setAccountSecurity();
-    this.setAccountDelegates();
+	this.setAccountPasswordRecovery();
+	this.setAccountDelegates();
 };
 
 // saving
