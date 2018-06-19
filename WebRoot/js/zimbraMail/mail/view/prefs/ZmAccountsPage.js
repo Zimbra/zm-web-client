@@ -319,21 +319,261 @@ function(params) {
 };
 
 /*
-ZmAccountsPage.prototype._requestRecoveryEmail =
-function(user, sendAs, sendObo) {
-    if (sendAs || sendObo){
-        this._handleDelegateRights(user, sendAs, sendObo, true, true);
-    }
+ * Recovery Account Section
+ *
+ */
+
+ZmAccountsPage.prototype._handleValidateRecoveryEmailButton =
+	function() {
+	var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
+	var batchCmd = new ZmBatchCommand(true, appCtxt.accountList.mainAccount.name);
+	var callback = this._recoveryValidateRequest.bind(this);
+	var errorCallback = this._recoveryErrorCallback.bind(this);
+	this.recoveryErrorMessage.innerHTML = "";
+	soapDoc.setMethodAttribute("op", "validateCode");
+	soapDoc.setMethodAttribute("recoveryAccountVerificationCode", this.recoveryCodeInputField.getValue());
+	//appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errorCallback});
+	batchCmd.addNewRequestParams(soapDoc, callback, errorCallback);
+	batchCmd.run();
+};
+
+ZmAccountsPage.prototype._recoveryValidateRequest =
+function(result) {
+	this.recoveryCodeInputField.setValue("", true);
+	this.validateRecoveryEmailButton.setEnabled(false);
+	this._setAccountPasswordControls("verified");
+};
+
+ZmAccountsPage.prototype._handleResetRecoveryEmailButton =
+	function() {
+	var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
+	var callback = this._recoveryResetRequest.bind(this);
+	var errorCallback = this._recoveryErrorCallback.bind(this);
+	this.recoveryErrorMessage.innerHTML = "";
+	soapDoc.setMethodAttribute("op", "reset");
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errorCallback});
+};
+
+ZmAccountsPage.prototype._recoveryResetRequest =
+function(result) {
+	this.recoveryCodeInputField.setValue("", true);
+	this.validateRecoveryEmailButton.setEnabled(false);
+	this.recoveryAccountInputField.setValue("", true);
+	this.addRecoveryEmailButton.setEnabled(false);
+	this._setAccountPasswordControls("Not Set");
+};
+
+ZmAccountsPage.prototype._handleResendRecoveryEmailButton =
+	function() {
+	var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
+	var callback = this._recoveryResendRequest.bind(this);
+	var errorCallback = this._recoveryErrorCallback.bind(this);
+	this.recoveryErrorMessage.innerHTML = "";
+	soapDoc.setMethodAttribute("op", "resendCode");
+	soapDoc.setMethodAttribute("recoveryAccount", this.recoveryEmail);
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errorCallback});
+};
+
+ZmAccountsPage.prototype._recoveryResendRequest =
+function(result) {
+	this._setAccountPasswordControls("pending");
 };
 
 ZmAccountsPage.prototype._handleAddRecoveryEmailButton =
 function() {
-    var callback = this._grantDelegateRights.bind(this);
-    var dlg = this.getGrantRightsDlg(callback);
-    dlg.setData();
-    dlg.popup();
+	var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
+	var batchCmd = new ZmBatchCommand(true, appCtxt.accountList.mainAccount.name);
+	var callback = this._recoveryRequest.bind(this);
+	var errorCallback = this._recoveryErrorCallback.bind(this);
+	this.recoveryErrorMessage.innerHTML = "";
+	this.currentPasswordRecoveryValue = this.recoveryAccountInputField.getValue();
+	soapDoc.setMethodAttribute("op", "sendCode");
+	soapDoc.setMethodAttribute("recoveryAccount", this.currentPasswordRecoveryValue);
+	//appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errorCallback});
+	batchCmd.addNewRequestParams(soapDoc, callback, errorCallback);
+	batchCmd.run();
 };
-*/
+
+ZmAccountsPage.prototype._recoveryRequest =
+function(result) {
+	this.recoveryAccountInputField.setValue("", true);
+	this.addRecoveryEmailButton.setEnabled(false);
+	this._setAccountPasswordControls("pending");
+};
+
+ZmAccountsPage.prototype._recoveryErrorCallback =
+function(result) {
+	var message;
+	message = result.msg; // temporary
+	/*
+	 * TBD
+	switch(result.code) {
+		case "mail.SEND_ABORTED_ADDRESS_FAILURE": {
+			message = ZmMsg.invalidEmailAddress ;
+			break;
+		}
+		default: {
+			message = "An unknown error has occured.";
+			break;
+		}
+	}
+	*/
+	this.recoveryErrorMessage.innerHTML = message;
+};
+
+ZmAccountsPage.prototype._setAccountPasswordControls =
+function(status) {
+	this.recoveryEmailStatus = status;
+	switch(status) {
+		case "verified": {
+			this.recoveryMessage.innerHTML = ZmMsg.recoveryEmailMessageVerified;
+			this.recoveryOptionsTitle.innerHTML = ZmMsg.recoveryEmailOptionLabel;
+			this.addRecoveryEmailButton.setVisible(false);
+			this.resetRecoveryEmailButton.setVisible(true);
+			this.resendRecoveryEmailButton.setVisible(false);
+			this.validateRecoveryEmailButton.setVisible(false);
+			this.addRecoveryEmailInputContainer.style.display = "none";
+			this.codeRecoveryEmailInputContainer.style.display = "none";
+			break;
+		}
+		case "pending": {
+			this.recoveryMessage.innerHTML = ZmMsg.recoveryEmailMessagePending;
+			this.recoveryOptionsTitle.innerHTML = ZmMsg.recoveryEmailOptionLabel;
+			this.recoveryEmail = this.currentPasswordRecoveryValue;
+			this.addRecoveryEmailButton.setVisible(false);
+			this.resetRecoveryEmailButton.setVisible(true);
+			this.resendRecoveryEmailButton.setVisible(true);
+			this.validateRecoveryEmailButton.setVisible(true);
+			this.addRecoveryEmailInputContainer.style.display = "none";
+			this.codeRecoveryEmailInputContainer.style.display = "table-row";
+			break;
+		}
+		default: {
+			this.recoveryMessage.innerHTML = ZmMsg.recoveryEmailMessageAdd;
+			this.recoveryEmail = "";
+			this.recoveryOptionsTitle.innerHTML = "";
+			this.addRecoveryEmailButton.setVisible(true);
+			this.resetRecoveryEmailButton.setVisible(false);
+			this.resendRecoveryEmailButton.setVisible(false);
+			this.validateRecoveryEmailButton.setVisible(false);
+			this.addRecoveryEmailInputContainer.style.display = "table-row";
+			this.codeRecoveryEmailInputContainer.style.display = "none";
+			break;
+		}
+	}
+	this.recoveryDetailDiv.innerHTML = this.recoveryEmail;
+	this.recoveryStatusDiv.innerHTML = this.recoveryEmailStatus;
+};
+
+ZmAccountsPage.prototype._getRecoverySettings =
+function() {
+	var myRecoveryEmail = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL);
+	var myRecoveryEmailStatus = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS);
+//	var fullset = appCtxt.getSettings(this.userAccount);
+//	console.log("SETTINGSS: ", fullset);
+};
+
+ZmAccountsPage.prototype._handleRecoveryEmailInput =
+function(result) {
+//	var patt = /^(.*?)(?:@(.*))?$/;
+	var patt = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	var validEmail = patt.test(result.target.value);
+	if(validEmail) {
+		this.addRecoveryEmailButton.setEnabled(true);
+	} else {
+		this.addRecoveryEmailButton.setEnabled(false);
+	}
+};
+
+ZmAccountsPage.prototype._handleRecoveryCodeInput =
+function(result) {
+	var codeLength = result.target.value.length;
+	if(codeLength === 6) {
+		this.validateRecoveryEmailButton.setEnabled(true);
+	} else {
+		this.validateRecoveryEmailButton.setEnabled(false);
+	}
+};
+
+ZmAccountsPage.prototype.setAccountPasswordRecovery =
+function() {
+	var isVisible = true;
+	var optionsTitle = document.getElementById(this._htmlElId + "_RECOVERY_OPTIONS_TITLE");
+	var addRecoveryEmailInputContainer = document.getElementById(this._htmlElId + "_RECOVERY_ACCOUNT_TR");
+	var codeRecoveryEmailInputContainer = document.getElementById(this._htmlElId + "_RECOVERY_CODE_TR");
+	var recoveryAccountInput = document.getElementById(this._htmlElId + "_RECOVERY_ACCOUNT");
+	var recoveryCodeInput = document.getElementById(this._htmlElId + "_RECOVERY_CODE");
+	var myInput;
+	if (addRecoveryEmailInputContainer && recoveryAccountInput && codeRecoveryEmailInputContainer && recoveryCodeInput) {
+		this.recoveryOptionsTitle = optionsTitle;
+		this.addRecoveryEmailInputContainer = addRecoveryEmailInputContainer;
+		this.codeRecoveryEmailInputContainer = codeRecoveryEmailInputContainer;
+		myInput = new DwtInputField({parent: this, id: "recoveryAccountInputField", type: "text", initialValue: "" });
+		myInput.setEnabled(true);
+		myInput.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleRecoveryEmailInput));
+		myInput.replaceElement(recoveryAccountInput);
+		this.recoveryAccountInputField = myInput;
+		myInput = new DwtInputField({parent: this, id: "recoveryCodeInputField", type: "text", initialValue: "" });
+		myInput.setEnabled(true);
+		myInput.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleRecoveryCodeInput));
+		myInput.replaceElement(recoveryCodeInput);
+		this.recoveryCodeInputField = myInput;
+	} else {
+		return;
+	}
+	this.recoveryDetailDiv = document.getElementById(this._htmlElId + "_RECOVERY_ACCOUNT_DETAIL");
+	this.recoveryStatusDiv = document.getElementById(this._htmlElId + "_RECOVERY_ACCOUNT_STATUS");
+	this.recoveryMessage = document.getElementById(this._htmlElId + "_RECOVERY_MESSAGE");
+	this.recoveryErrorMessage = document.getElementById(this._htmlElId + "_RECOVERY_ERROR_MESSAGE");
+	this.recoveryEmail = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) ? appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) : "";
+	this.recoveryEmailStatus = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) ? appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) : "Not Set";
+
+	this.reoveryCodeValidity = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_CODE_VALIDITY);
+	this.recoveryMaxAttempts = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_MAX_ATTEMPTS);
+	this.recoveryResetSuspendTime = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_RESET_SUSPEND_TIME);
+	this.recoveryResetExpiry = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_RESET_EXPIRY);
+
+	this.currentPasswordRecoveryValue = this.recoveryEmail;
+
+	isVisible = (this.recoveryEmailStatus !== "verified" && this.recoveryEmailStatus !== "pending");
+	this.recoveryOptionsTitle.innerHTML = isVisible ? "" : ZmMsg.recoveryEmailOptionLabel;
+	this.addRecoveryEmailInputContainer.style.display = isVisible ? "table-row" : "none";
+	this._createRecoveryButtons("addRecoveryEmailButton", ZmMsg.recoveryEmailButtonAdd, false, isVisible,
+					"_handleAddRecoveryEmailButton", "_ADD_RECOVERY_EMAIL");
+
+	isVisible = (this.recoveryEmailStatus === "verified" || this.recoveryEmailStatus === "pending");
+	this._createRecoveryButtons("resetRecoveryEmailButton", ZmMsg.recoveryEmailButtonReset, true, isVisible,
+					"_handleResetRecoveryEmailButton", "_RESET_RECOVERY_EMAIL");
+
+	isVisible = (this.recoveryEmailStatus === "pending");
+	this.codeRecoveryEmailInputContainer.style.display = isVisible ? "table-row" : "none";
+	this._createRecoveryButtons("resendRecoveryEmailButton", ZmMsg.recoveryEmailButtonResend, true, isVisible,
+					"_handleResendRecoveryEmailButton", "_RESEND_RECOVERY_EMAIL");
+	this._createRecoveryButtons("validateRecoveryEmailButton", ZmMsg.recoveryEmailButtonValidate, false, isVisible,
+					"_handleValidateRecoveryEmailButton", "_VALIDATE_RECOVERY_EMAIL");
+
+	this._setAccountPasswordControls(this.recoveryEmailStatus);
+
+/* keep only for attribute tests
+	this.myAcct = appCtxt.getActiveAccount();
+	this.userAccount = new ZmZimbraAccount(this.myAcct.id, this.myAcct.name, true);
+	console.log("ZMZIMBRAACCOUNT: ", this.userAccount);
+ */
+};
+
+ZmAccountsPage.prototype._createRecoveryButtons =
+function(ide, text, enabled, visible, listener, div) {
+	var button, buttonDiv = document.getElementById(this._htmlElId + div);
+	if(buttonDiv) {
+		button = new DwtButton({parent: this, id: ide});
+		button.setText(text);
+		button.setEnabled(enabled);
+		button.setVisible(visible);
+		button.addSelectionListener(new AjxListener(this, this[listener]));
+		button.replaceElement(buttonDiv);
+		this[ide] = button;
+	}
+};
 
 ZmAccountsPage.prototype.getGrantRightsDlg =
 function(callback) {
@@ -794,19 +1034,6 @@ function() {
 	}
 };
 
-ZmAccountsPage.prototype.setAccountPasswordRecovery =
-function() {
-    var addRecoveryEmailButtonDiv = document.getElementById(this._htmlElId+"_ADD_RECOVERY_EMAIL");
-	if (addRecoveryEmailButtonDiv) {
-		var button = new DwtButton({parent:this, id:"addRecoveryEmailBtn"});
-		button.setText("Add Recovery Email"); //button.setText(ZmMsg.addRecoveryEmail);
-		button.setEnabled(true);
-		button.addSelectionListener(new AjxListener(this, this._handleAddRecoveryEmailButton));
-		button.replaceElement(addRecoveryEmailButtonDiv);
-		this.addRecoveryEmailButton = button;
-	}
-}
-
 ZmAccountsPage.prototype.setAccountDelegates =
 function() {
     var delegatesEl =   document.getElementById(this._htmlElId+"_DELEGATE_RIGHTS");
@@ -1017,8 +1244,8 @@ function(useDefaults) {
 		var persona = new ZmPersona(identity);
 		this._accounts.add(ZmAccountsPage.__createProxy(persona), null, true);
 	}
-    var signatureLinkElement = Dwt.getElement(this._htmlElId + "_External_Signatures_Link");
-    Dwt.setHandler(signatureLinkElement, DwtEvent.ONCLICK, function(){skin.gotoPrefs("SIGNATURES")});
+	var signatureLinkElement = Dwt.getElement(this._htmlElId + "_External_Signatures_Link");
+	Dwt.setHandler(signatureLinkElement, DwtEvent.ONCLICK, function(){skin.gotoPrefs("SIGNATURES")});
 	// initialize list view
 	this._accounts.sort(ZmAccountsPage.__ACCOUNT_COMPARATOR);
 	var account = this._accounts.get(0);

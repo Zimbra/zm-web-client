@@ -1089,10 +1089,74 @@ and the container element is replaced with that control.
 						<tr><td colspan=2><hr></td></tr>
 					<$ // } $>
 
-					<$ if (appCtxt.get(ZmSetting.RESET_PASSWORD_ENABLED)) { $>
+					<$ if (appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS)) { $>
 						<tr>
-							<td class='ZOptionsLabel'>RESET IS ENABLED!!!</td>
-							<td><button id='${id}_ADD_RECOVERY_EMAIL' tabindex=0>Add Recovery Email</button></td>
+							<td style='text-align:left' colspan=2>
+								<b><$=ZmMsg.recoveryEmailPrefTitle$></b>
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td>
+								<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+									<tr>
+										<td class='DwtListView-Column'><div style='padding-left:6px; padding-right:6px; color: #727272'>Account</div></td>
+										<td class='DwtListView-Column'><div style='padding-left:6px; padding-right:6px; color: #727272; width: 200px;'>Status</div></td>
+									</tr>
+									<tr>
+										<td class='DwtListView-Rows'><div id='${id}_RECOVERY_ACCOUNT_DETAIL' style='padding-left:6px; padding-right:6px'></div></td>
+										<td class='DwtListView-Rows'><div id='${id}_RECOVERY_ACCOUNT_STATUS' style='padding-left:6px; padding-right:6px'></div></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td id='${id}_RECOVERY_MESSAGE' style='text-align:left'></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td id='${id}_RECOVERY_ERROR_MESSAGE' style='text-align:left; color: red'></td>
+						</tr>
+						<tr id='${id}_RECOVERY_ACCOUNT_TR'>
+							<td class="Label" style="padding-right:10px; text-align: right"><$=ZmMsg.emailLabel$></td>
+							<td class='ZOptionsField'>
+								<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+									<tr>
+										<td class='ZOptionsField'>
+											<input id='${id}_RECOVERY_ACCOUNT' style='width: 200px' tabindex=0>
+										</td>
+										<td>
+											<button id='${id}_ADD_RECOVERY_EMAIL' tabindex=0></button>
+										</td>
+										<td width="100%"></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr id='${id}_RECOVERY_CODE_TR'>
+							<td class="Label" style="padding-right:10px; text-align: right"><$=ZmMsg.recoveryEmailCodeLabel$></td>
+							<td class='ZOptionsField'>
+								<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+									<tr>
+										<td class='ZOptionsField'>
+											<input id='${id}_RECOVERY_CODE' style='width: 200px' tabindex=0>
+										</td>
+										<td>
+											<button id='${id}_VALIDATE_RECOVERY_EMAIL' tabindex=0></button>
+										</td>
+										<td width="100%"></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td id='${id}_RECOVERY_OPTIONS_TITLE' class='ZOptionsLabel' style='font-weight: normal'></td>
+							<td style='float: left'>
+								<button id='${id}_RESET_RECOVERY_EMAIL' style='float: left' tabindex=0></button>
+								<button id='${id}_RESEND_RECOVERY_EMAIL' style='float: left; margin-left: 5px' tabindex=0></button>
+							</td>
+						</tr>
 						<tr><td colspan=2><hr></td></tr>
 					<$ } $>
 					<tr>
@@ -2216,35 +2280,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</tr>
 </template>
 -->
-<template id='prefs.Pages#SetupRecoveryEmail'>
-	<table role="presentation">
-		<tr id='${id}_name_row'>
-			<td class="Label" style="padding-right:10px"><$=ZmMsg.emailLabel$></td>
-			<td id="${id}_name_cell_recovery">
-			</td>
-		</tr>
-		<tr>
-			<td class="Label">&nbsp;</td>
-			<td>
-				<table role="presentation">
-					<!-- 
-					<tr>
-						<td><input type="checkbox" id='${id}_sendAs'></td>
-						<td><label class="Text" for='${id}_sendAs'
-							style="text-align:left"><$=ZmMsg.sendAs$></label></td>
-					</tr>
-					<tr>
-						<td><input type="checkbox" id='${id}_sendObo'></td>
-						<td><label class="Text" for='${id}_sendObo'
-							style="text-align:left"><$=ZmMsg.sendOnBehalfOflbl$></label></td>
-					</tr>
-					-->
-				</table>
-			</td>
-		</tr>
-	</table>
-</template>
-
 <template id='prefs.Pages#GrantRightsDialog'>
 	<table role="presentation">
 		<tr id='${id}_name_row'>
@@ -2520,3 +2555,4 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</div>
     </div>
 </template>
+
