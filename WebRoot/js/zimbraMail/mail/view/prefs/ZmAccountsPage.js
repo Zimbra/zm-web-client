@@ -320,9 +320,14 @@ function(params) {
 
 /*
  * Recovery Account Section
- *
  */
 
+/*
+ * Validate Button's Listener.
+ *
+ * Validate code input through the SetRecoveryAccountRequest API Method.
+ *
+ */
 ZmAccountsPage.prototype._handleValidateRecoveryEmailButton =
 	function() {
 	var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
@@ -332,18 +337,35 @@ ZmAccountsPage.prototype._handleValidateRecoveryEmailButton =
 	this.recoveryErrorMessage.innerHTML = "";
 	soapDoc.setMethodAttribute("op", "validateCode");
 	soapDoc.setMethodAttribute("recoveryAccountVerificationCode", this.recoveryCodeInputField.getValue());
-	//appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errorCallback});
 	batchCmd.addNewRequestParams(soapDoc, callback, errorCallback);
 	batchCmd.run();
 };
 
+/*
+ * Validate listener callback method.
+ *
+ * Expecting a blank response so the callback acts as confirmation that the code is verified.
+ * Clear the code input field, reset the button, update controls based on "verified" status.
+ *
+ * @param {object} response The response object.
+ */
 ZmAccountsPage.prototype._recoveryValidateRequest =
-function(result) {
-	this.recoveryCodeInputField.setValue("", true);
-	this.validateRecoveryEmailButton.setEnabled(false);
-	this._setAccountPasswordControls("verified");
+function(response) {
+	if(!response._isException) {
+		this.recoveryCodeInputField.setValue("", true);
+		this.validateRecoveryEmailButton.setEnabled(false);
+		this._setAccountPasswordControls("verified");
+	} else {
+		this._recoveryErrorCallback({code: "Unknown", msg: "Unknown Error: " + ZmMsg.unknownError});
+	}
 };
 
+/*
+ * Reset Button's Listener.
+ *
+ * Reset code and email input through the SetRecoveryAccountRequest API Method.
+ *
+ */
 ZmAccountsPage.prototype._handleResetRecoveryEmailButton =
 	function() {
 	var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
@@ -354,17 +376,37 @@ ZmAccountsPage.prototype._handleResetRecoveryEmailButton =
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errorCallback});
 };
 
+/*
+ * Reset listener callback method.
+ *
+ * Expecting a blank response so the callback acts as confirmation that the code and email has been reset.
+ * Clear the code and email input fields, reset the buttons, update controls based on "null" status.
+ *
+ * @TODO use this.recoveryCodeValidity to manage code verification
+ * @TODO use this.recoveryResetExpiry to enable / disable reset button - might need a timer?
+ * @param {object} response The response object.
+ */
 ZmAccountsPage.prototype._recoveryResetRequest =
-function(result) {
-	this.recoveryCodeInputField.setValue("", true);
-	this.validateRecoveryEmailButton.setEnabled(false);
-	this.recoveryAccountInputField.setValue("", true);
-	this.addRecoveryEmailButton.setEnabled(false);
-	this._setAccountPasswordControls("Not Set");
+function(response) {
+	if(!response._isException) {
+		this.recoveryCodeInputField.setValue("", true);
+		this.validateRecoveryEmailButton.setEnabled(false);
+		this.recoveryAccountInputField.setValue("", true);
+		this.addRecoveryEmailButton.setEnabled(false);
+		this._setAccountPasswordControls("Not Set");
+	} else {
+		this._recoveryErrorCallback({code: "Unknown", msg: "Unknown Error: " + ZmMsg.unknownError});
+	}
 };
 
+/*
+ * Resend Button's Listener.
+ *
+ * Resend code input through the SetRecoveryAccountRequest API Method.
+ *
+ */
 ZmAccountsPage.prototype._handleResendRecoveryEmailButton =
-	function() {
+function() {
 	var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
 	var callback = this._recoveryResendRequest.bind(this);
 	var errorCallback = this._recoveryErrorCallback.bind(this);
@@ -374,53 +416,99 @@ ZmAccountsPage.prototype._handleResendRecoveryEmailButton =
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errorCallback});
 };
 
+/*
+ * Resend listener callback method.
+ *
+ * Expecting a blank response so the callback acts as confirmation that the code has been resent.
+ * Uupdate controls based on "pending" status.
+ *
+ * @TODO use this.recoveryCodeValidity to manage code verification
+ * @TODO use this.recoveryMaxAttempts to limit resends.
+ * @param {object} response The response object.
+ */
 ZmAccountsPage.prototype._recoveryResendRequest =
-function(result) {
-	this._setAccountPasswordControls("pending");
+function(response) {
+	if(!response._isException) {
+		this._setAccountPasswordControls("pending");
+	} else {
+		this._recoveryErrorCallback({code: "Unknown", msg: "Unknown Error: " + ZmMsg.unknownError});
+	}
 };
 
+/*
+ * Add Button's Listener.
+ *
+ * Add email input through the SetRecoveryAccountRequest API Method.
+ *
+ */
 ZmAccountsPage.prototype._handleAddRecoveryEmailButton =
 function() {
 	var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
 	var batchCmd = new ZmBatchCommand(true, appCtxt.accountList.mainAccount.name);
-	var callback = this._recoveryRequest.bind(this);
+	var callback = this._recoveryAddRequest.bind(this);
 	var errorCallback = this._recoveryErrorCallback.bind(this);
 	this.recoveryErrorMessage.innerHTML = "";
 	this.currentPasswordRecoveryValue = this.recoveryAccountInputField.getValue();
 	soapDoc.setMethodAttribute("op", "sendCode");
 	soapDoc.setMethodAttribute("recoveryAccount", this.currentPasswordRecoveryValue);
-	//appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errorCallback});
 	batchCmd.addNewRequestParams(soapDoc, callback, errorCallback);
 	batchCmd.run();
 };
 
-ZmAccountsPage.prototype._recoveryRequest =
-function(result) {
-	this.recoveryAccountInputField.setValue("", true);
-	this.addRecoveryEmailButton.setEnabled(false);
-	this._setAccountPasswordControls("pending");
+/*
+ * Add listener callback method.
+ *
+ * Expecting a blank response so the callback acts as confirmation that the email was submitted and in pending state.
+ * Clear the email input field, reset the buttons, update controls based on "pending" status.
+ *
+ * @TODO use this.recoveryCodeValidity to manage code verification
+ * @param {object} response The response object.
+ */
+ZmAccountsPage.prototype._recoveryAddRequest =
+function(response) {
+	if(!response._isException) {
+		this.recoveryAccountInputField.setValue("", true);
+		this.addRecoveryEmailButton.setEnabled(false);
+		this._setAccountPasswordControls("pending");
+	} else {
+		this._recoveryErrorCallback({code: "Unknown", msg: "Unknown Error: " + ZmMsg.unknownError});
+	}
 };
 
+/*
+ * Recovery Error callback method.
+ *
+ * Response object will have a code and msg value to work with.
+ * Determine message to display and update the error message div.
+ *
+ * @param {object} response The response object.
+ */
 ZmAccountsPage.prototype._recoveryErrorCallback =
-function(result) {
-	var message;
-	message = result.msg; // temporary
-	/*
-	 * TBD
-	switch(result.code) {
-		case "mail.SEND_ABORTED_ADDRESS_FAILURE": {
-			message = ZmMsg.invalidEmailAddress ;
-			break;
-		}
-		default: {
-			message = "An unknown error has occured.";
-			break;
-		}
+function(response) {
+	var message = response.msg;
+	var code = response.code;
+	// Simplify the message to description - usually the first colon is the error prefix
+	var messageBeginning = message.indexOf(": ") + 2;
+	message = message.substring(messageBeginning);
+	// because one particlar exception message is long, check the code and change the message.
+	if(code === "mail.SEND_ABORTED_ADDRESS_FAILURE") {
+		message = ZmMsg.invalidEmailAddress ;
 	}
-	*/
 	this.recoveryErrorMessage.innerHTML = message;
 };
 
+/*
+ * Method to update all Password Recovery elements.
+ *
+ * Based on the satus of the recovery email address, change the ui to fit the expected flow.
+ *
+ * @TODO use this.recoveryCodeValidity to manage code verification
+ * @TODO use this.recoveryResetExpiry to enable / disable reset button - might need a timer?
+ * @TODO use this.recoveryResetSuspendTime to enable / disable reset button - might need a timer?
+ * @TODO use this.recoveryMaxAttempts to limit resends.
+ * @TODO Possibly remove this.recoveryEmailStatus if variable is no longer being used in multiple methods
+ * @param {string} status pending || verified || null / other
+ */
 ZmAccountsPage.prototype._setAccountPasswordControls =
 function(status) {
 	this.recoveryEmailStatus = status;
@@ -465,17 +553,14 @@ function(status) {
 	this.recoveryStatusDiv.innerHTML = this.recoveryEmailStatus;
 };
 
-ZmAccountsPage.prototype._getRecoverySettings =
-function() {
-	var myRecoveryEmail = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL);
-	var myRecoveryEmailStatus = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS);
-//	var fullset = appCtxt.getSettings(this.userAccount);
-//	console.log("SETTINGSS: ", fullset);
-};
-
+/*
+ * Add Email Input's Keyup Listener.
+ *
+ * Keyup handler to enable the add button once the input is considered valid.
+ *
+ */
 ZmAccountsPage.prototype._handleRecoveryEmailInput =
 function(result) {
-//	var patt = /^(.*?)(?:@(.*))?$/;
 	var patt = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	var validEmail = patt.test(result.target.value);
 	if(validEmail) {
@@ -485,91 +570,142 @@ function(result) {
 	}
 };
 
+/*
+ * Validate Code Input's Keyup Listener.
+ *
+ * Keyup handler to enable the validate button once the input is considered valid.
+ *
+ * @TODO use this.recoveryCodeValidity to manage code verification
+ */
 ZmAccountsPage.prototype._handleRecoveryCodeInput =
 function(result) {
 	var codeLength = result.target.value.length;
-	if(codeLength === 6) {
+	if(codeLength >= 4) {
 		this.validateRecoveryEmailButton.setEnabled(true);
 	} else {
 		this.validateRecoveryEmailButton.setEnabled(false);
 	}
 };
 
+/**
+ * Initiate the Account Password Recovery Preference section.
+ *
+ * Grab and set all related ui elements and set their state. Create buttons and input fields with respective listeners.
+ * Use any ZmSettings applicable to determine the initial state.
+ *
+ * @TODO use this.recoveryCodeValidity to manage code verification
+ * @TODO use this.recoveryResetExpiry to enable / disable reset button - might need a timer?
+ * @TODO use this.recoveryResetSuspendTime to enable / disable reset button - might need a timer?
+ */
 ZmAccountsPage.prototype.setAccountPasswordRecovery =
 function() {
-	var isVisible = true;
 	var optionsTitle = document.getElementById(this._htmlElId + "_RECOVERY_OPTIONS_TITLE");
 	var addRecoveryEmailInputContainer = document.getElementById(this._htmlElId + "_RECOVERY_ACCOUNT_TR");
 	var codeRecoveryEmailInputContainer = document.getElementById(this._htmlElId + "_RECOVERY_CODE_TR");
 	var recoveryAccountInput = document.getElementById(this._htmlElId + "_RECOVERY_ACCOUNT");
 	var recoveryCodeInput = document.getElementById(this._htmlElId + "_RECOVERY_CODE");
-	var myInput;
+
+	// Add critical elements
 	if (addRecoveryEmailInputContainer && recoveryAccountInput && codeRecoveryEmailInputContainer && recoveryCodeInput) {
 		this.recoveryOptionsTitle = optionsTitle;
 		this.addRecoveryEmailInputContainer = addRecoveryEmailInputContainer;
 		this.codeRecoveryEmailInputContainer = codeRecoveryEmailInputContainer;
-		myInput = new DwtInputField({parent: this, id: "recoveryAccountInputField", type: "text", initialValue: "" });
-		myInput.setEnabled(true);
-		myInput.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleRecoveryEmailInput));
-		myInput.replaceElement(recoveryAccountInput);
-		this.recoveryAccountInputField = myInput;
-		myInput = new DwtInputField({parent: this, id: "recoveryCodeInputField", type: "text", initialValue: "" });
-		myInput.setEnabled(true);
-		myInput.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleRecoveryCodeInput));
-		myInput.replaceElement(recoveryCodeInput);
-		this.recoveryCodeInputField = myInput;
+		// create dwt input fields
+		this._createRecoveryInputFields("recoveryAccountInputField", "text", "", true, "_RECOVERY_ACCOUNT", "_handleRecoveryEmailInput");
+		this._createRecoveryInputFields("recoveryCodeInputField", "text", "", true, "_RECOVERY_CODE", "_handleRecoveryCodeInput");
 	} else {
 		return;
 	}
+
+	// Add additional non-critical elements
 	this.recoveryDetailDiv = document.getElementById(this._htmlElId + "_RECOVERY_ACCOUNT_DETAIL");
 	this.recoveryStatusDiv = document.getElementById(this._htmlElId + "_RECOVERY_ACCOUNT_STATUS");
 	this.recoveryMessage = document.getElementById(this._htmlElId + "_RECOVERY_MESSAGE");
 	this.recoveryErrorMessage = document.getElementById(this._htmlElId + "_RECOVERY_ERROR_MESSAGE");
+
+	// Get ZmSettings
 	this.recoveryEmail = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) ? appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) : "";
 	this.recoveryEmailStatus = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) ? appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) : "Not Set";
 
-	this.reoveryCodeValidity = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_CODE_VALIDITY);
+	/*
+	 * The following values are returning null
+	this.recoveryCodeValidity = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_CODE_VALIDITY);
 	this.recoveryMaxAttempts = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_MAX_ATTEMPTS);
 	this.recoveryResetSuspendTime = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_RESET_SUSPEND_TIME);
 	this.recoveryResetExpiry = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_RESET_EXPIRY);
 
+	console.log("CVY: ", this.recoveryCodeValidity);
+	console.log("MAX: ", this.recoveryMaxAttempts);
+	console.log("SUS: ", this.recoveryResetSuspendTime);
+	console.log("EXP: ", this.recoveryResetExpiry);
+	*/
+
+	// Set a email input value between submits
 	this.currentPasswordRecoveryValue = this.recoveryEmail;
 
-	isVisible = (this.recoveryEmailStatus !== "verified" && this.recoveryEmailStatus !== "pending");
-	this.recoveryOptionsTitle.innerHTML = isVisible ? "" : ZmMsg.recoveryEmailOptionLabel;
-	this.addRecoveryEmailInputContainer.style.display = isVisible ? "table-row" : "none";
-	this._createRecoveryButtons("addRecoveryEmailButton", ZmMsg.recoveryEmailButtonAdd, false, isVisible,
-					"_handleAddRecoveryEmailButton", "_ADD_RECOVERY_EMAIL");
+	// Create buttons
+	this._createRecoveryButtons("addRecoveryEmailButton", ZmMsg.recoveryEmailButtonAdd, false, false,
+					"_ADD_RECOVERY_EMAIL", "_handleAddRecoveryEmailButton");
+	this._createRecoveryButtons("resetRecoveryEmailButton", ZmMsg.recoveryEmailButtonReset, true, false,
+					"_RESET_RECOVERY_EMAIL", "_handleResetRecoveryEmailButton");
+	this._createRecoveryButtons("resendRecoveryEmailButton", ZmMsg.recoveryEmailButtonResend, true, false,
+					"_RESEND_RECOVERY_EMAIL", "_handleResendRecoveryEmailButton");
+	this._createRecoveryButtons("validateRecoveryEmailButton", ZmMsg.recoveryEmailButtonValidate, false, false,
+					"_VALIDATE_RECOVERY_EMAIL", "_handleValidateRecoveryEmailButton");
 
-	isVisible = (this.recoveryEmailStatus === "verified" || this.recoveryEmailStatus === "pending");
-	this._createRecoveryButtons("resetRecoveryEmailButton", ZmMsg.recoveryEmailButtonReset, true, isVisible,
-					"_handleResetRecoveryEmailButton", "_RESET_RECOVERY_EMAIL");
-
-	isVisible = (this.recoveryEmailStatus === "pending");
-	this.codeRecoveryEmailInputContainer.style.display = isVisible ? "table-row" : "none";
-	this._createRecoveryButtons("resendRecoveryEmailButton", ZmMsg.recoveryEmailButtonResend, true, isVisible,
-					"_handleResendRecoveryEmailButton", "_RESEND_RECOVERY_EMAIL");
-	this._createRecoveryButtons("validateRecoveryEmailButton", ZmMsg.recoveryEmailButtonValidate, false, isVisible,
-					"_handleValidateRecoveryEmailButton", "_VALIDATE_RECOVERY_EMAIL");
-
+	// Pass this status through standard control method for additional settings.
 	this._setAccountPasswordControls(this.recoveryEmailStatus);
-
-/* keep only for attribute tests
-	this.myAcct = appCtxt.getActiveAccount();
-	this.userAccount = new ZmZimbraAccount(this.myAcct.id, this.myAcct.name, true);
-	console.log("ZMZIMBRAACCOUNT: ", this.userAccount);
- */
 };
 
+/*
+ * Create Recovery Input Field method.
+ *
+ * To reduce repetitive code, make a function that can build password recovery buttons with the desired params.
+ *
+ * @param {string}  ide         The name of the id for this input element.
+ * @param {string}  inputType   The type of input field.
+ * @param {string}  value       The initial value to show inthe field.
+ * @param {boolean} enabled     Boolean to enable / disable the button.
+ * @param {string}  divSuffix   The id from the template to grab.
+ * @param {string}  listener    The onclick method.
+ */
+ZmAccountsPage.prototype._createRecoveryInputFields =
+function(ide, inputType, value, enabled, divSuffix, keyupListener) {
+	var inputField, inputDiv = document.getElementById(this._htmlElId + divSuffix);
+	if(inputDiv) {
+		inputField = new DwtInputField({parent: this, id: ide, type: inputType, initialValue: value});
+		inputField.setEnabled(enabled);
+		if(keyupListener) {
+			inputField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this[keyupListener]));
+		}
+		inputField.replaceElement(inputDiv);
+		this[ide] = inputField;
+	}
+};
+
+/*
+ * Create Recovery Button method.
+ *
+ * To reduce repetitive code, make a function that can build password recovery buttons with the desired params.
+ *
+ * @param {string}  ide         The name of the id for this button element.
+ * @param {string}  text        The text that shows on the button.
+ * @param {boolean} enabled     Boolean to enable / disable the button.
+ * @param {boolean} visible     Boolean to show / hide the button.
+ * @param {string}  divSuffix   The id from the template to grab.
+ * @param {string}  listener    The onclick method.
+ */
 ZmAccountsPage.prototype._createRecoveryButtons =
-function(ide, text, enabled, visible, listener, div) {
-	var button, buttonDiv = document.getElementById(this._htmlElId + div);
+function(ide, text, enabled, visible, divSuffix, listener) {
+	var button, buttonDiv = document.getElementById(this._htmlElId + divSuffix);
 	if(buttonDiv) {
 		button = new DwtButton({parent: this, id: ide});
 		button.setText(text);
 		button.setEnabled(enabled);
 		button.setVisible(visible);
-		button.addSelectionListener(new AjxListener(this, this[listener]));
+		if(listener) {
+			button.addSelectionListener(new AjxListener(this, this[listener]));
+		}
 		button.replaceElement(buttonDiv);
 		this[ide] = button;
 	}
