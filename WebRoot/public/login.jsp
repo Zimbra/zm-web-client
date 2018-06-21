@@ -584,13 +584,22 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <input id="remember" value="1" type="checkbox" name="zrememberme" />
                                     <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label>
                                 </c:if>
-                                <script TYPE="text/javascript">
-                                    document.write("<a href='#' onclick='forgotPassword();' id='ZLoginForgotPassword' aria-controls='ZLoginForgotPassword' aria-expanded='false'><fmt:message key='forgotPassword'/></a>");
-                                </script>
-
                                 <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
                                 </td>
                                 </tr>
+<%--
+                                <c:set var="resetPasswordStatus" value="${domainInfo.attrs.zimbraFeatureResetPasswordStatus}"/>
+                                <c:if test="${resetPasswordStatus eq 'enabled'}">
+--%>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td class="submitTD">
+                                            <a href="#" onclick="forgotPassword();" id="ZLoginForgotPassword" style="text-decoration: underline; font-size: 11px; color: #fff; float: right"  aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
+                                        </td>
+                                    </tr>
+<%--
+                                </c:if>
+--%>
                             </c:otherwise>
                         </c:choose>
                         <c:if test="${empty param.virtualacctdomain}">

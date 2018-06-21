@@ -108,16 +108,17 @@ ZmPasswordRecoveryDialog.prototype._createControls = function() {
 	this._codeInput = Dwt.getElement(id + "_code_input");
 	this._passwordNewInput = Dwt.getElement(id + "_password_new_input");
 	this._passwordConfirmInput = Dwt.getElement(id + "_password_confirm_input");
-	var keyupHandler = this._handleKeyUp.bind(this);
-	var keyupResetHandler = this._handleResetKeyUp.bind(this);
-	Dwt.setHandler(this._accountInput, DwtEvent.ONKEYUP, keyupHandler);
-	Dwt.setHandler(this._accountInput, DwtEvent.ONINPUT, keyupHandler);
-	Dwt.setHandler(this._codeInput, DwtEvent.ONKEYUP, keyupHandler);
-	Dwt.setHandler(this._codeInput, DwtEvent.ONINPUT, keyupHandler);
-	Dwt.setHandler(this._passwordNewInput, DwtEvent.ONKEYUP, keyupResetHandler);
-	Dwt.setHandler(this._passwordNewInput, DwtEvent.ONINPUT, keyupResetHandler);
-	Dwt.setHandler(this._passwordConfirmInput, DwtEvent.ONKEYUP, keyupResetHandler);
-	Dwt.setHandler(this._passwordConfirmInput, DwtEvent.ONINPUT, keyupResetHandler);
+	var accountKeyupHandler = this._accountHandleKeyUp.bind(this);
+	var codeKeyupHandler = this._codeHandleKeyUp.bind(this);
+	var resetKeyupHandler = this._resetHandleKeyUp.bind(this);
+	Dwt.setHandler(this._accountInput, DwtEvent.ONKEYUP, accountKeyupHandler);
+	Dwt.setHandler(this._accountInput, DwtEvent.ONINPUT, accountKeyupHandler);
+	Dwt.setHandler(this._codeInput, DwtEvent.ONKEYUP, codeKeyupHandler);
+	Dwt.setHandler(this._codeInput, DwtEvent.ONINPUT, codeKeyupHandler);
+	Dwt.setHandler(this._passwordNewInput, DwtEvent.ONKEYUP, resetKeyupHandler);
+	Dwt.setHandler(this._passwordNewInput, DwtEvent.ONINPUT, resetKeyupHandler);
+	Dwt.setHandler(this._passwordConfirmInput, DwtEvent.ONKEYUP, resetKeyupHandler);
+	Dwt.setHandler(this._passwordConfirmInput, DwtEvent.ONINPUT, resetKeyupHandler);
 	cancelbutton.setText(ZmMsg.passwordRecoveryButtonCancel);
 	this.setButtonEnabled(ZmPasswordRecoveryDialog.BEGIN_SETUP_BUTTON, false);
 };
@@ -128,7 +129,7 @@ ZmPasswordRecoveryDialog.prototype._createControls = function() {
 * @return An array of the input fields to be reset
 */
 ZmPasswordRecoveryDialog.prototype._getInputFields = function() {
-	return [this._accountInput, this._codeInput];
+	return [this._accountInput, this._codeInput, this._passwordNewInput, this._passwordConfirmInput];
 };
 
 /**
@@ -166,6 +167,9 @@ ZmPasswordRecoveryDialog.prototype._beginSetupButtonListener = function() {
 	var currentDivId = this._divIdArray[this._divIdArrayIndex];
 	Dwt.hide(this._getRecoveryAccountDivId);
 	Dwt.show(this._requestCodeDivId);
+	this._verifyEmail(currentDivId);
+	//	return;
+	// the items below would normally be set after the callback - to know where it will be in the view.
 	this.setButtonVisible(ZmPasswordRecoveryDialog.BEGIN_SETUP_BUTTON, false);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.PREVIOUS_BUTTON, true);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.NEXT_BUTTON, true);
@@ -233,18 +237,30 @@ ZmPasswordRecoveryDialog.prototype._cancelButtonListener = function() {
 	location.replace(location.origin);
 };
 
-ZmPasswordRecoveryDialog.prototype._handleKeyUp = function(ev) {
+ZmPasswordRecoveryDialog.prototype._accountHandleKeyUp = function(ev) {
 	var firstInputPattern = new RegExp("_account_input");
-	var targetIsAccountInput = firstInputPattern.test(ev.target.id);
-	var value = ev && ev.target && ev.target.value && ev.target.value.length;
+	var targetIsAccountInput = firstInputPattern.test(ev.target.id); // {id}_account_input 
+	var value = ev && ev.target && ev.target.value && ev.target.value.length; // value: length, ev.target.value: input value
+	var emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	var validEmail = emailPattern.test(ev.target.value); // email boolean
+	var valueValid = value && validEmail; // account and email boolean
+
 	if (targetIsAccountInput) {
-		this.setButtonEnabled(ZmPasswordRecoveryDialog.BEGIN_SETUP_BUTTON, !!value);
-	} else {
+		this.setButtonEnabled(ZmPasswordRecoveryDialog.BEGIN_SETUP_BUTTON, !!valueValid);
+	}
+};
+
+ZmPasswordRecoveryDialog.prototype._codeHandleKeyUp = function(ev) {
+	var firstInputPattern = new RegExp("_code_input");
+	var targetIsAccountInput = firstInputPattern.test(ev.target.id); // {id}_account_input 
+	var value = ev && ev.target && ev.target.value && ev.target.value.length; // value: length, ev.target.value: input value
+
+	if (targetIsAccountInput) {
 		this.setButtonEnabled(ZmPasswordRecoveryDialog.NEXT_BUTTON, !!value);
 	}
 };
 
-ZmPasswordRecoveryDialog.prototype._handleResetKeyUp = function(ev) {
+ZmPasswordRecoveryDialog.prototype._resetHandleKeyUp = function(ev) {
 	var firstInputPattern = new RegExp("_password_new_input");
 	var targetIsNewPasswordInput = firstInputPattern.test(ev.target.id);
 	var value = ev && ev.target && ev.target.value && ev.target.value.length;
@@ -259,6 +275,7 @@ ZmPasswordRecoveryDialog.prototype._handleResetKeyUp = function(ev) {
 
 ZmPasswordRecoveryDialog.prototype._codeInputCheck = function() {
 	var codeInput = this._codeInput.value;
+	console.log("codeInput: ", codeInput);
 	this.setButtonEnabled(ZmPasswordRecoveryDialog.NEXT_BUTTON, !!codeInput);
 };
 
@@ -274,4 +291,34 @@ ZmPasswordRecoveryDialog.prototype._passwordResetCheck = function() {
 ZmPasswordRecoveryDialog.prototype.preventContextMenu = function() {
 	return false;
 };
+
+/**
+ * Sends first EnableTwoFactorAuthRequest with username and password
+ * Sends second EnableTwoFactorAuthRequest with username, temporary authToken and twoFactorCode
+*/
+ZmPasswordRecoveryDialog.prototype._verifyEmail =
+function(currentDivId) {
+	console.log("currentDivId: ", currentDivId);
+	// get email input
+	console.log("input: ", this._accountInput.value);
+};
+
+ZmPasswordRecoveryDialog.prototype._verifyEmailCallback =
+function(currentDivId, result) {
+	console.log("currentDivId: ", currentDivId);
+	console.log("result: ", result);
+	if (!result || result.isException()) {
+		console.log("no result or theres an exception");
+	}
+	else {
+		var response = result.getResponse();
+		/*
+		if (!response || !response.Body || !response.Body.EnableTwoFactorAuthResponse) {
+			this._handleVerifyEmailError(currentDivId);
+			return;
+		}
+		*/
+	}
+};
+
 
