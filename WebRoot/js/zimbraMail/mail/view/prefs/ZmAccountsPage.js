@@ -551,6 +551,7 @@ function(status) {
  *
  * Keyup handler to enable the add button once the input is considered valid.
  *
+ * @param {object} result   The Keyup event information from the input object that dispatched the event.
  */
 ZmAccountsPage.prototype._handleRecoveryEmailInput =
 function(result) {
@@ -566,6 +567,7 @@ function(result) {
  *
  * Keyup handler to enable the validate button once the input is considered valid.
  *
+ * @param {object} result   The Keyup event information from the input object that dispatched the event.
  */
 ZmAccountsPage.prototype._handleRecoveryCodeInput =
 function(result) {
