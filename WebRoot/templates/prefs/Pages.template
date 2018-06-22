@@ -1005,7 +1005,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField' valign='middle'><$=ZmMsg.manageSignatures$></td>
 					</tr>
 					<tr><td colspan=2><hr></td></tr>
-					<$ // if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE)) { $>
+					<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE)) { $>
 						<tr valign=top>
 							<td class='ZOptionsLabel'><$=ZmMsg.twoStepAccountSecurity$></td>
 							<td class='ZOptionsField' valign='middle'>
@@ -1087,7 +1087,7 @@ and the container element is replaced with that control.
 							 </td>
 						</tr>
 						<tr><td colspan=2><hr></td></tr>
-					<$ // } $>
+					<$ } $>
 
 					<$ if (appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS)) { $>
 						<tr>
@@ -1100,8 +1100,8 @@ and the container element is replaced with that control.
 							<td>
 								<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 									<tr>
-										<td class='DwtListView-Column'><div style='padding-left:6px; padding-right:6px; color: #727272'>Account</div></td>
-										<td class='DwtListView-Column'><div style='padding-left:6px; padding-right:6px; color: #727272; width: 200px;'>Status</div></td>
+										<td class='DwtListView-Column'><div style='padding-left:6px; padding-right:6px; color: #727272'><$=ZmMsg.account$></div></td>
+										<td class='DwtListView-Column'><div style='padding-left:6px; padding-right:6px; color: #727272; width: 200px;'><$=ZmMsg.status$></div></td>
 									</tr>
 									<tr>
 										<td class='DwtListView-Rows'><div id='${id}_RECOVERY_ACCOUNT_DETAIL' style='padding-left:6px; padding-right:6px'></div></td>
@@ -1159,6 +1159,7 @@ and the container element is replaced with that control.
 						</tr>
 						<tr><td colspan=2><hr></td></tr>
 					<$ } $>
+
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.delegatesLabel$></td>
 						<td style='text-align:left'><$=ZmMsg.delegateRightsPrompt$></td></tr>
