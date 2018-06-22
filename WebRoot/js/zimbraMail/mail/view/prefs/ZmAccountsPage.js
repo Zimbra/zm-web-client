@@ -554,8 +554,6 @@ function(status) {
  */
 ZmAccountsPage.prototype._handleRecoveryEmailInput =
 function(result) {
-	//var patt = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	//var validEmail = patt.test(result.target.value);
 	if (result.target && result.target.value && AjxEmailAddress.isValid(result.target.value)) {
 		this.addRecoveryEmailButton.setEnabled(true);
 	} else {
