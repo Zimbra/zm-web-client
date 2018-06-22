@@ -730,12 +730,12 @@
 			<div class="ZmTwoFactorSetupContainer">
 				<div id='${id}_account_input_error' style="display:none;margin-left:163px;" class="ZmTwoFactorSetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></div>
 				<label for="${id}_account_input"><$=ZmMsg.passwordRecoveryAccountLabel$></label>
-				<input type="text" id="${id}_account_input" autocomplete="off"/>
+				<input type="text" id="${id}_account_input" size="35" autocomplete="off"/>
 			</div>
 		</div>
 		<div id='${id}_request_code'>
 			<h4><$=ZmMsg.passwordRecoveryCodeRequestTitle$></h4>
-			<p><$=ZmMsg.passwordRecoveryCodeRequestDescription$> "<span>${accountInput}</span>".</p>
+			<p id='${id}_request_code_description'>TEST</p>
 		</div>
 		<div id='${id}_validate_code'>
 			<h4><$=ZmMsg.passwordRecoveryCodeValidationTitle$></h4>
@@ -743,7 +743,7 @@
 			<div class="ZmTwoFactorSetupContainer">
 				<div id='${id}_validate_code_error' style="display:none;margin-left:163px;" class="ZmTwoFactorSetupError"><$=ZmMsg.passwordRecoveryCodeValidationError$></div>
 				<label for="${id}_code_input"><$=ZmMsg.passwordRecoveryCodeLabel$> : </label>
-				<input type="text" id="${id}_code_input" autocomplete="off"/>
+				<input type="text" id="${id}_code_input" size="35" autocomplete="off"/>
 			</div>
 		</div>
 		<div id='${id}_code_success'>
@@ -761,9 +761,9 @@
 			</div>
 			<div class="ZmTwoFactorSetupContainer">
 				<label for="${id}_password_new_input"><$=ZmMsg.passwordRecoveryResetNewLabel$></label>
-				<input type="password" id="${id}_password_new_input" autocomplete="off"/><br />
+				<input type="password" id="${id}_password_new_input" size="35" autocomplete="off"/><br />
 				<label for="${id}_password_confirm_input"><$=ZmMsg.passwordRecoveryResetConfirmLabel$></label>
-				<input type="password" id="${id}_password_confirm_input" autocomplete="off"/>
+				<input type="password" id="${id}_password_confirm_input" size="35" autocomplete="off"/>
 			</div>
 		</div>
 		<div id='${id}_password_reset_success'>
