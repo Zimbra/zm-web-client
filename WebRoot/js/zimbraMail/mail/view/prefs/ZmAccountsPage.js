@@ -318,11 +318,11 @@ function(params) {
 	this._oneTimeCodesDialog.popup();
 };
 
-/*
+/**
  * Recovery Account Section
  */
 
-/*
+/**
  * Validate Button's Listener.
  *
  * Validate code input through the SetRecoveryAccountRequest API Method.
@@ -331,17 +331,15 @@ function(params) {
 ZmAccountsPage.prototype._handleValidateRecoveryEmailButton =
 	function() {
 	var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
-	var batchCmd = new ZmBatchCommand(true, appCtxt.accountList.mainAccount.name);
 	var callback = this._recoveryValidateRequest.bind(this);
 	var errorCallback = this._recoveryErrorCallback.bind(this);
 	this.recoveryErrorMessage.innerHTML = "";
 	soapDoc.setMethodAttribute("op", "validateCode");
 	soapDoc.setMethodAttribute("recoveryAccountVerificationCode", this.recoveryCodeInputField.getValue());
-	batchCmd.addNewRequestParams(soapDoc, callback, errorCallback);
-	batchCmd.run();
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errorCallback});
 };
 
-/*
+/**
  * Validate listener callback method.
  *
  * Expecting a blank response so the callback acts as confirmation that the code is verified.
@@ -351,23 +349,24 @@ ZmAccountsPage.prototype._handleValidateRecoveryEmailButton =
  */
 ZmAccountsPage.prototype._recoveryValidateRequest =
 function(response) {
-	if(!response._isException) {
+	this.recoveryCodeInputField.setValue("", true);
+	if (!response._isException) {
 		this.recoveryCodeInputField.setValue("", true);
 		this.validateRecoveryEmailButton.setEnabled(false);
-		this._setAccountPasswordControls("verified");
+		this._setAccountPasswordControls(this.RECOVERY_EMAIL_STATUS.verified);
 	} else {
 		this._recoveryErrorCallback({code: "Unknown", msg: "Unknown Error: " + ZmMsg.unknownError});
 	}
 };
 
-/*
+/**
  * Reset Button's Listener.
  *
  * Reset code and email input through the SetRecoveryAccountRequest API Method.
  *
  */
 ZmAccountsPage.prototype._handleResetRecoveryEmailButton =
-	function() {
+function() {
 	var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
 	var callback = this._recoveryResetRequest.bind(this);
 	var errorCallback = this._recoveryErrorCallback.bind(this);
@@ -376,7 +375,7 @@ ZmAccountsPage.prototype._handleResetRecoveryEmailButton =
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errorCallback});
 };
 
-/*
+/**
  * Reset listener callback method.
  *
  * Expecting a blank response so the callback acts as confirmation that the code and email has been reset.
@@ -388,7 +387,7 @@ ZmAccountsPage.prototype._handleResetRecoveryEmailButton =
  */
 ZmAccountsPage.prototype._recoveryResetRequest =
 function(response) {
-	if(!response._isException) {
+	if (!response._isException) {
 		this.recoveryCodeInputField.setValue("", true);
 		this.validateRecoveryEmailButton.setEnabled(false);
 		this.recoveryAccountInputField.setValue("", true);
@@ -399,7 +398,7 @@ function(response) {
 	}
 };
 
-/*
+/**
  * Resend Button's Listener.
  *
  * Resend code input through the SetRecoveryAccountRequest API Method.
@@ -416,26 +415,24 @@ function() {
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errorCallback});
 };
 
-/*
+/**
  * Resend listener callback method.
  *
  * Expecting a blank response so the callback acts as confirmation that the code has been resent.
  * Uupdate controls based on "pending" status.
  *
- * @TODO use this.recoveryCodeValidity to manage code verification
- * @TODO use this.recoveryMaxAttempts to limit resends.
  * @param {object} response The response object.
  */
 ZmAccountsPage.prototype._recoveryResendRequest =
 function(response) {
-	if(!response._isException) {
-		this._setAccountPasswordControls("pending");
+	if (!response._isException) {
+		this._setAccountPasswordControls(this.RECOVERY_EMAIL_STATUS.pending);
 	} else {
 		this._recoveryErrorCallback({code: "Unknown", msg: "Unknown Error: " + ZmMsg.unknownError});
 	}
 };
 
-/*
+/**
  * Add Button's Listener.
  *
  * Add email input through the SetRecoveryAccountRequest API Method.
@@ -444,38 +441,35 @@ function(response) {
 ZmAccountsPage.prototype._handleAddRecoveryEmailButton =
 function() {
 	var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
-	var batchCmd = new ZmBatchCommand(true, appCtxt.accountList.mainAccount.name);
 	var callback = this._recoveryAddRequest.bind(this);
 	var errorCallback = this._recoveryErrorCallback.bind(this);
 	this.recoveryErrorMessage.innerHTML = "";
 	this.currentPasswordRecoveryValue = this.recoveryAccountInputField.getValue();
 	soapDoc.setMethodAttribute("op", "sendCode");
 	soapDoc.setMethodAttribute("recoveryAccount", this.currentPasswordRecoveryValue);
-	batchCmd.addNewRequestParams(soapDoc, callback, errorCallback);
-	batchCmd.run();
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errorCallback});
 };
 
-/*
+/**
  * Add listener callback method.
  *
  * Expecting a blank response so the callback acts as confirmation that the email was submitted and in pending state.
  * Clear the email input field, reset the buttons, update controls based on "pending" status.
  *
- * @TODO use this.recoveryCodeValidity to manage code verification
  * @param {object} response The response object.
  */
 ZmAccountsPage.prototype._recoveryAddRequest =
 function(response) {
-	if(!response._isException) {
+	if (!response._isException) {
 		this.recoveryAccountInputField.setValue("", true);
 		this.addRecoveryEmailButton.setEnabled(false);
-		this._setAccountPasswordControls("pending");
+		this._setAccountPasswordControls(this.RECOVERY_EMAIL_STATUS.pending);
 	} else {
 		this._recoveryErrorCallback({code: "Unknown", msg: "Unknown Error: " + ZmMsg.unknownError});
 	}
 };
 
-/*
+/**
  * Recovery Error callback method.
  *
  * Response object will have a code and msg value to work with.
@@ -487,33 +481,32 @@ ZmAccountsPage.prototype._recoveryErrorCallback =
 function(response) {
 	var message = response.msg;
 	var code = response.code;
-	// Simplify the message to description - usually the first colon is the error prefix
-	var messageBeginning = message.indexOf(": ") + 2;
+	var messageBeginning = message.indexOf(": ") + 2; // Simplify the message to description - usually the first colon is the error prefix
+	this.recoveryCodeInputField.setValue("", true);
 	message = message.substring(messageBeginning);
 	// because one particlar exception message is long, check the code and change the message.
-	if(code === "mail.SEND_ABORTED_ADDRESS_FAILURE") {
-		message = ZmMsg.invalidEmailAddress ;
+	if (code === "mail.SEND_ABORTED_ADDRESS_FAILURE") {
+		message = ZmMsg.invalidEmailAddress;
 	}
 	this.recoveryErrorMessage.innerHTML = message;
+	return true;
 };
 
-/*
+/**
  * Method to update all Password Recovery elements.
  *
  * Based on the satus of the recovery email address, change the ui to fit the expected flow.
  *
- * @TODO use this.recoveryCodeValidity to manage code verification
- * @TODO use this.recoveryResetExpiry to enable / disable reset button - might need a timer?
- * @TODO use this.recoveryResetSuspendTime to enable / disable reset button - might need a timer?
- * @TODO use this.recoveryMaxAttempts to limit resends.
  * @TODO Possibly remove this.recoveryEmailStatus if variable is no longer being used in multiple methods
- * @param {string} status pending || verified || null / other
+ * @param {string} status this.RECOVERY_EMAIL_STATUS (none || pending || verified)
  */
 ZmAccountsPage.prototype._setAccountPasswordControls =
 function(status) {
+	var userStatusMessage;
 	this.recoveryEmailStatus = status;
 	switch(status) {
-		case "verified": {
+		case this.RECOVERY_EMAIL_STATUS.verified:
+			userStatusMessage = ZmMsg.recoveryEmailStatusVerified;
 			this.recoveryMessage.innerHTML = ZmMsg.recoveryEmailMessageVerified;
 			this.recoveryOptionsTitle.innerHTML = ZmMsg.recoveryEmailOptionLabel;
 			this.addRecoveryEmailButton.setVisible(false);
@@ -523,8 +516,8 @@ function(status) {
 			this.addRecoveryEmailInputContainer.style.display = "none";
 			this.codeRecoveryEmailInputContainer.style.display = "none";
 			break;
-		}
-		case "pending": {
+		case this.RECOVERY_EMAIL_STATUS.pending:
+			userStatusMessage = ZmMsg.recoveryEmailStatusPending;
 			this.recoveryMessage.innerHTML = ZmMsg.recoveryEmailMessagePending;
 			this.recoveryOptionsTitle.innerHTML = ZmMsg.recoveryEmailOptionLabel;
 			this.recoveryEmail = this.currentPasswordRecoveryValue;
@@ -535,8 +528,8 @@ function(status) {
 			this.addRecoveryEmailInputContainer.style.display = "none";
 			this.codeRecoveryEmailInputContainer.style.display = "table-row";
 			break;
-		}
-		default: {
+		default:
+			userStatusMessage = ZmMsg.recoveryEmailStatusNone;
 			this.recoveryMessage.innerHTML = ZmMsg.recoveryEmailMessageAdd;
 			this.recoveryEmail = "";
 			this.recoveryOptionsTitle.innerHTML = "";
@@ -547,40 +540,39 @@ function(status) {
 			this.addRecoveryEmailInputContainer.style.display = "table-row";
 			this.codeRecoveryEmailInputContainer.style.display = "none";
 			break;
-		}
 	}
+	this.recoveryCodeInputField.setValue("", true);
 	this.recoveryDetailDiv.innerHTML = this.recoveryEmail;
-	this.recoveryStatusDiv.innerHTML = this.recoveryEmailStatus;
+	this.recoveryStatusDiv.innerHTML = userStatusMessage;
 };
 
-/*
+/**
  * Add Email Input's Keyup Listener.
  *
  * Keyup handler to enable the add button once the input is considered valid.
  *
+ * @param {object} result   The Keyup event information from the input object that dispatched the event.
  */
 ZmAccountsPage.prototype._handleRecoveryEmailInput =
 function(result) {
-	var patt = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	var validEmail = patt.test(result.target.value);
-	if(validEmail) {
+	if (result.target && result.target.value && AjxEmailAddress.isValid(result.target.value)) {
 		this.addRecoveryEmailButton.setEnabled(true);
 	} else {
 		this.addRecoveryEmailButton.setEnabled(false);
 	}
 };
 
-/*
+/**
  * Validate Code Input's Keyup Listener.
  *
  * Keyup handler to enable the validate button once the input is considered valid.
  *
- * @TODO use this.recoveryCodeValidity to manage code verification
+ * @param {object} result   The Keyup event information from the input object that dispatched the event.
  */
 ZmAccountsPage.prototype._handleRecoveryCodeInput =
 function(result) {
 	var codeLength = result.target.value.length;
-	if(codeLength >= 4) {
+	if (codeLength >= 4) {
 		this.validateRecoveryEmailButton.setEnabled(true);
 	} else {
 		this.validateRecoveryEmailButton.setEnabled(false);
@@ -593,9 +585,6 @@ function(result) {
  * Grab and set all related ui elements and set their state. Create buttons and input fields with respective listeners.
  * Use any ZmSettings applicable to determine the initial state.
  *
- * @TODO use this.recoveryCodeValidity to manage code verification
- * @TODO use this.recoveryResetExpiry to enable / disable reset button - might need a timer?
- * @TODO use this.recoveryResetSuspendTime to enable / disable reset button - might need a timer?
  */
 ZmAccountsPage.prototype.setAccountPasswordRecovery =
 function() {
@@ -604,6 +593,9 @@ function() {
 	var codeRecoveryEmailInputContainer = document.getElementById(this._htmlElId + "_RECOVERY_CODE_TR");
 	var recoveryAccountInput = document.getElementById(this._htmlElId + "_RECOVERY_ACCOUNT");
 	var recoveryCodeInput = document.getElementById(this._htmlElId + "_RECOVERY_CODE");
+
+	// Add constants
+	this.RECOVERY_EMAIL_STATUS = {none: "none", pending: "pending", verified: "verified"}
 
 	// Add critical elements
 	if (addRecoveryEmailInputContainer && recoveryAccountInput && codeRecoveryEmailInputContainer && recoveryCodeInput) {
@@ -625,20 +617,7 @@ function() {
 
 	// Get ZmSettings
 	this.recoveryEmail = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) ? appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) : "";
-	this.recoveryEmailStatus = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) ? appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) : "Not Set";
-
-	/*
-	 * The following values are returning null
-	this.recoveryCodeValidity = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_CODE_VALIDITY);
-	this.recoveryMaxAttempts = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_MAX_ATTEMPTS);
-	this.recoveryResetSuspendTime = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_RESET_SUSPEND_TIME);
-	this.recoveryResetExpiry = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_RESET_EXPIRY);
-
-	console.log("CVY: ", this.recoveryCodeValidity);
-	console.log("MAX: ", this.recoveryMaxAttempts);
-	console.log("SUS: ", this.recoveryResetSuspendTime);
-	console.log("EXP: ", this.recoveryResetExpiry);
-	*/
+	this.recoveryEmailStatus = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) ? appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) : this.RECOVERY_EMAIL_STATUS.none;
 
 	// Set a email input value between submits
 	this.currentPasswordRecoveryValue = this.recoveryEmail;
@@ -657,7 +636,7 @@ function() {
 	this._setAccountPasswordControls(this.recoveryEmailStatus);
 };
 
-/*
+/**
  * Create Recovery Input Field method.
  *
  * To reduce repetitive code, make a function that can build password recovery buttons with the desired params.
@@ -672,10 +651,10 @@ function() {
 ZmAccountsPage.prototype._createRecoveryInputFields =
 function(ide, inputType, value, enabled, divSuffix, keyupListener) {
 	var inputField, inputDiv = document.getElementById(this._htmlElId + divSuffix);
-	if(inputDiv) {
+	if (inputDiv) {
 		inputField = new DwtInputField({parent: this, id: ide, type: inputType, initialValue: value});
 		inputField.setEnabled(enabled);
-		if(keyupListener) {
+		if (keyupListener) {
 			inputField.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this[keyupListener]));
 		}
 		inputField.replaceElement(inputDiv);
@@ -683,7 +662,7 @@ function(ide, inputType, value, enabled, divSuffix, keyupListener) {
 	}
 };
 
-/*
+/**
  * Create Recovery Button method.
  *
  * To reduce repetitive code, make a function that can build password recovery buttons with the desired params.
@@ -698,12 +677,12 @@ function(ide, inputType, value, enabled, divSuffix, keyupListener) {
 ZmAccountsPage.prototype._createRecoveryButtons =
 function(ide, text, enabled, visible, divSuffix, listener) {
 	var button, buttonDiv = document.getElementById(this._htmlElId + divSuffix);
-	if(buttonDiv) {
+	if (buttonDiv) {
 		button = new DwtButton({parent: this, id: ide});
 		button.setText(text);
 		button.setEnabled(enabled);
 		button.setVisible(visible);
-		if(listener) {
+		if (listener) {
 			button.addSelectionListener(new AjxListener(this, this[listener]));
 		}
 		button.replaceElement(buttonDiv);
@@ -1173,7 +1152,7 @@ function() {
 ZmAccountsPage.prototype.setAccountDelegates =
 function() {
     var delegatesEl =   document.getElementById(this._htmlElId+"_DELEGATE_RIGHTS");
-    if(!delegatesEl) return;
+    if (!delegatesEl) return;
     this._getGrants(delegatesEl);
 
 
@@ -1258,7 +1237,7 @@ function(account, skipUpdate, ignoreProvider) {
         Dwt.setVisible(div, true);
         if (appCtxt.isOffline) {
             // bug 48014 - add "Use this persona" section for offline
-            if(account.type == ZmAccount.TYPE_PERSONA) {
+            if (account.type == ZmAccount.TYPE_PERSONA) {
                 this._currentSection = ZmAccountsPage.SECTIONS["PERSONA"];
                 this._setPersona(account, this._currentSection);
             } else {
@@ -3227,7 +3206,7 @@ function(account, field, html) {
 	if (field == ZmItem.F_NAME) {
 		el = document.getElementById(this._getCellId(account, field)+"_name");
     }
-    if(field == ZmItem.F_EMAIL) {
+    if (field == ZmItem.F_EMAIL) {
         html = "<div style='margin-left: 10px;'>"+ html +"</div>";    
     }
 	el.innerHTML = html;
@@ -3331,7 +3310,7 @@ function(account, field, html) {
 	if (field == ZmItem.F_NAME) {
 		el = document.getElementById(this._getCellId(account, field)+"_name");
     }
-    if(field == ZmItem.F_EMAIL) {
+    if (field == ZmItem.F_EMAIL) {
         html = "<div style='margin-left: 10px;'>"+ html +"</div>";
     }
 	el.innerHTML = html;
