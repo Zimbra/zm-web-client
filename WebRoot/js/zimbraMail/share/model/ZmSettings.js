@@ -365,7 +365,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		var enableMailPrefs = this.get(ZmSetting.MAIL_ENABLED) || (this.get(ZmSetting.ADMIN_DELEGATED) && this.get(ZmSetting.ADMIN_PREFERENCES_ENABLED));
 		this.set(ZmSetting.MAIL_PREFERENCES_ENABLED, enableMailPrefs, setDefault, skipNotify, skipImplicit);
 		// Disable other areas where mail could be exposed to a prefs-only admin
-		if (this.get(ZmSetting.MAIL_PREFERENCES_ENABLED) && !this.get(ZmSetting.MAIL__ENABLED)) {
+		if (this.get(ZmSetting.MAIL_PREFERENCES_ENABLED) && !this.get(ZmSetting.MAIL_ENABLED)) {
 			this.set(ZmSetting.MAIL_FORWARDING_ENABLED, false, setDefault, skipNotify, skipImplicit);
 			this.set(ZmSetting.FILTERS_MAIL_FORWARDING_ENABLED, false, setDefault, skipNotify, skipImplicit);
 			this.set(ZmSetting.NOTIF_FEATURE_ENABLED, false, setDefault, skipNotify, skipImplicit);
