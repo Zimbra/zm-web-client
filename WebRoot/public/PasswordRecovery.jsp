@@ -21,11 +21,20 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-<fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
+<%!
+	static String getParameter(HttpServletRequest request, String pname, String defValue) {
+		String value = request.getParameter(pname);
+		return value != null ? value : defValue;
+	}
+	static String getAttribute(HttpServletRequest request, String aname, String defValue) {
+		Object object = request.getAttribute(aname);
+		String value = object != null ? String.valueOf(object) : null;
+		return value != null ? value : defValue;
+	}
+%>
 <%
 	String accountInput = request.getParameter("account");
-	if (accountInput != null) {
+	if (accountInput != "") {
 		accountInput = BeanUtils.cook(accountInput);
 	}
 	String isDebugMode = request.getParameter("isDebug");
@@ -37,7 +46,12 @@
 	if (contextPath.equals("/")) {
 		contextPath = "";
 	}
+
+	boolean isDevMode = getParameter(request, "dev", "0").equals("1");
+	pageContext.setAttribute("isDevMode", isDevMode);
 %>
+<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+<fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <!DOCTYPE html>
 <html class="user_font_size_normal" data-ispasswordrecoverypage="true">
 <head>
@@ -69,7 +83,7 @@
 
 	<jsp:include page="Boot.jsp"/>
 
-	<% if (isDebugMode != null) { %>
+	<% if (isDevMode) { %>
 		<jsp:include page="/public/jsp/PasswordRecovery.jsp"/>
 	<% } else { %>
 		<script src="${contextPath}/js/PasswordRecovery_all.js<%=ext%>?v=${version}"></script>
@@ -81,8 +95,7 @@
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		}
 		var params = {
-			accountInput : "<%=accountInput%>",
-			isFromLoginPage : true
+			accountInput : "<%=accountInput%>"
 		};
 		new ZmPasswordRecoveryDialog(params).popup();
 	</script>

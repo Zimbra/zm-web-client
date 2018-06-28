@@ -30,7 +30,6 @@
  */
 ZmPasswordRecoveryDialog = function(params) {
 	this.accountInput = params.accountInput || "";
-	this.isFromLoginPage = params.isFromLoginPage;
 
 	var emailSubmitButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON,
 								ZmMsg.passwordRecoveryButtonSubmit,
@@ -287,35 +286,35 @@ function(currentDivId) {
 
 ZmPasswordRecoveryDialog.prototype._verifyEmailCallback =
 function(currentDivId, result) {
-	// console.log("verifyEmailCallback - currentDivId: ", currentDivId);
-	// console.log("result: ", result);
-	// console.log("email: ", this._accountInput.value);
-
-	var recoveryAccountAddress, recoveryCodeRequestDescription, response;
-	if (!result || result.isException() || (result.Body && result.Body.Fault)) {
-		Dwt.setInnerHtml(this._accountErrorDiv, ZmMsg.unknownError);
-		Dwt.show(this._accountErrorDiv);
-	} else {
-		response = result.getResponse();
-		if (!response || !response.Body || !response.Body.RecoverAccountResponse || !response.Body.RecoverAccountResponse.recoveryAccount) {
-			// console.log("Response error: ", reposnse);
-			// prep for generic error messaging
-			Dwt.setInnerHtml(this._accountErrorDiv, ZmMsg.unknownError);
-			Dwt.show(this._accountErrorDiv);
-		} else {
-			Dwt.setInnerHtml(this._accountErrorDiv, "");
-			Dwt.hide(this._accountErrorDiv);
-			recoveryAccountAddress = response.Body.RecoverAccountResponse.recoveryAccount;
-			recoveryCodeRequestDescription = AjxMessageFormat.format(ZmMsg.passwordRecoveryCodeRequestDescription, ["email address", recoveryAccountAddress]);
-			Dwt.setInnerHtml(this._requestCodeDescription, recoveryCodeRequestDescription);
-			Dwt.hide(this._getRecoveryAccountDivId);
-			Dwt.show(this._requestCodeDivId);
-			this.setButtonVisible(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON, false);
-			this.setButtonVisible(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON, true);
-			this._divIdArrayIndex = 1;
+	if (!result || result.isException()) {
+		this._handleResetPasswordError(currentDivId, result.getException());
+	}
+	else {
+		var response = result.getResponse();
+		if (!response || !response.Body || !response.Body.RecoverAccountResponse) {
+			this._handleResetPasswordError(currentDivId);
+			return;
 		}
+
+		Dwt.setInnerHtml(this._accountErrorDiv, "");
+		Dwt.hide(this._accountErrorDiv);
+		recoveryAccountAddress = response.Body.RecoverAccountResponse.recoveryAccount;
+		recoveryCodeRequestDescription = AjxMessageFormat.format(ZmMsg.passwordRecoveryCodeRequestDescription, ["email address", recoveryAccountAddress]);
+		Dwt.setInnerHtml(this._requestCodeDescription, recoveryCodeRequestDescription);
+		Dwt.hide(this._getRecoveryAccountDivId);
+		Dwt.show(this._requestCodeDivId);
+		this.setButtonVisible(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON, false);
+		this.setButtonVisible(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON, true);
+		this._divIdArrayIndex = 1;
 	}
 };
+
+ZmPasswordRecoveryDialog.prototype._handleResetPasswordError =
+function(currentDivId, exception) {
+	var errorCode = exception ? exception.code : 'unknownError';
+	Dwt.setInnerHtml(this._accountErrorDiv, ZmMsg[errorCode]);
+	Dwt.show(this._accountErrorDiv);
+}
 
 ZmPasswordRecoveryDialog.prototype._sendRecoveryCode =
 function(currentDivId) {

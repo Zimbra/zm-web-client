@@ -591,19 +591,16 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
                                 </td>
                                 </tr>
-<%--
-                                <c:set var="resetPasswordStatus" value="${domainInfo.attrs.zimbraFeatureResetPasswordStatus}"/>
-                                <c:if test="${resetPasswordStatus eq 'enabled'}">
---%>
+                                <script>console.log("${domainInfo.attrs.zimbraFeatureResetPasswordStatus}");</script>
+                                <!-- @TODO Change below condition when server side code is fixed -->
+                                <c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus ne 'enabled'}">
                                     <tr>
                                         <td>&nbsp;</td>
                                         <td class="submitTD">
-                                            <a href="#" onclick="forgotPassword();" id="ZLoginForgotPassword" style="text-decoration: underline; font-size: 11px; color: #fff; float: right"  aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
+                                            <a href="#" onclick="forgotPassword();" id="ZLoginForgotPassword" aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
                                         </td>
                                     </tr>
-<%--
                                 </c:if>
---%>
                             </c:otherwise>
                         </c:choose>
                         <c:if test="${empty param.virtualacctdomain}">
@@ -713,7 +710,13 @@ function showWhatsThis() {
 function forgotPassword() {
 	var accountInput = document.getElementById("username").value;
 	var queryParams = encodeURI("account=" + accountInput);
-	window.location.href = "/public/PasswordRecovery.jsp?" + queryParams;
+	var url = "/public/PasswordRecovery.jsp?" + location.search;
+
+	if (accountInput !== '') {
+		url += (location.search !== '' ? '&' : '') + encodeURI("account=" + accountInput);
+	}
+
+	window.location.href = url;
 }
 
 
