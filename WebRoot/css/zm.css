@@ -5946,6 +5946,38 @@ RBC, RTC {
 }
 /* Two-Factor Setup dialog end*/
 
+/* Password Recovery Setup dialog start*/
+.ZmPasswordRecoverySetup {
+	width:475px;
+	height:180px;
+}
+
+.ZmPasswordRecoverySetupContainer {
+	margin:20px;
+	text-align:center;
+}
+
+.ZmPasswordRecoverySetupContainer label {
+	display:inline-block;
+	margin:10px;
+}
+
+.ZmPasswordRecoverySetupContainer SPAN.email-key, .ZmAppPasscode {
+	padding:10px;
+	font-weight:bold;
+	background-color:#FFE599;
+	letter-spacing: 3px;
+	display:inline-block;
+	margin:10px
+}
+
+.ZmPasswordRecoverySetupError {
+	color:#990000;
+	font-weight:bold;
+}
+/* Password Recovery Setup dialog end*/
+
+
 .ZmAppNameError {
 	margin-left:157px;
 	text-align:left;

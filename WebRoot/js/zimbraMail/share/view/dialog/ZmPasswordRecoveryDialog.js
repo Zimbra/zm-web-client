@@ -115,6 +115,8 @@ ZmPasswordRecoveryDialog.prototype._createControls = function() {
 	var codeKeyupHandler = this._codeHandleKeyUp.bind(this);
 	var resetKeyupHandler = this._resetHandleKeyUp.bind(this);
 	this._accountInput = Dwt.getElement(id + "_account_input");
+	this._accountErrorDiv = Dwt.getElement(id + "_account_input_error");
+	this._requestErrorDiv = Dwt.getElement(id + "_request_code_error");
 	this._codeInput = Dwt.getElement(id + "_code_input");
 	this._passwordNewInput = Dwt.getElement(id + "_password_new_input");
 	this._passwordConfirmInput = Dwt.getElement(id + "_password_confirm_input");
@@ -274,9 +276,9 @@ ZmPasswordRecoveryDialog.prototype._verifyEmail =
 function(currentDivId) {
 	// console.log("verify email - currentDivId: ", currentDivId);
 	// console.log("input: ", this._accountInput.value);
-	var command = new ZmCsfeCommand();
-	var soapDoc = AjxSoapDoc.create("RecoverAccountRequest", "urn:zimbraMail");
-	var respCallback = this._verifyEmailCallback.bind(this, currentDivId);
+	var command = new ZmCsfeCommand(),
+		soapDoc = AjxSoapDoc.create("RecoverAccountRequest", "urn:zimbraMail"),
+		respCallback = this._verifyEmailCallback.bind(this, currentDivId);
 	soapDoc.setMethodAttribute("op", "getRecoveryAccount");
 	soapDoc.setMethodAttribute("email", this._accountInput.value);
 	soapDoc.setMethodAttribute("channel", "email");
@@ -290,16 +292,19 @@ function(currentDivId, result) {
 	// console.log("email: ", this._accountInput.value);
 
 	var recoveryAccountAddress, recoveryCodeRequestDescription, response;
-	if (!result || result.isException()) {
-		// console.log("no result or theres an exception");
+	if (!result || result.isException() || (result.Body && result.Body.Fault)) {
+		Dwt.setInnerHtml(this._accountErrorDiv, ZmMsg.unknownError);
+		Dwt.show(this._accountErrorDiv);
 	} else {
 		response = result.getResponse();
 		if (!response || !response.Body || !response.Body.RecoverAccountResponse || !response.Body.RecoverAccountResponse.recoveryAccount) {
 			// console.log("Response error: ", reposnse);
 			// prep for generic error messaging
+			Dwt.setInnerHtml(this._accountErrorDiv, ZmMsg.unknownError);
+			Dwt.show(this._accountErrorDiv);
 		} else {
-			// console.log("result detail: ", result._data.Body.RecoverAccountResponse.recoveryAccount);
-			// prep for sendcode request
+			Dwt.setInnerHtml(this._accountErrorDiv, "");
+			Dwt.hide(this._accountErrorDiv);
 			recoveryAccountAddress = response.Body.RecoverAccountResponse.recoveryAccount;
 			recoveryCodeRequestDescription = AjxMessageFormat.format(ZmMsg.passwordRecoveryCodeRequestDescription, ["email address", recoveryAccountAddress]);
 			Dwt.setInnerHtml(this._requestCodeDescription, recoveryCodeRequestDescription);
@@ -330,6 +335,8 @@ function(currentDivId, result) {
 	// console.log("result: ", result);
 	if (!result || result.isException()) {
 		// console.log("no result or theres an exception");
+		Dwt.setInnerHtml(this._requestErrorDiv, ZmMsg.unknownError);
+		Dwt.show(this._sendErrorDiv);
 	} else {
 		// callback returns RecoverAccountResponse with a recoveryAttemptsLeft value. The calback alone with no exceptions is valid enough.
 		Dwt.hide(this._requestCodeDivId);
@@ -338,7 +345,8 @@ function(currentDivId, result) {
 		this._codeInput.focus();
 		this.setButtonVisible(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON, false);
 		this.setButtonVisible(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, true);
-		this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, true);
+// TODO: uncomment below and connect
+//		this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, true);
 	}
 };
 

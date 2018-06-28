@@ -723,25 +723,26 @@
 </template>
 
 <template id='share.Dialogs#ZmPasswordRecovery'>
-	<div class="ZmTwoFactorSetup">
+	<div class="ZmPasswordRecoverySetup">
 		<div id='${id}_get_recovery_account'>
 			<h4><$=ZmMsg.passwordRecoveryGetAccountTitle$></h4>
 			<p><$=ZmMsg.passwordRecoveryGetAccountDescription$></p>
-			<div class="ZmTwoFactorSetupContainer">
-				<div id='${id}_account_input_error' style="display:none;margin-left:163px;" class="ZmTwoFactorSetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></div>
+			<div class="ZmPasswordRecoverySetupContainer">
+				<div id='${id}_account_input_error' style="display:none;margin-left:163px;" class="ZmPasswordRecoverySetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></div>
 				<label for="${id}_account_input"><$=ZmMsg.passwordRecoveryAccountLabel$></label>
 				<input type="text" id="${id}_account_input" size="35" autocomplete="off"/>
 			</div>
 		</div>
 		<div id='${id}_request_code'>
 			<h4><$=ZmMsg.passwordRecoveryCodeRequestTitle$></h4>
+			<div id='${id}_request_code_error' style="display:none;margin-left:163px;" class="ZmPasswordRecoverySetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></div>
 			<p id='${id}_request_code_description'>TEST</p>
 		</div>
 		<div id='${id}_validate_code'>
 			<h4><$=ZmMsg.passwordRecoveryCodeValidationTitle$></h4>
 			<div><$=ZmMsg.passwordRecoveryCodeValidationDescription$></div>
-			<div class="ZmTwoFactorSetupContainer">
-				<div id='${id}_validate_code_error' style="display:none;margin-left:163px;" class="ZmTwoFactorSetupError"><$=ZmMsg.passwordRecoveryCodeValidationError$></div>
+			<div class="ZmPasswordRecoverySetupContainer">
+				<div id='${id}_validate_code_error' style="display:none;margin-left:163px;" class="ZmPasswordRecoverySetupError"><$=ZmMsg.passwordRecoveryCodeValidationError$></div>
 				<label for="${id}_code_input"><$=ZmMsg.passwordRecoveryCodeLabel$> : </label>
 				<input type="text" id="${id}_code_input" size="35" autocomplete="off"/>
 			</div>
@@ -768,10 +769,10 @@
 				<p><$=ZmMsg.passwordRecoveryResetDescription$></p>
 			</div>
 			<div id='${id}_reset_password_error' style="display:none;">
-				<h4 class="ZmTwoFactorSetupError"><$=ZmMsg.passwordRecoveryResetError$></h4>
+				<h4 class="ZmPasswordRecoverySetupError"><$=ZmMsg.passwordRecoveryResetError$></h4>
 				<p><$=ZmMsg.passwordRecoveryResetErrorDescription$></p>
 			</div>
-			<div class="ZmTwoFactorSetupContainer">
+			<div class="ZmPasswordRecoverySetupContainer">
 				<label for="${id}_password_new_input"><$=ZmMsg.passwordRecoveryResetNewLabel$></label>
 				<input type="password" id="${id}_password_new_input" size="35" autocomplete="off"/><br />
 				<label for="${id}_password_confirm_input"><$=ZmMsg.passwordRecoveryResetConfirmLabel$></label>
