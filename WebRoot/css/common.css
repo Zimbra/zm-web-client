@@ -449,13 +449,6 @@ html[data-istwofactorsetuppage] .VeilOverlay TABLE {
 	opacity:1;
 }
 
-/*Applies only for password recovery page redirected from login page.*/
-html[data-ispasswordrecoverypage] .VeilOverlay TABLE {
-	@VeilOverlayGrad@
-	opacity:1;
-}
-
-
 
 /*
  *  Row display and highlighting in list views

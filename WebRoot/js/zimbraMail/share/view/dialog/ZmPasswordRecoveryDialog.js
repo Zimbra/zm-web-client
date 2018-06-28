@@ -48,7 +48,7 @@ ZmPasswordRecoveryDialog = function(params) {
 
 	var resendOptionButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON,
 								ZmMsg.recoveryEmailButtonResend,
-								DwtDialog.ALIGN_RIGHT,
+								DwtDialog.ALIGN_LEFT,
 								this._resendOptionButtonListener.bind(this));
 
 	var resetSubmitButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON,
@@ -58,7 +58,7 @@ ZmPasswordRecoveryDialog = function(params) {
 
 	var cancelButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.CANCEL_BUTTON,
 								ZmMsg.cancel,
-								DwtDialog.ALIGN_RIGHT,
+								DwtDialog.ALIGN_LEFT,
 								this._cancelButtonListener.bind(this));
 
 	var shell = typeof appCtxt !== "undefined" ? appCtxt.getShell() : new DwtShell({});
@@ -72,6 +72,9 @@ ZmPasswordRecoveryDialog = function(params) {
 	this.setContent(this._contentHtml());
 	this._createControls();
 	this._setAllowSelection();
+
+	// Hide title
+	Dwt.hide(this._titleEl)
 };
 
 ZmPasswordRecoveryDialog.prototype = new DwtDialog;
@@ -128,7 +131,6 @@ ZmPasswordRecoveryDialog.prototype._createControls = function() {
 	Dwt.setHandler(this._passwordNewInput, DwtEvent.ONINPUT, resetKeyupHandler);
 	Dwt.setHandler(this._passwordConfirmInput, DwtEvent.ONKEYUP, resetKeyupHandler);
 	Dwt.setHandler(this._passwordConfirmInput, DwtEvent.ONINPUT, resetKeyupHandler);
-	cancelbutton.setText(ZmMsg.passwordRecoveryButtonCancel);
 	this.setButtonEnabled(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON, false);
 };
 
@@ -287,12 +289,12 @@ function(currentDivId) {
 ZmPasswordRecoveryDialog.prototype._verifyEmailCallback =
 function(currentDivId, result) {
 	if (!result || result.isException()) {
-		this._handleResetPasswordError(currentDivId, result.getException());
+		this._handleResetPasswordError(this._accountErrorDiv, result.getException());
 	}
 	else {
 		var response = result.getResponse();
 		if (!response || !response.Body || !response.Body.RecoverAccountResponse) {
-			this._handleResetPasswordError(currentDivId);
+			this._handleResetPasswordError(this._accountErrorDiv);
 			return;
 		}
 
@@ -310,10 +312,10 @@ function(currentDivId, result) {
 };
 
 ZmPasswordRecoveryDialog.prototype._handleResetPasswordError =
-function(currentDivId, exception) {
+function(errorDivId, exception) {
 	var errorCode = exception ? exception.code : 'unknownError';
-	Dwt.setInnerHtml(this._accountErrorDiv, ZmMsg[errorCode]);
-	Dwt.show(this._accountErrorDiv);
+	Dwt.setInnerHtml(errorDivId, ZmMsg[errorCode]);
+	Dwt.show(errorDivId);
 }
 
 ZmPasswordRecoveryDialog.prototype._sendRecoveryCode =
@@ -334,8 +336,7 @@ function(currentDivId, result) {
 	// console.log("result: ", result);
 	if (!result || result.isException()) {
 		// console.log("no result or theres an exception");
-		Dwt.setInnerHtml(this._requestErrorDiv, ZmMsg.unknownError);
-		Dwt.show(this._sendErrorDiv);
+		this._handleResetPasswordError(this._requestErrorDiv, result.getException());
 	} else {
 		// callback returns RecoverAccountResponse with a recoveryAttemptsLeft value. The calback alone with no exceptions is valid enough.
 		Dwt.hide(this._requestCodeDivId);

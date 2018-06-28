@@ -5947,19 +5947,48 @@ RBC, RTC {
 /* Two-Factor Setup dialog end*/
 
 /* Password Recovery Setup dialog start*/
+html[data-ispasswordrecoverypage] .VeilOverlay TABLE {
+	@FontFamily-default@
+	@FontSize-normal@
+	@LoginScreen@
+}
+
+html[data-ispasswordrecoverypage] .WindowInnerContainer {
+	background-color: transparent;
+}
+
+html[data-ispasswordrecoverypage] .WindowOuterContainer {
+	@LoginContentBox@
+	box-shadow: none;
+    border-color: transparent;
+    padding: 40px;
+}
+
+html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
+	visibility: hidden;
+}
+
 .ZmPasswordRecoverySetup {
-	width:475px;
-	height:180px;
+	width: 475px;
+	height: 260px;
+	color: white;
 }
 
 .ZmPasswordRecoverySetupContainer {
 	margin:20px;
-	text-align:center;
 }
 
 .ZmPasswordRecoverySetupContainer label {
 	display:inline-block;
-	margin:10px;
+	margin:5px;
+}
+
+.ZmPasswordRecoverySetupContainer input {
+	float: right;
+}
+
+.ZmPasswordRecoverySetup .ImgLoginBanner {
+	height: 36px;
 }
 
 .ZmPasswordRecoverySetupContainer SPAN.email-key, .ZmAppPasscode {
