@@ -749,6 +749,18 @@
 		<div id='${id}_code_success'>
 			<h4><$=ZmMsg.passwordRecoveryCodeSuccessTitle$></h4>
 			<p><$=ZmMsg.passwordRecoveryCodeSuccessDescription$></p>
+
+							<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+								<tr>
+									<td class='ZOptionsField'>
+										<button id='${id}_CONTINUE_BUTTON' tabindex=0></button>
+									</td>
+									<td>
+										<button id='${id}_RESET_PASSWORD' tabindex=0></button>
+									</td>
+								</tr>
+							</table>
+
 		</div>
 		<div id='${id}_reset_password'>
 			<div id='${id}_reset_password_description'>
