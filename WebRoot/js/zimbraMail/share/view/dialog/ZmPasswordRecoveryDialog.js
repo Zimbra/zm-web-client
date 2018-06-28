@@ -110,12 +110,34 @@ ZmPasswordRecoveryDialog.prototype._contentHtml = function() {
 	return AjxTemplate.expand("share.Dialogs#ZmPasswordRecovery", {id : id, accountInput : this.accountInput});
 };
 
+ZmPasswordRecoveryDialog.prototype._createRecoveryButtons =
+function(ide, text, enabled, visible, divSuffix, listener) {
+	var button, buttonDiv = document.getElementById(this._htmlElId + divSuffix);
+	if (buttonDiv) {
+		button = new DwtButton({parent: this, id: ide});
+		button.setText(text);
+		button.setEnabled(enabled);
+		button.setVisible(visible);
+		if (listener) {
+			button.addSelectionListener(new AjxListener(this, this[listener]));
+		}
+		button.replaceElement(buttonDiv);
+		this[ide] = button;
+	}
+};
+
 ZmPasswordRecoveryDialog.prototype._createControls = function() {
 	var id = this._htmlElId;
 	var cancelbutton = this.getButton(ZmPasswordRecoveryDialog.CANCEL_BUTTON);
 	var accountKeyupHandler = this._accountHandleKeyUp.bind(this);
 	var codeKeyupHandler = this._codeHandleKeyUp.bind(this);
 	var resetKeyupHandler = this._resetHandleKeyUp.bind(this);
+
+	// Create buttons
+	this._createRecoveryButtons("continueSessionsRecoveryButton", ZmMsg.recoveryEmailButtonContinueSession, true, false,
+					"_CONTINUE_BUTTON", "_finishButtonListener");
+	this._createRecoveryButtons("resetPasswordRecoveryButton", ZmMsg.recoveryEmailButtonResetPassword, true, false,
+					"_RESET_PASSWORD", "_resetButtonListener");
 	this._accountInput = Dwt.getElement(id + "_account_input");
 	this._accountErrorDiv = Dwt.getElement(id + "_account_input_error");
 	this._requestErrorDiv = Dwt.getElement(id + "_request_code_error");
@@ -216,6 +238,11 @@ ZmPasswordRecoveryDialog.prototype._finishButtonListener = function() {
 	location.replace(location.origin);
 };
 
+ZmPasswordRecoveryDialog.prototype._resetButtonListener = function() {
+	// If the user clicks finish button, redirect to the login page
+	location.replace(location.origin + "/h/changepass");
+};
+
 ZmPasswordRecoveryDialog.prototype._cancelButtonListener = function() {
 	//If the user clicks cancel button, redirect to the login page
 	location.replace(location.origin);
@@ -301,7 +328,7 @@ function(currentDivId, result) {
 		Dwt.setInnerHtml(this._accountErrorDiv, "");
 		Dwt.hide(this._accountErrorDiv);
 		recoveryAccountAddress = response.Body.RecoverAccountResponse.recoveryAccount;
-		recoveryCodeRequestDescription = AjxMessageFormat.format(ZmMsg.passwordRecoveryCodeRequestDescription, ["email address", recoveryAccountAddress]);
+		recoveryCodeRequestDescription = AjxMessageFormat.format(ZmMsg.passwordRecoveryCodeRequestDescription, [ZmMsg.recoveryEmailButtonAccount, recoveryAccountAddress]);
 		Dwt.setInnerHtml(this._requestCodeDescription, recoveryCodeRequestDescription);
 		Dwt.hide(this._getRecoveryAccountDivId);
 		Dwt.show(this._requestCodeDivId);
