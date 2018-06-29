@@ -266,8 +266,9 @@ ZmPasswordRecoveryDialog.prototype._codeHandleKeyUp = function(ev) {
 	var firstInputPattern = new RegExp("_code_input");
 	var targetIsAccountInput = firstInputPattern.test(ev.target.id); // {id}_account_input 
 	var value = ev && ev.target && ev.target.value && ev.target.value.length; // value: length, ev.target.value: input value
+	var validValue = value && ev.target.value.length >= 8;
 	if (targetIsAccountInput) {
-		this.setButtonEnabled(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, !!value);
+		this.setButtonEnabled(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, !!validValue);
 	}
 };
 
