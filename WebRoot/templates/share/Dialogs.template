@@ -726,7 +726,6 @@
 	<div class="ZmPasswordRecoverySetup">
 		<div class="ImgLoginBanner"></div>
 		<div id='${id}_get_recovery_account'>
-			<h4><$=ZmMsg.passwordRecoveryGetAccountTitle$></h4>
 			<p><$=ZmMsg.passwordRecoveryGetAccountDescription$></p>
 			<div class="ZmPasswordRecoverySetupContainer">
 				<div id='${id}_account_input_error' style="display:none;" class="ZmPasswordRecoverySetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></div>
@@ -735,13 +734,11 @@
 			</div>
 		</div>
 		<div id='${id}_request_code'>
-			<h4><$=ZmMsg.passwordRecoveryCodeRequestTitle$></h4>
 			<div id='${id}_request_code_error' style="display:none;" class="ZmPasswordRecoverySetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></div>
 			<p id='${id}_request_code_description'>TEST</p>
 		</div>
 		<div id='${id}_validate_code'>
-			<h4><$=ZmMsg.passwordRecoveryCodeValidationTitle$></h4>
-			<div><$=ZmMsg.passwordRecoveryCodeValidationDescription$></div>
+			<p><$=ZmMsg.passwordRecoveryCodeValidationDescription$></p>
 			<div class="ZmPasswordRecoverySetupContainer">
 				<div id='${id}_validate_code_error' style="display:none;" class="ZmPasswordRecoverySetupError"><$=ZmMsg.passwordRecoveryCodeValidationError$></div>
 				<label for="${id}_code_input"><$=ZmMsg.passwordRecoveryCodeLabel$></label>
@@ -749,16 +746,15 @@
 			</div>
 		</div>
 		<div id='${id}_code_success'>
-			<h4><$=ZmMsg.passwordRecoveryCodeSuccessTitle$></h4>
 			<p><$=ZmMsg.passwordRecoveryCodeSuccessDescription$></p>
 
 			<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 				<tr>
 					<td class='ZOptionsField'>
-						<button id='${id}_CONTINUE_BUTTON' tabindex=0></button>
+						<button id='${id}_CONTINUE_BUTTON' class='ZmPasswordRecoveryButton' tabindex=0></button>
 					</td>
 					<td>
-						<button id='${id}_RESET_PASSWORD' tabindex=0></button>
+						<button id='${id}_RESET_PASSWORD' class='ZmPasswordRecoveryButton' tabindex=0></button>
 					</td>
 				</tr>
 			</table>
@@ -778,10 +774,6 @@
 				<label for="${id}_password_confirm_input"><$=ZmMsg.passwordRecoveryResetConfirmLabel$></label>
 				<input type="password" id="${id}_password_confirm_input" size="35" autocomplete="off"/>
 			</div>
-		</div>
-		<div id='${id}_password_reset_success'>
-			<h4><$=ZmMsg.passwordRecoveryResetSuccessTitle$></h4>
-			<p><$=ZmMsg.passwordRecoveryResetSuccessDescription$></p>
 		</div>
 	</div>
 </template>

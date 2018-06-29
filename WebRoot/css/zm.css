@@ -5960,17 +5960,52 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer {
 html[data-ispasswordrecoverypage] .WindowOuterContainer {
 	@LoginContentBox@
 	box-shadow: none;
-    border-color: transparent;
-    padding: 40px;
+	border-color: transparent;
+	padding: 22px;
 }
 
 html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	visibility: hidden;
 }
 
+.ZmPasswordRecoveryButton {
+	background-color: #007CC3;
+	border-radius: 3px;
+	border: 1px solid #fff;
+	color: #fff;
+	cursor: pointer;
+	font-size: 1em;
+}
+
+.ZmPasswordRecoveryButton .ZButtonBorder {
+	background-color: #007CC3;
+	padding: 2px;
+}
+
+.ZmPasswordRecoveryButton.ZDisabled {
+	border: 1px solid #ccc;
+	color: #ccc;
+}
+
+.ZmPasswordRecoveryButton.ZHasText .ZButtonTable {
+	width: 100%;
+}
+
+.ZmPasswordRecoveryButton.ZDisabled .ZButtonTable .ZWidgetTitle,
+.ZmPasswordRecoveryButton.ZDisabled .ZWidgetTitle {
+	color: #ccc;
+}
+
+.ZmPasswordRecoveryButton .ZWidgetTitle,
+.ZmPasswordRecoveryButton .ZButtonTable .ZWidgetTitle,
+.ZmPasswordRecoveryButton.ZFocused .ZButtonTable .ZWidgetTitle,
+.ZmPasswordRecoveryButton.ZFocused .ZWidgetTitle {
+	color: #fff;
+}
+
 .ZmPasswordRecoverySetup {
 	width: 475px;
-	height: 260px;
+	height: 212px;
 	color: white;
 }
 

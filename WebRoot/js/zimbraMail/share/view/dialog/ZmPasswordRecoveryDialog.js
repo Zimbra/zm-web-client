@@ -133,6 +133,15 @@ ZmPasswordRecoveryDialog.prototype._createControls = function() {
 	var codeKeyupHandler = this._codeHandleKeyUp.bind(this);
 	var resetKeyupHandler = this._resetHandleKeyUp.bind(this);
 
+	this.getButton(ZmPasswordRecoveryDialog.CANCEL_BUTTON).setClassName("ZmPasswordRecoveryButton");
+	this.getButton(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON).setClassName("ZmPasswordRecoveryButton");
+	this.getButton(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON).setClassName("ZmPasswordRecoveryButton");
+	this.getButton(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON).setClassName("ZmPasswordRecoveryButton");
+	this.getButton(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON).setClassName("ZmPasswordRecoveryButton");
+	this.getButton(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON).setClassName("ZmPasswordRecoveryButton");
+
+
+	cancelbutton.setClassName("ZmPasswordRecoveryButton");
 	// Create buttons
 	this._createRecoveryButtons("continueSessionsRecoveryButton", ZmMsg.recoveryEmailButtonContinueSession, true, false,
 					"_CONTINUE_BUTTON", "_finishButtonListener");
@@ -208,8 +217,6 @@ ZmPasswordRecoveryDialog.prototype.reset = function() {
 ZmPasswordRecoveryDialog.prototype._emailSubmitButtonListener = function() {
 	var currentDivId = this._divIdArray[this._divIdArrayIndex];
 	var account = this._accountInput.value;
-	// console.log("begin button clicked currentDivId: ", currentDivId); // DWT{#}_get_recovery_account
-	// console.log("divIdArrayIndex: ", this._divIdArrayIndex);
 	this._verifyEmail(currentDivId);
 };
 
@@ -225,12 +232,10 @@ ZmPasswordRecoveryDialog.prototype._verifyCodeButtonListener = function() {
 
 ZmPasswordRecoveryDialog.prototype._resendOptionButtonListener = function() {
 	var currentDivId = this._divIdArray[this._divIdArrayIndex];
-	// console.log("RESEND");
 };
 
 ZmPasswordRecoveryDialog.prototype._resetSubmitButtonListener = function() {
 	var currentDivId = this._divIdArray[this._divIdArrayIndex];
-	// console.log("RESET SUBMIT");
 };
 
 ZmPasswordRecoveryDialog.prototype._finishButtonListener = function() {
@@ -239,8 +244,7 @@ ZmPasswordRecoveryDialog.prototype._finishButtonListener = function() {
 };
 
 ZmPasswordRecoveryDialog.prototype._resetButtonListener = function() {
-	// If the user clicks finish button, redirect to the login page
-	location.replace(location.origin + "/h/changepass");
+	// call reset handler method
 };
 
 ZmPasswordRecoveryDialog.prototype._cancelButtonListener = function() {
@@ -252,12 +256,8 @@ ZmPasswordRecoveryDialog.prototype._accountHandleKeyUp = function(ev) {
 	var firstInputPattern = new RegExp("_account_input");
 	var targetIsAccountInput = firstInputPattern.test(ev.target.id); // {id}_account_input 
 	var value = ev && ev.target && ev.target.value && ev.target.value.length; // value: length, ev.target.value: input value
-	var emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	var validEmail = emailPattern.test(ev.target.value); // email boolean
-	var valueValid = value && validEmail; // account and email boolean
-
 	if (targetIsAccountInput) {
-		this.setButtonEnabled(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON, !!valueValid);
+		this.setButtonEnabled(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON, !!value);
 	}
 };
 
@@ -265,7 +265,6 @@ ZmPasswordRecoveryDialog.prototype._codeHandleKeyUp = function(ev) {
 	var firstInputPattern = new RegExp("_code_input");
 	var targetIsAccountInput = firstInputPattern.test(ev.target.id); // {id}_account_input 
 	var value = ev && ev.target && ev.target.value && ev.target.value.length; // value: length, ev.target.value: input value
-
 	if (targetIsAccountInput) {
 		this.setButtonEnabled(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, !!value);
 	}
@@ -286,7 +285,6 @@ ZmPasswordRecoveryDialog.prototype._resetHandleKeyUp = function(ev) {
 
 ZmPasswordRecoveryDialog.prototype._codeInputCheck = function() {
 	var codeInput = this._codeInput.value;
-	// console.log("codeInput: ", codeInput);
 	this.setButtonEnabled(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, !!codeInput);
 };
 
@@ -302,8 +300,6 @@ ZmPasswordRecoveryDialog.prototype._passwordResetCheck = function() {
 */
 ZmPasswordRecoveryDialog.prototype._verifyEmail =
 function(currentDivId) {
-	// console.log("verify email - currentDivId: ", currentDivId);
-	// console.log("input: ", this._accountInput.value);
 	var command = new ZmCsfeCommand(),
 		soapDoc = AjxSoapDoc.create("RecoverAccountRequest", "urn:zimbraMail"),
 		respCallback = this._verifyEmailCallback.bind(this, currentDivId);
@@ -328,7 +324,7 @@ function(currentDivId, result) {
 		Dwt.setInnerHtml(this._accountErrorDiv, "");
 		Dwt.hide(this._accountErrorDiv);
 		recoveryAccountAddress = response.Body.RecoverAccountResponse.recoveryAccount;
-		recoveryCodeRequestDescription = AjxMessageFormat.format(ZmMsg.passwordRecoveryCodeRequestDescription, [ZmMsg.recoveryEmailButtonAccount, recoveryAccountAddress]);
+		recoveryCodeRequestDescription = AjxMessageFormat.format(ZmMsg.passwordRecoveryCodeRequestDescription, [ZmMsg.passwordRecoveryTypeEmail, recoveryAccountAddress]);
 		Dwt.setInnerHtml(this._requestCodeDescription, recoveryCodeRequestDescription);
 		Dwt.hide(this._getRecoveryAccountDivId);
 		Dwt.show(this._requestCodeDivId);
@@ -347,7 +343,6 @@ function(errorDivId, exception) {
 
 ZmPasswordRecoveryDialog.prototype._sendRecoveryCode =
 function(currentDivId) {
-	// console.log("Send Recovery Code - cId: ", currentDivId);
 	var command = new ZmCsfeCommand();
 	var soapDoc = AjxSoapDoc.create("RecoverAccountRequest", "urn:zimbraMail");
 	var respCallback = this._sendRecoveryCodeCallback.bind(this, currentDivId);
@@ -359,13 +354,9 @@ function(currentDivId) {
 
 ZmPasswordRecoveryDialog.prototype._sendRecoveryCodeCallback =
 function(currentDivId, result) {
-	// console.log("recoveryCodeCallback - currentDivId: ", currentDivId);
-	// console.log("result: ", result);
 	if (!result || result.isException()) {
-		// console.log("no result or theres an exception");
 		this._handleResetPasswordError(this._requestErrorDiv, result.getException());
 	} else {
-		// callback returns RecoverAccountResponse with a recoveryAttemptsLeft value. The calback alone with no exceptions is valid enough.
 		Dwt.hide(this._requestCodeDivId);
 		Dwt.show(this._validateCodeDivId);
 		this._codeInputCheck();
@@ -379,8 +370,6 @@ function(currentDivId, result) {
 
 ZmPasswordRecoveryDialog.prototype._verifyRecoveryCode =
 function(currentDivId) {
-	// console.log("Verify Recovery Code: cId: ", currentDivId);
-	// console.log("verify code: ", this._codeInput.value);
 	var command = new ZmCsfeCommand();
 	var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAccount");
 	var respCallback = this._verifyRecoveryCodeCallback.bind(this, currentDivId);
@@ -394,16 +383,14 @@ function(currentDivId) {
 
 ZmPasswordRecoveryDialog.prototype._verifyRecoveryCodeCallback =
 function(currentDivId, result) {
-	// console.log("recoveryVerifyCodeCallback - currentDivId: ", currentDivId);
-	// console.log("result: ", result);
-//	console.log("result detail: ", result._data.Body.RecoverAccountResponse.recoveryAccount);
 	if (!result || result.isException()) {
-		// console.log("no result or theres an exception");
 	} else {
 		var response = result.getResponse();
-		// console.log("response: ", response);
 		Dwt.hide(this._validateCodeDivId);
 		Dwt.show(this._codeSuccessDivId);
+		this.continueSessionsRecoveryButton.setVisible(true);
+		this.resetPasswordRecoveryButton.setVisible(false); // set to true once methods are ready.
+		this.setButtonVisible(ZmPasswordRecoveryDialog.CANCEL_BUTTON, false);
 		this.setButtonVisible(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, false);
 		this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
 	}
