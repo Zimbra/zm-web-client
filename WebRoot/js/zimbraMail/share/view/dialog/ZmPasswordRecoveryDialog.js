@@ -150,6 +150,7 @@ ZmPasswordRecoveryDialog.prototype._createControls = function() {
 	this._accountInput = Dwt.getElement(id + "_account_input");
 	this._accountErrorDiv = Dwt.getElement(id + "_account_input_error");
 	this._requestErrorDiv = Dwt.getElement(id + "_request_code_error");
+	this._validateErrorDiv = Dwt.getElement(id + "_validate_code_error");
 	this._codeInput = Dwt.getElement(id + "_code_input");
 	this._passwordNewInput = Dwt.getElement(id + "_password_new_input");
 	this._passwordConfirmInput = Dwt.getElement(id + "_password_confirm_input");
@@ -384,6 +385,7 @@ function(currentDivId) {
 ZmPasswordRecoveryDialog.prototype._verifyRecoveryCodeCallback =
 function(currentDivId, result) {
 	if (!result || result.isException()) {
+		this._handleResetPasswordError(this._validateErrorDiv, result.getException());
 	} else {
 		var response = result.getResponse();
 		Dwt.hide(this._validateCodeDivId);

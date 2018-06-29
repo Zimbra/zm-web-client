@@ -591,9 +591,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
                                 </td>
                                 </tr>
-                                <script>console.log("${domainInfo.attrs.zimbraFeatureResetPasswordStatus}");</script>
-                                <!-- @TODO Change below condition when server side code is fixed -->
-                                <c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus ne 'enabled'}">
+                                <c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">
                                     <tr>
                                         <td>&nbsp;</td>
                                         <td class="submitTD">
