@@ -728,26 +728,40 @@
 		<div id='${id}_get_recovery_account'>
 			<p><$=ZmMsg.passwordRecoveryGetAccountDescription$></p>
 			<div class="ZmPasswordRecoverySetupContainer">
-				<div id='${id}_account_input_error' style="display:none;" class="ZmPasswordRecoverySetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></div>
+				<div id='${id}_account_input_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
+					<table><tr>
+						<td><img class="ZLoginErrorIcon" altkey='ALT_ERROR' src="/img/dwt/ImgCritical_32.png" /></td>
+						<td id='${id}_account_input_error_message'><$=ZmMsg.offlinePasswordUpdateFailure$></td>
+					</tr></table>
+				</div>
 				<label for="${id}_account_input"><$=ZmMsg.passwordRecoveryAccountLabel$></label>
 				<input type="text" id="${id}_account_input" size="35" autocomplete="off"/>
 			</div>
 		</div>
 		<div id='${id}_request_code'>
-			<div id='${id}_request_code_error' style="display:none;" class="ZmPasswordRecoverySetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></div>
 			<p id='${id}_request_code_description'>TEST</p>
+			<div id='${id}_request_code_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
+				<table><tr>
+					<td><img class="ZLoginErrorIcon" altkey='ALT_ERROR' src="/img/dwt/ImgCritical_32.png" /></td>
+					<td id='${id}_request_code_error_message'><$=ZmMsg.offlinePasswordUpdateFailure$></td>
+				</tr></table>
+			</div>
 		</div>
 		<div id='${id}_validate_code'>
 			<p><$=ZmMsg.passwordRecoveryCodeValidationDescription$></p>
 			<div class="ZmPasswordRecoverySetupContainer">
-				<div id='${id}_validate_code_error' style="display:none;" class="ZmPasswordRecoverySetupError"><$=ZmMsg.passwordRecoveryCodeValidationError$></div>
+				<div id='${id}_validate_code_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
+					<table><tr>
+						<td><img class="ZLoginErrorIcon" altkey='ALT_ERROR' src="/img/dwt/ImgCritical_32.png" /></td>
+						<td id='${id}_validate_code_error_message'><$=ZmMsg.passwordRecoveryCodeValidationError$></td>
+					</tr></table>
+				</div>
 				<label for="${id}_code_input"><$=ZmMsg.passwordRecoveryCodeLabel$></label>
 				<input type="text" id="${id}_code_input" size="35" autocomplete="off"/>
 			</div>
 		</div>
 		<div id='${id}_code_success'>
 			<p><$=ZmMsg.passwordRecoveryCodeSuccessDescription$></p>
-
 			<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 				<tr>
 					<td class='ZOptionsField'>
@@ -768,6 +782,15 @@
 				<h4 class="ZmPasswordRecoverySetupError"><$=ZmMsg.passwordRecoveryResetError$></h4>
 				<p><$=ZmMsg.passwordRecoveryResetErrorDescription$></p>
 			</div>
+			<div id='${id}_reset_password_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
+				<table><tr>
+					<td><img class="ZLoginErrorIcon" altkey='ALT_ERROR' src="/img/dwt/ImgCritical_32.png" /></td>
+					<td id='${id}_reset_password_error_message'><$=ZmMsg.passwordRecoveryResetError$>
+<!--						<$=ZmMsg.passwordRecoveryResetErrorDescription$>  -->
+					</td>
+				</tr></table>
+			</div>
+
 			<div class="ZmPasswordRecoverySetupContainer">
 				<label for="${id}_password_new_input"><$=ZmMsg.passwordRecoveryResetNewLabel$></label>
 				<input type="password" id="${id}_password_new_input" size="35" autocomplete="off"/><br />

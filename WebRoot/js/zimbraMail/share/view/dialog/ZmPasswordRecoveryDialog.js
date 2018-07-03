@@ -48,7 +48,7 @@ ZmPasswordRecoveryDialog = function(params) {
 
 	var resendOptionButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON,
 								ZmMsg.recoveryEmailButtonResend,
-								DwtDialog.ALIGN_LEFT,
+								DwtDialog.ALIGN_RIGHT,
 								this._resendOptionButtonListener.bind(this));
 
 	var resetSubmitButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON,
@@ -149,8 +149,12 @@ ZmPasswordRecoveryDialog.prototype._createControls = function() {
 					"_RESET_PASSWORD", "_resetButtonListener");
 	this._accountInput = Dwt.getElement(id + "_account_input");
 	this._accountErrorDiv = Dwt.getElement(id + "_account_input_error");
+	this._accountErrorMessageDiv = Dwt.getElement(id + "_account_input_error_message");
+	this._accountErrorDivMsg = Dwt.getElement(id + "_account_input_error_message");
 	this._requestErrorDiv = Dwt.getElement(id + "_request_code_error");
+	this._requestErrorMessageDiv = Dwt.getElement(id + "_request_code_error_message");
 	this._validateErrorDiv = Dwt.getElement(id + "_validate_code_error");
+	this._validateErrorMessageDiv = Dwt.getElement(id + "_validate_code_error_message");
 	this._codeInput = Dwt.getElement(id + "_code_input");
 	this._passwordNewInput = Dwt.getElement(id + "_password_new_input");
 	this._passwordConfirmInput = Dwt.getElement(id + "_password_confirm_input");
@@ -233,6 +237,7 @@ ZmPasswordRecoveryDialog.prototype._verifyCodeButtonListener = function() {
 
 ZmPasswordRecoveryDialog.prototype._resendOptionButtonListener = function() {
 	var currentDivId = this._divIdArray[this._divIdArrayIndex];
+	this._sendRecoveryCode(currentDivId);
 };
 
 ZmPasswordRecoveryDialog.prototype._resetSubmitButtonListener = function() {
@@ -314,12 +319,12 @@ function(currentDivId) {
 ZmPasswordRecoveryDialog.prototype._verifyEmailCallback =
 function(currentDivId, result) {
 	if (!result || result.isException()) {
-		this._handleResetPasswordError(this._accountErrorDiv, result.getException());
+		this._handleResetPasswordError(this._accountErrorDiv, this._accountErrorMessageDiv, result.getException());
 	}
 	else {
 		var response = result.getResponse();
 		if (!response || !response.Body || !response.Body.RecoverAccountResponse) {
-			this._handleResetPasswordError(this._accountErrorDiv);
+			this._handleResetPasswordError(this._accountErrorDiv, this._accountErrorMessageDiv);
 			return;
 		}
 
@@ -337,9 +342,9 @@ function(currentDivId, result) {
 };
 
 ZmPasswordRecoveryDialog.prototype._handleResetPasswordError =
-function(errorDivId, exception) {
+function(errorDivId, errorMessageDivId, exception) {
 	var errorCode = exception ? exception.code : 'unknownError';
-	Dwt.setInnerHtml(errorDivId, ZmMsg[errorCode]);
+	Dwt.setInnerHtml(errorMessageDivId, ZmMsg[errorCode]);
 	Dwt.show(errorDivId);
 }
 
@@ -357,7 +362,7 @@ function(currentDivId) {
 ZmPasswordRecoveryDialog.prototype._sendRecoveryCodeCallback =
 function(currentDivId, result) {
 	if (!result || result.isException()) {
-		this._handleResetPasswordError(this._requestErrorDiv, result.getException());
+		this._handleResetPasswordError(this._requestErrorDiv, this._requestErrorMessageDiv, result.getException());
 	} else {
 		Dwt.hide(this._requestCodeDivId);
 		Dwt.show(this._validateCodeDivId);
@@ -366,9 +371,12 @@ function(currentDivId, result) {
 		this.setButtonVisible(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON, false);
 		this.setButtonVisible(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, true);
 // TODO: uncomment below and connect
-//		this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, true);
+		this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, true);
 	}
 };
+
+
+
 
 ZmPasswordRecoveryDialog.prototype._verifyRecoveryCode =
 function(currentDivId) {
@@ -386,7 +394,7 @@ function(currentDivId) {
 ZmPasswordRecoveryDialog.prototype._verifyRecoveryCodeCallback =
 function(currentDivId, result) {
 	if (!result || result.isException()) {
-		this._handleResetPasswordError(this._validateErrorDiv, result.getException());
+		this._handleResetPasswordError(this._validateErrorDiv, this._validateErrorMessageDiv, result.getException());
 	} else {
 		var response = result.getResponse();
 		Dwt.hide(this._validateCodeDivId);
@@ -398,6 +406,5 @@ function(currentDivId, result) {
 		this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
 	}
 };
-
 
 

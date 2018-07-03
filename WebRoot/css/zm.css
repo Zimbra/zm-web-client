@@ -5975,14 +5975,22 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	color: #fff;
 	cursor: pointer;
 	font-size: 1em;
+	margin: 0 0.4em;
 }
 
 .ZmPasswordRecoveryButton .ZButtonBorder {
-	background-color: #007CC3;
+	background-color: transparent;
+	border: 1px solid transparent;
 	padding: 2px;
 }
 
+.ZmPasswordRecoveryButton:hover {
+	background-color: #3f9cd2;
+}
+
+.ZmPasswordRecoveryButton.ZDisabled:hover,
 .ZmPasswordRecoveryButton.ZDisabled {
+	background-color: #007CC3;
 	border: 1px solid #ccc;
 	color: #ccc;
 }
@@ -5991,6 +5999,8 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	width: 100%;
 }
 
+.ZmPasswordRecoveryButton.ZDisabled:hover .ZButtonTable .ZWidgetTitle,
+.ZmPasswordRecoveryButton.ZDisabled:hover .ZWidgetTitle,
 .ZmPasswordRecoveryButton.ZDisabled .ZButtonTable .ZWidgetTitle,
 .ZmPasswordRecoveryButton.ZDisabled .ZWidgetTitle {
 	color: #ccc;
@@ -6001,6 +6011,13 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 .ZmPasswordRecoveryButton.ZFocused .ZButtonTable .ZWidgetTitle,
 .ZmPasswordRecoveryButton.ZFocused .ZWidgetTitle {
 	color: #fff;
+}
+
+.ZmPasswordRecoveryButton:hover .ZWidgetTitle,
+.ZmPasswordRecoveryButton:hover .ZButtonTable .ZWidgetTitle,
+.ZmPasswordRecoveryButton.ZFocused:hover .ZButtonTable .ZWidgetTitle,
+.ZmPasswordRecoveryButton.ZFocused:hover .ZWidgetTitle {
+	color: #333;
 }
 
 .ZmPasswordRecoverySetup {
@@ -6018,8 +6035,14 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	margin:5px;
 }
 
-.ZmPasswordRecoverySetupContainer input {
+.ZmPasswordRecoverySetupContainer INPUT[type="text"], 
+.ZmPasswordRecoverySetupContainer INPUT[type="password"] {
 	float: right;
+	border: 1px solid #FFF;
+	padding: 0;
+	width: 235px;
+	height: 20px;
+	border-radius: 5px;
 }
 
 .ZmPasswordRecoverySetup .ImgLoginBanner {
@@ -6034,11 +6057,33 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	display:inline-block;
 	margin:10px
 }
-
+/*
 .ZmPasswordRecoverySetupError {
 	color:#990000;
 	font-weight:bold;
 }
+.LoginScreen .center-small #ZLoginErrorPanel {
+	max-height:40px;
+	overflow:auto;
+}
+*/
+
+.ZmPasswordRecoverySetupError {
+	position: relative;
+	color: #000;
+	border: 0;
+	left: auto;
+	margin: 10px 10%;
+	position: relative;
+	background-color: #ff9;
+	padding: .5em 1em;
+	border-radius: 8px;
+}
+
+.ZmPasswordRecoverySetupError .ZLoginErrorIcon {
+	margin: auto 10px auto auto;
+}
+
 /* Password Recovery Setup dialog end*/
 
 
