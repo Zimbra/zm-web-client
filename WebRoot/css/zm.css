@@ -5988,6 +5988,11 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	background-color: #3f9cd2;
 }
 
+#continueSessionsRecoveryButton {
+	width: 145px;
+	margin: 0 auto;
+}
+
 .ZmPasswordRecoveryButton.ZDisabled:hover,
 .ZmPasswordRecoveryButton.ZDisabled {
 	background-color: #007CC3;
