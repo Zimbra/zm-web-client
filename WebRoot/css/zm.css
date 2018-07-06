@@ -5988,9 +5988,10 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	background-color: #3f9cd2;
 }
 
+#resetPasswordRecoveryButton,
 #continueSessionsRecoveryButton {
 	width: 145px;
-	margin: 0 auto;
+	margin: 50px auto 0;
 }
 
 .ZmPasswordRecoveryButton.ZDisabled:hover,
@@ -6027,7 +6028,7 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 
 .ZmPasswordRecoverySetup {
 	width: 475px;
-	height: 212px;
+	min-height: 205px;
 	color: white;
 }
 
@@ -6062,17 +6063,8 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	display:inline-block;
 	margin:10px
 }
-/*
-.ZmPasswordRecoverySetupError {
-	color:#990000;
-	font-weight:bold;
-}
-.LoginScreen .center-small #ZLoginErrorPanel {
-	max-height:40px;
-	overflow:auto;
-}
-*/
 
+.ZmPasswordRecoverySetupInfo,
 .ZmPasswordRecoverySetupError {
 	position: relative;
 	color: #000;
@@ -6085,6 +6077,7 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	border-radius: 8px;
 }
 
+.ZmPasswordRecoverySetupInfo .ZLoginInfoIcon,
 .ZmPasswordRecoverySetupError .ZLoginErrorIcon {
 	margin: auto 10px auto auto;
 }
