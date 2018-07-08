@@ -26,71 +26,38 @@
 	function showCompanyUrl() {
 		window.open(ZmMsg.splashScreenCompanyURL, '_blank');
 	}
-	function getHistory() {
-        var userEmail =  appCtxt.getActiveAccount().getEmail();
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200 && this.responseText != null && this.responseText != "" && this.responseText != "No records found") {
-            var historyData = JSON.parse(this.responseText);
-            var splashScreenTable = document.getElementById("SplashScreenTable");
-            var dataLength = historyData.length;
-            for(var i =0; i< dataLength; i++){
-                var row = splashScreenTable.insertRow(i + 1);
-                var cell1 = row.insertCell(0);
-                var cell2 = row.insertCell(1);
-                var cell3 = row.insertCell(2);
-                var cell4 = row.insertCell(3);
-                var cell5 = row.insertCell(4);
-                cell1.innerHTML = i+1;
-                cell2.innerHTML = historyData[i].ip;
-                cell3.innerHTML = historyData[i].requestTime;
-                cell4.innerHTML = historyData[i].protocol;
-                cell5.innerHTML = historyData[i].location;
-                }
-            }
-        };
-        xhttp.open("GET", "/public/historyProxy.jsp?useremail="+userEmail, false);
-        xhttp.setRequestHeader("Content-Type", "application/json");
-        xhttp.send();
-   	}
-	window.onload = function() {
-		getHistory();
-		if(window.loginHistoryTimeout > 0) {
-			document.getElementById("SplashLoadingScreen").style.display = "none";
-			document.getElementById("SplashScreenTable").style.display = "table";
-			document.getElementById("SplashHisoryScreen").style.display = "block";
-		}
-	};
 </script>
+
 	<div id="ZSplashPanel" class="center">
 		<div class="contentBox">
-			<div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div>
+			<h1><div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div></h1>
 			<div id="ZLoginAppName">
 				<script>if(!window.isOffline) { document.write(ZmMsg.splashScreenAppName) }</script>
 			</div>
 			<div id="#ZSplashBodyContainer" class="content">
 				<div class="message">
-					<div id="SplashLoadingScreen"> <script>document.write(ZmMsg.splashScreenLoading)</script> </div>
-					<div class="SplashHisoryScreen" id="SplashHisoryScreen" style="display:none"> <h3><script>document.write(ZmMsg.zimbraLoginHistoryHeading)</script></h3> </div>
-					<div class="container-table100">
-						<div class="wrap-table100">
-							<div class="table100">
-								<table class="table_history" id="SplashScreenTable" style="display:none">
-									<thead>
-										<tr class="table100-head">
-											<th class="column1"><script>document.write(ZmMsg.zimbraLoginHistorySrNo)</script></th>
-											<th class="column2"><script>document.write(ZmMsg.zimbraLoginHistoryGeoLocationIP)</script></th>
-											<th class="column3"><script>document.write(ZmMsg.zimbraLoginHistoryTimestamp)</script></th>
-											<th class="column4"><script>document.write(ZmMsg.zimbraLoginHistoryProtocol)</script></th>
-											<th class="column4"><script>document.write(ZmMsg.zimbraLoginHistoryLocation)</script></th>
-										</tr>
-									</thead>
-									<tbody class="table_body">
-									</tbody>
-								<table>
-							</div>
+					<script>document.write(ZmMsg.splashScreenLoading)</script>
+					<h3><script>document.write(ZmMsg.zimbraLoginHistoryHeading)</script></h3>
+					<div align="center" style="margin-top: 0%">
+					<div class="divTable" style="border: 1px solid #000;" align="center">
+					<div class="divTableBody" id="login_history" align="center" >
+						<div class="divTableRow">
+							<div class="divTableCell"><b><script>document.write(ZmMsg.zimbraLoginHistorySrNo)</script></b></div>
+							<div class="divTableCell"><b><script>document.write(ZmMsg.zimbraLoginHistoryGeoLocationIP)</script></b></div>
+							<div class="divTableCell"><b><script>document.write(ZmMsg.zimbraLoginHistoryTimestamp)</script></b></div>
 						</div>
+						<div class="divTableRow"><div class="divTableCell">1</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">2</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">3</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">4</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">5</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">6</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">7</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">8</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">9</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">10</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
 					</div>
+					</div></div>
 				</div>
 				<div class="switch" id="splashScreenSwitchContainer">
 					<script>if(!window.isOffline) { document.write(ZmMsg.splashScreenSwitch) }</script>
