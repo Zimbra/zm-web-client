@@ -22,12 +22,12 @@
 -->
 <!-- BEGIN SPLASH SCREEN -->
 <div id='skin_container_splash_screen' class='SplashScreen'>
-	<script language='javascript'>
-		function showCompanyUrl() {
-			window.open(ZmMsg.splashScreenCompanyURL, '_blank');
-		}
-	</script>
-	
+<script language='javascript'>
+	function showCompanyUrl() {
+		window.open(ZmMsg.splashScreenCompanyURL, '_blank');
+	}
+</script>
+
 	<div id="ZSplashPanel" class="center">
 		<div class="contentBox">
 			<h1><div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div></h1>
@@ -37,6 +37,27 @@
 			<div id="#ZSplashBodyContainer" class="content">
 				<div class="message">
 					<script>document.write(ZmMsg.splashScreenLoading)</script>
+					<h3><script>document.write(ZmMsg.zimbraLoginHistoryHeading)</script></h3>
+					<div align="center" style="margin-top: 0%">
+					<div class="divTable" style="border: 1px solid #000;" align="center">
+					<div class="divTableBody" id="login_history" align="center" >
+						<div class="divTableRow">
+							<div class="divTableCell"><b><script>document.write(ZmMsg.zimbraLoginHistorySrNo)</script></b></div>
+							<div class="divTableCell"><b><script>document.write(ZmMsg.zimbraLoginHistoryGeoLocationIP)</script></b></div>
+							<div class="divTableCell"><b><script>document.write(ZmMsg.zimbraLoginHistoryTimestamp)</script></b></div>
+						</div>
+						<div class="divTableRow"><div class="divTableCell">1</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">2</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">3</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">4</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">5</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">6</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">7</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">8</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">9</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+						<div class="divTableRow"><div class="divTableCell">10</div><div class="divTableCell"></div><div class="divTableCell"></div></div>
+					</div>
+					</div></div>
 				</div>
 				<div class="switch" id="splashScreenSwitchContainer">
 					<script>if(!window.isOffline) { document.write(ZmMsg.splashScreenSwitch) }</script>
