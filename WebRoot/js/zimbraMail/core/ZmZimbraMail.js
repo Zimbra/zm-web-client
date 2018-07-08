@@ -281,7 +281,8 @@ ZmZimbraMail.killSplash =
 function() {
 	// 	Splash screen is now a part of the skin, loaded in statically via the JSP
 	//	as a well-known ID.  To hide the splash screen, just hide that div.
-	setTimeout(function () { Dwt.hide("skin_container_splash_screen") }, 15000);
+	var SPLASH_SCREEN_TIMEOUT = appCtxt.get(ZmSetting.SPLASH_SCREEN_TIMEOUT);
+	setTimeout(function () { Dwt.hide("skin_container_splash_screen") }, SPLASH_SCREEN_TIMEOUT);
 };
 
 /**
