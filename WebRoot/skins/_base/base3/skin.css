@@ -637,3 +637,30 @@ SELECT						{	@FieldBorder@	}
 	background-color: @AppC@;
 	background-image: none;
 }
+
+hr {
+	width: 50%;
+}
+
+.divTable {
+	display: table;
+	width: 80%;
+	color: #994221;
+}
+.divTableRow {
+	background-color: #FFFFFF;
+	display: table-row;
+	 color: #990033;
+}
+
+.divTableCell {
+	border: 1px solid #999999;
+	display: table-cell;
+	padding: 3px 10px;
+	color: #994221;
+}
+
+.divTableBody {
+	display: table-row-group;
+	color: #994221;
+}
