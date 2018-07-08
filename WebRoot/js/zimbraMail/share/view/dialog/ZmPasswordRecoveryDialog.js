@@ -122,9 +122,8 @@ function() {
 };
 
 /**
- * Create Recovery Button method.
- *
- * To reduce repetitive code, make a function that can build password recovery buttons with the desired params.
+ * Create DWT buttons that are not part of the main dialog button flow.
+ * These buttons are to be used in the body of the dialog view.
  *
  * @param {string}  ide         The name of the id for this button element.
  * @param {string}  text        The text that shows on the button.
@@ -285,7 +284,7 @@ function() {
  */
 ZmPasswordRecoveryDialog.prototype._resendOptionButtonListener =
 function() {
-	this._resendCount ++;
+	this._resendCount++;
 	this._sendRecoveryCode();
 };
 

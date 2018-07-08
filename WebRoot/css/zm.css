@@ -5969,7 +5969,7 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 }
 
 .ZmPasswordRecoveryButton {
-	background-color: #007CC3;
+	background-color: #007cc3;
 	border-radius: 3px;
 	border: 1px solid #fff;
 	color: #fff;
@@ -5996,7 +5996,7 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 
 .ZmPasswordRecoveryButton.ZDisabled:hover,
 .ZmPasswordRecoveryButton.ZDisabled {
-	background-color: #007CC3;
+	background-color: #007cc3;
 	border: 1px solid #ccc;
 	color: #ccc;
 }
@@ -6044,7 +6044,7 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 .ZmPasswordRecoverySetupContainer INPUT[type="text"], 
 .ZmPasswordRecoverySetupContainer INPUT[type="password"] {
 	float: right;
-	border: 1px solid #FFF;
+	border: 1px solid #fff;
 	padding: 0;
 	width: 235px;
 	height: 20px;
@@ -6058,7 +6058,7 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 .ZmPasswordRecoverySetupContainer SPAN.email-key, .ZmAppPasscode {
 	padding:10px;
 	font-weight:bold;
-	background-color:#FFE599;
+	background-color:#ffe599;
 	letter-spacing: 3px;
 	display:inline-block;
 	margin:10px
