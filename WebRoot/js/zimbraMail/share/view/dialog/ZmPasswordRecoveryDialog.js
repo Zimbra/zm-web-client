@@ -211,6 +211,12 @@ function() {
 	DwtDialog.prototype.popup.call(this);
 	this._accountInput.value = this.accountInput;
 	this._accountInput.focus();
+	this.setButtonEnabled(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON, false);
+	this.setButtonEnabled(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, false);
+	this.setButtonEnabled(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, false);
+	if(this._accountInput.value.length > 0) {
+		this.setButtonEnabled(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON, true);
+	}
 };
 
 /**
@@ -241,11 +247,6 @@ function() {
 	this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, false);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.LOGIN_BUTTON, false);
-	if(this._accountInput.value !== "") {
-		this.setButtonEnabled(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON, true);
-	} else {
-		this.setButtonEnabled(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON, false);
-	}
 	this._divIdArrayIndex = 0;
 	this._resendCount = 0;
 	DwtDialog.prototype.reset.call(this);
@@ -415,7 +416,20 @@ function(result) {
 ZmPasswordRecoveryDialog.prototype._handleResetPasswordError =
 function(errorDivId, errorMessageDivId, exception) {
 	var errorCode = exception ? exception.code : 'unknownError';
-	Dwt.setInnerHtml(errorMessageDivId, ZmMsg[errorCode]);
+	var errorMessage = exception ? exception.msg.toLowerCase() : 'unknownError';
+	var emailMatch = new RegExp('email');
+	var usernameMatch = new RegExp('username');
+	var passwordMatch = new RegExp('password');
+	if (errorCode === 'service.INVALID_REQUEST' && (usernameMatch.test(errorMessage) || emailMatch.test(errorMessage))) {
+		Dwt.setInnerHtml(errorMessageDivId, ZmMsg['service.INVALID_REQUEST_USERNAME']);
+	} else if (errorCode === 'service.INVALID_REQUEST' && passwordMatch.test(errorMessage)) {
+		Dwt.setInnerHtml(errorMessageDivId, ZmMsg['service.INVALID_REQUEST_PASSWORD']);
+	} else if (errorCode === 'service.MAX_ATTEMPTS_REACHED_SUSPEND_FEATURE') {
+		this.setButtonEnabled(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
+		Dwt.setInnerHtml(errorMessageDivId, ZmMsg[errorCode]);
+	} else {
+		Dwt.setInnerHtml(errorMessageDivId, ZmMsg[errorCode]);
+	}
 	Dwt.show(errorDivId);
 }
 
@@ -443,7 +457,7 @@ function() {
 ZmPasswordRecoveryDialog.prototype._sendRecoveryCodeCallback =
 function(result) {
 	if (!result || result.isException()) {
-		this._handleResetPasswordError(this._requestErrorDiv, this._requestErrorMessageDiv, result.getException());
+		this._handleResetPasswordError(this._validateErrorDiv, this._validateErrorMessageDiv, result.getException());
 	} else {
 		if (this._resendCount > 0 ) {
 			Dwt.setInnerHtml(this._validateCodeDescription, ZmMsg.recoveryEmailMessageResend);
@@ -506,6 +520,7 @@ function() {
 		Dwt.show(this._resetPasswordDivId);
 		this.continueSessionsRecoveryButton.setVisible(false);
 		this.resetPasswordRecoveryButton.setVisible(false); // set to true once methods are ready.
+		this.getButton(ZmPasswordRecoveryDialog.CANCEL_BUTTON).setText(ZmMsg.recoveryEmailButtonContinueSession);
 		this.setButtonVisible(ZmPasswordRecoveryDialog.CANCEL_BUTTON, true);
 		this.setButtonVisible(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, false);
 		this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
