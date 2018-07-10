@@ -58,12 +58,12 @@ function(params) {
 								this._resetSubmitButtonListener.bind(this));
 
 	var cancelButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.CANCEL_BUTTON,
-								ZmMsg.cancel,
+								ZmMsg.passwordRecoveryButtonCancel,
 								DwtDialog.ALIGN_LEFT,
 								this._cancelButtonListener.bind(this));
 
 	var loginButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.LOGIN_BUTTON,
-								ZmMsg.passwordRecoveryButtonLogin,
+								ZmMsg.passwordRecoveryButtonCancel,
 								DwtDialog.ALIGN_RIGHT,
 								this._finishButtonListener.bind(this));
 
@@ -213,7 +213,6 @@ function() {
 	this._accountInput.focus();
 	this.setButtonEnabled(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON, false);
 	this.setButtonEnabled(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, false);
-	this.setButtonEnabled(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, false);
 	if(this._accountInput.value.length > 0) {
 		this.setButtonEnabled(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON, true);
 	}
@@ -416,7 +415,7 @@ function(result) {
 ZmPasswordRecoveryDialog.prototype._handleResetPasswordError =
 function(errorDivId, errorMessageDivId, exception) {
 	var errorCode = exception ? exception.code : 'unknownError';
-	var errorMessage = exception ? exception.msg.toLowerCase() : 'unknownError';
+	var errorMessage = exception && exception.msg ? exception.msg.toLowerCase() : 'Unknown error.';
 	var emailMatch = new RegExp('email');
 	var usernameMatch = new RegExp('username');
 	var passwordMatch = new RegExp('password');
@@ -426,7 +425,9 @@ function(errorDivId, errorMessageDivId, exception) {
 		Dwt.setInnerHtml(errorMessageDivId, ZmMsg['service.INVALID_REQUEST_PASSWORD']);
 	} else if (errorCode === 'service.MAX_ATTEMPTS_REACHED_SUSPEND_FEATURE') {
 		this.setButtonEnabled(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
-		Dwt.setInnerHtml(errorMessageDivId, ZmMsg[errorCode]);
+		Dwt.setInnerHtml(errorMessageDivId, ZmMsg['service.CONTACT_ADMIN']);
+	} else if (errorCode === 'service.FEATURE_RESET_PASSWORD_SUSPENDED' || errorCode === 'service.FEATURE_RESET_PASSWORD_DISABLED') {
+		Dwt.setInnerHtml(errorMessageDivId, ZmMsg['service.CONTACT_ADMIN']);
 	} else {
 		Dwt.setInnerHtml(errorMessageDivId, ZmMsg[errorCode]);
 	}
