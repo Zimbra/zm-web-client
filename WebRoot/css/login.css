@@ -112,6 +112,11 @@ FORM {
 	font-size:.9em;
 	margin-left:5px;
 }
+.LoginScreen #ZLoginForgotPassword {
+	color:@LoginLabelColor@;
+	font-size:.9em;
+	float: right;
+}
 .LoginScreen #ZLoginWhatsThis {
 	left:0px;
 	margin-left:-10em;

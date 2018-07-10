@@ -365,7 +365,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		var enableMailPrefs = this.get(ZmSetting.MAIL_ENABLED) || (this.get(ZmSetting.ADMIN_DELEGATED) && this.get(ZmSetting.ADMIN_PREFERENCES_ENABLED));
 		this.set(ZmSetting.MAIL_PREFERENCES_ENABLED, enableMailPrefs, setDefault, skipNotify, skipImplicit);
 		// Disable other areas where mail could be exposed to a prefs-only admin
-		if (this.get(ZmSetting.MAIL_PREFERENCES_ENABLED) && !this.get(ZmSetting.MAIL__ENABLED)) {
+		if (this.get(ZmSetting.MAIL_PREFERENCES_ENABLED) && !this.get(ZmSetting.MAIL_ENABLED)) {
 			this.set(ZmSetting.MAIL_FORWARDING_ENABLED, false, setDefault, skipNotify, skipImplicit);
 			this.set(ZmSetting.FILTERS_MAIL_FORWARDING_ENABLED, false, setDefault, skipNotify, skipImplicit);
 			this.set(ZmSetting.NOTIF_FEATURE_ENABLED, false, setDefault, skipNotify, skipImplicit);
@@ -961,6 +961,12 @@ function() {
 	this.registerSetting("TWO_FACTOR_AUTH_REQUIRED",	    {name:"zimbraFeatureTwoFactorAuthRequired", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("TRUSTED_DEVICES_ENABLED",         {name:"zimbraFeatureTrustedDevicesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("APP_PASSWORDS_ENABLED",	        {name:"zimbraFeatureAppSpecificPasswordsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+
+	this.registerSetting("RESET_PASSWORD_STATUS",				{name:"zimbraFeatureResetPasswordStatus", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
+	this.registerSetting("PASSWORD_RECOVERY_EMAIL",				{name:"zimbraPrefPasswordRecoveryAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
+	this.registerSetting("PASSWORD_RECOVERY_EMAIL_STATUS",			{name:"zimbraPrefPasswordRecoveryAddressStatus", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
+	this.registerSetting("RESET_PASSWORD_RECOVERY_CODE_EXPIRY",				{name:"zimbraResetPasswordRecoveryCodeExpiry", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
+
 
 	// user metadata (included with COS since the user can't change them)
 	this.registerSetting("LICENSE_STATUS",					{type:ZmSetting.T_COS, defaultValue:ZmSetting.LICENSE_GOOD});

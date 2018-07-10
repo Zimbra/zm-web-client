@@ -5946,6 +5946,102 @@ RBC, RTC {
 }
 /* Two-Factor Setup dialog end*/
 
+/* Password Recovery Setup dialog start*/
+html[data-ispasswordrecoverypage] .VeilOverlay TABLE {
+	@FontFamily-default@
+	@FontSize-normal@
+	@LoginScreen@
+}
+
+html[data-ispasswordrecoverypage] .WindowInnerContainer {
+	background-color: transparent;
+}
+
+html[data-ispasswordrecoverypage] .WindowOuterContainer {
+	@LoginContentBox@
+	box-shadow: none;
+	border-color: transparent;
+	padding: 22px;
+}
+
+html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
+	visibility: hidden;
+}
+
+.ZmPasswordRecoveryButton {
+	background-color: #007CC3;
+	border-radius: 3px;
+	border: 1px solid #fff;
+	color: #fff;
+	cursor: pointer;
+	font-size: 1em;
+}
+
+.ZmPasswordRecoveryButton .ZButtonBorder {
+	background-color: #007CC3;
+	padding: 2px;
+}
+
+.ZmPasswordRecoveryButton.ZDisabled {
+	border: 1px solid #ccc;
+	color: #ccc;
+}
+
+.ZmPasswordRecoveryButton.ZHasText .ZButtonTable {
+	width: 100%;
+}
+
+.ZmPasswordRecoveryButton.ZDisabled .ZButtonTable .ZWidgetTitle,
+.ZmPasswordRecoveryButton.ZDisabled .ZWidgetTitle {
+	color: #ccc;
+}
+
+.ZmPasswordRecoveryButton .ZWidgetTitle,
+.ZmPasswordRecoveryButton .ZButtonTable .ZWidgetTitle,
+.ZmPasswordRecoveryButton.ZFocused .ZButtonTable .ZWidgetTitle,
+.ZmPasswordRecoveryButton.ZFocused .ZWidgetTitle {
+	color: #fff;
+}
+
+.ZmPasswordRecoverySetup {
+	width: 475px;
+	height: 212px;
+	color: white;
+}
+
+.ZmPasswordRecoverySetupContainer {
+	margin:20px;
+}
+
+.ZmPasswordRecoverySetupContainer label {
+	display:inline-block;
+	margin:5px;
+}
+
+.ZmPasswordRecoverySetupContainer input {
+	float: right;
+}
+
+.ZmPasswordRecoverySetup .ImgLoginBanner {
+	height: 36px;
+}
+
+.ZmPasswordRecoverySetupContainer SPAN.email-key, .ZmAppPasscode {
+	padding:10px;
+	font-weight:bold;
+	background-color:#FFE599;
+	letter-spacing: 3px;
+	display:inline-block;
+	margin:10px
+}
+
+.ZmPasswordRecoverySetupError {
+	color:#990000;
+	font-weight:bold;
+}
+/* Password Recovery Setup dialog end*/
+
+
 .ZmAppNameError {
 	margin-left:157px;
 	text-align:left;
