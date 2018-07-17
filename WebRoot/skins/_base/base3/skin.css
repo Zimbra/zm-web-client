@@ -259,11 +259,10 @@ BODY									{	margin:0px; 	}
 .SplashScreen .contentBox,
 .ErrorScreen .contentBox {
 	@LoginContentBox@
-	width:500px;
+	width:700px;
 }
 .LoginScreen .contentBox,
-.SplashScreen .contentBox {	
-	min-height:265px;
+.SplashScreen .contentBox {
 #IFDEF MSIE_LOWER_THAN_7
 	height:265px;
 #ENDIF
@@ -336,7 +335,6 @@ BODY									{	margin:0px; 	}
 .SplashScreen .message {
 	color:@LoginLabelColor@;
 	cursor:default;
-	padding-top:40px;
 	@FontSize-bigger@
 }
 .SplashScreen .switch {
@@ -636,4 +634,103 @@ SELECT						{	@FieldBorder@	}
 .ZmHtmlEditor .mce-btn, .ZmHtmlEditor .mce-panel {
 	background-color: @AppC@;
 	background-image: none;
+}
+
+.container-table100 {
+
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 33px 30px;
+}
+
+.wrap-table100 {
+  width: 1170px;
+}
+
+.table_history {
+  border-spacing: 1;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+}
+.table_history * {
+  position: relative;
+}
+.table_history td, .table_history th {
+  padding-left: 8px;
+}
+.table_history thead tr {
+  height: 60px;
+  background: #36304a;
+}
+.table_history .table_body tr {
+  height: 50px;
+}
+.table_history .table_body tr:last-child {
+  border: 0;
+}
+.table_history td.l, .table_history th.l {
+  text-align: right;
+}
+.table_history td.c, .table_history th.c {
+  text-align: center;
+}
+.table_history td.r, .table_history th.r {
+  text-align: center;
+}
+
+
+.table100-head th{
+  font-size: 18px;
+  color: #fff;
+  line-height: 1.2;
+  font-weight: unset;
+}
+
+.table_body tr:nth-child(even) {
+  background-color: #f5f5f5;
+}
+
+.table_body tr {
+  font-size: 15px;
+  color: #808080;
+  line-height: 1.2;
+  font-weight: unset;
+}
+
+.table_body tr:hover {
+  color: #555555;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.column1 {
+  width: 50px;
+  padding-left: 40px;
+  text-align: center;
+}
+
+.column2 {
+  width: 150px;
+  text-align: center;
+}
+
+.column3 {
+  width: 245px;
+  text-align: center;
+}
+
+.column4 {
+  width: 110px;
+  text-align: center;
 }

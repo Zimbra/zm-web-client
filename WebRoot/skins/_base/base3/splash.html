@@ -22,21 +22,73 @@
 -->
 <!-- BEGIN SPLASH SCREEN -->
 <div id='skin_container_splash_screen' class='SplashScreen'>
-	<script language='javascript'>
-		function showCompanyUrl() {
-			window.open(ZmMsg.splashScreenCompanyURL, '_blank');
-		}
-	</script>
-	
+<script language='javascript'>
+	function showCompanyUrl() {
+		window.open(ZmMsg.splashScreenCompanyURL, '_blank');
+	}
+	window.onload = function() {
+		document.getElementById("SplashScreenTable").style.display = "table";
+	};
+</script>
+
 	<div id="ZSplashPanel" class="center">
 		<div class="contentBox">
-			<h1><div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div></h1>
+			<div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div>
 			<div id="ZLoginAppName">
 				<script>if(!window.isOffline) { document.write(ZmMsg.splashScreenAppName) }</script>
 			</div>
 			<div id="#ZSplashBodyContainer" class="content">
 				<div class="message">
 					<script>document.write(ZmMsg.splashScreenLoading)</script>
+					<h3><script>document.write(ZmMsg.zimbraLoginHistoryHeading)</script></h3>
+					<div class="container-table100">
+						<div class="wrap-table100">
+							<div class="table100">
+								<table class="table_history" id="SplashScreenTable" style="display:none">
+									<thead>
+										<tr class="table100-head">
+											<th class="column1"><script>document.write(ZmMsg.zimbraLoginHistorySrNo)</script></th>
+											<th class="column2"><script>document.write(ZmMsg.zimbraLoginHistoryGeoLocationIP)</script></th>
+											<th class="column3"><script>document.write(ZmMsg.zimbraLoginHistoryTimestamp)</script></th>
+											<th class="column4"><script>document.write(ZmMsg.zimbraLoginHistoryProtocol)</script></th>
+										</tr>
+									</thead>
+									<tbody class="table_body">
+										<tr>
+											<td class="column1">1</td>
+											<td class="column2">10.268.28.117</td>
+											<td class="column3">09/07/2018 10:20:10</td>
+											<td class="column4">XYZ</td>
+										</tr>
+										<tr>
+											<td class="column1">2</td>
+											<td class="column2">10.268.28.117</td>
+											<td class="column3">09/07/2018 10:20:10</td>
+											<td class="column4">XYZ</td>
+										</tr>
+										<tr>
+											<td class="column1">3</td>
+											<td class="column2">10.268.28.117</td>
+											<td class="column3">09/07/2018 10:20:10</td>
+											<td class="column4">XYZ</td>
+										</tr>
+										<tr>
+											<td class="column1">4</td>
+											<td class="column2">10.268.28.117</td>
+											<td class="column3">09/07/2018 10:20:10</td>
+											<td class="column4">XYZ</td>
+										</tr>
+										<tr>
+											<td class="column1">5</td>
+											<td class="column2">10.268.28.117</td>
+											<td class="column3">09/07/2018 10:20:10</td>
+											<td class="column4">XYZ</td>
+										</tr>
+									</tbody>
+								<table>
+							</div>
+						</div>
+					</div>
 				</div>
 				<div class="switch" id="splashScreenSwitchContainer">
 					<script>if(!window.isOffline) { document.write(ZmMsg.splashScreenSwitch) }</script>
