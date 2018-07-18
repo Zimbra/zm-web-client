@@ -39,4 +39,5 @@ AjxPackage.require("ajax.3rdparty.tinymce.plugins.textcolor.plugin_min");
 AjxPackage.require("ajax.3rdparty.tinymce.plugins.lists.plugin_min");
 AjxPackage.require("ajax.3rdparty.tinymce.plugins.advlist.plugin_min");
 AjxPackage.require("ajax.3rdparty.tinymce.plugins.code.plugin_min");
+AjxPackage.require("ajax.3rdparty.tinymce.plugins.noneditable.plugin_min");
 AjxPackage.require("ajax.3rdparty.tinymce.themes.modern.theme_min");
