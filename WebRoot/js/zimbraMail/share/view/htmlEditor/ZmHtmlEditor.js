@@ -765,15 +765,14 @@ function(id, autoFocus) {
 		this._attachmentCallback ? 'zimage' : 'image',
 		'link zemoticons charmap hr table |',
 		appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS) ? 'ltr rtl |' : '',
-		'undo redo |',
-		'pastetext code'
+		'undo redo |'
 	];
 
 	// NB: contextmenu plugin deliberately omitted; it's confusing
 	var plugins = [
 		"zemoticons",
 		"table", "directionality", "textcolor", "lists", "advlist",
-		"link", "hr", "charmap", "code", "image", "autolink"
+		"link", "hr", "charmap", "code", "image", "autolink", "noneditable"
 	];
 
 	if (this._attachmentCallback) {
