@@ -457,12 +457,20 @@ function() {
  */
 ZmPasswordRecoveryDialog.prototype._sendRecoveryCodeCallback =
 function(result) {
+	var response = result && result.getResponse() ? result.getResponse() : {};
+	var sentLabel = this._resendCount > 0 ? ZmMsg.recoveryEmailResentLabel : ZmMsg.recoveryEmailSentLabel;
+	var attempts, validity, attemptsMessage, validityMessage, requestMessage;
 	if (!result || result.isException()) {
 		this._handleResetPasswordError(this._validateErrorDiv, this._validateErrorMessageDiv, result.getException());
 	} else {
-		if (this._resendCount > 0 ) {
-			Dwt.setInnerHtml(this._validateCodeDescription, ZmMsg.recoveryEmailMessageResend);
+		if (response.Body && response.Body.RecoverAccountResponse) {
+			attempts = response.Body.RecoverAccountResponse.recoveryAttemptsLeft ? response.Body.RecoverAccountResponse.recoveryAttemptsLeft : false;
+			attemptsMessage = attempts ? AjxMessageFormat.format(ZmMsg.recoveryEmailMessageAttempts, [attempts]) : '';
+			validity = response.Body.RecoverAccountResponse.recoveryValidity ? response.Body.RecoverAccountResponse.recoveryValidity : false;
+			validityMessage = validity ? AjxMessageFormat.format(ZmMsg.recoveryEmailMessageValidity, [validity]) : '';
 		}
+		requestMessage = AjxMessageFormat.format(ZmMsg.recoveryEmailMessageSent, [sentLabel, attemptsMessage, validityMessage]);
+		Dwt.setInnerHtml(this._validateCodeDescription, requestMessage);
 		Dwt.hide(this._requestCodeDivId);
 		Dwt.show(this._validateCodeDivId);
 		this._codeInput.focus();
