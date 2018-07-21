@@ -702,7 +702,7 @@ function() {
 	var codeRecoveryEmailInputContainer = document.getElementById(this._htmlElId + "_RECOVERY_CODE_TR");
 	var recoveryAccountInput = document.getElementById(this._htmlElId + "_RECOVERY_ACCOUNT");
 	var recoveryCodeInput = document.getElementById(this._htmlElId + "_RECOVERY_CODE");
-	var durationTypePos, durationTypeChar, durationArray, durationTime, durationType, plural;
+	var durationTypePos, durationTypeChar, durationArray, durationTime, durationType, durationMessage, plural;
 
 	// Add constants
 	this.RECOVERY_EMAIL_STATUS = {none: "none", pending: "pending", verified: "verified"}
