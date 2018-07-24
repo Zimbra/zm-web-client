@@ -27,7 +27,9 @@
 		window.open(ZmMsg.splashScreenCompanyURL, '_blank');
 	}
 	window.onload = function() {
+		document.getElementById("SplashLoadingScreen").style.display = "none";
 		document.getElementById("SplashScreenTable").style.display = "table";
+		document.getElementById("SplashHisoryScreen").style.display = "block";
 	};
 </script>
 
@@ -39,8 +41,8 @@
 			</div>
 			<div id="#ZSplashBodyContainer" class="content">
 				<div class="message">
-					<script>document.write(ZmMsg.splashScreenLoading)</script>
-					<h3><script>document.write(ZmMsg.zimbraLoginHistoryHeading)</script></h3>
+					<div id="SplashLoadingScreen"> <script>document.write(ZmMsg.splashScreenLoading)</script> </div>
+					<div class="SplashHisoryScreen" id="SplashHisoryScreen" style="display:none"> <h3><script>document.write(ZmMsg.zimbraLoginHistoryHeading)</script></h3> </div>
 					<div class="container-table100">
 						<div class="wrap-table100">
 							<div class="table100">

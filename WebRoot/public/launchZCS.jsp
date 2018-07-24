@@ -78,6 +78,7 @@
 	}
 
 	boolean isDev = getParameter(request, "dev", "0").equals("1");
+	int loginHistoryTimeout = Integer.parseInt(getParameter(request, "lht", "15")) * 1000;
 	if (isDev) {
 		request.setAttribute("mode", "mjsf");
 		request.setAttribute("gzip", "false");
@@ -156,6 +157,7 @@
 	pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));
 	pageContext.setAttribute("isProdMode", !prodMode.equals(""));
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
+	pageContext.setAttribute("loginHistoryTimeout", loginHistoryTimeout);
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
 	pageContext.setAttribute("isUnitTest", isUnitTest);
 	pageContext.setAttribute("preset", preset);
@@ -234,6 +236,7 @@
 	window.authTokenExpires     = <%= authResult.getExpires()%>;
 	window.csrfToken            = "${csrfToken}";
     window.appLang              = "${lang}";
+	window.loginHistoryTimeout  = ${loginHistoryTimeout};
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
@@ -492,6 +495,7 @@ delete text;
 			offlineMode:${isOfflineMode}, devMode:${isDevMode},
 			protocolMode:protocolMode, httpPort:"<%=httpPort%>", httpsPort:"<%=httpsPort%>",
 			noSplashScreen:noSplashScreen,
+			loginHistoryTimeout: loginHistoryTimeout,
 			unitTest:${isUnitTest},
 			preset:"${preset}",
 			virtualAcctDomain:virtualAcctDomain
