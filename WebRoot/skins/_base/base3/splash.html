@@ -34,7 +34,9 @@
 	};
 	window.onload = function() {
 		var lht = getQueryString('lht');
-		if(lht > 0) {
+		if(lht == 0) {
+			return true;
+		} else {
 			document.getElementById("SplashLoadingScreen").style.display = "none";
 			document.getElementById("SplashScreenTable").style.display = "table";
 			document.getElementById("SplashHisoryScreen").style.display = "block";
