@@ -78,7 +78,7 @@
 	}
 
 	boolean isDev = getParameter(request, "dev", "0").equals("1");
-	int loginHistoryTimeout = Integer.parseInt(getParameter(request, "lht", "15")) * 1000;
+	int loginHistoryTimeout = Integer.parseInt(getParameter(request, "lht", "10")) * 1000;
 	if (isDev) {
 		request.setAttribute("mode", "mjsf");
 		request.setAttribute("gzip", "false");
