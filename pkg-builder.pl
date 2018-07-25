@@ -97,18 +97,6 @@ my %PKG_GRAPH = (
                      '/opt/zimbra/jetty_base/etc/zimbra.web.xml.in'],
       stage_fun  => sub { &stage_zimbra_mbox_webclient_war(@_); },
    },
-   "zimbra-mbox-admin-common" => {
-      summary    => "Zimbra Admin Common",
-      version    => "1.0.0",
-      revision   => 1,
-      hard_deps  => [],
-      soft_deps  => [],
-      other_deps => ["zimbra-store-components"],
-      replaces   => ["zimbra-store, zimbra-mbox-admin-console-war"],
-      dir_list  => ['/opt/zimbra/*'],
-      stage_fun  => sub { &stage_zimbra_mbox_admin_common(@_); },
-   },
-
 );
 
 
@@ -152,6 +140,7 @@ sub make_package($)
       "--pkg-version=$pkg_info->{_version_ts}",
       "--pkg-release=$pkg_info->{revision}",
       "--pkg-summary=$pkg_info->{summary}",
+      "--pkg-post-install-script=scripts/postinst.sh"
    );
    if ( $pkg_info->{dir_list} )
    {
