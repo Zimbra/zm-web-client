@@ -648,6 +648,12 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
                                 </td>
                                 </tr>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td class="submitTD">
+                                            <a href="#" onclick="forgotPassword();" id="ZLoginForgotPassword" aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
+                                        </td>
+                                    </tr>
                             </c:otherwise>
                         </c:choose>
                         <c:if test="${empty param.virtualacctdomain}">
@@ -753,6 +759,19 @@ function showWhatsThis() {
     tooltip.style.display = doHide ? "none" : "block";
     anchor.setAttribute("aria-expanded", doHide ? "false" : "true");
 }
+
+function forgotPassword() {
+	var accountInput = document.getElementById("username").value;
+	var queryParams = encodeURI("account=" + accountInput);
+	var url = "/public/PasswordRecovery.jsp?" + location.search;
+
+	if (accountInput !== '') {
+		url += (location.search !== '' ? '&' : '') + encodeURI("account=" + accountInput);
+	}
+
+	window.location.href = url;
+}
+
 
 function onLoad() {
 	var loginForm = document.loginForm;
