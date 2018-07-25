@@ -589,12 +589,15 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
                                 </td>
                                 </tr>
+                                <c:set var="resetPasswordFeatureStatus" value="${domainInfo.attrs.zimbraFeatureResetPasswordStatus}"/>
+				<c:if test="${resetPasswordFeatureStatus eq 'enabled'}">
                                     <tr>
                                         <td>&nbsp;</td>
                                         <td class="submitTD">
                                             <a href="#" onclick="forgotPassword();" id="ZLoginForgotPassword" aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
                                         </td>
                                     </tr>
+                                </c:if>
                             </c:otherwise>
                         </c:choose>
                         <c:if test="${empty param.virtualacctdomain}">
