@@ -428,14 +428,12 @@ function(errorDivId, errorMessageDivId, exception) {
 		Dwt.setInnerHtml(errorMessageDivId, ZmMsg['service.INVALID_REQUEST_USERNAME']);
 	} else if (errorCode === 'service.INVALID_REQUEST' && passwordMatch.test(errorMessage)) {
 		Dwt.setInnerHtml(errorMessageDivId, ZmMsg['service.INVALID_REQUEST_PASSWORD']);
-//	} else if (errorCode === 'service.MAX_ATTEMPTS_REACHED') {
-//		Dwt.setInnerHtml(errorMessageDivId, ZmMsg[errorCode]);
-//	} else if (errorCode === 'service.MAX_ATTEMPTS_REACHED_SUSPEND_FEATURE') {
-//		Dwt.setInnerHtml(errorMessageDivId, ZmMsg[errorCode]);
+	} else if (errorCode === 'service.MAX_ATTEMPTS_REACHED_SUSPEND_FEATURE') {
+		this.setButtonEnabled(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
+		Dwt.setInnerHtml(errorMessageDivId, ZmMsg[errorCode]);
 	} else if (errorCode === 'service.FEATURE_RESET_PASSWORD_SUSPENDED' || errorCode === 'service.FEATURE_RESET_PASSWORD_DISABLED') {
 		Dwt.hide(this._validateCodeDescription);
 		Dwt.hide(this._validateInputDiv);
-		this.setButtonEnabled(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
 		Dwt.setInnerHtml(errorMessageDivId, ZmMsg['service.CONTACT_ADMIN']);
 	} else {
 		Dwt.setInnerHtml(errorMessageDivId, ZmMsg[errorCode]);
