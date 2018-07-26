@@ -721,3 +721,85 @@
 		</div>
 	</div>
 </template>
+
+<template id='share.Dialogs#ZmPasswordRecovery'>
+	<div class="ZmPasswordRecoverySetup">
+		<div class='ImgLoginBanner'></div>
+		<div id='${id}_get_recovery_account'>
+			<p><$=ZmMsg.passwordRecoveryGetAccountDescription$></p>
+			<div class='ZmPasswordRecoverySetupContainer'>
+				<div id='${id}_account_input_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
+					<table><tr>
+						<td><img class='ZLoginErrorIcon' altkey='ALT_ERROR' src='/img/dwt/ImgCritical_32.png' /></td>
+						<td id='${id}_account_input_error_message'><$=ZmMsg.offlinePasswordUpdateFailure$></td>
+					</tr></table>
+				</div>
+				<label for='${id}_account_input'><$=ZmMsg.passwordRecoveryAccountLabel$></label>
+				<input type='text' id='${id}_account_input' size='35' autocomplete='off'/>
+			</div>
+		</div>
+		<div id='${id}_request_code'>
+			<p id='${id}_request_code_description'></p>
+			<div id='${id}_request_code_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
+				<table><tr>
+					<td><img class='ZLoginErrorIcon' altkey='ALT_ERROR' src='/img/dwt/ImgCritical_32.png' /></td>
+					<td id='${id}_request_code_error_message'><$=ZmMsg.offlinePasswordUpdateFailure$></td>
+				</tr></table>
+			</div>
+		</div>
+		<div id='${id}_validate_code'>
+			<p id='${id}_validate_code_description'><$=ZmMsg.passwordRecoveryCodeValidationDescription$></p>
+			<div class='ZmPasswordRecoverySetupContainer'>
+				<div id='${id}_validate_code_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
+					<table><tr>
+						<td><img class='ZLoginErrorIcon' altkey='ALT_ERROR' src='/img/dwt/ImgCritical_32.png' /></td>
+						<td id='${id}_validate_code_error_message'><$=ZmMsg.passwordRecoveryCodeValidationError$></td>
+					</tr></table>
+				</div>
+				<label for='${id}_code_input'><$=ZmMsg.passwordRecoveryCodeLabel$></label>
+				<input type='text' id='${id}_code_input' size='35' autocomplete='off'/>
+			</div>
+		</div>
+		<div id='${id}_code_success'>
+			<p><$=ZmMsg.passwordRecoveryCodeSuccessDescription$></p>
+			<table role='presentation' width=100% class='ZPropertySheet' cellspacing='6'>
+				<tr>
+					<td class='ZOptionsField'>
+						<button id='${id}_CONTINUE_BUTTON' class='ZmPasswordRecoveryButton' tabindex=0></button>
+					</td>
+					<td>
+						<button id='${id}_RESET_PASSWORD' class='ZmPasswordRecoveryButton' tabindex=0></button>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id='${id}_reset_password'>
+			<div id='${id}_reset_password_description'>
+				<p><$=ZmMsg.passwordRecoveryResetDescription$></p>
+			</div>
+			<div id='${id}_reset_password_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
+				<table><tr>
+					<td><img class='ZLoginErrorIcon' altkey='ALT_ERROR' src='/img/dwt/ImgCritical_32.png' /></td>
+					<td id='${id}_reset_password_error_message'><$=ZmMsg.passwordRecoveryResetError$>
+					</td>
+				</tr></table>
+			</div>
+			<div class='ZmPasswordRecoverySetupContainer'>
+				<label for='${id}_password_new_input'><$=ZmMsg.passwordRecoveryResetNewLabel$></label>
+				<input type='password' id='${id}_password_new_input' size='35' autocomplete='off'/><br /><br />
+				<label for='${id}_password_confirm_input'><$=ZmMsg.passwordRecoveryResetConfirmLabel$></label>
+				<input type='password' id='${id}_password_confirm_input' size='35' autocomplete='off'/>
+			</div>
+		</div>
+		<div id='${id}_password_reset_success' style='margin-top: 60px;'>
+			<div class='ZmPasswordRecoverySetupContainer'>
+				<div class='ZmPasswordRecoverySetupInfo'>
+					<table><tr>
+						<td><img class='ZLoginInfoIcon' src='/img/dwt/ImgInformation_32.png' /></td>
+						<td><$=ZmMsg.passwordRecoveryResetSuccessDescription$></td>
+					</tr></table>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>

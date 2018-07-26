@@ -26,21 +26,10 @@
 	function showCompanyUrl() {
 		window.open(ZmMsg.splashScreenCompanyURL, '_blank');
 	}
-	var getQueryString = function ( field, url ) {
-		var href = url ? url : window.location.href;
-		var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
-		var string = reg.exec(href);
-		return string ? string[1] : null;
-	};
 	window.onload = function() {
-		var lht = getQueryString('lht');
-		if(lht == 0) {
-			return true;
-		} else {
-			document.getElementById("SplashLoadingScreen").style.display = "none";
-			document.getElementById("SplashScreenTable").style.display = "table";
-			document.getElementById("SplashHisoryScreen").style.display = "block";
-		}
+		document.getElementById("SplashLoadingScreen").style.display = "none";
+		document.getElementById("SplashScreenTable").style.display = "table";
+		document.getElementById("SplashHisoryScreen").style.display = "block";
 	};
 </script>
 
