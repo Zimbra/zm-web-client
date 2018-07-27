@@ -8,6 +8,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page language="java" import="com.zimbra.cs.account.Provisioning" %>
 <%!
 	private static String protocolMode = null;
 	private static String httpPort = null;
@@ -78,7 +79,8 @@
 	}
 
 	boolean isDev = getParameter(request, "dev", "0").equals("1");
-	int loginHistoryTimeout = Integer.parseInt(getParameter(request, "lht", "10")) * 1000;
+	int loginHistoryTimeout = Integer.parseInt(Provisioning.getInstance().getConfig().getAttr(Provisioning.A_zimbraSplashScreenTimeOut, "")) * 1000;
+	
 	if (isDev) {
 		request.setAttribute("mode", "mjsf");
 		request.setAttribute("gzip", "false");
