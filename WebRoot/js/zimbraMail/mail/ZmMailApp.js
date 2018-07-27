@@ -1639,6 +1639,11 @@ function(params, callback) {
 	// set type for initial search
 	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 
+	// Check if conversations are disabled and group by is conversation then change it to message
+	if (!appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED) && this._groupBy === 'conversation') {
+		this._groupBy = 'message';
+	}
+
 	var query;
 	params = params || {};
 

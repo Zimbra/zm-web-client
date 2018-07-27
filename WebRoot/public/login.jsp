@@ -117,7 +117,8 @@
 							<zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
 								varAuthResult="authResult" newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
 								trustedDeviceToken="${cookie.ZM_TRUST_TOKEN.value}"
-								requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"/>
+								requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"
+								attrs="zimbraFeatureConversationsEnabled" />
 
 							<%
 								// Delete cookie
@@ -151,7 +152,8 @@
 					varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 					rememberme="${param.zrememberme == '1'}" trustedDevice="${param.ztrusteddevice == 1}"
 					requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}"
-					importData="true" csrfTokenSecured="true"/>
+					importData="true" csrfTokenSecured="true"
+					attrs="zimbraFeatureConversationsEnabled" />
 
 				<%
 					// Delete cookie
