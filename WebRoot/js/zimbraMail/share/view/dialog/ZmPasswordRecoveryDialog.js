@@ -269,8 +269,7 @@ function() {
 ZmPasswordRecoveryDialog.prototype._requestCodeButtonListener =
 function() {
 	// hide button after click to help with  uncaught exception edge case
-	this.setButtonVisible(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON, false);
-	this.setButtonEnabled(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, true);
+	this.setButtonEnabled(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON, false);
 	this._sendRecoveryCode();
 };
 
@@ -473,30 +472,58 @@ ZmPasswordRecoveryDialog.prototype._sendRecoveryCodeCallback =
 function(result) {
 	var response = result && result.getResponse() ? result.getResponse() : false;
 	var sentLabel = this._resendCount > 0 ? ZmMsg.recoveryEmailResentLabel : ZmMsg.recoveryEmailSentLabel;
-	var attempts, validity, attemptsMessage, validityMessage, requestMessage;
+	var attempts, expiry, attemptsMessage, expiryMessage, requestMessage, resendMessage;
+	var durationTypePos, durationTypeChar, durationArray, durationTime, durationType, durationMessage, plural;
+	var expiryDefault = '10m';
+	this.setButtonVisible(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON, false);
 	if (!result || result.isException()) {
 		this._handleResetPasswordError(this._validateErrorDiv, this._validateErrorMessageDiv, result.getException());
 		return;
 	}
 	if (response.Body && response.Body.RecoverAccountResponse) {
 		attempts = response.Body.RecoverAccountResponse.recoveryAttemptsLeft ? response.Body.RecoverAccountResponse.recoveryAttemptsLeft : 0;
-		attemptsMessage = attempts >= 0 ? AjxMessageFormat.format(ZmMsg.recoveryEmailMessageAttempts, [attempts]) : '';
-		validity = response.Body.RecoverAccountResponse.recoveryValidity ? response.Body.RecoverAccountResponse.recoveryValidity : false;
-		validityMessage = validity ? AjxMessageFormat.format(ZmMsg.recoveryEmailMessageValidity, [validity]) : '';
-		requestMessage = AjxMessageFormat.format(ZmMsg.recoveryEmailMessageSent, [sentLabel, attemptsMessage, validityMessage]);
+		attemptsMessage = attempts > 0 ? AjxMessageFormat.format(ZmMsg.recoveryEmailMessageAttempts, [attempts]) : '';
+		resendMessage = attempts > 0 ? AjxMessageFormat.format(ZmMsg.recoveryEmailMessageResend) : '';
+		expiry = response.Body.RecoverAccountResponse.recoveryCodeExpiry ? response.Body.RecoverAccountResponse.recoveryCodeExpiry.toLowerCase() : expiryDefault;
+		if(expiry) {
+			durationTypePos = expiry.search(/[a-zA-Z]/);
+			durationTypeChar = expiry.charAt(durationTypePos);
+			durationArray = expiry.split(durationTypeChar);
+			durationTime = durationArray[0];
+			plural = durationTime > 1 ? "s" : "";
+			if (durationTypePos !== -1 && durationTime !== "") {
+				switch(durationTypeChar) {
+					case "d":
+						durationType = "day" + plural;
+					break;
+					case "m":
+						durationType = "minute" + plural;
+					break;
+					default:
+						durationType = "";
+					break;
+				}
+				if (durationType && durationTime) {
+					durationMessage = durationTime + " " + ZmMsg[durationType].toLowerCase();
+				}
+			} else {
+				durationMessage = false;
+			}
+		}
+		expiryMessage = durationMessage ? AjxMessageFormat.format(ZmMsg.recoveryEmailMessageDuration, [durationMessage]) : "";
+		requestMessage = AjxMessageFormat.format(ZmMsg.recoveryEmailMessageSent, [sentLabel, expiryMessage, attemptsMessage, resendMessage]);
 		Dwt.setInnerHtml(this._validateCodeDescription, requestMessage);
+		Dwt.hide(this._requestCodeDivId);
 		Dwt.show(this._validateCodeDescription);
 		Dwt.show(this._validateInputDiv);
-		if (attempts === 0 && !this._suspend) {
+		Dwt.show(this._validateCodeDivId);
+		this._codeInput.focus();
+		this.setButtonVisible(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, true);
+		this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, true);
+		if (attempts === 0) {
 			result.code = 'service.MAX_ATTEMPTS_REACHED';
 			this._suspend = true;
 			this._handleResetPasswordError(this._validateErrorDiv, this._validateErrorMessageDiv, result);
-		} else if (attempts > 0) {
-			Dwt.hide(this._requestCodeDivId);
-			Dwt.show(this._validateCodeDivId);
-			this._codeInput.focus();
-			this.setButtonVisible(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, true);
-			this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, true);
 		}
 	} else {
 		// account for unknown response error
@@ -573,7 +600,6 @@ function() {
 	var command = new ZmCsfeCommand();
 	var soapDoc = AjxSoapDoc.create('ResetPasswordRequest', 'urn:zimbraAccount');
 	var respCallback = this._resetPasswordCallback.bind(this);
-
 	var pwdNewValue = this._passwordNewInput.value;
 	var pwdConfirmValue = this._passwordConfirmInput.value;
 	var result = {};
@@ -582,7 +608,6 @@ function() {
 		this._handleResetPasswordError(this._resetPasswordErrorDiv, this._resetPasswordErrorMessageDiv, result);
 		return;
 	}
-
 	soapDoc.set('password', this._passwordNewInput.value);
 	command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true, asyncMode: true, callback: respCallback, serverUri:'/service/soap/'})
 };

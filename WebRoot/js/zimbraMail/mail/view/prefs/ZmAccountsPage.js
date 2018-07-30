@@ -512,6 +512,7 @@ function(response) {
 ZmAccountsPage.prototype._setAccountPasswordControls =
 function(status) {
 	var userStatusMessage, attempts, attemptsMessage, requestMessage;
+	var resendMessage = AjxMessageFormat.format(ZmMsg.recoveryEmailMessageResend);
 	this.recoveryEmailStatus = status;
 	switch(status) {
 		case this.RECOVERY_EMAIL_STATUS.verified:
@@ -529,7 +530,7 @@ function(status) {
 			userStatusMessage = ZmMsg.recoveryEmailStatusPending;
 			attempts = this._recoveryAttemptsLeft ? this._recoveryAttemptsLeft : false;
 			attemptsMessage = attempts ? AjxMessageFormat.format(ZmMsg.recoveryEmailMessageAttempts, [attempts]) : "";
-			requestMessage = AjxMessageFormat.format(ZmMsg.recoveryEmailMessageSent, [this._sentLabel, attemptsMessage, this._validityMessage]);
+			requestMessage = AjxMessageFormat.format(ZmMsg.recoveryEmailMessageSent, [this._sentLabel, this._validityMessage, attemptsMessage, resendMessage]);
 			this.recoveryMessage.innerHTML = requestMessage;
 			this.recoveryOptionsTitle.innerHTML = ZmMsg.recoveryEmailOptionLabel;
 			this.recoveryEmail = this.currentPasswordRecoveryValue;
@@ -765,7 +766,7 @@ function() {
 			durationMessage = false;
 		}
 	}
-	this._validityMessage = durationMessage ? AjxMessageFormat.format(ZmMsg.recoveryEmailMessageValidity, [durationMessage]) : "";
+	this._validityMessage = durationMessage ? AjxMessageFormat.format(ZmMsg.recoveryEmailMessageDuration, [durationMessage]) : "";
 
 	// Create buttons
 	this._createRecoveryButtons("addRecoveryEmailButton", ZmMsg.recoveryEmailButtonAdd, false, false,
