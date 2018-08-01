@@ -756,8 +756,10 @@
 						<td id='${id}_validate_code_error_message'><$=ZmMsg.passwordRecoveryCodeValidationError$></td>
 					</tr></table>
 				</div>
-				<label for='${id}_code_input'><$=ZmMsg.passwordRecoveryCodeLabel$></label>
-				<input type='text' id='${id}_code_input' size='35' autocomplete='off'/>
+				<div id='${id}_validate_input'>
+					<label for='${id}_code_input'><$=ZmMsg.passwordRecoveryCodeLabel$></label>
+					<input type='text' id='${id}_code_input' size='35' autocomplete='off'/>
+				</div>
 			</div>
 		</div>
 		<div id='${id}_code_success'>
