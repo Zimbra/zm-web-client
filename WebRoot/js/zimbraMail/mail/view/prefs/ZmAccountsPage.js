@@ -381,13 +381,12 @@ function() {
  * Expecting a blank response so the callback acts as confirmation that the code and email has been reset.
  * Clear the code and email input fields, reset the buttons, update controls based on "null" status.
  *
- * @TODO use this.recoveryCodeValidity to manage code verification
- * @TODO use this.recoveryResetExpiry to enable / disable reset button - might need a timer?
  * @param {object} response The response object.
  */
 ZmAccountsPage.prototype._recoveryResetRequest =
 function(response) {
 	if (!response._isException) {
+		this._sentLabel = ZmMsg.recoveryEmailSentLabel;
 		this.recoveryCodeInputField.setValue("", true);
 		this.validateRecoveryEmailButton.setEnabled(false);
 		this.recoveryAccountInputField.setValue("", true);
@@ -425,7 +424,12 @@ function() {
  */
 ZmAccountsPage.prototype._recoveryResendRequest =
 function(response) {
+	var responseDetail = response && response.getResponse() ? response.getResponse() : {};
 	if (!response._isException) {
+		if (responseDetail.Body && responseDetail.Body.RecoverAccountResponse) {
+			this._recoveryAttemptsLeft = responseDetail.Body.RecoverAccountResponse.recoveryAttemptsLeft ? responseDetail.Body.RecoverAccountResponse.recoveryAttemptsLeft : false;
+		}
+		this._sentLabel = ZmMsg.recoveryEmailResentLabel;
 		this._setAccountPasswordControls(this.RECOVERY_EMAIL_STATUS.pending);
 	} else {
 		this._recoveryErrorCallback({code: "Unknown", msg: "Unknown Error: " + ZmMsg.unknownError});
@@ -460,7 +464,11 @@ function() {
  */
 ZmAccountsPage.prototype._recoveryAddRequest =
 function(response) {
+	var responseDetail = response && response.getResponse() ? response.getResponse() : {};
 	if (!response._isException) {
+		if (responseDetail.Body && responseDetail.Body.RecoverAccountResponse) {
+			this._recoveryAttemptsLeft = responseDetail.Body.RecoverAccountResponse.recoveryAttemptsLeft ? responseDetail.Body.RecoverAccountResponse.recoveryAttemptsLeft : false;
+		}
 		this.recoveryAccountInputField.setValue("", true);
 		this.addRecoveryEmailButton.setEnabled(false);
 		this._setAccountPasswordControls(this.RECOVERY_EMAIL_STATUS.pending);
@@ -500,9 +508,11 @@ function(response) {
  * @TODO Possibly remove this.recoveryEmailStatus if variable is no longer being used in multiple methods
  * @param {string} status this.RECOVERY_EMAIL_STATUS (none || pending || verified)
  */
+
 ZmAccountsPage.prototype._setAccountPasswordControls =
 function(status) {
-	var userStatusMessage;
+	var userStatusMessage, attempts, attemptsMessage, requestMessage;
+	var resendMessage = AjxMessageFormat.format(ZmMsg.recoveryEmailMessageResend);
 	this.recoveryEmailStatus = status;
 	switch(status) {
 		case this.RECOVERY_EMAIL_STATUS.verified:
@@ -518,7 +528,10 @@ function(status) {
 			break;
 		case this.RECOVERY_EMAIL_STATUS.pending:
 			userStatusMessage = ZmMsg.recoveryEmailStatusPending;
-			this.recoveryMessage.innerHTML = ZmMsg.recoveryEmailMessagePending;
+			attempts = this._recoveryAttemptsLeft ? this._recoveryAttemptsLeft : false;
+			attemptsMessage = attempts ? AjxMessageFormat.format(ZmMsg.recoveryEmailMessageAttempts, [attempts]) : "";
+			requestMessage = AjxMessageFormat.format(ZmMsg.recoveryEmailMessageSent, [this._sentLabel, this._validityMessage, attemptsMessage, resendMessage]);
+			this.recoveryMessage.innerHTML = requestMessage;
 			this.recoveryOptionsTitle.innerHTML = ZmMsg.recoveryEmailOptionLabel;
 			this.recoveryEmail = this.currentPasswordRecoveryValue;
 			this.addRecoveryEmailButton.setVisible(false);
@@ -580,6 +593,103 @@ function(result) {
 };
 
 /**
+ * GetPrefRequest method.
+ *
+ * Retrieve up-to-date values of attributes and assign named variables for further use.
+ *
+ * @param {array} attrs An array of objects based on the foilowing format [ { "name": "variable_name", "attr": "name_of_preference_attribute" } ].
+ * @param {function} callback   The callback method to continue with after call is made.
+ */
+ZmAccountsPage.prototype.loadRecoveryPrefSettings =
+function(attrs, callback) {
+	var params, node = {};
+	var soapDoc = AjxSoapDoc.create("GetPrefsRequest", "urn:zimbraAccount");
+	var errorCallback = this._recoveryErrorPrefSettings.bind(this, attrs, callback);
+	var respCallback = this._handleLoadRecoveryPrefSettings.bind(this, attrs, callback);
+	for(var i = 0, count = attrs.length; i < count; i++) {
+		node[i] = soapDoc.set("pref", "TRUE");
+		node[i].setAttribute("name", attrs[i].attr);
+	}
+	params = {
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: respCallback,
+		errorCallback: errorCallback,
+	};
+	appCtxt.getAppController().sendRequest(params);
+};
+
+/**
+ * GetPrefsRequest response method.
+ *
+ * Parse out the values sent. If attributes don't exist, create the the variable by name supplied and set it to a false boolean value.
+ *
+ * @param {array} attrs An array of objects based on the foilowing format [ { "name": "variable_name", "attr": "name_of_preference_attribute" } ].
+ * @param {function} callback   The callback method to continue with after call is made.
+ * @param {object} result Data from GetPrefsRequest call.
+ *
+ */
+ZmAccountsPage.prototype._handleLoadRecoveryPrefSettings =
+function(attrs, callback, result) {
+	var resultDetail = result && result.getResponse() ? result.getResponse() : {};
+	var resultAttrs = resultDetail.GetPrefsResponse && resultDetail.GetPrefsResponse._attrs ? resultDetail.GetPrefsResponse._attrs : false;
+	if (resultAttrs) {
+		for(var i = 0, count = attrs.length; i < count; i++) {
+			if (resultAttrs[attrs[i].attr]){
+				this[attrs[i].name] = resultAttrs[attrs[i].attr];
+			} else {
+				this[attrs[i].name] = false;
+			}
+		}
+	}
+	if(callback) {
+		callback();
+	}
+};
+
+/**
+ * Error Handling for GetPrefsRequest for recovery settings.
+ *
+ * If errors occur for this request, error silently and continue with setup.
+ *
+ * @param {array} attrs An array of objects based on the foilowing format [ { "name": "variable_name", "attr": "name_of_preference_attribute" } ].
+ * @param {function} callback   The callback method to continue with after call is made.
+ * @param {object} result Data from GetPrefsRequest call.
+ *
+ */
+ZmAccountsPage.prototype._recoveryErrorPrefSettings =
+function(attrs, callback, result) {
+	for(var i = 0, count = attrs.length; i < count; i++) {
+		this[attrs[i].name] = "error";
+	}
+	if(callback) {
+		callback();
+	}
+};
+
+/**
+ * Load the Account Password Recovery Attributes.
+ *
+ * Get changes to potentially modifed attributes.
+ *
+ */
+ZmAccountsPage.prototype.loadAccountPasswordRecovery =
+function() {
+	var callback = this.setAccountPasswordRecovery.bind(this);
+	var attrs = [
+		{
+			"name": "recoveryEmail",
+			"attr": "zimbraPrefPasswordRecoveryAddress"
+		},
+		{
+			"name": "recoveryEmailStatus",
+			"attr": "zimbraPrefPasswordRecoveryAddressStatus"
+		}
+	];
+	this.loadRecoveryPrefSettings(attrs, callback);
+}
+
+/**
  * Initiate the Account Password Recovery Preference section.
  *
  * Grab and set all related ui elements and set their state. Create buttons and input fields with respective listeners.
@@ -593,6 +703,7 @@ function() {
 	var codeRecoveryEmailInputContainer = document.getElementById(this._htmlElId + "_RECOVERY_CODE_TR");
 	var recoveryAccountInput = document.getElementById(this._htmlElId + "_RECOVERY_ACCOUNT");
 	var recoveryCodeInput = document.getElementById(this._htmlElId + "_RECOVERY_CODE");
+	var durationTypePos, durationTypeChar, durationArray, durationTime, durationType, durationMessage, plural;
 
 	// Add constants
 	this.RECOVERY_EMAIL_STATUS = {none: "none", pending: "pending", verified: "verified"}
@@ -614,13 +725,48 @@ function() {
 	this.recoveryStatusDiv = document.getElementById(this._htmlElId + "_RECOVERY_ACCOUNT_STATUS");
 	this.recoveryMessage = document.getElementById(this._htmlElId + "_RECOVERY_MESSAGE");
 	this.recoveryErrorMessage = document.getElementById(this._htmlElId + "_RECOVERY_ERROR_MESSAGE");
+	this._recoveryAttemptsLeft = false;
+	this._sentLabel = ZmMsg.recoveryEmailSentLabel;
 
 	// Get ZmSettings
-	this.recoveryEmail = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) ? appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) : "";
-	this.recoveryEmailStatus = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) ? appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) : this.RECOVERY_EMAIL_STATUS.none;
+	if(!this.recoveryEmail) {
+		this.recoveryEmail = "";
+	} else if(this.recoveryEmail === "error") {
+		this.recoveryEmail = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) ? appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) : "";
+	}
+	if(!this.recoveryEmailStatus) {
+		this.recoveryEmailStatus = this.RECOVERY_EMAIL_STATUS.none;
+	} else if(this.recoveryEmail === "error") {
+		this.recoveryEmailStatus = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) ? appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) : this.RECOVERY_EMAIL_STATUS.none;
+	}
+	this.recoveryCodeValidity = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_CODE_VALIDITY) ? appCtxt.get(ZmSetting.PASSWORD_RECOVERY_CODE_VALIDITY).toLowerCase() : false;
 
-	// Set a email input value between submits
-	this.currentPasswordRecoveryValue = this.recoveryEmail;
+	if(this.recoveryCodeValidity) {
+		durationTypePos = this.recoveryCodeValidity.search(/[a-zA-Z]/);
+		durationTypeChar = this.recoveryCodeValidity.charAt(durationTypePos);
+		durationArray = this.recoveryCodeValidity.split(durationTypeChar);
+		durationTime = durationArray[0];
+		plural = durationTime > 1 ? "s" : "";
+		if (durationTypePos !== -1 && durationTime !== "") {
+			switch(durationTypeChar) {
+				case "d":
+					durationType = "day" + plural;
+					break;
+				case "m":
+					durationType = "minute" + plural;
+					break;
+				default:
+					durationType = "";
+					break;
+			}
+			if (durationType && durationTime) {
+				durationMessage = durationTime + " " + ZmMsg[durationType].toLowerCase();
+			}
+		} else {
+			durationMessage = false;
+		}
+	}
+	this._validityMessage = durationMessage ? AjxMessageFormat.format(ZmMsg.recoveryEmailMessageDuration, [durationMessage]) : "";
 
 	// Create buttons
 	this._createRecoveryButtons("addRecoveryEmailButton", ZmMsg.recoveryEmailButtonAdd, false, false,
@@ -631,6 +777,9 @@ function() {
 					"_RESEND_RECOVERY_EMAIL", "_handleResendRecoveryEmailButton");
 	this._createRecoveryButtons("validateRecoveryEmailButton", ZmMsg.recoveryEmailButtonValidate, false, false,
 					"_VALIDATE_RECOVERY_EMAIL", "_handleValidateRecoveryEmailButton");
+
+	// Set a email input value between submits
+	this.currentPasswordRecoveryValue = this.recoveryEmail;
 
 	// Pass this status through standard control method for additional settings.
 	this._setAccountPasswordControls(this.recoveryEmailStatus);
@@ -1367,7 +1516,7 @@ function(useDefaults) {
 	this._resetAccountListView(account);
 	this.setAccount(account);
 	this.setAccountSecurity();
-	this.setAccountPasswordRecovery();
+	this.loadAccountPasswordRecovery();
 	this.setAccountDelegates();
 };
 
