@@ -94,7 +94,12 @@ function(ev) {
     var id = this._htmlElId;
     switch(this.currentView) {
         case ZmExternalCalendarDialog.FIRST_VIEW :
-            var shareRadioOther  = document.getElementById(id + '_shareRadioOther'),
+            /*var _shareRadioPublic = document.getElementById(id + '_shareRadioPublic');
+            if(_shareRadioPublic && _shareRadioPublic.checked) {
+                this._showSharePublicView();
+            }*/
+            var shareRadioYahoo  = document.getElementById(id + '_shareRadioYahoo'),
+                shareRadioOther  = document.getElementById(id + '_shareRadioOther'),
                 shareRadioGoogle = document.getElementById(id + '_shareRadioGoogle');
 
             if(shareRadioGoogle && shareRadioGoogle.checked) {
@@ -102,6 +107,9 @@ function(ev) {
                 this.popdown();
                 window.location.href = hostname + "/service/extension/oauth2/authorize/google?type=caldav&state=/%3Fapp%3Dcalendar";
             } else {
+                if(shareRadioYahoo && shareRadioYahoo.checked) {
+                    this.showView(ZmExternalCalendarDialog.SECOND_VIEW, ZmExternalCalendarDialog.TYPE_YAHOO);
+                }
                 if(shareRadioOther && shareRadioOther.checked) {
                     this.showView(ZmExternalCalendarDialog.SECOND_VIEW, ZmExternalCalendarDialog.TYPE_OTHER);
                 }
