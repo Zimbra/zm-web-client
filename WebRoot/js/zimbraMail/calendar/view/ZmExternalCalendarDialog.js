@@ -99,17 +99,24 @@ function(ev) {
             if(_shareRadioPublic && _shareRadioPublic.checked) {
                 this._showSharePublicView();
             }*/
-            var shareRadioYahoo = document.getElementById(id + '_shareRadioYahoo'),
-                shareRadioOther = document.getElementById(id + '_shareRadioOther');
+            var shareRadioYahoo  = document.getElementById(id + '_shareRadioYahoo'),
+                shareRadioOther  = document.getElementById(id + '_shareRadioOther'),
+                shareRadioGoogle = document.getElementById(id + '_shareRadioGoogle');
 
-            if(shareRadioYahoo && shareRadioYahoo.checked) {
-                this.showView(ZmExternalCalendarDialog.SECOND_VIEW, ZmExternalCalendarDialog.TYPE_YAHOO);
+            if(shareRadioGoogle && shareRadioGoogle.checked) {
+                var hostname = window.location.origin;
+                this.popdown();
+                window.location.href = hostname + "/service/extension/oauth2/authorize/google?type=caldav&state=/%3Fapp%3Dcalendar";
+            } else {
+                if(shareRadioYahoo && shareRadioYahoo.checked) {
+                    this.showView(ZmExternalCalendarDialog.SECOND_VIEW, ZmExternalCalendarDialog.TYPE_YAHOO);
+                }
+                if(shareRadioOther && shareRadioOther.checked) {
+                    this.showView(ZmExternalCalendarDialog.SECOND_VIEW, ZmExternalCalendarDialog.TYPE_OTHER);
+                }
+                this.showIcalView(false);
+                this._syncTypeSelect.setSelectedValue(ZmExternalCalendarDialog.SYNC_TYPE_CALDAV);
             }
-            if(shareRadioOther && shareRadioOther.checked) {
-                this.showView(ZmExternalCalendarDialog.SECOND_VIEW, ZmExternalCalendarDialog.TYPE_OTHER);
-            }
-            this.showIcalView(false);
-            this._syncTypeSelect.setSelectedValue(ZmExternalCalendarDialog.SYNC_TYPE_CALDAV);
         break;
 
         case ZmExternalCalendarDialog.SECOND_VIEW :
