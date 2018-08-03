@@ -8,6 +8,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page language="java" import="com.zimbra.cs.account.Provisioning" %>
 <%!
 	private static String protocolMode = null;
 	private static String httpPort = null;
@@ -78,6 +79,8 @@
 	}
 
 	boolean isDev = getParameter(request, "dev", "0").equals("1");
+	int loginHistoryTimeout = Integer.parseInt(Provisioning.getInstance().getConfig().getAttr(Provisioning.A_zimbraSplashScreenTimeOut, "10")) * 1000;
+	
 	if (isDev) {
 		request.setAttribute("mode", "mjsf");
 		request.setAttribute("gzip", "false");
@@ -156,6 +159,7 @@
 	pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));
 	pageContext.setAttribute("isProdMode", !prodMode.equals(""));
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
+	pageContext.setAttribute("loginHistoryTimeout", loginHistoryTimeout);
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
 	pageContext.setAttribute("isUnitTest", isUnitTest);
 	pageContext.setAttribute("preset", preset);
@@ -234,6 +238,7 @@
 	window.authTokenExpires     = <%= authResult.getExpires()%>;
 	window.csrfToken            = "${csrfToken}";
     window.appLang              = "${lang}";
+	window.loginHistoryTimeout  = ${loginHistoryTimeout};
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
@@ -492,6 +497,7 @@ delete text;
 			offlineMode:${isOfflineMode}, devMode:${isDevMode},
 			protocolMode:protocolMode, httpPort:"<%=httpPort%>", httpsPort:"<%=httpsPort%>",
 			noSplashScreen:noSplashScreen,
+			loginHistoryTimeout: loginHistoryTimeout,
 			unitTest:${isUnitTest},
 			preset:"${preset}",
 			virtualAcctDomain:virtualAcctDomain
