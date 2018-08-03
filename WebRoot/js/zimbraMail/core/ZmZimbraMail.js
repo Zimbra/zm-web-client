@@ -278,11 +278,15 @@ function(hash, a, b) {
  * 
  */
 ZmZimbraMail.killSplash =
-function() {
+function(params) {
 	// 	Splash screen is now a part of the skin, loaded in statically via the JSP
 	//	as a well-known ID.  To hide the splash screen, just hide that div.
-	var SPLASH_SCREEN_TIMEOUT = appCtxt.get(ZmSetting.SPLASH_SCREEN_TIMEOUT);
-	setTimeout(function () { Dwt.hide("skin_container_splash_screen") }, SPLASH_SCREEN_TIMEOUT);
+	var SPLASH_LOGIN_HISTORY_TIMEOUT = params.loginHistoryTimeout;
+	if(SPLASH_LOGIN_HISTORY_TIMEOUT > 0) {
+		setTimeout(function () { Dwt.hide("skin_container_splash_screen") }, SPLASH_LOGIN_HISTORY_TIMEOUT);
+	} else {
+		Dwt.hide("skin_container_splash_screen");
+	}
 };
 
 /**
@@ -928,7 +932,7 @@ function(params) {
 	this.getKeyMapMgr();	// make sure keyboard handling is initialized
 
 	this.setSessionTimer(true);
-	ZmZimbraMail.killSplash();
+	ZmZimbraMail.killSplash(params);
 
 	// Give apps a chance to add their own UI components.
 	this.runAppFunction("addComponents", false, this._components);
