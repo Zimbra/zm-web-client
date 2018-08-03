@@ -259,7 +259,7 @@ BODY									{	margin:0px; 	}
 .SplashScreen .contentBox,
 .ErrorScreen .contentBox {
 	@LoginContentBox@
-	width:700px;
+	width:500px;
 }
 .LoginScreen .contentBox,
 .SplashScreen .contentBox {
