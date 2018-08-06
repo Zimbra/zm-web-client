@@ -587,8 +587,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
                                 </td>
                                 </tr>
-				<c:set var="resetPasswordFeatureStatus" value="${domainInfo.attrs.zimbraFeatureResetPasswordStatus}"/>
-				<c:if test="${resetPasswordFeatureStatus eq 'enabled'}">
+			
+				<c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">	
                                     <tr>
                                         <td>&nbsp;</td>
                                         <td class="submitTD">
