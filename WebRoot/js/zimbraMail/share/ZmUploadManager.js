@@ -269,8 +269,6 @@ ZmUploadManager.prototype._popupErrorDialog = function(message) {
 // --- Upload File Validation -------------------------------------------
 ZmUploadManager.prototype.getErrors = function(file, maxSize, errors, extensions){
 	this._extensions = extensions;
-	console.log('extensions' + extensions);
-	console.log('attrs' + JSON.stringify(appCtxt.getSettings().getInfoResponse.attrs._attrs));
 	var error = { errorCodes:[], filename: AjxStringUtil.htmlEncode(file.name) };
     var valid = true;
     var size = file.size || file.fileSize || 0;  // fileSize: Safari
