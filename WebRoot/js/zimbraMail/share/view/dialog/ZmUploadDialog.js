@@ -243,6 +243,12 @@ function(files, uploadForm, folder) {
 	}
 };
 
+ZmUploadDialog.prototype.setFileExtensions = function(){
+    String extensionsData = appCtxt.getSettings().getInfoResponse.attrs._attrs.zimbraFeatureBriefcaseAllowedFileExtensions;
+    var array = extensionsData.split(',');
+    this.setAllowedExtensions(array);
+}
+
 // Protected methods
 ZmUploadDialog.prototype._upload = function(){
     var form         	= this._uploadForm;
@@ -259,7 +265,7 @@ ZmUploadDialog.prototype._upload = function(){
     var msgFormat;
     var errorFilenames;
 	var newError;
-    var extensions = ['DOC', 'DOCX', 'XLS', 'XLSX', 'PPT', 'PDF', 'TXT'];
+    this.setFileExtensions();
     for (var i = 0; i < elements.length; i++) {
         var element = form.elements[i];
         if ((element.name != ZmUploadDialog.UPLOAD_FIELD_NAME) || !element.value)  continue;
@@ -272,7 +278,7 @@ ZmUploadDialog.prototype._upload = function(){
             for (var j = 0; j < files.length; j++){
                 file = files[j];
                 fileObj.push(file);
-				newError = zmUploadManager.getErrors(file, maxSize);
+				newError = zmUploadManager.getErrors(file, maxSize, null, this._extensions);
 				if (newError) {
 					errors.push(newError);
 				} else {
@@ -282,7 +288,7 @@ ZmUploadDialog.prototype._upload = function(){
         } else {
 			var fileName = element.value.replace(/^.*[\\\/:]/, "");
             file = { name: fileName };
-			newError = zmUploadManager.getErrors(file, maxSize, null, extensions);
+			newError = zmUploadManager.getErrors(file, maxSize, null, this._extensions);
 			if (newError) {
 				errors.push(newError);
 			} else {
