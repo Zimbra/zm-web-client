@@ -1651,8 +1651,17 @@ ext = BeanUtils.cook(ext);
         </copy>
     </target>
 
+    <property name="package.revision" value="1" />
+    <property name="package.version"
+      value="${zimbra.buildinfo.majorversion}.${zimbra.buildinfo.minorversion}.${zimbra.buildinfo.microversion}"/>
+
     <target name="pkg" depends="clean-pkg, prod-war, jspc.build">
-        <exec dir="." executable="./pkg-builder.pl" failonerror="true"/>
+        <exec dir="." executable="./pkg-builder.pl" failonerror="true">
+          <arg value="-v"/>
+          <arg value="${package.version}"/>
+          <arg value="-r"/>
+          <arg value="${package.revision}"/>
+        </exec>
     </target>
 
     <target name="clean-pkg">

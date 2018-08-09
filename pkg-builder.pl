@@ -13,6 +13,17 @@ use Getopt::Long;
 use IPC::Cmd qw/run can_run/;
 use Term::ANSIColor;
 
+my $usage   = "usage: $sc_name -v package_version -r package_release\n";
+our($opt_v, $opt_r);
+
+getopts('v:r:') or die "$usage";
+
+die "$usage" if (!$opt_v);
+die "$usage" if (!$opt_r);
+my $version = "$opt_v";
+$version =~ s/_/./g;
+my $revision = $opt_r;
+
 my %DEFINES = ();
 
 sub parse_defines()
@@ -59,8 +70,8 @@ sub git_timestamp_from_dirs($)
 my %PKG_GRAPH = (
    "zimbra-mbox-webclient-war" => {
       summary    => "Zimbra WebClient War",
-      version    => "1.0.0",
-      revision   => 1,
+      version    => "$version",
+      revision   => $revision,
       hard_deps  => [],
       soft_deps  => [],
       other_deps => ["zimbra-store-components"],
