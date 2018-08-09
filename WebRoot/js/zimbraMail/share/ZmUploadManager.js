@@ -40,7 +40,7 @@ ZmUploadManager = function() {
 
 ZmUploadManager.prototype.constructor = ZmUploadManager;
 
-ZmUploadDialog.prototype._extensions;
+ZmUploadManager.prototype._extensions;
 
 /**
  * Returns a string representation of the object.
