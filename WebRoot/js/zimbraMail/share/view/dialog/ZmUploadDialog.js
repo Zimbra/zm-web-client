@@ -245,7 +245,8 @@ function(files, uploadForm, folder) {
 
 ZmUploadDialog.prototype.setFileExtensions = function(){
     var extensionsData = appCtxt.getSettings().getInfoResponse.attrs._attrs.zimbraFeatureBriefcaseAllowedFileExtensions;
-    var array = extensionsData.split(',');
+    var array;
+    if (extensionsData) array = extensionsData.split(',');
     this.setAllowedExtensions(array);
 }
 
