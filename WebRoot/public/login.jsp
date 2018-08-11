@@ -645,7 +645,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <input id="remember" value="1" type="checkbox" name="zrememberme" />
                                     <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label>
                                 </c:if>
-                                <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
+                                <input type="submit" onclick="encrypt()" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
                                 </td>
                                 </tr>
                                     <tr>
@@ -811,6 +811,12 @@ function reloadImage() {
     };
     xhttp.open("GET", "/public/captcha_proxy.jsp", true);
     xhttp.send();
+}
+
+function encrypt() {
+    var pwd = document.getElementById("password").value;
+    document.getElementById("password").value = btoa(pwd);
+    return true;
 }
 </script>
 </body>
