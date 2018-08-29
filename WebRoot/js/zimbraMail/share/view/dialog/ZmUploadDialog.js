@@ -266,7 +266,7 @@ ZmUploadDialog.prototype._upload = function(){
     var msgFormat;
     var errorFilenames;
 	var newError;
-    this.setFileExtensions();
+    var extensions = ['DOC', 'DOCX', 'XLS', 'XLSX', 'PPT', 'PDF', 'TXT'];
     for (var i = 0; i < elements.length; i++) {
         var element = form.elements[i];
         if ((element.name != ZmUploadDialog.UPLOAD_FIELD_NAME) || !element.value)  continue;
@@ -289,7 +289,7 @@ ZmUploadDialog.prototype._upload = function(){
         } else {
 			var fileName = element.value.replace(/^.*[\\\/:]/, "");
             file = { name: fileName };
-			newError = zmUploadManager.getErrors(file, maxSize, null, this._extensions);
+			newError = zmUploadManager.getErrors(file, maxSize, null, extensions);
 			if (newError) {
 				errors.push(newError);
 			} else {
