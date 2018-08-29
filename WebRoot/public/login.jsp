@@ -86,6 +86,9 @@
 			<zm:logout/>
 			<c:set var="errorCode" value="${param.loginErrorCode}"/>
 			<fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
+			<c:if test = "${fn:contains(errorMessage, errorCode)}">
+				<fmt:message var="errorMessage" key="unknownError"/>
+			</c:if>
 		</c:when>
 		<c:when test="${param.loginOp eq 'logout'}">
 			<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
