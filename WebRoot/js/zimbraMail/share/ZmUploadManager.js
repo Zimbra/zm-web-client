@@ -40,6 +40,8 @@ ZmUploadManager = function() {
 
 ZmUploadManager.prototype.constructor = ZmUploadManager;
 
+ZmUploadManager.prototype._extensions;
+
 /**
  * Returns a string representation of the object.
  *
@@ -266,6 +268,7 @@ ZmUploadManager.prototype._popupErrorDialog = function(message) {
 
 // --- Upload File Validation -------------------------------------------
 ZmUploadManager.prototype.getErrors = function(file, maxSize, errors, extensions){
+	this._extensions = extensions;
 	var error = { errorCodes:[], filename: AjxStringUtil.htmlEncode(file.name) };
     var valid = true;
     var size = file.size || file.fileSize || 0;  // fileSize: Safari
