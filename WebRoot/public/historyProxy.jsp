@@ -27,7 +27,7 @@
 %>
 <%-- get login history api endpoint --%>
 <zm:getLoginHistoryApiUrl varHistoryApiUrl="varHistoryApiUrl"/>
-<c:import var="historyApiUrl" url="${varHistoryApiUrl}/mfid/otp_getUserLastActivity?mail=${userEmail}"/>
+<c:import var="historyApiUrl" url="${varHistoryApiUrl}?mail=${userEmail}"/>
 <%
   String resp = (String)pageContext.getAttribute("historyApiUrl");
   out.println(resp);
