@@ -22,14 +22,12 @@
 <%@ page import="com.zimbra.cs.taglib.ZJspSession"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-
+<%
+	String userEmail = request.getParameter("useremail"));
+%>
 <%-- get login history api endpoint --%>
 <zm:getLoginHistoryApiUrl varHistoryApiUrl="varHistoryApiUrl"/>
-<%
-	String userEmail = request.getParameter("useremail");
-	String fullHistoryApiURL = varHistoryApiUrl + "?mail="+userEmail;
-%>
-<c:import var="historyApiUrl" url="<%=fullHistoryApiURL%>"/>
+<c:import var="historyApiUrl" url="${varHistoryApiUrl}/mfid/otp_getUserLastActivity?mail=${userEmail}"/>
 <%
   String resp = (String)pageContext.getAttribute("historyApiUrl");
   out.println(resp);
