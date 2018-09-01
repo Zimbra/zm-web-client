@@ -670,7 +670,7 @@ SELECT						{	@FieldBorder@	}
   padding-left: 8px;
 }
 .table_history thead tr {
-  height: 60px;
+  height: 45px;
   background: #36304a;
 }
 .table_history .table_body tr {
