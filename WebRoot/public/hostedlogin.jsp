@@ -33,6 +33,9 @@
         <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
             <c:set var="errorCode" value="errorPassChange"/>
             <fmt:message var="errorMessage" key="bothNewPasswordsMustMatch"/>
+            <c:if test = "${fn:contains(errorMessage, errorCode)}">
+                <fmt:message var="errorMessage" key="unknownError"/>
+            </c:if>
         </c:when>
         <c:when test="${param.loginOp eq 'relogin'}">
             <zm:logout/>
