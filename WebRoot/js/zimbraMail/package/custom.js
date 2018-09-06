@@ -1,6 +1,4 @@
 $(document).ready(function() {
-    $('input[type="password"]').css("color", "white");
-    $('input[type="text"]').css("color", "white");
 
     var emailRegex = new RegExp(
         '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|' +
