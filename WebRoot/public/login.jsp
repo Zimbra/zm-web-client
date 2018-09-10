@@ -8,10 +8,34 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ page import='java.util.Locale' %>
+<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
 <app:skinAndRedirect />
-<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+<%!
+    static String getParameter(HttpServletRequest request, String pname, String defValue) {
+        String value = request.getParameter(pname);
+        return value != null ? value : defValue;
+    }
+%>
+
+<%
+    Locale locale;
+    String localeId = getParameter(request, "lang", "en_US");
+    localeId = localeId.replaceAll("[^A-Za-z_]","");
+    localeId = BeanUtils.cook(localeId);
+    int index = localeId.indexOf("_");
+    if (index == -1) {
+      locale = new Locale(localeId);
+    } else {
+      String language = localeId.substring(0, index);
+      String country = localeId.substring(localeId.length() - 2);
+      locale = new Locale(language, country);
+    }
+    pageContext.setAttribute("locale", locale);
+%>
+<fmt:setLocale value='${locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
@@ -124,8 +148,7 @@
 							<zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
 								varAuthResult="authResult" newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
 								trustedDeviceToken="${cookie.ZM_TRUST_TOKEN.value}"
-								requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"
-								attrs="zimbraFeatureConversationsEnabled" />
+								requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"/>
 
 							<%
 								// Delete cookie
@@ -159,8 +182,7 @@
 					varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 					rememberme="${param.zrememberme == '1'}" trustedDevice="${param.ztrusteddevice == 1}"
 					requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}"
-					importData="true" csrfTokenSecured="true"
-					attrs="zimbraFeatureConversationsEnabled" />
+					importData="true" csrfTokenSecured="true"/>
 
 				<%
 					// Delete cookie
@@ -629,15 +651,12 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
                                 </td>
                                 </tr>
-			
-				<c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">	
                                     <tr>
                                         <td>&nbsp;</td>
                                         <td class="submitTD">
                                             <a href="#" onclick="forgotPassword();" id="ZLoginForgotPassword" aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
                                         </td>
                                     </tr>
-                                </c:if>
                             </c:otherwise>
                         </c:choose>
                         <c:if test="${empty param.virtualacctdomain}">
