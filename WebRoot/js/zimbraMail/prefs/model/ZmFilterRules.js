@@ -400,15 +400,14 @@ function(ex) {
 		var msgDialog = appCtxt.getMsgDialog();
 
 		var msg = '';
-		switch(ex.code) {
-			case ZmCsfeException.MAIL_NO_SUCH_FOLDER:
-				msg = ZmMsg.errorNoSuchFolder;
-				break;
-			case ZmCsfeException.MAIL_NO_SUCH_TAG:
-				msg = ZmMsg.errorNoSuchTag;
-				break;
-			default:
-				msg = [ZmMsg.filterError, " ", AjxStringUtil.htmlEncode(ex.msg)].join("");
+		if (ex.code === ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
+			msg = ZmMsg.errorNoSuchFolder;
+		} else if (ex.code === ZmCsfeException.MAIL_NO_SUCH_TAG) {
+			msg = ZmMsg.errorNoSuchTag;
+		} else if (ex.code === ZmCsfeException.SVC_INVALID_REQUEST && ex.msg.match(ZmMsg.filterServiceErrorMatchString)) {
+			msg = ZmMsg.filterErrorSieveScriptMaxSize;
+		} else {
+			msg = [ZmMsg.filterError, " ", AjxStringUtil.htmlEncode(ex.msg)].join("");
 		}
 
 		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
