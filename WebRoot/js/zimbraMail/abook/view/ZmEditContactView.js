@@ -235,7 +235,6 @@ ZmEditContactView.phoneValidator = function(phone) {
 ZmEditContactView.urlValidator = function(url) {
 	for (var i = 0; i < url.length; i++) {
 		var validateurl = url[i]["value"];
-		console.log("=NUMBER="+url[i]["value"]);
 		var res = validateurl.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
 		if(res === null) {
 			throw ZmMsg.invalidURL;

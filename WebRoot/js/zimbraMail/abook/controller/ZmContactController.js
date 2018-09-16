@@ -339,7 +339,6 @@ ZmContactController.prototype._saveListener = function(ev, bIsPopCallback) {
 		var invalidItems = view.getInvalidItems();
 		for (var i = 0; i < invalidItems.length; i++) {
 			msg = view.getErrorMessage(invalidItems[i]);
-			var isInvalidEmailAddr = (invalidItems[i].indexOf("EMAIL") != -1);
 			if (AjxUtil.isString(msg)) {
 				msg = msg ? AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, msg) : ZmMsg.errorSaving;
 				var msgDlg = appCtxt.getMsgDialog();
