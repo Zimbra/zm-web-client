@@ -337,22 +337,16 @@ ZmContactController.prototype._saveListener = function(ev, bIsPopCallback) {
 
 	if (!view.isValid()) {
 		var invalidItems = view.getInvalidItems();
-		// This flag will be set to false when the view.validate() detects some invalid fields (other than EMAIL) which does not have an error message.  If the EMAIL field is the only invalid one, ignore the error and move on.
-		var onlyEmailInvalid = true;
 		for (var i = 0; i < invalidItems.length; i++) {
 			msg = view.getErrorMessage(invalidItems[i]);
 			var isInvalidEmailAddr = (invalidItems[i].indexOf("EMAIL") != -1);
-			if (AjxUtil.isString(msg) && !isInvalidEmailAddr) {
+			if (AjxUtil.isString(msg)) {
 				msg = msg ? AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, msg) : ZmMsg.errorSaving;
 				var msgDlg = appCtxt.getMsgDialog();
 				msgDlg.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 				msgDlg.popup();
 				return;
 			}
-			onlyEmailInvalid = onlyEmailInvalid && isInvalidEmailAddr;
-		}
-		if (!onlyEmailInvalid) {
-			return;
 		}
 	}
 

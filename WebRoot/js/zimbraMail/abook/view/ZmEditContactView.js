@@ -136,7 +136,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
 					inputWidth: 351, tooltip: ZmMsg.phone, hint: ZmMsg.phoneNumberHint, options: this.getPhoneOptions()
 				}
-			} },
+			}, validator: ZmEditContactView.phoneValidator },
 			{ id: "IM", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewIM", equals: ZmEditContactViewIM.equals, params: {
 					inputWidth: 351, tooltip: ZmMsg.imShort, hint: ZmMsg.imScreenNameHint, options: this.getIMOptions()
@@ -152,7 +152,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
 					inputWidth: 351, hint: ZmMsg.url, options: this.getURLOptions()
 				}
-			} },
+			}, validator: ZmEditContactView.urlValidator },
 			{ id: "OTHER", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewOther", equals:ZmEditContactViewInputSelect.equals, params: {
 					inputWidth: 300,
@@ -205,6 +205,40 @@ ZmEditContactView.emailValidator = function(emails) {
 		var address = emails[i];
 		if (address && !AjxEmailAddress.validateAddress(address)) {
 			throw ZmMsg.invalidEmailAddress;
+		}
+	}
+	return true;
+};
+
+
+/**
+ * validate the array of phone numbers. (0, 1 or more, each from a row in the edit view)
+ * @param {Array} phone
+ * @returns {*}
+ */
+ZmEditContactView.phoneValidator = function(phone) {
+	for (var i = 0; i < phone.length; i++) {
+		var number = phone[i]["value"];
+		var pattern = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
+		if (!pattern.test(number)) {
+			throw ZmMsg.invalidPhoneNumber;
+		}
+	}
+	return true;
+};
+
+/**
+ * validate the array of URL. (0, 1 or more, each from a row in the edit view)
+ * @param {Array} URL
+ * @returns {*}
+ */
+ZmEditContactView.urlValidator = function(url) {
+	for (var i = 0; i < url.length; i++) {
+		var validateurl = url[i]["value"];
+		console.log("=NUMBER="+url[i]["value"]);
+		var res = validateurl.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+		if(res === null) {
+			throw ZmMsg.invalidURL;
 		}
 	}
 	return true;
