@@ -220,7 +220,7 @@ ZmEditContactView.phoneValidator = function(phone) {
 	for (var i = 0; i < phone.length; i++) {
 		var number = phone[i]["value"];
 		var pattern = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
-		if (!pattern.test(number)) {
+		if (number != '' && !pattern.test(number)) {
 			throw ZmMsg.invalidPhoneNumber;
 		}
 	}
@@ -236,7 +236,7 @@ ZmEditContactView.urlValidator = function(url) {
 	for (var i = 0; i < url.length; i++) {
 		var validateurl = url[i]["value"];
 		var res = validateurl.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
-		if(res === null) {
+		if(validateurl != '' && res === null) {
 			throw ZmMsg.invalidURL;
 		}
 	}
