@@ -2442,9 +2442,10 @@ function(msgNode) {
 			}
 			this._parseParticipantNode(msgNode.e[i]);
 		}
-
+		
 		if (!isCurAddrExist) {
-			var node = {a: curAddr.address, d: identity.sendFromDisplay, p: identity.sendFromDisplay, t: "b"};
+			var displayName = appCtxt.getSettings().getInfoResponse.attrs._attrs.displayName;
+			var node = {a: curAddr.address, d: displayName, p: displayName, t: "b"};
 			this._parseParticipantNode(node);
 		}
 
