@@ -2431,10 +2431,23 @@ function(msgNode) {
 		}
 	}
 
+	var identity = appCtxt.getIdentityCollection().defaultIdentity;
+	var curAddr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress, identity.sendFromDisplay);
+	var isCurAddrExist = false;
+
 	if (msgNode.e && this.participants && this.participants.size() == 0) {
 		for (var i = 0; i < msgNode.e.length; i++) {
+			if (msgNode.e[i].a == curAddr.address) {
+				isCurAddrExist = true;
+			}
 			this._parseParticipantNode(msgNode.e[i]);
 		}
+
+		if (!isCurAddrExist) {
+			var node = {a: curAddr.address, d: identity.sendFromDisplay, p: identity.sendFromDisplay, t: "b"};
+			this._parseParticipantNode(node);
+		}
+
 		this.clearAddresses();
 		var parts = this.participants.getArray();
 		for (var j = 0; j < parts.length; j++ ) {
