@@ -1439,7 +1439,9 @@ ZmComposeView.prototype.enableInputs =
 function(bEnable) {
     DBG.println('draft', 'ZmComposeView.enableInputs for ' + this._view + ': ' + bEnable);
     this._recipients.enableInputs(bEnable);
-	this._subjectField.disabled = this._bodyField.disabled = !bEnable;
+    if (typeof(this._subjectField) !== 'undefined') {
+       this._subjectField.disabled = this._bodyField.disabled = !bEnable;
+    }
 };
 
 /**
