@@ -266,7 +266,7 @@ function(event) {
     } else {
         // Using the retention tab view - show the toolbar and all tabs
         this._tabInUse[retentionIndex] = true;
-        retentionTabButton.setVisible(true);
+        retentionTabButton.setVisible(false);
         tabBar.setVisible(true);
     }
 
