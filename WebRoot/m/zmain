@@ -290,9 +290,7 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
                 <c:if test="${!fn:endsWith(sessionScope.zms,'xlite')}"><c:set var="lbw" value="<a noajax='true' href='?zms=xlite&amp;limit=5'>${lbw}</a>"/>${lbw}</c:if> | <a href="?st=versions"><fmt:message key="more"/>...</a>
             </div>
     </div></div>
-    <div class="tbl"><div class="tr"><div class="container td fw" id="copyright_notice">
-        <a noajax='true' target="_blank" href="<fmt:message key="logoURL"/>"><fmt:message key="footerCopyright"/></a>
-    </div></div></div><c:if test="${empty param.noframe || empty param.isiniframe}">
+    <c:if test="${empty param.noframe || empty param.isiniframe}">
     <script type="text/javascript"><c:set var="js">
     if (XHR !==undefined && XHR(true)) {if(!nojs && (window == parent)){registerOnclickHook();
         <c:if test="${ua.isiPhone or ua.isiPod or ua.isOsAndroid}">setInterval(function() {checkHash(null,'get');}, 400);</c:if>
