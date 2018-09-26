@@ -59,11 +59,55 @@
 			document.getElementById("SplashLoadingScreen").style.display = "none";
 			document.getElementById("SplashScreenTable").style.display = "table";
 			document.getElementById("SplashHisoryScreen").style.display = "block";
+			document.getElementById("closeImg").style.display = "block";
+			document.getElementById("loadingImg").style.display = "block";
 		}
 	};
+	function hideSplash() {
+		Dwt.hide("skin_container_splash_screen");
+	}
 </script>
+<style>
+.lds-facebook {
+  display: inline-block;
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+.lds-facebook div {
+  display: inline-block;
+  position: absolute;
+  left: 6px;
+  width: 13px;
+  background: #fff;
+  animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+.lds-facebook div:nth-child(1) {
+  left: 6px;
+  animation-delay: -0.24s;
+}
+.lds-facebook div:nth-child(2) {
+  left: 26px;
+  animation-delay: -0.12s;
+}
+.lds-facebook div:nth-child(3) {
+  left: 45px;
+  animation-delay: 0;
+}
+@keyframes lds-facebook {
+  0% {
+    top: 6px;
+    height: 51px;
+  }
+  50%, 100% {
+    top: 19px;
+    height: 26px;
+  }
+}
+</style>
 	<div id="ZSplashPanel" class="center">
 		<div class="contentBox">
+			<span id="closeImg" style="float:left;padding:5px; display:none;" onclick="hideSplash()"><img src='/img/zimbra/ImgDelete.png'/> </span> 
 			<div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div>
 			<div id="ZLoginAppName">
 				<script>if(!window.isOffline) { document.write(ZmMsg.splashScreenAppName) }</script>
@@ -71,7 +115,8 @@
 			<div id="#ZSplashBodyContainer" class="content">
 				<div class="message">
 					<div id="SplashLoadingScreen"> <script>document.write(ZmMsg.splashScreenLoading)</script> </div>
-					<div class="SplashHisoryScreen" id="SplashHisoryScreen" style="display:none"> <h3><script>document.write(ZmMsg.zimbraLoginHistoryHeading)</script></h3> </div>
+					<div id="loadingImg" style="display:none;"> <div class="lds-facebook"><div></div><div></div><div></div></div></div>
+					<div class="SplashHisoryScreen" id="SplashHisoryScreen" style="display:none;"> <h3><script>document.write(ZmMsg.zimbraLoginHistoryHeading)</script></h3> </div>
 					<div class="container-table100">
 						<div class="wrap-table100">
 							<div class="table100">
