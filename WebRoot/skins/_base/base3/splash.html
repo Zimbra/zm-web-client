@@ -57,6 +57,7 @@
 		getHistory();
 		if(window.loginHistoryTimeout > 0) {
 			document.getElementById("SplashLoadingScreen").style.display = "none";
+			document.getElementById("ZLoginBannerImage").style.display = "none";
 			document.getElementById("SplashScreenTable").style.display = "table";
 			document.getElementById("SplashHisoryScreen").style.display = "block";
 			document.getElementById("closeImg").style.display = "block";
@@ -107,8 +108,8 @@
 </style>
 	<div id="ZSplashPanel" class="center">
 		<div class="contentBox">
-			<span id="closeImg" style="float:left;padding:5px; display:none;" onclick="hideSplash()"><img src='/img/zimbra/ImgDelete.png'/> </span> 
-			<div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div>
+			<span id="closeImg" style="float:left;padding:5px; display:none; cursor:pointer; position:relative; z-index:9999;" onclick="hideSplash()"><img src='/img/zimbra/ImgDelete.png'/> </span> 
+			<div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()' style="cursor:default;"></div>
 			<div id="ZLoginAppName">
 				<script>if(!window.isOffline) { document.write(ZmMsg.splashScreenAppName) }</script>
 			</div>
