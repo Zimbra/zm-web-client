@@ -65,11 +65,11 @@
 		}
 		onTimer();
 	};
-	var i = 10;
+	var counters = 10;
 	function onTimer() {
-	  document.getElementById("clicks").innerHTML = i;
-	  i--;
-	  if (i < 0) {
+	  document.getElementById("clicks").innerHTML = counters;
+	  counters = counters - 1;
+	  if (counters < 0) {
 	  }
 	  else {
 		setTimeout(onTimer, 1000);
