@@ -778,6 +778,11 @@ ZmMailMsgView.__unfangInternalImage =
 function(msg, elem, aname, external) {
 	
 	var avalue, pnsrc;
+
+	if ( typeof aname == "undefined" ) {
+		return false;
+	}
+
 	try {
 		if (external) {
 			avalue = elem.getAttribute("df" + aname);
@@ -791,8 +796,11 @@ function(msg, elem, aname, external) {
 		AjxDebug.println(AjxDebug.DATA_URI, "__unfangInternalImage: couldn't access attribute " + aname);
 	}
 
-	if (avalue) {
+	if ( typeof avalue !== "undefined" && avalue ) {
 		if (avalue.substr(0,4) == "cid:") {
+			if ( typeof msg == "undefined" ) {
+				return false;
+			}
 			var cid = "<" + AjxStringUtil.urlComponentDecode(avalue.substr(4)) + ">"; // Parse percent-escaping per bug #52085 (especially %40 to @)
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
 			if (avalue) {
@@ -806,6 +814,9 @@ function(msg, elem, aname, external) {
 				return false;
 			}
 		} else if (pnsrc) { // check for content-location verison
+			if ( typeof msg == "undefined" ) {
+				return false;
+			}
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, avalue);
 			if (avalue) {
 				elem.setAttribute(aname, avalue);
