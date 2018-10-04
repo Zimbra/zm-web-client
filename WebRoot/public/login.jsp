@@ -86,6 +86,9 @@
 			<zm:logout/>
 			<c:set var="errorCode" value="${param.loginErrorCode}"/>
 			<fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
+			<c:if test = "${fn:contains(errorMessage, errorCode)}">
+				<fmt:message var="errorMessage" key="unknownError"/>
+			</c:if>
 		</c:when>
 		<c:when test="${param.loginOp eq 'logout'}">
 			<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
@@ -117,7 +120,8 @@
 							<zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
 								varAuthResult="authResult" newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
 								trustedDeviceToken="${cookie.ZM_TRUST_TOKEN.value}"
-								requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"/>
+								requestedSkin="${param.skin}" importData="true" csrfTokenSecured="true"
+								attrs="zimbraFeatureConversationsEnabled" />
 
 							<%
 								// Delete cookie
@@ -151,7 +155,8 @@
 					varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 					rememberme="${param.zrememberme == '1'}" trustedDevice="${param.ztrusteddevice == 1}"
 					requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}"
-					importData="true" csrfTokenSecured="true"/>
+					importData="true" csrfTokenSecured="true"
+					attrs="zimbraFeatureConversationsEnabled" />
 
 				<%
 					// Delete cookie
@@ -587,7 +592,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
                                 </td>
                                 </tr>
-                                <c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">
+			
+				<c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">	
                                     <tr>
                                         <td>&nbsp;</td>
                                         <td class="submitTD">

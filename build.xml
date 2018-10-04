@@ -96,6 +96,11 @@
     <property name='tinymce.js.dir' value='${tinymce.root.dir}/tinymce-${tinymce.version}/js/tinymce' />
     <property name="tinymce.custom.dir" value="tiny_mce/custom"/>
 
+    <!-- Accepting version from variables -->
+    <property name="wclient.ext.patch.revision" value="1" />
+    <property name="wclient.ext.patch.version"
+        value="${zimbra.buildinfo.majorversion}.${zimbra.buildinfo.minorversion}.${zimbra.buildinfo.microversion}"/>
+
     <!-- Paths and Filesets -->
 
     <!-- pseudo-fileset so that targets that rely on it don't fail -->
@@ -1652,7 +1657,12 @@ ext = BeanUtils.cook(ext);
     </target>
 
     <target name="pkg" depends="clean-pkg, prod-war, jspc.build">
-        <exec dir="." executable="./pkg-builder.pl" failonerror="true"/>
+        <exec dir="." executable="./pkg-builder.pl" failonerror="true">
+	<arg value="-v"/>
+	<arg value="${wclient.ext.patch.version}"/>
+	<arg value="-r"/>
+	<arg value="${wclient.ext.patch.revision}"/>
+	</exec>
     </target>
 
     <target name="clean-pkg">
