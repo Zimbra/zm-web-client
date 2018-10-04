@@ -1026,8 +1026,21 @@ function(setup) {
 
 	var listener = new AjxListener(this, this._localeSelectionListener);
 	for (var language in ZmLocale.languageMap) {
+		if(language != 'en' && language != 'hi') continue;
+
 		var languageObj = ZmLocale.languageMap[language];
 		var locales = languageObj.locales;
+
+		if(language == 'en') {
+			var tmpLocal = [];
+			for (var i = 0, count = locales.length; i < count; i++) {
+				if(locales[i].id == 'en_US') {
+					tmpLocal.push(locales[i]);
+				}
+			}
+			locales = tmpLocal;
+		}
+
 		if (!locales) {
 			this._createLocaleItem(result, languageObj, listener);
 		}
