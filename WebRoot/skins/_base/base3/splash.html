@@ -81,7 +81,7 @@
 </script>
 	<div id="ZSplashPanel" class="center">
 		<div class="contentBox">
-			<span id="closeImg" style="float:right;padding-right:35px; width:10px; display:none; color:white; cursor:pointer; position:relative; z-index:9999;" onclick="hideSplash()"><img style="padding-left:8px;" src='/img/zimbra/ImgDelete.png'/> Close</span> 
+			<span id="closeImg" style="float:right; padding:15px 20px 10px 10px; width:auto; display:none; color:white; cursor:pointer; position:relative; z-index:9999;" onclick="hideSplash()"><img style="padding-left:8px; clear: both; float: left; margin-top: -15px; margin-right: -25px;" src='/img/zimbra/ImgDelete.png'/><script>document.write(ZmMsg.splashScreenClose)</script></span>
 			<div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()' style="cursor:default;"></div>
 			<div id="ZLoginAppName">
 				<script>if(!window.isOffline) { document.write(ZmMsg.splashScreenAppName) }</script>
@@ -89,7 +89,7 @@
 			<div id="#ZSplashBodyContainer" class="content">
 				<div class="message">
 					<div id="SplashLoadingScreen"> <script>document.write(ZmMsg.splashScreenLoading)</script> </div>
-					<h3 id="counter" style="display:none; padding:25px;">Time Remaining: <span id="clicks">0</span></h3>
+					<h3 id="counter" style="display:none; padding:25px;"><script>document.write(ZmMsg.splashScreenTimeRemaning)</script><span id="clicks">0</span></h3>
 					<div class="SplashHisoryScreen" id="SplashHisoryScreen" style="display:none;"> <h3><script>document.write(ZmMsg.zimbraLoginHistoryHeading)</script></h3> </div>
 					<div class="container-table100">
 						<div class="wrap-table100">
