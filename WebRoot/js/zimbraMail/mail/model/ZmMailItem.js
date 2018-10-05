@@ -176,7 +176,7 @@ function(node) {
 			contact = contactList && contactList.getContactByEmail(node.a),
 			fullName = contact && contact.getFullNameForDisplay(false);
 
-		var addr = new AjxEmailAddress(node.a, type, fullName || node.p, node.d, node.isGroup, node.isGroup && node.exp);
+		var addr = new AjxEmailAddress(node.a, type, node.p, node.d, node.isGroup, node.isGroup && node.exp);
 		var ac = window.parentAppCtxt || window.appCtxt;
 		ac.setIsExpandableDL(node.a, addr.canExpand);
 		this.participants.add(addr);
