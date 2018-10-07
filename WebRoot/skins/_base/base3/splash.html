@@ -74,7 +74,9 @@
 	function onTimer() {
 	  document.getElementById("clicks").innerHTML = counters;
 	  counters = counters - 1;
-	  if (counters < 0) {
+	  if (counters == 0) {
+		setTimeout(onTimer, 1000);
+		hideSplash();
 	  }
 	  else {
 		setTimeout(onTimer, 1000);
@@ -136,8 +138,8 @@
 						</div>
 					</div>
 				</div>
-				<div class="switch" id="splashScreenSwitchContainer">
-					<script>if(!window.isOffline) { document.write(ZmMsg.splashScreenSwitch) }</script>
+				<div class="switch" id="splashScreenSwitchContainer" style="cursor:pointer;">
+					<script> document.write(ZmMsg.splashScreenSwitch) </script>
 				</div>
 			</div>
 		</div>
