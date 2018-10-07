@@ -75,7 +75,8 @@
 	  document.getElementById("clicks").innerHTML = counters;
 	  counters = counters - 1;
 	  if (counters == 0) {
-		setTimeout(onTimer, 1000);
+		var timeOut = setTimeout(onTimer, 1000);
+		clearTimeout(timeOut);
 		hideSplash();
 	  }
 	  else {
