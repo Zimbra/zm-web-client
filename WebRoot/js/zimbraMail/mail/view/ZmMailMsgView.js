@@ -2147,17 +2147,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 				attLinkIds.push(params.id);
 			}
 			// remove attachment from msg
-			if (att.links.remove && !appCtxt.isWebClientOffline()) {
-				htmlArr[idx++] = linkCount ? " | " : "";
-				var params = {
-					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_REMOVE),
-					jsHref:			true,
-					text:			ZmMsg.remove
-				};
-				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
-				linkCount++;
-				attLinkIds.push(params.id);
-			}
+			//Commented out for Ticket number NICPS-446 if want to enable option of remove attachment again refer same.
 
 			// Attachment Link Handlers (optional)
 			if (ZmMailMsgView._attachmentHandlers) {
