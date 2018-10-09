@@ -2146,8 +2146,6 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 				linkCount++;
 				attLinkIds.push(params.id);
 			}
-			// remove attachment from msg
-			//Commented out for Ticket number NICPS-446 if want to enable option of remove attachment again refer same.
 
 			// Attachment Link Handlers (optional)
 			if (ZmMailMsgView._attachmentHandlers) {
