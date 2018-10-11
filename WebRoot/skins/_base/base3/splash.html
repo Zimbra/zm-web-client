@@ -72,17 +72,18 @@
 	};
 	var counters = 10;
 	function onTimer() {
-	  document.getElementById("clicks").innerHTML = counters;
-	  counters = counters - 1;
-	  if (counters == 0) {
-		var timeOut = setTimeout(onTimer, 1000);
-		clearTimeout(timeOut);
-		hideSplash();
-	  }
-	  else {
-		setTimeout(onTimer, 1000);
-	  }
+		document.getElementById("clicks").innerHTML = counters;
+		if (counters < 0) {
+			var timeOut = setTimeout(onTimer, 1000);
+			clearTimeout(timeOut);
+			hideSplash();
+		}
+		else {
+			setTimeout(onTimer, 1000);
+		}
+		counters = counters - 1;
 	}
+	
 	function hideSplash() {
 		Dwt.hide("skin_container_splash_screen");
 	}
