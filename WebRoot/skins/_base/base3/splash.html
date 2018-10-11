@@ -54,11 +54,11 @@
         xhttp.send();
    	}
 	window.onload = function() {
-		if(getCookie('splashLoginFlag') == "splashLoginFlag") {
+		if (getCookie('splashLoginFlag') == "splashLoginFlag") {
 			hideSplash();
 		} else {
 			getHistory();
-			if(window.loginHistoryTimeout > 0) {
+			if (window.loginHistoryTimeout > 0) {
 				setCookie('splashLoginFlag','splashLoginFlag',1);
 				document.getElementById("SplashLoadingScreen").style.display = "none";
 				document.getElementById("ZLoginBannerImage").style.display = "none";
