@@ -2431,22 +2431,9 @@ function(msgNode) {
 		}
 	}
 
-	var identity = appCtxt.getIdentityCollection().defaultIdentity;
-	var curAddr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress, identity.sendFromDisplay);
-	var isCurAddrExist = false;
-
 	if (msgNode.e && this.participants && this.participants.size() == 0) {
 		for (var i = 0; i < msgNode.e.length; i++) {
-			if (msgNode.e[i].a == curAddr.address) {
-				isCurAddrExist = true;
-			}
 			this._parseParticipantNode(msgNode.e[i]);
-		}
-		
-		if (!isCurAddrExist) {
-			var displayName = appCtxt.getSettings().getInfoResponse.attrs._attrs.displayName;
-			var node = {a: curAddr.address, d: displayName, p: displayName, t: "b"};
-			this._parseParticipantNode(node);
 		}
 
 		this.clearAddresses();
