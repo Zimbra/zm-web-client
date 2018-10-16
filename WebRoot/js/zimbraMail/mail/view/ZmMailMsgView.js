@@ -2146,18 +2146,6 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 				linkCount++;
 				attLinkIds.push(params.id);
 			}
-			// remove attachment from msg
-			if (att.links.remove && !appCtxt.isWebClientOffline()) {
-				htmlArr[idx++] = linkCount ? " | " : "";
-				var params = {
-					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_REMOVE),
-					jsHref:			true,
-					text:			ZmMsg.remove
-				};
-				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
-				linkCount++;
-				attLinkIds.push(params.id);
-			}
 
 			// Attachment Link Handlers (optional)
 			if (ZmMailMsgView._attachmentHandlers) {
