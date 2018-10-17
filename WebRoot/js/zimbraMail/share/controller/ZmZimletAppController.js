@@ -96,7 +96,7 @@ function() {
 								controller:		this,
 								callbacks:		callbacks,
 								isAppView:		true,
-								isTransient:	true});
+								isTransient:		false});
 	}
 	return this._view;
 };
