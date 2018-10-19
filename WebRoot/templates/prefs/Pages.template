@@ -989,7 +989,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField ZOptionsSubField'>
 							<table role="presentation">
 								<tr>
-									<td class='ZmSelector'>
+									<td class='ZmSelector' style='border-left-width: 1px;border-radius:3px;'>
 										<select id='${id}_PRIMARY_REPLY_TO_EMAIL' tabindex=0></select>
 									</td>
 								</tr>
