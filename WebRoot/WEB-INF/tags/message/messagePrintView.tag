@@ -20,6 +20,7 @@
 <%@ attribute name="counter" rtexprvalue="true" required="false" %>
 <%@ attribute name="externalImageUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ attribute name="timezone" rtexprvalue="true" required="false" type="java.util.TimeZone"%>
+<%@ attribute name="hasTemplate" rtexprvalue="true" required="false" type="java.lang.Boolean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -29,7 +30,7 @@
 <fmt:setBundle basename="/messages/I18nMsg" var="i18n"/>
 
 <c:set var="body" value="${message.body}"/>
-
+<c:if test="${hasTemplate == null}"><c:set var="visible" value="${false}" /></c:if>
 <c:set var="theBody">
     <c:if test="${body.isTextHtml or body.isTextPlain}">
         <c:catch>
@@ -92,6 +93,7 @@
         <td  colspan="2">
             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#EEEEEE;" >
                 <tr>
+                <c:if test="${not hasTemplate}">
                     <td align="left">
                         <table width="100%" align="left" cellpadding="2" cellspacing="0" border="0">
                             <tr>
@@ -181,14 +183,17 @@
                             </c:if>
                         </table>
                     </td>
+                </c:if>
                     <td valign='top'>
                         <table width="100%" cellpadding="2" cellspacing="0" border="0">
-                            <tr>
-                                <td nowrap align='right' class='MsgHdrSent'>
-                                    <fmt:message var="dateFmt" key="formatDateSent"/>
-									<span id="messageDisplayTime_${message.id}"><fmt:formatDate timeZone="${not empty timezone ? timezone : mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/></span>
-                                </td>
-                            </tr>
+                            <c:if test="${not hasTemplate}">
+                                <tr>
+                                    <td nowrap align='right' class='MsgHdrSent'>
+                                        <fmt:message var="dateFmt" key="formatDateSent"/>
+                                        <span id="messageDisplayTime_${message.id}"><fmt:formatDate timeZone="${not empty timezone ? timezone : mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/></span>
+                                    </td>
+                                </tr>
+                            </c:if>
                             <c:if test="${message.hasTags or message.isFlagged}">
                                 <tr>
                                     <td nowrap align='right' class='Tags'>
@@ -233,7 +238,7 @@
     </c:if>
     <tr>
         <td id="iframeBody${counter}" style="padding:5px; font-family: monospace" valign='top' colspan="${needExtraCol ? 1 : 2}">
-            <app:body message="${message}" body="${body}" theBody="${body.isTextHtml ? zm:stripHtmlComments(theBody) : theBody}" mailbox="${mailbox}" counter="${counter}" isPrintView="${true}"/>
+            <app:body message="${message}" body="${body}" theBody="${body.isTextHtml ? zm:stripHtmlComments(theBody) : theBody}" mailbox="${mailbox}" counter="${counter}" isPrintView="${true}" />
             <c:set var="bodies" value="${zm:getAdditionalBodies(body,message)}"/>
             <c:if test="${not empty bodies}">
                 <br/>
@@ -249,7 +254,7 @@
                 <a name="attachments${message.partName}"></a>
                 <app:attachments mailbox="${mailbox}" message="${message}" print="${true}" composeUrl="${composeUrl}"/>
             </c:if>
-            <hr>
+            <c:if test="${not hasTemplate}"><hr></c:if>
         </td>
     </tr>
 </table>
