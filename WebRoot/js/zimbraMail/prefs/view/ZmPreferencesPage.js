@@ -1026,7 +1026,7 @@ function(setup) {
 
 	var listener = new AjxListener(this, this._localeSelectionListener);
 	for (var language in ZmLocale.languageMap) {
-		if(language != 'en' && language != 'hi') continue;
+		if(language != 'en' && language != 'hi' && language != 'ta') continue;
 
 		var languageObj = ZmLocale.languageMap[language];
 		var locales = languageObj.locales;
