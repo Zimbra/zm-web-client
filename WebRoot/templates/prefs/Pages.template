@@ -975,9 +975,6 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField ZOptionsSubField'>
 							<table role="presentation">
 								<tr>
-									<$ if (appCtxt.get(ZmSetting.FROM_DISPLAY_ENABLED)) { $>
-										<td style='padding-right:.5em;'><input id='${id}_PRIMARY_FROM_NAME' tabindex=0 size=30></td>
-									<$ } $>
 									<td><select id='${id}_PRIMARY_FROM_EMAIL' tabindex=0 size=40></select></td>
 								</tr>
 							</table>
@@ -992,7 +989,6 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField ZOptionsSubField'>
 							<table role="presentation">
 								<tr>
-									<td style='padding-right:.5em;'><input id='${id}_PRIMARY_REPLY_TO_NAME' tabindex=0 size=30></td>
 									<td class='ZmSelector'>
 										<select id='${id}_PRIMARY_REPLY_TO_EMAIL' tabindex=0></select>
 									</td>

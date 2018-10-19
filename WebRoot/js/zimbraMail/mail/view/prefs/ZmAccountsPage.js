@@ -90,7 +90,7 @@ function() {
 			hint:				ZmMsg.exampleEmailName
 		},
 		REPLY_TO_EMAIL: {
-			displayContainer:	ZmPref.TYPE_COMBOBOX,
+			displayContainer:	ZmPref.TYPE_SELECT,
 			hint:				ZmMsg.emailAddr
 		},
 		// External
@@ -2184,7 +2184,7 @@ function( displayOptions, fromAddress){
 ZmAccountsPage.prototype._setupSelect =
 function(id, setup, value) {
 	var select;
-	if (id == "FROM_EMAIL") {
+	if (id == "FROM_EMAIL"|| "REPLY_TO_EMAIL") {
 		setup.displayOptions = this._getAllAddresses();
 		var fromAddress = appCtxt.get(ZmSetting.MAIL_FROM_ADDRESS);
         setup.options = this._setSelectFromLabels(setup.displayOptions, fromAddress );
