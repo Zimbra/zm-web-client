@@ -72,7 +72,7 @@ ZmHtmlEditor = function() {
     var settings = appCtxt.getSettings();
     var listener = new AjxListener(this, this._settingChangeListener);
     settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_COLOR).addChangeListener(listener);
-    settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_FAMILY).addChangeListener(listener);
+    //settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_FAMILY).addChangeListener(listener);
     settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
     settings.getSetting(ZmSetting.COMPOSE_INIT_DIRECTION).addChangeListener(listener);
     settings.getSetting(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS).addChangeListener(listener);
@@ -311,9 +311,8 @@ function(classCount) {
 	if (recordClassCount) {
 		a[i++] = 'id="' + ZmHtmlEditor._containerDivId + '" ';
 	}
-	a[i++] = 'style="font-family: ';
-	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-	a[i++] = '; font-size: ';
+	a[i++] = 'style="';
+	a[i++] = 'font-size: ';
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 	a[i++] = '; color: ';
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
@@ -553,7 +552,7 @@ ZmHtmlEditor.prototype.initTinyMCEEditor = function(params) {
         textEl.setAttribute("dir", ZmSetting.RTL);
     }
 	textEl.className = "ZmHtmlEditorTextArea";
-    if ( params.content !== null ) {
+    if ( params.content ) {
         textEl.value = params.content;
     }
 	if (this._mode === Dwt.HTML) {
@@ -565,7 +564,7 @@ ZmHtmlEditor.prototype.initTinyMCEEditor = function(params) {
 
     Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this._onTextareaFocus.bind(this, true, true));
     Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
-    Dwt.setHandler(textEl, DwtEvent.ONKEYDOWN, this._handleTextareaKeyEvent.bind(this));
+    //Dwt.setHandler(textEl, DwtEvent.ONKEYDOWN, this._handleTextareaKeyEvent.bind(this));
 
 	if (!window.tinyMCE) {
         window.tinyMCEPreInit = {};
@@ -757,7 +756,9 @@ function(id, autoFocus) {
 	}
 
 	var toolbarbuttons = [
-		'fontselect fontsizeselect formatselect |',
+		'pramukhime pramukhimehelp |',
+		//'fontselect fontsizeselect formatselect |',
+		'fontsizeselect formatselect |',
 		'bold italic underline strikethrough removeformat |',
 		'forecolor backcolor |',
 		'outdent indent bullist numlist blockquote |',
@@ -771,6 +772,7 @@ function(id, autoFocus) {
 	// NB: contextmenu plugin deliberately omitted; it's confusing
 	var plugins = [
 		"zemoticons",
+		"pramukhime",
 		"table", "directionality", "textcolor", "lists", "advlist",
 		"link", "hr", "charmap", "code", "image", "autolink", "noneditable"
 	];
@@ -805,19 +807,21 @@ function(id, autoFocus) {
 		autoFocus = false;
 	}
     var tinyMCEInitObj = {
-        // General options
 		mode :  (this._mode == Dwt.HTML)? "exact" : "none",
 		theme: 'modern',
 		auto_focus: autoFocus,
-		elements:  id,
         plugins : plugins.join(' '),
 		toolbar: toolbarbuttons.join(' '),
 		toolbar_items_size: 'small',
+		selector: "#" + id,
 		statusbar: false,
 		menubar: false,
 		ie7_compat: false,
 		object_resizing : true,
-        font_formats : fonts.join(";"),
+		pramukhime_options : {
+			selected_value: 'pramukhindic:hindi'
+        },
+        //font_formats : fonts.join(";"),
         fontsize_formats : AjxMsg.fontSizes || '',
 		convert_urls : true,
 		verify_html : false,
@@ -839,7 +843,7 @@ function(id, autoFocus) {
             ed.on('LoadContent', obj.onLoadContent.bind(obj));
             ed.on('PostRender', obj.onPostRender.bind(obj));
             ed.on('init', obj.onInit.bind(obj));
-            ed.on('keydown', obj._handleEditorKeyEvent.bind(obj));
+            //ed.on('keydown', obj._handleEditorKeyEvent.bind(obj));
             ed.on('MouseDown', obj._handleEditorMouseDownEvent.bind(obj));
             ed.on('paste', obj.onPaste.bind(obj));
             ed.on('PastePostProcess', obj.pastePostProcess.bind(obj));
@@ -1037,7 +1041,7 @@ ZmHtmlEditor.prototype._handlePasteUpload = function(r) {
 ZmHtmlEditor.prototype.onPostRender = function(ev) {
 	var ed = this.getEditor();
 
-    ed.dom.setStyles(ed.getBody(), {"font-family" : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY),
+    ed.dom.setStyles(ed.getBody(), {//"font-family" : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY),
                                     "font-size"   : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE),
                                     "color"       : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR)
                                    });
@@ -1346,47 +1350,6 @@ function(src, newsrc){
 				}
 			});
 		}
-	}
-};
-
-ZmHtmlEditor.prototype.addCSSForDefaultFontSize =
-function(editor) {
-	var selectorText = "body,td,pre";
-	var ruleText = [
-			"font-family:", appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY),";",
-			"font-size:", appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE),";",
-			"color:", appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR),";"
-	].join("");
-	var doc = editor ? editor.getDoc() : null;
-	if (doc) {
-		this.insertDefaultCSS(doc, selectorText, ruleText);
-	}
-};
-
-ZmHtmlEditor.prototype.insertDefaultCSS =
-function(doc, selectorText, ruleText) {
-	var sheet, styleElement;
-	if (doc.createStyleSheet) {
-		sheet = doc.createStyleSheet();
-	} else {
-		styleElement = doc.createElement("style");
-		doc.getElementsByTagName("head")[0].appendChild(styleElement);
-		sheet = styleElement.styleSheet ? styleElement.styleSheet : styleElement.sheet;
-	}
-
-	if (!sheet && styleElement) {
-		//remove braces
-		ruleText = ruleText.replace(/^\{?([^\}])/, "$1");
-		styleElement.innerHTML = selectorText + ruleText;
-	} else if (sheet.addRule) {
-		//remove braces
-		ruleText = ruleText.replace(/^\{?([^\}])/, "$1");
-		DBG.println("ruleText:" + ruleText + ",selector:" + selectorText);
-		sheet.addRule(selectorText, ruleText);
-	} else if (sheet.insertRule) {
-		//need braces
-		if (!/^\{[^\}]*\}$/.test(ruleText)) ruleText = "{" + ruleText + "}";
-		sheet.insertRule(selectorText + " " + ruleText, sheet.cssRules.length);
 	}
 };
 
@@ -2374,7 +2337,7 @@ ZmHtmlEditor.prototype._settingChangeListener = function(ev) {
         return;
 
     if (id === ZmSetting.COMPOSE_INIT_FONT_FAMILY) {
-        body.style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+        //body.style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
     }
     else if (id === ZmSetting.COMPOSE_INIT_FONT_SIZE) {
         body.style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
