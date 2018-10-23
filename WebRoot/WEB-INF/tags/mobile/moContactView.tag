@@ -121,7 +121,7 @@
                                     <app:contactJobInfo contact="${memberContact}" />
                                 </td>
                                 <td width="20" class="contactOutput">
-                                    <app:contactEmail email="${memberContact.email}"/>
+                                    <mo:contactEmail email="${memberContact.email}"/>
                                 </td>
                                 <c:set var="memberContactAttrs" value="${memberContact.attrs}"/>
                                 <td width="20" class="contactOutput" nowrap="nowrap"><c:if test="${zm:anySet(memberContact,'mobilePhone')}">${fn:escapeXml(memberContactAttrs['mobilePhone'])}</c:if></td>
