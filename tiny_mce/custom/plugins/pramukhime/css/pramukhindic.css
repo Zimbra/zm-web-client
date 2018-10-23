@@ -1,0 +1,185 @@
+@font-face {
+	/*devanagari*/
+	font-family: "pramukhimefamily";
+	src: local('Noto Sans Devanagari'), local('Lohit Devanagari'), local('Lohit Marathi'), local('Lohit Nepali'), local('Nirmala UI'), local('Mangal'), local('Kokila'), local('Arial Unicode MS');
+	unicode-range:U+0900-097F;
+}
+@font-face {
+	/*bengali*/
+	font-family: "pramukhimefamily";
+	src: local('Noto Sans Bengali'), local('Lohit Bengali'), local('Lohit Assamese'), local('Nirmala UI'), local('Shonar Bangla'), local('Vrinda'), local('Arial Unicode MS');
+	unicode-range:U+0980-09FF;
+}
+@font-face {
+	/*gujarati*/
+	font-family: "pramukhimefamily";
+	src: local('Noto Sans Gujarati'), local('Lohit Gujarati'), local('Nirmala UI'), local('Shruti'), local('Arial Unicode MS');
+	unicode-range:U+0A80-0AFF;
+}
+@font-face {
+	/*kannada*/
+	font-family: "pramukhimefamily";
+	src: local('Noto Sans Kannada'), local('Lohit Kannada'), local('Nirmala UI'), local('Tunga'), local('Arial Unicode MS');
+	unicode-range:U+0C80-0CFF;
+}
+@font-face {
+	/*malayalam*/
+	font-family: "pramukhimefamily";
+	src: local('Noto Sans Malayalam'), local('Lohit Malayalam'), local('Nirmala UI'), local('Kartika'), local('Arial Unicode MS');
+	unicode-range:U+0D00-0D7F;
+}
+@font-face {
+	/*marathi modi*/
+	font-family: "pramukhimefamily";
+	src: local('MarathiCursiveG');
+	unicode-range:U+11600-1165F;
+}
+@font-face {
+	/*Meetei Mayek*/
+	font-family: "pramukhimefamily";
+	src: local("Noto Sans Meetei Mayek"), local('Eeyek Unicode');
+	unicode-range:U+ABC0-ABFF;
+}
+@font-face {
+	/*odia*/
+	font-family: "pramukhimefamily";
+	src: local('Noto Sans Oriya'), local('Lohit Odia'), local('Lohit Oriya'), local('Nirmala UI'), local('Kalinga'), local('Arial Unicode MS');
+	unicode-range:U+0B00-0B7F;
+}
+@font-face {
+	/*Ol Chiki*/
+	font-family: "pramukhimefamily";
+	src: local('Noto Sans Ol Chiki'), local('Nirmala UI'), local('Ol-Chiki Bivash');
+	unicode-range:U+1C50-1C7F;
+}
+@font-face {
+	/*punjabi*/
+	font-family: "pramukhimefamily";
+	src: local('Noto Sans Gurmukhi'), local('Lohit Punjabi'), local('Nirmala UI'), local('Raavi'), local('Agency FB'), local('Arial Unicode MS');
+	unicode-range:U+0A00-0A7F;
+}
+@font-face {
+	/*sora*/
+	font-family: "pramukhimefamily";
+	src: local('Nirmala UI');
+	unicode-range:U+110D0-110FF;
+}
+@font-face {
+	/*tamil*/
+	font-family: "pramukhimefamily";
+	src: local('Noto Sans Tamil'), local('Lohit Tamil'), local('Nirmala UI'), local('Latha'), local('Agency FB'), local('Arial Unicode MS');
+	unicode-range:U+0B80-0BFF;
+}
+@font-face {
+	/*telugu*/
+	font-family: "pramukhimefamily";
+	src: local('Noto Sans Telugu'), local('Lohit Telugu'), local('Nirmala UI'), local('Gautami'), local('Arial Unicode MS');
+	unicode-range:U+0C00-0C7F;
+}
+@font-face {
+	/*roman*/
+	font-family: "pramukhimefamily";
+	src: local('Verdana'), local('Arial'), local('Helvetica'), local('sans-serif');
+	unicode-range:U+0000-052F;
+}
+@font-face {
+	font-family:pramukhindic;
+	/* not using eot font as it is used by IE7-8 only */
+	src: url(pramukhindic.woff) format('woff'),url(pramukhindic.ttf) format('truetype'),url(pramukhindic.svg#pramukhindic) format('svg');
+	font-weight:400;
+	font-style:normal;
+}
+
+
+.mce-i-pramukhimehelp:before,.pi-pramukhime-english-help:before{font-family:pramukhindic; content:"\e050";}
+.pi-pramukhindic-assamese-help:before, .pi-pramukhindic-bengali-help:before,.pi-pramukhindic-manipuri-help:before{font-family:pramukhindic; content:"\e051";}
+.pi-pramukhindic-bodo-help:before, .pi-pramukhindic-dogri-help:before, .pi-pramukhindic-hindi-help:before,
+.pi-pramukhindic-kashmiri-help:before, .pi-pramukhindic-konkani-help:before, .pi-pramukhindic-maithili-help:before,
+.pi-pramukhindic-marathi-help:before, .pi-pramukhindic-nepali-help:before, .pi-pramukhindic-sanskrit-help:before, 
+.pi-pramukhindic-sindhi-help:before{font-family:pramukhindic; content:"\e052";}
+.pi-pramukhindic-marathimodi-help:before{font-family:pramukhindic; content:"\e053";}
+.pi-pramukhindic-gujarati-help:before{font-family:pramukhindic; content:"\e054";}
+.pi-pramukhindic-kannada-help:before{font-family:pramukhindic; content:"\e055";}
+.pi-pramukhindic-malayalam-help:before{font-family:pramukhindic; content:"\e056";}
+.pi-pramukhindic-meitei-help:before{font-family:pramukhindic; content:"\e057";}
+.pi-pramukhindic-odia-help:before{font-family:pramukhindic; content:"\e058";}
+.pi-pramukhindic-punjabi-help:before{font-family:pramukhindic; content:"\e059";}
+.pi-pramukhindic-santali-help:before{font-family:pramukhindic; content:"\e05a";}
+.pi-pramukhindic-sora-help:before{font-family:pramukhindic; content:"\e05b";}
+.pi-pramukhindic-tamil-help:before{font-family:pramukhindic; content:"\e05c";}
+.pi-pramukhindic-telugu-help:before{font-family:pramukhindic; content:"\e05d";}
+
+.mce-i-pramukhimesettings:before,
+.pi-pramukhime-english-settings:before,
+.pi-pramukhindic-assamese-settings:before,
+.pi-pramukhindic-bengali-settings:before,
+.pi-pramukhindic-manipuri-settings:before,
+.pi-pramukhindic-bodo-settings:before,
+.pi-pramukhindic-dogri-settings:before,
+.pi-pramukhindic-gujarati-settings:before,
+.pi-pramukhindic-hindi-settings:before,
+.pi-pramukhindic-kannada-settings:before,
+.pi-pramukhindic-kashmiri-settings:before,
+.pi-pramukhindic-konkani-settings:before,
+.pi-pramukhindic-maithili-settings:before,
+.pi-pramukhindic-malayalam-settings:before,
+.pi-pramukhindic-marathi-settings:before,
+.pi-pramukhindic-marathimodi-settings:before,
+.pi-pramukhindic-meitei-settings:before,
+.pi-pramukhindic-nepali-settings:before,
+.pi-pramukhindic-odia-settings:before,
+.pi-pramukhindic-punjabi-settings:before,
+.pi-pramukhindic-sanskrit-settings:before,
+.pi-pramukhindic-santali-settings:before,
+.pi-pramukhindic-sindhi-settings:before,
+.pi-pramukhindic-sora-settings:before,
+.pi-pramukhindic-tamil-settings:before,
+.pi-pramukhindic-telugu-settings:before {font-family:pramukhindic; content:"\e000";}
+
+.mce-i-pramukhimeresetsettings:before,
+.pi-pramukhime-english-resetsettings:before,
+.pi-pramukhindic-assamese-resetsettings:before,
+.pi-pramukhindic-bengali-resetsettings:before,
+.pi-pramukhindic-manipuri-resetsettings:before,
+.pi-pramukhindic-bodo-resetsettings:before,
+.pi-pramukhindic-dogri-resetsettings:before,
+.pi-pramukhindic-gujarati-resetsettings:before,
+.pi-pramukhindic-hindi-resetsettings:before,
+.pi-pramukhindic-kannada-resetsettings:before,
+.pi-pramukhindic-kashmiri-resetsettings:before,
+.pi-pramukhindic-konkani-resetsettings:before,
+.pi-pramukhindic-maithili-resetsettings:before,
+.pi-pramukhindic-malayalam-resetsettings:before,
+.pi-pramukhindic-marathi-resetsettings:before,
+.pi-pramukhindic-marathimodi-resetsettings:before,
+.pi-pramukhindic-meitei-resetsettings:before,
+.pi-pramukhindic-nepali-resetsettings:before,
+.pi-pramukhindic-odia-resetsettings:before,
+.pi-pramukhindic-punjabi-resetsettings:before,
+.pi-pramukhindic-sanskrit-resetsettings:before,
+.pi-pramukhindic-santali-resetsettings:before,
+.pi-pramukhindic-sindhi-resetsettings:before,
+.pi-pramukhindic-sora-resetsettings:before,
+.pi-pramukhindic-tamil-resetsettings:before,
+.pi-pramukhindic-telugu-resetsettings:before {font-family:pramukhindic; content:"\e001";}
+
+.mce-i-pramukhimetogglelanguage:before,.pi-pramukhime-english:before{font-family:pramukhindic; content:"\e040";}
+.pi-pramukhindic-assamese:before, .pi-pramukhindic-bengali:before,.pi-pramukhindic-manipuri:before{font-family:pramukhindic; content:"\e041";}
+.pi-pramukhindic-bodo:before, .pi-pramukhindic-dogri:before, .pi-pramukhindic-hindi:before,
+.pi-pramukhindic-kashmiri:before, .pi-pramukhindic-konkani:before, .pi-pramukhindic-maithili:before,
+.pi-pramukhindic-marathi:before, .pi-pramukhindic-nepali:before, .pi-pramukhindic-sanskrit:before, 
+.pi-pramukhindic-sindhi:before{font-family:pramukhindic; content:"\e042";}
+.pi-pramukhindic-marathimodi:before{font-family:pramukhindic; content:"\e043";}
+.pi-pramukhindic-gujarati:before{font-family:pramukhindic; content:"\e044";}
+.pi-pramukhindic-kannada:before{font-family:pramukhindic; content:"\e045";}
+.pi-pramukhindic-malayalam:before{font-family:pramukhindic; content:"\e046";}
+.pi-pramukhindic-meitei:before{font-family:pramukhindic; content:"\e047";}
+.pi-pramukhindic-odia:before{font-family:pramukhindic; content:"\e048";}
+.pi-pramukhindic-punjabi:before{font-family:pramukhindic; content:"\e049";}
+.pi-pramukhindic-santali:before{font-family:pramukhindic; content:"\e04a";}
+.pi-pramukhindic-sora:before{font-family:pramukhindic; content:"\e04b";}
+.pi-pramukhindic-tamil:before{font-family:pramukhindic; content:"\e04c";}
+.pi-pramukhindic-telugu:before{font-family:pramukhindic; content:"\e04d";}
+
+/* for help file */
+.pramukhindicchar {font-family:"pramukhimefamily";}
