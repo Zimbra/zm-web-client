@@ -698,6 +698,15 @@ h1, h2, h3, h4, h5, h6 {
     -moz-border-radius: 5px;
     vertical-align:middle;
 }
+
+#fbbar .zo_button1 {
+    display: inline-block;
+}
+
+#fbbar .zo_button1 .ImgCancel {
+    display: block;
+}
+
 /* TODO: Is this still used? And have we lost any formatting going to ImgEdit class?
 .Edit{
     background-color: #EEE;
