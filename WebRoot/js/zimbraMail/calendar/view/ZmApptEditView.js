@@ -478,11 +478,11 @@ ZmApptEditView.prototype.cleanup =
 function() {
 	ZmCalItemEditView.prototype.cleanup.call(this);
 
-	if (this.GROUP_CALENDAR_ENABLED) {
-		this._attendeesInputField.clear();
-		this._optAttendeesInputField.clear();
-        this._forwardToField.clear();
-	}
+
+    this._attendeesInputField.clear();
+    this._optAttendeesInputField.clear();
+    this._forwardToField.clear();
+
     this._attInputField[ZmCalBaseItem.LOCATION].clear();
 	this._locationTextMap = {};
 
@@ -1216,26 +1216,24 @@ function(width) {
 
 	this._attInputField = {};
 
-	if (this.GROUP_CALENDAR_ENABLED) {
-		this._attendeesInputField = this._createInputField("_person", ZmCalBaseItem.PERSON, {
-		            label: ZmMsg.attendees,
-		            bubbleAddedCallback: new AjxCallback(this, this._handleAddedAttendees, [ZmCalBaseItem.PERSON]),
-		            bubbleRemovedCallback: new AjxCallback(this, this._handleRemovedAttendees, [ZmCalBaseItem.PERSON])
-		        });
-		this._optAttendeesInputField = this._createInputField("_optional", ZmCalBaseItem.OPTIONAL_PERSON, {
-				            label: ZmMsg.optionalAttendees,
-				            bubbleAddedCallback: new AjxCallback(this, this._handleAddedAttendees, [ZmCalBaseItem.OPTIONAL_PERSON]),
-				            bubbleRemovedCallback: new AjxCallback(this, this._handleRemovedAttendees, [ZmCalBaseItem.OPTIONAL_PERSON])
-				        });
-        //add Resources Field
-        if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-            this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT, {
-                strictMode:false,
-                label: ZmMsg.equipmentAttendee,
-                bubbleAddedCallback: this._handleAddedAttendees.bind(this, ZmCalBaseItem.EQUIPMENT),
-                bubbleRemovedCallback: this._handleRemovedAttendees.bind(this, ZmCalBaseItem.EQUIPMENT)
-			});
-        }
+    this._attendeesInputField = this._createInputField("_person", ZmCalBaseItem.PERSON, {
+        label: ZmMsg.attendees,
+        bubbleAddedCallback: new AjxCallback(this, this._handleAddedAttendees, [ZmCalBaseItem.PERSON]),
+        bubbleRemovedCallback: new AjxCallback(this, this._handleRemovedAttendees, [ZmCalBaseItem.PERSON])
+    });
+    this._optAttendeesInputField = this._createInputField("_optional", ZmCalBaseItem.OPTIONAL_PERSON, {
+        label: ZmMsg.optionalAttendees,
+        bubbleAddedCallback: new AjxCallback(this, this._handleAddedAttendees, [ZmCalBaseItem.OPTIONAL_PERSON]),
+        bubbleRemovedCallback: new AjxCallback(this, this._handleRemovedAttendees, [ZmCalBaseItem.OPTIONAL_PERSON])
+    });
+	//add Resources Field
+	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT, {
+			strictMode:false,
+			label: ZmMsg.equipmentAttendee,
+			bubbleAddedCallback: this._handleAddedAttendees.bind(this, ZmCalBaseItem.EQUIPMENT),
+			bubbleRemovedCallback: this._handleRemovedAttendees.bind(this, ZmCalBaseItem.EQUIPMENT)
+		});
 	}
 
     // add location input field
@@ -1323,10 +1321,8 @@ function(width) {
 	this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_endTimeSelect");
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 
-    if (this.GROUP_CALENDAR_ENABLED) {
-		// create without saving in this._attInputField (will overwrite attendee input)
-		this._forwardToField = this._createInputField("_to_control",ZmCalBaseItem.FORWARD);
-    }
+	// create without saving in this._attInputField (will overwrite attendee input)
+	this._forwardToField = this._createInputField("_to_control",ZmCalBaseItem.FORWARD);
 
 	// timezone DwtSelect
     var timezoneListener = new AjxListener(this, this._timezoneListener);
@@ -2048,7 +2044,7 @@ function() {
 	};
 
 	// autocomplete for attendees (required and optional) and forward recipients
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this.GROUP_CALENDAR_ENABLED)	{
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED))	{
 		params.contextId = [this._controller.getCurrentViewId(), ZmCalBaseItem.PERSON].join("-");
 		var aclv = this._acContactsList = new ZmAutocompleteListView(params);
 		this._setAutocompleteHandler(aclv, ZmCalBaseItem.PERSON);
