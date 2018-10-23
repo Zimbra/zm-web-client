@@ -54,11 +54,11 @@
         xhttp.send();
    	}
 	window.onload = function() {
-		if(getCookie('splashLoginFlag') == "splashLoginFlag") {
+		if (getCookie('splashLoginFlag') == "splashLoginFlag") {
 			hideSplash();
 		} else {
 			getHistory();
-			if(window.loginHistoryTimeout > 0) {
+			if (window.loginHistoryTimeout > 0) {
 				setCookie('splashLoginFlag','splashLoginFlag',1);
 				document.getElementById("SplashLoadingScreen").style.display = "none";
 				document.getElementById("ZLoginBannerImage").style.display = "none";
@@ -72,17 +72,18 @@
 	};
 	var counters = 10;
 	function onTimer() {
-	  document.getElementById("clicks").innerHTML = counters;
-	  counters = counters - 1;
-	  if (counters == 0) {
-		var timeOut = setTimeout(onTimer, 1000);
-		clearTimeout(timeOut);
-		hideSplash();
-	  }
-	  else {
-		setTimeout(onTimer, 1000);
-	  }
+		document.getElementById("clicks").innerHTML = counters;
+		if (counters < 0) {
+			var timeOut = setTimeout(onTimer, 1000);
+			clearTimeout(timeOut);
+			hideSplash();
+		}
+		else {
+			setTimeout(onTimer, 1000);
+		}
+		counters = counters - 1;
 	}
+	
 	function hideSplash() {
 		Dwt.hide("skin_container_splash_screen");
 	}
