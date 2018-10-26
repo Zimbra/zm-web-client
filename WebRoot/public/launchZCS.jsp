@@ -79,7 +79,7 @@
 	}
 
 	boolean isDev = getParameter(request, "dev", "0").equals("1");
-	int loginHistoryTimeout = Integer.parseInt(Provisioning.getInstance().getConfig().getAttr(Provisioning.A_zimbraSplashScreenTimeOut, "10")) * 1000;
+	int loginHistoryTimeout = Integer.parseInt(Provisioning.getInstance().getConfig().getAttr(Provisioning.A_zimbraSplashScreenTimeOut, "10"));
 	
 	if (isDev) {
 		request.setAttribute("mode", "mjsf");
