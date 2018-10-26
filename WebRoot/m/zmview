@@ -39,7 +39,7 @@
     </c:when>
 
     <c:when test="${app eq 'message' || app eq 'conversation' || app eq 'contact' || app eq 'briefcase' || app eq 'wiki' || app eq 'task' || app eq 'gal'}">
-         <c:import url="/m/mosearch?st=${app}"/>
+         <c:import url="/m/mosearch?st=${app}&crumb=${param.crumb}"/>
     </c:when>
 
     <c:when test="${app eq 'cal'}">

@@ -19,6 +19,7 @@
     <c:set var="action" value="${zm:cook(empty param.paction ? param.action : param.paction)}" scope="request"/>
     <c:choose>
         <c:when test="${not empty param.actionSearch}">
+            <zm:checkCrumb crumb="${param.crumb}"/>
             <c:if test="${not empty param.sq_size}"><c:set var="sq_size"
                                                            value=" ${param.sq_size_comp}:${fn:trim(param.sq_size)}${param.sq_size_units}"/></c:if>
             <c:if test="${not empty param.sq_from}"><c:set var="sq_from" value=' from:(${param.sq_from})'/></c:if>
