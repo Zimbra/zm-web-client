@@ -70,7 +70,7 @@
 			onTimer();
 		}
 	};
-	var counters = 10;
+	var counters = window.loginHistoryTimeout;
 	function onTimer() {
 		document.getElementById("clicks").innerHTML = counters;
 		if (counters < 0) {
