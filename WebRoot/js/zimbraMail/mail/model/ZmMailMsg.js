@@ -1369,10 +1369,10 @@ function(callback, toastMessage, result) {
 
 	// allow or disallow move logic:
 	var allowMove;
-	if ((this.acceptFolderId != ZmOrganizer.ID_CALENDAR) ||
+	if ((this.acceptFolderId != appCtxt.get(ZmSetting.CAL_DEFAULT_ID)) ||
 		(appCtxt.multiAccounts &&
 			!this.getAccount().isMain &&
-			this.acceptFolderId == ZmOrganizer.ID_CALENDAR))
+			this.acceptFolderId == appCtxt.get(ZmSetting.CAL_DEFAULT_ID)))
 	{
 		allowMove = true;
 	}

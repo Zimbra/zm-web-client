@@ -185,10 +185,10 @@ function(msg) {
 						? ([calendar.name, " (", calAcct.getDisplayName(), ")"].join(""))
 						: calendar.name;
 					var isSelected = (calAcctId && msgAcctId)
-						? (calAcctId == msgAcctId && calendar.nId == ZmOrganizer.ID_CALENDAR)
-						: calendar.nId == ZmOrganizer.ID_CALENDAR;
+						? (calAcctId == msgAcctId && calendar.nId == appCtxt.get(ZmSetting.CAL_DEFAULT_ID))
+						: calendar.nId == appCtxt.get(ZmSetting.CAL_DEFAULT_ID);
                     //bug: 57538 - this invite is intended for owner of shared calendar which should be selected
-                    if(msg.cif && calendar.owner == msg.cif && calendar.rid == ZmOrganizer.ID_CALENDAR) isSelected = true;
+                    if(msg.cif && calendar.owner == msg.cif && calendar.rid == appCtxt.get(ZmSetting.CAL_DEFAULT_ID)) isSelected = true;
 					var option = new DwtSelectOptionData(calendar.id, name, isSelected, null, icon);
 					this._inviteMoveSelect.addOption(option);
 				}
