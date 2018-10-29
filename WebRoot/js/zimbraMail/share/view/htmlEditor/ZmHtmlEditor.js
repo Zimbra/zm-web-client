@@ -72,7 +72,6 @@ ZmHtmlEditor = function() {
     var settings = appCtxt.getSettings();
     var listener = new AjxListener(this, this._settingChangeListener);
     settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_COLOR).addChangeListener(listener);
-    //settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_FAMILY).addChangeListener(listener);
     settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
     settings.getSetting(ZmSetting.COMPOSE_INIT_DIRECTION).addChangeListener(listener);
     settings.getSetting(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS).addChangeListener(listener);
@@ -564,7 +563,7 @@ ZmHtmlEditor.prototype.initTinyMCEEditor = function(params) {
 
     Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this._onTextareaFocus.bind(this, true, true));
     Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
-    //Dwt.setHandler(textEl, DwtEvent.ONKEYDOWN, this._handleTextareaKeyEvent.bind(this));
+    Dwt.setHandler(textEl, DwtEvent.ONKEYDOWN, this._handleTextareaKeyEvent.bind(this));
 
 	if (!window.tinyMCE) {
         window.tinyMCEPreInit = {};
@@ -757,7 +756,6 @@ function(id, autoFocus) {
 
 	var toolbarbuttons = [
 		'pramukhime pramukhimehelp |',
-		//'fontselect fontsizeselect formatselect |',
 		'fontsizeselect formatselect |',
 		'bold italic underline strikethrough removeformat |',
 		'forecolor backcolor |',
@@ -820,9 +818,9 @@ function(id, autoFocus) {
 		object_resizing : true,
 		pramukhime_options : {
 			selected_value: 'pramukhindic:hindi'
-        },
-        //font_formats : fonts.join(";"),
-        fontsize_formats : AjxMsg.fontSizes || '',
+		},
+		//font_formats : fonts.join(";"),
+		fontsize_formats : AjxMsg.fontSizes || '',
 		convert_urls : true,
 		verify_html : false,
 		browser_spellcheck : true,
@@ -843,7 +841,7 @@ function(id, autoFocus) {
             ed.on('LoadContent', obj.onLoadContent.bind(obj));
             ed.on('PostRender', obj.onPostRender.bind(obj));
             ed.on('init', obj.onInit.bind(obj));
-            //ed.on('keydown', obj._handleEditorKeyEvent.bind(obj));
+            ed.on('keydown', obj._handleEditorKeyEvent.bind(obj));
             ed.on('MouseDown', obj._handleEditorMouseDownEvent.bind(obj));
             ed.on('paste', obj.onPaste.bind(obj));
             ed.on('PastePostProcess', obj.pastePostProcess.bind(obj));
@@ -1041,7 +1039,7 @@ ZmHtmlEditor.prototype._handlePasteUpload = function(r) {
 ZmHtmlEditor.prototype.onPostRender = function(ev) {
 	var ed = this.getEditor();
 
-    ed.dom.setStyles(ed.getBody(), {//"font-family" : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY),
+    ed.dom.setStyles(ed.getBody(), {
                                     "font-size"   : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE),
                                     "color"       : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR)
                                    });
@@ -2336,9 +2334,7 @@ ZmHtmlEditor.prototype._settingChangeListener = function(ev) {
     if(!body)
         return;
 
-    if (id === ZmSetting.COMPOSE_INIT_FONT_FAMILY) {
-        //body.style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-    }
+    if (id === ZmSetting.COMPOSE_INIT_FONT_FAMILY) {}
     else if (id === ZmSetting.COMPOSE_INIT_FONT_SIZE) {
         body.style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
     }
