@@ -819,7 +819,6 @@ function(id, autoFocus) {
 		pramukhime_options : {
 			selected_value: 'pramukhindic:hindi'
 		},
-		//font_formats : fonts.join(";"),
 		fontsize_formats : AjxMsg.fontSizes || '',
 		convert_urls : true,
 		verify_html : false,
