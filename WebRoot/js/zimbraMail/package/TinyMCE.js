@@ -23,6 +23,7 @@
 AjxPackage.require("ajax.3rdparty.tinymce.tinymce_min");
 AjxPackage.require("ajax.3rdparty.tinymce.locales");
 AjxPackage.require("ajax.3rdparty.tinymce.localeconv_min");
+AjxPackage.require("ajax.3rdparty.tinymce.plugins.pramukhime.plugin");
 AjxPackage.require("ajax.3rdparty.tinymce.plugins.zemoticons.data");
 AjxPackage.require("ajax.3rdparty.tinymce.plugins.zemoticons.plugin_min");
 AjxPackage.require("ajax.3rdparty.tinymce.plugins.autolink.plugin_min");
