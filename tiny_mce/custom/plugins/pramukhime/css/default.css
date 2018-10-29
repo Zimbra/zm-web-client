@@ -1,0 +1,6 @@
+/* generic header/footer */
+.pageheader {border-bottom:2px solid #FF6600; margin-top:10px; color:#FF6600;}
+.pagefooter {border-top:2px solid #FF6600;}
+
+/*Addition to bootstrap*/
+.row-top10 {margin-top:10px;}
