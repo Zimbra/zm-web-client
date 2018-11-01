@@ -37,9 +37,9 @@
 </c:choose>
 <c:if test="${app:boolean(width)}"><c:set var="width" value="${width}"/></c:if>
 <c:if test="${not empty src}">
-    <td height="100%" nowrap="nowrap" valign="middle"><input name="${name}" type="image" src="<app:imgurl value='${src}' />" ${extra} <c:if test="${not empty id}">id="I${zm:cook(id)}"</c:if> <c:if test="${app:boolean(disabled)}">disabled </c:if> <c:if test="${not empty tooltip}">alt="${fn:escapeXml(tooltip)}" title="${fn:escapeXml(tooltip)}"</c:if> <c:if test="${not empty clazz}">class='${clazz}'</c:if>></td>
+    <td height="100%" nowrap="nowrap" valign="middle"><input name="${name}" type="image" src="<app:imgurl value='${zm:cook(src)}' />" ${zm:cook(extra)} <c:if test="${not empty id}">id="I${zm:cook(id)}"</c:if> <c:if test="${app:boolean(disabled)}">disabled </c:if> <c:if test="${not empty tooltip}">alt="${fn:escapeXml(tooltip)}" title="${fn:escapeXml(tooltip)}"</c:if> <c:if test="${not empty clazz}">class='${zm:cook(clazz)}'</c:if>></td>
 </c:if>
 <c:if test="${not empty text}">
-    <td height="100%" <c:if test="${not empty width}">width="${width}"</c:if>  valign="middle" class="IEbutton"><input align=left ${extra} <c:if test="${not empty id}">id="S${zm:cook(id)}"</c:if> <c:if test="${app:boolean(disabled)}">disabled class='ImgDisabled' </c:if> <c:if test="${not empty clazz}">class="${clazz}"</c:if> name="${name}" type="submit" value="${fn:escapeXml(text)}" <c:if test="${not empty tooltip}">title="${fn:escapeXml(tooltip)}"</c:if>></td>
+    <td height="100%" <c:if test="${not empty width}">width="${zm:cook(width)}"</c:if>  valign="middle" class="IEbutton"><input align=left ${zm:cook(extra)} <c:if test="${not empty id}">id="S${zm:cook(id)}"</c:if> <c:if test="${app:boolean(disabled)}">disabled class='ImgDisabled' </c:if> <c:if test="${not empty clazz}">class="${zm:cook(clazz)}"</c:if> name="${zm:cook(name)}" type="submit" value="${fn:escapeXml(text)}" <c:if test="${not empty tooltip}">title="${fn:escapeXml(tooltip)}"</c:if>></td>
 </c:if>
     
