@@ -203,6 +203,7 @@ function(appt) {
     }
 	newAppt.color = appt.color;
 	newAppt.rgb = appt.rgb;
+	newAppt.metadata = appt.metadata && JSON.parse(JSON.stringify(appt.metadata));
 
     return newAppt;
 };
@@ -211,6 +212,18 @@ ZmAppt.createFromDom =
 function(apptNode, args, instNode, noCache) {
 	var appt = new ZmAppt(args.list);
 	appt._loadFromDom(apptNode, (instNode || {}));
+	if (appt.invId) {
+		var metadataResp = ZmAppt.getMetadata(appt, appt.invId);
+		if (
+			metadataResp &&
+			metadataResp.GetMsgResponse &&
+			metadataResp.GetMsgResponse.m &&
+			metadataResp.GetMsgResponse.m[0] &&
+			metadataResp.GetMsgResponse.m[0].meta
+		) {
+			appt.metadata = metadataResp.GetMsgResponse.m[0].meta;
+		}
+	}
     if (appt.id && !noCache) {
         appCtxt.cacheSet(appt.id, appt);
     }
@@ -252,6 +265,23 @@ function(controller, callback) {
 	this.apptClone = ZmAppt.quickClone(this);
 	var respCallback = this._handleResponseGetToolTip.bind(this.apptClone, controller, callback); //run the callback on the clone - otherwise we lost data such as freeBusy
 	this.apptClone.getDetails(null, respCallback);
+};
+
+ZmAppt.getMetadata =
+function(appt, invId) {
+	var jsonObj = {
+		GetMsgRequest: {//get the whole message instead of getMsgMetadata because getMsgMetadata won't work for messages with no associated email
+			_jsns: "urn:zimbraMail",
+			m: {
+				id: invId
+			}
+		}
+	};
+	var request = jsonObj.GetMsgRequest;
+	return appCtxt.getAppController().sendRequest({
+		jsonObj: jsonObj,
+		asyncMode: false
+	});
 };
 
 ZmAppt.prototype._handleResponseGetToolTip =

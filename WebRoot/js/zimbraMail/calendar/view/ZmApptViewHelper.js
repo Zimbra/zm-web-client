@@ -55,6 +55,12 @@ ZmApptViewHelper.SHOWAS_OPTIONS = [
 	{ label: ZmMsg.outOfOffice,			value: "O", 	selected: false }
 ];
 
+ZmApptViewHelper.FONTSIZE_OPTIONS = [
+	{ label: ZmMsg.fontSizeSmall,					value: "small",		selected: false },
+	{ label: ZmMsg.fontSizeNormal,					value: "normal",	selected: true  },
+	{ label: ZmMsg.fontSizeLarge,					value: "large",		selected: false }
+];
+
 /**
  * returns the label of the option specified by it's value. This is used in calendar.Appointment#Tooltip template
  *
@@ -654,6 +660,7 @@ function(list, role, count) {
 	return a;
 };
 
+//applies to Month view only. Day/week/work week are in ZmCalColView
 ZmApptViewHelper._allDayItemHtml =
 function(appt, id, controller, first, last) {
 	var isNew = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;

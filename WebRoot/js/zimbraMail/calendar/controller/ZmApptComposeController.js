@@ -544,9 +544,7 @@ function(ev, force) {
         }
     }
 
-	if (this._doSave() === false) {
-		return;
-    }
+    this._doSave();
 };
 
 ZmApptComposeController.prototype._createToolBar =
@@ -1162,9 +1160,10 @@ function(appt, attId, dlg) {
 	this._saveCalItemFoRealz(appt, attId);
 };
 
+//calls the ZmCalItemComposeController function that calls the actual save action
 ZmApptComposeController.prototype._saveCalItemFoRealz =
-function(calItem, attId, notifyList, force){
-    force = force || ( this._action == ZmCalItemComposeController.SEND );
+function(calItem, attId, notifyList, force) {
+    force = force || ( this._action == ZmCalItemComposeController.SEND ) || calItem.isFontSizeMetaChanged();
 
     //organizer forwarding an appt is same as organizer editing appt while adding new attendees
     if(calItem.isForward) {
@@ -1213,6 +1212,7 @@ function(appt, attId, callback, errorCallback, notifyList){
     }
 };
 
+//handles actions after normal appointment creation
 ZmApptComposeController.prototype._handleResponseSave =
 function(calItem, result) {
 	if (calItem.__newFolderId) {
@@ -1226,10 +1226,10 @@ function(calItem, result) {
     if(viewMode == ZmCalItem.MODE_NEW || viewMode == ZmCalItem.MODE_NEW_FROM_QUICKADD || viewMode == ZmAppt.MODE_DRAG_OR_SASH) {
         isNewAppt = true;
     }
-
+    calItem.setFontSizeMetadata(calItem, result);
     if(this.isCloseAction()) {
         calItem.handlePostSaveCallbacks();
-        this.closeView();	    
+        this.closeView();
     }else {
         this.enableToolbar(true);
         if(isNewAppt) {
@@ -1240,7 +1240,7 @@ function(calItem, result) {
             calItem.isDraft = this._draftFlag;
             calItem.draftUpdated = true;
         }
-        this._composeView.set(calItem, viewMode);        
+        this._composeView.set(calItem, viewMode);
     }
 
     var msg = isNewAppt ? ZmMsg.apptCreated : ZmMsg.apptSaved;
@@ -1251,7 +1251,7 @@ function(calItem, result) {
             if(viewMode != ZmCalItem.MODE_NEW){
                 msg = ZmMsg.apptSent;
             }
-        }              
+        }
     }
     appCtxt.setStatusMsg(msg);
     
@@ -1429,6 +1429,7 @@ function(appt, action, closeCallback, errorCallback, cancelCallback) {
     return ret;
 };
 
+//handles actions after saving a quick-add event
 ZmSimpleApptComposeController.prototype._handleResponseSave =
 function(calItem, result) {
     if (this._simpleCloseCallback) {
