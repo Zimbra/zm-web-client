@@ -20,7 +20,7 @@
 		    <$ if(data.headerStyle) {$>
 			<tr style="${headerStyle}">
 			<$ }else { $>
-            <tr class='${headerColor}'>			
+			<tr class='${headerColor}'>
 			<$ } $>
                 <td style="${showAsColor}" width=4 rowspan="<$= data.hideTime ? 2 : 3 $>"></td>
 				<td class='appt${newState}_time'>
@@ -51,7 +51,7 @@
 			</tr>
 			<tr valign=top>
 				<td class=appt${newState}_name style='height:100%'>
-					${name}
+					<span class='custom_font_size_${subjFontSize}'>${name}</span>
 					<$ if (data.location) { $>
 						${location}
 					<$ } $>
@@ -140,7 +140,7 @@
             <$ } $>
 				<td class='${showAsClass}' style="min-width:4px; ${showAsColor}" ></td>
 				<td width=100% class=appt_allday${newState}_name>
-					<div style="overflow: hidden; white-space: nowrap;">${name}</div>
+					<div style="overflow: hidden; white-space: nowrap;" class='custom_font_size_${subjFontSize}'>${name}</div>
 				</td>
                 <$ if (data.icon) { $>
                     <td width=16px style='padding-right:3px;'>
