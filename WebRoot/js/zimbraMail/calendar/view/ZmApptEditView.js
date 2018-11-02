@@ -525,6 +525,8 @@ function() {
     this._locationExceptions = null;
     this._alteredLocations   = null;
 
+    this._locationFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1].value);
+    this._subjectFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1].value);
 };
 
 // Acceptable hack needed to prevent cursor from bleeding thru higher z-index'd views
@@ -1312,6 +1314,22 @@ function(width) {
 	this._folderSelect.addChangeListener(new AjxListener(this, this._folderListener));
 	this._showAsSelect.setAttribute('aria-label', ZmMsg.showAs);
 
+	//set up the font size selects for subject/location
+	this._subjectFontSizeSelect = new DwtSelect({ parent: this, parentElement: this._htmlElId + "_subjectFontSizeSelect" });
+	this._subjectFontSizeSelect.setAttribute('aria-label', ZmMsg.subjectFontSize);
+
+	this._locationFontSizeSelect = new DwtSelect({ parent: this, parentElement: this._htmlElId + "_locationFontSizeSelect" });
+	this._locationFontSizeSelect.setAttribute('aria-label', ZmMsg.locationFontSize);
+ 
+	for (var i = 0; i < ZmApptViewHelper.FONTSIZE_OPTIONS.length; i++) {
+		var option = ZmApptViewHelper.FONTSIZE_OPTIONS[i];
+		this._locationFontSizeSelect.addOption(option.label, option.selected, option.value);
+		this._subjectFontSizeSelect.addOption(option.label, option.selected, option.value);
+	}
+	this._locationFontSizeSelect.addChangeListener(new AjxListener(this, this._locationFontSizeChangeListener));
+	this._subjectFontSizeSelect.addChangeListener(new AjxListener(this, this._subjectFontSizeChangeListener));
+
+
     this._privateCheckbox = document.getElementById(this._htmlElId + "_privateCheckbox");
     this._color = document.getElementById(this._htmlElId + "_color");
 	this._setAppointmentColorMenu(this._color);
@@ -1994,6 +2012,18 @@ function() {
 	}
 };
 
+ZmApptEditView.prototype._subjectFontSizeChangeListener =
+function() {
+    var chosenFont = this._subjectFontSizeSelect.getValue();
+    this._calItem.setSubjectFontSize(chosenFont);
+}
+
+ZmApptEditView.prototype._locationFontSizeChangeListener =
+function() {
+    var chosenFont = this._locationFontSizeSelect.getValue();
+    this._calItem.setLocationFontSize(chosenFont);
+}
+
 ZmApptEditView.prototype.setSchedulerVisibility =
 function(visible) {
     Dwt.setVisible(this._schedulerOptions, visible);
@@ -2257,6 +2287,12 @@ function(calItem, isAllDayAppt) {
 	this._tzoneSelectEnd.setSelectedValue(calItem.endTimezone || calItem.timezone);
     this.handleTimezoneOverflow();
 };
+
+ZmApptEditView.prototype._resetFontSizeSelects =
+function() {
+    this._locationFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1]);
+    this._subjectFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1]);
+}
 
 ZmApptEditView.prototype._setTimezoneVisible =
 function(dateInfo) {

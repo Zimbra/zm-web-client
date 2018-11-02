@@ -2767,6 +2767,14 @@ INPUT[type="text"].search_input-expanded:focus {
 #ENDIF
 }
 
+.custom_font_size_large {
+	font-size: 16px;
+}
+
+.custom_font_size_small {
+	font-size: 8px;
+}
+
 /* tweak the padding for firefox so the appts don't jump when selected */
 HTML>BODY .appt-selected .appt_body TD,
 HTML>BODY .appt-selected .appt_allday_body TD,
