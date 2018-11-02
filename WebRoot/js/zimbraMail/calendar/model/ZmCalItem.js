@@ -441,6 +441,37 @@ function(folderId) {
 	this.folderId = folderId || ZmOrganizer.ID_CALENDAR;
 };
 
+ZmCalItem.prototype.setSubjectFontSize =
+function(size) {
+	this.subjectFontSize = size;
+}
+
+ZmCalItem.prototype.setLocationFontSize =
+function(size) {
+	this.locationFontSize = size;
+}
+
+ZmCalItem.prototype.getFontSizeMetadata =
+function() {
+	if (this.metadata) {
+		var metaLength = this.metadata.length;
+		for(var metaInd = 0; metaInd < metaLength; metaInd++ ) {
+			if (this.metadata[metaInd].section && this.metadata[metaInd].section === "fontSize") {
+				return {
+					locationFontSize: this.metadata[metaInd]._attrs && this.metadata[metaInd]._attrs.locationFontSize || "normal",
+					subjectFontSize: this.metadata[metaInd]._attrs && this.metadata[metaInd]._attrs.subjectFontSize || "normal",
+				}
+			}
+		}
+	}
+}
+
+ZmCalItem.prototype.isFontSizeMetaChanged =
+function() {
+	var metaOrig = this.getFontSizeMetadata();
+	return metaOrig && (this.locationFontSize !== metaOrig.locationFontSize || this.subjectFontSize !== metaOrig.subjectFontSize);
+}
+
 /**
  * Gets the "local" folder id even for remote folders. Otherwise, just use <code>this.folderId</code>.
  * 
@@ -2720,6 +2751,36 @@ function() {
     if(this._proposedTimeCallback) this._proposedTimeCallback.run(this);
     this.setIgnoreVersion(false);
 };
+
+ZmCalItem.prototype.setFontSizeMetadata =
+function(calItem, result) {
+	var jsonObj = {
+		SetCustomMetadataRequest: {
+			id: result.invId,
+			meta: [{
+				_attrs: {
+					subjectFontSize: calItem.subjectFontSize || "normal",
+					locationFontSize: calItem.locationFontSize || "normal"
+				},
+				section: "fontSize"
+			}],
+			_jsns: "urn:zimbraMail"
+		}
+	};
+	var request = jsonObj.SetCustomMetadataRequest;
+
+	appCtxt.getAppController().sendRequest({
+		jsonObj: jsonObj,
+		asyncMode: true,
+		callback: (new AjxCallback(this, function (response) {
+			//we don't actually care about the response,
+			//if it's successful we don't get any useful data back
+		})),
+		errorCallback: (new AjxCallback(this, function (errorResponse) {
+			console.error(errorResponse);
+		}))
+	});
+}
 
 // Static methods
 
