@@ -44,6 +44,8 @@
                 <$ } $>
                 <tr><td class='ZmFieldLabelRight'><$= ZmMsg.subjectLabel $></td>
                     <td colspan='4' id='${id}_subject'></td>
+                    <td id='${id}_subject_font_size_options' class='ZmFieldLabelRight'><$= ZmMsg.subjectFontSizeLabel $></td>
+                    <td id='${id}_subjectFontSizeSelect'></td>
                 </tr>
                 <$ if(data.isGroupCalEnabled) { $>
                 <tr id="${id}_attendeesContainer">
@@ -79,6 +81,8 @@
                             <$= ZmMsg.showEquipment $>
                         </div>
                     </td>
+                    <td id='${id}_location_font_size_options' class='ZmFieldLabelRight'><$= ZmMsg.locationFontSizeLabel $>
+                    <td id='${id}_locationFontSizeSelect'></td>
                     <$ }else { $>
                     <td colspan='4' id='${id}_location'></td>
                     <$ } $>
@@ -284,10 +288,13 @@
 								<tr>
 									<td width="1%" class='ZmFieldLabelRight'>*&nbsp;<$= ZmMsg.subjectLabel $></td>
 									<td colspan=2 id='${id}_subject'></td>
+									<td id='${id}_subjectFontSizeSelect'></td>
 								</tr>
 								<tr>
 									<td width='1%' class='ZmApptTabViewPageField' style='white-space:nowrap;'><$= ZmMsg.locationLabel $></td>
 									<td colspan='2' id='${id}_location'></td>
+									<td id='${id}_location_font_size_options' class='ZmFieldLabelRight'><$= ZmMsg.locationFontSizeLabel $>
+									<td id='${id}_locationFontSizeSelect'></td>
 								</tr>
 								<$ if (data.isAppt) { $>
 									<tr>

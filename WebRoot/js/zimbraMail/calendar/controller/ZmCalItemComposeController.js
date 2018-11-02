@@ -562,9 +562,7 @@ ZmCalItemComposeController.prototype._saveListener =
 function(ev) {
     this._action = ZmCalItemComposeController.SAVE;
     this.enableToolbar(false);
-	if (this._doSave() === false) {
-		return;
-    }
+	this._doSave();
 };
 
 // Cancel button was pressed

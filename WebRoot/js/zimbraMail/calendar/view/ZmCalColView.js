@@ -628,7 +628,7 @@ function(div, allDay, folderId) {
             subs.bodyStyle   = gradient;
             subs.headerStyle = null;
         }
-    }
+	}
 	div.innerHTML = AjxTemplate.expand("calendar.Calendar#"+template, subs);
 	return div;
 };
@@ -685,9 +685,12 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
 		is60 = appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HOUR,
 		apptName = AjxStringUtil.htmlEncode(appt.getName());
 
+	var meta = appt.getFontSizeMetadata();
+	var locationFontSize = meta && meta.locationFontSize || "normal";
+
 	// normalize location
 	var location = appt.getLocation();
-	location = location && location.length && !is60 ? "<div class='appt_location'>" + AjxStringUtil.htmlEncode(appt.getLocation()) + "</div>" : null;
+	location = location && location.length && !is60 ? "<div class='appt_location custom_font_size_" + locationFontSize + "'>" + AjxStringUtil.htmlEncode(appt.getLocation()) + "</div>" : null;
 
 	if (is30 || isAllDay) {
 		apptName = isAllDay ? apptName : appt.getDurationText(true, true) + " - " + apptName;
@@ -731,7 +734,9 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
 		isDraft:        appt.isDraft,
 		otherAttendees: appt.otherAttendees,
 		isException:    appt.isException,
-		isRecurring:    appt.isRecurring()
+		isRecurring:    appt.isRecurring(),
+		locFontSize:    locationFontSize,
+		subjFontSize:   meta && meta.subjectFontSize || "normal"
 	};
 
 	var template,
@@ -803,7 +808,6 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
 
 	return div;
 };
-
 
 // TODO: i18n
 ZmCalColView.prototype._createHoursHtml =
