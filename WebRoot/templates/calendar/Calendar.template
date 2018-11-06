@@ -283,10 +283,6 @@
                         <td align=left><label for="${id}_shareRadioGoogle"><$= ZmMsg.sharedCalTitleGoogle $></label></td>
                     </tr>
                     <tr>
-                        <td width="5"><input type="radio" name="extCalType" id="${id}_shareRadioYahoo"></td>
-                        <td align=left><label for="${id}_shareRadioYahoo"><$= ZmMsg.sharedCalTitleYahoo $></label></td>
-                    </tr>
-                    <tr>
                         <td width="5"><input type="radio" name="extCalType" id="${id}_shareRadioOther"></td>
                         <td align=left><label for="${id}_shareRadioOther"><$= ZmMsg.sharedCalTitleOther $></label></td>
                     </tr>
