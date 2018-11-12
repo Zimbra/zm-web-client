@@ -1430,7 +1430,9 @@ function(rowId) {
 	}
 	else if (testType == ZmFilterRule.TEST_ADDRESS && subject) {
 		subjectMod = ZmFilterRule.C_ADDRESS_VALUE[subject];
-		value += ";" + valueMod;   //addressTest has value=email part=all|domain|localpart
+		if (value != "") {
+			value += ";" + valueMod;   //addressTest has value=email part=all|domain|localpart
+		}
 	}
 	else if (testType == ZmFilterRule.TEST_SIZE && valueMod && valueMod != "B") {
 		value += valueMod;
@@ -1441,7 +1443,9 @@ function(rowId) {
 		value = ZmMimeTable.MSG_READ_RECEIPT;
 	}
 	else if (testType == ZmFilterRule.TEST_ADDRESS) {
-		value += ";" + valueMod;   //addressTest has value=email part=all|domain|localpart
+		if (value != "") {
+			value += ";" + valueMod;   //addressTest has value=email part=all|domain|localpart
+		}
 	}
 	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && value == ZmFilterRule.IMPORTANCE) {
 		value = valueMod;  //importanceTest
