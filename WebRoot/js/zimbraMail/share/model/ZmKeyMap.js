@@ -85,6 +85,7 @@ ZmKeyMap.ADDRESS_PICKER			= "AddressPicker";
 ZmKeyMap.ADD_EXTERNAL_CALENDAR	= "AddExternalCalendar";
 ZmKeyMap.ATTACHMENT				= "Attachment";
 ZmKeyMap.CAL_DAY_VIEW			= "DayView";
+ZmKeyMap.CAL_MULTI_DAY_VIEW		= "MultiDayView";
 ZmKeyMap.CAL_FB_VIEW			= "FBView";
 ZmKeyMap.CAL_LIST_VIEW			= "CalListView";
 ZmKeyMap.CAL_MONTH_VIEW			= "MonthView";

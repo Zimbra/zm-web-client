@@ -306,7 +306,7 @@ ZmOperation.defineOperation =
 function(baseId, overrides) {
 	var id = (overrides && overrides.id) || (baseId && baseId.id) || baseId || Dwt.getNextId();
 	var textKey = (overrides && overrides.textKey) || ZmOperation.getProp(baseId, "textKey");
-	var text = textKey && ZmMsg[textKey];
+	var text;
 	var tooltipKey = (overrides && overrides.tooltipKey) || ZmOperation.getProp(baseId, "tooltipKey");
 	var tooltip = tooltipKey && ZmMsg[tooltipKey];
 	var image = ZmOperation.getProp(baseId, "image");
@@ -317,7 +317,12 @@ function(baseId, overrides) {
 	var style = ZmOperation.getProp(baseId, "style");
 	var shortcut = ZmOperation.getProp(baseId, "shortcut");
 
-    var opDesc = {id:id, text:text, image:image, showImageInToolbar:showImageInToolbar, showTextInToolbar:showTextInToolbar, disImage:disImage, enabled:enabled,
+	if (textKey) {
+		var isMulti = ZmOperation.getProp(baseId, "multiDay");
+		text = isMulti ? AjxMessageFormat.format(ZmMsg[textKey], [appCtxt.get(ZmSetting.CAL_MULTI_DAY_LENGTH)]) : ZmMsg[textKey];
+	}
+
+	var opDesc = {id:id, text:text, image:image, showImageInToolbar:showImageInToolbar, showTextInToolbar:showTextInToolbar, disImage:disImage, enabled:enabled,
 				  tooltip:tooltip, style:style, shortcut:shortcut};
 	if (overrides) {
 		for (var i in overrides) {

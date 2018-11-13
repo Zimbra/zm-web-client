@@ -454,6 +454,9 @@ ZmPrefView.prototype._checkSection = function(section, viewPage, dirtyCheck, noV
                         setup.setFunction(pref, value, list, viewPage);
                     } else {
                         pref.setValue(value);
+                        if (pref.id === 'CAL_MULTI_DAY_LENGTH') {
+                            viewPage.multiDayLengthChanged = true;
+                        }
                         if (pref.name) {
                             list.push(pref);
                         }
