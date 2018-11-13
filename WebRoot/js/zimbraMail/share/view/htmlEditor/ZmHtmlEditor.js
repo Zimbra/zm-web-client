@@ -868,7 +868,6 @@ function(id, autoFocus) {
             ed.on('mouseup', obj._handleEditorEvent.bind(obj));
         }
     };
-	console.log(appCtxt.getApp(ZmApp.PREFERENCES))
 	tinyMCE.init(tinyMCEInitObj);
 	this._editor = this.getEditor();
 };
