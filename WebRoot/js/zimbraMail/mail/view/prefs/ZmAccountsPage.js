@@ -1442,11 +1442,6 @@ function() {
 			!this.__validateEmailList(this.__getIdentityValue(account, "WHEN_SENT_TO_LIST"))) {
 			return false;
 		}
-		if ( AjxUtil.isEmpty(this.__getIdentityValue(account, "FROM_NAME")) &&
-		    !AjxUtil.isEmpty(appCtxt.get(ZmSetting.DISPLAY_NAME))) {
-			this._errorMsg = ZmMsg.missingEmailDisplayName;
-			return false;
-		}
 	}
 	return true;
 };
