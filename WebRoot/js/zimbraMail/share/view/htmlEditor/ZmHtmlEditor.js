@@ -804,6 +804,24 @@ function(id, autoFocus) {
 		// if !true, Set to false in case undefined
 		autoFocus = false;
 	}
+
+	var getPramukhLanguageValue = function(localeName){
+		var languageValue;
+		switch(localeName.toLowerCase()){
+			// hindi
+			case 'hi':
+				languageValue = 'pramukhindic:hindi';
+				break;
+			// tamil
+			case 'ta':
+				languageValue = 'pramukhindic:tamil'
+				break;
+			// english as default
+			default:
+				languageValue = 'pramukhime:english'
+		}
+		return languageValue;
+	}
     var tinyMCEInitObj = {
 		mode :  (this._mode == Dwt.HTML)? "exact" : "none",
 		theme: 'modern',
@@ -817,7 +835,7 @@ function(id, autoFocus) {
 		ie7_compat: false,
 		object_resizing : true,
 		pramukhime_options : {
-			selected_value: 'pramukhindic:hindi'
+			selected_value: getPramukhLanguageValue(appCtxt.get(ZmSetting.LOCALE_NAME))
 		},
 		fontsize_formats : AjxMsg.fontSizes || '',
 		convert_urls : true,
@@ -850,7 +868,6 @@ function(id, autoFocus) {
             ed.on('mouseup', obj._handleEditorEvent.bind(obj));
         }
     };
-
 	tinyMCE.init(tinyMCEInitObj);
 	this._editor = this.getEditor();
 };
