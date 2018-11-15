@@ -74,8 +74,11 @@
 	<c:remove var="overrideCacheControl" scope="session" />
 </c:if>
 <%	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
-	if (localePref != null && localePref.size() > 0) {
+	String lang = getParameter(request, "lang", "");
+	if (localePref != null && localePref.size() > 0 && (lang == null || lang.isEmpty())) {
 		request.setAttribute("localeId", localePref.get(0));
+	} else if (lang != null && !lang.isEmpty()) {
+		request.setAttribute("localeId", lang);
 	}
 
 	boolean isDev = getParameter(request, "dev", "0").equals("1");
