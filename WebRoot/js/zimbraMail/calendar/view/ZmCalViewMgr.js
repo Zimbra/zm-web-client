@@ -45,6 +45,7 @@ ZmCalViewMgr = function(parent, controller, dropTgt) {
 	this._date = new Date();
 	this._viewFactory = {};
 	this._viewFactory[ZmId.VIEW_CAL_DAY]		= ZmCalDayTabView;
+	this._viewFactory[ZmId.VIEW_CAL_MULTI_DAY]  = ZmCalMultiDayView;
 	this._viewFactory[ZmId.VIEW_CAL_WORK_WEEK]	= ZmCalWorkWeekView;
 	this._viewFactory[ZmId.VIEW_CAL_WEEK]		= ZmCalWeekView;
 	this._viewFactory[ZmId.VIEW_CAL_MONTH]		= ZmCalMonthView;
@@ -88,10 +89,11 @@ ZmCalViewMgr.prototype.layoutWorkingHours =
 function() {
 	for (var name in this._views) {
 		if (name == ZmId.VIEW_CAL_DAY ||
-            name == ZmId.VIEW_CAL_WORK_WEEK ||
-            name == ZmId.VIEW_CAL_WEEK ||
-            name == ZmId.VIEW_CAL_FB
-            )
+			name == ZmId.VIEW_CAL_MULTI_DAY ||
+			name == ZmId.VIEW_CAL_WORK_WEEK ||
+			name == ZmId.VIEW_CAL_WEEK ||
+			name == ZmId.VIEW_CAL_FB
+		)
 			this._views[name].layoutWorkingHours();
 	}
 };

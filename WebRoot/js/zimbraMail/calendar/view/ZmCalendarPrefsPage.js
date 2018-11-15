@@ -392,6 +392,7 @@ function(setting, right) {
 	return {grants:grants, revokes:revokes};
 };
 
+//called by ZmPrefView.prototype.getChangedPrefs
 ZmCalendarPrefsPage.prototype.addCommand =
 function(batchCmd) {
     if (this._isAclSupported) {
@@ -403,6 +404,10 @@ function(batchCmd) {
             this._acl.grant(this._grants, respCallback, batchCmd);
         }
     }
+
+    var updateMultiDayCallback = new AjxCallback(this, this._postSaveMultiDayCallback),
+        soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
+    batchCmd.addNewRequestParams(soapDoc, updateMultiDayCallback);
 
 	var workHoursControl = this._workHoursControl;
     if(workHoursControl) {
@@ -420,6 +425,27 @@ function(batchCmd) {
     }
 };
 
+ZmCalendarPrefsPage.prototype._postSaveMultiDayCallback =
+function() {
+    if (this.multiDayLengthChanged) {
+        var cd = appCtxt.getYesNoMsgDialog();
+        cd.reset();
+        cd.registerCallback(DwtDialog.YES_BUTTON, this._newMultiDayYesCallback, this, [cd]);
+        cd.setMessage(ZmMsg.calendarRestart, DwtMessageDialog.WARNING_STYLE);
+        cd.popup();
+        this.multiDayLengthChanged = false;
+    }
+}
+
+ZmCalendarPrefsPage.prototype._newMultiDayYesCallback =
+function (dialog) {
+    dialog.popdown();
+    window.onbeforeunload = null;
+    var url = AjxUtil.formatUrl();
+    DBG.println(AjxDebug.DBG1, "multi day length change, redirect to: " + url);
+    ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
+};
+
 ZmCalendarPrefsPage.prototype._postSaveBatchCmd =
 function(value) {
     appCtxt.set(ZmSetting.CAL_WORKING_HOURS, value);
@@ -434,7 +460,7 @@ function(value) {
             var cd = appCtxt.getYesNoMsgDialog();
             cd.reset();
             cd.registerCallback(DwtDialog.YES_BUTTON, this._newWorkHoursYesCallback, this, [skin, cd]);
-            cd.setMessage(ZmMsg.workingDaysRestart, DwtMessageDialog.WARNING_STYLE);
+            cd.setMessage(ZmMsg.calendarRestart, DwtMessageDialog.WARNING_STYLE);
             cd.popup();
         }
     }
