@@ -83,6 +83,7 @@ ZmCalendarApp.MINICAL_DELAY = 5000;
 
 ZmCalendarApp.VIEW_FOR_SETTING = {};
 ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_DAY]		= ZmId.VIEW_CAL_DAY;
+ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_MULTI_DAY]	= ZmId.VIEW_CAL_MULTI_DAY;
 ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_WEEK]		= ZmId.VIEW_CAL_WEEK;
 ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_WORK_WEEK]	= ZmId.VIEW_CAL_WORK_WEEK;
 ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_MONTH]		= ZmId.VIEW_CAL_MONTH;
@@ -122,6 +123,7 @@ ZmCalendarApp.METHOD_REQUEST			= "REQUEST";
 ZmCalendarApp.METHOD_COUNTER			= "COUNTER";
 
 ZmCalendarApp.DEFAULT_WORKING_HOURS			= "1:N:0800:1700,2:Y:0800:1700,3:Y:0800:1700,4:Y:0800:1700,5:Y:0800:1700,6:Y:0800:1700,7:N:0800:1700";
+ZmCalendarApp.DEFAULT_MULTI_DAY_LENGTH		= 3;
 ZmCalendarApp.DEFAULT_APPT_DURATION         = "60"; //60minutes
 
 ZmCalendarApp.reminderTimeWarningDisplayMsgs = [
@@ -185,7 +187,8 @@ function(settings) {
 	settings.registerSetting("CAL_SHOW_TIMEZONE",			{name: "zimbraPrefUseTimeZoneListInCalendar", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
 	settings.registerSetting("CAL_USE_QUICK_ADD",			{name: "zimbraPrefCalendarUseQuickAdd", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
 	settings.registerSetting("CALENDAR_INITIAL_VIEW",		{name: "zimbraPrefCalendarInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CAL_DAY, isGlobal:true});
-    settings.registerSetting("CAL_WORKING_HOURS",           {name: "zimbraPrefCalendarWorkingHours", type: ZmSetting.T_PREF, defaultValue: ZmCalendarApp.DEFAULT_WORKING_HOURS, isGlobal:true});
+	settings.registerSetting("CAL_WORKING_HOURS",           {name: "zimbraPrefCalendarWorkingHours", type: ZmSetting.T_PREF, defaultValue: ZmCalendarApp.DEFAULT_WORKING_HOURS, isGlobal:true});
+	settings.registerSetting("CAL_MULTI_DAY_LENGTH",		{name: "zimbraPrefCalendarMultiDayLength", type: ZmSetting.T_PREF, defaultValue: ZmCalendarApp.DEFAULT_MULTI_DAY_LENGTH, isGlobal:true});
     settings.registerSetting("FREE_BUSY_VIEW_ENABLED",      {name: "zimbraFeatureFreeBusyViewEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("DELETE_INVITE_ON_REPLY",		{name: "zimbraPrefDeleteInviteOnReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
     settings.registerSetting("ENABLE_APPL_ICAL_DELEGATION", {name: "zimbraPrefAppleIcalDelegationEnabled",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
@@ -227,6 +230,7 @@ function() {
 				ZmSetting.CAL_USE_QUICK_ADD,
 				ZmSetting.CALENDAR_INITIAL_VIEW,
 				ZmSetting.CAL_WORKING_HOURS,
+				ZmSetting.CAL_MULTI_DAY_LENGTH,
 				ZmSetting.DELETE_INVITE_ON_REPLY,
 				ZmSetting.ENABLE_APPL_ICAL_DELEGATION,
 				ZmSetting.CAL_FREE_BUSY_ACL,
@@ -259,6 +263,12 @@ function() {
 
     ZmPref.registerPref("CAL_WORKING_HOURS", {
 		displayContainer:	ZmPref.TYPE_CUSTOM
+	});
+
+	ZmPref.registerPref("CAL_MULTI_DAY_LENGTH", {
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		[ZmMsg.multiDayLength2, ZmMsg.multiDayLength3, ZmMsg.multiDayLength4],
+        options:			[2, 3, 4]
 	});
 
 	ZmPref.registerPref("CAL_AUTO_ADD_INVITES", {
@@ -353,8 +363,8 @@ function() {
 	ZmPref.registerPref("CALENDAR_INITIAL_VIEW", {
 		displayName:		ZmMsg.calendarInitialView,
 		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewList],
-        options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_LIST]
+		displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewMultiDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewList],
+        options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_MULTI_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_LIST]
 	});
 
 	ZmPref.registerPref("CAL_REMINDER_NOTIFY_SOUNDS", {
@@ -459,6 +469,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_DELETE_APPT_SERIES, {textKey:"deleteApptSeries", image:"Delete"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_APPT_INSTANCE, {textKey:"apptInstance", image:"Appointment"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_APPT_SERIES, {textKey:"apptSeries", image:"Appointment"});
+	ZmOperation.registerOp(ZmId.OP_MULTI_DAY_VIEW, {textKey:"viewMultiDay", tooltipKey:"viewMultiDayTooltip", shortcut:ZmKeyMap.CAL_MULTI_DAY_VIEW, multiDay: true});//no image
 	ZmOperation.registerOp(ZmId.OP_WEEK_VIEW, {textKey:"viewWeek", tooltipKey:"viewWeekTooltip", image:"WeekView", shortcut:ZmKeyMap.CAL_WEEK_VIEW});
 	ZmOperation.registerOp(ZmId.OP_WORK_WEEK_VIEW, {textKey:"viewWorkWeek", tooltipKey:"viewWorkWeekTooltip", image:"WorkWeekView", shortcut:ZmKeyMap.CAL_WORK_WEEK_VIEW});
 	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT, {textKey:"forward", tooltipKey:"forward", image:"Forward"});
@@ -1192,11 +1203,11 @@ function(parent) {
 ZmCalendarApp.addCalViewMenu =
 function(parent) {
 	var list = [
-		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
+		ZmOperation.DAY_VIEW, ZmOperation.MULTI_DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
 		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW
 	];
     if(appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
-        list.push(ZmOperation.FB_VIEW);    
+        list.push(ZmOperation.FB_VIEW);
     }
 	var menu = new ZmActionMenu({parent:parent, menuItems:list});
 	parent.setMenu(menu);
@@ -1333,11 +1344,15 @@ function() {
 	if (setting) {
 		setting.addChangeListener(this._settingListener);
 	}
-    setting = settings.getSetting(ZmSetting.CAL_WORKING_HOURS);
+	setting = settings.getSetting(ZmSetting.CAL_WORKING_HOURS);
 	if (setting) {
 		setting.addChangeListener(this._settingListener);
 	}
-    setting = settings.getSetting(ZmSetting.CAL_SHOW_DECLINED_MEETINGS);
+	setting = settings.getSetting(ZmSetting.CAL_SHOW_DECLINED_MEETINGS);
+	if (setting) {
+		setting.addChangeListener(this._settingListener);
+	}
+	setting = settings.getSetting(ZmSetting.CAL_MULTI_DAY_LENGTH);
 	if (setting) {
 		setting.addChangeListener(this._settingListener);
 	}

@@ -40,6 +40,7 @@ AjxPackage.require("zimbraMail.calendar.view.ZmCalBaseView");
 AjxPackage.require("zimbraMail.calendar.view.ZmCalColView");
 AjxPackage.require("zimbraMail.calendar.view.ZmCalDayView");
 AjxPackage.require("zimbraMail.calendar.view.ZmCalWorkWeekView");
+AjxPackage.require("zimbraMail.calendar.view.ZmCalMultiDayView");
 AjxPackage.require("zimbraMail.calendar.view.ZmCalWeekView");
 AjxPackage.require("zimbraMail.calendar.view.ZmCalMonthView");
 AjxPackage.require("zimbraMail.calendar.view.ZmCalScheduleView");

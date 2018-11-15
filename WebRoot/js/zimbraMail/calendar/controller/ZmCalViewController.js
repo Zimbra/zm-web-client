@@ -50,6 +50,7 @@ ZmCalViewController = function(container, calApp, sessionId, searchResultsContro
 	// get view based on op
 	ZmCalViewController.OP_TO_VIEW = {};
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_VIEW]		= ZmId.VIEW_CAL_DAY;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.MULTI_DAY_VIEW]	= ZmId.VIEW_CAL_MULTI_DAY;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.WEEK_VIEW]		= ZmId.VIEW_CAL_WEEK;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmId.VIEW_CAL_WORK_WEEK;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmId.VIEW_CAL_MONTH;
@@ -97,7 +98,7 @@ ZmCalViewController = function(container, calApp, sessionId, searchResultsContro
 	this._currentViewIdOverride = ZmId.VIEW_CAL;	// public view ID
 	
 	ZmCalViewController.OPS = [
-		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
+		ZmOperation.DAY_VIEW, ZmOperation.MULTI_DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
 		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW
 	];
     if (appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
@@ -138,6 +139,7 @@ ZmCalViewController.MAINT_REMINDER	= 0x4; // reminders need refresh
 // get view based on op
 ZmCalViewController.ACTION_CODE_TO_VIEW = {};
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_DAY_VIEW]			= ZmId.VIEW_CAL_DAY;
+ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_MULTI_DAY_VIEW]	= ZmId.VIEW_CAL_MULTI_DAY;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_WEEK_VIEW]			= ZmId.VIEW_CAL_WEEK;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_WORK_WEEK_VIEW]	= ZmId.VIEW_CAL_WORK_WEEK;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_MONTH_VIEW]		= ZmId.VIEW_CAL_MONTH;
@@ -234,9 +236,16 @@ function(viewId, startDate, skipMaintenance) {
 
     switch(viewId) {
         case ZmId.VIEW_CAL_DAY:
+            this._miniCalendar.setMultiDayRange(null);
             this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
             this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousDay);
             this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextDay);
+            break;
+        case ZmId.VIEW_CAL_MULTI_DAY:
+            this._miniCalendar.setMultiDayRange(ZmCalBaseView.getMultiDayLength());
+            this._miniCalendar.setSelectionMode(DwtCalendar.MULTI_DAY);
+            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMultiDay);
+            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextMultiDay);
             break;
         case ZmId.VIEW_CAL_WORK_WEEK:
             this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
@@ -1041,6 +1050,7 @@ function() {
 		ZmOperation.TODAY,
         ZmOperation.FILLER,
         ZmOperation.DAY_VIEW,
+        ZmOperation.MULTI_DAY_VIEW,
         ZmOperation.WORK_WEEK_VIEW,
         ZmOperation.WEEK_VIEW,
 		ZmOperation.MONTH_VIEW,
@@ -1064,15 +1074,18 @@ function(viewId) {
 
 	// Set the other view toolbar entries to point to the Day view entry. Hack
 	// to fool the ZmListController into thinking there are multiple toolbars
-    this._toolbar[ZmId.VIEW_CAL_FB] = this._toolbar[ZmId.VIEW_CAL_WEEK] =
-	this._toolbar[ZmId.VIEW_CAL_WORK_WEEK] = this._toolbar[ZmId.VIEW_CAL_MONTH] =
-	this._toolbar[ZmId.VIEW_CAL_LIST] = this._toolbar[ZmId.VIEW_CAL_DAY];
+	this._toolbar[ZmId.VIEW_CAL_FB] =
+		this._toolbar[ZmId.VIEW_CAL_WEEK] =
+		this._toolbar[ZmId.VIEW_CAL_WORK_WEEK] =
+		this._toolbar[ZmId.VIEW_CAL_MONTH] =
+		this._toolbar[ZmId.VIEW_CAL_LIST] =
+		this._toolbar[ZmId.VIEW_CAL_MULTI_DAY] = this._toolbar[ZmId.VIEW_CAL_DAY];
 
 	this._toolbar[ZmId.VIEW_CAL] = toolbar;
 
 	// Setup the toolbar stuff
 	toolbar.enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
-	toolbar.enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW], true);
+	toolbar.enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW, ZmOperation.MULTI_DAY_VIEW], true);
 
 	// We have style sheets in place to position the navigation toolbar at the
 	// center of the main toolbar. The filler is usually at that location, so
@@ -1512,8 +1525,9 @@ function(viewId, forward) {
     this.setCurrentListView(null);
 	var view = this._listView[viewId];
 	var field = view.getRollField();
+	var rollNum = (field === AjxDateUtil.DAY && view.numDays) ? view.numDays : 1;//for multi-day
 	var d = new Date(this._viewMgr.getDate());
-	d = AjxDateUtil.roll(d, field, forward ? 1 : -1);
+	d = AjxDateUtil.roll(d, field, forward ? rollNum*1 : rollNum*-1);
 	this.setDate(d, 0, true);
     this._viewMgr.getView(viewId).checkIndicatorNeed(viewId,d);
 };
@@ -1544,7 +1558,7 @@ function(date, duration, roll) {
 			this._currentViewType == ZmId.VIEW_CAL_WORK_WEEK &&
 			!currentView.workingHours[date.getDay()].isWorkingDay &&
 			(date.getDay() == 0 || date.getDay() == 6))
-		{
+		{//TODO: any logic needed here?
 			this.show(ZmId.VIEW_CAL_WEEK);
 		}
 		if (ZmId.VIEW_CAL_MONTH == this._currentViewType) {
@@ -1679,58 +1693,6 @@ function(ev) {
     printDialog.popup(params);
 
     this._printDialog = printDialog;
-    /*
-	if (viewId == ZmId.VIEW_CAL_LIST)
-	{
-		var ids = [];
-		var list = this.getSelection();
-		for (var i = 0; i < list.length; i++) {
-			ids.push(list[i].invId);
-		}
-        url = ["/h/printappointments?id=", ids.join(','), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)];
-        if(appCtxt.isOffline) {
-            if (ids.length == 1) {
-                var appt = this.getSelection()[0];
-                url.push("&acct=", appt.getFolder().getAccount().name);
-            }
-            url.push("&zd=", "true");
-        }
-        url = url.join("");
-    } else {
-		var date = this._viewMgr
-			? this._viewMgr.getDate()
-			: (new Date());
-
-		var day = (date.getDate() < 10)
-			? ('0' + date.getDate())
-			: date.getDate();
-
-		var month = date.getMonth() + 1;
-		if (month < 10) {
-			month = '0' + month;
-		}
-
-		var view;
-		switch (viewId) {
-			case ZmId.VIEW_CAL_DAY: 		view = "day"; break;
-			case ZmId.VIEW_CAL_WORK_WEEK:	view = "workWeek"; break;
-			case ZmId.VIEW_CAL_WEEK:		view = "week"; break;
-			case ZmId.VIEW_CAL_SCHEDULE:	view = "schedule"; break;
-			default:						view = "month"; break;				// default is month
-		}
-
-		var folderIds = this.getCheckedCalendarFolderIds();
-		var l = folderIds.join(",");
-
-		url = [
-			"/h/printcalendar?view=", view,
-			"&l=", l,
-			"&date=", date.getFullYear(), month, day,
-			"&tz=",AjxTimezone.getServerId(AjxTimezone.DEFAULT)
-		].join("");
-	} */
-
-	//window.open(appContextPath+url, "_blank");
 };
 
 ZmCalViewController.prototype.createPrintDialog =
@@ -4226,6 +4188,7 @@ function(actionCode) {
 	switch (actionCode) {
 
 		case ZmKeyMap.CAL_DAY_VIEW:
+		case ZmKeyMap.CAL_MULTI_DAY_VIEW:
 		case ZmKeyMap.CAL_WEEK_VIEW:
 		case ZmKeyMap.CAL_WORK_WEEK_VIEW:
 		case ZmKeyMap.CAL_MONTH_VIEW:
@@ -4275,7 +4238,8 @@ function(actionCode) {
             var currentView = this._viewMgr.getCurrentView();
             if ((this._currentViewType == ZmId.VIEW_CAL_WORK_WEEK) ||
                 (this._currentViewType == ZmId.VIEW_CAL_WEEK) ||
-                (this._currentViewType == ZmId.VIEW_CAL_MONTH)) {
+                (this._currentViewType == ZmId.VIEW_CAL_MONTH) ||
+                (this._currentViewType == ZmId.VIEW_CAL_MULTI_DAY)) {
                 // Abort - restore location and Mouse up
                 var data = DwtMouseEventCapture.getTargetObj();
                 if (data) {

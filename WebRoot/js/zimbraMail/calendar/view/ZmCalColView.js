@@ -133,6 +133,7 @@ function() {
 		case ZmId.VIEW_CAL_WEEK:
 			return AjxDateUtil.WEEK;
 			break;
+		case ZmId.VIEW_CAL_MULTI_DAY:
 		case ZmId.VIEW_CAL_DAY:
 		default:
 			return AjxDateUtil.DAY;
@@ -480,12 +481,6 @@ function() {
 
 	switch(this.view) {
 		case ZmId.VIEW_CAL_WORK_WEEK:
-			/*dow = d.getDay();
-			if (dow == 0)
-				d.setDate(d.getDate()+1);
-			else if (dow != 1)
-				d.setDate(d.getDate()-(dow-1));
-			break; */
 		case ZmId.VIEW_CAL_WEEK:
 			var fdow = this.firstDayOfWeek();
 			dow = d.getDay();
@@ -493,6 +488,7 @@ function() {
 				d.setDate(d.getDate()-((dow+(7-fdow))%7));
 			}
 			break;
+		case ZmId.VIEW_CAL_MULTI_DAY:
 		case ZmId.VIEW_CAL_DAY:
 		default:
 			/* nothing */
@@ -515,9 +511,10 @@ function() {
 	for (var i=0; i < 7; i++) {
         var wHrs = this.workingHours[d.getDay()];
         var isWorkingDay = wHrs && wHrs.isWorkingDay ? wHrs.isWorkingDay : false;
-        if (this.view === ZmId.VIEW_CAL_WEEK    ||
-            this.view === ZmId.VIEW_CAL_DAY     ||
-            this._scheduleMode === true         ||
+        if (this.view === ZmId.VIEW_CAL_WEEK      ||
+            this.view === ZmId.VIEW_CAL_DAY       ||
+            this.view === ZmId.VIEW_CAL_MULTI_DAY ||
+            this._scheduleMode === true           ||
             isWorkingDay === true ) {
 
             var day = this._days[j] = {};
@@ -1069,7 +1066,7 @@ ZmCalColView.prototype.startIndicatorTimer=function(force){
 };
 
 ZmCalColView.prototype.checkIndicatorNeed=function(viewId,startDate){
-   var isValidView = (viewId == ZmId.VIEW_CAL_WORK_WEEK || viewId == ZmId.VIEW_CAL_WEEK || viewId == ZmId.VIEW_CAL_DAY);
+   var isValidView = (viewId == ZmId.VIEW_CAL_WORK_WEEK || viewId == ZmId.VIEW_CAL_WEEK || viewId == ZmId.VIEW_CAL_DAY || viewId == ZmId.VIEW_CAL_MULTI_DAY);
    if(startDate!=null && isValidView){
         var today = new Date();
         var todayTime = today.getTime();
@@ -1842,12 +1839,21 @@ function(workingHours){
                 }
             }
         }
+		//reset any "working days" from the previous layout that are no longer working - needed for multi-day view
+		else this.resetWorkingHoursDiv(col.workingHrsFirstDivId);
+		
         currentX += dayWidth;
 
 		this._setBounds(col.headingDaySepDivId, currentX, 0, this._daySepWidth, allDayHeadingDivHeight + this._allDayDivHeight);
 		this._setBounds(col.daySepDivId, currentX, 0, this._daySepWidth, this._apptBodyDivHeight);
 		currentX += this._daySepWidth;
 	}
+};
+
+ZmCalColView.prototype.resetWorkingHoursDiv =
+function(divId) {
+	var whDiv = document.getElementById(divId);
+	whDiv && whDiv.setAttribute("style", "position: absolute; background-color:#FFF;");
 };
 
 // Must remain in sync with layoutWorkingHours

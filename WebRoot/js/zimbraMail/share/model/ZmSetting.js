@@ -157,6 +157,7 @@ ZmSetting.ACL_DOMAIN			= "dom";
  */
 ZmSetting.ACL_USER				= "usr";
 ZmSetting.CAL_DAY				= "day";
+ZmSetting.CAL_MULTI_DAY			= "multiDay";
 ZmSetting.CAL_LIST				= "list";
 ZmSetting.CAL_MONTH				= "month";
 ZmSetting.CAL_WEEK				= "week";

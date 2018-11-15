@@ -263,6 +263,11 @@ function() {
 	return appCtxt.get(ZmSetting.CAL_WORKING_HOURS) || 0;
 };
 
+ZmCalBaseView.getMultiDayLength =
+function() {
+	return appCtxt.get(ZmSetting.CAL_MULTI_DAY_LENGTH);
+}
+
 ZmCalBaseView.parseWorkingHours =
 function(wHrsString) {
     if(wHrsString === 0) {
@@ -867,7 +872,7 @@ function() {
 
 // override
 ZmCalBaseView.prototype._updateRange =
-function() { 
+function() {
 	this._updateDays();
 	this._timeRangeStart = this._days[0].date.getTime();
 	//this._timeRangeEnd = this._days[this.numDays-1].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
