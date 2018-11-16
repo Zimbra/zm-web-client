@@ -227,11 +227,6 @@ and the container element is replaced with that control.
 						</tr>
 
 						<tr>
-							<td class='ZOptionsLabel'></td>
-							<td class='ZOptionsField'><div id='${id}_DISPLAY_TIME_IN_MAIL_LIST' tabindex=0></div></td>
-						</tr>
-
-						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.imagesLabel$></td>
 							<td class='ZOptionsField'><div id='${id}_DISPLAY_EXTERNAL_IMAGES' tabindex=0></div></td>
 						</tr>
