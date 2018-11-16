@@ -583,6 +583,11 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
 	if (appCtxt.get(ZmSetting.SHOW_CHATS_FOLDER)) {
 		delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	}
+
+	// Get langId from launchZCS.jsp file and update it to Preference Language
+	if (params.langId) {
+		appCtxt.set(ZmSetting.LOCALE_NAME, params.langId);
+	}
 };
 
 /**
@@ -2770,10 +2775,13 @@ function(ev, relogin) {
 		window.platform.icon().imageSpec = "resource://webapp/icons/default/launcher.ico";
 		window.platform.icon().title = null;
 	}
+	var myLocale = appCtxt.get(ZmSetting.LOCALE_NAME);
+	var myLanguage = myLocale.split('_')[0];
     var urlParams = {
                 path:appContextPath,
                 qsArgs: {
-                        loginOp: relogin ? 'relogin' : 'logout'
+                        loginOp: relogin ? 'relogin' : 'logout',
+			lang: myLanguage
                     }
                 };
 	if (relogin) {
