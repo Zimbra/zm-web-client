@@ -473,7 +473,8 @@ if (screen.width<=800) {
 											<a class='skin_link' target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a>&nbsp;<font color="gray">|</font>&nbsp;
 										</c:if>
 											<!--<a class='skin_yahoo_link' target="_new" href="<fmt:message key='yahooYahooMailURL'/>"><fmt:message key='yahooYahooMail'/></a>&nbsp;<font color="gray">|</font>&nbsp;-->
-											<a class='skin_link' target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a> &nbsp; 
+											<!-- Commented for NICPS-396 
+											 <a class='skin_link' target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a> &nbsp;  --> 
 											<a class='skin_link' href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>
 										</td>
 									</tr></table>
