@@ -213,15 +213,13 @@ function(apptNode, args, instNode, noCache) {
 	var appt = new ZmAppt(args.list);
 	appt._loadFromDom(apptNode, (instNode || {}));
 	if (appt.invId) {
-		var metadataResp = ZmAppt.getMetadata(appt, appt.invId);
+		var metadataResp = ZmAppt.getMetadata(appt.invId);
 		if (
 			metadataResp &&
 			metadataResp.GetMsgResponse &&
-			metadataResp.GetMsgResponse.m &&
-			metadataResp.GetMsgResponse.m[0] &&
-			metadataResp.GetMsgResponse.m[0].meta
+			metadataResp.GetMsgResponse.meta
 		) {
-			appt.metadata = metadataResp.GetMsgResponse.m[0].meta;
+			appt.metadata = metadataResp.GetMsgResponse.meta;
 		}
 	}
     if (appt.id && !noCache) {
@@ -268,13 +266,14 @@ function(controller, callback) {
 };
 
 ZmAppt.getMetadata =
-function(appt, invId) {
+function(invId) {
 	var jsonObj = {
-		GetMsgRequest: {//get the whole message instead of getMsgMetadata because getMsgMetadata won't work for messages with no associated email
+		GetCustomMetadataRequest: {
 			_jsns: "urn:zimbraMail",
-			m: {
-				id: invId
-			}
+			id:invId,
+			meta: [{
+				section: "fontSize"
+			}]
 		}
 	};
 	var request = jsonObj.GetMsgRequest;

@@ -35,6 +35,9 @@
 <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
 <fmt:message var="noSubject" key="noSubject"/>
 <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
+<zm:getMessage var="message" id="${appt.inviteId}"/>
+<c:set var="subjectFontSize" value="${message.subjectFontSize}"/>
+<c:set var="locationFontSize" value="${message.locationFontSize}"/>
 <app:calendarUrl appt="${appt}" var="apptUrl"/>
 <c:if test="${selected}">
     <table width="100%" border="0" style="height:100%;" cellspacing="0" cellpadding="0">
@@ -70,7 +73,7 @@
         <tr>
             <td class="${fbashowAsColor}" width="2px"></td>
             <td>
-                <c:if test="${param.action ne 'print'}"><a id="${apptId}" href="${fn:escapeXml(apptUrl)}"></c:if>
+                <c:if test="${param.action ne 'print'}"><a id="${apptId}" href="${fn:escapeXml(apptUrl)}" class="custom_font_size_${subjectFontSize}"></c:if>
                         ${fn:escapeXml(subject)}
                  <c:if test="${param.action ne 'print'}"></a></c:if>
             </td>
@@ -138,11 +141,11 @@
         </tr>
         <tr>
             <td colspan="2" height="100%" valign="top">
-                <c:if test="${param.action ne 'print'}"><a id="${apptId}" href="${fn:escapeXml(apptUrl)}"></c:if>
+                <c:if test="${param.action ne 'print'}"><a id="${apptId}" href="${fn:escapeXml(apptUrl)}" class="custom_font_size_${subjectFontSize}"></c:if>
                     ${fn:escapeXml(subject)}
                     <c:if test="${param.action ne 'print'}"></a></c:if>
                 <br/>
-                    <c:if test="${param.action ne 'print'}"><a id="l${apptId}" href="${fn:escapeXml(apptUrl)}"></c:if>
+                    <c:if test="${param.action ne 'print'}"><a id="l${apptId}" href="${fn:escapeXml(apptUrl)}" class="custom_font_size_${locationFontSize}"></c:if>
                     ${fn:escapeXml(appt.location)}
                     <c:if test="${param.action ne 'print'}"></a></c:if>
             </td>
@@ -170,7 +173,7 @@
             <td style="background-color:${color}" valign=top>
                 <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
                 &nbsp;
-                <c:if test="${param.action ne 'print'}"><a id="${apptId}" href="${fn:escapeXml(apptUrl)}"></c:if>
+                <c:if test="${param.action ne 'print'}"><a id="${apptId}" href="${fn:escapeXml(apptUrl)}" class="custom_font_size_${subjectFontSize}"></c:if>
                     ${fn:escapeXml(subject)}
                 <c:if test="${param.action ne 'print'}"></a></c:if>
             </td>
