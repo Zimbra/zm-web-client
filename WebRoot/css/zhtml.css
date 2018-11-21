@@ -1142,6 +1142,14 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 	width:23;
  }
 
+ .custom_font_size_large {
+	font-size: 16pt!important;
+ }
+
+ .custom_font_size_small {
+	font-size: 8pt!important;
+ }
+
 /* Submit button that's made to look like text in an <a> tag */
 .ZhOptVoiceRemove {
 	padding: 0;
