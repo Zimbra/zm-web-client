@@ -371,16 +371,6 @@
 			</td>
 		</tr>
 		<$ } $>
-		<$ if (!appCtxt.isExternalAccount()) { $>
-		<tr>
-			<td width='1%' style='padding-right:3px;'>
-				<$= AjxImg.getImageHtml("AttachmentRemove", "position:relative;") $>
-			</td>
-			<td style='white-space:nowrap;'>
-				<a style='text-decoration:underline' class='AttLink' id='${removeAllLinkId}' href="javascript:;"><$= ZmMsg.removeAllAttachments $></a>
-			</td>
-		</tr>
-		<$ } $>
 	</table>
 </template>
 
