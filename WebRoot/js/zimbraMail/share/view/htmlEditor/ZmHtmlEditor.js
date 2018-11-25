@@ -822,7 +822,53 @@ function(id, autoFocus) {
 		}
 		return languageValue;
 	}
-    var tinyMCEInitObj = {
+	
+	var tinyMCEInitSignatureObj = {
+		mode :  (this._mode == Dwt.HTML)? "exact" : "none",
+		theme: 'modern',
+		auto_focus: autoFocus,
+		elements:  id,
+        plugins : plugins.join(' '),
+		toolbar: toolbarbuttons.join(' '),
+		toolbar_items_size: 'small',
+		statusbar: false,
+		menubar: false,
+		ie7_compat: false,
+		object_resizing : true,
+		font_formats : fonts.join(";"),
+        fontsize_formats : AjxMsg.fontSizes || '',
+		convert_urls : true,
+		verify_html : false,
+		browser_spellcheck : true,
+        content_css : appContextPath + '/css/tinymce-content.css?v=' + cacheKillerVersion,
+        dialog_type : "modal",
+        forced_root_block : "div",
+        width: "100%",
+        height: "auto",
+        visual: false,
+        language: tinyMCE.getlanguage(appCtxt.get(ZmSetting.LOCALE_NAME)),
+        directionality : appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION),
+        paste_retain_style_properties : "all",
+		paste_data_images: false,
+        paste_remove_styles_if_webkit : false,
+        table_default_attributes: { cellpadding: '3px', border: '1px' },
+        table_default_styles: { width: '90%', tableLayout: 'fixed' },
+		setup : function(ed) {
+            ed.on('LoadContent', obj.onLoadContent.bind(obj));
+            ed.on('PostRender', obj.onPostRender.bind(obj));
+            ed.on('init', obj.onInit.bind(obj));
+            //ed.on('keydown', obj._handleEditorKeyEvent.bind(obj));
+            ed.on('MouseDown', obj._handleEditorMouseDownEvent.bind(obj));
+            ed.on('paste', obj.onPaste.bind(obj));
+            ed.on('PastePostProcess', obj.pastePostProcess.bind(obj));
+            ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
+            ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
+            ed.on('mouseup', obj._handleEditorEvent.bind(obj));
+        }
+		
+	};
+	
+    var tinyMCEInitComposeObj = {
 		mode :  (this._mode == Dwt.HTML)? "exact" : "none",
 		theme: 'modern',
 		auto_focus: autoFocus,
@@ -863,11 +909,11 @@ function(id, autoFocus) {
             ed.on('paste', obj.onPaste.bind(obj));
             ed.on('PastePostProcess', obj.pastePostProcess.bind(obj));
             ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
-
             ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
             ed.on('mouseup', obj._handleEditorEvent.bind(obj));
         }
     };
+	var tinyMCEInitObj = (id == 'TEXTAREA_SIGNATURE') ? tinyMCEInitSignatureObj: tinyMCEInitComposeObj;
 	tinyMCE.init(tinyMCEInitObj);
 	this._editor = this.getEditor();
 };
@@ -1364,6 +1410,46 @@ function(src, newsrc){
 				}
 			});
 		}
+	}
+};
+
+ZmHtmlEditor.prototype.addCSSForDefaultFontSize =
+function(editor) {
+	var selectorText = "body,td,pre";
+	var ruleText = [
+			"font-family:", appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY),";",
+			"font-size:", appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE),";",
+			"color:", appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR),";"
+	].join("");
+	var doc = editor ? editor.getDoc() : null;
+	if (doc) {
+		this.insertDefaultCSS(doc, selectorText, ruleText);
+	}
+};
+
+ZmHtmlEditor.prototype.insertDefaultCSS =
+function(doc, selectorText, ruleText) {
+	var sheet, styleElement;
+	if (doc.createStyleSheet) {
+		sheet = doc.createStyleSheet();
+	} else {
+		styleElement = doc.createElement("style");
+		doc.getElementsByTagName("head")[0].appendChild(styleElement);
+		sheet = styleElement.styleSheet ? styleElement.styleSheet : styleElement.sheet;
+	}
+	if (!sheet && styleElement) {
+		//remove braces
+		ruleText = ruleText.replace(/^\{?([^\}])/, "$1");
+		styleElement.innerHTML = selectorText + ruleText;
+	} else if (sheet.addRule) {
+		//remove braces
+		ruleText = ruleText.replace(/^\{?([^\}])/, "$1");
+		DBG.println("ruleText:" + ruleText + ",selector:" + selectorText);
+		sheet.addRule(selectorText, ruleText);
+	} else if (sheet.insertRule) {
+		//need braces
+		if (!/^\{[^\}]*\}$/.test(ruleText)) ruleText = "{" + ruleText + "}";
+		sheet.insertRule(selectorText + " " + ruleText, sheet.cssRules.length);
 	}
 };
 
