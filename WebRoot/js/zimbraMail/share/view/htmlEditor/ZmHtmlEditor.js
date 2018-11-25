@@ -828,7 +828,7 @@ function(id, autoFocus) {
 		theme: 'modern',
 		auto_focus: autoFocus,
 		elements:  id,
-        plugins : plugins.join(' '),
+		plugins : plugins.join(' '),
 		toolbar: toolbarbuttons.join(' '),
 		toolbar_items_size: 'small',
 		statusbar: false,
@@ -836,35 +836,35 @@ function(id, autoFocus) {
 		ie7_compat: false,
 		object_resizing : true,
 		font_formats : fonts.join(";"),
-        fontsize_formats : AjxMsg.fontSizes || '',
+		fontsize_formats : AjxMsg.fontSizes || '',
 		convert_urls : true,
 		verify_html : false,
 		browser_spellcheck : true,
-        content_css : appContextPath + '/css/tinymce-content.css?v=' + cacheKillerVersion,
-        dialog_type : "modal",
-        forced_root_block : "div",
-        width: "100%",
-        height: "auto",
-        visual: false,
-        language: tinyMCE.getlanguage(appCtxt.get(ZmSetting.LOCALE_NAME)),
-        directionality : appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION),
-        paste_retain_style_properties : "all",
+		content_css : appContextPath + '/css/tinymce-content.css?v=' + cacheKillerVersion,
+		dialog_type : "modal",
+		forced_root_block : "div",
+		width: "100%",
+		height: "auto",
+		visual: false,
+		language: tinyMCE.getlanguage(appCtxt.get(ZmSetting.LOCALE_NAME)),
+		directionality : appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION),
+		paste_retain_style_properties : "all",
 		paste_data_images: false,
-        paste_remove_styles_if_webkit : false,
-        table_default_attributes: { cellpadding: '3px', border: '1px' },
-        table_default_styles: { width: '90%', tableLayout: 'fixed' },
+		paste_remove_styles_if_webkit : false,
+		table_default_attributes: { cellpadding: '3px', border: '1px' },
+		table_default_styles: { width: '90%', tableLayout: 'fixed' },
 		setup : function(ed) {
-            ed.on('LoadContent', obj.onLoadContent.bind(obj));
-            ed.on('PostRender', obj.onPostRender.bind(obj));
-            ed.on('init', obj.onInit.bind(obj));
-            //ed.on('keydown', obj._handleEditorKeyEvent.bind(obj));
-            ed.on('MouseDown', obj._handleEditorMouseDownEvent.bind(obj));
-            ed.on('paste', obj.onPaste.bind(obj));
-            ed.on('PastePostProcess', obj.pastePostProcess.bind(obj));
-            ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
-            ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
-            ed.on('mouseup', obj._handleEditorEvent.bind(obj));
-        }
+			ed.on('LoadContent', obj.onLoadContent.bind(obj));
+			ed.on('PostRender', obj.onPostRender.bind(obj));
+			ed.on('init', obj.onInit.bind(obj));
+			//ed.on('keydown', obj._handleEditorKeyEvent.bind(obj));
+			ed.on('MouseDown', obj._handleEditorMouseDownEvent.bind(obj));
+			ed.on('paste', obj.onPaste.bind(obj));
+			ed.on('PastePostProcess', obj.pastePostProcess.bind(obj));
+			ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
+			ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
+			ed.on('mouseup', obj._handleEditorEvent.bind(obj));
+		}
 		
 	};
 	
