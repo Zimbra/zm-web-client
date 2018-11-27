@@ -216,10 +216,10 @@ function(apptNode, args, instNode, noCache) {
 		var metadataResp = ZmAppt.getMetadata(appt.invId);
 		if (
 			metadataResp &&
-			metadataResp.GetMsgResponse &&
-			metadataResp.GetMsgResponse.meta
+			metadataResp.GetCustomMetadataResponse &&
+			metadataResp.GetCustomMetadataResponse.meta
 		) {
-			appt.metadata = metadataResp.GetMsgResponse.meta;
+			appt.metadata = metadataResp.GetCustomMetadataResponse.meta;
 		}
 	}
     if (appt.id && !noCache) {
