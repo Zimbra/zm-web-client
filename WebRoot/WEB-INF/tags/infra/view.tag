@@ -56,6 +56,9 @@
 	<%-- we use <c:url> below to add the locid param so don't need to do it here --%>
 	<c:set var='helpUrl' value="/help/standard/zimbra_user_help.htm" scope="request" />
 </c:if>
+<c:if test="${not empty param.lang}">
+	<c:set var="langId" value="${param.lang}" scope='request' />
+</c:if>
 
 <c:choose>
 
@@ -472,7 +475,7 @@ if (screen.width<=800) {
 										<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
 											<a class='skin_link' target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a>&nbsp;<font color="gray">|</font>&nbsp;
 										</c:if>
-											<a class='skin_link' href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>
+											<a class='skin_link' href="<c:url value="/?loginOp=logout&lang=${langId != null ? langId : ''}"/>"><fmt:message key="logOut"/></a>
 										</td>
 									</tr></table>
 								</td>

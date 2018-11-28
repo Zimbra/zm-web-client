@@ -34,7 +34,7 @@
 <c:remove var="prevUrl" scope="session"/><c:remove var="currentUrl" scope="session"/></c:if>
 <c:url var="baseURL" scope="request" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
 <c:set var="context_url" value="${requestScope.baseURL}"/>
-<c:if test="${param.loginOp=='logout'}"><c:remove var="mapp" scope="session"/><c:redirect url="/"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:redirect></c:if>
+<c:if test="${param.loginOp=='logout'}"><c:remove var="mapp" scope="session"/><c:redirect url="/"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/><c:param name="lang" value="${param.lang != null ? param.lang :mailbox.prefs.locale }"/></c:redirect></c:if>
 <%--<c:if test="${not empty param.ajax}">--%>
     <c:url var="prevUrl" scope="session" value="${zm:cook(sessionScope.currentUrl)}"/>
     <c:url var="currentUrl" scope="session" value="zmain">
@@ -50,6 +50,9 @@
     <c:choose>
         <c:when test="${not empty mailbox.prefs.locale}">
             <fmt:setLocale value='${mailbox.prefs.locale}' scope='request'/>
+        </c:when>
+	<c:when test="${not empty param.lang}">
+            <fmt:setLocale value='${param.lang}' scope='request'/>
         </c:when>
         <c:otherwise>
             <fmt:setLocale value='${pageContext.request.locale}' scope='request'/>
@@ -273,7 +276,7 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
 </c:if>
 <c:if test="${empty param.ajax}">
     <div class="tbl"><div class="tr">
-        <div class="container td" id="userinfo"><c:url var="logoutUrl" value="${context_url}"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:url>
+        <div class="container td" id="userinfo"><c:url var="logoutUrl" value="${context_url}"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/><c:param name="lang" value="${param.lang != null ? param.lang :mailbox.prefs.locale }"/></c:url>
             <span class="logout-span"><a href="${logoutUrl}" id="_logout" noajax='true'><fmt:message key="logOut"/> </a> (${mailbox.accountInfo.attrs["uid"][0]}) </span>
             <span class="quota-span"><fmt:message key="MO_quotaLabel"/>&nbsp;<c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/><fmt:message var="unlimited" key="unlimited"/><fmt:message key="MO_quotaUsage"><fmt:param value="${zm:displaySizeFractions(pageContext, mailbox.size,2)}"/><fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(pageContext, max,2)}"/></fmt:message></span>
         </div>
