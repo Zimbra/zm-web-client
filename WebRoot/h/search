@@ -8,11 +8,11 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
-    <c:when test="${not empty mailbox.prefs.locale}">
-        <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
-    </c:when>
     <c:when test="${not empty param.lang}">
         <fmt:setLocale value='${param.lang}' scope='request' />
+    </c:when>
+    <c:when test="${not empty mailbox.prefs.locale}">
+        <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
     </c:when>
     <c:otherwise>
         <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
