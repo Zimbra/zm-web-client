@@ -39,6 +39,7 @@
 		<zm:pref name="zimbraPrefLocale" value="${param.lang}"/>
 	</zm:modifyPrefs>
 </c:if>
+<zm:getMailbox var="mailbox" refreshaccount="${true}"/>
 <c:set var="langId" value="${param.lang}" scope='request' />
 <c:choose>
 	<c:when test="${not empty param.lang}">
