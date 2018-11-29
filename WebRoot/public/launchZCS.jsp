@@ -74,9 +74,14 @@
 	<c:remove var="overrideCacheControl" scope="session" />
 </c:if>
 <%	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
-	if (localePref != null && localePref.size() > 0) {
-		request.setAttribute("localeId", localePref.get(0));
+	String lang = getParameter(request, "lang", "en_US");
+	String langId = "en_US";
+	if (lang != null && !lang.isEmpty()) {
+		langId = lang;
+	} else if (localePref != null && localePref.size() > 0) {
+		langId = localePref.get(0);
 	}
+	request.setAttribute("localeId", langId);
 
 	boolean isDev = getParameter(request, "dev", "0").equals("1");
 	int loginHistoryTimeout = Integer.parseInt(Provisioning.getInstance().getConfig().getAttr(Provisioning.A_zimbraSplashScreenTimeOut, "10"));
@@ -167,6 +172,7 @@
     pageContext.setAttribute("isPerfMetric", isPerfMetric);
     pageContext.setAttribute("isLocaleId", localeId != null);
 	pageContext.setAttribute("csrfToken", authResult.getCsrfToken());
+	pageContext.setAttribute("langId", langId);
 %>
 <c:set var="lang" value="${fn:substring(pageContext.request.locale, 0, 2)}"/>
 <html class="user_font_size_normal" lang="${lang}">
@@ -500,7 +506,8 @@ delete text;
 			loginHistoryTimeout: loginHistoryTimeout,
 			unitTest:${isUnitTest},
 			preset:"${preset}",
-			virtualAcctDomain:virtualAcctDomain
+			virtualAcctDomain:virtualAcctDomain,
+			langId:"${langId}"
 		};
 		ZmZimbraMail.run(params);
 		
