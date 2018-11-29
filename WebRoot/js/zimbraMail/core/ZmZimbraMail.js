@@ -599,6 +599,11 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
 	if (appCtxt.get(ZmSetting.SHOW_CHATS_FOLDER)) {
 		delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	}
+
+	// Get langId from launchZCS.jsp file and update it to Preference Language
+	if (params.langId) {
+		appCtxt.set(ZmSetting.LOCALE_NAME, params.langId);
+	}
 };
 
 /**
