@@ -5,9 +5,26 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<c:if test="${not empty param.lang}">
+	<zm:modifyPrefs var="updated">
+		<zm:pref name="zimbraPrefLocale" value="${param.lang}"/>
+	</zm:modifyPrefs>
+</c:if>
+<c:set var="langId" value="${param.lang}" scope='request' />
+<c:choose>
+	<c:when test="${not empty param.lang}">
+		<c:set var="langId" value="${param.lang}" scope='request' />
+	</c:when>
+	<c:when test="${not empty mailbox.prefs.locale}">
+		<c:set var="langId" value="${mailbox.prefs.locale}" scope='request' />
+	</c:when>
+	<c:otherwise>
+		<c:set var="langId" value="${pageContext.request.locale}" scope='request' />
+	</c:otherwise>
+</c:choose>
 
 <app:handleError>
-    <zm:getMailbox var="mailbox"/>
+    <zm:getMailbox var="mailbox refreshaccount="${true}"/>
     <c:choose>
     <c:when test="${not empty mailbox.prefs.locale}">
         <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />

@@ -1169,7 +1169,10 @@ function(ev) {
 				// do nothing for now
 			}
 		}
-		this._showConfirmDialog(ZmMsg.localeChangeRestart, this._refreshBrowserCallback.bind(this));
+		var myLocale = appCtxt.get(ZmSetting.LOCALE_NAME);
+		var myLanguage = myLocale.split('_')[0];
+		var qsArgs = { lang: myLanguage };
+		this._showConfirmDialog(ZmMsg.localeChangeRestart, this._refreshBrowserCallback.bind(this, qsArgs));
 	}
 	else if (id === ZmSetting.CHILD_ACCTS_VISIBLE) {
 		this._showConfirmDialog(ZmMsg.accountChangeRestart, this._refreshBrowserCallback.bind(this));
