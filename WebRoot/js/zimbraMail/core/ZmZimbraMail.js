@@ -90,6 +90,22 @@ ZmZimbraMail = function(params) {
 
     this._requestMgr = new ZmRequestMgr(this); // NOTE: requires settings to be initialized
 
+	// Get langId from launchZCS.jsp file and update in preferences
+	if (params.langId) {
+		var jsonObj = {
+			ModifyPrefsRequest: {
+				_attrs: {
+					zimbraPrefLocale: params.langId
+				},
+				_jsns: "urn:zimbraAccount"
+			}
+		};
+		this.sendRequest({
+			jsonObj: jsonObj,
+			asyncMode: false
+		});
+	}
+
 	this._appIframeView = {};
 	this._activeApp = null;
 	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.executeSessionTimer);
@@ -2770,10 +2786,13 @@ function(ev, relogin) {
 		window.platform.icon().imageSpec = "resource://webapp/icons/default/launcher.ico";
 		window.platform.icon().title = null;
 	}
+	var myLocale = appCtxt.get(ZmSetting.LOCALE_NAME);
+	var myLanguage = myLocale.split('_')[0];
     var urlParams = {
                 path:appContextPath,
                 qsArgs: {
-                        loginOp: relogin ? 'relogin' : 'logout'
+						loginOp: relogin ? 'relogin' : 'logout',
+						lang: myLanguage
                     }
                 };
 	if (relogin) {
