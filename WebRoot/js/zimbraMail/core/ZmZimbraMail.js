@@ -89,6 +89,22 @@ ZmZimbraMail = function(params) {
     this._userShell = params.userShell;
 
     this._requestMgr = new ZmRequestMgr(this); // NOTE: requires settings to be initialized
+	
+	// Get langId from launchZCS.jsp file and update in preferences
+	if (params.langId) {
+		var jsonObj = {
+			ModifyPrefsRequest: {
+				_attrs: {
+					zimbraPrefLocale: params.langId
+				},
+				_jsns: "urn:zimbraAccount"
+			}
+		};
+		this.sendRequest({
+			jsonObj: jsonObj,
+			asyncMode: false
+		});
+	}
 
 	this._appIframeView = {};
 	this._activeApp = null;
@@ -582,6 +598,11 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
 	// Chats hidden by default, check for override
 	if (appCtxt.get(ZmSetting.SHOW_CHATS_FOLDER)) {
 		delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
+	}
+
+	// Get langId from launchZCS.jsp file and update it to Preference Language
+	if (params.langId) {
+		appCtxt.set(ZmSetting.LOCALE_NAME, params.langId);
 	}
 };
 
@@ -2770,10 +2791,13 @@ function(ev, relogin) {
 		window.platform.icon().imageSpec = "resource://webapp/icons/default/launcher.ico";
 		window.platform.icon().title = null;
 	}
+	var myLocale = appCtxt.get(ZmSetting.LOCALE_NAME);
+	var myLanguage = myLocale.split('_')[0];
     var urlParams = {
                 path:appContextPath,
                 qsArgs: {
-                        loginOp: relogin ? 'relogin' : 'logout'
+                        loginOp: relogin ? 'relogin' : 'logout',
+			lang: myLanguage
                     }
                 };
 	if (relogin) {

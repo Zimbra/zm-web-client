@@ -56,6 +56,17 @@
 	<%-- we use <c:url> below to add the locid param so don't need to do it here --%>
 	<c:set var='helpUrl' value="/help/standard/zimbra_user_help.htm" scope="request" />
 </c:if>
+<c:choose>
+    <c:when test="${not empty param.lang}">
+            <c:set var="langId" value="${param.lang}" scope='request' />
+        </c:when>
+    <c:when test="${not empty mailbox.prefs.locale}">
+            <c:set var="langId" value="${mailbox.prefs.locale}" scope='request' />
+        </c:when>
+        <c:otherwise>
+            <c:set var="langId" value="${pageContext.request.locale}" scope='request' />
+        </c:otherwise>
+</c:choose>
 
 <c:choose>
 
@@ -71,7 +82,7 @@
 				<tr>
 					<td class='R1Text'>hi,</td>
 					<td><div id='skin_container_username' class='R1Text'><span style='white-space:nowrap'><b>${fn:escapeXml(mailbox.name)}</b></span></div></td>
-					<td id='#skin_container_logoff_lite' class='R1Link'><span style='white-space:nowrap'><a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut" /></a></span></td>
+					<td id='#skin_container_logoff_lite' class='R1Link'><span style='white-space:nowrap'><a href="<c:url value="/?loginOp=logout&lang=${langId != null ? langId : 'en'}"/>"><fmt:message key="logOut" /></a></span></td>
 					<td class='R1Sep'>|</td>
 					<td class='R1Link'><span style='white-space:nowrap'><a href="https://acctmgt.bbt1.cistest.att.net:9003/Comcast/AcctMgt/acctmgt.cmd?CM.src=top" target=_new >My Account</a></span></td>
 					<td width=100%>&nbsp;</td>
@@ -358,7 +369,7 @@ if (screen.width<=800) {
 			<a target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a> |
 		</td>	
 		<td align="right" nowrap="nowrap" class="Tab">
-			<a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>
+			<a href="<c:url value="/?loginOp=logout&lang=${langId != null ? langId : 'en'}"/>"><fmt:message key="logOut"/></a>
 		</td>
 	</tr>
 </table>
@@ -472,7 +483,7 @@ if (screen.width<=800) {
 										<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
 											<a class='skin_link' target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a>&nbsp;<font color="gray">|</font>&nbsp;
 										</c:if>
-											<a class='skin_link' href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>
+											<a class='skin_link' href="<c:url value="/?loginOp=logout&lang=${langId != null ? langId : 'en'}"/>"><fmt:message key="logOut"/></a>
 										</td>
 									</tr></table>
 								</td>
