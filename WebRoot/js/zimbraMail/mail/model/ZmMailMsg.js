@@ -2151,7 +2151,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 			if (!this.isRealAttachment(attach) ||
 					(attach.contentType.match(/^image/) && attach.contentId && attach.foundInMsgBody && !includeInlineImages) ||
-					(attach.contentDisposition == "inline" && attach.fileName && ZmMimeTable.isRenderable(attach.contentType, true) && !includeInlineAtts)) {
+					(attach.contentDisposition == "inline" && attach.fileName && ZmMimeTable.isRenderable(attach.contentType, !appCtxt.get(ZmSetting.VIEW_AS_HTML)) && !includeInlineAtts)) {
 				continue;
 			}
 
