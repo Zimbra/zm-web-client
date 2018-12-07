@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>PramukhIME TinyMCE Plugin Changelog</title>
+		<meta name="Description" content="Changelog for PramukhIME TinyMCE Plugin" />
+		<meta name="keywords" content="changelog, pramukhime" />
+		<meta name="copyright" content="Copyright © 2005-2018 Vishal Monpara" />
+		<link rel="shortcut icon" href="img/pramukhime.ico" type="image/x-icon"/>
+		<link type="text/css" href="css/bootstrap.min.css" rel="Stylesheet" />
+		<link type="text/css" href="css/default.css" rel="Stylesheet" />
+	</head>
+	<body class="container">
+		<div class="row pageheader">
+			<img src="img/pramukhime48.png" alt="logo"/>
+			<h1 class="visible-xs-inline visible-sm-inline visible-md-inline visible-lg-inline">PramukhIME TinyMCE Plugin Changelog</h1>
+		</div>
+		<h2>Version 4.0.2 (November 2018)</h2>
+		<ul>
+			<li>Removed Devanagari OM from Kannada, Malayalam and Telugu.</li>
+			<li>Added Udatta, Anudatta and double Svarita in Sanskrit.</li>
+		</ul>
+		<h2>Version 4.0.1 (February 2018)</h2>
+		<ul>
+			<li>Internal release</li>
+		</ul>
+		<h2>Version 4.0.0 (January 2017)</h2>
+		<ul>
+			<li>Kashmiri, Meitei (Meetei Mayek), Ol Chiki (Santali), Marathi (Modi script) and Sora languages added</li>
+			<li>Any elements with contenteditable = true can be enabled for PramukhIME</li>
+			<li>Readonly, Disabled and MaxLength attributes for textbox are honored</li>
+			<li>Additional textbox types (email, tel, datetime etc) are added for which PramukhIME can be enabled</li>
+			<li>pramukhIME.enable function is modified and it will not be compatible with older version</li>
+			<li>Advanced typing rules for each language is implemented
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Language</th>
+							<th>Advanced Rule</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Assamese</td>
+							<td>&quot;n&quot; is transliterated to &quot;NG&quot; depending on the position in the word</td>
+						</tr>
+						<tr>
+							<td>Bodo</td>
+							<td>&quot;ng&quot; is transliterated to Anusvar depending on the position in the word</td>
+						</tr>
+						<tr>
+							<td>Bengali</td>
+							<td>&quot;n&quot; and &quot;y&quot; is transliterated to the &quot;NG&quot;, &quot;y&quot;/&quot;z&quot; depending on the position in the word</td>
+						</tr>
+						<tr>
+							<td>Gujarati, Maithili, Manipuri</td>
+							<td>&quot;n&quot; is transliterated to Anusvar depending on the position in the word</td>
+						</tr>
+						<tr>
+							<td>Hindi, Kashmiri</td>
+							<td>&quot;n&quot; and &quot;m&quot; depending on the position in the word can be transliterated to Anusvar or Panchamakshar depending on your preferred settings.</td>
+						</tr>
+						<tr>
+							<td>Kannada</td>
+							<td>&quot;n&quot; and &quot;m&quot; depending on the position in the word can be transliterated to Anusvar or Panchamakshar depending on your preferred settings.<br />
+							&quot;m&quot; at the end of the word is transliterated to Anusvar
+							</td>
+						</tr>
+						<tr>
+							<td>Konkani, Marathi and Marathi (Modi)</td>
+							<td>&quot;n&quot; is translitereted to Anusvar depending on the position in the word</td>
+						</tr>
+						<tr>
+							<td>Malayalam</td>
+							<td>&quot;n&quot;, &quot;N&quot;, &quot;r&quot;, &quot;l&quot;, &quot;L&quot; at the end of the word is transliterated to Chillakshar<br />
+							&quot;m&quot; at the end of the word is transliterated to Anusvar</td>
+						</tr>
+						<tr>
+							<td>Meitei</td>
+							<td>&quot;k&quot;, &quot;l&quot;, &quot;m&quot;, &quot;p&quot;, &quot;n&quot;, &quot;t&quot; and &quot;ng&quot; at the end of the word is transliterated to Lonsum</td>
+						</tr>
+						<tr>
+							<td>Nepali</td>
+							<td>&quot;n&quot; and &quot;m&quot; is transliterated to Anusvar or Panchamakshar depending on the position in the word</td>
+						</tr>
+						<tr>
+							<td>Punjabi</td>
+							<td>&quot;n&quot; if followed by Kanna, Bihari, Lanv, Dulavan, Horha or Kanaorha is transliterated to Bindi<br />
+							&quot;n&quot; if followed by Mukta, Sihari,Aaunkarh or Dulaenkarh is transliterated to Bindi<br />
+							&quot;k&quot;, &quot;g&quot;, &quot;j&quot;, &quot;T&quot;, &quot;D&quot;, &quot;t&quot;, &quot;d&quot;, &quot;p&quot;,
+							&quot;R&quot;, &quot;l&quot; or &quot;s&quot; if typed two times, transliterated to Addak
+							</td>
+						</tr>
+						<tr>
+							<td>Sanskrit</td>
+							<td>&quot;n&quot; is translitereted to Panchamakshar depending on the position in the word</td>
+						</tr>
+						<tr>
+							<td>Tamil</td>
+							<td>&quot;n&quot; is transliterated to &quot;n&quot;, &quot;N&quot;, &quot;NN&quot; or &quot;NY&quot; depending on the position in the word<br />
+							&quot;s&quot; is transliterated to &quot;s&quot; or &quot;ch&quot; depending on the position in the word
+							</td>
+						</tr>
+						<tr>
+							<td>Telugu</td>
+							<td>&quot;n&quot; and &quot;m&quot; is transliterated to Anusvar depending on the position in the word.<br />
+							&quot;m&quot; at the end of the word is transliterated to Anusvar</td>
+						</tr>
+					</tbody>
+				</table>
+			</li>
+			<li>Key mappings are changed for certain keys for mobile friendly typing</li>
+			<li>Enhanced to work with mobile browsers</li>
+		</ul>
+		<h2>Version 3.2 (July 2015)</h2>
+		<ul>
+			<li>In Telugu language, Tsa and Dza character mapping changed to Ts~ and Dz~ respectively</li>
+			<li>Changed language name from Oriya to Odia</li>
+			<li>Renamed function "getNewObject" to "createPramukhIME"</li>
+		</ul>
+		<h2>Version 3.1 (September 2013)</h2>
+		<ul>
+			<li>In all languages, "Ch" is added as an alternate to "chh" to make it backward compatible.</li>
+			<li>In Gujarati, "Ri", "RI", "Li~" and "LI~" are added as an alternative to "Ru", "RU", "Lu~", "LU~" respectively for making it compatible with other languages. "Gn" is added as alternative to "Gy" because that is how it is pronounced in Gujarati</li>
+			<li>In Assamese, "x", "xh", "X" and "Xh" are added as an alternative to "s", "sh", "S" and "Sh" respectively.</li>
+			<li>In PramukhIME class, "getNewObject" is added to give developer an option to create a separate object of PramukhIME class.</li>
+			<li>For Bengali ana character mapping is changed from a~ to A~</li>
+		</ul>
+		<h2>Version 3.0 (June 2012)</h2>
+		<p>Due to major changes, I am not able to identify and list all changes here. Please feel free to compare the versions. Here is a list of all major functionality changes.</p>
+		<ul>
+			<li>PramukhIME functionality is split into core engine and keyboard functionality. Now any developer can create a keyboard of their choice and easily integrate with PramukhIME.</li>
+			<li>PramukhIME is now language based instead of script based.</li>
+			<li>Enables user to convert the Unicode text into other languages.</li>
+			<li>Unicode 6.0 compliant output</li>
+			<li>Indian Rs. symbol and swastika symbol is added.</li>
+		</ul>
+		<h2>Version 2.5.1 (September 2009)</h2>
+		<ul>
+			<li>For all scripts letter | will be printed by typing |~</li>
+			<li>Fixed small bug for Kannada, Malayalam, Tamil and Telugu: typing digit after consonant would remove halant</li>
+			<li>All help image files are modified as png to reduce the size</li>
+			<li>For Malayalam help file, Chillu character N added</li>
+			<li>For Oriya help file, "y" and "ki" was showing wrong characters</li>
+			<li>In Tamil help file, example "sri" was wrong, it should be "srI"</li>
+		</ul>
+		<h2>Version 2.5 (July 2009)</h2>
+		<ul>
+			<li>ConvertAllToIndicIME is removed and ConvertPageToIndicIME is added which does the same function</li>
+			<li>ConvertPageToDefault and ConvertToDetault functions were added to remove IndicIME functionality from elements</li>
+			<li>Added "H" to perform same action as ":" for all scripts</li>
+			<li>Added Zero Width Joiner and Zero Width Non Joiner character supports for all scripts</li>
+			<li>Punctuation characters removed from mapping and replaced with less used symbols</li>
+			<li>Symbols with special meaning for Indic script can be printed by suffixing "~".</li>
+			<li>Added "S" to perform same action as "sh"</li>
+			<li>For all scripts help image is updated</li>
+			<li>For all scripts, typing "a^i" gives separate characters</li>
+			<li>For all scripts, "ou" is now equivalent to "au"</li>
+			<li>For all scripts, R is changed to "Ru" and RR is changed to "RU"</li>
+			<li>For applicable scripts Q and QQ is changed to "Lu~" and "LU~"</li>
+			<li>For applicable scripts, avagrah is now represented with "&"</li>
+			<li>For applicable scripts, chandrabindu is now represented with "M~"</li>
+			<li>Example words are added at the bottom of the help image.</li>
+			<li>Bengali: Added Khand t letter, Changed letter for r, rr and v/w</li>
+			<li>Misspelled "devnagari" is changed to "devanagari"</li>
+			<li>Gurmukhi Script: Tippi and Addak will be printed by M~ and N~ instead of ~ and @.</li>
+			<li>Kannada Script: Swapped characters for e<->E, o<->O. Halant will be retained after consonant. rr character is changed to rx to correctly display rra.</li>
+			<li>Malayalam Script: Swapped characters for e<->E, o<->O. Halant will be retained after consonant. Added chillu character support for N, n, r, l and L</li>
+			<li>Oriya Script: y and Y gives different letters</li>
+			<li>Tamil Script: Swapped characters for e<->E, o<->O. Halant will be retained after consonant. Added kSh letter, 0(zero), f.</li>
+			<li>Telugu Script: Swapped characters for e<->E, o<->O. Halant will be retained after consonant.</li>
+		</ul>
+		<h2>Version 2.0 (Oct 2008)</h2>
+		<ul>
+			<li>Changed the way Indic IME is attached to any HTML element</li>
+			<li>Changed associated characters for t, th to th and tH for Tamil and Telugu</li>
+			<li>Added Oriya script. (Currently Oriya is not properly displayed due to font issue.)</li>
+			<li>More object oriented approach developed</li>
+			<li>Added various functions to do bulk operation</li>
+			<li>Optimized memory usage by creating script object per script instead of per element</li>
+			<li>Developer has choice to either automatically attach keyboard event or handle on his own</li>
+		</ul>
+		<h2>Version 1.0 (May 2008)</h2>
+		<ul>
+			<li>Created library to easily integrate in any Website to have IndicIME enabled for it.</li>
+			<li>Supports 8 Indian scripts</li>
+			<li>With few lines of code, visitor will be able to directly write in chosen Indian script</li>
+		</ul>
+		<div class="row pagefooter">
+			<div class="col-xs-12 text-center">
+				Copyright &copy; 2005-2018 <a href="https://www.vishalon.net" target="_blank" title="Vishal Monpara's Website">Vishal Monpara</a> | Version 4.0.3 | 
+		Dedicated to <a href="http://www.pramukhswami.org" title="HH Pramukh Swami Maharaj" target="_blank">HH Pramukh Swami Maharaj</a>
+			</div>
+		</div>
+	</body>
+</html>
