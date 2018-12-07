@@ -5,6 +5,12 @@
 	unicode-range:U+0900-097F;
 }
 @font-face {
+	/*devanagari double svarita*/
+	font-family: "pramukhimefamily";
+	src: local('Noto Sans Devanagari'), local('Lohit Devanagari'), local('Lohit Marathi'), local('Lohit Nepali'), local('Nirmala UI'), local('Mangal'), local('Kokila'), local('Arial Unicode MS');
+	unicode-range:U+1CDA;
+}
+@font-face {
 	/*bengali*/
 	font-family: "pramukhimefamily";
 	src: local('Noto Sans Bengali'), local('Lohit Bengali'), local('Lohit Assamese'), local('Nirmala UI'), local('Shonar Bangla'), local('Vrinda'), local('Arial Unicode MS');
