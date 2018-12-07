@@ -807,6 +807,9 @@ function(id, autoFocus) {
 
 	var getPramukhLanguageValue = function(localeName){
 		var languageValue;
+		if (window.pramukhIME) { //if pramukhIME is already set up and the language has been changed, don't switch back to the default language
+			return window.pramukhIME.getLanguage().language === "english" ? 'pramukhime:english' : 'pramukhindic:' + window.pramukhIME.getLanguage().language;
+		}
 		switch(localeName.toLowerCase()){
 			// hindi
 			case 'hi':
@@ -881,7 +884,21 @@ function(id, autoFocus) {
 		ie7_compat: false,
 		object_resizing : true,
 		pramukhime_options : {
-			selected_value: getPramukhLanguageValue(appCtxt.get(ZmSetting.LOCALE_NAME))
+			selected_value: getPramukhLanguageValue(appCtxt.get(ZmSetting.LOCALE_NAME)),
+			languages: [
+				{
+					text: ZmMsg.localeName_hi,
+					value: 'pramukhindic:tamil'
+				},
+				{
+					text: ZmMsg.localeName_ta,
+					value: 'pramukhindic:hindi'
+				},
+				{
+					text: ZmMsg.localeName_en,
+					value: 'pramukhime:english'
+				}
+			]
 		},
 		fontsize_formats : AjxMsg.fontSizes || '',
 		convert_urls : true,
@@ -911,7 +928,12 @@ function(id, autoFocus) {
             ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
             ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
             ed.on('mouseup', obj._handleEditorEvent.bind(obj));
-        }
+		},
+		init_instance_callback: function () {
+			//allows typing in all text areas once tinyMCE has been loaded up
+			pramukhIME.addKeyboard('PramukhIndic');
+			pramukhIME.enable();
+		}
     };
 	var tinyMCEInitObj = (id == 'TEXTAREA_SIGNATURE') ? tinyMCEInitSignatureObj: tinyMCEInitComposeObj;
 	tinyMCE.init(tinyMCEInitObj);

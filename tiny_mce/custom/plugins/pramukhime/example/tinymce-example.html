@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PramukhIME TinyMCE Plugin Example</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0" />
+<style>
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+.title {color:#FF6600; font-size: 1.5em; border-bottom: 2px solid #FF6600;}
+</style>
+<script src="../../js/tinymce/tinymce.js"></script>
+<!-- Use above script tag or below depending on which TinyMCE Package you have downloaded
+<script src="js/tinymce/tinymce.min.js"></script>
+-->
+<script type="text/javascript">
+	function setupPage() {
+		pramukhIME.enable(["myinputid"]);
+		pramukhIME.on('languagechange', languageChangeHandler);
+	}
+    
+    function onDropdownChange()
+    {
+        var dd = document.getElementById("mydropdownid");
+        var lang = dd.options[dd.selectedIndex].value;
+        pramukhIME.setLanguage(lang.split(':')[1],lang.split(':')[0]);
+    }
+
+    function languageChangeHandler(data)
+    {
+		// Select correct option if the value exist
+		var optvalue = data.kb + ':' + data.language;
+        var dd = document.getElementById("mydropdownid");
+        var i;
+        for(i=0; i< dd.options.length; i++)
+        {
+            if(dd.options[i].value == optvalue)
+            {
+                dd.selectedIndex = i;
+                break;
+            }
+        }
+		// Notify that language is changed.
+		document.getElementById("message").innerHTML = "Language changed.";
+    }
+	tinymce.init({
+	    selector: 'textarea#mytextareaid',
+		theme: "modern",
+		// Add pramukhime plugin
+		plugins: [
+			"pramukhime"
+		],
+		content_css: "css/development.css",
+		add_unload_trigger: false,
+		autosave_ask_before_unload: false,
+		// Add buttons to toolbar
+		toolbar1: "pramukhime pramukhimehelp pramukhimesettings pramukhimeresetsettings pramukhimetogglelanguage | bold italic underline",
+		menubar: false,
+		toolbar_items_size: 'small',
+
+		// pramukhime customization
+		// Uncomment this section to customize pramukhime plugin
+/*		 
+        pramukhime_options : { // pramukhime_options is Optional. If you don't provide, it will use the default settings
+			languages: [ // Optional. If this value is not provided, it will list all the available languages
+				// Explanation for the values
+				//{
+				//	text: 'Sanskrit', // Required
+				//	value: 'pramukhindic:sanskrit', // Required. Format = KEYBOARD_NAME:LANGUAGE_NAME
+				//	disabled: false // Optional. To make the item non-selectable in the list
+				//}
+				
+				// Uncomment the following to show title + two languages + english
+					{text:'Pramukh Indic', value:'', disabled:true}, // May be used for title
+					{text:'Assamese', value:'pramukhindic:assamese'},
+					{text:'Bengali', value:'pramukhindic:bengali'},
+					{text:'Bodo', value:'pramukhindic:bodo'},
+					{text:'Dogri', value:'pramukhindic:dogri'},
+					{text:'Gujarati', value:'pramukhindic:gujarati'},
+					{text:'Hindi', value:'pramukhindic:hindi'},
+					{text:'Kannada', value:'pramukhindic:kannada'},
+					{text:'Kashmiri', value:'pramukhindic:kashmiri'},
+					{text:'Konkani', value:'pramukhindic:konkani'},
+					{text:'Maithili', value:'pramukhindic:maithili'},
+					{text:'Malayalam', value:'pramukhindic:malayalam'},
+					{text:'Manipuri', value:'pramukhindic:manipuri'},
+					{text:'Marathi', value:'pramukhindic:marathi'},
+					{text:'Marathi (Modi)', value:'pramukhindic:marathimodi'},
+					{text:'Meitei', value:'pramukhindic:meitei'},
+					{text:'Nepali', value:'pramukhindic:nepali'},
+					{text:'Odia', value:'pramukhindic:odia'},
+					{text:'Punjabi', value:'pramukhindic:punjabi'},
+					{text:'Sanskrit', value:'pramukhindic:sanskrit'},
+					{text:'Santali (Ol Chiki)', value:'pramukhindic:santali'},
+					{text:'Sindhi', value:'pramukhindic:sindhi'},
+					{text:'Sora', value:'pramukhindic:sora'},
+					{text:'Tamil', value:'pramukhindic:tamil'},
+					{text:'Telugu', value:'pramukhindic:telugu'},
+					{text:'-', value:''}, // This will turn into menu separator
+					{text:'English', value:'pramukhime:english'} // Note: the value contains pramukhime and NOT pramukhindic
+			],
+			// Uncomment the following value to select Sanskrit as the default language
+			selected_value: 'pramukhindic:sanskrit', // Not required. Default value is 'pramukhime:english'
+			// Use the toggle key as a keyboard shortcut to quickly switch between current and last selected language. 
+			toggle_key: { // Not required. Default value is {key:120, ctrl: false, alt: false, title: 'F9'}. Customizes a toggle key which is a shortcut key responsible for switching
+			// between currently and last selected languages.
+					key : 119, // Required. F8 key's keycode
+					ctrl : false, // Not required. If true, user must press "Ctrl" key + key to switch
+					alt : false,  // Not required. If true, user must press "Alt" key + key to switch
+					title:'F8' // Required. This title will be appended to the title of "English" language.
+				},
+			// Uncomment following line to separate the PramukhIME for TinyMCE and the textbox.
+			// This settings will make the instance separate from the rest of the editors or global object available within the same page
+			// It is useful when you need to have separate languages for separate editor instances within the same page.
+			create_dedicated_pramukhime: true // Not required. Default value is false
+        },
+*/
+        setup: function(editor)
+        {
+			editor.on('init', function(e) { 
+				var intervalId;
+				var checkInit = function() {
+					if (typeof pramukhIME !== 'undefined' && typeof PramukhIndic !== 'undefined') {
+						clearInterval(intervalId);
+						setupPage();
+					}
+				}
+				intervalId = setInterval(checkInit, 100);
+				
+			});
+        }
+	});
+</script>
+
+</head>
+<body role="application">
+
+<form method="post" action="">
+	<h1 class="title">PramukhIME TinyMCE Plugin Example</h1>
+	<br />
+	<div>
+		Type in <select name="mydropdownid" id="mydropdownid" onchange="onDropdownChange();">
+		<option value="pramukhindic:bengali">Bengali</option>
+		<option value="pramukhindic:gujarati">Gujarati</option>
+		<option value="pramukhindic:hindi">Hindi</option>
+		<option value="pramukhime:english" selected="selected">English</option>
+		</select> here -&gt;
+		<input type="text" name="myinputid" id="myinputid" />
+	</div>
+	<br />
+	<br />
+	<div>
+		<textarea id="mytextareaid" name="mytextareaid" rows="20" cols="80" style="width: 80%; height:200px;"></textarea>
+	</div>
+	<div id="message"></div>
+	<br />
+	<div>
+		<h4>How to use?</h4>
+		<ol>
+			<li>Download TinyMCE 4.x and unzip on hard drive (TinyMCE_ROOT)</li>
+			<li>Unzip PramukhIME TinyMCE Plugin into &quot;TinyMCE_ROOT\js\tinymce\plugins\&quot; 
+				folder.</li>
+			<li>If you are using TinyMCE Dev Package then place this file example.html into &quot;TinyMCE_ROOT\tests\manual&quot; folder or change the path of &quot;tinymce.js&quot; in this file.</li>
+			<li>If you are using TinyMCE Production package then place this file example.html into &quot;TinyMCE_ROOT\&quot; folder or change the path of &quot;tinymce.min.js&quot; in this file.</li>
+			<li>Place this file example.html into &quot;TinyMCE_ROOT\tests\manual&quot; folder or change the path of &quot;tinymce.js/tinymce.min.js&quot; in this file.</li>
+			<li>Open this file using <b>real webserver like IIS/Apache</b> and you should be able to view PramukhIME 
+				drop down list and buttons.</li>
+			<li>Open this file in text editor and change the options given as per comments 
+				within html code to customize PramukhIME plugin.</li>
+		</ol>
+	</div>
+</form>
+
+<script type="text/javascript">
+if (document.location.protocol == 'file:') {
+	alert("The examples might not work properly on the local file system due to security settings in your browser. Please use a real webserver.");
+}
+</script>
+</body>
+</html>
