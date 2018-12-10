@@ -48,6 +48,10 @@
 <c:set var="refreshSkin" value="${true}" scope="request"/>
 <c:remove var="skin" scope="session"/>
 <app:skin mailbox="${mailbox}"/>
+<%@ page
+contentType="text/html;charset=UTF-8"
+pageEncoding="UTF-8"
+%>
 <%!
 	static String getParameter(HttpServletRequest request, String pname, String defValue) {
 		String value = request.getParameter(pname);
