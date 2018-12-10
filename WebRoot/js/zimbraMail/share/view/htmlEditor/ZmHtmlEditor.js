@@ -888,11 +888,11 @@ function(id, autoFocus) {
 			languages: [
 				{
 					text: ZmMsg.localeName_hi,
-					value: 'pramukhindic:tamil'
+					value: 'pramukhindic:hindi'
 				},
 				{
 					text: ZmMsg.localeName_ta,
-					value: 'pramukhindic:hindi'
+					value: 'pramukhindic:tamil'
 				},
 				{
 					text: ZmMsg.localeName_en,
