@@ -878,7 +878,7 @@ function(id, autoFocus) {
         plugins : plugins.join(' '),
 		toolbar: toolbarbuttons.join(' '),
 		toolbar_items_size: 'small',
-		selector: "#" + id,
+		elements:  id,
 		statusbar: false,
 		menubar: false,
 		ie7_compat: false,
