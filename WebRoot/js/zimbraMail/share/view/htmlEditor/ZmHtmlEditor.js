@@ -838,6 +838,22 @@ function(id, autoFocus) {
 		menubar: false,
 		ie7_compat: false,
 		object_resizing : true,
+		pramukhime_options: {
+			selected_value: getPramukhLanguageValue(appCtxt.get(ZmSetting.LOCALE_NAME)),
+			languages: [{
+					text: ZmMsg.localeName_hi,
+					value: 'pramukhindic:hindi'
+				},
+				{
+					text: ZmMsg.localeName_ta,
+					value: 'pramukhindic:tamil'
+				},
+				{
+					text: ZmMsg.localeName_en,
+					value: 'pramukhime:english'
+				}
+			]
+		},
 		font_formats : fonts.join(";"),
 		fontsize_formats : AjxMsg.fontSizes || '',
 		convert_urls : true,
@@ -867,8 +883,16 @@ function(id, autoFocus) {
 			ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
 			ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
 			ed.on('mouseup', obj._handleEditorEvent.bind(obj));
+		},
+		init_instance_callback: function () {
+			//allows typing in all text areas once tinyMCE has been loaded up
+			pramukhIME.addKeyboard('PramukhIndic');
+			let lang = pramukhIME.getLanguage();
+			//set the language a second time, because for some reason, the first time it stays in English
+			//(something to do with the selectors vs elements setting in the initObj - selectors works for starting with correct language but breaks other things)
+			lang === 'english' ? pramukhIME.setLanguage('english', 'pramukhime') : pramukhIME.setLanguage(lang, 'pramukhindic');
+			pramukhIME.enable();
 		}
-		
 	};
 	
     var tinyMCEInitComposeObj = {
@@ -932,6 +956,10 @@ function(id, autoFocus) {
 		init_instance_callback: function () {
 			//allows typing in all text areas once tinyMCE has been loaded up
 			pramukhIME.addKeyboard('PramukhIndic');
+			let lang = pramukhIME.getLanguage();
+			//set the language a second time, because for some reason, the first time it stays in English
+			//(something to do with the selectors vs elements setting in the initObj - selectors works for starting with correct language but breaks other things)
+			lang === 'english' ? pramukhIME.setLanguage('english', 'pramukhime') : pramukhIME.setLanguage(lang, 'pramukhindic');
 			pramukhIME.enable();
 		}
     };
