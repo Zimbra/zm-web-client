@@ -602,7 +602,7 @@ ZmMainSearchToolBar.prototype._onInputFocus = function(ev) {
 	var searchValue = this.getSearchFieldValue();
 	// check if search value consists the keyword for folder search
 	if(searchValue && searchValue.indexOf('in:') === 0){
-		this.setSearchFieldValue(searchValue+ " ");
+		this.setSearchFieldValue(searchValue + " ");
 	}
 	this._setInputExpanded(true);
 };
