@@ -890,7 +890,18 @@ function(id, autoFocus) {
 			let lang = pramukhIME.getLanguage();
 			//set the language a second time, because for some reason, the first time it stays in English
 			//(something to do with the selectors vs elements setting in the initObj - selectors works for starting with correct language but breaks other things)
-			lang === 'english' ? pramukhIME.setLanguage('english', 'pramukhime') : pramukhIME.setLanguage(lang, 'pramukhindic');
+			//also, cannot pass a string var in to setLanguage, must pass actual string
+			switch (lang) {
+				case 'english':
+					pramukhIME.setLanguage('english', 'pramukhime');
+					break;
+				case 'hindi':
+					pramukhIME.setLanguage('hindi', 'pramukhindic');
+					break;
+				case 'tamil':
+					pramukhIME.setLanguage('tamil', 'pramukhindic');
+					break;
+			}
 			pramukhIME.enable();
 		}
 	};
@@ -959,7 +970,18 @@ function(id, autoFocus) {
 			let lang = pramukhIME.getLanguage();
 			//set the language a second time, because for some reason, the first time it stays in English
 			//(something to do with the selectors vs elements setting in the initObj - selectors works for starting with correct language but breaks other things)
-			lang === 'english' ? pramukhIME.setLanguage('english', 'pramukhime') : pramukhIME.setLanguage(lang, 'pramukhindic');
+			//also, cannot pass a string var in to setLanguage, must pass actual string
+			switch (lang) {
+				case 'english':
+					pramukhIME.setLanguage('english', 'pramukhime');
+					break;
+				case 'hindi':
+					pramukhIME.setLanguage('hindi', 'pramukhindic');
+					break;
+				case 'tamil':
+					pramukhIME.setLanguage('tamil', 'pramukhindic');
+					break;
+			}
 			pramukhIME.enable();
 		}
     };
