@@ -525,8 +525,8 @@ function() {
     this._locationExceptions = null;
     this._alteredLocations   = null;
 
-    this._locationFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1].value);
-    this._subjectFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1].value);
+    this._locationFontSizeSelect && this._locationFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1].value);
+    this._subjectFontSizeSelect && this._subjectFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1].value);
 };
 
 // Acceptable hack needed to prevent cursor from bleeding thru higher z-index'd views
@@ -2290,8 +2290,8 @@ function(calItem, isAllDayAppt) {
 
 ZmApptEditView.prototype._resetFontSizeSelects =
 function() {
-    this._locationFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1]);
-    this._subjectFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1]);
+    this._locationFontSizeSelect && this._locationFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1]);
+    this._subjectFontSizeSelect && this._subjectFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1]);
 }
 
 ZmApptEditView.prototype._setTimezoneVisible =

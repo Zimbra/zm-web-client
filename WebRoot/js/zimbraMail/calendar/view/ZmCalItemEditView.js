@@ -159,8 +159,8 @@ function() {
 	}
 
 	//reset font size options to "normal"
-	this._locationFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1].value);
-	this._subjectFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1].value);
+	this._locationFontSizeSelect && this._locationFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1].value);
+	this._subjectFontSizeSelect && this._subjectFontSizeSelect.setSelectedValue(ZmApptViewHelper.FONTSIZE_OPTIONS[1].value);
 
 	// remove attachments if any were added
 	this._removeAllAttachments();
@@ -465,8 +465,8 @@ function(calItem) {
 	// create a copy of the appointment so we don't muck w/ the original
 	calItem.setViewMode(this._mode);
 
-	calItem.locationFontSize = this._locationFontSizeSelect.getValue();
-	calItem.subjectFontSize = this._subjectFontSizeSelect.getValue();
+	calItem.locationFontSize = this._locationFontSizeSelect ? this._locationFontSizeSelect.getValue() : "normal";
+	calItem.subjectFontSize = this._subjectFontSizeSelect ? this._subjectFontSizeSelect.getValue() : "normal";
 
 	// bug fix #5617 - check if there are any existing attachments that were unchecked
 	var attCheckboxes = document.getElementsByName(ZmCalItem.ATTACHMENT_CHECKBOX_NAME);
@@ -599,8 +599,8 @@ function(calItem, mode) {
 	var fontSizeMeta = calItem.getFontSizeMetadata();
 	if (fontSizeMeta) {
 		//calItem.locationFontSize will always be more recent, look for that first
-		fontSizeMeta.subjectFontSize && this._subjectFontSizeSelect.setSelectedValue(calItem.subjectFontSize || fontSizeMeta.subjectFontSize);
-		fontSizeMeta.locationFontSize && this._locationFontSizeSelect.setSelectedValue(calItem.locationFontSize || fontSizeMeta.locationFontSize);
+		fontSizeMeta.subjectFontSize && this._subjectFontSizeSelect && this._subjectFontSizeSelect.setSelectedValue(calItem.subjectFontSize || fontSizeMeta.subjectFontSize);
+		fontSizeMeta.locationFontSize && this._locationFontSizeSelect && this._locationFontSizeSelect.setSelectedValue(calItem.locationFontSize || fontSizeMeta.locationFontSize);
 	}
 };
 
