@@ -755,7 +755,7 @@ function(id, autoFocus) {
 	}
 
 	var toolbarbuttons = [
-		'pramukhime pramukhimehelp |',
+		'pramukhime |',
 		'fontsizeselect formatselect |',
 		'bold italic underline strikethrough removeformat |',
 		'forecolor backcolor |',
