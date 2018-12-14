@@ -27,7 +27,10 @@
 <zm:checkCrumb crumb="${param.crumb}"/>
 <zm:getMailbox var="mailbox"/>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
+<c:set var="idsArr" value="${fn:split(ids, ',')}"/>
+<c:set var="params" value="${paramValues}"/>
 <c:set var="msgids" value="${fn:join(paramValues.idcv, ',')}"/>
+<c:set var="msgidsArr" value="${paramValues.idcv}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 <c:set var="viewOp" value="${not empty paramValues.viewOp[0] ? paramValues.viewOp[0] :  paramValues.viewOp[1]}"/>
@@ -349,8 +352,17 @@
 		<c:when test="${actionOp eq 'actionSpam'}">
             <c:choose>
             <c:when test="${not empty ids and not empty msgids}">
+                <script type="text/javascript">
+                    console.log("convids: " + ${ids});
+                    console.log("msgids: " + ${msgids});
+                </script>
                 <zm:markConversationSpam var="convresult" id="${ids}" spam="true"/>
                 <zm:markMessageSpam var="msgresult" id="${msgids}" spam="true"/>
+                <script type="text/javascript">
+                    console.log("convresult: " + ${convresult});
+                    console.log("msgresult: " + ${msgresult});
+
+                </script>
                 <app:status>
                 <fmt:message key="actionConvMessageMarkedSpam">
                     <fmt:param value="${convresult.idCount}"/>
@@ -375,6 +387,18 @@
                 </app:status>
             </c:when>
             </c:choose>
+            <c:if test="${not empty idsArr}">
+                <c:forEach items="${idsArr}" var="id">
+                    <script type="text/javascript">
+                        console.log("id: ${id}");
+                    </script>
+                    <zm:getConversation var="conversation" id="${id}"/>
+                    <c:set var="summaries" value="${conversation.messageSummaries}"/>
+                    <c:set var="email" value="${summaries[0].sender.address}"/>
+                    <app:constructAutoSpam var="filterRule" address="${email}"/>
+                    <zm:createFilterRule rule="${filterRule}"/>
+                </c:forEach>
+            </c:if>
 		</c:when>
 		<c:when test="${actionOp eq 'actionNotSpam'}">
             <c:choose>
