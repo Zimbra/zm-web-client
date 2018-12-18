@@ -455,7 +455,7 @@ function(calItemNode, instNode) {
  */
 ZmCalBaseItem.prototype._getDefaultFolderId =
 function() {
-	return ZmOrganizer.ID_CALENDAR;
+	return appCtxt.get(ZmSetting.CAL_DEFAULT_ID);
 };
 
 /**

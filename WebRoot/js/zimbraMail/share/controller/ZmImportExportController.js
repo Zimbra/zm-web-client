@@ -160,7 +160,7 @@ function(params) {
 	params.ext = params.filename.replace(/^.*\./,"").toLowerCase();
     if (!ZmImportExportController.EXTS_TYPE[params.ext]) {
         var params = {
-            msg:	AjxMessageFormat.format(ZmMsg.importErrorTypeNotSupported, params.ext),
+            msg:	AjxMessageFormat.format(ZmMsg.importErrorTypeNotSupported, AjxStringUtil.htmlEncode(params.ext)),
             level:	ZmStatusView.LEVEL_CRITICAL
         };
         appCtxt.setStatusMsg(params);

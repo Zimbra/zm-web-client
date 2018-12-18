@@ -857,7 +857,7 @@ function(a, b) {
 // todo: change to currently "selected" calendar
 ZmCalViewController.prototype.getDefaultCalendarFolderId =
 function() {
-	return ZmOrganizer.ID_CALENDAR;
+	return appCtxt.get(ZmSetting.CAL_DEFAULT_ID);
 };
 
 /**
@@ -1603,7 +1603,9 @@ function(startDate, duration, folderId, mailItem) {
 		// get folderId from mail message if being created off of one
 		if (appCtxt.multiAccounts && mailItem) {
 			newAppt.setFolderId(mailItem.getAccount().getDefaultCalendar().id);
-		} else {
+		}
+		// As per ZCS-223, we will always default to user defined default folder and not based on selections
+		/* else {
 			// bug: 27646 case where only one calendar is checked
 			var checkedFolderIds = this.getCheckedCalendarFolderIds();
 			if (checkedFolderIds && checkedFolderIds.length == 1) {
@@ -1622,7 +1624,7 @@ function(startDate, duration, folderId, mailItem) {
 				this.defaultAccount = appCtxt.isFamilyMbox ? this.mainAccount : this.visibleAccounts[1];
 				newAppt.setFolderId(calId);
 			}
-		}
+		}*/
 	}
 	newAppt.setPrivacy((appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY) == ZmSetting.CAL_VISIBILITY_PRIV)?"PRI" :"PUB");
 	return newAppt;

@@ -1369,10 +1369,10 @@ function(callback, toastMessage, result) {
 
 	// allow or disallow move logic:
 	var allowMove;
-	if ((this.acceptFolderId != ZmOrganizer.ID_CALENDAR) ||
+	if ((this.acceptFolderId != appCtxt.get(ZmSetting.CAL_DEFAULT_ID)) ||
 		(appCtxt.multiAccounts &&
 			!this.getAccount().isMain &&
-			this.acceptFolderId == ZmOrganizer.ID_CALENDAR))
+			this.acceptFolderId == appCtxt.get(ZmSetting.CAL_DEFAULT_ID)))
 	{
 		allowMove = true;
 	}
@@ -2151,7 +2151,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 			if (!this.isRealAttachment(attach) ||
 					(attach.contentType.match(/^image/) && attach.contentId && attach.foundInMsgBody && !includeInlineImages) ||
-					(attach.contentDisposition == "inline" && attach.fileName && ZmMimeTable.isRenderable(attach.contentType, true) && !includeInlineAtts)) {
+					(attach.contentDisposition == "inline" && attach.fileName && ZmMimeTable.isRenderable(attach.contentType, !appCtxt.get(ZmSetting.VIEW_AS_HTML)) && !includeInlineAtts)) {
 				continue;
 			}
 

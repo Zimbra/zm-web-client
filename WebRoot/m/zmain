@@ -209,7 +209,8 @@
                 <c:when test="${param.st eq 'notebooks'}">
                    <c:set var="st" value="wiki"/>
                 </c:when>
-            </c:choose><input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> 
+            </c:choose>
+            	<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/> 
                 <div class="tbl">
                     <div class="tr">
                           <span class="td sih aleft"><input type="text" class="searchInput" id="sq" name="sq" value="${zm:cook(param.sq)}"/></span>
@@ -244,8 +245,11 @@
             <span class="td" style="width:40%"><input type="text" class="searchInput" name="sname" value="${zm:cook(param.sname)}"/></span>
             <span class="td"><input type="submit" class="searchButton zo_button" name="actionSaveSearch" value="<fmt:message key="save"/>"/></span>
         </form>
-    </div><mo:handleError>
-        <c:import url="/m/zmview" var="response" scope="page"/></mo:handleError><div class="container" id="body">${response}</div>
+    </div>
+    <mo:handleError>
+        <c:import url="/m/zmview?crumb=${param.crumb}" var="response" scope="page"/>
+    </mo:handleError>
+    <div class="container" id="body">${response}</div>
 </div></div></div>
 <script type="text/javascript"><c:set var="js">
 //This code runs from the ajax response

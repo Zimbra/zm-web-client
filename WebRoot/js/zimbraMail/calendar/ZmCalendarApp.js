@@ -200,6 +200,7 @@ function(settings) {
     settings.registerSetting("CAL_DEFAULT_APPT_DURATION",   {name: "zimbraPrefCalendarDefaultApptDuration", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LDAP_TIME, defaultValue:ZmCalendarApp.DEFAULT_APPT_DURATION, isGlobal:true});
     settings.registerSetting("CAL_EXCEPTION_ON_SERIES_TIME_CHANGE",	    {name: "zimbraCalendarKeepExceptionsOnSeriesTimeChange", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
     settings.registerSetting("CAL_LOCATION_FIELDS_DISABLED",{name: "zimbraCalendarLocationDisabledFields", type: ZmSetting.T_COS, dataType: ZmSetting.D_STRING, defaultValue: false, isGlobal:true});
+    settings.registerSetting("CAL_DEFAULT_ID",				{name:"zimbraPrefDefaultCalendarId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue: "10"});
 };
 
 ZmCalendarApp.prototype._registerPrefs =
@@ -223,6 +224,7 @@ function() {
 				ZmSetting.CAL_REMINDER_NOTIFY_SOUNDS,
 				ZmSetting.CAL_REMINDER_NOTIFY_BROWSER,
 				ZmSetting.CAL_SHOW_DECLINED_MEETINGS,
+				ZmSetting.CAL_DEFAULT_ID,
 				ZmSetting.CAL_SHOW_TIMEZONE,
 				ZmSetting.CAL_USE_QUICK_ADD,
 				ZmSetting.CALENDAR_INITIAL_VIEW,
@@ -338,6 +340,14 @@ function() {
 	ZmPref.registerPref("CAL_SHOW_DECLINED_MEETINGS", {
 		displayName:        ZmMsg.showDeclinedMeetings,
 		displayContainer:   ZmPref.TYPE_CHECKBOX
+	});
+
+	var defaultCalendars = ZmCalendarApp.getDefaultCalendarFolders();
+	ZmPref.registerPref("CAL_DEFAULT_ID", {
+		displayName:		ZmMsg.defaultCalendar,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		defaultCalendars.displayOptions,
+		options: 			defaultCalendars.options
 	});
 
 	ZmPref.registerPref("CAL_SHOW_TIMEZONE", {
@@ -1499,6 +1509,69 @@ function() {
 		
 	}
 	return returnArr;
+};
+
+ZmCalendarApp.getDefaultCalendarFolders = 
+function() {
+	// get calendar folders (across all accounts)
+	var org = ZmOrganizer.ITEM_ORGANIZER[ZmId.ITEM_APPOINTMENT];
+	var data = [];
+	var displayOptions = [];
+	var options = [];
+	var images = [];
+	var folderTree;
+	var accounts = appCtxt.accountList.visibleAccounts;
+
+	for (var i = 0; i < accounts.length; i++) {
+		var acct = accounts[i];
+
+		var appEnabled = ZmApp.SETTING[ZmItem.APP[ZmId.ITEM_APPOINTMENT]];
+		if ((appCtxt.isOffline && acct.isMain) ||
+			!appCtxt.get(appEnabled, null, acct))
+		{
+			continue;
+		}
+
+		folderTree = appCtxt.getFolderTree(acct);
+		data = data.concat(folderTree.getByType(org));
+	}
+
+	// add the local account last for multi-account
+	if (appCtxt.isOffline) {
+		folderTree = appCtxt.getFolderTree(appCtxt.accountList.mainAccount);
+		data = data.concat(folderTree.getByType(org));
+	}
+
+	for (var i = 0; i < data.length; i++) {
+		var cal = data[i];
+		var acct = cal.getAccount();
+
+		if (cal.noSuchFolder || cal.isFeed() || (cal.link && cal.isReadOnly()) || cal.isInTrash()) { continue; }
+
+		if (appCtxt.multiAccounts &&
+			cal.nId == ZmOrganizer.ID_CALENDAR &&
+			acct.isCalDavBased())
+		{
+			continue;
+		}
+
+		var id = cal.link ? cal.getRemoteId() : cal.id;
+
+		var image = appCtxt.multiAccounts ? acct.getIcon() : cal.getIconWithColor();
+		var name = AjxStringUtil.htmlDecode(appCtxt.multiAccounts
+			? ([cal.getName(), " (", acct.getDisplayName(), ")"].join(""))
+			: cal.getName());
+
+		displayOptions.push(name);
+		options.push(id);
+		images.push(image);
+	}
+
+	return {
+		displayOptions: displayOptions,
+		options: options,
+		images: images
+	};
 };
 
 /**
