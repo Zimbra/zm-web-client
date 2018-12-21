@@ -259,6 +259,80 @@ function(params, result) {
 	if (params.callback) {
 		params.callback.run(result);
 	}
+
+	//create a new filter
+	if (folderId === ZmFolder.ID_SPAM) {
+		var filterRules = new Array(),
+			movedItemsLength = movedItems.length;
+
+		appCtxt.getAppController().sendRequest({
+			jsonObj: {
+				GetFilterRulesRequest: {
+					_jsns: "urn:zimbraMail"
+				}
+			},
+			asyncMode: true,
+			callback: (new AjxCallback(this, function(filtersResponse) {
+				let filters = filtersResponse.getResponse().GetFilterRulesResponse && filtersResponse.getResponse().GetFilterRulesResponse.filterRules[0];
+
+				if (filters.filterRule) filterRules = filters.filterRule;
+
+				let initialFiltersLength = filterRules.length;
+
+				for (var i = 0; i < movedItemsLength; i++) {
+					var fromAddress = movedItems[i].getAddresses(AjxEmailAddress.FROM, false, false, false).get(0).address,
+						filterName = "Automatic Spam Filter: " + fromAddress,
+						filtersLength = filterRules.length,
+						dupeFilter = false;
+
+					//check for duplicates
+					for (var currFilter = 0; currFilter < filtersLength; currFilter++) {
+						if (filterName === filterRules[currFilter].name) {
+							dupeFilter = true;
+							break;
+						}
+					}
+
+					!dupeFilter && filterRules.push({
+						active: true,
+						name: filterName,
+						filterActions: [{
+							actionFileInto: [{
+								folderPath: "Junk"
+							}]
+						}],
+						filterTests: [{
+							condition: "anyof",
+							addressTest: [{
+								header: "from",
+								part: "all",
+								stringComparison: "contains",
+								value: fromAddress
+							}]
+						}]
+					});
+				}
+
+				//make sure something has actually been added before making a new request
+				if (initialFiltersLength !== filterRules.length) {
+					var jsonObj = {
+						ModifyFilterRulesRequest: {
+							_jsns: "urn:zimbraMail",
+							filterRules: [{
+								filterRule: filterRules
+							}]
+						}
+					};
+
+					appCtxt.getAppController().sendRequest({
+						jsonObj: jsonObj,
+						asyncMode: true,
+						callback: (new AjxCallback(this, function () {}))
+					});
+				}
+			}))
+		});
+	}
 };
 
 /**

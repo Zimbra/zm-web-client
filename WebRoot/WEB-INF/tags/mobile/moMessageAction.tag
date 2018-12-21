@@ -25,6 +25,8 @@
 <zm:getMailbox var="mailbox"/>
 <zm:getUserAgent var="ua" session="true"/>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/> <%--id param for messages--%>
+<c:set var="mIdsArr" value="${paramValues.id}"/>
+<c:set var="cIdsArr" value="${paramValues.cid}"/>
 <c:set var="_selectedIds" scope="request" value=",${ids},"/> <%--Used to keep msg's selected in the list--%>
 <c:set var="_selectedCids" scope="request" value=",${fn:join(paramValues.cid,',')},"/> <%--Used to keep conv's selected in the list--%>
 <%--type var specified that whether we have to operate on Conv or Message--%>
@@ -157,9 +159,34 @@
     <c:choose>
         <c:when test="${type eq 'Conv'}">
             <zm:markConversationSpam var="result" id="${ids}" spam="${true}"/>
+            <c:if test="${not empty cIdsArr}">
+                <c:forEach items="${cIdsArr}" var="id">
+                    <zm:getConversation var="conversation" id="${id}"/>
+                    <c:set var="summaries" value="${conversation.messageSummaries}"/>
+                    <c:set var="email" value="${summaries[0].sender.address}"/>
+                    <mo:constructAutoSpam var="filterRule" address="${email}"/>
+                    <c:catch var="filterDuplicate">
+                        <zm:createFilterRule rule="${filterRule}"/>
+                    </c:catch>
+                </c:forEach>
+            </c:if>
         </c:when>
         <c:otherwise>
             <zm:markMessageSpam var="result" id="${ids}" spam="${true}"/>
+            <c:forEach items="${mIdsArr}" var="id">
+                <zm:getMessage var="mMessage" id="${id}"/>
+                <c:set var="mAddresses" value="${mMessage.getEmailAddresses()}"/>
+                <c:set var="addressesLength" value="${fn:length(mAddresses)}"/>
+                <c:forEach items="${mAddresses}" var="mAddress">
+                    <c:if test="${mAddress.type == 'f'}">
+                        <c:set var="email" value="${mAddress.address}"/>
+                        <mo:constructAutoSpam var="filterRule" address="${email}"/>
+                        <c:catch var="filterDuplicate">
+                            <zm:createFilterRule rule="${filterRule}"/>
+                        </c:catch>
+                    </c:if>
+                </c:forEach>
+            </c:forEach>
         </c:otherwise>
     </c:choose>
     <mo:status>
