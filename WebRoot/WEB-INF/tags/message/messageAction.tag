@@ -26,6 +26,7 @@
 <zm:requirePost/>
 <zm:getMailbox var="mailbox"/>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
+<c:set var="messageIds" value="${paramValues.id}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 <c:set var="viewOp" value="${not empty paramValues.viewOp[0] ? paramValues.viewOp[0] :  paramValues.viewOp[1]}"/>
@@ -284,6 +285,22 @@
 						<fmt:param value="${result.idCount}"/>
 					</fmt:message>
 				</app:status>
+				<c:if test="${not empty messageIds}">
+				<c:forEach items="${messageIds}" var="id">
+					<zm:getMessage var="mMessage" id="${id}"/>
+					<c:set var="mAddresses" value="${mMessage.getEmailAddresses()}"/>
+					<c:set var="addressesLength" value="${fn:length(mAddresses)}"/>
+					<c:forEach items="${mAddresses}" var="mAddress">
+						<c:if test="${mAddress.type == 'f'}">
+							<c:set var="email" value="${mAddress.address}"/>
+							<app:constructAutoSpam var="filterRule" address="${email}"/>
+							<c:catch var="filterDuplicate">
+								<zm:createFilterRule rule="${filterRule}"/>
+							</c:catch>
+						</c:if>
+					</c:forEach>
+				</c:forEach>
+			</c:if>
 			</c:when>
 			<c:when test="${zm:actionSet(param, 'actionPrint')}">
 				<zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${result.idCount}"/>
@@ -333,12 +350,20 @@
 				</c:if>
 			</c:when>
 			<c:when test="${actionOp eq 'actionSpam'}">
+			<%--this is for when in message mode but viewing the full conversation of a message--%>
 				<zm:markConversationSpam  var="result" id="${param.contextConvId}" spam="true"/>
 				<app:status>
 					<fmt:message key="actionConvMarkedSpam">
 						<fmt:param value="${result.idCount}"/>
 					</fmt:message>
 				</app:status>
+				<zm:getConversation var="conversation" id="${param.contextConvId}"/>
+					<c:set var="summaries" value="${conversation.messageSummaries}"/>
+					<c:set var="email" value="${summaries[0].sender.address}"/>
+					<app:constructAutoSpam var="filterRule" address="${email}"/>
+					<c:catch var="duplicateFilter">
+						<zm:createFilterRule rule="${filterRule}"/>
+					</c:catch>
 			</c:when>
 			<c:when test="${actionOp eq 'actionNotSpam'}">
 				<zm:markConversationSpam  var="result" id="${param.contextConvId}" spam="false"/>
