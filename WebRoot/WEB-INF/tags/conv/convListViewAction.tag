@@ -27,7 +27,9 @@
 <zm:checkCrumb crumb="${param.crumb}"/>
 <zm:getMailbox var="mailbox"/>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
+<c:set var="idsArr" value="${paramValues.id}"/>
 <c:set var="msgids" value="${fn:join(paramValues.idcv, ',')}"/>
+<c:set var="msgidsArr" value="${paramValues.idcv}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 <c:set var="viewOp" value="${not empty paramValues.viewOp[0] ? paramValues.viewOp[0] :  paramValues.viewOp[1]}"/>
@@ -375,6 +377,34 @@
                 </app:status>
             </c:when>
             </c:choose>
+            <%--wait for everything else to finish up, then create the filters--%>
+            <c:if test="${not empty idsArr}">
+                <c:forEach items="${idsArr}" var="id">
+                    <zm:getConversation var="conversation" id="${id}"/>
+                    <c:set var="summaries" value="${conversation.messageSummaries}"/>
+                    <c:set var="email" value="${summaries[0].sender.address}"/>
+                    <app:constructAutoSpam var="filterRule" address="${email}"/>
+                    <c:catch var="filterDuplicate">
+                        <zm:createFilterRule rule="${filterRule}"/>
+                    </c:catch>
+                </c:forEach>
+            </c:if>
+            <c:if test="${not empty msgidsArr}">
+                <c:forEach items="${msgidsArr}" var="id">
+                    <zm:getMessage var="mMessage" id="${id}"/>
+                    <c:set var="mAddresses" value="${mMessage.getEmailAddresses()}"/>
+                    <c:set var="addressesLength" value="${fn:length(mAddresses)}"/>
+                    <c:forEach items="${mAddresses}" var="mAddress" varStatus="status">
+                        <c:if test="${mAddress.type == 'f'}">
+                            <c:set var="email" value="${mAddress.address}"/>
+                            <app:constructAutoSpam var="filterRule" address="${email}"/>
+                            <c:catch var="filterDuplicate">
+                                <zm:createFilterRule rule="${filterRule}"/>
+                            </c:catch>
+                        </c:if>
+                    </c:forEach>
+                </c:forEach>
+            </c:if>
 		</c:when>
 		<c:when test="${actionOp eq 'actionNotSpam'}">
             <c:choose>
