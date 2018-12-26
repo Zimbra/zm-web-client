@@ -20,8 +20,6 @@
  * All portions of the code are Copyright (C) 2011, 2012, 2013, 2014, 2016 Synacor, Inc. All Rights Reserved.
  * ***** END LICENSE BLOCK *****
 -->
-<!-- BEGIN SPLASH SCREEN -->
-<div id='skin_container_splash_screen' class='SplashScreen'>
 <script language='javascript'>
 	function showCompanyUrl() {
 		window.open(ZmMsg.splashScreenCompanyURL, '_blank');
@@ -54,20 +52,34 @@
         xhttp.send();
    	}
 	window.onload = function() {
-		if (getCookie('splashLoginFlag') == "splashLoginFlag") {
+		document.getElementById("div_nicemployeenumber").style.display = "none";
+		document.getElementById("form_givenName").value = window.user_givenName != "NODATA" ? window.user_givenName : "";
+		document.getElementById("form_sn").value = window.user_sn != "NODATA" ? window.user_sn : "";
+		document.getElementById("form_telephoneNumber").value = window.user_telephoneNumber != "NODATA" ? window.user_telephoneNumber : "";
+		document.getElementById("form_mobile").value = window.user_mobile != "NODATA" ? window.user_mobile : "";
+		document.getElementById("form_postalAddress").value = window.user_postalAddress != "NODATA" ? window.user_postalAddress : "" ;
+
+		var showUserProfile = window.showUserProfile ? window.showUserProfile : false;
+		if(showUserProfile && (showUserProfile == true || showUserProfile == TRUE)) {
+			showUserProfileScreen();
 			hideSplash();
 		} else {
-			getHistory();
-			if (window.loginHistoryTimeout > 0) {
-				setCookie('splashLoginFlag','splashLoginFlag',1);
-				document.getElementById("SplashLoadingScreen").style.display = "none";
-				document.getElementById("ZLoginBannerImage").style.display = "none";
-				document.getElementById("SplashScreenTable").style.display = "table";
-				document.getElementById("SplashHisoryScreen").style.display = "block";
-				document.getElementById("closeImg").style.display = "block";
-				document.getElementById("counter").style.display = "block";
+			if (getCookie('splashLoginFlag') == "splashLoginFlag") {
+				hideSplash();
+				hideUserProfileScreen();
+			} else {
+				getHistory();
+				if (window.loginHistoryTimeout > 0) {
+					setCookie('splashLoginFlag','splashLoginFlag',1);
+					document.getElementById("SplashLoadingScreen").style.display = "none";
+					document.getElementById("ZLoginBannerImage").style.display = "none";
+					document.getElementById("SplashScreenTable").style.display = "table";
+					document.getElementById("SplashHisoryScreen").style.display = "block";
+					document.getElementById("closeImg").style.display = "block";
+					document.getElementById("counter").style.display = "block";
+				}
+				onTimer();
 			}
-			onTimer();
 		}
 	};
 	var counters = window.loginHistoryTimeout;
@@ -87,7 +99,21 @@
 	function hideSplash() {
 		Dwt.hide("skin_container_splash_screen");
 	}
+	function hideSplash() {
+		Dwt.hide("skin_container_splash_screen");
+	}
+	
+	function showSplash() {
+		Dwt.show("skin_container_splash_screen");
+	}
 
+	function showUserProfileScreen() {
+		Dwt.show("skin_container_userprofile_screen");
+	}
+
+	function hidecUserProfileScreen() {
+		Dwt.hide("skin_container_userprofile_screen");
+	}
 	function setCookie(name,value,days) {
 		var expires = "";
 		if (days) {
@@ -107,7 +133,128 @@
 		}
 		return null;
 	}
+
+	function validateForm() {
+		var isError = false;
+		var inputFieldsArr = ["givenName", "sn", "telephoneNumber", "mobile", "postalAddress", "legacyDateOfBirth", "legacyAccountExpDate", "legacyDateOfRetirement", "oldPassword", "newPassword"];
+		var inputFieldsArrLenght = inputFieldsArr.length;
+		for(var field = 0 ; field < inputFieldsArrLenght; field++) {
+			var fieldName = inputFieldsArr[field];
+			if(document.getElementById("form_"+fieldName).value == "") {
+				isError = true;
+				document.getElementById("form_"+fieldName).style.border = "1px solid red";
+			} else {
+				document.getElementById("form_"+fieldName).style.border = "none";
+			}
+		}
+		var oldPasswordVal = document.getElementById("form_oldPassword").value;
+		var newPasswordVal = document.getElementById("form_newPassword").value;
+		if(oldPasswordVal != newPasswordVal) {
+			isError = true;
+			document.getElementById("form_oldPassword").style.border = "1px solid red";
+			document.getElementById("form_newPassword").style.border = "1px solid red";
+		}
+		if(isError == false) {
+			alert("form submitted")
+		}
+
+	}
+
+	function showHideEmployee(display) {
+		document.getElementById("div_nicemployeenumber").style.display = display;
+
+	}
 </script>
+<!-- BEGIN USER PROFILE SCREEN -->
+<div id='skin_container_userprofile_screen' class='SplashScreen'>
+	<div id="ZSplashPanel" class="center">
+		<div class="contentBox">
+			<div id="#ZSplashBodyContainer" class="content">
+				<div class="message">
+					<div class="SplashHisoryScreen" id="SplashHisoryScreen" style="display:none;"> <h3><script>document.write(ZmMsg.zimbraLoginHistoryHeading)</script></h3> </div>
+					<div class="container-table100">
+						<div class="wrap-table100">
+							<div class="table100">
+								<div class="table_userprofile" id="UserProfileScreenTable">
+									<div class="field-row">
+										<div class="label">Initial </div>
+											<div class="fields">
+												<select name="initial" id="initial">
+													<option value=""> Select </option>
+													<option value="mr"> Mr </option>
+													<option value="miss"> Miss </option>
+													<option value="mrs"> Mrs </option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="field-row">
+										<div class="label">First Name<span class"required">*</span></div>
+										<div class="fields"><input type="text" name="givenName" id="form_givenName" value="test" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label">Last Name<span class"required">*</span></div>
+										<div class="fields"><input type="text" name="sn" id="form_sn" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label">Telephone Number<span class"required">*</span></div>
+										<div class="fields"><input type="text" name="telephoneNumber" id="form_telephoneNumber" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label">Mobile<span class"required">*</span></div>
+										<div class="fields"><input type="text" name="mobile" id="form_mobile" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label">Postal Address<span class"required">*</span></div>
+										<div class="fields"><input type="text" name="postalAddress" id="form_postalAddress" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label">Date of Birth<span class"required">*</span></div>
+										<div class="fields"><input type="text" name="legacyDateOfBirth" id="form_legacyDateOfBirth" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label">Date of Account Expiry<span class"required">*</span></div>
+										<div class="fields"><input type="text" name="legacyAccountExpDate" id="form_legacyAccountExpDate" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label">Date of Retirement<span class"required">*</span></div>
+										<div class="fields"><input type="text" name="legacyDateOfRetirement" id="form_legacyDateOfRetirement" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label">NIC Employee<span class"required">*</span></div>
+										<div class="fields">
+											<input type="radio" name="legacyEmployee" id"form_legacyEmployeeYes" value="TRUE" onclick="showHideEmployee('block')" > YES
+											<input type="radio" name="legacyEmployee" id"form_legacyEmployeeNO" value="FALSE" onclick="showHideEmployee('none')"> NO
+										</div>
+									</div>
+									<div class="field-row" id="div_nicemployeenumber">
+										<div class="label">NIC Employee Number<span class"required">*</span></div>
+										<div class="fields"><input type="text" name="form_nicEmployeeNumber" id="form_nicEmployeeNumber" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label">OLD Password<span class"required">*</span></div>
+										<div class="fields"><input type="password" name="oldPassword" id="form_oldPassword" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label">NEW Password<span class"required">*</span></div>
+										<div class="fields"><input type="password" name="newPassword" id="form_newPassword" value="" /></div>
+									</div>
+									 <div class="field-row">
+									 	<div class="fields"><input type="button" name=submit" id="submit" value="Save" onclick="validateForm()"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END USER PROFILE SCREEN -->
+
+<!-- BEGIN SPLASH SCREEN -->
+<div id='skin_container_splash_screen' class='SplashScreen'>
 	<div id="ZSplashPanel" class="center">
 		<div class="contentBox">
 			<span id="closeImg" style="float:right; padding:15px 20px 10px 10px; width:auto; display:none; color:white; cursor:pointer; position:relative; z-index:9999;" onclick="hideSplash()"><img style="padding-left:8px; clear: both; float: left; margin-top: -15px; margin-right: -25px;" src='/img/zimbra/ImgDelete.png'/><script>document.write(ZmMsg.splashScreenClose)</script></span>

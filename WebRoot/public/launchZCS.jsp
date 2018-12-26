@@ -1,5 +1,7 @@
 <%@ page buffer="8kb" session="true" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page import="java.util.*,javax.naming.*,com.zimbra.client.ZAuthResult" %>
+<%@ page import="java.util.*,javax.naming.*,com.zimbra.client.ZAuthResult,com.zimbra.cs.account.ZimbraAuthToken,com.zimbra.cs.account.AuthToken,com.zimbra.cs.account.Account" %>
+<%@ page import="com.zimbra.common.account.Key" %>
+<%@ page import="com.zimbra.common.account.Key.AccountBy" %>
 <%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <%@ page import="java.util.regex.Pattern" %>
 <%@ page import="java.util.regex.Matcher" %>
@@ -86,6 +88,18 @@
 	boolean isDev = getParameter(request, "dev", "0").equals("1");
 	int loginHistoryTimeout = Integer.parseInt(Provisioning.getInstance().getConfig().getAttr(Provisioning.A_zimbraSplashScreenTimeOut, "10"));
 	
+	AuthToken token = ZimbraAuthToken.getAuthToken(authResult.getAuthToken().getValue());
+	String acctId = token.getAccountId();
+    	boolean showUserProfile = Provisioning.getInstance().getAccount(acctId).getBooleanAttr(Provisioning.A_zimbraShowUserProfile, false);
+    	String user_givenName = Provisioning.getInstance().getAccount(acctId).getAttr(Provisioning.A_givenName, "");
+    	String user_sn = Provisioning.getInstance().getAccount(acctId).getAttr(Provisioning.A_sn, "");
+    	String user_telephoneNumber = Provisioning.getInstance().getAccount(acctId).getAttr(Provisioning.A_telephoneNumber, "");
+    	String user_mobile = Provisioning.getInstance().getAccount(acctId).getAttr(Provisioning.A_mobile, "");
+    	String user_postalAddress = Provisioning.getInstance().getAccount(acctId).getAttr(Provisioning.A_postalAddress, "");
+    	//String user_legacyDateOfBirth = Provisioning.getInstance().getAccount(acctId).getAttr(legacyDateOfBirth, "");
+    	//String user_legacyAccountExpDate = Provisioning.getInstance().getAccount(acctId).getAttr(Provisioning.A_legacyAccountExpDate, "");
+    	//String user_legacyDateOfRetirement = Provisioning.getInstance().getAccount(acctId).getAttr(Provisioning.A_legacyDateOfRetirement, "");
+	
 	if (isDev) {
 		request.setAttribute("mode", "mjsf");
 		request.setAttribute("gzip", "false");
@@ -168,11 +182,17 @@
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
 	pageContext.setAttribute("isUnitTest", isUnitTest);
 	pageContext.setAttribute("preset", preset);
-    pageContext.setAttribute("isCoverage", isCoverage);
-    pageContext.setAttribute("isPerfMetric", isPerfMetric);
-    pageContext.setAttribute("isLocaleId", localeId != null);
+    	pageContext.setAttribute("isCoverage", isCoverage);
+    	pageContext.setAttribute("isPerfMetric", isPerfMetric);
+    	pageContext.setAttribute("isLocaleId", localeId != null);
 	pageContext.setAttribute("csrfToken", authResult.getCsrfToken());
 	pageContext.setAttribute("langId", langId);
+	pageContext.setAttribute("showUserProfile", showUserProfile);
+	pageContext.setAttribute("user_givenName", user_givenName);
+    	pageContext.setAttribute("user_sn", user_sn);
+    	pageContext.setAttribute("user_telephoneNumber", user_telephoneNumber);
+    	pageContext.setAttribute("user_mobile", user_mobile);
+    	pageContext.setAttribute("user_postalAddress", user_postalAddress);
 %>
 <c:set var="lang" value="${fn:substring(pageContext.request.locale, 0, 2)}"/>
 <html class="user_font_size_normal" lang="${lang}">
@@ -238,13 +258,19 @@
 	window.cacheKillerVersion	= "${zm:jsEncode(vers)}";
 	window.appRequestLocaleId	= "${locale}";
 	window.appDevMode			= ${isDevMode};
-    window.appCoverageMode		= ${isCoverage};
-    window.isScriptErrorOn		= ${isScriptErrorOn};
-    window.isPerfMetric			= ${isPerfMetric};
+    	window.appCoverageMode		= ${isCoverage};
+    	window.isScriptErrorOn		= ${isScriptErrorOn};
+    	window.isPerfMetric			= ${isPerfMetric};
 	window.authTokenExpires     = <%= authResult.getExpires()%>;
 	window.csrfToken            = "${csrfToken}";
-    window.appLang              = "${lang}";
+    	window.appLang              = "${lang}";
 	window.loginHistoryTimeout  = ${loginHistoryTimeout};
+	window.showUserProfile  = ${showUserProfile};
+    	window.user_givenName  = "${user_givenName}";
+    	window.user_sn  = "${user_sn}";
+    	window.user_telephoneNumber  = "${user_telephoneNumber}";
+    	window.user_mobile  = "${user_mobile}";
+    	window.user_postalAddress  = "${user_postalAddress}";
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
