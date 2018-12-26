@@ -212,7 +212,7 @@ BODY									{	margin:0px; 	}
 /*#skin_td_new_button					{	padding:2px; 	}*/
 
 /** Login, Splash and Error screen **/
-#skin_container_splash_screen			{	@SkinOuter@	@FullWindow@ z-index:90000000;		}
+#skin_container_splash_screen, #skin_container_userprofile_screen			{	@SkinOuter@	@FullWindow@ z-index:90000000;		}
 
 #ZLoginBodyContainer					{	@LoginPanelInnerBorder@	}
 #ZSplashPanel							{	@SplashOuterBorder@		}
@@ -220,7 +220,8 @@ BODY									{	margin:0px; 	}
 
 .LoginScreen,
 .SplashScreen,
-.ErrorScreen {
+.ErrorScreen,
+.userProfileScreen {
 	position:absolute;
 	left:0px;
 	top:0px;
@@ -233,14 +234,16 @@ BODY									{	margin:0px; 	}
 }
 .LoginScreen .center,
 .SplashScreen .center,
-.ErrorScreen .center {
+.ErrorScreen .center,
+.userProfileScreen .center {
 	margin-top:-205px;
 	margin-left:-250px;
 }
 
 .LoginScreen .center-small,
 .SplashScreen .center-small,
-.ErrorScreen .center-small {
+.ErrorScreen .center-small,
+.userProfileScreen .center-small {
 	height:270px;
 	margin-top:-135px;
 	margin-left:-126px;
@@ -248,7 +251,8 @@ BODY									{	margin:0px; 	}
 }
 .LoginScreen .center, .LoginScreen .center-small,
 .SplashScreen .center, .SplashScreen .center-small,
-.ErrorScreen .center, .ErrorScreen .center-small {
+.ErrorScreen .center, .ErrorScreen .center-small,
+.userProfileScreen .center, .userProfileScreen .center-small {
 	left:50%;
 	overflow:visible;
 	position:absolute;
@@ -257,24 +261,28 @@ BODY									{	margin:0px; 	}
 }
 .LoginScreen .contentBox,
 .SplashScreen .contentBox,
-.ErrorScreen .contentBox {
+.ErrorScreen .contentBox,
+.userProfileScreen .contentBox {
 	@LoginContentBox@
 	width:500px;
 }
 .LoginScreen .contentBox,
-.SplashScreen .contentBox {
+.SplashScreen .contentBox,
+.userProfileScreen .contentBox {
 #IFDEF MSIE_LOWER_THAN_7
 	height:265px;
 #ENDIF
 }
 .LoginScreen .center-small .contentBox,
 .SplashScreen .center-small .contentBox,
-.ErrorScreen .center-small .contentBox { width:auto; }
+.ErrorScreen .center-small .contentBox,
+.userProfileScreen .center-small .contentBox { width:auto; }
 
 .center-small .form .submittd{ text-align:left; }
 
 .LoginScreen H1,
-.SplashScreen H1 	{	@LoginH1@ 		}
+.SplashScreen H1,
+.userProfileScreen H1 	{	@LoginH1@ 		}
 
 #ZLoginAppName 		{	@LoginAppName@ 	}
 
@@ -299,7 +307,8 @@ BODY									{	margin:0px; 	}
 .LoginScreen .Footer,
 .SplashScreen .Footer,
 .LoginScreen .Footer-small,
-.SplashScreen .Footer-small {
+.SplashScreen .Footer-small,
+.userProfileScreen .Footer-small {
 	bottom:0px;
 	position:absolute;
 	text-align:center;
@@ -308,7 +317,8 @@ BODY									{	margin:0px; 	}
 }
 .LoginScreen .copyright,
 .LoginScreen #ZLoginNotice,
-.SplashScreen .copyright {
+.SplashScreen .copyright,
+.userProfileScreen .copyright {
 	cursor:default;
 	margin-bottom:5px;
 	@FontSize-normal@
