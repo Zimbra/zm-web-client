@@ -99,10 +99,15 @@ function(params) {
 
     this.currentViewId = params.currentViewId;
     var cv = ZmCalViewController.VIEW_TO_OP[params.currentViewId];
+    this._viewSelect.isMultiDay = false;
     if(cv == ZmOperation.WORK_WEEK_VIEW) {
         cv = ZmOperation.WEEK_VIEW;
     }
     else if (cv == ZmOperation.FB_VIEW) {
+        cv = ZmOperation.DAY_VIEW;
+    }
+    else if (cv == ZmOperation.MULTI_DAY_VIEW) {
+        this._viewSelect.isMultiDay = true;
         cv = ZmOperation.DAY_VIEW;
     }
     this._viewSelect.setSelectedValue(cv);
@@ -274,8 +279,12 @@ function(ev) {
             Dwt.setDisplay(workDaysOnlyContainer, Dwt.DISPLAY_NONE);
             Dwt.setDisplay(oneWeekPerPageContainer, Dwt.DISPLAY_NONE);
             Dwt.setDisplay(oneDayPerPageContainer, Dwt.DISPLAY_BLOCK);
+            if (this._viewSelect.isMultiDay) {
+                this._setSelectedDateEnabled(false);
+            } else {
+                this._setSelectedDateEnabled(true);
+            }
 
-            this._setSelectedDateEnabled(true);
             break;
 
         case ZmOperation.WORK_WEEK_VIEW:
