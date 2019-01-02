@@ -255,6 +255,11 @@ function(type, used, addAsContact, dontUpdateUsed) {
 			var email = addr.getAddress();
 			if (!email) { continue; }
 			email = email.toLowerCase();
+			/*Handling UTF8 characters, Removing extra characters from username part*/
+			if (email.indexOf("\"") == 0 && email.indexOf("\"@") != -1) {
+				email = email.substring(1);
+				email = email.replace("\"@", "@");
+			}
 			if (!used[email]) {
 				var contact = addr;
 				if (addAsContact) {
