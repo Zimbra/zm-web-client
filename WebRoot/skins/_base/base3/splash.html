@@ -302,20 +302,24 @@
 	}
 </script>
 <!-- BEGIN USER PROFILE SCREEN -->
-<div id='skin_container_userprofile_screen' class='userProfileScreen'>
+<div id='skin_container_userprofile_screen' class='userProfileScreen' style="overflow:auto !important;">
 	<div id="ZUserProfilePanel" class="center">
-		<div class="contentBox">
+		<div class="contentBox profile_contentBox">
 			<div id="#ZSplashBodyContainer" class="content">
 				<div class="message">
 					<div class="SplashHisoryScreen" id="SplashHisoryScreen" style="display:none;"> <h3><script>document.write(ZmMsg.zimbraLoginHistoryHeading)</script></h3> </div>
 					<div class="container-table100">
 						<div class="wrap-table100">
 							<div class="table100">
+								<div class="field-row profile_header">
+									NOTE- For designation based id's please fill out the details of the person holding/controlling that designation/account.<br>
+									 <span class="required">*</span> Mandatory fields
+								</div>
 								<div class="table_userprofile" id="UserProfileScreenTable">
 									<div class="field-row">
-										<div class="label">Initial </div>
+										<div class="label profile_label">Initial </div>
 											<div class="fields">
-												<select name="initial" id="initial">
+												<select name="initial" id="initial" class="profile_input profile_input_select">
 													<option value=""> Select </option>
 													<option value="mr"> Mr </option>
 													<option value="miss"> Miss </option>
@@ -325,59 +329,60 @@
 										</div>
 									</div>
 									<div class="field-row">
-										<div class="label">First Name<span class"required">*</span></div>
-										<div class="fields"><input type="text" name="givenName" id="form_givenName" value="test" /></div>
+										<div class="label profile_label">First Name<span class="required">*</span></div>
+										<div class="fields"><input type="text" class="profile_input" name="givenName" id="form_givenName" value="test" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label">Last Name<span class"required">*</span></div>
-										<div class="fields"><input type="text" name="sn" id="form_sn" value="" /></div>
+										<div class="label profile_label">Last Name<span class="required">*</span></div>
+										<div class="fields"><input type="text" class="profile_input" name="sn" id="form_sn" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label">Telephone Number<span class"required">*</span></div>
-										<div class="fields"><input type="text" name="telephoneNumber" id="form_telephoneNumber" value="" /></div>
+										<div class="label profile_label">Telephone Number<span class="required">*</span></div>
+										<div class="fields"><input type="text" class="profile_input" name="telephoneNumber" id="form_telephoneNumber" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label">Mobile<span class"required">*</span></div>
-										<div class="fields"><input type="text" name="mobile" id="form_mobile" value="" /></div>
+										<div class="label profile_label">Mobile<span class="required">*</span></div>
+										<div class="fields"><input type="text" class="profile_input" name="mobile" id="form_mobile" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label">Postal Address<span class"required">*</span></div>
-										<div class="fields"><input type="text" name="postalAddress" id="form_postalAddress" value="" /></div>
+										<div class="label profile_label">Postal Address<span class="required">*</span></div>
+										<div class="fields"><input type="text" class="profile_input" name="postalAddress" id="form_postalAddress" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label">Date of Birth<span class"required">*</span></div>
-										<div class="fields"><input type="date" name="legacyDateOfBirth" id="form_legacyDateOfBirth" value="" /></div>
+										<div class="label profile_label">Date of Birth(mm/dd/yyyy)<span class="required">*</span></div>
+										
+										<div class="fields"><input type="date" class="profile_input" name="legacyDateOfBirth" id="form_legacyDateOfBirth" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label">Date of Account Expiry<span class"required">*</span></div>
-										<div class="fields"><input type="date" name="legacyAccountExpDate" id="form_legacyAccountExpDate" value="" /></div>
+										<div class="label profile_label">Date of Account Expiry(mm/dd/yyyy)<span class="required">*</span></div>
+										<div class="fields"><input type="date" class="profile_input" name="legacyAccountExpDate" id="form_legacyAccountExpDate" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label">Date of Retirement<span class"required">*</span></div>
-										<div class="fields"><input type="date" name="legacyDateOfRetirement" id="form_legacyDateOfRetirement" value="" /></div>
+										<div class="label profile_label">Date of Retirement(mm/dd/yyyy)<span class="required">*</span></div>
+										<div class="fields"><input type="date" class="profile_input" name="legacyDateOfRetirement" id="form_legacyDateOfRetirement" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label">NIC Employee<span class"required">*</span></div>
-										<div class="fields">
+										<div class="label profile_label">NIC Employee<span class="required">*</span></div>
+										<div class="fields profile_label">
 											<input type="radio" name="legacyEmployee" id="form_legacyEmployeeYes" value="TRUE" onclick="showHideEmployee('block')" > YES
 											<input type="radio" name="legacyEmployee" id="form_legacyEmployeeNO" value="FALSE" onclick="showHideEmployee('none')"> NO
 										</div>
 									</div>
 									<div class="field-row" id="div_nicemployeenumber">
-										<div class="label">NIC Employee Number<span class"required">*</span></div>
-										<div class="fields"><input type="text" name="form_legacyEmployeeNum" id="form_legacyEmployeeNum" value="" /></div>
+										<div class="label profile_label">NIC Employee Number<span class="required">*</span></div>
+										<div class="fields"><input type="text" class="profile_input" name="form_legacyEmployeeNum" id="form_legacyEmployeeNum" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label">OLD Password<span class"required">*</span></div>
-										<div class="fields"><input type="password" name="oldPassword" id="form_oldPassword" value="" /></div>
+										<div class="label profile_label">OLD Password<span class="required">*</span></div>
+										<div class="fields"><input type="password" class="profile_input" name="oldPassword" id="form_oldPassword" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label">NEW Password<span class"required">*</span></div>
-										<div class="fields"><input type="password" name="newPassword" id="form_newPassword" value="" /></div>
+										<div class="label profile_label">NEW Password<span class="required">*</span></div>
+										<div class="fields"><input type="password" class="profile_input" name="newPassword" id="form_newPassword" value="" /></div>
 									</div>
-									<div class="field-row" id="passwordErrorDiv"> </div>
-									 <div class="field-row">
-									 	<div class="fields"><input type="button" name=submit" id="submit" value="Save" onclick="validateForm()"></div>
+									<div class="field-row profile_error_label" id="passwordErrorDiv"> </div>
+									 <div class="field-row" style="text-align:center;">
+									 	<div class="fields"><input type="button" class="profile_button" name=submit" id="submit" value="Save" onclick="validateForm()"></div>
 									</div>
 								</div>
 							</div>

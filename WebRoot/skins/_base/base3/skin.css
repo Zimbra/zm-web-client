@@ -744,3 +744,69 @@ SELECT						{	@FieldBorder@	}
   width: 110px;
   text-align: center;
 }
+
+.profile_label {
+	color: white;
+	padding: 15px 0px 5px 0px;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.profile_validate_label {
+	color: #F7DC6F;
+	padding: 0px 0px 10px 0px;
+	font-weight: bold;
+}
+
+.profile_input {
+	width:100%;
+}
+
+.profile_input_select {
+	height: 26px;
+}
+
+.profile_header {
+	background-color:#EAECEE; 
+	font-family: monospace; 
+	border-color:#EAECEE; 
+	border-radius:10px; 
+	padding:5px;  
+	width: 100%;
+}
+
+.required {
+	color: red;
+	padding-left: 5px; 
+}
+
+.profile_button {
+  	outline: none;
+    text-align: center;
+    width: auto;
+    font-size: 16px;
+    border: 0;
+    border-radius: 25px;
+    line-height: 24px;
+    padding: 8px 24px 8px 24px;
+    color: white;
+    margin: 7px 0;
+    background: #F5B000;
+    cursor: pointer;
+}
+
+.profile_button:hover {
+  background-color: white;
+  color: #F5B000;
+}
+
+.profile_contentBox {
+	margin-bottom: 50px;
+	padding: 0px !important;
+}
+
+.profile_error_label {
+	color: #A93226;
+	font-weight: bold;
+	padding: 10px 0px 10px 0px;
+}

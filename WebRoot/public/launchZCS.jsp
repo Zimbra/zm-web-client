@@ -102,7 +102,7 @@
     	String user_legacyDateOfRetirement = Provisioning.getInstance().getAccount(acctId).getAttr("legacyDateOfRetirement", "");
     	boolean user_legacyEmployee = Provisioning.getInstance().getAccount(acctId).getBooleanAttr("legacyEmployee", false);
     	String user_legacyEmployeeNum = Provisioning.getInstance().getAccount(acctId).getAttr("legacyEmployeeNum", "");
-	
+
 	if (isDev) {
 		request.setAttribute("mode", "mjsf");
 		request.setAttribute("gzip", "false");
