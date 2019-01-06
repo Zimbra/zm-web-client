@@ -79,7 +79,7 @@
 		}
 
 		var showUserProfile = window.showUserProfile ? window.showUserProfile : false;
-		if(showUserProfile && (showUserProfile == true || showUserProfile == TRUE)) {
+		if(showUserProfile && (showUserProfile == true || showUserProfile == "TRUE")) {
 			showUserProfileScreen();
 			hideSplash();
 		} else {
@@ -119,9 +119,10 @@
 		return date.substring(0,4) + '-' + date.substring(4,6) + '-' + date.substring(6,8);
 	}
 	
-	function hideSplash() {
-		Dwt.hide("skin_container_splash_screen");
+	function formatDateInMillies(date) {
+		return date.replace(/-/g, "") + "000000Z";
 	}
+
 	function hideSplash() {
 		Dwt.hide("skin_container_splash_screen");
 	}
@@ -134,9 +135,10 @@
 		Dwt.show("skin_container_userprofile_screen");
 	}
 
-	function hidecUserProfileScreen() {
+	function hideUserProfileScreen() {
 		Dwt.hide("skin_container_userprofile_screen");
 	}
+	
 	function setCookie(name,value,days) {
 		var expires = "";
 		if (days) {
@@ -177,7 +179,7 @@
 		var oldPasswordVal = document.getElementById("form_oldPassword").value;
 		var newPasswordVal = document.getElementById("form_newPassword").value;
 		var userEmail =  appCtxt.getActiveAccount().getEmail();
-		var respCallback = new AjxCallback(this, this.handleResponseSendMessage);
+		var respCallback = new AjxCallback(this, this.handleResponseChangePasswordReq);
 		var errCallback = new AjxCallback(this, this.handleChangePasswordReqErr);
 		
 		appCtxt.getAppController().sendRequest({
@@ -208,8 +210,8 @@
 		});
 	}
 	
-	function handleResponseSendMessage(result) {
-		document.getElementById("passwordErrorDiv").innerHTML = ""//ZmMsg.passwordErrorMessage;
+	function handleResponseChangePasswordReq(result) {
+		document.getElementById("passwordErrorDiv").innerHTML = "";
 		document.getElementById("passwordErrorDiv").classList.remove('passwordError');
 		document.getElementById("passwordErrorDiv").classList.add('passwordSuccess');
 		var userEmail =  appCtxt.getActiveAccount().getEmail();
@@ -241,10 +243,50 @@
 	}
 	
 	function handleResponseOfAuthSendMessage(result) {
-		//TODO Call for modify user details
+		var modifyRequestCallback = new AjxCallback(this, this.handleResponseOfModifyAccountRequest);
+		var initial = document.getElementById("initial").value.toLowerCase();
+		var firstName = document.getElementById("form_givenName").value;
+		var lastName = document.getElementById("form_sn").value;
+		var teleNum = document.getElementById("form_telephoneNumber").value;
+		var mobile = document.getElementById("form_mobile").value;
+		var postalAddr = document.getElementById("form_postalAddress").value;
+		var dateOfBirth = formatDateInMillies(document.getElementById("form_legacyDateOfBirth").value);
+		var accountExpDate = formatDateInMillies(document.getElementById("form_legacyAccountExpDate").value);
+		var dateOfRetirement = formatDateInMillies(document.getElementById("form_legacyDateOfRetirement").value);
+		var empNumber = "";
+		if (window.user_legacyEmployee || document.getElementById("form_legacyEmployeeNum").value != "") { 
+			empNumber = document.getElementById("form_legacyEmployeeNum").value;
+		}
+		
+		var jsonToBeSaved = {
+				initials: initial,
+				givenName: firstName,
+				sn: lastName,
+				telephoneNumber: teleNum,
+				mobile: mobile,
+				postalAddress: postalAddr,
+				legacyDateOfBirth: dateOfBirth,
+				legacyAccountExpDate: accountExpDate,
+				legacyDateOfRetirement: dateOfRetirement,
+				legacyNewUser: "FALSE",
+				legacyEmployeeNum: empNumber
+		};
+
+		appCtxt.getAppController().sendRequest({
+			jsonObj: {
+				ModifyAccountRequest: {
+					"_attrs": jsonToBeSaved,
+					"_jsns": "urn:zimbraAccount"
+				}
+			},
+			asyncMode: false,
+			callback: modifyRequestCallback
+		});
 		var url = window.location.href;
-		//TODO Must remove '?dev=1'
-		window.location = "/?dev=1"
+		window.location = "/"; 
+	}
+	
+	function handleResponseOfModifyAccountRequest(result) {
 	}
 	
 	function handleChangePasswordReqErr(error) {
