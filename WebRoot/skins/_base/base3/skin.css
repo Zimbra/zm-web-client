@@ -232,6 +232,10 @@ BODY									{	margin:0px; 	}
 	@FontSize-normal@
 	@LoginScreen@
 }
+#skin_container_userprofile_screen {
+	background: #d7e5f2;
+	overflow:auto;
+}
 .LoginScreen .center,
 .SplashScreen .center,
 .ErrorScreen .center,
@@ -259,12 +263,19 @@ BODY									{	margin:0px; 	}
 	top:35%;
 	z-index:11;
 }
+.userProfileScreen .center {
+	left: 40%;
+	right: 10%;
+}
 .LoginScreen .contentBox,
 .SplashScreen .contentBox,
 .ErrorScreen .contentBox,
 .userProfileScreen .contentBox {
 	@LoginContentBox@
 	width:500px;
+}
+.userProfileScreen .contentBox {
+	width:80%;
 }
 .LoginScreen .contentBox,
 .SplashScreen .contentBox,

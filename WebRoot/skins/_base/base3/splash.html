@@ -88,6 +88,7 @@
 				hideUserProfileScreen();
 			} else {
 				getHistory();
+				hideUserProfileScreen();
 				if (window.loginHistoryTimeout > 0) {
 					setCookie('splashLoginFlag','splashLoginFlag',1);
 					document.getElementById("SplashLoadingScreen").style.display = "none";
@@ -279,11 +280,11 @@
 					"_jsns": "urn:zimbraAccount"
 				}
 			},
-			asyncMode: false,
+			asyncMode: true,
 			callback: modifyRequestCallback
 		});
 		var url = window.location.href;
-		window.location = "/"; 
+		window.location = "/?dev=1";
 	}
 	
 	function handleResponseOfModifyAccountRequest(result) {
@@ -302,12 +303,11 @@
 	}
 </script>
 <!-- BEGIN USER PROFILE SCREEN -->
-<div id='skin_container_userprofile_screen' class='userProfileScreen' style="overflow:auto !important;">
+<div id='skin_container_userprofile_screen' class='userProfileScreen'>
 	<div id="ZUserProfilePanel" class="center">
 		<div class="contentBox profile_contentBox">
 			<div id="#ZSplashBodyContainer" class="content">
 				<div class="message">
-					<div class="SplashHisoryScreen" id="SplashHisoryScreen" style="display:none;"> <h3><script>document.write(ZmMsg.zimbraLoginHistoryHeading)</script></h3> </div>
 					<div class="container-table100">
 						<div class="wrap-table100">
 							<div class="table100">
@@ -317,7 +317,7 @@
 								</div>
 								<div class="table_userprofile" id="UserProfileScreenTable">
 									<div class="field-row">
-										<div class="label profile_label">Initial </div>
+										<div class="label profile_label"><script>document.write(ZmMsg.initial)</script></div>
 											<div class="fields">
 												<select name="initial" id="initial" class="profile_input profile_input_select">
 													<option value=""> Select </option>
@@ -329,55 +329,54 @@
 										</div>
 									</div>
 									<div class="field-row">
-										<div class="label profile_label">First Name<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.firstName)</script><span class="required">*</span></div>
 										<div class="fields"><input type="text" class="profile_input" name="givenName" id="form_givenName" value="test" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label profile_label">Last Name<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.lastName)</script><span class="required">*</span></div>
 										<div class="fields"><input type="text" class="profile_input" name="sn" id="form_sn" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label profile_label">Telephone Number<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.telephone)</script><span class="required">*</span></div>
 										<div class="fields"><input type="text" class="profile_input" name="telephoneNumber" id="form_telephoneNumber" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label profile_label">Mobile<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.mobile)</script><span class="required">*</span></div>
 										<div class="fields"><input type="text" class="profile_input" name="mobile" id="form_mobile" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label profile_label">Postal Address<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.postalAddress)</script><span class="required">*</span></div>
 										<div class="fields"><input type="text" class="profile_input" name="postalAddress" id="form_postalAddress" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label profile_label">Date of Birth(mm/dd/yyyy)<span class="required">*</span></div>
-										
+										<div class="label profile_label"><script>document.write(ZmMsg.dateOfBirth)</script> (mm/dd/yyyy)<span class="required">*</span></div>
 										<div class="fields"><input type="date" class="profile_input" name="legacyDateOfBirth" id="form_legacyDateOfBirth" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label profile_label">Date of Account Expiry(mm/dd/yyyy)<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.dateOfAccountExpiry)</script> (mm/dd/yyyy)<span class="required">*</span></div>
 										<div class="fields"><input type="date" class="profile_input" name="legacyAccountExpDate" id="form_legacyAccountExpDate" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label profile_label">Date of Retirement(mm/dd/yyyy)<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.dateOfRetirement)</script> (mm/dd/yyyy)<span class="required">*</span></div>
 										<div class="fields"><input type="date" class="profile_input" name="legacyDateOfRetirement" id="form_legacyDateOfRetirement" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label profile_label">NIC Employee<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.nicEmployee)</script><span class="required">*</span></div>
 										<div class="fields profile_label">
-											<input type="radio" name="legacyEmployee" id="form_legacyEmployeeYes" value="TRUE" onclick="showHideEmployee('block')" > YES
-											<input type="radio" name="legacyEmployee" id="form_legacyEmployeeNO" value="FALSE" onclick="showHideEmployee('none')"> NO
+											<input type="radio" name="legacyEmployee" id="form_legacyEmployeeYes" value="TRUE" onclick="showHideEmployee('block')" > <script>document.write(ZmMsg.yes)</script>
+											<input type="radio" name="legacyEmployee" id="form_legacyEmployeeNO" value="FALSE" onclick="showHideEmployee('none')"> <script>document.write(ZmMsg.no)</script>
 										</div>
 									</div>
 									<div class="field-row" id="div_nicemployeenumber">
-										<div class="label profile_label">NIC Employee Number<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.nicEmployeeNumber)</script><span class="required">*</span></div>
 										<div class="fields"><input type="text" class="profile_input" name="form_legacyEmployeeNum" id="form_legacyEmployeeNum" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label profile_label">OLD Password<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.old); document.write(" " + ZmMsg.password)</script><span class="required">*</span></div>
 										<div class="fields"><input type="password" class="profile_input" name="oldPassword" id="form_oldPassword" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label profile_label">NEW Password<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg._new); document.write(" " + ZmMsg.password)</script><span class="required">*</span></div>
 										<div class="fields"><input type="password" class="profile_input" name="newPassword" id="form_newPassword" value="" /></div>
 									</div>
 									<div class="field-row profile_error_label" id="passwordErrorDiv"> </div>
