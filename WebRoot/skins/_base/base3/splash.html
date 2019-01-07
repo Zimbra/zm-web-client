@@ -20,8 +20,6 @@
  * All portions of the code are Copyright (C) 2011, 2012, 2013, 2014, 2016 Synacor, Inc. All Rights Reserved.
  * ***** END LICENSE BLOCK *****
 -->
-<!-- BEGIN SPLASH SCREEN -->
-<div id='skin_container_splash_screen' class='SplashScreen'>
 <script language='javascript'>
 	function showCompanyUrl() {
 		window.open(ZmMsg.splashScreenCompanyURL, '_blank');
@@ -54,20 +52,54 @@
         xhttp.send();
    	}
 	window.onload = function() {
-		if (getCookie('splashLoginFlag') == "splashLoginFlag") {
+		document.getElementById("div_nicemployeenumber").style.display = "none";
+		document.getElementById("form_givenName").value = window.user_givenName != "NODATA" ? window.user_givenName : "";
+		document.getElementById("form_sn").value = window.user_sn != "NODATA" ? window.user_sn : "";
+		document.getElementById("form_telephoneNumber").value = window.user_telephoneNumber != "NODATA" ? window.user_telephoneNumber : "";
+		document.getElementById("form_mobile").value = window.user_mobile != "NODATA" ? window.user_mobile : "";
+		document.getElementById("form_postalAddress").value = window.user_postalAddress != "NODATA" ? window.user_postalAddress : "" ;
+		document.getElementById("form_legacyEmployeeNum").value = window.user_legacyEmployeeNum != "NODATA" ? window.user_legacyEmployeeNum : "";
+		document.getElementById("initial").value = window.user_initials != "NODATA" ? window.user_initials.toLowerCase() : "";
+
+		window.user_legacyDateOfBirth = window.user_legacyDateOfBirth != "NODATA" && window.user_legacyDateOfBirth.includes('000000Z') ? window.user_legacyDateOfBirth.replace('000000Z', '') : "";
+		window.user_legacyAccountExpDate = window.user_legacyAccountExpDate != "NODATA" && window.user_legacyAccountExpDate.includes('000000Z') ? window.user_legacyAccountExpDate.replace('000000Z', '') : "";
+		window.user_legacyDateOfRetirement = window.user_legacyDateOfRetirement != "NODATA" && window.user_legacyDateOfRetirement.includes('000000Z') ? window.user_legacyDateOfRetirement.replace('000000Z', '') : "";
+		document.getElementById("form_legacyDateOfBirth").value = formatDate(window.user_legacyDateOfBirth);
+		document.getElementById("form_legacyAccountExpDate").value = formatDate(window.user_legacyAccountExpDate);
+		document.getElementById("form_legacyDateOfRetirement").value = formatDate(window.user_legacyDateOfRetirement);
+
+		if (window.user_legacyEmployee) {
+			document.getElementById("form_legacyEmployeeYes").checked = true;
+			document.getElementById("form_legacyEmployeeNO").checked = false;
+			showHideEmployee('block');
+		} else {
+			document.getElementById("form_legacyEmployeeYes").checked = false;
+			document.getElementById("form_legacyEmployeeNO").checked = true;
+			showHideEmployee('none');
+		}
+
+		var showUserProfile = window.showUserProfile ? window.showUserProfile : false;
+		if(showUserProfile && (showUserProfile == true || showUserProfile == "TRUE")) {
+			showUserProfileScreen();
 			hideSplash();
 		} else {
-			getHistory();
-			if (window.loginHistoryTimeout > 0) {
-				setCookie('splashLoginFlag','splashLoginFlag',1);
-				document.getElementById("SplashLoadingScreen").style.display = "none";
-				document.getElementById("ZLoginBannerImage").style.display = "none";
-				document.getElementById("SplashScreenTable").style.display = "table";
-				document.getElementById("SplashHisoryScreen").style.display = "block";
-				document.getElementById("closeImg").style.display = "block";
-				document.getElementById("counter").style.display = "block";
+			if (getCookie('splashLoginFlag') == "splashLoginFlag") {
+				hideSplash();
+				hideUserProfileScreen();
+			} else {
+				getHistory();
+				hideUserProfileScreen();
+				if (window.loginHistoryTimeout > 0) {
+					setCookie('splashLoginFlag','splashLoginFlag',1);
+					document.getElementById("SplashLoadingScreen").style.display = "none";
+					document.getElementById("ZLoginBannerImage").style.display = "none";
+					document.getElementById("SplashScreenTable").style.display = "table";
+					document.getElementById("SplashHisoryScreen").style.display = "block";
+					document.getElementById("closeImg").style.display = "block";
+					document.getElementById("counter").style.display = "block";
+				}
+				onTimer();
 			}
-			onTimer();
 		}
 	};
 	var counters = window.loginHistoryTimeout;
@@ -83,11 +115,31 @@
 		}
 		counters = counters - 1;
 	}
+
+	function formatDate(date) {
+		return date.substring(0,4) + '-' + date.substring(4,6) + '-' + date.substring(6,8);
+	}
 	
+	function formatDateInMillies(date) {
+		return date.replace(/-/g, "") + "000000Z";
+	}
+
 	function hideSplash() {
 		Dwt.hide("skin_container_splash_screen");
 	}
+	
+	function showSplash() {
+		Dwt.show("skin_container_splash_screen");
+	}
 
+	function showUserProfileScreen() {
+		Dwt.show("skin_container_userprofile_screen");
+	}
+
+	function hideUserProfileScreen() {
+		Dwt.hide("skin_container_userprofile_screen");
+	}
+	
 	function setCookie(name,value,days) {
 		var expires = "";
 		if (days) {
@@ -107,7 +159,243 @@
 		}
 		return null;
 	}
+
+	function validateForm() {
+		var isError = false;
+		var inputFieldsArr = ["givenName", "sn", "telephoneNumber", "mobile", "postalAddress", "legacyDateOfBirth", "legacyAccountExpDate", "legacyDateOfRetirement", "legacyEmployeeNum", "oldPassword", "newPassword"];
+		var inputFieldsArrLenght = inputFieldsArr.length;
+		for(var field = 0 ; field < inputFieldsArrLenght; field++) {
+			var fieldName = inputFieldsArr[field];
+			if(document.getElementById("form_"+fieldName).value == "") {
+				isError = true;
+				document.getElementById("form_"+fieldName).style.border = "1px solid red";
+			} else {
+				document.getElementById("form_"+fieldName).style.border = "none";
+			}
+		}
+		this.changePasswordRequest();
+	}
+
+	function changePasswordRequest() {
+		var oldPasswordVal = document.getElementById("form_oldPassword").value;
+		var newPasswordVal = document.getElementById("form_newPassword").value;
+		var userEmail =  appCtxt.getActiveAccount().getEmail();
+		var respCallback = new AjxCallback(this, this.handleResponseChangePasswordReq);
+		var errCallback = new AjxCallback(this, this.handleChangePasswordReqErr);
+		
+		appCtxt.getAppController().sendRequest({
+			jsonObj: {
+				ChangePasswordRequest: {
+					"account": [
+						{
+							"by": "name",
+							"_content": userEmail
+						}
+					],
+					"oldPassword": [
+						{
+							"_content": oldPasswordVal
+						}
+					],
+					"password": [
+						{
+							"_content": newPasswordVal
+						}
+					],
+					"_jsns": "urn:zimbraAccount"
+				}
+			},
+			asyncMode: true,
+			callback: respCallback,
+			errorCallback: errCallback
+		});
+	}
+	
+	function handleResponseChangePasswordReq(result) {
+		document.getElementById("passwordErrorDiv").innerHTML = "";
+		document.getElementById("passwordErrorDiv").classList.remove('passwordError');
+		document.getElementById("passwordErrorDiv").classList.add('passwordSuccess');
+		var userEmail =  appCtxt.getActiveAccount().getEmail();
+		var newPasswordVal = document.getElementById("form_newPassword").value;
+		var authRespCallback = new AjxCallback(this, this.handleResponseOfAuthSendMessage);
+		var response = result.getResponse();
+		
+		//Updating the Auth Token as Auth token get changed after the ChangePasswordRequest SOAP call
+		appCtxt.getAppController().sendRequest({
+			jsonObj: {
+				AuthRequest: {
+					"account": [
+						{
+							"by": "name",
+							"_content": userEmail
+						}
+					],
+					"password": [
+						{
+							"_content": newPasswordVal
+						}
+					],
+					"_jsns": "urn:zimbraAccount"
+				}
+			},
+			asyncMode: true,
+			callback: authRespCallback
+		});
+	}
+	
+	function handleResponseOfAuthSendMessage(result) {
+		var modifyRequestCallback = new AjxCallback(this, this.handleResponseOfModifyAccountRequest);
+		var initial = document.getElementById("initial").value.toLowerCase();
+		var firstName = document.getElementById("form_givenName").value;
+		var lastName = document.getElementById("form_sn").value;
+		var teleNum = document.getElementById("form_telephoneNumber").value;
+		var mobile = document.getElementById("form_mobile").value;
+		var postalAddr = document.getElementById("form_postalAddress").value;
+		var dateOfBirth = formatDateInMillies(document.getElementById("form_legacyDateOfBirth").value);
+		var accountExpDate = formatDateInMillies(document.getElementById("form_legacyAccountExpDate").value);
+		var dateOfRetirement = formatDateInMillies(document.getElementById("form_legacyDateOfRetirement").value);
+		var empNumber = "";
+		if (window.user_legacyEmployee || document.getElementById("form_legacyEmployeeNum").value != "") { 
+			empNumber = document.getElementById("form_legacyEmployeeNum").value;
+		}
+		
+		var jsonToBeSaved = {
+				initials: initial,
+				givenName: firstName,
+				sn: lastName,
+				telephoneNumber: teleNum,
+				mobile: mobile,
+				postalAddress: postalAddr,
+				legacyDateOfBirth: dateOfBirth,
+				legacyAccountExpDate: accountExpDate,
+				legacyDateOfRetirement: dateOfRetirement,
+				legacyNewUser: "FALSE",
+				legacyEmployeeNum: empNumber
+		};
+
+		appCtxt.getAppController().sendRequest({
+			jsonObj: {
+				ModifyAccountRequest: {
+					"_attrs": jsonToBeSaved,
+					"_jsns": "urn:zimbraAccount"
+				}
+			},
+			asyncMode: true,
+			callback: modifyRequestCallback
+		});
+		var url = window.location.href;
+		window.location = "/?dev=1";
+	}
+	
+	function handleResponseOfModifyAccountRequest(result) {
+	}
+	
+	function handleChangePasswordReqErr(error) {
+		document.getElementById("form_oldPassword").style.border = "1px solid red";
+		document.getElementById("form_newPassword").style.border = "1px solid red";
+		document.getElementById("passwordErrorDiv").innerHTML = ZmMsg.oldPasswordIsIncorrect;
+		document.getElementById("passwordErrorDiv").classList.remove('passwordSuccess');
+		document.getElementById("passwordErrorDiv").classList.add('passwordError');
+	}
+	
+	function showHideEmployee(display) {
+		document.getElementById("div_nicemployeenumber").style.display = display;
+	}
 </script>
+<!-- BEGIN USER PROFILE SCREEN -->
+<div id='skin_container_userprofile_screen' class='userProfileScreen'>
+	<div id="ZUserProfilePanel" class="center">
+		<div class="contentBox profile_contentBox">
+			<div id="#ZSplashBodyContainer" class="content">
+				<div class="message">
+					<div class="container-table100">
+						<div class="wrap-table100">
+							<div class="table100">
+								<div class="field-row profile_header">
+									<script>document.write(ZmMsg.noteLabel); document.write(ZmMsg.nicNote);</script><br>
+									 <span class="required">*</span> <script>document.write(ZmMsg.mandatoryFields);</script>
+								</div>
+								<div class="table_userprofile" id="UserProfileScreenTable">
+									<div class="field-row">
+										<div class="label profile_label"><script>document.write(ZmMsg.initial)</script></div>
+											<div class="fields">
+												<select name="initial" id="initial" class="profile_input profile_input_select">
+													<option value=""> Select </option>
+													<option value="mr"> Mr </option>
+													<option value="miss"> Miss </option>
+													<option value="mrs"> Mrs </option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="field-row">
+										<div class="label profile_label"><script>document.write(ZmMsg.firstName)</script><span class="required">*</span></div>
+										<div class="fields"><input type="text" class="profile_input" name="givenName" id="form_givenName" value="test" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label profile_label"><script>document.write(ZmMsg.lastName)</script><span class="required">*</span></div>
+										<div class="fields"><input type="text" class="profile_input" name="sn" id="form_sn" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label profile_label"><script>document.write(ZmMsg.telephone)</script><span class="required">*</span></div>
+										<div class="fields"><input type="text" class="profile_input" name="telephoneNumber" id="form_telephoneNumber" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label profile_label"><script>document.write(ZmMsg.mobile)</script><span class="required">*</span></div>
+										<div class="fields"><input type="text" class="profile_input" name="mobile" id="form_mobile" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label profile_label"><script>document.write(ZmMsg.postalAddress)</script><span class="required">*</span></div>
+										<div class="fields"><input type="text" class="profile_input" name="postalAddress" id="form_postalAddress" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label profile_label"><script>document.write(ZmMsg.dateOfBirth)</script> (mm/dd/yyyy)<span class="required">*</span></div>
+										<div class="fields"><input type="date" class="profile_input" name="legacyDateOfBirth" id="form_legacyDateOfBirth" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label profile_label"><script>document.write(ZmMsg.dateOfAccountExpiry)</script> (mm/dd/yyyy)<span class="required">*</span></div>
+										<div class="fields"><input type="date" class="profile_input" name="legacyAccountExpDate" id="form_legacyAccountExpDate" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label profile_label"><script>document.write(ZmMsg.dateOfRetirement)</script> (mm/dd/yyyy)<span class="required">*</span></div>
+										<div class="fields"><input type="date" class="profile_input" name="legacyDateOfRetirement" id="form_legacyDateOfRetirement" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label profile_label"><script>document.write(ZmMsg.nicEmployee)</script><span class="required">*</span></div>
+										<div class="fields profile_label">
+											<input type="radio" name="legacyEmployee" id="form_legacyEmployeeYes" value="TRUE" onclick="showHideEmployee('block')" > <script>document.write(ZmMsg.yes)</script>
+											<input type="radio" name="legacyEmployee" id="form_legacyEmployeeNO" value="FALSE" onclick="showHideEmployee('none')"> <script>document.write(ZmMsg.no)</script>
+										</div>
+									</div>
+									<div class="field-row" id="div_nicemployeenumber">
+										<div class="label profile_label"><script>document.write(ZmMsg.nicEmployeeNumber)</script><span class="required">*</span></div>
+										<div class="fields"><input type="text" class="profile_input" name="form_legacyEmployeeNum" id="form_legacyEmployeeNum" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label profile_label"><script>document.write(ZmMsg.old); document.write(" " + ZmMsg.password)</script><span class="required">*</span></div>
+										<div class="fields"><input type="password" class="profile_input" name="oldPassword" id="form_oldPassword" value="" /></div>
+									</div>
+									<div class="field-row">
+										<div class="label profile_label"><script>document.write(ZmMsg._new); document.write(" " + ZmMsg.password)</script><span class="required">*</span></div>
+										<div class="fields"><input type="password" class="profile_input" name="newPassword" id="form_newPassword" value="" /></div>
+									</div>
+									<div class="field-row profile_error_label" id="passwordErrorDiv"> </div>
+									 <div class="field-row" style="text-align:center;">
+									 	<div class="fields"><button type="button" class="profile_button" name=submit" id="submit" value="" onclick="validateForm()"><script>document.write(ZmMsg.save)</script></button></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END USER PROFILE SCREEN -->
+
+<!-- BEGIN SPLASH SCREEN -->
+<div id='skin_container_splash_screen' class='SplashScreen'>
 	<div id="ZSplashPanel" class="center">
 		<div class="contentBox">
 			<span id="closeImg" style="float:right; padding:15px 20px 10px 10px; width:auto; display:none; color:white; cursor:pointer; position:relative; z-index:9999;" onclick="hideSplash()"><img style="padding-left:8px; clear: both; float: left; margin-top: -15px; margin-right: -25px;" src='/img/zimbra/ImgDelete.png'/><script>document.write(ZmMsg.splashScreenClose)</script></span>
