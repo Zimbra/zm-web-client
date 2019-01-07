@@ -168,12 +168,17 @@
 			var fieldName = inputFieldsArr[field];
 			if(document.getElementById("form_"+fieldName).value == "") {
 				isError = true;
+				if (!window.user_legacyEmployee && fieldName === 'legacyEmployeeNum') {
+					isError = false;
+				}
 				document.getElementById("form_"+fieldName).style.border = "1px solid red";
 			} else {
 				document.getElementById("form_"+fieldName).style.border = "none";
 			}
 		}
-		this.changePasswordRequest();
+		if (!isError) {
+			this.changePasswordRequest();
+		}
 	}
 
 	function changePasswordRequest() {
@@ -283,11 +288,10 @@
 			asyncMode: true,
 			callback: modifyRequestCallback
 		});
-		var url = window.location.href;
-		window.location = "/?dev=1";
 	}
 	
 	function handleResponseOfModifyAccountRequest(result) {
+		var url = window.location.href;
 	}
 	
 	function handleChangePasswordReqErr(error) {
