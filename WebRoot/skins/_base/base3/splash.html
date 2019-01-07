@@ -312,8 +312,8 @@
 						<div class="wrap-table100">
 							<div class="table100">
 								<div class="field-row profile_header">
-									NOTE- For designation based id's please fill out the details of the person holding/controlling that designation/account.<br>
-									 <span class="required">*</span> Mandatory fields
+									<script>document.write(ZmMsg.noteLabel); document.write(ZmMsg.nicNote);</script><br>
+									 <span class="required">*</span> <script>document.write(ZmMsg.mandatoryFields);</script>
 								</div>
 								<div class="table_userprofile" id="UserProfileScreenTable">
 									<div class="field-row">
@@ -381,7 +381,7 @@
 									</div>
 									<div class="field-row profile_error_label" id="passwordErrorDiv"> </div>
 									 <div class="field-row" style="text-align:center;">
-									 	<div class="fields"><input type="button" class="profile_button" name=submit" id="submit" value="Save" onclick="validateForm()"></div>
+									 	<div class="fields"><button type="button" class="profile_button" name=submit" id="submit" value="" onclick="validateForm()"><script>document.write(ZmMsg.save)</script></button></div>
 									</div>
 								</div>
 							</div>
