@@ -146,14 +146,14 @@
 		var dateOfAcctExp = getDate(document.getElementById("form_legacyAccountExpDate").value);
 		var dateOfRetirement = getDate(document.getElementById("form_legacyDateOfRetirement").value);
 		if (type == "legacyDateOfBirth" && (dateOfBirth >= dateOfAcctExp || dateOfBirth >= dateOfRetirement)) {
-			document.getElementById("legacyDateOfBirthErrDiv").innerHTML = "Date of Birth must be less than Account Exipry/Date of Retirement Date.";
+			document.getElementById("legacyDateOfBirthErrDiv").innerHTML = ZmMsg.nicDateOfBirthError;
 			return true;
 		}
 		else if (type == "legacyDateOfRetirement" && dateOfRetirement <= dateOfBirth) {
-			document.getElementById("legacyDateOfRetirementErrDiv").innerHTML = "Date of Retirement must be greater than Date of Birth.";
+			document.getElementById("legacyDateOfRetirementErrDiv").innerHTML = ZmMsg.nicDateOfRetirementError;
 			return true;
 		} else if (type == "legacyAccountExpDate" && dateOfAcctExp <= dateOfBirth) {
-			document.getElementById("legacyAccountExpDateErrDiv").innerHTML = "Account Expiry Date must be greater than Date of Birth.";
+			document.getElementById("legacyAccountExpDateErrDiv").innerHTML = ZmMsg.nicAccountExpiryError;
 			return true;
 		}
 		return false;
@@ -231,7 +231,7 @@
 			}else if (fieldName == "legacyEmployeeNum") {
 				if (!Number.isInteger(Number(fieldValue)) || fieldValue < 0) {
 					isError = true;
-					document.getElementById(fieldName + "ErrDiv").innerHTML = "Please enter valid employee number";
+					document.getElementById(fieldName + "ErrDiv").innerHTML = ZmMsg.nicEmployeeNumError;
 				} else {
 					document.getElementById(fieldName + "ErrDiv").innerHTML = "";
 				}
