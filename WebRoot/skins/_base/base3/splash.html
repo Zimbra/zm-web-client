@@ -228,14 +228,7 @@
 				if (!isError) {
 					document.getElementById(fieldName + "ErrDiv").innerHTML = "";
 				} 
-			}else if (fieldName == "legacyEmployeeNum") {
-				if (!Number.isInteger(Number(fieldValue)) || fieldValue < 0) {
-					isError = true;
-					document.getElementById(fieldName + "ErrDiv").innerHTML = ZmMsg.nicEmployeeNumError;
-				} else {
-					document.getElementById(fieldName + "ErrDiv").innerHTML = "";
-				}
-			}else {
+			} else {
 				document.getElementById("form_"+fieldName).style.border = "none";
 			}
 		}
