@@ -142,9 +142,9 @@
 	}
 	
 	function dateValidator(type) {
-		var dateOfBirth = getDate(document.getElementById("form_legacyDateOfBirth").value);
-		var dateOfAcctExp = getDate(document.getElementById("form_legacyAccountExpDate").value);
-		var dateOfRetirement = getDate(document.getElementById("form_legacyDateOfRetirement").value);
+		var dateOfBirth = document.getElementById("form_legacyDateOfBirth").value;
+		var dateOfAcctExp = document.getElementById("form_legacyAccountExpDate").value;
+		var dateOfRetirement = document.getElementById("form_legacyDateOfRetirement").value;
 		if (type == "legacyDateOfBirth" && (dateOfBirth >= dateOfAcctExp || dateOfBirth >= dateOfRetirement)) {
 			document.getElementById("legacyDateOfBirthErrDiv").innerHTML = ZmMsg.nicDateOfBirthError;
 			return true;
@@ -157,11 +157,6 @@
 			return true;
 		}
 		return false;
-	}
-	
-	function getDate(date) {
-		var parts = date.split("-");
-		return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
 	}
 	
 	function formatDate(date) {
@@ -411,17 +406,17 @@
 										<div class="fields"><input type="text" class="profile_input" name="postalAddress" id="form_postalAddress" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label profile_label"><script>document.write(ZmMsg.dateOfBirth)</script> (mm/dd/yyyy)<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.dateOfBirth)</script><span class="required">*</span></div>
 										<div class="fields"><input type="date" class="profile_input" name="legacyDateOfBirth" id="form_legacyDateOfBirth" value="" /></div>
 									</div>
 									<div class="field-row phone_error_label" id="legacyDateOfBirthErrDiv"></div>
 									<div class="field-row">
-										<div class="label profile_label"><script>document.write(ZmMsg.dateOfAccountExpiry)</script> (mm/dd/yyyy)<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.dateOfAccountExpiry)</script><span class="required">*</span></div>
 										<div class="fields"><input type="date" class="profile_input" name="legacyAccountExpDate" id="form_legacyAccountExpDate" value="" /></div>
 									</div>
 									<div class="field-row phone_error_label" id="legacyAccountExpDateErrDiv"></div>
 									<div class="field-row">
-										<div class="label profile_label"><script>document.write(ZmMsg.dateOfRetirement)</script> (mm/dd/yyyy)<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.dateOfRetirement)</script><span class="required">*</span></div>
 										<div class="fields"><input type="date" class="profile_input" name="legacyDateOfRetirement" id="form_legacyDateOfRetirement" value="" /></div>
 									</div>
 									<div class="field-row phone_error_label" id="legacyDateOfRetirementErrDiv"></div>
