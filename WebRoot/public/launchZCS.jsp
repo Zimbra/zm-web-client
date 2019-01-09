@@ -90,7 +90,7 @@
 	
 	AuthToken token = ZimbraAuthToken.getAuthToken(authResult.getAuthToken().getValue());
 	String acctId = token.getAccountId();
-    	boolean showUserProfile = Provisioning.getInstance().getAccount(acctId).getBooleanAttr("legacyNewUser", false);
+    	boolean showUserProfile = Provisioning.getInstance().get(AccountBy.id, token.getAccountId(), true).getBooleanAttr("legacyNewUser", false);
     	String user_initials = Provisioning.getInstance().getAccount(acctId).getAttr(Provisioning.A_initials, "");
     	String user_givenName = Provisioning.getInstance().getAccount(acctId).getAttr(Provisioning.A_givenName, "");
     	String user_sn = Provisioning.getInstance().getAccount(acctId).getAttr(Provisioning.A_sn, "");
