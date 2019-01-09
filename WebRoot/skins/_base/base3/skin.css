@@ -821,3 +821,9 @@ SELECT						{	@FieldBorder@	}
 	font-weight: bold;
 	padding: 10px 0px 10px 0px;
 }
+
+.phone_error_label {
+	color: #A93226;
+	font-weight: bold;
+}
+
