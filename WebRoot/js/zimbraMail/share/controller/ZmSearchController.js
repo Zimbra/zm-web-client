@@ -810,13 +810,6 @@ function(params) {
 			queryString = this._currentQuery || "";
 		}
 
-		if(queryString != undefined && queryString.indexOf(":") != -1) {
-			var searchFolderName = langSearchArray[queryString.substring(0, queryString.indexOf(" "))]+" "+ queryString.substring(queryString.indexOf(" "));
-			if(searchFolderName != undefined) {
-				queryString = searchFolderName;
-			}
-		}
-
 		appCtxt.notifyZimlets(params.zimletEvent, [queryString]);
 		var searchParams = {
 			query:						queryString,
