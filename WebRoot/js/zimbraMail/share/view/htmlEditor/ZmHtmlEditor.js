@@ -755,7 +755,7 @@ function(id, autoFocus) {
 	}
 
 	var toolbarbuttons = [
-		'pramukhime |',
+		'pramukhime pramHelp |',
 		'fontsizeselect formatselect |',
 		'bold italic underline strikethrough removeformat |',
 		'forecolor backcolor |',
@@ -824,7 +824,176 @@ function(id, autoFocus) {
 				languageValue = 'pramukhime:english'
 		}
 		return languageValue;
+	};
+
+	var helpAction = function () {
+		var pramSelectedLang = pramukhIME ? pramukhIME.getLanguage().language : window.pramukhIME ? window.pramukhIME.getLanguage().language : 'english',
+			langCapitalize = pramSelectedLang.charAt(0).toUpperCase() + pramSelectedLang.slice(1),
+			isHindi = pramSelectedLang === 'hindi' ? true : false,
+			localeName = isHindi ? ZmMsg.localeName_hi : ZmMsg.localeName_ta,
+			quickLinks = isHindi ? AjxMessageFormat.format(ZmMsg.pramHindiQuicklinks,
+					[ZmMsg.pramQuickLinks, ZmMsg.pramQuickLinks, ZmMsg.pramConsonant, ZmMsg.pramAddCons, ZmMsg.pramVowelSign,
+					ZmMsg.pramDigit, ZmMsg.pramOther, ZmMsg.pramSymbol, ZmMsg.pramRule, ZmMsg.pramZWJ, ZmMsg.pramExample])
+				: AjxMessageFormat.format(ZmMsg.pramTamilQuicklinks,
+					[ZmMsg.pramQuickLinks, ZmMsg.pramVowel, ZmMsg.pramConsonant, ZmMsg.pramAddCons, ZmMsg.pramVowelSign, ZmMsg.pramDigit,
+						ZmMsg.pramAddDigit, ZmMsg.pramOther, ZmMsg.pramSymbol, ZmMsg.pramRule, ZmMsg.pramExample]);
+			vowels = isHindi ? AjxMessageFormat.format(ZmMsg.pramHindiVowelList,
+					[ZmMsg.pramHindiShortA, ZmMsg.pramHindiChandraE, ZmMsg.pramHindiShortE, ZmMsg.pramHindiChandraO, ZmMsg.pramHindiShortO])
+					: ZmMsg.pramTamilVowelList,
+			consonants = isHindi ? ZmMsg.pramHindiConsonantList : ZmMsg.pramTamilConsonantList,
+			additionalConsonants = isHindi ? ZmMsg.pramHindiAdditionalConsonants : ZmMsg.pramTamilAdditionalConsonants,
+			vowelSigns = isHindi ? AjxMessageFormat.format(ZmMsg.pramHindiVowelSignList,
+					[ZmMsg.pramHindiChandraE, ZmMsg.pramHindiShortE, ZmMsg.pramHindiChandraO, ZmMsg.pramHindiShortO, ZmMsg.pramAnusvar, ZmMsg.pramHindiChandrabindu, ZmMsg.pramVisarg])
+				: AjxMessageFormat.format(ZmMsg.pramTamilVowelSignList,
+					[ZmMsg.pramTamilAU, ZmMsg.pramAnusvar, ZmMsg.pramTamilAnytham, ZmMsg.pramVisarg]),
+			digitSetting = isHindi ? AjxMessageFormat.format(ZmMsg.pramHindiDigitSetting, [ZmMsg.pramHindiDigitInEnglishUnset])
+				: AjxMessageFormat.format(ZmMsg.pramTamilDigitSetting, [ZmMsg.pramTamilDigitInEnglishUnset]),
+			additionalDigits = isHindi ? '' : '<h2 id="additionaldigit">' + ZmMsg.pramAddDigit + '</h2>' +
+				ZmMsg.pramTamilAdditionalDigits,
+			others = isHindi ? AjxMessageFormat.format(ZmMsg.pramHindiOthersList,
+					[ZmMsg.pramHindiHalandViram, ZmMsg.pramHindiNukta, ZmMsg.pramHindiAvagrah, ZmMsg.pramHindiDevanagariAbbr,
+					ZmMsg.pramDevanagariDanda, ZmMsg.pramDevanagariDblDanda, ZmMsg.pramRupee, ZmMsg.pramAum,
+					ZmMsg.pramSwastika, ZmMsg.pramZeroWidthJoiner, ZmMsg.pramTwoDashes, ZmMsg.pramZeroWidthJoiner, ZmMsg.pramZeroWidthNonJoiner])
+				: AjxMessageFormat.format(ZmMsg.pramTamilOthersList,
+					[ZmMsg.pramTamilPulliViram, ZmMsg.pramTamilDaySign, ZmMsg.pramTamilMonthSign, ZmMsg.pramTamilYearSign, ZmMsg.pramTamilDebitSign,
+					ZmMsg.pramTamilCreditSign, ZmMsg.pramTamilAboveSign, ZmMsg.pramTamilRupeeSign, ZmMsg.pramTailNumberSign, ZmMsg.pramDevanagariDanda,
+						ZmMsg.pramDevanagariDblDanda, ZmMsg.pramRupee, ZmMsg.pramAum, ZmMsg.pramSwastika, ZmMsg.pramZeroWidthJoiner, ZmMsg.pramTwoDashes,
+						ZmMsg.pramZeroWidthNonJoiner, ZmMsg.pramThreeDashes]),
+			symbols = isHindi ? AjxMessageFormat.format(ZmMsg.pramHindiSymbolsList, [ZmMsg.pramHindiSymbols]) : AjxMessageFormat.format(ZmMsg.pramTamilSymbolsList, [ZmMsg.pramTamilSymbols]),
+			symbolsNote = AjxMessageFormat.format(ZmMsg.pramSymbolsNote, [langCapitalize]),
+			consVowelExample = isHindi ? ZmMsg.pramHindiConsVowelExample : ZmMsg.pramTamilConsVowelExample,
+			consConsExample = isHindi ? ZmMsg.pramHindiConsConsExample : ZmMsg.pramTamilConsConsExample,
+			dashCons = isHindi ? ZmMsg.pramHindiDashConsonant : ZmMsg.pramTamilDashConsonant,
+			dashConsExample = isHindi ? ZmMsg.pramHindiDashConsExample : ZmMsg.pramTamilDashConsExample,
+			vowelDash = AjxMessageFormat.format(ZmMsg.pramVowelDash, [langCapitalize]),
+			vowelDashExample = isHindi ? ZmMsg.pramHindiVowelDashExample : ZmMsg.pramTamilVowelDashExample,
+			restOfExamples = isHindi ?
+					'<li>' +
+						AjxMessageFormat.format(ZmMsg.pramHindiNMTable, [ZmMsg.pramHindiNM, ZmMsg.pramHindiAnyOther]) +
+					'</li>'
+					: '<li>' +
+						AjxMessageFormat.format(ZmMsg.pramTamilNTable, [ZmMsg.pramTamilN]) + '<br/>' +
+					'</li>' +
+					'<li>' +
+						ZmMsg.pramTamilSpecialRules +
+					'</li>',
+			zwj = isHindi ? '<h2 id="#zwj">' + ZmMsg.pramZWJ + '</h2>' +
+				ZmMsg.pramZWJDesc + '<br/><br/>' +
+				'<ol>' +
+					AjxMessageFormat.format(ZmMsg.pramZWJExample,
+							[ZmMsg.pramZWJCons, ZmMsg.pramExample, ZmMsg.pramZWNJCons]) +
+				'</ol>' : '',
+			examples = isHindi ? ZmMsg.pramHindiExamples : ZmMsg.pramTamilExamples;
+
+		console.log("selected language is: ", pramSelectedLang);
+		tinyMCE.activeEditor.windowManager.open({
+			title: "PramukhIME Help",
+			bodyType: "tabpanel",
+			padding: 10,
+			height: 540,
+			width: 630,
+			body: [{
+					title: "Quick Typing Help",
+					type: "container",
+					style: "overflow:auto; height: 498px;",
+					html: '<div>' +
+						ZmMsg.pramHelp +
+						'<img src="/js/ajax/3rdparty/tinymce/plugins/pramukhime/img/pramukhindic-' + pramSelectedLang + '.png"/>' +
+						'</div>'
+				},
+				{
+					title: "Detailed Typing Help",
+					type: "container",
+					style: "overflow-y: scroll; overflow-x: hidden; width: 618px; height: 498px;",
+					classes: "pram-detailed-help",
+					html: '<div class="pageheader">' +
+							'<img src="/js/ajax/3rdparty/tinymce/plugins/pramukhime/img/pramukhime48.png" alt="logo" />' +
+							'<div class="detailed-help-title"><h1>' + localeName + ' ' + ZmMsg.pramTransliteration + '</h1></div>' +
+						'</div>' +
+						'<div class="detailed-help-container">' +
+							ZmMsg["pramWriting" + langCapitalize] +
+							'<img src="/js/ajax/3rdparty/tinymce/plugins/pramukhime/img/pramukhindic-' + pramSelectedLang + '.png" class="img-centered"/>' +
+							'<div class="alert alert-danger">' + ZmMsg.pramCaseSensitiveAlert + '</div>' +
+							'<span class="bold">' +quickLinks + '</span>' +
+							'<h2 id="vowel">' + ZmMsg.pramVowel + '</h2>' +
+							'<table>' +
+								vowels +
+							'</table>' +
+							'<h2 id="consonant">' + ZmMsg.pramConsonant + '</h2>' +
+							'<table>' +
+								consonants +
+							'</table>' +
+							'<h2 id="additionalconsonant">' + ZmMsg.pramAddCons + '</h2>' +
+							'<table>' +
+								additionalConsonants +
+							'</table>' +
+							'<h2 id="vowelsign">' + ZmMsg.pramVowelSign + '</h2>' +
+							'<table>' +
+								vowelSigns +
+							'</table>' +
+							ZmMsg.pramDottedNote +
+							'<h2 id="digit">' + ZmMsg.pramDigit + '</h2>' +
+							digitSetting +
+							'0 = 0-, 1 = 1-,\2 = 2-, 3 = 3-, 4 = 4-, 5 = 5-, 6 = 6-, 7 = 7-, 8 = 8-, 9 = 9-<br/><br/>' +
+							additionalDigits +
+							'<h2 id="other">' + ZmMsg.other + '</h2>' +
+							others +
+							 ZmMsg.pramDottedNote +
+							'<h2 id="symbol">' + ZmMsg.pramSymbol + '</h2>' +
+							symbols +
+							symbolsNote + '<br/>' +
+							'<h2 id="rule">' + ZmMsg.pramRule + '</h2>' +
+							'<ol>' +
+								'<li>' +
+									ZmMsg.pramConsVowelRule + '<br/>' +
+									'<div class="alert alert-info">' +
+										ZmMsg.pramExample + '<br/>' +
+										consVowelExample +
+									'</div>' +
+								'</li>' +
+								'<li>' +
+									ZmMsg.pramConsConsRule + '<br/>' +
+									'<div class="alert alert-info">' +
+										ZmMsg.pramExample + '<br/>' +
+										consConsExample +
+									'</div>' +
+								'</li>' +
+								'<li>' +
+									ZmMsg.pramConsLigature +
+								'</li>' + '<br/>' +
+								'<li>' +
+									dashCons + 
+									'<div class="alert alert-info">' +
+										ZmMsg.pramExample + '<br/>' +
+										dashConsExample +
+									'</div>' +
+								'</li>' +
+								'<li>' +
+									vowelDash +
+									'<div class="alert alert-info">' +
+										ZmMsg.pramExample + '<br/>' +
+										vowelDashExample +
+									'</div>' +
+								'</li>' +
+								restOfExamples +
+							'</ol>' +
+							zwj +
+							'<h2 id="example">' + ZmMsg.pramExample + '</h2>' +
+							'<div class="alert alert-info">' +
+								examples +
+							'</div>' +
+						'</div>'
+				}
+			],
+			buttons: [{
+				text: ZmMsg.close,
+				onclick: 'close',
+				subtype: 'primary'
+			}]
+		});
 	}
+
+	var signatureHelpButton = null;
 	
 	var tinyMCEInitSignatureObj = {
 		mode :  (this._mode == Dwt.HTML)? "exact" : "none",
@@ -883,11 +1052,26 @@ function(id, autoFocus) {
 			ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
 			ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
 			ed.on('mouseup', obj._handleEditorEvent.bind(obj));
+			ed.addButton('pramHelp', {
+				title: "PramukhIME Typing Help",
+				text: '?',
+				classes: 'helpButton',
+				onclick: helpAction,
+				onPostRender: function () {
+					signatureHelpButton = this;
+				}
+			});
 		},
 		init_instance_callback: function () {
 			//allows typing in all text areas once tinyMCE has been loaded up
 			pramukhIME.addKeyboard('PramukhIndic');
 			let lang = pramukhIME.getLanguage();
+
+			pramukhIME.on('languagechange', function (e) {
+				e.language === 'english' ? defaultHelpButton && defaultHelpButton.disabled(true) : defaultHelpButton && defaultHelpButton.disabled(false);
+				e.language === 'english' ? signatureHelpButton && signatureHelpButton.disabled(true) : signatureHelpButton && signatureHelpButton.disabled(false);
+			});
+
 			//set the language a second time, because for some reason, the first time it stays in English
 			//(something to do with the selectors vs elements setting in the initObj - selectors works for starting with correct language but breaks other things)
 			//also, cannot pass a string var in to setLanguage, must pass actual string
@@ -903,8 +1087,16 @@ function(id, autoFocus) {
 					break;
 			}
 			pramukhIME.enable();
+
+			if (pramukhIME.getLanguage().language === 'english') {
+				defaultHelpButton && defaultHelpButton.disabled(true);
+				signatureHelpButton && signatureHelpButton.disabled(true);
+			}
+
 		}
 	};
+
+	var defaultHelpButton = null;
 	
     var tinyMCEInitComposeObj = {
 		mode :  (this._mode == Dwt.HTML)? "exact" : "none",
@@ -963,11 +1155,26 @@ function(id, autoFocus) {
             ed.on('BeforeExecCommand', obj.onBeforeExecCommand.bind(obj));
             ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
             ed.on('mouseup', obj._handleEditorEvent.bind(obj));
+			ed.addButton('pramHelp', {
+				title: "PramukhIME Typing Help",
+				text: '?',
+				classes: 'helpButton',
+				onclick: helpAction,
+				onPostRender: function() {
+					defaultHelpButton = this;
+				}
+			});
 		},
 		init_instance_callback: function () {
 			//allows typing in all text areas once tinyMCE has been loaded up
 			pramukhIME.addKeyboard('PramukhIndic');
 			let lang = pramukhIME.getLanguage();
+
+			pramukhIME.on('languagechange', function (e) {
+				e.language === 'english' ? defaultHelpButton && defaultHelpButton.disabled(true) : defaultHelpButton && defaultHelpButton.disabled(false);
+				e.language === 'english' ? signatureHelpButton && signatureHelpButton.disabled(true) : signatureHelpButton && signatureHelpButton.disabled(false);
+			});
+
 			//set the language a second time, because for some reason, the first time it stays in English
 			//(something to do with the selectors vs elements setting in the initObj - selectors works for starting with correct language but breaks other things)
 			//also, cannot pass a string var in to setLanguage, must pass actual string
@@ -983,6 +1190,12 @@ function(id, autoFocus) {
 					break;
 			}
 			pramukhIME.enable();
+
+			if (pramukhIME.getLanguage().language === 'english') {
+				defaultHelpButton && defaultHelpButton.disabled(true);
+				signatureHelpButton && signatureHelpButton.disabled(true);
+			}
+
 		}
     };
 	var tinyMCEInitObj = (id == 'TEXTAREA_SIGNATURE') ? tinyMCEInitSignatureObj: tinyMCEInitComposeObj;
