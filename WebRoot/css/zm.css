@@ -1554,6 +1554,116 @@ INPUT[type="text"].search_input-expanded:focus {
 	width:100%;
 }
 
+/* translation plugin popup styles */
+.mce-pram-detailed-help .pramukhindicchar {
+	font-family: "pramukhimefamily";
+	font-size: 16px;
+}
+
+.mce-pram-detailed-help .pageheader {
+	border-bottom: 2px solid #f60;
+	padding-top: 10px;
+}
+
+.mce-pram-detailed-help .detailed-help-title {
+	display: inline;
+}
+.mce-pram-detailed-help h1 {
+	color: #f60;
+	font-size: 32px;
+	font-weight: 500;
+	margin-left: 10px;
+	display: inline;
+}
+
+.mce-pram-detailed-help h2 {
+	font-size: 26px;
+	margin: 10px 0px;
+}
+
+.mce-pram-detailed-help kbd {
+	border-radius: 3px;
+	background-color: #333;
+	color: white;
+	padding: 2px 4px;
+	line-height: 22px;
+}
+
+.mce-pram-detailed-help .detailed-help-container {
+	font-size: 16px;
+	margin: 0 10px;
+	line-height: 1.4;
+	width: 578px;
+}
+
+.mce-pram-detailed-help .alert {
+	padding: 15px;
+	margin-bottom: 22px;
+	border: 1px solid transparent;
+	font-size: 16px;
+}
+
+.mce-pram-detailed-help .alert-danger {
+	background-color: #f2dede;
+	border-color: #ebccd1;
+	color: #a94441;
+}
+
+.mce-pram-detailed-help .alert-warning {
+	background-color: #fcf8e3;
+	border-color: #faebcc;
+	color: #8a6d3b;
+}
+
+.mce-pram-detailed-help .alert-info {
+	background-color: #d9edf7;
+	border-color: #bce8f1;
+	color: #31708f;
+}
+
+.mce-pram-detailed-help .alert-info .pramukhindicchar {
+	color: #31708f;
+}
+
+.mce-pram-detailed-help td {
+	font-size: 16px;
+	height: 30px;
+	padding: 8px;
+}
+
+.mce-pram-detailed-help .chart td {
+	border: 1px solid #e5e5e5;
+}
+
+.mce-pram-detailed-help .two-col {
+	width: 300px;
+}
+
+.mce-pram-detailed-help .three-col {
+	width: 200px;
+}
+
+.mce-pram-detailed-help ol {
+	padding-left: 20px;
+}
+
+.mce-pram-detailed-help li {
+	font-size: 16px;
+}
+
+.mce-pram-detailed-help .bold {
+	font-weight: 500;
+	font-size: 16px;
+}
+
+.mce-pram-detailed-help .img-centered {
+	margin-left: 17px;
+}
+
+.mce-helpButton {
+	padding: 0px 5px!important;
+}
+
 /* ??? USE? */
 .ZmHEDialog TD.Label {
 	@DisableSelection@
