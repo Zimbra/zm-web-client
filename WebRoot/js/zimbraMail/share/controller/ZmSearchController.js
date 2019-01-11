@@ -810,6 +810,13 @@ function(params) {
 			queryString = this._currentQuery || "";
 		}
 
+		if(queryString && queryString.indexOf(":") != -1) {
+			var queryIndex = queryString.indexOf(" ");
+			var updatedQueryString = langSearchArray[queryString.substring(0, queryIndex)]+" "+ queryString.substring(queryIndex);
+			if(updatedQueryString) {
+				queryString = updatedQueryString;
+			}
+		}
 		appCtxt.notifyZimlets(params.zimletEvent, [queryString]);
 		var searchParams = {
 			query:						queryString,
