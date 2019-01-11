@@ -329,12 +329,13 @@ ZmSettings.prototype.setUserSettings = function(params) {
     var setDefault = params.preInit ? false : params.setDefault;
     var skipNotify = params.preInit ? true : params.skipNotify;
     var skipImplicit = params.preInit ? true : params.skipImplicit;
+    var docSizeLimit = info.attrs._attrs.zimbraFileUploadMaxSize ? info.attrs._attrs.zimbraFileUploadMaxSize : info.docSizeLimit;
 
     var settings = [
         ZmSetting.ADMIN_DELEGATED,          info.adminDelegated,
         ZmSetting.MESSAGE_SIZE_LIMIT,    this._base64toNormalSize(info.attSizeLimit),
         ZmSetting.CHANGE_PASSWORD_URL,      info.changePasswordURL,
-        ZmSetting.DOCUMENT_SIZE_LIMIT,      this._base64toNormalSize(info.docSizeLimit),
+        ZmSetting.DOCUMENT_SIZE_LIMIT,      this._base64toNormalSize(docSizeLimit),
         ZmSetting.LAST_ACCESS,              info.accessed,
         ZmSetting.LICENSE_STATUS,           info.license && info.license.status,
         ZmSetting.PREVIOUS_SESSION,         info.prevSession,
