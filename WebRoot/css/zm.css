@@ -1647,7 +1647,8 @@ INPUT[type="text"].search_input-expanded:focus {
 	padding-left: 20px;
 }
 
-.mce-pram-detailed-help li {
+.mce-pram-detailed-help li,
+.mce-pram-detailed-help a {
 	font-size: 16px;
 }
 
