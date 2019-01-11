@@ -787,7 +787,7 @@ function() {
 	this.set(ZmSetting.CSFE_MSG_FETCHER_URI, value, null, false, true);
 
 	// CSFE_UPLOAD_URI
-	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/upload", qsReset:true, qsArgs:{lbfums:""}});
+	value = AjxUtil.formatUrl({host:location.hostname, path:"/service/upload", qsReset:true, qsArgs:{lbfums:true}});
 	this.set(ZmSetting.CSFE_UPLOAD_URI, value, null, false, true);
 
 	// CSFE_ATTACHMENT_UPLOAD_URI
