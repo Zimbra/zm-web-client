@@ -199,10 +199,26 @@ function(enable) {
 		this._button[buttonId].setEnabled(enable);
 	}
 };
+var langSearchArray = new Array();
 ZmSearchToolBar.prototype.setSearchFieldValue =
 function(value) {
 	if (this._searchField && value != this.getSearchFieldValue()) {
-		this._searchField.setValue(value);
+		if(value && value.indexOf("in:") != -1) {
+			if(value.indexOf(" ") != -1) {
+				value = value.substring(0, value.indexOf(" "));
+			}
+			if(value) {
+				var startStr = value.substring(0, value.indexOf(":"));
+				var endStr = value.substring(value.indexOf(":")+1);
+				langSearchArray[value]=(ZmMsg[startStr]+":"+ZmMsg[endStr]).toLowerCase();
+				langSearchArray[ZmMsg[startStr]+":"+ZmMsg[endStr]]=value.toLowerCase();
+			}
+		}
+		if(value && langSearchArray[value]) {
+			this._searchField.setValue(langSearchArray[value].toLowerCase()+" ");
+		} else {
+			this._searchField.setValue(value);
+		}
 	}
 };
 
@@ -601,7 +617,7 @@ function(ev) {
 ZmMainSearchToolBar.prototype._onInputFocus = function(ev) {
 	var searchValue = this.getSearchFieldValue();
 	// check if search value consists the keyword for folder search
-	if(searchValue && searchValue.indexOf('in:') === 0){
+	if(searchValue && searchValue.indexOf(':') != -1){
 		this.setSearchFieldValue(searchValue + " ");
 	}
 	this._setInputExpanded(true);

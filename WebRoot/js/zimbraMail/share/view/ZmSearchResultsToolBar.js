@@ -138,6 +138,9 @@ function(search) {
 			var token = tokens[i], prevToken = tokens[i - 1], nextToken = tokens[i + 1];
 			var showAnd = (prevToken && prevToken.op == ZmParsedQuery.GROUP_CLOSE) || (nextToken && nextToken.op == ZmParsedQuery.GROUP_OPEN);
 			var text = token.toString(showAnd);
+			if(langSearchArray && langSearchArray[text] ) {
+				text = langSearchArray[text];
+			}
 			if (text) {
 				var bubble = this._searchField.addBubble({address:text, noParse:true});
 				this._bubbleId[text] = bubble.id;
