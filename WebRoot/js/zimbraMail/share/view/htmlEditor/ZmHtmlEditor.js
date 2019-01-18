@@ -1114,6 +1114,8 @@ function(id, autoFocus) {
 		menubar: false,
 		ie7_compat: false,
 		object_resizing : true,
+		font_formats: fonts.join(";"),
+		fontsize_formats: AjxMsg.fontSizes || '',
 		pramukhime_options : {
 			selected_value: getPramukhLanguageValue(appCtxt.get(ZmSetting.LOCALE_NAME)),
 			languages: [
