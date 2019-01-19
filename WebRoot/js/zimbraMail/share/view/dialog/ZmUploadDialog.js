@@ -267,99 +267,129 @@ ZmUploadDialog.prototype._upload = function(){
     var errorFilenames;
 	var newError;
     this.setFileExtensions();
-    for (var i = 0; i < elements.length; i++) {
-        var element = form.elements[i];
-        if ((element.name != ZmUploadDialog.UPLOAD_FIELD_NAME) || !element.value)  continue;
 
+    var setLinkTitleText = (function(){
+        if (this._showLinkTitleText) {
+            var id = element.id;
+            id = id.replace("_input", "") + "_titleinput";
+            var txtElement = document.getElementById(id);
+            if (txtElement) {
+                this._linkText[file.name] = txtElement.value;
+            }
+        }
+    }).bind(this);
+
+    var postUpload = (function(){
+        if (errors.length > 0) {
+            this._msgInfo.innerHTML = zmUploadManager.createUploadErrorMsg(errors, maxSize, "<br>");
+        } else if (uploadFiles.length > 0) {
+            var briefcaseApp = aCtxt.getApp(ZmApp.BRIEFCASE);
+            var shutDownCallback = null;
+            var uploadButton = null;
+            if (this._controller == null) {
+                shutDownCallback = this.popdown.bind(this);
+            } else {
+                var toolbar = this._controller.getCurrentToolbar();
+                if (toolbar) {
+                    uploadButton = toolbar.getOp(ZmOperation.NEW_FILE);
+                }
+                this.popdown();
+                shutDownCallback = this._enableUpload.bind(this, uploadButton);
+            }
+            var uploadParams = {
+                attachment: false,
+                files: fileObj,
+                notes: notes,
+                allResponses: null,
+                start: 0,
+                uploadFolder: this._uploadFolder,
+                completeAllCallback: briefcaseApp.uploadSaveDocs.bind(briefcaseApp),
+                conflictAction: this._conflictAction || this._selector.getValue(),
+                preResolveConflictCallback: shutDownCallback,
+                errorCallback: shutDownCallback,
+                completeDocSaveCallback: this._finishUpload.bind(this, uploadButton),
+                docFiles: uploadFiles
+            }
+            uploadParams.progressCallback = this._uploadFileProgress.bind(this, uploadButton, uploadParams);
+
+            try {
+                if (this._supportsHTML5) {
+                    zmUploadManager.upload(uploadParams);
+                } else {
+                    var callback = briefcaseApp.uploadSaveDocs.bind(briefcaseApp, null, uploadParams);
+                    var uploadMgr = appCtxt.getUploadManager();
+                    window._uploadManager = uploadMgr;
+                    uploadMgr.execute(callback, this._uploadForm);
+                }
+
+                if (uploadButton) {
+                    // The 16x16 upload image has ImgUpload0 (no fill) .. ImgUpload12 (completely filled) variants to give a
+                    // gross idea of the progress.
+                    ZmToolBar._setButtonStyle(uploadButton, null, ZmMsg.uploading, "Upload0");
+                    this._inprogress = true;
+                }
+            } catch (ex) {
+                this._enableUpload(uploadButton);
+                if (ex.msg) {
+                    this._popupErrorDialog(ex.msg);
+                } else {
+                    this._popupErrorDialog(ZmMsg.unknownError);
+                }
+            }
+        }
+    }).bind(this);
+
+    var fileElements = [];
+
+    for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        if ((element.name != ZmUploadDialog.UPLOAD_FIELD_NAME) || !element.value)  continue;        
+        fileElements.push(elements[i]);
+    }
+
+    for (var i = 0; i < fileElements.length; i++) {
+        var element = fileElements[i];
         this._msgInfo.innerHTML = "";
+
         if(this._supportsHTML5){
             var files = element.files;
             for (var j = 0; j < files.length; j++){
                 file = files[j];
                 fileObj.push(file);
-				newError = zmUploadManager.getErrors(file, maxSize, null, this._extensions);
-				if (newError) {
-					errors.push(newError);
-				} else {
-                    uploadFiles.push({name: file.name, fullname: file.name, notes: notes});
-                }
+                (function (i, j) {
+                    zmUploadManager.getErrorsAsync(file, maxSize, null, this._extensions, (function (newError) {
+                        if (newError) {
+                            errors.push(newError);
+                        } else {
+                            uploadFiles.push({ name: file.name, fullname: file.name, notes: notes });
+                        }
+                        if (((j + 1) === files.length)) {
+                            setLinkTitleText();
+                        }
+
+                        if ((i + 1) === elements.length) {
+                            postUpload();
+                        }
+                    }).bind(this))
+
+                }).bind(this)(i, j);
             }
         } else {
 			var fileName = element.value.replace(/^.*[\\\/:]/, "");
             file = { name: fileName };
-			newError = zmUploadManager.getErrors(file, maxSize, null, this._extensions);
-			if (newError) {
-				errors.push(newError);
-			} else {
-                uploadFiles.push({ fullname: element.value, name: fileName, notes: notes});
-			}
-        }
-		if(this._showLinkTitleText) {
-			var id = element.id;
-			id = id.replace("_input", "") + "_titleinput";
-			var txtElement = document.getElementById(id);
-			if(txtElement) {
-				this._linkText[file.name] = txtElement.value;
-			}
-		}
-
-    }
-
-	if (errors.length > 0) {
-		this._msgInfo.innerHTML = zmUploadManager.createUploadErrorMsg(errors, maxSize, "<br>");
-	} else if (uploadFiles.length > 0) {
-		var briefcaseApp    = aCtxt.getApp(ZmApp.BRIEFCASE);
-		var shutDownCallback = null;
-		var uploadButton     = null;
-		if (this._controller == null) {
-			shutDownCallback = this.popdown.bind(this);
-		} else {
-			var toolbar = this._controller.getCurrentToolbar();
-			if (toolbar) {
-				uploadButton = toolbar.getOp(ZmOperation.NEW_FILE);
-			}
-			this.popdown();
-			shutDownCallback = this._enableUpload.bind(this, uploadButton);
-		}
-        var uploadParams = {
-			attachment:                 false,
-            files:                      fileObj,
-            notes:                      notes,
-            allResponses:               null,
-            start:                      0,
-            uploadFolder:               this._uploadFolder,
-			completeAllCallback:        briefcaseApp.uploadSaveDocs.bind(briefcaseApp),
-			conflictAction:				this._conflictAction || this._selector.getValue(),
-            preResolveConflictCallback: shutDownCallback,
-            errorCallback:              shutDownCallback,
-            completeDocSaveCallback:    this._finishUpload.bind(this, uploadButton),
-            docFiles:                   uploadFiles
-        }
-		uploadParams.progressCallback = this._uploadFileProgress.bind(this, uploadButton, uploadParams);
-
-        try {
-            if (this._supportsHTML5) {
-                zmUploadManager.upload(uploadParams);
-            } else {
-				var callback  = briefcaseApp.uploadSaveDocs.bind(briefcaseApp, null, uploadParams);
-                var uploadMgr = appCtxt.getUploadManager();
-                window._uploadManager = uploadMgr;
-                uploadMgr.execute(callback, this._uploadForm);
-            }
-
-			if (uploadButton) {
-				// The 16x16 upload image has ImgUpload0 (no fill) .. ImgUpload12 (completely filled) variants to give a
-				// gross idea of the progress.
-				ZmToolBar._setButtonStyle(uploadButton, null, ZmMsg.uploading, "Upload0");
-				this._inprogress = true;
-			}
-        } catch (ex) {
-			this._enableUpload(uploadButton);
-            if (ex.msg) {
-                this._popupErrorDialog(ex.msg);
-            } else {
-                this._popupErrorDialog(ZmMsg.unknownError);
-            }
+            (function (i) {
+                zmUploadManager.getErrorsAsync(file, maxSize, null, this._extensions, (function (newError) {
+                    if (newError) {
+                        errors.push(newError);
+                    } else {
+                        uploadFiles.push({ name: file.name, fullname: file.name, notes: notes });
+                    }
+                    setLinkTitleText();
+                    if ((i + 1) === elements.length) {
+                        postUpload();
+                    }
+                }).bind(this));
+            }).bind(this)(i);
         }
     }
 };
