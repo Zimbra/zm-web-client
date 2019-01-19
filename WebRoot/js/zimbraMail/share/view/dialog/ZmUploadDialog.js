@@ -254,7 +254,7 @@ ZmUploadDialog.prototype.setFileExtensions = function(){
 ZmUploadDialog.prototype._upload = function(){
     var form         	= this._uploadForm;
     var uploadFiles  	= [];
-    var errors       	= {};
+    var errors       	= [];
     this._linkText   	= {};
     var aCtxt        	= ZmAppCtxt.handleWindowOpener();
     var maxSize      	=  aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT);
@@ -272,10 +272,8 @@ ZmUploadDialog.prototype._upload = function(){
         if ((element.name != ZmUploadDialog.UPLOAD_FIELD_NAME) || !element.value)  continue;
 
         this._msgInfo.innerHTML = "";
-		var errors = [];
         if(this._supportsHTML5){
             var files = element.files;
-			var errors = [];
             for (var j = 0; j < files.length; j++){
                 file = files[j];
                 fileObj.push(file);
