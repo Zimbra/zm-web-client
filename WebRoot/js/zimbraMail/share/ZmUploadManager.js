@@ -328,20 +328,24 @@ function(file, extensions, cb) {
         var slice = file.slice(0, 4);      // Get the first 4 bytes of a file
         var reader = new FileReader();    // Create instance of file reader. It is asynchronous!
 
-          reader.onload = function(e){
+        reader.onload = function(e){
             var buffer = reader.result;          // The result ArrayBuffer
             var view = new DataView(buffer);      // Get access to the result bytes
-            var signature = view.getUint32(0, false).toString(16);  // Read 4 bytes, big-endian，return hex string
+            var signature = view.getUint32(0, false).toString(16).toLowerCase();  // Read 4 bytes, big-endian，return hex string
             // Almost every file has a unique signature, we can collect them and create a data lib.
             // some files shares same signature, for example
             // d0cf11e0 - doc, ppt, xls, etc
             // 504b0304 - docx, pptx, xlxs, zip, jar 
             switch (signature) {                      
+                case "25504446": file.verifiedTypeList = ["PDF"]; break;
+                case "504b0304": file.verifiedTypeList = ["DOCX", "PPTX", "XLSX", "ZIP", "JAR", "ODT", "XPS"]; break;
+                case "504b0506": 
+                case "504b0708": file.verifiedTypeList = ["ZIP"]; break;
+                case "52617221": file.verifiedTypeList = ["RAR"]; break;
+                case "d0cf11e0": file.verifiedTypeList = ["DOC", "XLS", "PPT"]; break;
                 case "89504e47": file.verifiedTypeList = ["PNG"]; break;
                 case "47494638": file.verifiedTypeList = ["GIF"]; break;
-                case "25504446": file.verifiedTypeList = ["PDF"]; break;
-                case "504b0304": file.verifiedTypeList = ["DOCX", "PPTX", "XLSX", "ZIP"]; break;
-                case "d0cf11e0": file.verifiedTypeList = ["DOC", "XLS", "PPT"]; break;
+                case "4d4d002A": file.verifiedTypeList = ["TIFF"]; break;
                 case "ffd8ffdb":
                 case "ffd8ffe0":
                 case "ffd8ffe1":
@@ -355,20 +359,24 @@ function(file, extensions, cb) {
                 case "38425053": file.verifiedTypeList = ["PSD"]; break;
                 default: file.verifiedTypeList = []
             }
-            // explicitly check for exe files
+            // explicit check for other file types
             if(signature.indexOf("4d5a") === 0){
                 file.verifiedTypeList = ["EXE"];
             }
-                // explicitly check for bmp files
             if(signature.indexOf("424d") === 0){
                 file.verifiedTypeList = ["BMP"];
             }
-                // explicitly check for mp3 files
             if(signature.indexOf("494433") === 0){
                 file.verifiedTypeList = ["MP3"];
             }
+            if(signature.indexOf("1fa0") === 0 || signature.indexOf("1f9d") === 0){
+                file.verifiedTypeList = ["TAR.Z"];
+            }
+            if(signature.indexOf("7801") === 0 || signature.indexOf("789c") === 0 || signature.indexOf("78da") === 0){
+                file.verifiedTypeList = ["ZLIB"];
+            }
             // result = true;
-            console.log(file.name, file.verifiedTypeList);
+            console.log(file.name, file.verifiedTypeList, signature);
             console.log("Extensions:-->", extensions);
             for (var i = 0; i < extensions.length; i++) {
             if ( file.verifiedTypeList &&  file.verifiedTypeList.indexOf(extensions[i].toUpperCase()) !== -1) {
@@ -376,11 +384,11 @@ function(file, extensions, cb) {
                 }
             }
             return cb(false);
-          }
-          reader.readAsArrayBuffer(slice);
+        }
+        reader.readAsArrayBuffer(slice);
     }
     catch(err){
-        return false;
+        return cb(false);
     }
 };
 
