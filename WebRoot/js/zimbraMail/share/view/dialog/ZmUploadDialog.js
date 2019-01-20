@@ -367,7 +367,7 @@ ZmUploadDialog.prototype._upload = function(){
                             setLinkTitleText();
                         }
 
-                        if ((i + 1) === elements.length) {
+                        if ((i + 1) === fileElements.length) {
                             postUpload();
                         }
                     }).bind(this))
