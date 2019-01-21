@@ -57,6 +57,7 @@ function() {
 ZmUploadManager.ERROR_INVALID_SIZE      = "invalidSize";
 ZmUploadManager.ERROR_INVALID_EXTENSION = "invalidExtension";
 ZmUploadManager.ERROR_INVALID_FILENAME  = "invalidFilename";
+ZmUploadManager.ERROR_INVALID_FILE  = "invalidFile";
 
 /**
  * uploadMyComputerFile serializes a set of files uploads.  The responses are accumulated, and progress is provided to the
@@ -288,12 +289,113 @@ ZmUploadManager.prototype.getErrors = function(file, maxSize, errors, extensions
     return valid ? null : error;
 };
 
+// --- Upload File Validation - Async -------------------------------------------
+ZmUploadManager.prototype.getErrorsAsync = function(file, maxSize, errors, extensions, cb){
+	this._extensions = extensions;
+	var error = { errorCodes:[], filename: AjxStringUtil.htmlEncode(file.name) };
+    var valid = true;
+    var size = file.size || file.fileSize || 0;  // fileSize: Safari
+    if (size && (size > maxSize)) {
+		valid = false;
+		error.errorCodes.push( ZmUploadManager.ERROR_INVALID_SIZE );
+    }
+    if (!this._checkExtension(file.name, extensions)) {
+		valid = false;
+		error.errorCodes.push( ZmUploadManager.ERROR_INVALID_EXTENSION );
+    }
+	if (ZmAppCtxt.INVALID_NAME_CHARS_RE.test(file.name)) {
+		valid = false;
+		error.errorCodes.push( ZmUploadManager.ERROR_INVALID_FILENAME );
+    }
+    if(valid && window.FileReader){
+        return this._checkFileType(file, extensions, function(isFileValid){
+            if(!isFileValid){
+                valid = false;
+                error.errorCodes.push( ZmUploadManager.ERROR_INVALID_FILE );
+            }
+            return cb(valid ? null : error);
+        })
+    }
+    return cb(valid ? null : error);
+};
+
+ZmUploadManager.prototype._checkFileType =
+function(file, extensions, cb) {
+    try {
+        if(!extensions){
+            return cb(true);
+        }
+        var slice = file.slice(0, 4);      // Get the first 4 bytes of a file
+        var reader = new FileReader();    // Create instance of file reader. It is asynchronous!
+
+        reader.onload = function(e){
+            var buffer = reader.result;          // The result ArrayBuffer
+            var view = new DataView(buffer);      // Get access to the result bytes
+            var signature = view.getUint32(0, false).toString(16).toLowerCase();  // Read 4 bytes, big-endian，return hex string
+            // Almost every file has a unique signature, we can collect them and create a data lib.
+            // some files shares same signature, for example
+            // d0cf11e0 - doc, ppt, xls, etc
+            // 504b0304 - docx, pptx, xlxs, zip, jar 
+            switch (signature) {                      
+                case "25504446": file.verifiedTypeList = ["PDF"]; break;
+                case "504b0304": file.verifiedTypeList = ["DOCX", "PPTX", "XLSX", "ZIP", "JAR", "ODT", "XPS"]; break;
+                case "504b0506": 
+                case "504b0708": file.verifiedTypeList = ["ZIP"]; break;
+                case "52617221": file.verifiedTypeList = ["RAR"]; break;
+                case "d0cf11e0": file.verifiedTypeList = ["DOC", "XLS", "PPT"]; break;
+                case "89504e47": file.verifiedTypeList = ["PNG"]; break;
+                case "47494638": file.verifiedTypeList = ["GIF"]; break;
+                case "4d4d002A": file.verifiedTypeList = ["TIFF"]; break;
+                case "ffd8ffdb":
+                case "ffd8ffe0":
+                case "ffd8ffe1":
+                case "ffd8ffe8":
+                case "ffd8ffe2": file.verifiedTypeList = ["JPEG", "JPG"]; break;
+                case "75737461": file.verifiedTypeList = ["TAR"]; break;
+                case "424C4932": file.verifiedTypeList = ["BIN"]; break;
+                case "43443030": file.verifiedTypeList = ["ISO"]; break;
+                case "2A2A2A20": file.verifiedTypeList = ["LOG"]; break;
+                case "3c3f786d": file.verifiedTypeList = ["XML"]; break;
+                case "38425053": file.verifiedTypeList = ["PSD"]; break;
+                default: file.verifiedTypeList = []
+            }
+            // explicit check for other file types
+            if(signature.indexOf("4d5a") === 0){
+                file.verifiedTypeList = ["EXE"];
+            }
+            if(signature.indexOf("424d") === 0){
+                file.verifiedTypeList = ["BMP"];
+            }
+            if(signature.indexOf("494433") === 0){
+                file.verifiedTypeList = ["MP3"];
+            }
+            if(signature.indexOf("1fa0") === 0 || signature.indexOf("1f9d") === 0){
+                file.verifiedTypeList = ["TAR.Z"];
+            }
+            if(signature.indexOf("7801") === 0 || signature.indexOf("789c") === 0 || signature.indexOf("78da") === 0){
+                file.verifiedTypeList = ["ZLIB"];
+            }
+            // result = true;
+            for (var i = 0; i < extensions.length; i++) {
+            if ( file.verifiedTypeList &&  file.verifiedTypeList.indexOf(extensions[i].toUpperCase()) !== -1) {
+                return cb(true);
+                }
+            }
+            return cb(false);
+        }
+        reader.readAsArrayBuffer(slice);
+    }
+    catch(err){
+        return cb(false);
+    }
+};
+
 ZmUploadManager.prototype._checkExtension =
 function(filename, extensions) {
     if (!extensions) return true;
     var ext = filename.replace(/^.*\./,"").toUpperCase();
     for (var i = 0; i < extensions.length; i++) {
-        if (extensions[i] == ext) {
+        if (extensions[i].toUpperCase() == ext) {
             return true;
         }
     }
@@ -319,7 +421,8 @@ function(errors, maxSize, lineBreak) {
     var errorMsg = [ZmMsg.uploadFailed];
     if (errorSummary.invalidExtension) {
         var extensions = this._formatUploadErrorList(this._extensions);
-        errorMsg.push("* " + AjxMessageFormat.format(ZmMsg.errorNotAllowedFile, [ extensions ]));
+        errorFilenames = this._formatUploadErrorList(errorSummary.invalidExtension);
+        errorMsg.push("* " + AjxMessageFormat.format(ZmMsg.errorNotAllowedFile, [ errorFilenames, extensions ]));
     }
 	var msgFormat, errorFilenames;
     if (errorSummary.invalidFilename) {
@@ -331,6 +434,11 @@ function(errors, maxSize, lineBreak) {
         msgFormat =  (errorSummary.invalidSize.length > 1) ? ZmMsg.uploadSizeError : ZmMsg.singleUploadSizeError;
         errorFilenames = this._formatUploadErrorList(errorSummary.invalidSize);
         errorMsg.push("* " + AjxMessageFormat.format(msgFormat, [ errorFilenames, AjxUtil.formatSize(maxSize)] ));
+    }
+    if (errorSummary.invalidFile) {
+        msgFormat =  (errorSummary.invalidFile.length > 1) ? ZmMsg.errorNotAllowedInvalidFiles : ZmMsg.errorNotAllowedInvalidFile;
+        errorFilenames = this._formatUploadErrorList(errorSummary.invalidFile);
+        errorMsg.push("* " + AjxMessageFormat.format(msgFormat, [ errorFilenames ] ));
     }
     return errorMsg.join(lineBreak);
 };
