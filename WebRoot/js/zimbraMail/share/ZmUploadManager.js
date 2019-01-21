@@ -423,7 +423,8 @@ function(errors, maxSize, lineBreak) {
     var errorMsg = [ZmMsg.uploadFailed];
     if (errorSummary.invalidExtension) {
         var extensions = this._formatUploadErrorList(this._extensions);
-        errorMsg.push("* " + AjxMessageFormat.format(ZmMsg.errorNotAllowedFile, [ extensions ]));
+        errorFilenames = this._formatUploadErrorList(errorSummary.invalidExtension);
+        errorMsg.push("* " + AjxMessageFormat.format(ZmMsg.errorNotAllowedFile, [ errorFilenames, extensions ]));
     }
 	var msgFormat, errorFilenames;
     if (errorSummary.invalidFilename) {
