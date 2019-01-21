@@ -71,7 +71,8 @@ ZmHtmlEditor = function() {
 
     var settings = appCtxt.getSettings();
     var listener = new AjxListener(this, this._settingChangeListener);
-    settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_COLOR).addChangeListener(listener);
+	settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_COLOR).addChangeListener(listener);
+	settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_FAMILY).addChangeListener(listener);
     settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
     settings.getSetting(ZmSetting.COMPOSE_INIT_DIRECTION).addChangeListener(listener);
     settings.getSetting(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS).addChangeListener(listener);
@@ -310,6 +311,9 @@ function(classCount) {
 	if (recordClassCount) {
 		a[i++] = 'id="' + ZmHtmlEditor._containerDivId + '" ';
 	}
+	a[i++] = 'style="font-family: ';
+	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+	a[i++] = '; font-size: ';
 	a[i++] = 'style="';
 	a[i++] = 'font-size: ';
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
@@ -756,7 +760,7 @@ function(id, autoFocus) {
 
 	var toolbarbuttons = [
 		'pramukhime pramHelp |',
-		'fontsizeselect formatselect |',
+		'fontselect fontsizeselect formatselect |',
 		'bold italic underline strikethrough removeformat |',
 		'forecolor backcolor |',
 		'outdent indent bullist numlist blockquote |',
@@ -1110,6 +1114,8 @@ function(id, autoFocus) {
 		menubar: false,
 		ie7_compat: false,
 		object_resizing : true,
+		font_formats: fonts.join(";"),
+		fontsize_formats: AjxMsg.fontSizes || '',
 		pramukhime_options : {
 			selected_value: getPramukhLanguageValue(appCtxt.get(ZmSetting.LOCALE_NAME)),
 			languages: [
@@ -1387,6 +1393,7 @@ ZmHtmlEditor.prototype.onPostRender = function(ev) {
 	var ed = this.getEditor();
 
     ed.dom.setStyles(ed.getBody(), {
+									"font-family": appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY),
                                     "font-size"   : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE),
                                     "color"       : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR)
                                    });
@@ -2721,7 +2728,9 @@ ZmHtmlEditor.prototype._settingChangeListener = function(ev) {
     if(!body)
         return;
 
-    if (id === ZmSetting.COMPOSE_INIT_FONT_FAMILY) {}
+    if (id === ZmSetting.COMPOSE_INIT_FONT_FAMILY) {
+		body.style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+	}
     else if (id === ZmSetting.COMPOSE_INIT_FONT_SIZE) {
         body.style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
     }
