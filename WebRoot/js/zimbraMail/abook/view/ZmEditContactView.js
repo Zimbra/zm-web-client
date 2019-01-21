@@ -219,7 +219,11 @@ ZmEditContactView.emailValidator = function(emails) {
 ZmEditContactView.phoneValidator = function(phone) {
 	for (var i = 0; i < phone.length; i++) {
 		var number = phone[i]["value"];
-		var pattern = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
+
+		//Remove all relevant phone # symbols, don't worry about number groupings,
+		//since we don't know what all possible groups are (plus, this is simpler)
+		number = number.replace(/[()\-. ]/g, ''); 
+		var pattern = /^\+?\d{8,15}$/;
 		if (number != '' && !pattern.test(number)) {
 			throw ZmMsg.invalidPhoneNumber;
 		}
