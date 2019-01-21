@@ -376,8 +376,6 @@ function(file, extensions, cb) {
                 file.verifiedTypeList = ["ZLIB"];
             }
             // result = true;
-            console.log(file.name, file.verifiedTypeList, signature);
-            console.log("Extensions:-->", extensions);
             for (var i = 0; i < extensions.length; i++) {
             if ( file.verifiedTypeList &&  file.verifiedTypeList.indexOf(extensions[i].toUpperCase()) !== -1) {
                 return cb(true);
