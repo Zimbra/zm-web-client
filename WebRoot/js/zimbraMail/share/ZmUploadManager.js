@@ -395,7 +395,7 @@ function(filename, extensions) {
     if (!extensions) return true;
     var ext = filename.replace(/^.*\./,"").toUpperCase();
     for (var i = 0; i < extensions.length; i++) {
-        if (extensions[i] == ext) {
+        if (extensions[i].toUpperCase() == ext) {
             return true;
         }
     }
