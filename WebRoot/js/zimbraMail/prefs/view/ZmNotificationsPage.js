@@ -407,6 +407,7 @@ ZmNotificationsPageForm.prototype._getFormParams = function(templateId) {
 			{ id: "DEVICE_EMAIL_PHONE", type: "DwtInputField",
 				hint: ZmMsg.deviceEmailNotificationsPhoneHint,
 				visible: "!this.isCustom()",
+				enabled: "this.get('DEVICE_EMAIL_CODE_STATUS_VALUE') === ZmNotificationsPageForm.CONFIRMED ? false : true",
 				onchange: this._handleCarrierChange
 			},
 			{ id: "DEVICE_EMAIL_PHONE_HINT", type: "DwtText",
@@ -416,7 +417,7 @@ ZmNotificationsPageForm.prototype._getFormParams = function(templateId) {
 			{ id: "DEVICE_EMAIL_PHONE_SEND_CODE", type: "DwtButton",
 				label: ZmMsg.deviceEmailNotificationsVerificationCodeSend,
 				visible: "!this.isCustom()",
-				enabled: "get('DEVICE_EMAIL_PHONE')",
+				enabled: "this.get('DEVICE_EMAIL_CODE_STATUS_VALUE') === ZmNotificationsPageForm.CONFIRMED ? false : true && get('DEVICE_EMAIL_PHONE')",
 				onclick: this._handleSendCode
 			},
 			{ id: "DEVICE_EMAIL_CUSTOM_NUMBER", type: "DwtInputField",
@@ -432,7 +433,8 @@ ZmNotificationsPageForm.prototype._getFormParams = function(templateId) {
 				onclick: this._handleSendCode
 			},
 			{ id: "DEVICE_EMAIL_CODE", type: "DwtInputField",
-				hint: ZmMsg.deviceEmailNotificationsVerificationCodeHint
+				hint: ZmMsg.deviceEmailNotificationsVerificationCodeHint,
+				enabled: "this.get('DEVICE_EMAIL_CODE_STATUS_VALUE') === ZmNotificationsPageForm.CONFIRMED ? false : true"
 			},
 			{ id: "DEVICE_EMAIL_CODE_VALIDATE", type: "DwtButton",
 				label: ZmMsg.deviceEmailNotificationsVerificationCodeValidate,
