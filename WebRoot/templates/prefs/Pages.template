@@ -2091,7 +2091,50 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
     		</tr>
     	</table>
 
+	<div class='prefHeader'><$=ZmMsg.mobileConfiguration$></div>
+	<table role="presentation" class='ZOptionsSectionTable' width=100%>
+		<tr>
+			<td class='ZOptionsSectionMain'>
+				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+					<tr>
+						<td>
+							<div style="margin-bottom:12px"><$=ZmMsg.mobileConfigurationInstruction$></div>
+							<div><$=ZmMsg.mobileConfigurationOptions$></div>
+						</td>
+					</tr>
+					<tr><td colspan=2><hr></td></tr>
+					<tr>
+						<td><div id='${id}_mobileConfig'></div></td>
+					</tr>
+					<tr><td colspan=2><hr></td></tr>
+					<tr>
+						<td>
+							<div><$=ZmMsg.mobileConfigurationUrls$></div>
+							<br/>
+							<div><textarea rows='1' cols='100%' class='ZmMobileConfigTextarea' readonly>&bull;&ensp;<$=AjxMessageFormat.format(ZmMsg.mobileConfigurationUrlCalDAV, [location.hostname, appCtxt.get(ZmSetting.USERNAME)])$></textarea></div>
+							<div><textarea rows='1' cols='100%' class='ZmMobileConfigTextarea' readonly>&bull;&ensp;<$=AjxMessageFormat.format(ZmMsg.mobileConfigurationUrlCardDAV, [location.hostname, appCtxt.get(ZmSetting.USERNAME)])$></textarea></div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</template>
 
+<template id='prefs.Pages#MobileConfig'>
+	<div><$=ZmMsg.mobileConfigurationDownload$></div>	
+	<br>
+	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+		<tr>
+			<td><div><$=ZmMsg.mobileConfigurationDownloadList$></div></td>
+			<td><div id='${id}_configType' tabindex=0></div></td>
+<<<<<<< HEAD
+			<td><div id='${id}_downloadButton' tabindex=0></div></td>
+=======
+        		<td><div id='${id}_downloadButton' tabindex=0></div></td>
+>>>>>>> 4e315ea66e... ZCS-4919 : Small Indentation change
+		</tr>
+	</table>
 </template>
 
 <template id='prefs.Pages#MobileDeviceInfo'>
