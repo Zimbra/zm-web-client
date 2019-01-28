@@ -438,12 +438,12 @@ ZmNotificationsPageForm.prototype._getFormParams = function(templateId) {
 			},
 			{ id: "DEVICE_EMAIL_CODE_VALIDATE", type: "DwtButton",
 				label: ZmMsg.deviceEmailNotificationsVerificationCodeValidate,
-				enabled: "get('DEVICE_EMAIL_CODE') && this.getEmailAddress()",
+				enabled: "this.get('DEVICE_EMAIL_CODE_STATUS_VALUE') === ZmNotificationsPageForm.PENDING ? true : false",
 				onclick: this._handleValidateCode
 			},
 			{ id: "DEVICE_EMAIL_CODE_INVALIDATE", type: "DwtButton",
 				label: ZmMsg.deviceEmailNotificationsVerificationCodeInvalidate,
-				visible: "this._getValidatedDevice()",
+				visible: "this.get('DEVICE_EMAIL_CODE_STATUS_VALUE') === ZmNotificationsPageForm.CONFIRMED ? true : false",
 				onclick: this._handleInvalidateDevice
 			},
 			{ id: "DEVICE_EMAIL_CODE_STATUS", type: "DwtText",
@@ -608,7 +608,7 @@ ZmNotificationsPageForm.prototype._handleValidateCodeResponse = function(resp) {
 		appCtxt.set(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS, this.getEmailAddress());
 	}
 
-	var status = success ? ZmNotificationsPageForm.CONFIRMED : ZmNotificationsPageForm.UNCONFIRMED;
+	var status = success ? ZmNotificationsPageForm.CONFIRMED : ZmNotificationsPageForm.PENDING;
 	this.setValue("DEVICE_EMAIL_CODE_STATUS_VALUE", status);
 	this.update();
 };
