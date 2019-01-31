@@ -425,8 +425,11 @@ function() {
         {
             this._searchInSelect.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
         }
+	}
 
-    }
+	if (appCtxt.get(ZmSetting.HAB_ROOT)) {
+		this._searchInSelect.addOption(ZmMsg.OAB, false, ZmContactsApp.SEARCHFOR_HAB);
+	}
 };
 
 ZmContactPicker.prototype.getSearchFieldValue =
@@ -461,7 +464,13 @@ function() {
 			- this._getSectionHeight("_buttons")
 			- 30; //still need some magic to account for some margins etc.
 
-	this._chooser.resize(this.getSize().x - 25, chooserHeight);
+	// Make room for habTree by shrinking _chooser
+	var chooserWidth = this.getSize().x - 25;
+	if (Dwt.getVisible(this.sourceTreeView.getHtmlElement())) {
+		chooserWidth = this.getSize().x - 250;
+	}
+
+	this._chooser.resize(chooserWidth, chooserHeight);
 };
 
 /**
@@ -497,6 +506,28 @@ function(account) {
 	} else {
 		this.setSize("600");
 	}
+
+	// Somehow the width gets changed to a very very high number after tree will be added, so lets save it here then re-apply
+	var tempSize = this.getSize();
+	var overviewParams = {
+		parent : this,
+		VISIBLE : false,
+		overviewId : appCtxt.getOverviewId([this.toString(), appCtxt.getCurrentAppName()], null)
+	};
+
+	// Create and add source tree view
+	this.sourceTreeView = appCtxt.getOverviewController().createOverview(overviewParams);
+	this.sourceTreeView.setTreeView("HAB");
+	this.sourceTreeView.reparentHtmlElement(this._htmlElId + "_habTree");
+	this.sourceTreeView.setVisible(false);
+
+	var habContainer = document.getElementById(this._htmlElId + "_habTree");
+	if (habContainer) {
+		Dwt.setSize(habContainer, 250);
+	}
+
+	// now, the width gets very large, let's just move it back to the previous width
+	this.setSize(tempSize.x);
 
 	// add chooser
 	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo});
@@ -878,8 +909,16 @@ function(ev) {
 	var newValue = ev._args.newValue;
 
 	if (oldValue != newValue) {
-		this._updateSearchRows(newValue);
-		this._searchButtonListener();
+		if (newValue !== ZmContactsApp.SEARCHFOR_HAB) {
+			this._updateSearchRows(newValue);
+			this._searchButtonListener();
+			this.sourceTreeView.setVisible(false);
+			this._resizeChooser();
+		} else {
+			// Hab tree selected, no need to make any search request
+			this.sourceTreeView.setVisible(true);
+			this._resizeChooser();
+		}
 	}
 };
 
