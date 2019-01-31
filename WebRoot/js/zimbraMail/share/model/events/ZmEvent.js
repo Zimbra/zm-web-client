@@ -59,6 +59,7 @@ ZmEvent.S_SETTINGS		= "SETTINGS";
 ZmEvent.S_SHARE         = "SHARE";
 ZmEvent.S_MOUNTPOINT	= "MOUNTPOINT";
 ZmEvent.S_ZIMLET		= "ZIMLET";
+ZmEvent.S_HAB			= "HAB";
 
 // Event types
 /**

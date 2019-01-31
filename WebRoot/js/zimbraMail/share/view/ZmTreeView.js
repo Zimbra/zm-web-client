@@ -178,7 +178,7 @@ function(params) {
 		dndScrollId:		this._overview && this._overview._scrollableContainerId
 	});
 	ti._isHeader = true;
-	var name = ZmMsg[ZmOrganizer.LABEL[this.type]];
+	var name = ZmMsg[ZmOrganizer.LABEL[this.type]] || root.name;
 	if (name) {
 		ti.setText(name);
 	}
