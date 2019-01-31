@@ -128,6 +128,7 @@ ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
 ZmOrganizer.SHARE               = ZmEvent.S_SHARE;
 ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
+ZmOrganizer.HAB					= ZmEvent.S_HAB;
 
 // folder IDs defined in com.zimbra.cs.mailbox.Mailbox
 // Note: since these are defined as Numbers, and IDs come into our system as Strings,

@@ -186,6 +186,11 @@ ZmFolderTree._traverse =
 function(folder, obj, tree, path, elementType, account) {
 
 	var isRoot = (folder.nId == ZmOrganizer.ID_ROOT);
+
+	if (elementType === "hab") {
+		obj.folder = obj.habGroup
+	}
+
 	if (obj.folder && obj.folder.length) {
 		if (!isRoot) {
 			path.push(obj.name);
@@ -244,6 +249,10 @@ ZmFolderTree.createFolder =
 function(type, parent, obj, tree, path, elementType, account) {
 	var orgClass = eval(ZmOrganizer.ORG_CLASS[type]);
 	if (!orgClass) { return null; }
+
+	if (elementType == "hab") {
+		obj.name = obj._attrs ? obj._attrs.displayName : obj.name;
+	}
 
 	DBG.println(AjxDebug.DBG2, "Creating " + type + " with id " + obj.id + " and name " + obj.name);
 
