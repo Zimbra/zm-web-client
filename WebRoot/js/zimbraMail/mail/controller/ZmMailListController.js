@@ -898,7 +898,7 @@ function(ev) {
 	var email = address && address.getAddress();
 
 	var item = (items && items.length == 1) ? items[0] : null;
-	if (this.isDraftsFolder() || (item && item.isDraft && item.type != ZmId.ITEM_CONV)) { //note that we never treat a conversation as a draft for actions. See also bug 64494
+	if (this.isDraftsFolder() || (item && item.isDraft && (item.type != ZmId.ITEM_CONV || item.numMsgs == 1))) { //note that we never treat a conversation as a draft for actions. See also bug 64494
 		// show drafts menu
 		this._initializeDraftsActionMenu();
         this._setDraftSearchMenu(address, item, ev);
