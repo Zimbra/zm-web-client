@@ -156,11 +156,11 @@
     </c:when>
     <c:when test="${zm:actionSet(param, 'composeTo') || zm:actionSet(param, 'composeCC') || zm:actionSet(param, 'composeBCC')
                             || (zm:actionSet(param,'moreActions') && (anAction == 'composeTo' || anAction == 'composeCC' || anAction == 'composeBCC'))}">
+        <c:set var="emailIds" value="" />
         <c:forEach var="id" items="${ids}">
             <zm:getContact var="contact" id="${id}"/>
             <c:choose>
                 <c:when test="${contact.isGroup}">
-                    <c:set var="emailIds" value="" />
                     <c:forEach var="member" items="${contact.groupMembers}">
                         <c:if test="${not empty emailIds}"><c:set var="grpsep" value=", " /></c:if>
                         <c:set var="memberContact" value="${zm:groupMemberById(contact, member)}"/>
@@ -204,7 +204,11 @@
                     <c:if test="${empty homeEmail and not empty workEmail}">
                          <c:set var="toEmail" value="${workEmail}${not empty toEmail ? ',' : ''}${not empty toEmail ? toEmail : ''}"/>
                     </c:if>
-                    <c:set var="emailIds" value="${toEmail}" />
+                    <c:set var="mailsep" value="" />
+                    <c:if test="${not empty emailIds}">
+                        <c:set var="mailsep" value=", " />
+                    </c:if>
+                    <c:set var="emailIds" value="${emailIds}${mailsep}${toEmail}" />
                 </c:otherwise>
             </c:choose>
         </c:forEach>
