@@ -818,7 +818,7 @@
 							</tr>
 							<tr>
 								<td>
-									<textarea class='groupMembers' id='${id}_addNewField'></textarea>
+									<textarea class='groupMembers groupMembersInput' id='${id}_addNewField'></textarea>
 								</td>
 							</tr>
 						</table>
