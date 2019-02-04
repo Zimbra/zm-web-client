@@ -307,7 +307,9 @@ ZmUploadManager.prototype.getErrorsAsync = function(file, maxSize, errors, exten
 		valid = false;
 		error.errorCodes.push( ZmUploadManager.ERROR_INVALID_FILENAME );
     }
-    if(valid && window.FileReader){
+    var isFileTypeCheckEnabled = appCtxt.getSettings().getInfoResponse.attrs._attrs.zimbraFileTypeCheckEnabled;
+
+    if(isFileTypeCheckEnabled && valid && window.FileReader){
         return this._checkFileType(file, extensions, function(isFileValid){
             if(!isFileValid){
                 valid = false;
