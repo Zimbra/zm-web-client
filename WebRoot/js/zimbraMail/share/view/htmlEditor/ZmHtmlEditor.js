@@ -891,7 +891,7 @@ function(id, autoFocus) {
 
 		console.log("selected language is: ", pramSelectedLang);
 		tinyMCE.activeEditor.windowManager.open({
-			title: "PramukhIME Help",
+			title: "Typing Help",
 			bodyType: "tabpanel",
 			padding: 10,
 			height: 540,
@@ -1057,7 +1057,7 @@ function(id, autoFocus) {
 			ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
 			ed.on('mouseup', obj._handleEditorEvent.bind(obj));
 			ed.addButton('pramHelp', {
-				title: "PramukhIME Typing Help",
+				title: "Typing Help",
 				text: '?',
 				classes: 'helpButton',
 				onclick: helpAction,
@@ -1162,7 +1162,7 @@ function(id, autoFocus) {
             ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
             ed.on('mouseup', obj._handleEditorEvent.bind(obj));
 			ed.addButton('pramHelp', {
-				title: "PramukhIME Typing Help",
+				title: "Typing Help",
 				text: '?',
 				classes: 'helpButton',
 				onclick: helpAction,
