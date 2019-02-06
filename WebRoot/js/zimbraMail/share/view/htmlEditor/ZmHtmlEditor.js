@@ -888,8 +888,7 @@ function(id, autoFocus) {
 							[ZmMsg.pramZWJCons, ZmMsg.pramExample, ZmMsg.pramZWNJCons]) +
 				'</ol>' : '',
 			examples = isHindi ? ZmMsg.pramHindiExamples : ZmMsg.pramTamilExamples;
-
-		console.log("selected language is: ", pramSelectedLang);
+			
 		tinyMCE.activeEditor.windowManager.open({
 			title: "Typing Help",
 			bodyType: "tabpanel",
