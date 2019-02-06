@@ -888,10 +888,9 @@ function(id, autoFocus) {
 							[ZmMsg.pramZWJCons, ZmMsg.pramExample, ZmMsg.pramZWNJCons]) +
 				'</ol>' : '',
 			examples = isHindi ? ZmMsg.pramHindiExamples : ZmMsg.pramTamilExamples;
-
-		console.log("selected language is: ", pramSelectedLang);
+			
 		tinyMCE.activeEditor.windowManager.open({
-			title: "PramukhIME Help",
+			title: "Typing Help",
 			bodyType: "tabpanel",
 			padding: 10,
 			height: 540,
@@ -914,10 +913,10 @@ function(id, autoFocus) {
 							'<img src="/js/ajax/3rdparty/tinymce/plugins/pramukhime/img/pramukhime48.png" alt="logo" />' +
 							'<div class="detailed-help-title"><h1>' + localeName + ' ' + ZmMsg.pramTransliteration + '</h1></div>' +
 						'</div>' +
-						'<div class="detailed-help-container">' +
+						'<div class="detailed-help-container" style="white-space: normal;">' +
 							ZmMsg["pramWriting" + langCapitalize] +
 							'<img src="/js/ajax/3rdparty/tinymce/plugins/pramukhime/img/pramukhindic-' + pramSelectedLang + '.png" class="img-centered"/>' +
-							'<div class="alert alert-danger">' + ZmMsg.pramCaseSensitiveAlert + '</div>' +
+							'<div class="alert alert-danger" style="white-space: normal;">' + ZmMsg.pramCaseSensitiveAlert + '</div>' +
 							'<span class="bold">' +quickLinks + '</span>' +
 							'<h2 id="vowel">' + ZmMsg.pramVowel + '</h2>' +
 							'<table>' +
@@ -1057,7 +1056,7 @@ function(id, autoFocus) {
 			ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
 			ed.on('mouseup', obj._handleEditorEvent.bind(obj));
 			ed.addButton('pramHelp', {
-				title: "PramukhIME Typing Help",
+				title: "Typing Help",
 				text: '?',
 				classes: 'helpButton',
 				onclick: helpAction,
@@ -1162,7 +1161,7 @@ function(id, autoFocus) {
             ed.on('contextmenu', obj._handleEditorEvent.bind(obj));
             ed.on('mouseup', obj._handleEditorEvent.bind(obj));
 			ed.addButton('pramHelp', {
-				title: "PramukhIME Typing Help",
+				title: "Typing Help",
 				text: '?',
 				classes: 'helpButton',
 				onclick: helpAction,
