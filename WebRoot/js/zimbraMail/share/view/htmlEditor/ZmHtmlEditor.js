@@ -914,10 +914,10 @@ function(id, autoFocus) {
 							'<img src="/js/ajax/3rdparty/tinymce/plugins/pramukhime/img/pramukhime48.png" alt="logo" />' +
 							'<div class="detailed-help-title"><h1>' + localeName + ' ' + ZmMsg.pramTransliteration + '</h1></div>' +
 						'</div>' +
-						'<div class="detailed-help-container">' +
+						'<div class="detailed-help-container" style="white-space: normal;">' +
 							ZmMsg["pramWriting" + langCapitalize] +
 							'<img src="/js/ajax/3rdparty/tinymce/plugins/pramukhime/img/pramukhindic-' + pramSelectedLang + '.png" class="img-centered"/>' +
-							'<div class="alert alert-danger">' + ZmMsg.pramCaseSensitiveAlert + '</div>' +
+							'<div class="alert alert-danger" style="white-space: normal;">' + ZmMsg.pramCaseSensitiveAlert + '</div>' +
 							'<span class="bold">' +quickLinks + '</span>' +
 							'<h2 id="vowel">' + ZmMsg.pramVowel + '</h2>' +
 							'<table>' +
