@@ -50,7 +50,14 @@
             <fmt:message var="singleDayFormat" key="CAL_DAY_TB_TITLE_FORMAT"/>
             <fmt:message var="pageTitle" key="CAL_MDAY_TITLE_FORMAT">
                 <fmt:param><fmt:formatDate value="${currentDay.time}" pattern="${singleDayFormat}"/></fmt:param>
-                <fmt:param><fmt:formatDate value="${zm:addDay(currentDay, numdays-1).time}" pattern="${singleDayFormat}"/></fmt:param>
+                <c:choose>
+                    <c:when test="${view eq 'workWeek'}">
+                        <fmt:param><fmt:formatDate value="${zm:addDay(currentDay, 4).time}" pattern="${singleDayFormat}"/></fmt:param>
+                    </c:when>
+                    <c:otherwise>
+                        <fmt:param><fmt:formatDate value="${zm:addDay(currentDay, numdays-1).time}" pattern="${singleDayFormat}"/></fmt:param>
+                    </c:otherwise>
+                </c:choose>
             </fmt:message>
             <c:set var="tbTitle" value="${pageTitle}"/>
         </c:otherwise>
