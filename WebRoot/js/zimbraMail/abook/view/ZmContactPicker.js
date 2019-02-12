@@ -509,10 +509,16 @@ function(account) {
 
 	// Somehow the width gets changed to a very very high number after tree will be added, so lets save it here then re-apply
 	var tempSize = this.getSize();
+	var overviewIdParts = [
+		appCtxt.getCurrentAppName(),
+		this.toString(),
+		this._htmlElId
+	];
 	var overviewParams = {
 		parent : this,
-		VISIBLE : false,
-		overviewId : appCtxt.getOverviewId([this.toString(), appCtxt.getCurrentAppName()], null)
+		collapsed : false,
+		scroll : Dwt.SCROLL,
+		overviewId : appCtxt.getOverviewId(overviewIdParts, null)
 	};
 
 	// Create and add source tree view
