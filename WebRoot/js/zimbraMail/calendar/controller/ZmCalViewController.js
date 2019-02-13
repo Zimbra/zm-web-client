@@ -1618,8 +1618,7 @@ function(startDate, duration, folderId, mailItem) {
 		if (appCtxt.multiAccounts && mailItem) {
 			newAppt.setFolderId(mailItem.getAccount().getDefaultCalendar().id);
 		}
-		// As per ZCS-223, we will always default to user defined default folder and not based on selections
-		/* else {
+		else {
 			// bug: 27646 case where only one calendar is checked
 			var checkedFolderIds = this.getCheckedCalendarFolderIds();
 			if (checkedFolderIds && checkedFolderIds.length == 1) {
@@ -1633,12 +1632,12 @@ function(startDate, duration, folderId, mailItem) {
 						newAppt.setFolderId(calId);
 					}
 				}
-			} else if (appCtxt.multiAccounts) {
+			} /*else if (appCtxt.multiAccounts) {
 				// calendar app has no notion of "active" app, so always set to default calendar
 				this.defaultAccount = appCtxt.isFamilyMbox ? this.mainAccount : this.visibleAccounts[1];
 				newAppt.setFolderId(calId);
-			}
-		}*/
+			}*/
+		}
 	}
 	newAppt.setPrivacy((appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY) == ZmSetting.CAL_VISIBILITY_PRIV)?"PRI" :"PUB");
 	return newAppt;
