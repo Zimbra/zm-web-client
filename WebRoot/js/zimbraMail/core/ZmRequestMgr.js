@@ -664,7 +664,8 @@ function() {
  */
 ZmRequestMgr.prototype._handleHABResponse =
 function(result) {
-	var habRootFolder = result._data.GetHABResponse.ou[0];
+	var organizationalUnit = result._data.GetHABResponse.ou[0];
+	var habRootFolder = organizationalUnit.habGroup[0];
 	habRootFolder.id = appCtxt.get(ZmSetting.HAB_ROOT);
 
 	this._loadTree("HAB", {}, habRootFolder, "hab", null);
