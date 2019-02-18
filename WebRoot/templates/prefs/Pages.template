@@ -881,7 +881,7 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#Accounts'>
-
+<$ if (data.isEnabled(ZmSetting.ACCOUNT_SETTING_ENABLED)) { $>
 	<div class='prefHeader'><$=ZmMsg.accounts$></div>
 	<table role="presentation" class='ZOptionsSectionTable' width=100%>
 		<tr>
@@ -912,7 +912,9 @@ and the container element is replaced with that control.
 			</td>
 		</tr>
 	</table>
-
+<$ } else { $>
+    <div id='${id}_ACCOUNTS' tabindex=0 style="display:none;"></div>
+<$ } $>
 	<div id="${id}_PRIMARY" class='ZAccountSettings'>
 		<$= AjxTemplate.expand("#PrimaryAccount", data) $>
 	</div>
@@ -945,6 +947,7 @@ and the container element is replaced with that control.
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
+					<$ if (data.isEnabled(ZmSetting.ACCOUNT_SETTING_ENABLED)) { $>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.emailAddrLabel$></td>
 						<td class='ZOptionsField'><span id='${id}_PRIMARY_EMAIL' tabindex=0></span></td>
@@ -994,7 +997,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField' valign='middle'><$=ZmMsg.manageSignatures$></td>
 					</tr>
 					<tr><td colspan=2><hr></td></tr>
-					<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE)) { $>
+					<$ } if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE)) { $>
 						<tr valign=top>
 							<td class='ZOptionsLabel'><$=ZmMsg.twoStepAccountSecurity$></td>
 							<td class='ZOptionsField' valign='middle'>
