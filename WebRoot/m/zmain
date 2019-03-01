@@ -304,7 +304,7 @@ document.title = "<fmt:message key="zimbraTitleLabel"/>"+" "+"${fn:escapeXml(req
                 <fmt:message key="lowBandwidth" var="lbw"/>
                 <fmt:message key="default" var="def"/>
                 <fmt:message key="viewLabel"/>&nbsp;
-                <c:if test="${fn:endsWith(sessionScope.zms,'xlite')}"><c:set var="def" value="<a noajax='true' href='?zms=${v}&amp;limit=10'>${def}</a>"/>${def}</c:if>
+                <c:if test="${fn:endsWith(sessionScope.zms,'xlite')}"><c:set var="def" value="<a noajax='true' href='/m/zmain'>${def}</a>"/>${def}</c:if>
                 <c:if test="${!fn:endsWith(sessionScope.zms,'xlite')}"><c:set var="lbw" value="<a noajax='true' href='?zms=xlite&amp;limit=5'>${lbw}</a>"/>${lbw}</c:if> | <a href="?st=versions"><fmt:message key="more"/>...</a>
             </div>
     </div></div>
