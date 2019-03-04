@@ -535,6 +535,9 @@ function(account) {
 	// now, the width gets very large, let's just move it back to the previous width
 	this.setSize(tempSize.x);
 
+	var stv = this.sourceTreeView.getTreeView("HAB");
+	stv.addSelectionListener(new AjxListener(this, this._sourceTreeViewSelectionListener));
+
 	// add chooser
 	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo});
 	this._chooser.reparentHtmlElement(this._htmlElId + "_chooser");
@@ -997,6 +1000,59 @@ function(ev) {
 		return false;
 	}
 	return true;
+};
+
+/**
+ * Handles left and right mouse clicks. A left click generates a selection event.
+ * If selection is supported for the overview, some action (typically a search)
+ * will be performed. A right click generates an action event, which pops up an
+ * action menu if supported.
+ *
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
+ */
+ZmContactPicker.prototype._sourceTreeViewSelectionListener = function(ev) {
+	this._resetResults();
+	var jsonObj = {GetDistributionListMembersRequest:{_jsns:"urn:zimbraAccount", offset:"0", limit:"0"}};
+	var request = jsonObj.GetDistributionListMembersRequest;
+	request.dl = {_content: ev.item._data._object_.mail};
+	var respCallback = new AjxCallback(this, this._handleResponseGetDLMembers, ["0", "0"]);
+	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+}
+
+ZmContactPicker.prototype._handleResponseGetDLMembers =
+function(offset, limit, result, resp) {
+
+	if (resp || !result.list) {
+		var list = [];
+		resp = resp || result.getResponse();  //if response is passed, take it. Otherwise get it from result
+		resp = resp.GetDistributionListMembersResponse;
+		var dl = appCtxt.getApp(ZmApp.CONTACTS).getDL(this.getEmail());
+		var more = dl.more = resp.more;
+		var isDL = {};
+		var members = resp.dlm;
+		if (members && members.length) {
+			for (var i = 0, len = members.length; i < len; i++) {
+				var member = members[i]._content;
+				list.push(member);
+				dl.list[offset + i] = member;
+				if (members[i].isDL) {
+					isDL[member] = dl.isDL[member] = true;
+				}
+			}
+		}
+		dl.total = resp.total;
+		DBG.println("dl", list.join("<br>"));
+		var result = {list:list, more:more, isDL:isDL};
+	}
+	DBG.println("dl", "returning list of " + result.list.length + ", more is " + result.more);
+	if (callback) {
+		callback.run(result);
+	}
+	else { //synchronized case - see ZmContact.prototype.getDLMembers above
+		return result;
+	}
 };
 
 
