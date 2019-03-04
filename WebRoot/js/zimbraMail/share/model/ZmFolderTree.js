@@ -250,10 +250,6 @@ function(type, parent, obj, tree, path, elementType, account) {
 	var orgClass = eval(ZmOrganizer.ORG_CLASS[type]);
 	if (!orgClass) { return null; }
 
-	if (elementType == "hab") {
-		obj.name = obj._attrs ? obj._attrs.displayName : obj.name;
-	}
-
 	DBG.println(AjxDebug.DBG2, "Creating " + type + " with id " + obj.id + " and name " + obj.name);
 
 	var params = {
@@ -279,6 +275,11 @@ function(type, parent, obj, tree, path, elementType, account) {
         webOfflineSyncDays : obj.webOfflineSyncDays,
         retentionPolicy: obj.retentionPolicy
 	};
+
+	if (elementType == "hab") {
+		params.name = obj._attrs ? obj._attrs.displayName : obj.name;
+		params.mail = obj._attrs ? obj._attrs.mail : undefined;
+	}
 
 	var folder = new orgClass(params);
 	ZmFolderTree._fillInFolder(folder, obj, path);
