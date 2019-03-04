@@ -134,7 +134,11 @@ function(buttonId, addrs, str, account) {
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
 
-	this.search(null, true, true);
+	if (searchFor === ZmContactsApp.SEARCHFOR_HAB) {
+		this._getHabDlMembers(this.sourceTreeView.getSelected().mail);
+	} else {
+		this.search(null, true, true);
+	}
 
     DwtDialog.prototype.popup.call(this);
 
@@ -466,7 +470,7 @@ function() {
 
 	// Make room for habTree by shrinking _chooser
 	var chooserWidth = this.getSize().x - 25;
-	if (Dwt.getVisible(this.sourceTreeView.getHtmlElement())) {
+	if (Dwt.getVisible(this.sourceTreeOverView.getHtmlElement())) {
 		chooserWidth = this.getSize().x - 250;
 	}
 
@@ -522,10 +526,10 @@ function(account) {
 	};
 
 	// Create and add source tree view
-	this.sourceTreeView = appCtxt.getOverviewController().createOverview(overviewParams);
-	this.sourceTreeView.setTreeView("HAB");
-	this.sourceTreeView.reparentHtmlElement(this._htmlElId + "_habTree");
-	this.sourceTreeView.setVisible(false);
+	this.sourceTreeOverView = appCtxt.getOverviewController().createOverview(overviewParams);
+	this.sourceTreeOverView.setTreeView("HAB");
+	this.sourceTreeOverView.reparentHtmlElement(this._htmlElId + "_habTree");
+	this.sourceTreeOverView.setVisible(false);
 
 	var habContainer = document.getElementById(this._htmlElId + "_habTree");
 	if (habContainer) {
@@ -534,6 +538,9 @@ function(account) {
 
 	// now, the width gets very large, let's just move it back to the previous width
 	this.setSize(tempSize.x);
+
+	this.sourceTreeView = this.sourceTreeOverView.getTreeView("HAB");
+	this.sourceTreeView.addSelectionListener(new AjxListener(this, this._sourceTreeViewSelectionListener));
 
 	// add chooser
 	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo});
@@ -918,12 +925,13 @@ function(ev) {
 		if (newValue !== ZmContactsApp.SEARCHFOR_HAB) {
 			this._updateSearchRows(newValue);
 			this._searchButtonListener();
-			this.sourceTreeView.setVisible(false);
+			this.sourceTreeOverView.setVisible(false);
 			this._resizeChooser();
 		} else {
 			// Hab tree selected, no need to make any search request
-			this.sourceTreeView.setVisible(true);
+			this.sourceTreeOverView.setVisible(true);
 			this._resizeChooser();
+			this.sourceTreeView.getSelected() && this._getHabDlMembers(this.sourceTreeView.getSelected().mail);
 		}
 	}
 };
@@ -997,6 +1005,55 @@ function(ev) {
 		return false;
 	}
 	return true;
+};
+
+/**
+ * Handles source-tree click event. Underlying members which belongs to the clicked
+ * HAB node would be fetched.
+ *
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
+ */
+ZmContactPicker.prototype._sourceTreeViewSelectionListener = function(ev) {
+	this._resetResults();
+	this._getHabDlMembers(ev.item._data._object_.mail);
+}
+
+ZmContactPicker.prototype._getHabDlMembers =
+function(dlAddress) {
+	var jsonObj = {GetDistributionListMembersRequest:{_jsns:"urn:zimbraAccount", offset:"0", limit:"0"}};
+	var request = jsonObj.GetDistributionListMembersRequest;
+	request.dl = {_content: dlAddress};
+	var respCallback = new AjxCallback(this, this._handleResponseGetDLMembers, ["0", "0"]);
+	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+}
+
+ZmContactPicker.prototype._handleResponseGetDLMembers =
+function(offset, limit, result, resp) {
+
+	if (resp || !result.list) {
+		resp = resp || result.getResponse();  //if response is passed, take it. Otherwise get it from result
+		resp = resp.GetDistributionListMembersResponse;
+		var members = resp.groupMembers && resp.groupMembers.length > 0 && resp.groupMembers[0].groupMember;
+		var contactList = new ZmContactList(false, false, "CONTACT");
+		var list = [];
+		if (members && members.length) {
+			for (var i = 0, len = members.length; i < len; i++) {
+				var member = members[i];
+				member._attrs.email = member.name;
+				member._attrs.name = member._attrs.displayName;
+				member._attrs.address = member.name;
+				contactList.addFromDom(member);
+			}
+
+			var vectorArray = contactList.getVector().getArray();
+			for (var j = 0, len = vectorArray.length; j < len; j++) {
+				ZmContactsHelper._addContactToList(list, vectorArray[j]);
+			}
+		}
+		this._showResults(AjxVector.fromArray(list));
+	}
 };
 
 

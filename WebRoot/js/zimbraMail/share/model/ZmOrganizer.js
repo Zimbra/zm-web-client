@@ -67,6 +67,7 @@ ZmOrganizer = function(params) {
 	var id = this.id = params.id;
 	this.nId = ZmOrganizer.normalizeId(id);
 	this.name = ZmFolder.MSG_KEY[this.nId] ? ZmMsg[ZmFolder.MSG_KEY[this.nId]] : params.name;
+	this.mail = params.mail;
 	this._systemName = this.nId < 256 && params.name;
 	this.parent = params.parent;
 	this.tree = params.tree;
