@@ -1025,33 +1025,26 @@ ZmContactPicker.prototype._handleResponseGetDLMembers =
 function(offset, limit, result, resp) {
 
 	if (resp || !result.list) {
-		var list = [];
 		resp = resp || result.getResponse();  //if response is passed, take it. Otherwise get it from result
 		resp = resp.GetDistributionListMembersResponse;
-		var dl = appCtxt.getApp(ZmApp.CONTACTS).getDL(this.getEmail());
-		var more = dl.more = resp.more;
-		var isDL = {};
-		var members = resp.dlm;
+		var members = resp.groupMembers[0].groupMember;
+		var contactList = new ZmContactList(false, false, "CONTACT");
+		var list = [];
 		if (members && members.length) {
 			for (var i = 0, len = members.length; i < len; i++) {
-				var member = members[i]._content;
-				list.push(member);
-				dl.list[offset + i] = member;
-				if (members[i].isDL) {
-					isDL[member] = dl.isDL[member] = true;
-				}
+				var member = members[i];
+				member._attrs.email = member.name;
+				member._attrs.name = member._attrs.displayName;
+				member._attrs.address = member.name;
+				contactList.addFromDom(member);
+			}
+
+			var vectorArray = contactList.getVector().getArray();
+			for (var j = 0, len = vectorArray.length; j < len; j++) {
+				ZmContactsHelper._addContactToList(list, vectorArray[j]);
 			}
 		}
-		dl.total = resp.total;
-		DBG.println("dl", list.join("<br>"));
-		var result = {list:list, more:more, isDL:isDL};
-	}
-	DBG.println("dl", "returning list of " + result.list.length + ", more is " + result.more);
-	if (callback) {
-		callback.run(result);
-	}
-	else { //synchronized case - see ZmContact.prototype.getDLMembers above
-		return result;
+		this._showResults(AjxVector.fromArray(list));
 	}
 };
 
