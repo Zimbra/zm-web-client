@@ -1008,10 +1008,8 @@ function(ev) {
 };
 
 /**
- * Handles left and right mouse clicks. A left click generates a selection event.
- * If selection is supported for the overview, some action (typically a search)
- * will be performed. A right click generates an action event, which pops up an
- * action menu if supported.
+ * Handles source-tree click event. Underlying members which belongs to the clicked
+ * HAB node would be fetched.
  *
  * @param {DwtUiEvent}	ev		the UI event
  * 
