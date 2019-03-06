@@ -645,28 +645,32 @@ function(refresh) {
  */
 ZmRequestMgr.prototype._loadHabTree =
 function() {
-	var habRoot = appCtxt.get(ZmSetting.HAB_ROOT);
-	if (!habRoot) { return; }
+	var habRoots = appCtxt.get(ZmSetting.HAB_ROOT);
+	if (!habRoots && habRoots.length === 0) { return; }
 
-	var request = {
-		_jsns: "urn:zimbraAccount",
-		"ownerOf": 1,
-		habRootGroupId: habRoot
-	};
+	var habRoot = habRoots[0];
+	if (habRoot) {
+		var habRootId = habRoot._content;
+		var request = {
+			_jsns: "urn:zimbraAccount",
+			"ownerOf": 1,
+			habRootGroupId: habRootId
+		};
 
-	var jsonObj = {GetHABRequest: request};
-	var respCallback = this._handleHABResponse.bind(this);
-	appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
+		var jsonObj = {GetHABRequest: request};
+		var respCallback = this._handleHABResponse.bind(this, habRootId);
+		appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
+	}
 };
 
 /**
  * @private
  */
 ZmRequestMgr.prototype._handleHABResponse =
-function(result) {
+function(habRootId, result) {
 	var organizationalUnit = result._data.GetHABResponse.ou[0];
 	var habRootFolder = organizationalUnit.habGroup[0];
-	habRootFolder.id = appCtxt.get(ZmSetting.HAB_ROOT);
+	habRootFolder.id = habRootId;
 
 	this._loadTree("HAB", {}, habRootFolder, "hab", null);
 }
