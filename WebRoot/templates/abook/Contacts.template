@@ -980,7 +980,7 @@
 	<div class='ZmContactPicker'>
 		<table>
 			<tr>
-				<td rowspan="3" id='${id}_habTree' valign="top"></td>
+				<td rowspan="2" id='${id}_habTree' valign="top"></td>
 				<td>
 					<table role="presentation" width='100%'>
 						<tr>
@@ -1036,6 +1036,7 @@
 				</td>
 			</tr>
 			<tr>
+				<td>&nbsp;</td>
 				<td>
 					<div id='${id}_paging' style='margin-left:5px;'>
 						<table role="presentation" width='100%'>
