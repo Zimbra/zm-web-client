@@ -134,8 +134,9 @@ function(buttonId, addrs, str, account) {
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
 
-	if (searchFor === ZmContactsApp.SEARCHFOR_HAB) {
-		this._getHabDlMembers(this.sourceTreeView.getSelected().mail);
+	if (searchFor === ZmContactsApp.SEARCHFOR_HAB && this.sourceTreeView) {
+		var selectedItem = this.sourceTreeView.getSelected() ? this.sourceTreeView.getSelected().mail : false;
+			selectedItem && this._getHabDlMembers(selectedItem);
 	} else {
 		this.search(null, true, true);
 	}
@@ -531,16 +532,11 @@ function(account) {
 	this.sourceTreeOverView.reparentHtmlElement(this._htmlElId + "_habTree");
 	this.sourceTreeOverView.setVisible(false);
 
-	var habContainer = document.getElementById(this._htmlElId + "_habTree");
-	if (habContainer) {
-		Dwt.setSize(habContainer, 250);
-	}
-
 	// now, the width gets very large, let's just move it back to the previous width
 	this.setSize(tempSize.x);
-
+	
 	this.sourceTreeView = this.sourceTreeOverView.getTreeView("HAB");
-	this.sourceTreeView.addSelectionListener(new AjxListener(this, this._sourceTreeViewSelectionListener));
+	this.sourceTreeView && this.sourceTreeView.addSelectionListener(new AjxListener(this, this._sourceTreeViewSelectionListener));
 
 	// add chooser
 	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo});
@@ -590,6 +586,16 @@ function(account) {
 	this._updateSearchRows(this._searchInSelect && this._searchInSelect.getValue() || ZmContactsApp.SEARCHFOR_CONTACTS);
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
     this.sharedContactGroups = [];
+
+	var habContainer = document.getElementById(this._htmlElId + "_habTree");
+	if (habContainer && this.sourceTreeView) {
+		var innerOverviewDiv = habContainer.getElementsByClassName("ZmOverview")[0];
+		Dwt.setSize(innerOverviewDiv, '210px', habContainer.clientHeight);
+		Dwt.setScrollStyle(innerOverviewDiv, Dwt.SCROLL);
+		var headerItem = this.sourceTreeView._headerItem;
+		headerItem && headerItem.setScrollStyle('visible');
+		innerOverviewDiv.style.paddingRight = "15px";
+	}
 
 	//add tabgroups for keyboard navigation
 	this._tabGroup = new DwtTabGroup(this.toString());
@@ -931,7 +937,10 @@ function(ev) {
 			// Hab tree selected, no need to make any search request
 			this.sourceTreeOverView.setVisible(true);
 			this._resizeChooser();
-			this.sourceTreeView.getSelected() && this._getHabDlMembers(this.sourceTreeView.getSelected().mail);
+			if (this.sourceTreeView) {
+				var selectedItem = this.sourceTreeView.getSelected() ? this.sourceTreeView.getSelected().mail : false;
+				selectedItem && this._getHabDlMembers(selectedItem);
+			}
 		}
 	}
 };
