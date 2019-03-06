@@ -134,7 +134,12 @@ function(buttonId, addrs, str, account) {
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
 
-	this.search(null, true, true);
+	if (searchFor === ZmContactsApp.SEARCHFOR_HAB) {
+		var stv = this.sourceTreeView.getTreeView("HAB");
+		this._getHabDlMembers(stv.getSelected().mail);
+	} else {
+		this.search(null, true, true);
+	}
 
     DwtDialog.prototype.popup.call(this);
 
@@ -927,6 +932,8 @@ function(ev) {
 			// Hab tree selected, no need to make any search request
 			this.sourceTreeView.setVisible(true);
 			this._resizeChooser();
+			var stv = this.sourceTreeView.getTreeView("HAB");
+			stv.getSelected() && this._getHabDlMembers(stv.getSelected().mail);
 		}
 	}
 };
@@ -1014,9 +1021,14 @@ function(ev) {
  */
 ZmContactPicker.prototype._sourceTreeViewSelectionListener = function(ev) {
 	this._resetResults();
+	this._getHabDlMembers(ev.item._data._object_.mail);
+}
+
+ZmContactPicker.prototype._getHabDlMembers =
+function(dlAddress) {
 	var jsonObj = {GetDistributionListMembersRequest:{_jsns:"urn:zimbraAccount", offset:"0", limit:"0"}};
 	var request = jsonObj.GetDistributionListMembersRequest;
-	request.dl = {_content: ev.item._data._object_.mail};
+	request.dl = {_content: dlAddress};
 	var respCallback = new AjxCallback(this, this._handleResponseGetDLMembers, ["0", "0"]);
 	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 }
@@ -1027,7 +1039,7 @@ function(offset, limit, result, resp) {
 	if (resp || !result.list) {
 		resp = resp || result.getResponse();  //if response is passed, take it. Otherwise get it from result
 		resp = resp.GetDistributionListMembersResponse;
-		var members = resp.groupMembers[0].groupMember;
+		var members = resp.groupMembers && resp.groupMembers.length > 0 && resp.groupMembers[0].groupMember;
 		var contactList = new ZmContactList(false, false, "CONTACT");
 		var list = [];
 		if (members && members.length) {
