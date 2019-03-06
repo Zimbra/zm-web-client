@@ -135,8 +135,7 @@ function(buttonId, addrs, str, account) {
 	this._nextButton.setEnabled(false);
 
 	if (searchFor === ZmContactsApp.SEARCHFOR_HAB) {
-		var stv = this.sourceTreeView.getTreeView("HAB");
-		this._getHabDlMembers(stv.getSelected().mail);
+		this._getHabDlMembers(this.sourceTreeView.getSelected().mail);
 	} else {
 		this.search(null, true, true);
 	}
@@ -471,7 +470,7 @@ function() {
 
 	// Make room for habTree by shrinking _chooser
 	var chooserWidth = this.getSize().x - 25;
-	if (Dwt.getVisible(this.sourceTreeView.getHtmlElement())) {
+	if (Dwt.getVisible(this.sourceTreeOverView.getHtmlElement())) {
 		chooserWidth = this.getSize().x - 250;
 	}
 
@@ -527,10 +526,10 @@ function(account) {
 	};
 
 	// Create and add source tree view
-	this.sourceTreeView = appCtxt.getOverviewController().createOverview(overviewParams);
-	this.sourceTreeView.setTreeView("HAB");
-	this.sourceTreeView.reparentHtmlElement(this._htmlElId + "_habTree");
-	this.sourceTreeView.setVisible(false);
+	this.sourceTreeOverView = appCtxt.getOverviewController().createOverview(overviewParams);
+	this.sourceTreeOverView.setTreeView("HAB");
+	this.sourceTreeOverView.reparentHtmlElement(this._htmlElId + "_habTree");
+	this.sourceTreeOverView.setVisible(false);
 
 	var habContainer = document.getElementById(this._htmlElId + "_habTree");
 	if (habContainer) {
@@ -540,8 +539,8 @@ function(account) {
 	// now, the width gets very large, let's just move it back to the previous width
 	this.setSize(tempSize.x);
 
-	var stv = this.sourceTreeView.getTreeView("HAB");
-	stv.addSelectionListener(new AjxListener(this, this._sourceTreeViewSelectionListener));
+	this.sourceTreeView = this.sourceTreeOverView.getTreeView("HAB");
+	this.sourceTreeView.addSelectionListener(new AjxListener(this, this._sourceTreeViewSelectionListener));
 
 	// add chooser
 	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo});
@@ -926,14 +925,13 @@ function(ev) {
 		if (newValue !== ZmContactsApp.SEARCHFOR_HAB) {
 			this._updateSearchRows(newValue);
 			this._searchButtonListener();
-			this.sourceTreeView.setVisible(false);
+			this.sourceTreeOverView.setVisible(false);
 			this._resizeChooser();
 		} else {
 			// Hab tree selected, no need to make any search request
-			this.sourceTreeView.setVisible(true);
+			this.sourceTreeOverView.setVisible(true);
 			this._resizeChooser();
-			var stv = this.sourceTreeView.getTreeView("HAB");
-			stv.getSelected() && this._getHabDlMembers(stv.getSelected().mail);
+			this.sourceTreeView.getSelected() && this._getHabDlMembers(this.sourceTreeView.getSelected().mail);
 		}
 	}
 };
