@@ -812,8 +812,9 @@ function(params) {
 
 		if(queryString && queryString.indexOf(":") != -1) {
 			var queryIndex = queryString.indexOf(" ");
-			var updatedQueryString = langSearchArray[queryString.substring(0, queryIndex)]+" "+ queryString.substring(queryIndex);
-			if(updatedQueryString) {
+			var searchFolderName = langSearchArray[queryString.substring(0, queryIndex)];
+			var updatedQueryString = searchFolderName+" "+ queryString.substring(queryIndex);
+			if(searchFolderName && updatedQueryString) {
 				queryString = updatedQueryString;
 			}
 		}
