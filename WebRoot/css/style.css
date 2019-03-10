@@ -1,0 +1,612 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    -webkit-transition: all 500ms;
+   -moz-transition: all 500ms;
+     -o-transition: all 500ms;
+        transition: all 500ms;
+}
+.bg {
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    overflow: hidden;
+    background: url("@AppContextPath@/img/nic/bg.png?v=@jsVersion@") repeat;
+    z-index: -1;
+}
+.bg .img{
+    background: url("@AppContextPath@/img/nic/bg-img.jpg?v=@jsVersion@");
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+}
+.bg > svg {
+    position: absolute;
+    width: 160%;
+    height: 160%;
+    right: -70%;
+    bottom: -20%;
+    z-index: 999;
+}
+.blur-svg{
+    display: none;
+}
+.blur-svg > svg{
+    width: 115%;
+    height: 115%;
+    left: -5%;
+    top: -5%;
+    position: fixed;
+}
+.content-area{
+    display: flex;
+    flex-direction: column;
+    min-height: 80vh;
+    position: relative;
+    justify-content: center;
+}
+.loginform{
+    padding: 0 5%;
+}
+.emblem{
+   position: absolute;
+    margin: 30px 5%;
+    max-width: 71px;
+}
+.logo{
+   height:80px;
+}
+.logo svg {
+    height: 85px;
+    width: 215px;
+    margin-left: 5%;
+}
+.bottom{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+.version{
+    outline: none;
+    z-index: 899;
+    position: relative;
+    width: 100%;
+    font-size: 16px;
+    box-sizing: border-box;
+    border-radius: 25px;
+    line-height: 24px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.5);
+    padding: 5px 10px 5px 10px;
+    color: #FFF;
+}
+.bottom-content{
+    padding: 15px 5%;
+    width: 160px;
+}
+.niclogo{
+    display:inline-block;
+    vertical-align: middle;
+    padding-bottom: 10px;
+    padding-left: 5px;
+}
+.niclogo svg{
+    height: 90px;
+    width:70px;
+    display:inline-block;
+    vertical-align: middle;
+}
+.niclogo img{
+    width: 100%;
+}
+.nicinfo{
+    display: block;
+    margin-bottom: -8px;
+    vertical-align: middle;
+    padding-bottom:8px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+}
+.nicinfo a, .nicinfo a:visited{
+    color: white;
+    text-decoration: none;
+}
+.nicinfo a:hover{
+    text-decoration: underline;
+}
+.dig-indi{
+    display: inline-block;
+    vertical-align: middle;
+    float: right;
+    width: 15%;
+    z-index: 999;
+    position: relative;
+}
+.dig-indi img{
+    max-width: 120px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.logo-scroller{
+    background: #FFFFFF;
+    height: 50px;
+    width: 100%; 
+}
+
+.logo-scroller .slider{
+    width: 65%;
+    display: inline-block;
+    vertical-align: middle;
+    padding-top: 10px;
+    z-index: 999;
+    margin-left: 20%;
+}
+.logo-scroller .slick-slide img{
+    max-width: 120px;
+}
+
+.line{
+    display: inline-block;
+    width: 50px;
+    vertical-align: middle;
+    height: 60px !important;
+}
+
+    /* SVG Color */
+    .em0{fill:#FFFFFF;}
+
+    /*.logo .st0{fill:#207DC0;}*/
+    .logo .st0{fill:#FFFFFF;}
+    .logo .st1{fill:none;}
+    .logo .st2{fill:#2B2422;}
+    .logo .st3{fill:#F4AF00;}
+    .logo .st4{fill:#314F8B;}
+    .logo .st5{fill:#FAE810;}
+    .logo .st6{opacity:7.000700e-02;}
+    .logo .st7{fill:none;stroke:#FFFFFF;stroke-width:0.2713;stroke-miterlimit:10;}
+    .logo .st8{fill:#F3EBDF;}
+    .logo .st9{fill:#96C124;}
+
+    .st0{fill:#FFFFFF;}
+    .st1{fill:#F5B000;}
+    .st2{fill:#3AAA35;}
+
+    .pk0{fill-rule:evenodd;clip-rule:evenodd;fill:#90C146;}
+    .pk1{fill-rule:evenodd;clip-rule:evenodd;fill:#F39200;}
+    .pk2{fill-rule:evenodd;clip-rule:evenodd;fill:#F6AE19;}
+    .pk3{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+
+    .niclogo .st0{fill:#2D7FC1;}
+    .niclogo .st1{fill:#FFFFFF;}
+
+@media (max-width:1400px){
+    .bg > svg {
+        position: absolute;
+        width: 150%;
+        height: 150%;
+        right: -53%;
+        top: auto;
+        bottom: -15%;
+       }
+}
+@media (max-width:1300px) and (min-height:1000px){
+    .bg > svg {
+        position: absolute;
+        width: 300%;
+        height: 300%;
+        right: -160%;
+        top: auto;
+        bottom: -90%;
+    }
+}
+@media (max-width:991px){
+    .bg > svg {
+        position: absolute;
+        width: 314%;
+        height:314%;
+        right: -160%;
+        top: auto;
+        bottom: -80%;
+    }
+}
+@media (max-width:800px) and (max-height:1280px){
+    .bg > svg {
+        position: absolute;
+        width: 300%;
+        height: 300%;
+        right: -160%;
+        top: auto;
+        bottom: -90%;
+    }
+}
+@media (max-width:800px) and (orientation : landscape){
+    .bg > svg {
+        position: absolute;
+        width: 150%;
+        height: 150%;
+        height: auto;
+        right: -70%;
+        top: auto;
+        bottom: -21%;
+    }
+}
+@media (max-width:1024px) and (orientation : landscape){
+    .emblem, .bottom{
+        position: relative;
+    }
+   .emblem {
+       margin: 0 5%;
+       padding: 30px 0;
+    }
+    .bg > svg {
+        position: absolute;
+        width: 160%;
+        height: 160%;
+        right: -80%;
+        top: auto;
+        bottom: -25%;
+    }
+}
+@media (max-width:767px){
+    .bg > svg {
+        position: absolute;
+        width: 310%;
+        height: 310%;
+        right: -160%;
+        top: auto;
+        bottom: -100%;
+    }
+}
+@media (max-width:767px) and (min-height:900px){
+    .bg > svg {
+        position: absolute;
+        width: 350%;
+        height: 350%;
+        right: -200%;
+        top: auto;
+        bottom: -120%;
+    }
+    .content-area{
+        min-height: 80vh;
+    }
+}
+
+@media (max-width:768px) and (orientation : landscape){
+    .emblem, .bottom{
+        position: relative;
+    }
+   .emblem {
+       margin: 0 5%;
+       padding: 30px 0;
+    }
+    .bg > svg {
+        position: absolute;
+        width: 160%;
+        height: 160%;
+        right: -80%;
+        top: auto;
+        bottom: -30%;
+    }
+}
+
+@media (max-width:480px){
+    .bg > svg {
+        position: absolute;
+        width: 350%;
+        height: 350%;
+        right: -200%;
+        top: auto;
+        bottom: -115%;
+    }
+    .emblem img{
+        width:80%;
+    }
+    .niclogo{
+        width:80px;
+        position: relative;
+    }
+    .niclogo svg{
+        height: auto;
+        width: 50px;
+    }
+    .line{
+        width: 45px !important;
+        height: 40px !important;
+        position: absolute;
+        top: 8px;
+        right: -20px;
+    }
+    .logo-scroller{
+        background: #FFFFFF;
+        width: 100%;
+    }
+}
+@media (max-width:480px) and (min-height:800px){
+    .bg > svg {
+        position: absolute;
+        width: 400%;
+        height: 400%;
+        right: -250%;
+        top: auto;
+        bottom: -146%;
+    }
+    .content-area{
+        min-height: 80vh;
+    }
+}
+@media (max-height:800px){
+    .emblem, .bottom{
+        position: relative;
+    }
+   .emblem {
+       margin: 0 5%;
+       padding: 30px 0;
+       max-width: 71px;
+    }
+}
+@media (max-width:360px) {
+    .emblem, .bottom{
+        position: relative;
+    }
+   .emblem {
+       margin: 0 5%;
+       padding: 30px 0;
+       max-width: 71px;
+    }
+    .bg > svg {
+        position: absolute;
+        width: 313%;
+        height: 313%;
+        right: -172%;
+        top: auto;
+        bottom: -110%;
+    }
+}
+
+.email, .pwd {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+}
+input{
+    box-sizing: border-box;
+}
+.email input, .pwd input {
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    box-sizing: border-box;
+    border-radius: 25px;
+    line-height: 24px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.5);
+    padding: 12px 36px 12px 14px;
+    color: #FFF;
+    margin: 7px 0;
+}
+.email label{
+    color: white;
+}
+.email input::-webkit-input-placeholder, .pwd input::-webkit-input-placeholder {
+  color: #C7C8CC;
+}
+.email input:-moz-placeholder, .pwd input:-moz-placeholder {
+  color: #C7C8CC;
+}
+.email input::-moz-placeholder, .pwd input::-moz-placeholder {
+  color: #C7C8CC;
+}
+.email input:-ms-input-placeholder, .pwd input:-ms-input-placeholder {
+  color: #C7C8CC;
+}
+.email svg, .pwd svg {
+  position: absolute;
+  z-index: 1;
+  right: 14px;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  margin: -4px 0 0 0;
+}
+.pwd svg{
+    margin: -10px 0 0 0;
+}
+.email svg, .pwd svg {
+    opacity: 0;
+}
+.email.success svg, .pwd.success svg {
+    opacity: 1;
+}
+.email svg polyline,
+.email svg path, .pwd svg polyline,
+.pwd svg path {
+  stroke: #D1D7E3;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke .3s ease 0s;
+}
+.email svg path, .pwd svg path {
+  stroke-dasharray: 64;
+  stroke-dashoffset: 127;
+  transition: stroke-dasharray .8s ease .8s, stroke-dashoffset .8s ease .5s;
+}
+.email svg polyline, .pwd svg polyline {
+  stroke-dasharray: 18;
+  stroke-dashoffset: 18;
+  transition: stroke-dashoffset .5s ease 0s;
+}
+.email.success svg polyline,
+.email.success svg path, .pwd.success svg polyline,
+.pwd.success svg path {
+  stroke: #69DD95;
+}
+.email.success svg path, .pwd.success svg path {
+  stroke-dasharray: 46;
+  stroke-dashoffset: 150;
+  transition: stroke-dasharray .6s ease 0s, stroke-dashoffset .8s ease .3s, stroke .3s ease .6s;
+}
+.email.success svg polyline, .pwd.success svg polyline {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset .5s ease .6s, stroke .3s ease .6s;
+}
+.submit button{
+    outline: none;
+    text-align: center;
+  width: auto;
+  font-size: 16px;
+  border: 0;
+  border-radius: 25px;
+  line-height: 24px;
+  padding: 12px 36px 12px 36px;
+  color: white;
+  margin: 7px 0;
+    background: #F5B000;
+    cursor: pointer;
+}
+.icon{
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 15px;
+}
+span.icon.ico-menu {
+    display: inline;
+}
+
+/*
+  Menu
+*/
+nav#slide-menu {
+  position: fixed;
+  top: 0;
+  z-index: 1;
+  right: -300px;
+  bottom: 0;
+  display: block;
+  float: left;
+  background: #FFF;
+  width: 100%;
+  max-width: 280px;
+  height: 100%;
+  overflow-y: auto;
+  -moz-transition: all 300ms;
+  -webkit-transition: all 300ms;
+  transition: all 300ms;
+}
+nav#slide-menu > ul {
+  display: block;
+  margin: 30px;
+  padding: 0;
+  list-style: none;
+  opacity: 0.5;
+  -moz-transition: all 300ms;
+  -webkit-transition: all 300ms;
+  transition: all 300ms;
+}
+nav#slide-menu > ul li {
+  color: #000;
+  padding: 10px 0;
+  cursor: pointer;
+}
+nav#slide-menu > ul li a {
+  color: #000;
+    text-decoration: none;
+     -webkit-transition: all 500ms;
+   -moz-transition: all 500ms;
+     -o-transition: all 500ms;
+        transition: all 500ms;
+}
+nav#slide-menu > ul li a:hover {
+  color: #f39200;
+    
+    margin-left: 10px;
+}
+nav#slide-menu > ul li:hover {
+  border-bottom: 1px solid #eee;
+}
+nav#slide-menu > ul li:hover img {
+  opacity: 0.6;
+}
+nav#slide-menu > ul li.sep {
+  margin-top: 7px;
+  padding-top: 14px;
+  border-top: 1px solid #6b7b8d;
+}
+body.menu-active nav#slide-menu {
+  right: 0px;
+}
+
+body.menu-active nav#slide-menu ul {
+  right: 0px;
+  opacity: 1;
+}
+BODY {
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+}
+HTML {
+    font-size: inherit;
+}
+
+/*
+  Content
+*/
+div#content {
+  position: fixed;
+    z-index: 999;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  padding: 60px;
+  overflow: hidden;
+  -moz-transition: all 300ms;
+  -webkit-transition: all 300ms;
+  transition: all 300ms;
+}
+div#content div.menu-trigger {
+  position: fixed;
+  top: 30px;
+  right: 5%;
+    padding:10px;
+  width: 24px;
+    z-index: 9999;
+  height: 24px;
+  background: #FFF;
+  cursor: pointer;
+  border-radius: 5px;
+  -moz-transition: all 300ms;
+  -webkit-transition: all 300ms;
+  transition: all 300ms;
+}
+div#content div.menu-trigger:hover {
+  background-color: white;
+}
+div#content div.menu-trigger:hover:before {
+  color: #fcfeff;
+}
+
+body.menu-active div#content {
+  right: 270px;
+  border-radius: 7px 0 0 7px;
+}
+
+body.menu-active div#content .menu-trigger {
+  right: 275px;
+}
+/* IE Hack */
+html[data-agent*="Trident"] .content-area {
+    height: 80vh;
+}
+.login-logo {
+  max-width:103px;
+}
+.login-logo-title {
+  font-size:16px;
+}
+.login-logo-title-inside {
+  display: inline-block;
+  padding-left: 5px;
+}
