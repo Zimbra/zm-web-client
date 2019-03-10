@@ -203,6 +203,8 @@ var langSearchArray = new Array();
 ZmSearchToolBar.prototype.setSearchFieldValue =
 function(value) {
 	if (this._searchField && value != this.getSearchFieldValue()) {
+		var customFolder = false;
+		var originalVal = value;
 		if(value && value.indexOf("in:") != -1) {
 			if(value.indexOf(" ") != -1) {
 				value = value.substring(0, value.indexOf(" "));
@@ -210,14 +212,18 @@ function(value) {
 			if(value) {
 				var startStr = value.substring(0, value.indexOf(":"));
 				var endStr = value.substring(value.indexOf(":")+1);
-				langSearchArray[value]=(ZmMsg[startStr]+":"+ZmMsg[endStr]).toLowerCase();
-				langSearchArray[ZmMsg[startStr]+":"+ZmMsg[endStr]]=value.toLowerCase();
+				if(ZmMsg[endStr]) {	
+					langSearchArray[value]=(ZmMsg[startStr]+":"+ZmMsg[endStr]).toLowerCase();
+					langSearchArray[ZmMsg[startStr]+":"+ZmMsg[endStr]]=value.toLowerCase();
+				} else {
+					customFolder = true; 
+				}
 			}
 		}
-		if(value && langSearchArray[value]) {
+		if(value && langSearchArray[value] && !customFolder) {
 			this._searchField.setValue(langSearchArray[value].toLowerCase()+" ");
 		} else {
-			this._searchField.setValue(value);
+			this._searchField.setValue(originalVal);
 		}
 	}
 };
