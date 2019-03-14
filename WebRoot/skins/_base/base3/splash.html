@@ -59,7 +59,7 @@
 		document.getElementById("form_mobile").value = window.user_mobile != "NODATA" ? window.user_mobile : "";
 		document.getElementById("form_postalAddress").value = window.user_postalAddress != "NODATA" ? window.user_postalAddress : "" ;
 		document.getElementById("form_legacyEmployeeNum").value = window.user_legacyEmployeeNum != "NODATA" ? window.user_legacyEmployeeNum : "";
-		document.getElementById("initial").value = window.user_initials != "NODATA" ? window.user_initials.toLowerCase() : "";
+		document.getElementById("form_initial").value = window.user_initials != "NODATA" ? window.user_initials.toLowerCase() : "";
 
 		window.user_legacyDateOfBirth = window.user_legacyDateOfBirth != "NODATA" && window.user_legacyDateOfBirth.includes('000000Z') ? window.user_legacyDateOfBirth.replace('000000Z', '') : "";
 		window.user_legacyAccountExpDate = window.user_legacyAccountExpDate != "NODATA" && window.user_legacyAccountExpDate.includes('000000Z') ? window.user_legacyAccountExpDate.replace('000000Z', '') : "";
@@ -87,18 +87,7 @@
 				hideSplash();
 				hideUserProfileScreen();
 			} else {
-				getHistory();
-				hideUserProfileScreen();
-				if (window.loginHistoryTimeout > 0) {
-					setCookie('splashLoginFlag','splashLoginFlag',1);
-					document.getElementById("SplashLoadingScreen").style.display = "none";
-					document.getElementById("ZLoginBannerImage").style.display = "none";
-					document.getElementById("SplashScreenTable").style.display = "table";
-					document.getElementById("SplashHisoryScreen").style.display = "block";
-					document.getElementById("closeImg").style.display = "block";
-					document.getElementById("counter").style.display = "block";
-				}
-				onTimer();
+				displaySplash();
 			}
 		}
 	};
@@ -116,6 +105,60 @@
 		counters = counters - 1;
 	}
 
+	function displaySplash() {
+		getHistory();
+		showSplash();
+		hideUserProfileScreen();
+		if (window.loginHistoryTimeout > 0) {
+			setCookie('splashLoginFlag','splashLoginFlag',1);
+			document.getElementById("SplashLoadingScreen").style.display = "none";
+			document.getElementById("ZLoginBannerImage").style.display = "none";
+			document.getElementById("SplashScreenTable").style.display = "table";
+			document.getElementById("SplashHisoryScreen").style.display = "block";
+			document.getElementById("closeImg").style.display = "block";
+			document.getElementById("counter").style.display = "block";
+		}
+		onTimer();
+	}
+	
+	function phoneValidator(phoneNumber, type) {
+		phoneNumber = phoneNumber.replace(/[()\-. ]/g, ''); 
+		var pattern = /^\+?\d{8,15}$/;
+		if (phoneNumber != '' && !pattern.test(phoneNumber)) {
+			if (type == "mobile") {
+				document.getElementById("mobileErrorDiv").innerHTML = ZmMsg.invalidPhoneNumber;
+			} else {
+				document.getElementById("telephoneErrorDiv").innerHTML = ZmMsg.invalidPhoneNumber;
+			}
+			return false;
+		}
+		
+		if (type == "mobile") {
+			document.getElementById("mobileErrorDiv").innerHTML = "";
+		} else {
+			document.getElementById("telephoneErrorDiv").innerHTML = "";
+		}
+		return true;
+	}
+	
+	function dateValidator(type) {
+		var dateOfBirth = document.getElementById("form_legacyDateOfBirth").value;
+		var dateOfAcctExp = document.getElementById("form_legacyAccountExpDate").value;
+		var dateOfRetirement = document.getElementById("form_legacyDateOfRetirement").value;
+		if (type == "legacyDateOfBirth" && (dateOfBirth >= dateOfAcctExp || dateOfBirth >= dateOfRetirement)) {
+			document.getElementById("legacyDateOfBirthErrDiv").innerHTML = ZmMsg.nicDateOfBirthError;
+			return true;
+		}
+		else if (type == "legacyDateOfRetirement" && dateOfRetirement <= dateOfBirth) {
+			document.getElementById("legacyDateOfRetirementErrDiv").innerHTML = ZmMsg.nicDateOfRetirementError;
+			return true;
+		} else if (type == "legacyAccountExpDate" && dateOfAcctExp <= dateOfBirth) {
+			document.getElementById("legacyAccountExpDateErrDiv").innerHTML = ZmMsg.nicAccountExpiryError;
+			return true;
+		}
+		return false;
+	}
+	
 	function formatDate(date) {
 		return date.substring(0,4) + '-' + date.substring(4,6) + '-' + date.substring(6,8);
 	}
@@ -162,16 +205,24 @@
 
 	function validateForm() {
 		var isError = false;
-		var inputFieldsArr = ["givenName", "sn", "telephoneNumber", "mobile", "postalAddress", "legacyDateOfBirth", "legacyAccountExpDate", "legacyDateOfRetirement", "legacyEmployeeNum", "oldPassword", "newPassword"];
+		var inputFieldsArr = ["initial", "givenName", "sn", "telephoneNumber", "mobile", "postalAddress", "legacyDateOfBirth", "legacyAccountExpDate", "legacyDateOfRetirement", "legacyEmployeeNum", "oldPassword", "newPassword"];
 		var inputFieldsArrLenght = inputFieldsArr.length;
 		for(var field = 0 ; field < inputFieldsArrLenght; field++) {
 			var fieldName = inputFieldsArr[field];
-			if(document.getElementById("form_"+fieldName).value == "") {
+			var fieldValue = document.getElementById("form_"+fieldName).value;
+			if(fieldValue == "") {
 				isError = true;
 				if (!window.user_legacyEmployee && fieldName === 'legacyEmployeeNum') {
 					isError = false;
 				}
 				document.getElementById("form_"+fieldName).style.border = "1px solid red";
+			} else if (fieldName == "telephoneNumber" || fieldName == "mobile") {
+				isError = phoneValidator(fieldValue, fieldName) ? false : true;
+			} else if (fieldName == "legacyDateOfBirth" || fieldName == "legacyAccountExpDate" || fieldName == "legacyDateOfRetirement") {
+				isError = dateValidator(fieldName);
+				if (!isError) {
+					document.getElementById(fieldName + "ErrDiv").innerHTML = "";
+				} 
 			} else {
 				document.getElementById("form_"+fieldName).style.border = "none";
 			}
@@ -250,7 +301,7 @@
 	
 	function handleResponseOfAuthSendMessage(result) {
 		var modifyRequestCallback = new AjxCallback(this, this.handleResponseOfModifyAccountRequest);
-		var initial = document.getElementById("initial").value.toLowerCase();
+		var initial = document.getElementById("form_initial").value.toLowerCase();
 		var firstName = document.getElementById("form_givenName").value;
 		var lastName = document.getElementById("form_sn").value;
 		var teleNum = document.getElementById("form_telephoneNumber").value;
@@ -291,7 +342,7 @@
 	}
 	
 	function handleResponseOfModifyAccountRequest(result) {
-		var url = window.location.href;
+		displaySplash();
 	}
 	
 	function handleChangePasswordReqErr(error) {
@@ -323,7 +374,7 @@
 									<div class="field-row">
 										<div class="label profile_label"><script>document.write(ZmMsg.initial)</script></div>
 											<div class="fields">
-												<select name="initial" id="initial" class="profile_input profile_input_select">
+												<select name="initial" id="form_initial" class="profile_input profile_input_select">
 													<option value=""> Select </option>
 													<option value="mr"> Mr </option>
 													<option value="miss"> Miss </option>
@@ -344,26 +395,31 @@
 										<div class="label profile_label"><script>document.write(ZmMsg.telephone)</script><span class="required">*</span></div>
 										<div class="fields"><input type="text" class="profile_input" name="telephoneNumber" id="form_telephoneNumber" value="" /></div>
 									</div>
+									<div class="field-row phone_error_label" id="telephoneErrorDiv"></div>
 									<div class="field-row">
 										<div class="label profile_label"><script>document.write(ZmMsg.mobile)</script><span class="required">*</span></div>
 										<div class="fields"><input type="text" class="profile_input" name="mobile" id="form_mobile" value="" /></div>
 									</div>
+									<div class="field-row phone_error_label" id="mobileErrorDiv"></div>
 									<div class="field-row">
 										<div class="label profile_label"><script>document.write(ZmMsg.postalAddress)</script><span class="required">*</span></div>
 										<div class="fields"><input type="text" class="profile_input" name="postalAddress" id="form_postalAddress" value="" /></div>
 									</div>
 									<div class="field-row">
-										<div class="label profile_label"><script>document.write(ZmMsg.dateOfBirth)</script> (mm/dd/yyyy)<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.dateOfBirth)</script><span class="required">*</span></div>
 										<div class="fields"><input type="date" class="profile_input" name="legacyDateOfBirth" id="form_legacyDateOfBirth" value="" /></div>
 									</div>
+									<div class="field-row phone_error_label" id="legacyDateOfBirthErrDiv"></div>
 									<div class="field-row">
-										<div class="label profile_label"><script>document.write(ZmMsg.dateOfAccountExpiry)</script> (mm/dd/yyyy)<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.dateOfAccountExpiry)</script><span class="required">*</span></div>
 										<div class="fields"><input type="date" class="profile_input" name="legacyAccountExpDate" id="form_legacyAccountExpDate" value="" /></div>
 									</div>
+									<div class="field-row phone_error_label" id="legacyAccountExpDateErrDiv"></div>
 									<div class="field-row">
-										<div class="label profile_label"><script>document.write(ZmMsg.dateOfRetirement)</script> (mm/dd/yyyy)<span class="required">*</span></div>
+										<div class="label profile_label"><script>document.write(ZmMsg.dateOfRetirement)</script><span class="required">*</span></div>
 										<div class="fields"><input type="date" class="profile_input" name="legacyDateOfRetirement" id="form_legacyDateOfRetirement" value="" /></div>
 									</div>
+									<div class="field-row phone_error_label" id="legacyDateOfRetirementErrDiv"></div>
 									<div class="field-row">
 										<div class="label profile_label"><script>document.write(ZmMsg.nicEmployee)</script><span class="required">*</span></div>
 										<div class="fields profile_label">
@@ -375,6 +431,7 @@
 										<div class="label profile_label"><script>document.write(ZmMsg.nicEmployeeNumber)</script><span class="required">*</span></div>
 										<div class="fields"><input type="text" class="profile_input" name="form_legacyEmployeeNum" id="form_legacyEmployeeNum" value="" /></div>
 									</div>
+									<div class="field-row phone_error_label" id="legacyEmployeeNumErrDiv"></div>
 									<div class="field-row">
 										<div class="label profile_label"><script>document.write(ZmMsg.old); document.write(" " + ZmMsg.password)</script><span class="required">*</span></div>
 										<div class="fields"><input type="password" class="profile_input" name="oldPassword" id="form_oldPassword" value="" /></div>
@@ -383,7 +440,7 @@
 										<div class="label profile_label"><script>document.write(ZmMsg._new); document.write(" " + ZmMsg.password)</script><span class="required">*</span></div>
 										<div class="fields"><input type="password" class="profile_input" name="newPassword" id="form_newPassword" value="" /></div>
 									</div>
-									<div class="field-row profile_error_label" id="passwordErrorDiv"> </div>
+									<div class="field-row profile_error_label" id="passwordErrorDiv"></div>
 									 <div class="field-row" style="text-align:center;">
 									 	<div class="fields"><button type="button" class="profile_button" name=submit" id="submit" value="" onclick="validateForm()"><script>document.write(ZmMsg.save)</script></button></div>
 									</div>
