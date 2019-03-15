@@ -1,8 +1,9 @@
 <%@ page buffer="8kb" session="true" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.*,javax.naming.*,com.zimbra.client.ZAuthResult,com.zimbra.cs.account.ZimbraAuthToken,com.zimbra.cs.account.AuthToken,com.zimbra.cs.account.Account" %>
-<%@ page import="com.zimbra.soap.type.*" %>
 <%@ page import="com.zimbra.common.account.Key" %>
 <%@ page import="com.zimbra.common.account.Key.AccountBy" %>
+<%@ page import="com.zimbra.soap.type.AccountSelector" %>
+<%@ page import="com.zimbra.soap.admin.type.DomainSelector" %>
 <%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <%@ page import="java.util.regex.Pattern" %>
 <%@ page import="java.util.regex.Matcher" %>
