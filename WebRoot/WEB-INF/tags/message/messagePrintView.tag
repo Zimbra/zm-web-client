@@ -190,7 +190,7 @@
                                 <tr>
                                     <td nowrap align='right' class='MsgHdrSent'>
                                         <fmt:message var="dateFmt" key="formatDateSent"/>
-                                        <span id="messageDisplayTime_${message.id}"><fmt:formatDate timeZone="${not empty timezone ? timezone : mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/></span>
+                                        <span id="messageDisplayTime_${message.id}"><fmt:formatDate timeZone="${not empty timezone ? timezone : mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.receivedDate}"/></span>
                                     </td>
                                 </tr>
                             </c:if>
