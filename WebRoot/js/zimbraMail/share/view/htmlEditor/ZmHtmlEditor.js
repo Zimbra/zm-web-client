@@ -820,7 +820,7 @@ function(id, autoFocus) {
 		object_resizing : true,
         font_formats : fonts.join(";"),
         fontsize_formats : AjxMsg.fontSizes || '',
-		convert_urls : true,
+		convert_urls : false,
 		verify_html : false,
 		browser_spellcheck : true,
         content_css : appContextPath + '/css/tinymce-content.css?v=' + cacheKillerVersion,
