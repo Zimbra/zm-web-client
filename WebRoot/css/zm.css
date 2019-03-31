@@ -6274,3 +6274,13 @@ a.ZmLinkDisabled {
 	height: 100%;
 }
 /*Chat end */
+
+/*MObile Configuration start*/
+textarea[readonly].ZmMobileConfigTextarea{
+    border: none;
+    margin: 0;
+    padding: 0;
+    color: black;
+    outline: none;
+}
+/*MObile Configuration end*/

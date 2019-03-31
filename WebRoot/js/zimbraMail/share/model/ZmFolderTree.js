@@ -186,6 +186,11 @@ ZmFolderTree._traverse =
 function(folder, obj, tree, path, elementType, account) {
 
 	var isRoot = (folder.nId == ZmOrganizer.ID_ROOT);
+
+	if (elementType === "hab") {
+		obj.folder = obj.habGroup
+	}
+
 	if (obj.folder && obj.folder.length) {
 		if (!isRoot) {
 			path.push(obj.name);
@@ -270,6 +275,11 @@ function(type, parent, obj, tree, path, elementType, account) {
         webOfflineSyncDays : obj.webOfflineSyncDays,
         retentionPolicy: obj.retentionPolicy
 	};
+
+	if (elementType == "hab") {
+		params.name = obj._attrs ? obj._attrs.displayName : obj.name;
+		params.mail = obj._attrs ? obj._attrs.mail : undefined;
+	}
 
 	var folder = new orgClass(params);
 	ZmFolderTree._fillInFolder(folder, obj, path);

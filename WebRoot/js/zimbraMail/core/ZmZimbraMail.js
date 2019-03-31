@@ -1957,6 +1957,12 @@ function() {
 							 openSetting:		ZmSetting.ZIMLET_TREE_OPEN,
 							 hideEmpty:			true
 							});
+
+	ZmOrganizer.registerOrg(ZmOrganizer.HAB,
+							{
+								treeController:	"ZmHabTreeController",
+								labelKey:			"hab"
+							});
 	
 	// Technically, we don't need to do this because the drop listeners for dragged organizers typically do their
 	// own checks on the class of the dragged object. But it's better to do it anyway, in case it ever gets

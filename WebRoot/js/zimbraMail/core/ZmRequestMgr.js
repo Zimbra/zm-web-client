@@ -634,7 +634,46 @@ function(refresh) {
 	var main = appCtxt.multiAccounts ? appCtxt.accountList.mainAccount : null;
 	this._loadTree(ZmOrganizer.TAG, unread, refresh.tags, null, main);
 	this._loadTree(ZmOrganizer.FOLDER, unread, refresh.folder[0], "folder", main);
+	
+	this._loadHabTree();
 };
+
+/**
+ * Try to load HAB data if HAB-root-id is available.
+ * 
+ * @private
+ */
+ZmRequestMgr.prototype._loadHabTree =
+function() {
+	var habRoots = appCtxt.get(ZmSetting.HAB_ROOT);
+	if (!habRoots && habRoots.length === 0) { return; }
+
+	var habRoot = habRoots[0];
+	if (habRoot) {
+		var habRootId = habRoot._content;
+		var request = {
+			_jsns: "urn:zimbraAccount",
+			"ownerOf": 1,
+			habRootGroupId: habRootId
+		};
+
+		var jsonObj = {GetHABRequest: request};
+		var respCallback = this._handleHABResponse.bind(this, habRootId);
+		appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
+	}
+};
+
+/**
+ * @private
+ */
+ZmRequestMgr.prototype._handleHABResponse =
+function(habRootId, result) {
+	var organizationalUnit = result._data.GetHABResponse.ou[0];
+	var habRootFolder = organizationalUnit.habGroup[0];
+	habRootFolder.id = habRootId;
+
+	this._loadTree("HAB", {}, habRootFolder, "hab", null);
+}
 
 /**
  * User has accepted reload due to change in server version.
