@@ -81,7 +81,14 @@
 	String lang = getParameter(request, "lang", "");
 	String langId = "en_US";
 	if (lang != null && !lang.isEmpty()) {
-		langId = lang;
+		int indexParam = lang.indexOf("_");
+		if(indexParam == -1) {
+			langId = lang;
+		} else {
+			String languageParam = lang.substring(0, indexParam);
+	  		String countryParam = lang.substring(lang.length() - 2);
+			langId = languageParam;
+		}
 	} else if (localePref != null && localePref.size() > 0) {
 		langId = localePref.get(0);
 	}
