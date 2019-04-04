@@ -163,27 +163,6 @@ sub make_package($)
             chomp($entry);
             $entry =~ s@$stage_base_dir@@;
 
-   if ( $pkg_info->{dir_list} )	
-   {
-      foreach my $expr ( @{ $pkg_info->{dir_list} } )
-      {
-         push( @cmd, "--pkg-installs=$expr" );
-      }
-   }
-   if ( $pkg_info->{file_list} )
-   {
-      foreach my $expr ( @{ $pkg_info->{file_list} } )
-      {
-         print "stage_base_dir = $stage_base_dir\n";
-         print "expr = $expr\n";
-
-         my $dir_expr = "$stage_base_dir$expr";
-
-         foreach my $entry (`find $dir_expr -type f`)
-         {
-            chomp($entry);
-            $entry =~ s@$stage_base_dir@@;
-
             push( @cmd, "--pkg-installs=$entry" );
          }
       }
