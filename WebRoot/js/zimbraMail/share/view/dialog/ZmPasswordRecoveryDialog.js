@@ -537,6 +537,7 @@ function() {
 	var command = new ZmCsfeCommand();
 	var soapDoc = AjxSoapDoc.create('ResetPasswordRequest', 'urn:zimbraAccount');
 	var respCallback = this._resetPasswordCallback.bind(this);
+
 	var pwdNewValue = this._passwordNewInput.value;
 	var pwdConfirmValue = this._passwordConfirmInput.value;
 	var result = {};
@@ -545,6 +546,7 @@ function() {
 		this._handleResetPasswordError(this._resetPasswordErrorDiv, this._resetPasswordErrorMessageDiv, result);
 		return;
 	}
+
 	soapDoc.set('password', this._passwordNewInput.value);
 	command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true, asyncMode: true, callback: respCallback, serverUri:'/service/soap/'})
 };
