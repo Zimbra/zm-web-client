@@ -652,13 +652,14 @@ if (application.getInitParameter("offlineMode") != null) {
                                 </td>
                                 </tr>
 			
-				<c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">	
+				                <c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">	
                                     <tr>
                                         <td>&nbsp;</td>
                                         <td class="submitTD">
                                             <a href="#" onclick="forgotPassword();" id="ZLoginForgotPassword" aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
                                         </td>
                                     </tr>
+                                </c:if>
                             </c:otherwise>
                         </c:choose>
                         <c:if test="${empty param.virtualacctdomain}">
