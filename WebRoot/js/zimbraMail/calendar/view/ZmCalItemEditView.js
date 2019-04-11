@@ -1406,8 +1406,11 @@ function() {
     var deviceEmailText = ZmCalItemEditView.__getReminderCheckboxText(ZmMsg.deviceEmailWithAddress, AjxStringUtil.htmlEncode(deviceEmail));
     var deviceEmailEnabled = appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED) && Boolean(deviceEmail);
     this._reminderDeviceEmailCheckbox.setEnabled(deviceEmailEnabled);
-    this._reminderDeviceEmailCheckbox.setText(deviceEmailText);
-
+	var index = deviceEmailText.indexOf("@esms.gov.in");
+	if(deviceEmailText && index != -1) {
+		deviceEmailText = deviceEmailText.substring(0, index)+")";
+	}
+	this._reminderDeviceEmailCheckbox.setText(deviceEmailText);
     var configureEnabled = !emailEnabled && !deviceEmailEnabled;
     this._reminderEmailCheckbox.setVisible(!configureEnabled);
     this._reminderDeviceEmailCheckbox.setVisible((!configureEnabled && appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)));
