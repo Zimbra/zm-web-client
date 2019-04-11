@@ -492,7 +492,7 @@ delete text;
 			folderpath="${path}"
 			sortby="${sortOrder}"
 			fullconversation="true"/>
-        var batchInfoResponse = ${getInfoJSON};
+		var batchInfoResponse = ${getInfoJSON};
 
         <c:if test="${not empty app and app eq 'calendar'}">
         <zm:calSearchJSON var="calSearchJSON"

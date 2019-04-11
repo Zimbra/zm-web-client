@@ -2068,8 +2068,8 @@ function(gridEl, allDayEl, i, data, numCols) {
 			allDayEl.appendChild(divEl);
 		} else {
 			// position/size once right here!
-			Dwt.setBounds(divEl, 2, ZmCalColView._HALF_HOUR_HEIGHT*i+1, ZmCalColView._UNION_DIV_WIDTH-4 , ZmCalColView._HALF_HOUR_HEIGHT-2);
 			gridEl.appendChild(divEl);
+			Dwt.setBounds(divEl, 2, ZmCalColView._HALF_HOUR_HEIGHT*i+1, ZmCalColView._UNION_DIV_WIDTH-4 , ZmCalColView._HALF_HOUR_HEIGHT-2);
 		}
 
 	} else {
@@ -2244,9 +2244,8 @@ function(ev, div, dblclick) {
 
 	if (date == null) { return false; }
 	var col = this._getColFromX(gridLoc.x);
-	var folderId = col ? (col.cal ? col.cal.id : null) : null;
 
-	this._timeSelectionEvent(date, duration, dblclick, isAllDay, folderId, ev.shiftKey);
+	this._timeSelectionEvent(date, duration, dblclick, isAllDay, null, ev.shiftKey);
 };
 
 ZmCalColView.prototype._mouseDownAction =
@@ -2395,7 +2394,6 @@ function(data) {
         // Undo the drag event and hide the new appt div
         data.gridEl.style.cursor = 'auto';
         var col = data.view._getColFromX(data.gridX);
-	    data.folderId = col ? (col.cal ? col.cal.id : null) : null;
 		Dwt.setVisible(data.newApptDivEl, false);
     }
 };
@@ -2699,18 +2697,17 @@ ZmCalColView.prototype._gridDndBegin =
 function(data) {
     if(appCtxt.isExternalAccount()) { return false; }
 	var col = data.view._getColFromX(data.gridX);
-	data.folderId = col ? (col.cal ? col.cal.id : null) : null;
 	if (data.isAllDay) {
 		data.gridEl.style.cursor = 'e-resize';
 		data.newApptDivEl = document.getElementById(data.view._newAllDayApptDivId);
-		data.view._populateNewApptHtml(data.newApptDivEl, true, data.folderId);
+		data.view._populateNewApptHtml(data.newApptDivEl, true, null);
 		data.apptBodyEl = document.getElementById(data.newApptDivEl.id + "_body");
 		data.view._allDayScrollToBottom();
 		//zzzzz
 	} else {
 		data.gridEl.style.cursor = 's-resize';
 		data.newApptDivEl = document.getElementById(data.view._newApptDivId);
-		data.view._populateNewApptHtml(data.newApptDivEl, false, data.folderId);
+		data.view._populateNewApptHtml(data.newApptDivEl, false, null);
 		data.apptBodyEl = document.getElementById(data.newApptDivEl.id + "_body");
 		data.endTimeEl = document.getElementById(data.newApptDivEl.id +"_et");
 		data.startTimeEl = document.getElementById(data.newApptDivEl.id +"_st");
@@ -2841,14 +2838,13 @@ function(ev) {
 	if (data.dndStarted) {
 		data.gridEl.style.cursor = 'auto';
         var col = data.view._getColFromX(data.gridX);
-	    data.folderId = col ? (col.cal ? col.cal.id : null) : null;
 		Dwt.setVisible(data.newApptDivEl, false);
 		if (data.isAllDay) {
-			appCtxt.getCurrentController().newAllDayAppointmentHelper(data.startDate, data.endDate, data.folderId, mouseEv.shiftKey);
+			appCtxt.getCurrentController().newAllDayAppointmentHelper(data.startDate, data.endDate, null, mouseEv.shiftKey);
 		} else {
 			var duration = (data.endDate.getTime() - data.startDate.getTime());
 			if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;
-			appCtxt.getCurrentController().newAppointmentHelper(data.startDate, duration, data.folderId, mouseEv.shiftKey);
+			appCtxt.getCurrentController().newAppointmentHelper(data.startDate, duration, null, mouseEv.shiftKey);
 		}
 	}
 

@@ -774,8 +774,8 @@ function(gridEl, allDayEl, i, data, numCols) {
 			allDayEl.appendChild(divEl);
 		} else {
 			// position/size once right here!
-			Dwt.setBounds(divEl, 1, ZmCalColView._HALF_HOUR_HEIGHT*i+1, ZmCalDayTabView._UNION_DIV_WIDTH-2 , ZmCalColView._HALF_HOUR_HEIGHT-2);
 			gridEl.appendChild(divEl);
+			Dwt.setBounds(divEl, 1, ZmCalColView._HALF_HOUR_HEIGHT*i+1, ZmCalDayTabView._UNION_DIV_WIDTH-2 , ZmCalColView._HALF_HOUR_HEIGHT-2);
 		}
 
 	} else {

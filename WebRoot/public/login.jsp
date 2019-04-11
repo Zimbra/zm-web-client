@@ -114,6 +114,9 @@
 			<zm:logout/>
 			<c:set var="errorCode" value="${param.loginErrorCode}"/>
 			<fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
+			<c:if test = "${fn:contains(errorMessage, errorCode)}">
+				<fmt:message var="errorMessage" key="unknownError"/>
+			</c:if>
 		</c:when>
 		<c:when test="${param.loginOp eq 'logout'}">
 			<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
@@ -649,7 +652,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                 </td>
                                 </tr>
 			
-				<c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">	
+				                <c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">	
                                     <tr>
                                         <td>&nbsp;</td>
                                         <td class="submitTD">

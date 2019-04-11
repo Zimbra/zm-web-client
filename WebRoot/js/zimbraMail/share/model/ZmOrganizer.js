@@ -67,6 +67,7 @@ ZmOrganizer = function(params) {
 	var id = this.id = params.id;
 	this.nId = ZmOrganizer.normalizeId(id);
 	this.name = ZmFolder.MSG_KEY[this.nId] ? ZmMsg[ZmFolder.MSG_KEY[this.nId]] : params.name;
+	this.mail = params.mail;
 	this._systemName = this.nId < 256 && params.name;
 	this.parent = params.parent;
 	this.tree = params.tree;
@@ -128,6 +129,7 @@ ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
 ZmOrganizer.SHARE               = ZmEvent.S_SHARE;
 ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
+ZmOrganizer.HAB					= ZmEvent.S_HAB;
 
 // folder IDs defined in com.zimbra.cs.mailbox.Mailbox
 // Note: since these are defined as Numbers, and IDs come into our system as Strings,

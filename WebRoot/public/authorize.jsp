@@ -77,6 +77,9 @@
         </c:when>
         <c:otherwise>
             <fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
+            <c:if test = "${fn:contains(errorMessage, errorCode)}">
+                <fmt:message var="errorMessage" key="unknownError"/>
+            </c:if>
         </c:otherwise>
     </c:choose>
     <c:forEach var="arg" items="${error.arguments}">

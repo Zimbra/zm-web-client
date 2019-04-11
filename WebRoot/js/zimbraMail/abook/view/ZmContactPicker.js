@@ -134,7 +134,12 @@ function(buttonId, addrs, str, account) {
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
 
-	this.search(null, true, true);
+	if (searchFor === ZmContactsApp.SEARCHFOR_HAB && this.sourceTreeView) {
+		var selectedItem = this.sourceTreeView.getSelected() ? this.sourceTreeView.getSelected().mail : false;
+			selectedItem && this._getHabDlMembers(selectedItem);
+	} else {
+		this.search(null, true, true);
+	}
 
     DwtDialog.prototype.popup.call(this);
 
@@ -425,8 +430,11 @@ function() {
         {
             this._searchInSelect.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
         }
+	}
 
-    }
+	if (appCtxt.get(ZmSetting.HAB_ROOT)) {
+		this._searchInSelect.addOption(ZmMsg.OAB, false, ZmContactsApp.SEARCHFOR_HAB);
+	}
 };
 
 ZmContactPicker.prototype.getSearchFieldValue =
@@ -461,7 +469,13 @@ function() {
 			- this._getSectionHeight("_buttons")
 			- 30; //still need some magic to account for some margins etc.
 
-	this._chooser.resize(this.getSize().x - 25, chooserHeight);
+	// Make room for habTree by shrinking _chooser
+	var chooserWidth = this.getSize().x - 25;
+	if (Dwt.getVisible(this.sourceTreeOverView.getHtmlElement())) {
+		chooserWidth = this.getSize().x - 250;
+	}
+
+	this._chooser.resize(chooserWidth, chooserHeight);
 };
 
 /**
@@ -497,6 +511,32 @@ function(account) {
 	} else {
 		this.setSize("600");
 	}
+
+	// Somehow the width gets changed to a very very high number after tree will be added, so lets save it here then re-apply
+	var tempSize = this.getSize();
+	var overviewIdParts = [
+		appCtxt.getCurrentAppName(),
+		this.toString(),
+		this._htmlElId
+	];
+	var overviewParams = {
+		parent : this,
+		collapsed : false,
+		scroll : Dwt.SCROLL,
+		overviewId : appCtxt.getOverviewId(overviewIdParts, null)
+	};
+
+	// Create and add source tree view
+	this.sourceTreeOverView = appCtxt.getOverviewController().createOverview(overviewParams);
+	this.sourceTreeOverView.setTreeView("HAB");
+	this.sourceTreeOverView.reparentHtmlElement(this._htmlElId + "_habTree");
+	this.sourceTreeOverView.setVisible(false);
+
+	// now, the width gets very large, let's just move it back to the previous width
+	this.setSize(tempSize.x);
+	
+	this.sourceTreeView = this.sourceTreeOverView.getTreeView("HAB");
+	this.sourceTreeView && this.sourceTreeView.addSelectionListener(new AjxListener(this, this._sourceTreeViewSelectionListener));
 
 	// add chooser
 	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo});
@@ -546,6 +586,16 @@ function(account) {
 	this._updateSearchRows(this._searchInSelect && this._searchInSelect.getValue() || ZmContactsApp.SEARCHFOR_CONTACTS);
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
     this.sharedContactGroups = [];
+
+	var habContainer = document.getElementById(this._htmlElId + "_habTree");
+	if (habContainer && this.sourceTreeView) {
+		var innerOverviewDiv = habContainer.getElementsByClassName("ZmOverview")[0];
+		Dwt.setSize(innerOverviewDiv, '210px', habContainer.clientHeight);
+		Dwt.setScrollStyle(innerOverviewDiv, Dwt.SCROLL);
+		var headerItem = this.sourceTreeView._headerItem;
+		headerItem && headerItem.setScrollStyle('visible');
+		innerOverviewDiv.style.paddingRight = "15px";
+	}
 
 	//add tabgroups for keyboard navigation
 	this._tabGroup = new DwtTabGroup(this.toString());
@@ -878,8 +928,20 @@ function(ev) {
 	var newValue = ev._args.newValue;
 
 	if (oldValue != newValue) {
-		this._updateSearchRows(newValue);
-		this._searchButtonListener();
+		if (newValue !== ZmContactsApp.SEARCHFOR_HAB) {
+			this._updateSearchRows(newValue);
+			this._searchButtonListener();
+			this.sourceTreeOverView.setVisible(false);
+			this._resizeChooser();
+		} else {
+			// Hab tree selected, no need to make any search request
+			this.sourceTreeOverView.setVisible(true);
+			this._resizeChooser();
+			if (this.sourceTreeView) {
+				var selectedItem = this.sourceTreeView.getSelected() ? this.sourceTreeView.getSelected().mail : false;
+				selectedItem && this._getHabDlMembers(selectedItem);
+			}
+		}
 	}
 };
 
@@ -952,6 +1014,55 @@ function(ev) {
 		return false;
 	}
 	return true;
+};
+
+/**
+ * Handles source-tree click event. Underlying members which belongs to the clicked
+ * HAB node would be fetched.
+ *
+ * @param {DwtUiEvent}	ev		the UI event
+ * 
+ * @private
+ */
+ZmContactPicker.prototype._sourceTreeViewSelectionListener = function(ev) {
+	this._resetResults();
+	this._getHabDlMembers(ev.item._data._object_.mail);
+}
+
+ZmContactPicker.prototype._getHabDlMembers =
+function(dlAddress) {
+	var jsonObj = {GetDistributionListMembersRequest:{_jsns:"urn:zimbraAccount", offset:"0", limit:"0"}};
+	var request = jsonObj.GetDistributionListMembersRequest;
+	request.dl = {_content: dlAddress};
+	var respCallback = new AjxCallback(this, this._handleResponseGetDLMembers, ["0", "0"]);
+	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+}
+
+ZmContactPicker.prototype._handleResponseGetDLMembers =
+function(offset, limit, result, resp) {
+
+	if (resp || !result.list) {
+		resp = resp || result.getResponse();  //if response is passed, take it. Otherwise get it from result
+		resp = resp.GetDistributionListMembersResponse;
+		var members = resp.groupMembers && resp.groupMembers.length > 0 && resp.groupMembers[0].groupMember;
+		var contactList = new ZmContactList(false, false, "CONTACT");
+		var list = [];
+		if (members && members.length) {
+			for (var i = 0, len = members.length; i < len; i++) {
+				var member = members[i];
+				member._attrs.email = member.name;
+				member._attrs.name = member._attrs.displayName;
+				member._attrs.address = member.name;
+				contactList.addFromDom(member);
+			}
+
+			var vectorArray = contactList.getVector().getArray();
+			for (var j = 0, len = vectorArray.length; j < len; j++) {
+				ZmContactsHelper._addContactToList(list, vectorArray[j]);
+			}
+		}
+		this._showResults(AjxVector.fromArray(list));
+	}
 };
 
 
