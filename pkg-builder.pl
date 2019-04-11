@@ -142,13 +142,15 @@ sub make_package($)
       "--pkg-summary=$pkg_info->{summary}",
       "--pkg-post-install-script=scripts/postinst.sh"
    );
-   if ( $pkg_info->{dir_list} )
+
+   if ( $pkg_info->{dir_list} )	
    {
       foreach my $expr ( @{ $pkg_info->{dir_list} } )
       {
          push( @cmd, "--pkg-installs=$expr" );
       }
    }
+
    if ( $pkg_info->{file_list} )
    {
       foreach my $expr ( @{ $pkg_info->{file_list} } )
@@ -167,6 +169,7 @@ sub make_package($)
          }
       }
    }
+
    push( @cmd, @{ [ map { "--pkg-replaces=$_"; } @{ $pkg_info->{replaces} } ] } )                                                              if ( $pkg_info->{replaces} );
    push( @cmd, @{ [ map { "--pkg-depends=$_"; } @{ $pkg_info->{other_deps} } ] } )                                                             if ( $pkg_info->{other_deps} );
    push( @cmd, @{ [ map { "--pkg-depends=$_ (>= $PKG_GRAPH{$_}->{version})"; } @{ $pkg_info->{soft_deps} } ] } )                               if ( $pkg_info->{soft_deps} );
