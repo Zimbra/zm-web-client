@@ -36,6 +36,9 @@
             <c:param name="xim" value="${param.xim}"/>
         </c:url>
 
+        <c:set var="cidRegex" value="(cid:[^\"\']+)&#64;"/>
+        <c:set var="theBody" value="${zm:replaceAll(theBody,cidRegex,'$1@')}"/>
+
         <c:forEach var="part" items="${message.attachments}">
            <c:set var="cid" value="${fn:replace(part.contentId,'<' ,'')}"/>
            <c:set var="cid" value="cid:${fn:replace(cid,'>' ,'')}"/>

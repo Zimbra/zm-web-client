@@ -917,7 +917,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SEND_MENU, {textKey:"send", tooltipKey:"sendTooltip", image:"Send"}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SEND_LATER, {textKey:"sendLater", tooltipKey:"sendLaterTooltip", image:"SendLater"}, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHOW_BCC, {textKey:"showBcc"});
-	ZmOperation.registerOp(ZmId.OP_SHOW_CONV, {textKey:"showConv", image:"Conversation"});
+	ZmOperation.registerOp(ZmId.OP_SHOW_CONV, {textKey:"showConv", image:"Conversation"}, ZmSetting.CONVERSATIONS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHOW_ORIG, {textKey:"showOrig", image:"Message"});
 	ZmOperation.registerOp(ZmId.OP_SPAM, {textKey:"junkLabel", tooltipKey:"junkTooltip", image:"JunkMail", shortcut:ZmKeyMap.SPAM, textPrecedence:70}, ZmSetting.SPAM_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_USE_PREFIX, {textKey:"usePrefix"});
@@ -1639,6 +1639,11 @@ ZmMailApp.prototype._handleLoadLaunch =
 function(params, callback) {
 	// set type for initial search
 	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+
+	// Check if conversations are disabled and group by is conversation then change it to message
+	if (!appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED) && this._groupBy === 'conversation') {
+		this._groupBy = 'message';
+	}
 
 	var query;
 	params = params || {};

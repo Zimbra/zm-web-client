@@ -8,34 +8,10 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<%@ page import='java.util.Locale' %>
-<%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
 <app:skinAndRedirect />
-<%!
-    static String getParameter(HttpServletRequest request, String pname, String defValue) {
-        String value = request.getParameter(pname);
-        return value != null ? value : defValue;
-    }
-%>
-
-<%
-    Locale locale;
-    String localeId = getParameter(request, "lang", "en_US");
-    localeId = localeId.replaceAll("[^A-Za-z_]","");
-    localeId = BeanUtils.cook(localeId);
-    int index = localeId.indexOf("_");
-    if (index == -1) {
-      locale = new Locale(localeId);
-    } else {
-      String language = localeId.substring(0, index);
-      String country = localeId.substring(localeId.length() - 2);
-      locale = new Locale(language, country);
-    }
-    pageContext.setAttribute("locale", locale);
-%>
-<fmt:setLocale value='${locale}' scope='request' />
+<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
@@ -114,6 +90,9 @@
 			<zm:logout/>
 			<c:set var="errorCode" value="${param.loginErrorCode}"/>
 			<fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
+			<c:if test = "${fn:contains(errorMessage, errorCode)}">
+				<fmt:message var="errorMessage" key="unknownError"/>
+			</c:if>
 		</c:when>
 		<c:when test="${param.loginOp eq 'logout'}">
 			<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
@@ -649,7 +628,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                 </td>
                                 </tr>
 			
-				<c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">	
+				                <c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">	
                                     <tr>
                                         <td>&nbsp;</td>
                                         <td class="submitTD">

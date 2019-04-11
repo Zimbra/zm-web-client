@@ -1116,6 +1116,9 @@ function(ev) {
 	// bug fix #14874 - if moved to trash, show strike-thru
 	var folderId = this._controller.getFolderId();
 	if (!folderId && ev.event == ZmEvent.E_MOVE) {
+		if(!ev._details.items) {
+			ev._details.items = ev.items;
+		}
 		var contact = ev._details.items[0];
 		var folder = appCtxt.getById(contact.folderId);
 		var row = this._getElement(contact, ZmItem.F_ITEM_ROW);

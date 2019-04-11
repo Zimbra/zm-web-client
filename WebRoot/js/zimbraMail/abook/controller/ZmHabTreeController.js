@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2012, 2013, 2014, 2016 Synacor, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2016 Synacor, Inc.
  *
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,31 @@
  * The Initial Developer of the Original Code is Zimbra, Inc.  All rights to the Original Code were
  * transferred by Zimbra, Inc. to Synacor, Inc. on September 14, 2015.
  *
- * All portions of the code are Copyright (C) 2006, 2007, 2008, 2009, 2010, 2012, 2013, 2014, 2016 Synacor, Inc. All Rights Reserved.
+ * All portions of the code are Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2016 Synacor, Inc. All Rights Reserved.
  * ***** END LICENSE BLOCK *****
  */
-/*
- * Package: ContactsCore
+
+/**
+ * @overview
+ * This file contains the address book tree controller class.
  * 
- * Supports: Loading of contacts and address books
- * 
- * Loaded:
- * 	- When user contacts are loaded during startup
- * 	- If the <refresh> block has address books
- * 	- If a search for contacts returns results
  */
 
-AjxPackage.require("zimbraMail.abook.model.ZmAddrBook");
-AjxPackage.require("zimbraMail.abook.model.ZmContact");
-AjxPackage.require("zimbraMail.abook.model.ZmContactList");
-AjxPackage.require("zimbraMail.abook.view.ZmContactsHelper");
-AjxPackage.require("zimbraMail.abook.view.ZmContactPicker");
-AjxPackage.require("zimbraMail.abook.controller.ZmHabTreeController");
+/**
+ * Creates an address book tree controller.
+ * @class
+ * This class is a controller for the tree view used by the address book 
+ * application. This class uses the support provided by {@link ZmOperation}. 
+ *
+ * 
+ * @extends		ZmFolderTreeController
+ */
+ZmHabTreeController = function() {
+	ZmFolderTreeController.call(this, ZmOrganizer.HAB);
+};
+
+ZmHabTreeController.prototype = new ZmFolderTreeController;
+ZmHabTreeController.prototype.constructor = ZmHabTreeController;
+
+ZmHabTreeController.prototype.isZmHabTreeController = true;
+ZmHabTreeController.prototype.toString = function() { return "ZmHabTreeController"; };

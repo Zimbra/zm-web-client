@@ -1374,10 +1374,10 @@ function(callback, toastMessage, result) {
 
 	// allow or disallow move logic:
 	var allowMove;
-	if ((this.acceptFolderId != ZmOrganizer.ID_CALENDAR) ||
+	if ((this.acceptFolderId != appCtxt.get(ZmSetting.CAL_DEFAULT_ID)) ||
 		(appCtxt.multiAccounts &&
 			!this.getAccount().isMain &&
-			this.acceptFolderId == ZmOrganizer.ID_CALENDAR))
+			this.acceptFolderId == appCtxt.get(ZmSetting.CAL_DEFAULT_ID)))
 	{
 		allowMove = true;
 	}
@@ -2096,6 +2096,7 @@ function() {
 			content = bodyPart.getContent();
 			var msgRef = this;
 			content.replace(/src=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
+				cid=cid.replace(/&#64;/g, "@");
 				var attach = msgRef.findInlineAtt("<" + AjxStringUtil.urlComponentDecode(cid)  + ">");
 				if (attach) {
 					attach.foundInMsgBody = true;
@@ -2156,13 +2157,13 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 			if (!this.isRealAttachment(attach) ||
 					(attach.contentType.match(/^image/) && attach.contentId && attach.foundInMsgBody && !includeInlineImages) ||
-					(attach.contentDisposition == "inline" && attach.fileName && ZmMimeTable.isRenderable(attach.contentType, true) && !includeInlineAtts)) {
+					(attach.contentDisposition == "inline" && attach.fileName && ZmMimeTable.isRenderableText(attach.contentType, attach.isBody) && !includeInlineAtts) ||
+					(attach.contentDisposition == "inline" && attach.contentType === "application/pdf" && attach.contentId && attach.foundInMsgBody)) {
 				continue;
 			}
 
 			var props = {};
 			props.links = {};	// flags that indicate whether to include a certain type of link
-
 			// set a viable label for this attachment
 			props.label = attach.name || attach.fileName || (ZmMsg.unknown + " <" + attach.contentType + ">");
 

@@ -218,26 +218,31 @@ function() {
 	// get basic controls
 	var MAX_VALUE = 100000;
 	var tabIndexes = {};
-	var ids = [ this._nameInputId, this._activeCheckboxId, this._stopCheckboxId ];
+	var el, tabIndex;
+	var ids = [this._activeCheckboxId, this._nameInputId];
 	for (var i = 0; i < ids.length; i++) {
-		var el = Dwt.byId(ids[i]);
-		var tabIndex = el.getAttribute("tabindex") || MAX_VALUE - 5 - i;
+		el = Dwt.byId(ids[i]);
+		tabIndex = MAX_VALUE - 6 - i;
 		tabIndexes[tabIndex] = el;
 	}
 
 	// add other controls
-	var el = Dwt.byId(this._conditionId);
-	var tabIndex = el.getAttribute("tabindex") || MAX_VALUE - 4;
+	el = Dwt.byId(this._conditionId);
+	tabIndex = MAX_VALUE - 5;
 	tabIndexes[tabIndex] = this._conditionSelect;
 
 	// add tabgroups that will hold the conditions and actions
-	var el = Dwt.byId(this._conditionsTableId);
-	var tabIndex = el.getAttribute("tabindex") || MAX_VALUE - 3;
+	el = Dwt.byId(this._conditionsTableId);
+	tabIndex = MAX_VALUE - 4;
 	tabIndexes[tabIndex] = this._conditionsTabGroup;
 
-	var el = Dwt.byId(this._actionsTableId);
-	var tabIndex = el.getAttribute("tabindex") || MAX_VALUE - 2;
+	el = Dwt.byId(this._actionsTableId);
+	tabIndex = MAX_VALUE - 3;
 	tabIndexes[tabIndex] = this._actionsTabGroup;
+
+	el = Dwt.byId(this._stopCheckboxId);
+	tabIndex = MAX_VALUE -2;
+	tabIndexes[tabIndex] = el;
 
 	// add dialog buttons
 	tabIndexes[MAX_VALUE - 1] = this.getButton(DwtDialog.OK_BUTTON);
@@ -363,12 +368,12 @@ function(data, test, isCondition, rowId) {
 				html[i++] = "<td><table>";
 				html[i++] = "<tr><td>" + ZmMsg.actionNotifyReadOnlyMsg + "</td></tr>";
 				html[i++] = "<tr><td>" + ZmMsg.emailLabel + " " + email + " | " + subject + " | " + ZmMsg.maxBodySize + ": " + maxBodySize + "</td><tr>";
-				html[i++] = "<tr><td>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
+				html[i++] = "<tr><td style='max-width:100px'>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
 			}
 			else if (actionId == ZmFilterRule.A_REPLY && data) {
 				var content = AjxUtil.isArray(data.content) ? data.content[0]._content : "";
 				html[i++] = "<td><table><tr><td>" + ZmMsg.actionReplyReadOnlyMsg + "</td></tr>";
-				html[i++] = "<tr><td>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
+				html[i++] = "<tr><td style='max-width:100px'>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
 			}
 			this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 		}

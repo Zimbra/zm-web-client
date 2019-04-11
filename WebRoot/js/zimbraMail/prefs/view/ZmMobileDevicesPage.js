@@ -86,6 +86,7 @@ function() {
 
         var pageId = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView().getView("MOBILE").getHTMLElId();
         this._addListView(this.oAuthAppsListView, pageId + "_oauthconsumerapps");
+        this._mobileConfiguration(pageId+"_mobileConfig");
         this._rendered = true;
 	}
 	this._deviceController.loadDeviceInfo();
@@ -140,16 +141,24 @@ ZmMobileDeviceListView.prototype.constructor = ZmMobileDeviceListView;
 
 // Consts
 
-ZmMobileDeviceListView.F_DEVICE			= "de";
-ZmMobileDeviceListView.F_STATUS			= "st";
-ZmMobileDeviceListView.F_ID				= "id";
-ZmMobileDeviceListView.F_PROTOCOL		= "pr";
-ZmMobileDeviceListView.F_PROVISIONABLE	= "pv";
+ZmMobileDevicesPage.ALL                 = "all";
+ZmMobileDevicesPage.DAV                 = "dav";
+ZmMobileDevicesPage.CALDAV              = "caldav";
+ZmMobileDevicesPage.CARDDAV             = "carddav";
+ZmMobileDevicesPage.IMAP                = "imap";
+ZmMobileDevicesPage.ID_DOWNLOAD_CONFIG  = "downloadButton";
+ZmMobileDevicesPage.ID_CONFIG_TYPE      = "configType";
 
-ZmMobileDeviceListView.F_APP		    = "ap";
-ZmMobileDeviceListView.F_APPDEVICE	    = "ad";
-ZmMobileDeviceListView.F_APPROVED	    = "ar";
-ZmMobileDeviceListView.F_ACTIONS	    = "ac";
+ZmMobileDeviceListView.F_DEVICE         = "de";
+ZmMobileDeviceListView.F_STATUS         = "st";
+ZmMobileDeviceListView.F_ID             = "id";
+ZmMobileDeviceListView.F_PROTOCOL       = "pr";
+ZmMobileDeviceListView.F_PROVISIONABLE  = "pv";
+
+ZmMobileDeviceListView.F_APP            = "ap";
+ZmMobileDeviceListView.F_APPDEVICE      = "ad";
+ZmMobileDeviceListView.F_APPROVED       = "ar";
+ZmMobileDeviceListView.F_ACTIONS        = "ac";
 
 
 // Public methods
@@ -158,6 +167,71 @@ ZmMobileDeviceListView.prototype.toString =
 function() {
 	return "ZmMobileDeviceListView";
 };
+
+ZmMobileDevicesPage.prototype._downloadUrl = 
+function() {
+
+    var portPrefix = (location.port == "" || location.port == "80")
+			? ""
+            : (":" + location.port);
+    var username = appCtxt.multiAccounts ? (AjxStringUtil.urlComponentEncode(appCtxt.get(ZmSetting.USERNAME))) : "~";
+    var uri=[
+        location.protocol, "//", location.hostname, portPrefix, "/service/home/",
+        username, "/", "?fmt=mobileconfig&configType="
+    ].join("");
+    return uri;
+};
+
+ZmMobileDevicesPage.prototype._onClick = 
+function(id) {
+
+    var downloadType = "";
+    if(id === ZmMobileDevicesPage.ID_DOWNLOAD_CONFIG) {
+        var configType = this.getValue(ZmMobileDevicesPage.ID_CONFIG_TYPE);
+        switch(configType) {
+        case ZmMobileDevicesPage.DAV:
+            downloadType = "dav";
+            break;
+        case ZmMobileDevicesPage.CALDAV:
+            downloadType = "caldav";
+            break;
+        case ZmMobileDevicesPage.CARDDAV:
+            downloadType = "carddav";
+            break;
+        case ZmMobileDevicesPage.IMAP:
+            downloadType = "imap";
+            break;
+        default:
+            downloadType = "all"
+        }
+        var link = this.parent._downloadUrl().concat(downloadType);
+        window.open(link,"_parent");
+    }
+};
+
+ZmMobileDevicesPage.prototype._mobileConfiguration = 
+function(configDivId) {
+
+    var params = {};
+    var options = [
+        { id: ZmMobileDevicesPage.ALL, value: ZmMobileDevicesPage.ALL, label: ZmMsg.mobileConfigurationAll },
+        { id: ZmMobileDevicesPage.DAV, value: ZmMobileDevicesPage.DAV, label: ZmMsg.mobileConfigurationDav },
+        { id: ZmMobileDevicesPage.CALDAV, value: ZmMobileDevicesPage.CALDAV, label: ZmMsg.mobileConfigurationCaldav },
+        { id: ZmMobileDevicesPage.CARDDAV, value: ZmMobileDevicesPage.CARDDAV, label: ZmMsg.mobileConfigurationCarddav },
+        { id: ZmMobileDevicesPage.IMAP, value: ZmMobileDevicesPage.IMAP, label: ZmMsg.mobileConfigurationImap }
+    ];
+    params.parent = this;
+    params.template = "prefs.Pages#MobileConfig"
+    params.form = {
+        items: [
+            { id: ZmMobileDevicesPage.ID_CONFIG_TYPE, type: "DwtSelect", items: options},
+            { id: ZmMobileDevicesPage.ID_DOWNLOAD_CONFIG, type: "DwtButton", label: ZmMsg.mobileConFigurationDownloadLabel, onclick: this._onClick }
+        ]
+    };
+    this._mobileConfig = new DwtForm(params);
+    var mobileConfigDiv = document.getElementById(configDivId);
+    mobileConfigDiv.appendChild(this._mobileConfig.getHtmlElement());
+}
 
 ZmMobileDeviceListView.prototype._getHeaderList =
 function() {
