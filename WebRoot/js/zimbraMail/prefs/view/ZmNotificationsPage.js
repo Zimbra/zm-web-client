@@ -351,6 +351,10 @@ ZmNotificationsPageForm.prototype.getCodeStatus = function() {
 		var email = this._getValidatedDevice();
 		if (email) {
 			var pattern = ZmMsg.deviceEmailNotificationsVerificationStatusConfirmed;
+			var index = email.indexOf("@esms.gov.in");
+			if(index != -1) {
+				email = email.substring(0, index);
+			}
 			return AjxMessageFormat.format(pattern, [email]);
 		}
 		// default back to unconfirmed
@@ -367,6 +371,10 @@ ZmNotificationsPageForm.prototype.getPhoneHint = function() {
 	var carrier = ZmNotificationsPage.CARRIERS[carrierId];
 	var carrierHint = carrier && carrier.hint;
 	var email = this.getEmailAddress();
+	var index = email.indexOf("@esms.gov.in");
+	if(email && index != -1) {
+		email = email.substring(0, index);
+	}
 	var emailHint = email && AjxMessageFormat.format(ZmMsg.deviceEmailNotificationsPhoneNumber, [email]);
 	if (carrierHint || emailHint) {
 		if (!carrierHint) return emailHint;
