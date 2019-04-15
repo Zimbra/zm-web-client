@@ -427,6 +427,19 @@ function(callback, noPop) {
 	var list;
 	try {
 		list = this._prefsView.getChangedPrefs(false, false, batchCommand);
+		if (list) {
+			var setting;
+			for(i = 0; i < list.length; i++) {
+				setting = list[i];
+				if(setting.name == 'zimbraPrefCalendarReminderEmail') {
+					var domain = setting.value.split('@')[1];
+					if(domain == 'esms.gov.in') {
+						appCtxt.setStatusMsg(ZmMsg.invalidDomain, ZmStatusView.LEVEL_CRITICAL);
+						return;
+					}
+				}
+			}
+		}
 	}
 	catch (e) {
 		// getChangedPrefs throws an AjxException if any of the values have not passed validation.
