@@ -146,11 +146,17 @@
 		var dd = String(today.getDate());
 		var mm = String(today.getMonth() + 1); //January is 0!
 		var yyyy = today.getFullYear();
+		if (dd < 10) {
+			dd = '0' + dd;
+		}
+		if (mm < 10) {
+			mm = '0' + mm;
+		} 
 		today = yyyy + '-' + mm + '-' + dd;
-		var dateOfBirth = document.getElementById("form_legacyDateOfBirth").value;
-		var dateOfAcctExp = document.getElementById("form_legacyAccountExpDate").value;
-		var dateOfRetirement = document.getElementById("form_legacyDateOfRetirement").value;
-		if (type == "legacyDateOfBirth" && dateOfBirth > today) {
+		var dateOfBirth = new Date(document.getElementById("form_legacyDateOfBirth").value).getTime();
+		var dateOfAcctExp = new Date(document.getElementById("form_legacyAccountExpDate").value).getTime();
+		var dateOfRetirement = new Date(document.getElementById("form_legacyDateOfRetirement").value).getTime();
+		if (type == "legacyDateOfBirth" && dateOfBirth > new Date(today).getTime()) {
 			document.getElementById("legacyDateOfBirthErrDiv").innerHTML = ZmMsg.nicBirthError;
 			return true;
 		}
