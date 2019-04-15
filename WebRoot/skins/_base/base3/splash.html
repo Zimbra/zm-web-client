@@ -61,9 +61,9 @@
 		document.getElementById("form_legacyEmployeeNum").value = window.user_legacyEmployeeNum != "NODATA" ? window.user_legacyEmployeeNum : "";
 		document.getElementById("form_initial").value = window.user_initials != "NODATA" ? window.user_initials.toLowerCase() : "";
 
-		window.user_legacyDateOfBirth = window.user_legacyDateOfBirth != "NODATA" && window.user_legacyDateOfBirth.includes('000000Z') ? window.user_legacyDateOfBirth.replace('000000Z', '') : "";
-		window.user_legacyAccountExpDate = window.user_legacyAccountExpDate != "NODATA" && window.user_legacyAccountExpDate.includes('000000Z') ? window.user_legacyAccountExpDate.replace('000000Z', '') : "";
-		window.user_legacyDateOfRetirement = window.user_legacyDateOfRetirement != "NODATA" && window.user_legacyDateOfRetirement.includes('000000Z') ? window.user_legacyDateOfRetirement.replace('000000Z', '') : "";
+		window.user_legacyDateOfBirth = window.user_legacyDateOfBirth != "NODATA" && window.user_legacyDateOfBirth.indexOf('000000Z') != -1 ? window.user_legacyDateOfBirth.replace('000000Z', '') : "";
+		window.user_legacyAccountExpDate = window.user_legacyAccountExpDate != "NODATA" && window.user_legacyAccountExpDate.indexOf('000000Z') != -1 ? window.user_legacyAccountExpDate.replace('000000Z', '') : "";
+		window.user_legacyDateOfRetirement = window.user_legacyDateOfRetirement != "NODATA" && window.user_legacyDateOfRetirement.indexOf('000000Z') != -1 ? window.user_legacyDateOfRetirement.replace('000000Z', '') : "";
 		document.getElementById("form_legacyDateOfBirth").value = formatDate(window.user_legacyDateOfBirth);
 		document.getElementById("form_legacyAccountExpDate").value = formatDate(window.user_legacyAccountExpDate);
 		document.getElementById("form_legacyDateOfRetirement").value = formatDate(window.user_legacyDateOfRetirement);
@@ -142,10 +142,20 @@
 	}
 	
 	function dateValidator(type) {
+		var today = new Date();
+		var dd = String(today.getDate());
+		var mm = String(today.getMonth() + 1); //January is 0!
+		var yyyy = today.getFullYear();
+		today = yyyy + '-' + mm + '-' + dd;
 		var dateOfBirth = document.getElementById("form_legacyDateOfBirth").value;
+		console.log("dateOfBirth " + dateOfBirth);
 		var dateOfAcctExp = document.getElementById("form_legacyAccountExpDate").value;
 		var dateOfRetirement = document.getElementById("form_legacyDateOfRetirement").value;
-		if (type == "legacyDateOfBirth" && (dateOfBirth >= dateOfAcctExp || dateOfBirth >= dateOfRetirement)) {
+		if (type == "legacyDateOfBirth" && dateOfBirth > today) {
+			document.getElementById("legacyDateOfBirthErrDiv").innerHTML = ZmMsg.nicBirthError;
+			return true;
+		}
+		else if (type == "legacyDateOfBirth" && (dateOfBirth >= dateOfAcctExp || dateOfBirth >= dateOfRetirement)) {
 			document.getElementById("legacyDateOfBirthErrDiv").innerHTML = ZmMsg.nicDateOfBirthError;
 			return true;
 		}
@@ -160,6 +170,9 @@
 	}
 	
 	function formatDate(date) {
+		if (!date) {
+			return '';
+		}
 		return date.substring(0,4) + '-' + date.substring(4,6) + '-' + date.substring(6,8);
 	}
 	
@@ -207,7 +220,9 @@
 		var isError = false;
 		var inputFieldsArr = ["initial", "givenName", "sn", "telephoneNumber", "mobile", "postalAddress", "legacyDateOfBirth", "legacyAccountExpDate", "legacyDateOfRetirement", "legacyEmployeeNum", "oldPassword", "newPassword"];
 		var inputFieldsArrLenght = inputFieldsArr.length;
+		var formError = false;
 		for(var field = 0 ; field < inputFieldsArrLenght; field++) {
+			var isError = false;
 			var fieldName = inputFieldsArr[field];
 			var fieldValue = document.getElementById("form_"+fieldName).value;
 			if(fieldValue == "") {
@@ -223,15 +238,37 @@
 				if (!isError) {
 					document.getElementById(fieldName + "ErrDiv").innerHTML = "";
 				} 
+			} else if (fieldName == "newPassword" && document.getElementById("form_oldPassword").value != "") {
+				isError = validatePassword(document.getElementById("form_oldPassword").value, fieldValue);
 			} else {
 				document.getElementById("form_"+fieldName).style.border = "none";
 			}
+			if (isError) {
+				formError = true;
+			}
 		}
-		if (!isError) {
+		if (!formError) {
 			this.changePasswordRequest();
 		}
 	}
 
+	function validatePassword(newPassword, oldPassword) {
+		var isError = false;
+		if (newPassword == oldPassword) {
+			document.getElementById("form_oldPassword").style.border = "1px solid red";
+			document.getElementById("form_newPassword").style.border = "1px solid red";
+			document.getElementById("passwordErrorDiv").innerHTML = ZmMsg.nicPasswordError;
+			document.getElementById("passwordErrorDiv").classList.remove('passwordSuccess');
+			document.getElementById("passwordErrorDiv").classList.add('passwordError');
+			isError = true;
+		}else {
+			document.getElementById("passwordErrorDiv").innerHTML = "";
+			document.getElementById("passwordErrorDiv").classList.remove('passwordError');
+			document.getElementById("passwordErrorDiv").classList.add('passwordSuccess');
+		}
+		return isError;
+	}
+	
 	function changePasswordRequest() {
 		var oldPasswordVal = document.getElementById("form_oldPassword").value;
 		var newPasswordVal = document.getElementById("form_newPassword").value;
@@ -358,7 +395,7 @@
 	}
 </script>
 <!-- BEGIN USER PROFILE SCREEN -->
-<div id='skin_container_userprofile_screen' class='userProfileScreen'>
+<div id='skin_container_userprofile_screen' class='userProfileScreen' style='display:none'>
 	<div id="ZUserProfilePanel" class="center">
 		<div class="contentBox profile_contentBox">
 			<div id="#ZSplashBodyContainer" class="content">
