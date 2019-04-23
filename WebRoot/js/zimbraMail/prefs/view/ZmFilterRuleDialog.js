@@ -363,12 +363,12 @@ function(data, test, isCondition, rowId) {
 				html[i++] = "<td><table>";
 				html[i++] = "<tr><td>" + ZmMsg.actionNotifyReadOnlyMsg + "</td></tr>";
 				html[i++] = "<tr><td>" + ZmMsg.emailLabel + " " + email + " | " + subject + " | " + ZmMsg.maxBodySize + ": " + maxBodySize + "</td><tr>";
-				html[i++] = "<tr><td>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
+				html[i++] = "<tr><td style='max-width:100px'>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
 			}
 			else if (actionId == ZmFilterRule.A_REPLY && data) {
 				var content = AjxUtil.isArray(data.content) ? data.content[0]._content : "";
 				html[i++] = "<td><table><tr><td>" + ZmMsg.actionReplyReadOnlyMsg + "</td></tr>";
-				html[i++] = "<tr><td>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
+				html[i++] = "<tr><td style='max-width:100px'>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
 			}
 			this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 		}
