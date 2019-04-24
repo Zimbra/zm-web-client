@@ -371,9 +371,9 @@ ZmUploadDialog.prototype._upload = function(){
 
                 }).bind(this)(i, j);
             }
-			if ((i + 1) === fileElements.length) {
-				postUpload();
-			}
+	     if ((i + 1) === fileElements.length) {
+		   postUpload();
+	     }
         } else {
 			var fileName = element.value.replace(/^.*[\\\/:]/, "");
             file = { name: fileName };
