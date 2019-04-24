@@ -209,9 +209,12 @@ function(editor) {
    if (currentObj._mode === Dwt.HTML) {
         editor = editor || currentObj.getEditor();
         if (currentObj._editorInitialized && editor) {
-            editor.focus();
-            currentObj.setFocusStatus(true);
-            editor.getWin().scrollTo(0,0);
+			// Fix for the issue of text going blank while replying in Edge browser - NICPS-577, ZBUG-566
+			if(!AjxEnv.isMSEdge) {
+				editor.focus();
+				currentObj.setFocusStatus(true);
+				editor.getWin().scrollTo(0,0);
+			}
         }
     }
     else {
