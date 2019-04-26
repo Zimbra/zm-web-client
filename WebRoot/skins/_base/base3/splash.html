@@ -21,27 +21,33 @@
  * ***** END LICENSE BLOCK *****
 -->
 <link href="/css/jquery-ui.css" rel="stylesheet" type="text/css" />	
-<script src="/js/jquery_calender.js" ><</script>
-<script src="/js/jquery-ui.js" ><</script>
+<script src="/js/jquery_calender.js" ></script>
+<script src="/js/jquery-ui.js" ></script>
 <script type="text/javascript">
 		$cal = $.noConflict();
 		$cal( document ).ready(function() {
 			$cal('#form_legacyDateOfBirth').datepicker({
 	        	changeMonth: true,
 	            changeYear: true,
-	            yearRange: '1800:2200'
+	            yearRange: getYearRange()
 	        });
 			$cal('#form_legacyAccountExpDate').datepicker({
 	        	changeMonth: true,
 	            changeYear: true,
-	            yearRange: '1800:2200'
+	            yearRange: getYearRange()
 	        });
 			$cal('#form_legacyDateOfRetirement').datepicker({
 	        	changeMonth: true,
 	            changeYear: true,
-	            yearRange: '1800:2200'
+	            yearRange: getYearRange()
 	        });
 		});
+		
+		function getYearRange() {
+			var today = new Date();
+			var yyyy = today.getFullYear();
+			return (yyyy - 100) + ':'  + (yyyy + 100);
+		}
 </script>
 
 <script language='javascript'>
@@ -473,17 +479,17 @@
 									</div>
 									<div class="field-row">
 										<div class="label profile_label"><script>document.write(ZmMsg.dateOfBirth)</script><span class="required">*</span></div>
-										<div class="fields"><input type="text" class="profile_input" name="legacyDateOfBirth" id="form_legacyDateOfBirth" value="" /></div>
+										<div class="fields"><input type="text" class="profile_input" name="legacyDateOfBirth" id="form_legacyDateOfBirth" value="" autocomplete="off"/></div>
 									</div>
 									<div class="field-row phone_error_label" id="legacyDateOfBirthErrDiv"></div>
 									<div class="field-row">
 										<div class="label profile_label"><script>document.write(ZmMsg.dateOfAccountExpiry)</script><span class="required">*</span></div>
-										<div class="fields"><input type="text" class="profile_input" name="legacyAccountExpDate" id="form_legacyAccountExpDate" value="" /></div>
+										<div class="fields"><input type="text" class="profile_input" name="legacyAccountExpDate" id="form_legacyAccountExpDate" value="" autocomplete="off"/></div>
 									</div>
 									<div class="field-row phone_error_label" id="legacyAccountExpDateErrDiv"></div>
 									<div class="field-row">
 										<div class="label profile_label"><script>document.write(ZmMsg.dateOfRetirement)</script><span class="required">*</span></div>
-										<div class="fields"><input type="text" class="profile_input" name="legacyDateOfRetirement" id="form_legacyDateOfRetirement" value="" /></div>
+										<div class="fields"><input type="text" class="profile_input" name="legacyDateOfRetirement" id="form_legacyDateOfRetirement" value="" autocomplete="off"/></div>
 									</div>
 									<div class="field-row phone_error_label" id="legacyDateOfRetirementErrDiv"></div>
 									<div class="field-row">
