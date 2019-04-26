@@ -17,6 +17,7 @@
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
+<%@ page import="java.util.regex.Pattern" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -25,8 +26,17 @@
 <app:skinAndRedirect />
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+
+<%
+        String skin = request.getParameter("skin");
+        boolean skinOK = (skin != null &&
+                          Pattern.matches("^[0-9A-Za-z]+$", skin));
+%>
+
+<c:if test="${skinOK}">
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZmMsg" var="zmmsg" scope="request"/>
+</c:if>
 
 <%
 	Object errorCode = request.getAttribute("javax.servlet.error.status_code");
