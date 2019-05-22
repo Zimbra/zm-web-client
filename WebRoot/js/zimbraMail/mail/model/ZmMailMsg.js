@@ -1367,17 +1367,8 @@ function(callback, toastMessage, result) {
 		this._origMsg.folderId = ZmFolder.ID_TRASH;
 	}
 
-	// allow or disallow move logic:
-	var allowMove;
-	if ((this.acceptFolderId != appCtxt.get(ZmSetting.CAL_DEFAULT_ID)) ||
-		(appCtxt.multiAccounts &&
-			!this.getAccount().isMain &&
-			this.acceptFolderId == appCtxt.get(ZmSetting.CAL_DEFAULT_ID)))
-	{
-		allowMove = true;
-	}
-
-	if (this.acceptFolderId && allowMove && resp.apptId != null) {
+	if (this.acceptFolderId && resp.apptId != null) {
+	
 		this.moveApptItem(resp.apptId, this.acceptFolderId);
 	}
 
