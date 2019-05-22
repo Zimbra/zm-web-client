@@ -1044,6 +1044,9 @@ function(offset, limit, result, resp) {
 	if (resp || !result.list) {
 		resp = resp || result.getResponse();  //if response is passed, take it. Otherwise get it from result
 		resp = resp.GetDistributionListMembersResponse;
+		var serverHasMore = resp.more;
+		var serverPaginationSupported = resp.paginationSupported !== false; //if it's not specified (such as the case of SearchResponse, i.e. not Gal) it IS supported.
+		this._serverHasMoreAndPaginationSupported = serverHasMore && serverPaginationSupported;
 		var members = resp.groupMembers && resp.groupMembers.length > 0 && resp.groupMembers[0].groupMember;
 		var contactList = new ZmContactList(false, false, "CONTACT");
 		var list = [];
