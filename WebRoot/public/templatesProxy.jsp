@@ -5,7 +5,9 @@
 
 <%
     String templateIds    = request.getParameter("id");
-    String templateApiUrl = Provisioning.getInstance().getConfig().getAttr(Provisioning.A_zimbraEmailTemplateApiUrl, "");
+    String templateApiUrl = Provisioning.getInstance().getLocalServer().getAttr(Provisioning.A_zimbraEmailTemplateApiUrl, "");
+    if (templateApiUrl == null || templateApiUrl.isEmpty())
+         templateApiUrl = Provisioning.getInstance().getConfig().getAttr(Provisioning.A_zimbraEmailTemplateApiUrl, "");
 
     String errorMsg = "";
     if(templateApiUrl.equals("")) {
