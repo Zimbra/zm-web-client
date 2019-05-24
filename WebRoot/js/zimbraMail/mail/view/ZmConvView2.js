@@ -2270,7 +2270,7 @@ function(state, force) {
 	this._idToAddr = {};
 
 	this._dateCellId = id + "_dateCell";
-	var date = msg.date || msg.sentDate;
+	var date = !msg.receivedDate ? msg.date : (msg.sentDate || msg.date);
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	var dateString = dateFormatter.format(new Date(date));
 
