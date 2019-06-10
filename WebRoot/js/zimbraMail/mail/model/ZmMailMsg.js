@@ -2088,7 +2088,7 @@ function() {
 	for (var i = 0; i < bodyParts.length; i++) {
 		var bodyPart = bodyParts[i];
 		if (bodyPart.contentType == ZmMimeTable.TEXT_HTML) {
-			content = bodyPart.getContent();
+			content = AjxStringUtil.inlineImageDecoder(bodyPart.getContent());
 			var msgRef = this;
 			content.replace(/src=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
 				var attach = msgRef.findInlineAtt("<" + AjxStringUtil.urlComponentDecode(cid)  + ">");
