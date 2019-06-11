@@ -2088,9 +2088,10 @@ function() {
 	for (var i = 0; i < bodyParts.length; i++) {
 		var bodyPart = bodyParts[i];
 		if (bodyPart.contentType == ZmMimeTable.TEXT_HTML) {
-			content = AjxStringUtil.inlineImageDecoder(bodyPart.getContent());
+			content = bodyPart.getContent();
 			var msgRef = this;
 			content.replace(/src=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
+				cid=cid.replace(/&#64;zimbra/g, "@zimbra");
 				var attach = msgRef.findInlineAtt("<" + AjxStringUtil.urlComponentDecode(cid)  + ">");
 				if (attach) {
 					attach.foundInMsgBody = true;
