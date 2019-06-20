@@ -279,7 +279,7 @@
                                         <app:optCalendar mailbox="${mailbox}"/>
                                     </c:when>
                                     <%------------------- ACCOUNTS ------------------%>
-                                    <c:when test="${selected eq 'accounts'}">
+                                    <c:when test="${mailbox.attrs.zimbraAccountSettingEnabled[0] eq 'TRUE' and selected eq 'accounts'}">
                                         <app:optAccounts mailbox="${mailbox}"/>
                                     </c:when>
                                     <%------------------- SHORTCUTS ------------------%>
