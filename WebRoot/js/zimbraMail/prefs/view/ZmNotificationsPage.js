@@ -553,17 +553,30 @@ ZmNotificationsPageForm.prototype._handleCarrierChange = function() {
 };
 
 ZmNotificationsPageForm.prototype._handleSendCode = function() {
-	var params = {
-		jsonObj: {
-			SendVerificationCodeRequest: {
-				_jsns: "urn:zimbraMail",
-				a: this.getEmailAddress()
-			}
-		},
-		asyncMode: true,
-		callback: new AjxCallback(this, this._handleSendCodeResponse)
-	};
-	appCtxt.getAppController().sendRequest(params);
+	if(this.validateEmailPhone()) {
+		var params = {
+			jsonObj: {
+				SendVerificationCodeRequest: {
+					_jsns: "urn:zimbraMail",
+					a: this.getEmailAddress()
+				}
+			},
+			asyncMode: true,
+			callback: new AjxCallback(this, this._handleSendCodeResponse)
+		};
+		appCtxt.getAppController().sendRequest(params);
+	}
+};
+
+ZmNotificationsPageForm.prototype.validateEmailPhone = function () {
+	var phoneNumber = this.getValue("DEVICE_EMAIL_PHONE").replace(/[()\-. ]/g, '');
+	var pattern = /^\+?\d{8,15}$/;
+	if (phoneNumber != '' && !pattern.test(phoneNumber)) {
+		appCtxt.setStatusMsg(ZmMsg.invalidPhoneNumber, ZmStatusView.LEVEL_CRITICAL);
+		return false;
+	} else {
+		return true;
+	}
 };
 
 ZmNotificationsPageForm.prototype._handleSendCodeResponse = function(resp) {
