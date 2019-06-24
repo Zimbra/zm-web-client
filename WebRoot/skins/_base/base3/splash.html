@@ -217,10 +217,12 @@
 
 	function hideSplash() {
 		Dwt.hide("skin_container_splash_screen");
+		Dwt.hide("splashLocationMessageContainer");
 	}
 	
 	function showSplash() {
 		Dwt.show("skin_container_splash_screen");
+		Dwt.show("splashLocationMessageContainer");
 	}
 
 	function showUserProfileScreen() {
@@ -562,6 +564,9 @@
 						</div>
 					</div>
 				</div>
+				<div class="locationmessage" id="splashLocationMessageContainer" style="cursor:pointer;">
+                                        <script> document.write(ZmMsg.splashLocationMessage) </script>
+                                </div>
 				<div class="switch" id="splashScreenSwitchContainer" style="cursor:pointer;">
 					<script> document.write(ZmMsg.splashScreenSwitch) </script>
 				</div>
