@@ -41,36 +41,34 @@ tinymce.PluginManager.add('zemoticons', function(editor, url) {
         emoticonsHtml = ['<table role="presentation" class="mce-grid">'];
 
         var emoticons = [];
-        for (var icon in tinyMCE.emoticon_map)
-            emoticons.push(icon);
+        var emoticon_map = [
+         0x1F603,0x1F605,0x1F609,0x1F60A,0x1F60B,0x1F60D,0x1F62D,
+         0x1F61E,0x1F620,0x1F621,0x1F622,0x1F637,0x1F635,0x1F61C,
+         0x1F44D,0x1F44E,0x1F44F,0x2764,0x1F496,0x1F498,0x1F494,
+         0x2708,0x1F680,0x1F684,0x1F687,0x1F68C,0x1F697,0x1F6A2,
+         0x1F6B2,0x1F6B6,0x2705,0x2615,0x1F355,0x1F389,0x1F3C1
+        ];
+              
+        while (emoticon_map.length) {
+          emoticonsHtml.push('<tr>');
+          var row = emoticon_map.splice(0, 7);
 
-        while (emoticons.length) {
-            emoticonsHtml.push('<tr>');
+          for (var i = 0; i < row.length; i++) {
+              var icon = row[i];
+              var emoticonUrl = '#';
 
-            var row = emoticons.splice(0, 4);
+              emoticonsHtml.push('<td><a style="font-size:24px;text-decoration:none; color:#666666" href="#" data-mce-url="');
+              emoticonsHtml.push(String.fromCodePoint(icon));
+              emoticonsHtml.push('" tabindex="-1">');
+              emoticonsHtml.push(String.fromCodePoint(icon));
+              emoticonsHtml.push('</a></td>');
+          };
 
-            for (var i = 0; i < row.length; i++) {
-                var icon = row[i];
-                var emoticonUrl = tinyMCE.emoticon_map[icon];
-
-                emoticonsHtml.push('<td><a href="#" data-mce-url="');
-                emoticonsHtml.push(emoticonUrl);
-                emoticonsHtml.push('" tabindex="-1"><img src="');
-                emoticonsHtml.push(emoticonUrl);
-                emoticonsHtml.push('" style="width: 18px; height: 18px" alt="');
-                emoticonsHtml.push(icon);
-                emoticonsHtml.push('">');
-                emoticonsHtml.push('</a></td>');
-            };
-
-            emoticonsHtml.push('</tr>');
+          emoticonsHtml.push('</tr>');          
         }
-
         emoticonsHtml.push('</table>');
-
-        return emoticonsHtml.join('');
+        return emoticonsHtml.join('');        
     }
-
     editor.addButton('zemoticons', {
         type: 'panelbutton',
         panel: {
@@ -79,10 +77,7 @@ tinymce.PluginManager.add('zemoticons', function(editor, url) {
             onclick: function(e) {
                 var linkElm = editor.dom.getParent(e.target, 'a');
                 if (linkElm) {
-					var orig = editor.settings.paste_data_images;
-					editor.settings.paste_data_images = true;
-                    editor.insertContent('<img src="' + linkElm.getAttribute('data-mce-url') + '" />');
-					editor.settings.paste_data_images = orig;
+                    editor.insertContent(linkElm.getAttribute('data-mce-url'));
                     this.hide();
                 }
             }
