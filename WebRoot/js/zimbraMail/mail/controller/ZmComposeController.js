@@ -2406,7 +2406,7 @@ function (imgArray, length, callback) {
         var img = imgArray[i];
         if (img) {
             var imgSrc = img.src;
-            if (imgSrc && imgSrc.indexOf("data:") !== -1) {
+            if (imgSrc && imgSrc.indexOf("data:") !== -1 && imgSrc.indexOf(";base64,") === -1) {
                 var blob = AjxUtil.dataURItoBlob(imgSrc);
                 if (blob) {
                     //setting data-zim-uri attribute for image replacement in callback
@@ -2530,7 +2530,7 @@ ZmComposeController.prototype._uploadImage = function(blob, callback, errorCallb
 
 ZmComposeController.prototype._handleUploadImage = function(callback, id, response){
     this._dataURIImagesLength--;
-    var uploadedImageArray = this._uploadedImageArray;
+    var uploadedImageArray = this._uploadedImageArray || [];
     if( response && id ){
         response[0]["id"] = id;
         uploadedImageArray.push(response[0]);
