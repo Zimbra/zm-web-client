@@ -303,7 +303,10 @@ BODY									{	margin:0px; 	}
 .SplashScreen .center .contentBox .table_history thead tr {
 	height: 28px;
 	background: #36304a;
-  }
+ }
+.SplashScreen .center .contentBox .table_history .table_body tr {
+	height: 30px;
+}
 .LoginScreen .center-small .contentBox,
 .SplashScreen .center-small .contentBox,
 .ErrorScreen .center-small .contentBox,
