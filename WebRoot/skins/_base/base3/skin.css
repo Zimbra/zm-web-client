@@ -267,7 +267,7 @@ BODY									{	margin:0px; 	}
 	left:50%;
 	overflow:visible;
 	position:absolute;
-	top:25%;
+	top:30%;
 	z-index:11;
 }
 #splashLocationMessageContainer {
@@ -301,7 +301,7 @@ BODY									{	margin:0px; 	}
 }
 
 .SplashScreen .center .contentBox .table_history thead tr {
-	height: 38px;
+	height: 28px;
 	background: #36304a;
   }
 .LoginScreen .center-small .contentBox,
@@ -379,7 +379,7 @@ BODY									{	margin:0px; 	}
 	@FontSize-bigger@
 }
 .SplashScreen .switch {
-	margin:70px 100px 30px;
+	margin:25px 100px 30px;
 #IFDEF WEBKIT
 	margin-bottom:0px;
 #ENDIF
