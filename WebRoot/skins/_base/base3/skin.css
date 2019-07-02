@@ -213,10 +213,6 @@ BODY									{	margin:0px; 	}
 
 /** Login, Splash and Error screen **/
 #skin_container_splash_screen, #skin_container_userprofile_screen			{	@SkinOuter@	@FullWindow@ z-index:90000000;		}
-#skin_container_splash_screen {
-	display: table;
-	margin: 0;
-}
 
 #ZLoginBodyContainer					{	@LoginPanelInnerBorder@	}
 #ZSplashPanel							{	@SplashOuterBorder@		}
@@ -240,33 +236,8 @@ BODY									{	margin:0px; 	}
 	background: #d7e5f2;
 	overflow:auto;
 }
-
-.SplashScreen .center {
-	width: 500px;
-    height: auto;
-    position: relative;
-    left: 0px;
-    right: 0px;
-    top: 0px;
-    bottom: 0px;
-    max-width: 100%;
-    max-height: 100%;
-    display: table-cell;
-    text-align: center;
-    vertical-align: middle;
-    margin: auto;
-    overflow: auto;
-}
-
-.SplashScreen .contentBox {
-	position: relative;
-	display: inline-block;
-	background-color: rgb(0, 124, 195);
-    width: 500px;
-    padding: 10px 0px 40px;
-    border-radius: 3px;
-}
 .LoginScreen .center,
+.SplashScreen .center,
 .ErrorScreen .center,
 .userProfileScreen .center {
 	margin-top:-205px;
@@ -283,7 +254,7 @@ BODY									{	margin:0px; 	}
 	width:250px;
 }
 .LoginScreen .center, .LoginScreen .center-small,
-.SplashScreen .center-small,
+.SplashScreen .center, .SplashScreen .center-small,
 .ErrorScreen .center, .ErrorScreen .center-small,
 .userProfileScreen .center, .userProfileScreen .center-small {
 	left:50%;
@@ -292,11 +263,23 @@ BODY									{	margin:0px; 	}
 	top:35%;
 	z-index:11;
 }
+.SplashScreen .center {
+	left:50%;
+	overflow:visible;
+	position:absolute;
+	top:25%;
+	z-index:11;
+}
+#splashLocationMessageContainer {
+	padding-top: 10px;
+	display: none;
+}
 .userProfileScreen .center {
 	left: 40%;
 	right: 10%;
 }
 .LoginScreen .contentBox,
+.SplashScreen .contentBox,
 .ErrorScreen .contentBox,
 .userProfileScreen .contentBox {
 	@LoginContentBox@
@@ -312,6 +295,15 @@ BODY									{	margin:0px; 	}
 	height:265px;
 #ENDIF
 }
+
+.SplashScreen .contentBox {
+	padding-bottom: 10px;
+}
+
+.SplashScreen .center .contentBox .table_history thead tr {
+	height: 38px;
+	background: #36304a;
+  }
 .LoginScreen .center-small .contentBox,
 .SplashScreen .center-small .contentBox,
 .ErrorScreen .center-small .contentBox,
