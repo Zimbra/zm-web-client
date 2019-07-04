@@ -263,6 +263,17 @@ BODY									{	margin:0px; 	}
 	top:35%;
 	z-index:11;
 }
+.SplashScreen .center {
+	left:50%;
+	overflow:visible;
+	position:absolute;
+	top:30%;
+	z-index:11;
+}
+#splashLocationMessageContainer {
+	padding-top: 10px;
+	display: none;
+}
 .userProfileScreen .center {
 	left: 40%;
 	right: 10%;
@@ -283,6 +294,18 @@ BODY									{	margin:0px; 	}
 #IFDEF MSIE_LOWER_THAN_7
 	height:265px;
 #ENDIF
+}
+
+.SplashScreen .contentBox {
+	padding-bottom: 10px;
+}
+
+.SplashScreen .center .contentBox .table_history thead tr {
+	height: 28px;
+	background: #36304a;
+ }
+.SplashScreen .center .contentBox .table_history .table_body tr {
+	height: 30px;
 }
 .LoginScreen .center-small .contentBox,
 .SplashScreen .center-small .contentBox,
@@ -359,7 +382,7 @@ BODY									{	margin:0px; 	}
 	@FontSize-bigger@
 }
 .SplashScreen .switch {
-	margin:70px 100px 30px;
+	margin:25px 100px 30px;
 #IFDEF WEBKIT
 	margin-bottom:0px;
 #ENDIF
