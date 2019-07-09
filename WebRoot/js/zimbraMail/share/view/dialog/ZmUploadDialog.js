@@ -357,7 +357,7 @@ ZmUploadDialog.prototype._upload = function(){
                 file = files[j];
                 fileObj.push(file);
                 (function (i, j) {
-                    zmUploadManager.getErrorsAsync(file, maxSize, null, this._extensions, (function (newError) {
+                    zmUploadManager.getErrorsAsync(file, maxSize, null, this._extensions, this._controller, (function (newError) {
                         if (newError) {
                             errors.push(newError);
                         } else {
@@ -366,19 +366,18 @@ ZmUploadDialog.prototype._upload = function(){
                         if (((j + 1) === files.length)) {
                             setLinkTitleText();
                         }
-
+                        if ((i + 1) === fileElements.length) {
+                            postUpload();
+                        }
                     }).bind(this))
 
                 }).bind(this)(i, j);
             }
-	     if ((i + 1) === fileElements.length) {
-		   postUpload();
-	     }
         } else {
 			var fileName = element.value.replace(/^.*[\\\/:]/, "");
             file = { name: fileName };
             (function (i) {
-                zmUploadManager.getErrorsAsync(file, maxSize, null, this._extensions, (function (newError) {
+                zmUploadManager.getErrorsAsync(file, maxSize, null, this._extensions, this._controller, (function (newError) {
                     if (newError) {
                         errors.push(newError);
                     } else {
@@ -454,7 +453,7 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 	var cell = row.insertCell(-1);
 	// bug:53841 allow only one file upload when oneInputOnly is set
 	cell.innerHTML = [
-		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 ",(this._supportsHTML5 ? (oneInputOnly ? "" : "multiple") : ""),">"
+		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 ",">"
 	].join("");
 
 	var cell = row.insertCell(-1);

@@ -290,16 +290,20 @@ ZmUploadManager.prototype.getErrors = function(file, maxSize, errors, extensions
 };
 
 // --- Upload File Validation - Async -------------------------------------------
-ZmUploadManager.prototype.getErrorsAsync = function(file, maxSize, errors, extensions, cb){
+ZmUploadManager.prototype.getErrorsAsync = function(file, maxSize, errors, extensions, controller, cb){
 	this._extensions = extensions;
 	var error = { errorCodes:[], filename: AjxStringUtil.htmlEncode(file.name) };
     var valid = true;
     var size = file.size || file.fileSize || 0;  // fileSize: Safari
+    var isSignature = false;
+    if(!controller) {
+        isSignature = true;
+    }
     if (size && (size > maxSize)) {
 		valid = false;
 		error.errorCodes.push( ZmUploadManager.ERROR_INVALID_SIZE );
     }
-    if (!this._checkExtension(file.name, extensions)) {
+    if (!isSignature && !this._checkExtension(file.name, extensions)) {
 		valid = false;
 		error.errorCodes.push( ZmUploadManager.ERROR_INVALID_EXTENSION );
     }
@@ -308,8 +312,9 @@ ZmUploadManager.prototype.getErrorsAsync = function(file, maxSize, errors, exten
 		error.errorCodes.push( ZmUploadManager.ERROR_INVALID_FILENAME );
     }
     var isFileTypeCheckEnabled = appCtxt.getSettings().getInfoResponse.attrs._attrs.zimbraFileTypeCheckEnabled;
+    var isFileTypeCheckEnabledBooelan = (isFileTypeCheckEnabled == "TRUE");
 
-    if(isFileTypeCheckEnabled && valid && window.FileReader){
+    if(!isSignature && isFileTypeCheckEnabledBooelan && valid && window.FileReader){
         return this._checkFileType(file, extensions, function(isFileValid){
             if(!isFileValid){
                 valid = false;
