@@ -1475,7 +1475,7 @@ function(msg, container, doNotClearBubbles) {
 	var subject = AjxStringUtil.htmlEncode(msg.subject || ZmMsg.noSubject);
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	// bug fix #31512 - if no sent date then display received date
-	var date = new Date(msg.sentDate || msg.date);
+	var date = new Date(msg.date || msg.sentDate);
 	var dateString = dateFormatter.format(date);
 
 	var additionalHdrs = [];
