@@ -893,13 +893,13 @@ function(id, autoFocus) {
 			examples = isHindi ? ZmMsg.pramHindiExamples : ZmMsg.pramTamilExamples;
 			
 		tinyMCE.activeEditor.windowManager.open({
-			title: "Typing Help",
+			title: ZmMsg.pramTypingHelp,
 			bodyType: "tabpanel",
 			padding: 10,
 			height: 540,
 			width: 630,
 			body: [{
-					title: "Quick Typing Help",
+					title: ZmMsg.pramQuickHelp,
 					type: "container",
 					style: "overflow:auto; height: 498px;",
 					html: '<div>' +
@@ -908,7 +908,7 @@ function(id, autoFocus) {
 						'</div>'
 				},
 				{
-					title: "Detailed Typing Help",
+					title: ZmMsg.pramDetailedHelp,
 					type: "container",
 					style: "overflow-y: scroll; overflow-x: hidden; width: 618px; height: 498px;",
 					classes: "pram-detailed-help",
