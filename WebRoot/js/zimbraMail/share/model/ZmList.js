@@ -587,17 +587,14 @@ function(params, result) {
 		if(!item._list[item.list.id]) {
 			item._list[item.list.id] = true;
 		}
-		for (var listId in item._list) {
-			var ac = window.parentAppCtxt || appCtxt; //always get the list in the parent window. The child might be closed or closing, causing bugs.
-			var list = ac.getById(listId);
-			if (!list) {
-				continue;
-			}
-            list._evt.batchMode = true;
-            list._evt.item = item;	// placeholder
-            list._evt.items = movedItems;
-            list._notify(ZmEvent.E_MOVE, details);
-        }
+		
+		var listId = item.list.id;
+		var ac = window.parentAppCtxt || appCtxt; //always get the list in the parent window. The child might be closed or closing, causing bugs.
+		var list = ac.getById(listId);
+		list._evt.batchMode = true;
+		list._evt.item = item;	// placeholder
+		list._evt.items = movedItems;
+		list._notify(ZmEvent.E_MOVE, details);
 	}
 
 	if (params.callback) {
