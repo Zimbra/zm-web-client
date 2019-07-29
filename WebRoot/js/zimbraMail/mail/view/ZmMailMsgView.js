@@ -987,6 +987,10 @@ function(params) {
 
 	var html = params.html || "";
 	
+	if(html.search(/(<form)(?![^>]+action)(.*?>)/g)){
+        html=html.replace(/(<form)(?![^>]+action)(.*?>)/g, `$1 action="SAMEHOSTFORMPOST-BLOCKED"$2`)
+    }
+
 	if (!params.isTextMsg) {
 		//Microsoft silly smilies
 		html = html.replace(/<span style="font-family:Wingdings">J<\/span>/g, "\u263a"); // :)
