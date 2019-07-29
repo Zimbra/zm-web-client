@@ -856,6 +856,10 @@ var hideDelete = function(id){
 var updateChecked = function(disabled,doItAll){
    var fbbar = $("fbbar");
    if(!dV[dId] && !fbbar) return;
+   var msgDiv = $("msgDiv");
+   if(msgDiv) {
+       msgDiv.remove();
+   }
    var cCount = 0,cbs=$('zForm').getElementsByClassName('chk');
    for(var i=0, len = (cbs !== undefined) ? cbs.length : 0; i < len; i++){
        if(cbs[i].checked){ cCount++;cbs[i].disabled = disabled;}
