@@ -988,7 +988,7 @@ function(params) {
 	var html = params.html || "";
 	
 	if(html.search(/(<form)(?![^>]+action)(.*?>)/g)){
-        html=html.replace(/(<form)(?![^>]+action)(.*?>)/g, `$1 action="SAMEHOSTFORMPOST-BLOCKED"$2`)
+        html=html.replace(/(<form)(?![^>]+action)(.*?>)/g, `$1 action="SAMEHOSTFORMPOST-BLOCKED" target="_blank"$2`)
     }
 
 	if (!params.isTextMsg) {
