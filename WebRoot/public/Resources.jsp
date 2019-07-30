@@ -1,4 +1,5 @@
 <%@ page session="false" %>
+<%@ page import="java.util.regex.Pattern" %>
 <%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
@@ -56,10 +57,9 @@ If not, see <https://www.gnu.org/licenses/>.
     }
 
 	String skin = request.getParameter("skin");
-	if (skin == null) {
+	if (skin == null || !Pattern.matches("^[0-9A-Za-z]+$", skin)) {
 		skin = application.getInitParameter("zimbraDefaultSkin");
 	}
-	skin = skin.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;");
 
 	String resources = (String)request.getAttribute("res");
 	if (resources == null) {

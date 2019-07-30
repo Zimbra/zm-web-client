@@ -260,7 +260,7 @@
                     ${ua.isiPad eq true ? '<div class="Stripes cmp_container composeFields">' : '<div class="msgBody">'}
                     <div class="tbl"><div class="tr">
                         <span class="label td"><fmt:message key="nameLabel"/>
-                        <input type="text" ${ua.isiPad eq true ? 'style="width:50%;"' : 'style="width:100px;"'} class="Textarea" name="tag_name" value="${etag.name}">
+                        <input type="text" ${ua.isiPad eq true ? 'style="width:50%;"' : 'style="width:100px;"'} class="Textarea" name="tag_name" value="${zm:cook(etag.name)}">
                         <c:if test="${ua.isiPad == false}"><input type="submit" class="zo_button" name="action${empty etag ? 'Save':'Modify'}Tag" value="<fmt:message key='save'/>"></c:if>
                         </span>
                     </div></div> 

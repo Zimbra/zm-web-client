@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ page import="java.util.Locale" %>
+<%@ page import="java.util.regex.Pattern" %>
 <%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <%
     // Prevent IE from ever going into compatibility/quirks mode.
@@ -68,7 +69,8 @@ If not, see <https://www.gnu.org/licenses/>.
     String skin = application.getInitParameter("zimbraDefaultSkin");
     Cookie[] cookies = request.getCookies();
     String requestSkin = request.getParameter("skin");
-    if (requestSkin != null) {
+    if (requestSkin == null ||
+        !Pattern.matches("^[0-9A-Za-z]+$", requestSkin)) {
         skin = requestSkin;
     } else if (cookies != null) {
         for (Cookie cookie : cookies) {

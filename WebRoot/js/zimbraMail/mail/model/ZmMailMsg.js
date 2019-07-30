@@ -2091,6 +2091,7 @@ function() {
 			content = bodyPart.getContent();
 			var msgRef = this;
 			content.replace(/src=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
+				cid=cid.replace(/&#64;/g, "@");
 				var attach = msgRef.findInlineAtt("<" + AjxStringUtil.urlComponentDecode(cid)  + ">");
 				if (attach) {
 					attach.foundInMsgBody = true;

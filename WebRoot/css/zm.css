@@ -1972,6 +1972,10 @@ INPUT[type="text"].search_input-expanded:focus {
 	width:100%;
 }
 
+.groupMembers.groupMembersInput {
+	width:98%;
+}
+
 /* ??? -> ZmFieldLabelRight */
 .ZmTaskEditView .editLabel {
 	@Label-right@

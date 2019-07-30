@@ -41,7 +41,7 @@
 <c:set var="appt" value="${invite.component}"/>
 <c:catch>
     <c:set var="myAttendee" value="${zm:getMyAttendee(invite, mailbox)}"/>
-    <c:set var="pstat" value="${not empty param.pstat ? param.pstat : not empty myAttendee ? myAttendee.participantStatus : ''}"/>
+    <c:set var="pstat" value="${not empty param.pstat ? zm:cook(param.pstat) : not empty myAttendee ? myAttendee.participantStatus : ''}"/>
 </c:catch>
 <fmt:message var="noSubject" key="noSubject"/>
 <c:set var="isPart" value="${!empty message.partName}"/>

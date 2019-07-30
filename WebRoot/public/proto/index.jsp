@@ -1,4 +1,5 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ page import="java.util.regex.Pattern" %>
 <!--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
@@ -28,7 +29,8 @@
 	String controller = request.getParameter("controller");
 	String template = request.getParameter("template");
 	String skin = request.getParameter("skin");
-	if (skin == null) skin = application.getInitParameter("zimbraDefaultSkin");
+	if (skin == null || !Pattern.matches("^[0-9A-Za-z]+$", skin))
+		skin = application.getInitParameter("zimbraDefaultSkin");
 
     pageContext.setAttribute("template", template);
     pageContext.setAttribute("controller", controller);
