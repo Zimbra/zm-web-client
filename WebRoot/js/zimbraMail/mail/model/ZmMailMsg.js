@@ -2152,7 +2152,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 			if (!this.isRealAttachment(attach) ||
 					(attach.contentType.match(/^image/) && attach.contentId && attach.foundInMsgBody && !includeInlineImages) ||
-					(attach.contentDisposition == "inline" && attach.fileName && ZmMimeTable.isRenderable(attach.contentType, true) && !includeInlineAtts) ||
+					(attach.contentDisposition == "inline" && attach.fileName && ZmMimeTable.textIsRenderable(attach.contentType, true, attach.isBody) && !includeInlineAtts) ||
 					(attach.contentDisposition == "inline" && attach.contentType === "application/pdf" && attach.contentId && attach.foundInMsgBody)) {
 				continue;
 			}
