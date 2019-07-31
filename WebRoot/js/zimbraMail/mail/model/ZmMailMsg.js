@@ -2152,14 +2152,13 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 			if (!this.isRealAttachment(attach) ||
 					(attach.contentType.match(/^image/) && attach.contentId && attach.foundInMsgBody && !includeInlineImages) ||
-					(attach.contentDisposition == "inline" && attach.fileName && ZmMimeTable.isRenderable(attach.contentType, true) && !includeInlineAtts) ||
+					(attach.contentDisposition == "inline" && attach.fileName && ZmMimeTable.isRenderableText(attach.contentType, attach.isBody) && !includeInlineAtts) ||
 					(attach.contentDisposition == "inline" && attach.contentType === "application/pdf" && attach.contentId && attach.foundInMsgBody)) {
 				continue;
 			}
 
 			var props = {};
 			props.links = {};	// flags that indicate whether to include a certain type of link
-
 			// set a viable label for this attachment
 			props.label = attach.name || attach.fileName || (ZmMsg.unknown + " <" + attach.contentType + ">");
 
