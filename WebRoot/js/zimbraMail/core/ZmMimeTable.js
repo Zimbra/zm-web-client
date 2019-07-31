@@ -196,6 +196,13 @@ function(type) {
  * @param	{constant}	type		the type
  * @return	{Boolean}	<code>true</code> if the type is renderable
  */
+
+ZmMimeTable.isRenderableText =
+function(type, body) {
+	return ((type === ZmMimeTable.TEXT_HTML && !body) || 
+			(type === ZmMimeTable.TEXT_PLAIN && !body));
+};
+
 ZmMimeTable.isRenderable =
 function(type, textOnly) {
 	return (type === ZmMimeTable.TEXT_HTML ||
