@@ -987,13 +987,13 @@ function(params) {
 
 	var html = params.html || "";
 	
-	if(html.search(/(<form)(?![^>]+action)(.*?>)/g)){
-		html = html.replace(/(<form)(?![^>]+action)(.*?>)/ig, function(form){
-				if(form.match(/target/g)){
-					form=form.replace(/(<.*)(target=.*)(.*>)/g,`$1action="SAMEHOSTFORMPOST-BLOCKED" target="_blank"$3`);
+	if (html.search(/(<form)(?![^>]+action)(.*?>)/g)) {
+		html = html.replace(/(<form)(?![^>]+action)(.*?>)/ig, function(form) {
+				if (form.match(/target/g)) {
+					form = form.replace(/(<.*)(target=.*)(.*>)/g, `$1action="SAMEHOSTFORMPOST-BLOCKED" target="_blank"$3`);
 				}
-				else{
-					form=form.replace(/(<form)(?![^>]+action)(.*?>)/g, `$1 action="SAMEHOSTFORMPOST-BLOCKED" target="_blank"$2`)
+				else {
+					form = form.replace(/(<form)(?![^>]+action)(.*?>)/g, `$1 action="SAMEHOSTFORMPOST-BLOCKED" target="_blank"$2`)
 				}
 		return form;
 		});
