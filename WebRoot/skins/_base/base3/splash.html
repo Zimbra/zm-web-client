@@ -264,10 +264,11 @@
 			var fieldValue = document.getElementById("form_"+fieldName).value;
 			if(fieldValue == "") {
 				isError = true;
-				if (!window.user_legacyEmployee && fieldName === 'legacyEmployeeNum') {
+				if (!document.getElementById("form_legacyEmployeeYes").checked && fieldName === 'legacyEmployeeNum') {
 					isError = false;
+				} else {
+					document.getElementById("form_"+fieldName).style.border = "1px solid red";
 				}
-				document.getElementById("form_"+fieldName).style.border = "1px solid red";
 			} else if (fieldName == "telephoneNumber" || fieldName == "mobile") {
 				isError = phoneValidator(fieldValue, fieldName) ? false : true;
 			} else if (fieldName == "legacyDateOfBirth" || fieldName == "legacyAccountExpDate" || fieldName == "legacyDateOfRetirement") {
@@ -276,7 +277,7 @@
 					document.getElementById(fieldName + "ErrDiv").innerHTML = "";
 				} 
 			} else if (fieldName == "newPassword" && document.getElementById("form_oldPassword").value != "") {
-				isError = validatePassword(document.getElementById("form_oldPassword").value, fieldValue);
+				isError = validatePassword(fieldValue, document.getElementById("form_oldPassword").value);
 			}
 			if (isError) {
 				formError = true;
@@ -291,17 +292,33 @@
 
 	function validatePassword(newPassword, oldPassword) {
 		var isError = false;
-		if (newPassword == oldPassword) {
-			document.getElementById("form_oldPassword").style.border = "1px solid red";
-			document.getElementById("form_newPassword").style.border = "1px solid red";
-			document.getElementById("passwordErrorDiv").innerHTML = ZmMsg.nicPasswordError;
-			document.getElementById("passwordErrorDiv").classList.remove('passwordSuccess');
-			document.getElementById("passwordErrorDiv").classList.add('passwordError');
+		var errorMsg = "";
+		var re = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[-!$%^&*()_+|~=`{}\[\]:\/;<>?,.@#]).{8,}/;
+		if (!re.test(newPassword)) {
+			errorMsg = ZmMsg.nicPasswordHint;
 			isError = true;
-		}else {
+		}
+		else if (newPassword == oldPassword) {
+			errorMsg = ZmMsg.nicPasswordError;
+			isError = true;
+		} else {
+			var userId =  appCtxt.getActiveAccount().getEmail().split('@')[0];
+			if (newPassword.includes(userId)) {
+				isError = true;
+				errorMsg = ZmMsg.nicPasswordNotBeDerivativeOfUserId;
+			}
+		}
+		
+		if (!isError) {
 			document.getElementById("passwordErrorDiv").innerHTML = "";
 			document.getElementById("passwordErrorDiv").classList.remove('passwordError');
 			document.getElementById("passwordErrorDiv").classList.add('passwordSuccess');
+		} else {
+			document.getElementById("form_oldPassword").style.border = "1px solid red";
+			document.getElementById("form_newPassword").style.border = "1px solid red";
+			document.getElementById("passwordErrorDiv").innerHTML = errorMsg;
+			document.getElementById("passwordErrorDiv").classList.remove('passwordSuccess');
+			document.getElementById("passwordErrorDiv").classList.add('passwordError');
 		}
 		return isError;
 	}
