@@ -258,6 +258,7 @@
 		var inputFieldsArr = ["initial", "givenName", "sn", "telephoneNumber", "mobile", "postalAddress", "legacyDateOfBirth", "legacyAccountExpDate", "legacyDateOfRetirement", "legacyEmployeeNum", "oldPassword", "newPassword"];
 		var inputFieldsArrLenght = inputFieldsArr.length;
 		var formError = false;
+		document.getElementById("passwordErrorDiv").innerHTML = "";
 		for(var field = 0 ; field < inputFieldsArrLenght; field++) {
 			var isError = false;
 			var fieldName = inputFieldsArr[field];
