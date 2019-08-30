@@ -18,15 +18,22 @@
 
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page session="false" %>
+<%@ page session="true" %>
 <%@ page import="com.zimbra.cs.taglib.ZJspSession"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
 <%-- get login history api endpoint --%>
 <zm:getLoginHistoryApiUrl varHistoryApiUrl="varHistoryApiUrl"/>
+<c:catch var ="catchtheException">
+  <zm:getMailbox var="mailbox"/>
+</c:catch>
+<c:set var="mailboxName" value="${fn:escapeXml(mailbox.name)}" />
 <%
-	String userEmail = request.getParameter("useremail");
+  String userEmail = (String)pageContext.getAttribute("mailboxName");
 	String fullHistoryApiURL = varHistoryApiUrl + "?mail="+userEmail;
 %>
 <c:import var="historyApiUrl" url="<%=fullHistoryApiURL%>"/>
