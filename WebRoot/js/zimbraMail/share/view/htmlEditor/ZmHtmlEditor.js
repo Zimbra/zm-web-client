@@ -1159,7 +1159,7 @@ function(id, autoFocus) {
 					value: 'pramukhindic:tamil'
 				},
 				{
-					text: ZmMsg.localeName_0d,
+					text: ZmMsg.localeName_od,
 					value: 'pramukhindic:odia'
 				},
 				{
