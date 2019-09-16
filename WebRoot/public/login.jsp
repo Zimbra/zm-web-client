@@ -285,6 +285,9 @@
                                     </c:forEach>
                                 </c:redirect>
                             </c:when>
+                            <c:when test="${client eq 'zimbrax'}">
+                                    <jsp:forward page="/public/zimbrax.jsp"/>
+                            </c:when>
                             <c:when test="${client eq 'touch'}">
                                 <c:redirect url="${param.dev eq '1' ? '/tdebug' : '/t'}">
                                     <c:forEach var="p" items="${paramValues}">
