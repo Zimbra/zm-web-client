@@ -826,6 +826,10 @@ function(id, autoFocus) {
 			case 'ta':
 				languageValue = 'pramukhindic:tamil'
 				break;
+			// odia
+			case 'od':
+				languageValue = 'pramukhindic:odia'
+				break;
 			// english as default
 			default:
 				languageValue = 'pramukhime:english'
@@ -834,10 +838,28 @@ function(id, autoFocus) {
 	};
 
 	var helpAction = function () {
-		var pramSelectedLang = pramukhIME ? pramukhIME.getLanguage().language : window.pramukhIME ? window.pramukhIME.getLanguage().language : 'english',
-			langCapitalize = pramSelectedLang.charAt(0).toUpperCase() + pramSelectedLang.slice(1),
+		var pramSelectedLang = pramukhIME ? pramukhIME.getLanguage().language : window.pramukhIME ? window.pramukhIME.getLanguage().language : 'english';
+		var languageValue = 'english';
+		switch(pramSelectedLang.toLowerCase()) {
+			// hindi
+			case 'hindi':
+				languageValue = ZmMsg.localeName_hi;
+				break;
+			// tamil
+			case 'tamil':
+				languageValue = ZmMsg.localeName_ta;
+				break;
+			// odia
+			case 'odia':
+				languageValue = ZmMsg.localeName_od;
+				break;
+			// english as default
+			default:
+				languageValue = ZmMsg.localeName_en
+		}
+		var langCapitalize = pramSelectedLang.charAt(0).toUpperCase() + pramSelectedLang.slice(1),
 			isHindi = pramSelectedLang === 'hindi' ? true : false,
-			localeName = isHindi ? ZmMsg.localeName_hi : ZmMsg.localeName_ta,
+			localeName = languageValue,
 			quickLinks = isHindi ? AjxMessageFormat.format(ZmMsg.pramHindiQuicklinks,
 					[ZmMsg.pramQuickLinks, ZmMsg.pramQuickLinks, ZmMsg.pramConsonant, ZmMsg.pramAddCons, ZmMsg.pramVowelSign,
 					ZmMsg.pramDigit, ZmMsg.pramOther, ZmMsg.pramSymbol, ZmMsg.pramRule, ZmMsg.pramZWJ, ZmMsg.pramExample])
@@ -1024,6 +1046,10 @@ function(id, autoFocus) {
 					value: 'pramukhindic:tamil'
 				},
 				{
+					text: ZmMsg.localeName_od,
+					value: 'pramukhindic:odia'
+				},
+				{
 					text: ZmMsg.localeName_en,
 					value: 'pramukhime:english'
 				}
@@ -1091,6 +1117,9 @@ function(id, autoFocus) {
 				case 'tamil':
 					pramukhIME.setLanguage('tamil', 'pramukhindic');
 					break;
+				case 'odia':
+					pramukhIME.setLanguage('odia', 'pramukhindic');
+					break;
 			}
 			pramukhIME.enable();
 
@@ -1128,6 +1157,10 @@ function(id, autoFocus) {
 				{
 					text: ZmMsg.localeName_ta,
 					value: 'pramukhindic:tamil'
+				},
+				{
+					text: ZmMsg.localeName_od,
+					value: 'pramukhindic:odia'
 				},
 				{
 					text: ZmMsg.localeName_en,
@@ -1195,6 +1228,9 @@ function(id, autoFocus) {
 					break;
 				case 'tamil':
 					pramukhIME.setLanguage('tamil', 'pramukhindic');
+					break;
+				case 'odia':
+					pramukhIME.setLanguage('odia', 'pramukhindic');
 					break;
 			}
 			pramukhIME.enable();
