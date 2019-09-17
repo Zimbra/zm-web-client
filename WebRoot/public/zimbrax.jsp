@@ -9,6 +9,6 @@
 <script TYPE="text/javascript">
     localStorage.setItem("csrfToken" , "${csrfToken}");
     var url = window.location.origin + "/zimbrax/index.html"
-    window.location.href(url);
+    window.location.href = url;
 </script>
 
