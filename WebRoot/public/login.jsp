@@ -285,6 +285,9 @@
                                     </c:forEach>
                                 </c:redirect>
                             </c:when>
+                            <c:when test="${client eq 'zimbrax'}">
+                                    <jsp:forward page="/public/zimbrax.jsp"/>
+                            </c:when>
                             <c:when test="${client eq 'touch'}">
                                 <c:redirect url="${param.dev eq '1' ? '/tdebug' : '/t'}">
                                     <c:forEach var="p" items="${paramValues}">
@@ -623,6 +626,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
                                     <option value="standard" <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
                                     <option value="mobile" <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
+                                    <option value="zimbrax" <c:if test="${client eq 'zimbrax'}">selected</c:if>> <fmt:message key="clientZimbrax"/></option>
                                     <c:if test="${touchLoginPageExists}">
                                         <option value="touch" <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
                                     </c:if>
