@@ -165,6 +165,7 @@ ZmSetting.CAL_VISIBILITY_PRIV	= "private";
 ZmSetting.CAL_VISIBILITY_PUB	= "public";
 ZmSetting.CLIENT_ADVANCED		= "advanced";				// zimbraPrefClientType
 ZmSetting.CLIENT_STANDARD		= "standard";
+ZmSetting.CLIENT_ZIMBRAX        = "zimbrax";
 ZmSetting.COMPOSE_FONT_COLOR	= "#000000";	 			// zimbraPrefHtmlEditorDefaultFontColor
 ZmSetting.COMPOSE_FONT_FAM 		= "arial,helvetica,sans-serif";		// zimbraPrefHtmlEditorDefaultFontFamily
 ZmSetting.COMPOSE_FONT_SIZE 	= AjxMessageFormat.format(ZmMsg.pt,"12"); 			// zimbraPrefHtmlEditorDefaultFontSize
