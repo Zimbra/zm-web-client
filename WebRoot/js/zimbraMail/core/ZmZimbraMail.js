@@ -2763,7 +2763,10 @@ function(ev, relogin) {
 	}
 	if (appCtxt.isWebClientOfflineSupported && (ev || relogin)) {
 		return ZmOffline.handleLogOff(ev, relogin);
-    }
+	}
+	if (localStorage.hasOwnProperty('csrfToken') ==  true ){
+		localStorage.removeItem('csrfToken');
+	}
 
 	ZmZimbraMail._isLogOff = true;
 

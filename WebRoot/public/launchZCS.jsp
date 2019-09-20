@@ -183,6 +183,21 @@
  * ***** END LICENSE BLOCK *****
 -->
 
+<%
+    // check if zimbrax package exists
+    Boolean zimbraxSupported = (Boolean) application.getAttribute("zimbraxSupported");
+    if(zimbraxSupported == null) {
+        try {
+            zimbraxSupported = new java.io.File(application.getRealPath("/zimbrax/index.html")).exists();
+        } catch (Exception ignored) {
+            // Just in case there's anException
+            zimbraxSupported = true;
+        }
+        application.setAttribute("zimbraxSupported", zimbraxSupported);
+    }
+%>
+<c:set var="zimbraxSupported" value="<%=zimbraxSupported%>" />
+
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <meta http-equiv="cache-control" content="no-cache"/>
 <meta http-equiv="Pragma" content="no-cache"/>
@@ -231,7 +246,9 @@
     window.isPerfMetric			= ${isPerfMetric};
 	window.authTokenExpires     = <%= authResult.getExpires()%>;
 	window.csrfToken            = "${csrfToken}";
-    window.appLang              = "${lang}";
+	window.appLang              = "${lang}";
+	localStorage.setItem("csrfToken" , "${csrfToken}");
+	window.zimbraxSupported     = ${zimbraxSupported}
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
