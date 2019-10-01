@@ -15,6 +15,7 @@
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag import="java.io.*" %>
+<%@ tag import="java.util.regex.Pattern" %>
 <%@ tag import="javax.servlet.*" %>
 <%@ tag import="javax.servlet.jsp.*" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="false" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
@@ -27,6 +28,10 @@
 	<%
 		PageContext pageContext = (PageContext)jspContext;
 		String skin = (String)pageContext.findAttribute("skin");
+
+		if (!Pattern.matches("^[0-9A-Za-z]+$", skin)) {
+		    skin = application.getInitParameter("zimbraDefaultSkin");
+		}
 
 		if (uri == null) {
 			uri = request.getRequestURI();
@@ -41,23 +46,25 @@
 
 		// perform redirect
 		String path = pageContext.getServletContext().getRealPath(uri);
-		File file = new File(path);
-		if (file.exists()) {
-			/***
-			// NOTE: Setting an attribute and passing it into the
-			// NOTE: forwarded request doesn't work. The value is
-			// NOTE: not seen by the other JSP.
-	//		pageContext.setAttribute("originalRequest", request);
-			pageContext.forward(uri);
-			/***/
-			ServletContext servletContext = pageContext.getServletContext();
-			RequestDispatcher dispatcher = servletContext.getRequestDispatcher(uri);
+		if (path != null) {
+			File file = new File(path);
+			if (file.exists()) {
+				/***
+				// NOTE: Setting an attribute and passing it into the
+				// NOTE: forwarded request doesn't work. The value is
+				// NOTE: not seen by the other JSP.
+//				pageContext.setAttribute("originalRequest", request);
+				pageContext.forward(uri);
+				/***/
+				ServletContext servletContext = pageContext.getServletContext();
+				RequestDispatcher dispatcher = servletContext.getRequestDispatcher(uri);
 
-			ServletRequest servletRequest = pageContext.getRequest();
-			ServletResponse servletResponse = pageContext.getResponse();
-			servletRequest.setAttribute("originalRequestURI", request.getRequestURI());
-			dispatcher.forward(servletRequest, servletResponse);
-			/***/
+				ServletRequest servletRequest = pageContext.getRequest();
+				ServletResponse servletResponse = pageContext.getResponse();
+				servletRequest.setAttribute("originalRequestURI", request.getRequestURI());
+				dispatcher.forward(servletRequest, servletResponse);
+				/***/
+			}
 		}
 	%>
 </c:if>

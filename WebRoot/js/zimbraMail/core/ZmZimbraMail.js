@@ -1985,7 +1985,8 @@ function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.HAB,
 							{
 								treeController:	"ZmHabTreeController",
-								labelKey:			"hab"
+								labelKey:			"hab",
+								childWindow:		true
 							});
 	
 	// Technically, we don't need to do this because the drop listeners for dragged organizers typically do their

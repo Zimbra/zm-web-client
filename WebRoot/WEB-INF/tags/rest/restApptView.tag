@@ -57,7 +57,7 @@
                                 <table cellspacing=0 cellpadding=0 class='Tb'>
                                     <tr>
                                         <td nowrap>
-                                            <rest:calendarUrl var="closeurl" />
+                                            <rest:calendarUrl var="closeurl" action=""/>
                                             <a id="OPCLOSE" href="${closeurl}"> <app:img src="common/ImgClose.png"/> <span><fmt:message key="close"/></span></a>
                                         </td>
                                     </tr>

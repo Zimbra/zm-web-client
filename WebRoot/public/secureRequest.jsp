@@ -14,6 +14,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  * ***** END LICENSE BLOCK *****
 -->
+<%@ page import="java.net.URLEncoder"%>
 <%@ page import="java.io.*,java.util.*,javax.naming.*,com.zimbra.cs.taglib.bean.BeanUtils"
 %><%@ taglib prefix="zm" uri="com.zimbra.zm" %><%!
 	//
@@ -61,7 +62,7 @@
 		encodedData = data.replaceAll("(</[Tt][Ee])([Xx][Tt])","$1\"+\"$2");
 	}
 
-	String server = request.getServerName();
+	String server = URLEncoder.encode(request.getServerName(), "UTF-8");
 	String port = httpPort != null && !httpPort.equals("80") ? ":"+httpPort : "";
 	String url = "http://"+server+port+request.getContextPath()+"/public/insecureResponse.jsp";
 

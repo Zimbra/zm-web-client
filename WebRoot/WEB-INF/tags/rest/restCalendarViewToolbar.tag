@@ -75,7 +75,7 @@
                         ${fn:escapeXml(title)}
                     </td>
                     <td>
-                        <a <c:if test="${keys}">id="NEXT_PAGE"</c:if> href="${fn:escapeXml(nextUrl)}"><app:img alt="ALT_PAGE_NEXT" src="startup/ImgRightArrow.png" border="0"/></a>
+                        <a <c:if test="${keys}">id="NEXT_PAGE"</c:if> href="${fn:escapeXml(nextUrl)}"><app:img altkey="ALT_PAGE_NEXT" src="startup/ImgRightArrow.png" border="0"/></a>
                     </td>
                 </tr>
             </table>
