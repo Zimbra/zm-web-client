@@ -40,9 +40,15 @@
 
 <%
 	Object errorCode = request.getAttribute("javax.servlet.error.status_code");
+	pageContext.setAttribute("currentUri", request.getAttribute("javax.servlet.error.request_uri"));
 	String errorTitle = errorCode+"Title";
 	String errorMsg = errorCode+"Msg";
 %>
+
+
+<c:if test = "${fn:contains(currentUri, '/zimbrax')}">
+<jsp:forward page="/zimbrax/index.html"/>
+</c:if>
 
 <c:set var="errCode" value="<%=errorCode%>"/>
 <c:set var="errTitle" value="<%=errorTitle%>"/>
