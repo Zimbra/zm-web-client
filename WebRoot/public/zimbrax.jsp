@@ -9,7 +9,7 @@
 <script TYPE="text/javascript">
     localStorage.setItem("csrfToken" , "${csrfToken}");
 	//TODO : we need to remove index.html when jetty configs are in place
-    var url = window.location.origin + "/zimbrax/index.html"
+    var url = window.location.origin + "/zimbrax/"
     window.location.href = url;
 </script>
 
