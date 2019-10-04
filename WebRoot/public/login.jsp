@@ -285,19 +285,6 @@
                                     </c:forEach>
                                 </c:redirect>
                             </c:when>
-			    <c:when test="${client eq 'zimbrax'}">
-                                <c:set var="zxURL" value="/public/zimbrax/index.html"/>
-                                <c:redirect url="${zxURL}">
-                                    <c:forEach var="p" items="${paramValues}">
-                                        <c:forEach var='value' items='${p.value}'>
-                                        <c:set var="testKey" value=",${p.key},"/>
-                                        <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
-                                                <c:param name="${p.key}" value='${value}'/>
-                                            </c:if>
-                                        </c:forEach>
-                                    </c:forEach>
-                                </c:redirect>
-                            </c:when>
                             <c:when test="${client eq 'touch'}">
                                 <c:redirect url="${param.dev eq '1' ? '/tdebug' : '/t'}">
                                     <c:forEach var="p" items="${paramValues}">
@@ -636,7 +623,6 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
                                     <option value="standard" <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
                                     <option value="mobile" <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
-				    <option value="zimbrax" <c:if test="${client eq 'zimbrax'}">selected</c:if>> <fmt:message key="clientZimbrax"/></option>
                                     <c:if test="${touchLoginPageExists}">
                                         <option value="touch" <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
                                     </c:if>
