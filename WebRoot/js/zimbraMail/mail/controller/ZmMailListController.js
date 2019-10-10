@@ -1385,6 +1385,27 @@ function(items, on, callback, forceCallback) {
 ZmMailListController.prototype._doSpam =
 function(items, markAsSpam, folder) {
 
+	var okCancelDialog = appCtxt.getOkCancelMsgDialog();
+	var callback = new AjxCallback(this, this._doSpamMove, [items, markAsSpam, folder]);
+	var warningMsg = markAsSpam ? ZmMsg.moveToSpamMsg : ZmMsg.moveToInboxMsg;
+    okCancelDialog.registerCallback(DwtDialog.OK_BUTTON, this._handleRetentionWarningOK, this, [okCancelDialog, callback]);
+    okCancelDialog.setMessage(warningMsg, DwtMessageDialog.WARNING_STYLE);
+    okCancelDialog.setVisible(true);
+	okCancelDialog.popup();
+};
+
+/**
+* Marks the given items as "spam" or "not spam". Items marked as spam are moved to
+* the Junk folder. If items are being moved out of the Junk folder, they will be
+* marked "not spam", and the destination folder may be provided. It defaults to Inbox
+* if not present.
+*
+* @param items			[Array]			a list of items to move
+* @param markAsSpam		[boolean]		spam or not spam
+* @param folder			[ZmFolder]		destination folder
+*/
+ZmMailListController.prototype._doSpamMove =
+function(items, markAsSpam, folder) {
 	this._listView[this._currentViewId]._itemToSelect = this._getNextItemToSelect();
 	items = AjxUtil.toArray(items);
 
@@ -1396,8 +1417,10 @@ function(items, markAsSpam, folder) {
 
 	var allDoneCallback = this._getAllDoneCallback();
 	var list = params.list = this._getList(params.items);
-	this._setupContinuation(this._doSpam, [markAsSpam, folder], params, allDoneCallback);
+	this._setupContinuation(this._doSpamMove, [markAsSpam, folder], params, allDoneCallback);
 	list.spamItems(params);
+	var okCancelDialog = appCtxt.getOkCancelMsgDialog();
+	okCancelDialog.reset();
 };
 
 ZmMailListController.prototype._inviteReplyHandler =
