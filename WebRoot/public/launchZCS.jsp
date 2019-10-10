@@ -232,7 +232,10 @@
 	window.authTokenExpires     = <%= authResult.getExpires()%>;
 	window.csrfToken            = "${csrfToken}";
 	window.appLang              = "${lang}";
-	localStorage.setItem("csrfToken" , "${csrfToken}");
+	if (localStorage.hasOwnProperty('csrfToken') ==  false ){
+		localStorage.setItem("csrfToken" , "${csrfToken}");
+	}
+	
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
