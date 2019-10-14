@@ -36,7 +36,10 @@
   String userEmail = (String)pageContext.getAttribute("mailboxName");
   String startDate = (String)request.getParameter("startDate");
   String endDate = (String)request.getParameter("endDate");
-  String fullHistoryApiURL = varHistoryApiUrl + "?mail="+userEmail + "&startDate=" + startDate + "&endDate=" + endDate;
+  String fullHistoryApiURL = varHistoryApiUrl + "?mail="+userEmail;
+  if (startDate != null && endDate != null) {
+	  fullHistoryApiURL = fullHistoryApiURL + "&startDate=" + startDate + "&endDate=" + endDate;
+  }
 %>
 <c:import var="historyApiUrl" url="<%=fullHistoryApiURL%>"/>
 <%
