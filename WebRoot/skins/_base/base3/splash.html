@@ -79,7 +79,7 @@
              }
           }
         };
-        xhttp.open("GET", "/public/historyProxy.jsp?useremail="+userEmail, false);
+        xhttp.open("GET", "/public/historyProxy.jsp?useremail="+userEmail+"&startDate="+"&endDate=", false);
         xhttp.setRequestHeader("Content-Type", "application/json");
         xhttp.send();
    	}
