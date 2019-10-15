@@ -106,10 +106,6 @@
                 <td style='padding-left:20px'>
                     <table>
                         <tr>
-                            <td>
-                                <input id="mailFrom" size="30" type="text" name='zimbraPrefFromDisplay' 
-									value="${fn:escapeXml(mailbox.defaultIdentity.fromDisplay)}">
-                            </td>
                             <td style='padding-left:10px'>
                                 <select name="zimbraPrefFromAddress">
                                     <c:set var="fromAddr" value="${fn:toLowerCase(mailbox.defaultIdentity.fromAddress)}"/>
@@ -123,9 +119,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style='padding-left:5px' class='ZOptionsHint'>
-                                <fmt:message key="optionsEmailPersonalHint"/>
-                            </td>
                             <td style='padding-left:15px' class='ZOptionsHint'>
                                 &nbsp;
                             </td>
@@ -156,19 +149,12 @@
                 <td style='padding-left:20px'>
                     <table>
                         <tr>
-                            <td>
-                                <input id="replyToDisplay" size="30" type="text" name='zimbraPrefReplyToDisplay' 
-									value="${fn:escapeXml(mailbox.defaultIdentity.replyToDisplay)}">
-                            </td>
                             <td style='padding-left:10px'>
                                 <input id="replyToAddress" size="30" type="text" name='zimbraPrefReplyToAddress' 
 									value="${fn:escapeXml(mailbox.defaultIdentity.replyToAddress)}">
                             </td>
                         </tr>
                         <tr>
-                            <td style='padding-left:5px' class='ZOptionsHint'>
-                                <fmt:message key="optionsEmailPersonalHint"/>
-                            </td>
                             <td style='padding-left:15px' class='ZOptionsHint'>
                                 <fmt:message key="optionsEmailAddressHint"/>
                             </td>
