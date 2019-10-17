@@ -34,7 +34,12 @@
 <c:set var="mailboxName" value="${fn:escapeXml(mailbox.name)}" />
 <%
   String userEmail = (String)pageContext.getAttribute("mailboxName");
-	String fullHistoryApiURL = varHistoryApiUrl + "?mail="+userEmail;
+  String startDate = (String)request.getParameter("startDate");
+  String endDate = (String)request.getParameter("endDate");
+  String fullHistoryApiURL = varHistoryApiUrl + "?mail="+userEmail;
+  if (startDate != null && endDate != null) {
+	  fullHistoryApiURL = fullHistoryApiURL + "&startDate=" + startDate + "&endDate=" + endDate;
+  }
 %>
 <c:import var="historyApiUrl" url="<%=fullHistoryApiURL%>"/>
 <%
