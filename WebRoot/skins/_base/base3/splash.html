@@ -306,7 +306,7 @@
 			isError = true;
 		} else {
 			var userId =  appCtxt.getActiveAccount().getEmail().split('@')[0];
-			if (newPassword.includes(userId)) {
+			if (newPassword.indexOf(userId) != -1) {
 				isError = true;
 				errorMsg = ZmMsg.nicPasswordNotBeDerivativeOfUserId;
 			}
