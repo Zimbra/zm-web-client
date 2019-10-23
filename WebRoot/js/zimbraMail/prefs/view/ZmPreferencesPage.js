@@ -721,7 +721,12 @@ function(id, setup, value) {
 		optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
 		var optImage = setup.images ? setup.images[j] : null;
 		var data = new DwtSelectOptionData(optValue, optLabel, false, null, optImage);
-		selObj.addOption(data);
+		var diabledId = "FROM_EMAIL";
+		var diabledId2 = "REPLY_TO_EMAIL";
+		var disableDomain = "@gov.in.local"
+		if((id == diabledId || id == diabledId2) && optValue.indexOf(disableDomain) === -1) {
+			selObj.addOption(data);
+		}
 	}
 
 	selObj.setName(id);
