@@ -914,7 +914,7 @@ function(id, autoFocus) {
 				vowelDashExample = ZmMsg.pramTamilVowelDashExample;
 				restOfExamples = '<li>' + AjxMessageFormat.format(ZmMsg.pramTamilNTable, [ZmMsg.pramTamilN]) + '<br/>' + '</li><li>' + ZmMsg.pramTamilSpecialRules +'</li>';
 				zwj = '';
-				examples = ZmMsg.pramHindiExamples;
+				examples = ZmMsg.pramTamilExamples;
 				break;
 			// odia
 			case 'odia':
