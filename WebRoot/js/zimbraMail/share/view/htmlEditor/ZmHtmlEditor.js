@@ -839,80 +839,123 @@ function(id, autoFocus) {
 
 	var helpAction = function () {
 		var pramSelectedLang = pramukhIME ? pramukhIME.getLanguage().language : window.pramukhIME ? window.pramukhIME.getLanguage().language : 'english';
-		var languageValue = 'english';
+		var languageValue = 'english',
+		quickLinks = AjxMessageFormat.format(ZmMsg.pramQuicklinks,
+			[ZmMsg.pramQuickLinks, ZmMsg.pramVowel, ZmMsg.pramConsonant, ZmMsg.pramAddCons, ZmMsg.pramVowelSign, ZmMsg.pramDigit,
+				ZmMsg.pramAddDigit, ZmMsg.pramOther, ZmMsg.pramSymbol, ZmMsg.pramRule, ZmMsg.pramExample]),
+			vowels = '',
+			consonants = '',
+			additionalConsonants = '',
+			vowelSigns = '',
+			additionalDigits = '',
+			others = '',
+			symbols = '',
+			consVowelExample = ''
+			consConsExample = '',
+			dashCons = '',
+			dashConsExample = '',
+			vowelDashExample = '',
+			restOfExamples = '',
+			zwj = '',
+			examples = '';
+
 		switch(pramSelectedLang.toLowerCase()) {
 			// hindi
 			case 'hindi':
 				languageValue = ZmMsg.localeName_hi;
+				quickLinks = AjxMessageFormat.format(ZmMsg.pramHindiQuicklinks,
+					[ZmMsg.pramQuickLinks, ZmMsg.pramQuickLinks, ZmMsg.pramConsonant, ZmMsg.pramAddCons, ZmMsg.pramVowelSign,
+					ZmMsg.pramDigit, ZmMsg.pramOther, ZmMsg.pramSymbol, ZmMsg.pramRule, ZmMsg.pramZWJ, ZmMsg.pramExample]);
+				vowels = AjxMessageFormat.format(ZmMsg.pramHindiVowelList,
+					[ZmMsg.pramHindiShortA, ZmMsg.pramHindiChandraE, ZmMsg.pramHindiShortE, ZmMsg.pramHindiChandraO, ZmMsg.pramHindiShortO]);
+					consonants = ZmMsg.pramHindiConsonantList;
+					additionalConsonants = ZmMsg.pramHindiAdditionalConsonants;
+					vowelSigns= AjxMessageFormat.format(ZmMsg.pramHindiVowelSignList,
+						[ZmMsg.pramHindiChandraE, ZmMsg.pramHindiShortE, ZmMsg.pramHindiChandraO, ZmMsg.pramHindiShortO, ZmMsg.pramAnusvar, ZmMsg.pramHindiChandrabindu, ZmMsg.pramVisarg]);
+					digitSetting = AjxMessageFormat.format(ZmMsg.pramHindiDigitSetting, [ZmMsg.pramHindiDigitInEnglishUnset]);
+					additionalDigits = '<h2 id="additionaldigit">' + ZmMsg.pramAddDigit + '</h2>';
+					others = AjxMessageFormat.format(ZmMsg.pramHindiOthersList,
+						[ZmMsg.pramHindiHalandViram, ZmMsg.pramHindiNukta, ZmMsg.pramHindiAvagrah, ZmMsg.pramHindiDevanagariAbbr,
+						ZmMsg.pramDevanagariDanda, ZmMsg.pramDevanagariDblDanda, ZmMsg.pramRupee, ZmMsg.pramAum,
+						ZmMsg.pramSwastika, ZmMsg.pramZeroWidthJoiner, ZmMsg.pramTwoDashes, ZmMsg.pramZeroWidthJoiner, ZmMsg.pramZeroWidthNonJoiner]);
+					symbols = AjxMessageFormat.format(ZmMsg.pramHindiSymbolsList, [ZmMsg.pramHindiSymbols]);
+					consVowelExample = ZmMsg.pramHindiConsVowelExample;
+					consConsExample = ZmMsg.pramHindiConsConsExample;
+					dashCons = ZmMsg.pramHindiDashConsonant;
+					dashConsExample = ZmMsg.pramHindiDashConsExample;
+					vowelDashExample = ZmMsg.pramHindiVowelDashExample;
+					restOfExamples = '<li>' + AjxMessageFormat.format(ZmMsg.pramHindiNMTable, [ZmMsg.pramHindiNM, ZmMsg.pramHindiAnyOther]) +'</li>';
+					zwj = '<h2 id="#zwj">' + ZmMsg.pramZWJ + '</h2>' + ZmMsg.pramZWJDesc + '<br/><br/><ol>' +AjxMessageFormat.format(ZmMsg.pramZWJExample,[ZmMsg.pramZWJCons, ZmMsg.pramExample]) + '</ol>';
+					examples = ZmMsg.pramHindiExamples;
 				break;
 			// tamil
 			case 'tamil':
 				languageValue = ZmMsg.localeName_ta;
+				quickLinks = AjxMessageFormat.format(ZmMsg.pramTamilQuicklinks,
+					[ZmMsg.pramQuickLinks, ZmMsg.pramVowel, ZmMsg.pramConsonant, ZmMsg.pramAddCons, ZmMsg.pramVowelSign, ZmMsg.pramDigit,
+						ZmMsg.pramAddDigit, ZmMsg.pramOther, ZmMsg.pramSymbol, ZmMsg.pramRule, ZmMsg.pramExample]);
+				vowels =  ZmMsg.pramTamilVowelList;
+				consonants = ZmMsg.pramTamilConsonantList;
+				additionalConsonants = ZmMsg.pramTamilAdditionalConsonants;
+				vowelSigns= AjxMessageFormat.format(ZmMsg.pramTamilVowelSignList,
+					[ZmMsg.pramTamilAU, ZmMsg.pramAnusvar, ZmMsg.pramTamilAnytham, ZmMsg.pramVisarg]);
+				digitSetting = AjxMessageFormat.format(ZmMsg.pramTamilDigitSetting, [ZmMsg.pramTamilDigitInEnglishUnset]);
+				additionalDigits = ZmMsg.pramTamilAdditionalDigits;
+				others = AjxMessageFormat.format(ZmMsg.pramTamilOthersList,
+					[ZmMsg.pramTamilPulliViram, ZmMsg.pramTamilDaySign, ZmMsg.pramTamilMonthSign, ZmMsg.pramTamilYearSign, ZmMsg.pramTamilDebitSign,
+					ZmMsg.pramTamilCreditSign, ZmMsg.pramTamilAboveSign, ZmMsg.pramTamilRupeeSign, ZmMsg.pramTamilNumberSign, ZmMsg.pramDevanagariDanda,
+						ZmMsg.pramDevanagariDblDanda, ZmMsg.pramRupee, ZmMsg.pramAum, ZmMsg.pramSwastika, ZmMsg.pramZeroWidthJoiner, ZmMsg.pramTwoDashes,
+						ZmMsg.pramZeroWidthNonJoiner, ZmMsg.pramThreeDashes]);
+				symbols = AjxMessageFormat.format(ZmMsg.pramTamilSymbolsList, [ZmMsg.pramTamilSymbols]);
+				consVowelExample = ZmMsg.pramTamilConsVowelExample;
+				consConsExample = ZmMsg.pramTamilConsConsExample;
+				dashCons = ZmMsg.pramTamilDashConsonant;
+				dashConsExample = ZmMsg.pramTamilDashConsExample;
+				vowelDashExample = ZmMsg.pramTamilVowelDashExample;
+				restOfExamples = '<li>' + AjxMessageFormat.format(ZmMsg.pramTamilNTable, [ZmMsg.pramTamilN]) + '<br/>' + '</li><li>' + ZmMsg.pramTamilSpecialRules +'</li>';
+				zwj = '';
+				examples = ZmMsg.pramHindiExamples;
 				break;
 			// odia
 			case 'odia':
 				languageValue = ZmMsg.localeName_od;
+				quickLinks = AjxMessageFormat.format(ZmMsg.pramOdiaQuicklinks,
+					[ZmMsg.pramQuickLinks, ZmMsg.pramVowel, ZmMsg.pramConsonant, ZmMsg.pramAddCons, ZmMsg.pramVowelSign, ZmMsg.pramDigit,
+						ZmMsg.pramAddDigit, ZmMsg.pramOther, ZmMsg.pramSymbol, ZmMsg.pramRule, ZmMsg.pramExample]);
+				vowels =  ZmMsg.pramOdiaVowelList;
+				consonants = ZmMsg.pramOdiaConsonantList;
+				additionalConsonants = ZmMsg.pramOdiaAdditionalConsonants;
+				vowelSigns= AjxMessageFormat.format(ZmMsg.pramOdiaVowelSignList,
+					[ZmMsg.pramOdiaAU, ZmMsg.pramAnusvar, ZmMsg.pramOdiaAnytham, ZmMsg.pramVisarg]);
+				digitSetting = AjxMessageFormat.format(ZmMsg.pramOdiaDigitSetting, [ZmMsg.pramOdiaDigitInEnglishUnset]);
+				additionalDigits = '<h2 id="additionaldigit">' + ZmMsg.pramAddDigit + '</h2>';
+				others = AjxMessageFormat.format(ZmMsg.pramOdiaOthersList,
+					[ZmMsg.pramOdiaHalandViram, ZmMsg.pramOdiaNukta, ZmMsg.pramOdiaAvagrah, ZmMsg.pramOdiaDevanagariAbbr,
+					ZmMsg.pramDevanagariDanda, ZmMsg.pramDevanagariDblDanda, ZmMsg.pramRupee, ZmMsg.pramAum,
+					ZmMsg.pramSwastika, ZmMsg.pramZeroWidthJoiner, ZmMsg.pramTwoDashes, ZmMsg.pramZeroWidthJoiner, ZmMsg.pramZeroWidthNonJoiner]);
+				symbols = AjxMessageFormat.format(ZmMsg.pramOdiaSymbolsList, [ZmMsg.pramOdiaSymbols]);
+				consVowelExample = ZmMsg.pramOdiaConsVowelExample;
+				consConsExample = ZmMsg.pramOdiaConsConsExample;
+				dashCons = ZmMsg.pramOdiaDashConsonant;
+				dashConsExample = ZmMsg.pramOdiaDashConsExample;
+				vowelDashExample = ZmMsg.pramOdiaVowelDashExample;
+				restOfExamples = '<li>' + AjxMessageFormat.format(ZmMsg.pramHindiNMTable, [ZmMsg.pramHindiNM, ZmMsg.pramHindiAnyOther]) +'</li>';
+				zwj = '';
+				examples = ZmMsg.pramOdiaExamples;
 				break;
 			// english as default
 			default:
-				languageValue = ZmMsg.localeName_en
+				languageValue = ZmMsg.localeName_en;
+				quickLinks = AjxMessageFormat.format(ZmMsg.pramQuicklinks,
+					[ZmMsg.pramQuickLinks, ZmMsg.pramVowel, ZmMsg.pramConsonant, ZmMsg.pramAddCons, ZmMsg.pramVowelSign, ZmMsg.pramDigit,
+						ZmMsg.pramAddDigit, ZmMsg.pramOther, ZmMsg.pramSymbol, ZmMsg.pramRule, ZmMsg.pramExample]);
 		}
+
 		var langCapitalize = pramSelectedLang.charAt(0).toUpperCase() + pramSelectedLang.slice(1),
 			isHindi = pramSelectedLang === 'hindi' ? true : false,
 			localeName = languageValue,
-			quickLinks = isHindi ? AjxMessageFormat.format(ZmMsg.pramHindiQuicklinks,
-					[ZmMsg.pramQuickLinks, ZmMsg.pramQuickLinks, ZmMsg.pramConsonant, ZmMsg.pramAddCons, ZmMsg.pramVowelSign,
-					ZmMsg.pramDigit, ZmMsg.pramOther, ZmMsg.pramSymbol, ZmMsg.pramRule, ZmMsg.pramZWJ, ZmMsg.pramExample])
-				: AjxMessageFormat.format(ZmMsg.pramTamilQuicklinks,
-					[ZmMsg.pramQuickLinks, ZmMsg.pramVowel, ZmMsg.pramConsonant, ZmMsg.pramAddCons, ZmMsg.pramVowelSign, ZmMsg.pramDigit,
-						ZmMsg.pramAddDigit, ZmMsg.pramOther, ZmMsg.pramSymbol, ZmMsg.pramRule, ZmMsg.pramExample]);
-			vowels = isHindi ? AjxMessageFormat.format(ZmMsg.pramHindiVowelList,
-					[ZmMsg.pramHindiShortA, ZmMsg.pramHindiChandraE, ZmMsg.pramHindiShortE, ZmMsg.pramHindiChandraO, ZmMsg.pramHindiShortO])
-					: ZmMsg.pramTamilVowelList,
-			consonants = isHindi ? ZmMsg.pramHindiConsonantList : ZmMsg.pramTamilConsonantList,
-			additionalConsonants = isHindi ? ZmMsg.pramHindiAdditionalConsonants : ZmMsg.pramTamilAdditionalConsonants,
-			vowelSigns = isHindi ? AjxMessageFormat.format(ZmMsg.pramHindiVowelSignList,
-					[ZmMsg.pramHindiChandraE, ZmMsg.pramHindiShortE, ZmMsg.pramHindiChandraO, ZmMsg.pramHindiShortO, ZmMsg.pramAnusvar, ZmMsg.pramHindiChandrabindu, ZmMsg.pramVisarg])
-				: AjxMessageFormat.format(ZmMsg.pramTamilVowelSignList,
-					[ZmMsg.pramTamilAU, ZmMsg.pramAnusvar, ZmMsg.pramTamilAnytham, ZmMsg.pramVisarg]),
-			digitSetting = isHindi ? AjxMessageFormat.format(ZmMsg.pramHindiDigitSetting, [ZmMsg.pramHindiDigitInEnglishUnset])
-				: AjxMessageFormat.format(ZmMsg.pramTamilDigitSetting, [ZmMsg.pramTamilDigitInEnglishUnset]),
-			additionalDigits = isHindi ? '' : '<h2 id="additionaldigit">' + ZmMsg.pramAddDigit + '</h2>' +
-				ZmMsg.pramTamilAdditionalDigits,
-			others = isHindi ? AjxMessageFormat.format(ZmMsg.pramHindiOthersList,
-					[ZmMsg.pramHindiHalandViram, ZmMsg.pramHindiNukta, ZmMsg.pramHindiAvagrah, ZmMsg.pramHindiDevanagariAbbr,
-					ZmMsg.pramDevanagariDanda, ZmMsg.pramDevanagariDblDanda, ZmMsg.pramRupee, ZmMsg.pramAum,
-					ZmMsg.pramSwastika, ZmMsg.pramZeroWidthJoiner, ZmMsg.pramTwoDashes, ZmMsg.pramZeroWidthJoiner, ZmMsg.pramZeroWidthNonJoiner])
-				: AjxMessageFormat.format(ZmMsg.pramTamilOthersList,
-					[ZmMsg.pramTamilPulliViram, ZmMsg.pramTamilDaySign, ZmMsg.pramTamilMonthSign, ZmMsg.pramTamilYearSign, ZmMsg.pramTamilDebitSign,
-					ZmMsg.pramTamilCreditSign, ZmMsg.pramTamilAboveSign, ZmMsg.pramTamilRupeeSign, ZmMsg.pramTailNumberSign, ZmMsg.pramDevanagariDanda,
-						ZmMsg.pramDevanagariDblDanda, ZmMsg.pramRupee, ZmMsg.pramAum, ZmMsg.pramSwastika, ZmMsg.pramZeroWidthJoiner, ZmMsg.pramTwoDashes,
-						ZmMsg.pramZeroWidthNonJoiner, ZmMsg.pramThreeDashes]),
-			symbols = isHindi ? AjxMessageFormat.format(ZmMsg.pramHindiSymbolsList, [ZmMsg.pramHindiSymbols]) : AjxMessageFormat.format(ZmMsg.pramTamilSymbolsList, [ZmMsg.pramTamilSymbols]),
 			symbolsNote = AjxMessageFormat.format(ZmMsg.pramSymbolsNote, [langCapitalize]),
-			consVowelExample = isHindi ? ZmMsg.pramHindiConsVowelExample : ZmMsg.pramTamilConsVowelExample,
-			consConsExample = isHindi ? ZmMsg.pramHindiConsConsExample : ZmMsg.pramTamilConsConsExample,
-			dashCons = isHindi ? ZmMsg.pramHindiDashConsonant : ZmMsg.pramTamilDashConsonant,
-			dashConsExample = isHindi ? ZmMsg.pramHindiDashConsExample : ZmMsg.pramTamilDashConsExample,
-			vowelDash = AjxMessageFormat.format(ZmMsg.pramVowelDash, [langCapitalize]),
-			vowelDashExample = isHindi ? ZmMsg.pramHindiVowelDashExample : ZmMsg.pramTamilVowelDashExample,
-			restOfExamples = isHindi ?
-					'<li>' +
-						AjxMessageFormat.format(ZmMsg.pramHindiNMTable, [ZmMsg.pramHindiNM, ZmMsg.pramHindiAnyOther]) +
-					'</li>'
-					: '<li>' +
-						AjxMessageFormat.format(ZmMsg.pramTamilNTable, [ZmMsg.pramTamilN]) + '<br/>' +
-					'</li>' +
-					'<li>' +
-						ZmMsg.pramTamilSpecialRules +
-					'</li>',
-			zwj = isHindi ? '<h2 id="#zwj">' + ZmMsg.pramZWJ + '</h2>' +
-				ZmMsg.pramZWJDesc + '<br/><br/>' +
-				'<ol>' +
-					AjxMessageFormat.format(ZmMsg.pramZWJExample,
-							[ZmMsg.pramZWJCons, ZmMsg.pramExample, ZmMsg.pramZWNJCons]) +
-				'</ol>' : '',
-			examples = isHindi ? ZmMsg.pramHindiExamples : ZmMsg.pramTamilExamples;
+			vowelDash = AjxMessageFormat.format(ZmMsg.pramVowelDash, [langCapitalize]);
 			
 		tinyMCE.activeEditor.windowManager.open({
 			title: ZmMsg.pramTypingHelp,
