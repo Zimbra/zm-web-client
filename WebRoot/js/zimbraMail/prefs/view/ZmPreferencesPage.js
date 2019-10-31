@@ -715,15 +715,30 @@ function(id, setup, value) {
 
 	var options = setup.options || setup.displayOptions || setup.choices || [];
 	var isChoices = Boolean(setup.choices);
-	for (var j = 0; j < options.length; j++) {
-		var optValue = isChoices ? options[j].value : options[j];
-		var optLabel = isChoices ? options[j].label : setup.displayOptions[j];
-		optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
-		var optImage = setup.images ? setup.images[j] : null;
-		var data = new DwtSelectOptionData(optValue, optLabel, false, null, optImage);
-		selObj.addOption(data);
+	var diabledId = "FROM_EMAIL";
+	var diabledId2 = "REPLY_TO_EMAIL";
+	var disableDomain = "@gov.in.local";
+	if(id == diabledId || id == diabledId2) {
+		for (var j = 0; j < options.length; j++) {
+			var optValue = isChoices ? options[j].value : options[j];
+			var optLabel = isChoices ? options[j].label : setup.displayOptions[j];
+			optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
+			var optImage = setup.images ? setup.images[j] : null;
+			var data = new DwtSelectOptionData(optValue, optLabel, false, null, optImage);
+			if(optValue.indexOf(disableDomain) === -1) {
+				selObj.addOption(data);
+			}
+		} 
+	} else {
+		for (var j = 0; j < options.length; j++) {
+			var optValue = isChoices ? options[j].value : options[j];
+			var optLabel = isChoices ? options[j].label : setup.displayOptions[j];
+			optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
+			var optImage = setup.images ? setup.images[j] : null;
+			var data = new DwtSelectOptionData(optValue, optLabel, false, null, optImage);
+			selObj.addOption(data);
+		}
 	}
-
 	selObj.setName(id);
 	selObj.setSelectedValue(value);
     selObj.dynamicButtonWidth();
