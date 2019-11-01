@@ -90,12 +90,14 @@ function(parent, viewId, htmlElId, fieldNames) {
     this._fieldNames = fieldNames;
 	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
 	var galEnabled = appCtxt.get(ZmSetting.GAL_ENABLED);
+	var acCallback = this._autocompleteOutOfOfficeCallback.bind(this);
 
     	// init autocomplete list
     if (contactsEnabled || galEnabled || appCtxt.isOffline) {
 		var params = {
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
+			compCallback:		acCallback,
 			keyUpCallback:	this._acKeyupHandler.bind(this),
 			contextId:		this._contextId
 		};
@@ -173,6 +175,74 @@ function(parent, viewId, htmlElId, fieldNames) {
 			// Otherwise, it is set to 30px wide, which makes it rather hard to type into.
 			fieldEl.supportsAutoComplete = false;
 		}
+	}
+};
+
+ZmRecipients.prototype._getOutOfOfficeInfo =
+function(emailId) {
+	var senderEmailId = appCtxt.getUsername();
+	if(senderEmailId && emailId) {
+		var senderAr = senderEmailId.split("@");
+		var rcptAr = emailId.split("@");
+		if(senderAr[1]===rcptAr[1]) {
+			var soapDoc = AjxSoapDoc.create("GetOutOfOfficeRequest", "urn:zimbraMail");
+			soapDoc.setMethodAttribute("uid", emailId);
+			var fbCallback = new AjxCallback(this, this._handleResponseOutOfOffice);
+			var res = appCtxt.getAppController().sendRequest({
+				soapDoc: soapDoc,
+				asyncMode: true,
+				callback: fbCallback,
+			});
+		}
+	}
+};
+
+ZmRecipients.GetOutOfOfficeArr = [];
+
+ZmRecipients.prototype._handleResponseOutOfOffice =
+function(result) {
+	var args = result.getResponse().GetOutOfOfficeResponse.match || [];
+	for (var i = 0; i < args.length; i++) {
+		var user = args[i];
+		if(user && user.isOutOfOffice && user.email) {
+			var tempArr = [];
+			for( var j = 0; j < ZmRecipients.GetOutOfOfficeArr.length; j++) {
+				if(ZmRecipients.GetOutOfOfficeArr[j] !== user.email.trim()) {
+					tempArr.push(ZmRecipients.GetOutOfOfficeArr[j]);
+				}
+			}
+			ZmRecipients.GetOutOfOfficeArr = tempArr;
+			tempArr = [];
+			ZmRecipients.GetOutOfOfficeArr.push(user.email);
+			if(ZmRecipients.GetOutOfOfficeArr) {
+				var GetOutOfOfficeArrLength = ZmRecipients.GetOutOfOfficeArr.length;
+				if(GetOutOfOfficeArrLength>1) {
+					var outOfOfficeRecipients = "";
+					for(var count=0;count<GetOutOfOfficeArrLength;count++) {
+						outOfOfficeRecipients += ZmRecipients.GetOutOfOfficeArr[count] +", ";
+					}
+					document.getElementById("td_compose_out_of_office").innerHTML = (outOfOfficeRecipients.substring(0, outOfOfficeRecipients.length-2))+ " are out of office!";
+					document.getElementById("zv__COMPOSE-1_out_of_office_row").style.display = "table-row";
+				} else if(GetOutOfOfficeArrLength==1) {
+					document.getElementById("td_compose_out_of_office").innerHTML = ZmRecipients.GetOutOfOfficeArr[0] + " is out of office";
+					document.getElementById("zv__COMPOSE-1_out_of_office_row").style.display = "table-row";
+				} else {
+					document.getElementById("td_compose_out_of_office").innerHTML = "";
+					document.getElementById("zv__COMPOSE-1_out_of_office_row").style.display = "none;";
+				}
+			}
+		} 
+	}; 
+}; 
+
+ZmRecipients.prototype._autocompleteOutOfOfficeCallback =
+function(text, el, match) {
+	if (!match) {
+		DBG.println(AjxDebug.DBG1, "ZmApptEditView: match empty in autocomplete callback; text: " + text);
+		return;
+	}
+	if(match.email){
+		this._getOutOfOfficeInfo(match.email);
 	}
 };
 

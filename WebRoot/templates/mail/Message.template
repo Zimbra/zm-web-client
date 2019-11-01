@@ -375,6 +375,7 @@
 </template>
 
 <template id="mail.Message#To_Recipient">
+	<tr id='zv__COMPOSE-1_out_of_office_row' style='display:none:'><td id='td_compose_out_of_office' colspan="2" style="color:red; padding-left:10px;"></td></tr>
 	<tr id='${toRowId}'>
 		<td width='1%' align=right valign=top style='${labelStyle}'>
 			<div id='${toPickerId}'><$=ZmMsg.toLabel$></div>

@@ -274,7 +274,8 @@ function(bubbleId, skipNotify) {
 
 	var bubble = DwtControl.fromElementId(bubbleId);
 	if (!bubble) { return; }
-	
+
+	var bubbleEmail = bubble.email.trim();
 	this._bubbleList.remove(bubble);
 
 	bubble.dispose();
@@ -297,6 +298,32 @@ function(bubbleId, skipNotify) {
 	if (this._singleBubble && this._numBubbles === 0) {
 		this._setInputEnabled(true);
 	}
+
+	if(ZmRecipients.GetOutOfOfficeArr && bubbleEmail) {
+		var tempArr = [];
+		for( var j = 0; j < ZmRecipients.GetOutOfOfficeArr.length; j++) {
+			if(ZmRecipients.GetOutOfOfficeArr[j] !== bubbleEmail)
+				tempArr.push(ZmRecipients.GetOutOfOfficeArr[j]);
+		}
+
+        ZmRecipients.GetOutOfOfficeArr = tempArr;
+		tempArr = [];
+		var GetOutOfOfficeArrLength = ZmRecipients.GetOutOfOfficeArr.length;
+		if(GetOutOfOfficeArrLength>1) {
+			var outOfOfficeRecipients = "";
+			for(var count=0;count<GetOutOfOfficeArrLength;count++) {
+				outOfOfficeRecipients += ZmRecipients.GetOutOfOfficeArr[count] +", ";
+			}
+			document.getElementById("td_compose_out_of_office").innerHTML = (outOfOfficeRecipients.substring(0, outOfOfficeRecipients.length-2))+ " are out of office";
+			document.getElementById("zv__COMPOSE-1_out_of_office_row").style.display = "table-row";
+		} else if(GetOutOfOfficeArrLength==1) {
+			document.getElementById("td_compose_out_of_office").innerHTML = ZmRecipients.GetOutOfOfficeArr[0] + " is out of office";
+			document.getElementById("zv__COMPOSE-1_out_of_office_row").style.display = "table-row";
+		} else {
+			document.getElementById("td_compose_out_of_office").innerHTML = "";
+			document.getElementById("zv__COMPOSE-1_out_of_office_row").style.display = "none;";
+		}
+	} 
 };
 
 /**
