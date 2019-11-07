@@ -274,7 +274,8 @@ function(bubbleId, skipNotify) {
 
 	var bubble = DwtControl.fromElementId(bubbleId);
 	if (!bubble) { return; }
-	
+
+	var bubbleEmail = bubble.email.trim();
 	this._bubbleList.remove(bubble);
 
 	bubble.dispose();
@@ -297,8 +298,36 @@ function(bubbleId, skipNotify) {
 	if (this._singleBubble && this._numBubbles === 0) {
 		this._setInputEnabled(true);
 	}
-};
 
+	if(bubbleEmail) {
+		var tempArr = [];
+		var oooUsers = document.getElementById(bubble.parent.parent._htmlElId+"_ooo_picker").innerHTML;
+		if(oooUsers.indexOf(",")!==-1) {
+			var oooUsersArr = oooUsers.split(",");
+			for(var k=0; k<oooUsersArr.length-1; k++) {
+				if(oooUsersArr[k] !== bubbleEmail) {
+					tempArr.push(oooUsersArr[k]);
+				}
+			}
+		}
+		var tempArrLength = tempArr.length;
+		if(tempArrLength>0) {
+			var outOfOfficeRecipients = "<table><tr>";
+			for(var count=0;count<tempArrLength;count++) {
+				outOfOfficeRecipients += "<td class='addrBubble'><div class='ImgContact' style='float:left;'></div>"+tempArr[count] +"</td>";
+			}
+			outOfOfficeRecipients += "<td style='color:red; padding-left:5px;'>"+ ZmMsg.outOfOffice +"</td>";
+			outOfOfficeRecipients += "</tr></table>";
+			document.getElementById(bubble.parent.parent._htmlElId+"_ooo_picker").innerHTML = tempArr+",";
+			document.getElementById(bubble.parent.parent._htmlElId+"_ooo_cell").innerHTML = outOfOfficeRecipients;
+			document.getElementById(bubble.parent.parent._htmlElId+"_ooo_row").style.display = "table-row";
+		} else {
+			document.getElementById(bubble.parent.parent._htmlElId+"_ooo_picker").innerHTML = tempArr;
+			document.getElementById(bubble.parent.parent._htmlElId+"_ooo_cell").innerHTML = "";
+			document.getElementById(bubble.parent.parent._htmlElId+"_ooo_row").style.display = "none;";
+		}
+	}
+}
 /**
  * Removes all bubbles from the holding area.
  */

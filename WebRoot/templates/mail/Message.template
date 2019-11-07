@@ -375,6 +375,8 @@
 </template>
 
 <template id="mail.Message#To_Recipient">
+	<tr id='${oooPickerId}' style='display:none'></tr>
+	<tr id='${oooRowId}' style='display:none:'><td id='${oooCellId}' colspan="2" style="color:red; padding-left:10px;"></td></tr>
 	<tr id='${toRowId}'>
 		<td width='1%' align=right valign=top style='${labelStyle}'>
 			<div id='${toPickerId}'><$=ZmMsg.toLabel$></div>
