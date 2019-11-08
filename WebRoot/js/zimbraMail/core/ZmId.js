@@ -689,6 +689,10 @@ ZmId.CMP_TO_CELL			= "_to_cell";
 ZmId.CMP_CC_CELL			= "_cc_cell";
 ZmId.CMP_BCC_CELL			= "_bcc_cell";
 
+ZmId.CMP_OOO_ROW			= "_ooo_row";
+ZmId.CMP_OOO_CELL			= "_ooo_cell";
+ZmId.CMP_OOO_PICKER			= "_ooo_picker";
+
 // compose operations
 ZmId.CMP_TO					= "TO";
 ZmId.CMP_CC					= "CC";

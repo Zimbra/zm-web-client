@@ -3140,7 +3140,10 @@ function(templateId) {
 		replyAttRowId:		ZmId.getViewId(this._view, ZmId.CMP_REPLY_ATT_ROW),
 		attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
 		attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV),
-		attBtnId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_BTN)
+		attBtnId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_BTN),
+		oooRowId:			ZmId.getViewId(this._view, ZmId.CMP_OOO_ROW),
+		oooCellId:			ZmId.getViewId(this._view, ZmId.CMP_OOO_CELL),
+		oooPickerId:		ZmId.getViewId(this._view, ZmId.CMP_OOO_PICKER)
 	};
 
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
