@@ -166,11 +166,12 @@ function(calItem, mode) {
 	this._location.setValue(calItem.getLocation());
 	this._setPriority(calItem.priority);
 	this._statusSelect.setSelectedValue(calItem.status);
-    this._pCompleteSelectInput.setValue(this.formatPercentComplete(calItem.pComplete));
-    if (!this._notesHtmlEditor.getContent() && calItem.message){
-        this._notesHtmlEditor.setContent(calItem.message.getInviteDescriptionContentValue(ZmMimeTable.TEXT_PLAIN) || "");
-    }
-    this._setEmailReminderControls();
+	this._pCompleteSelectInput.setValue(this.formatPercentComplete(calItem.pComplete));
+	var notesHtmlEditorcontent = this._notesHtmlEditor.getContent();
+	if (!notesHtmlEditorcontent && notesHtmlEditorcontent != "" && calItem.message){
+		this._notesHtmlEditor.setContent(calItem.message.getInviteDescriptionContentValue(ZmMimeTable.TEXT_PLAIN) || "");
+	}
+	this._setEmailReminderControls();
 };
 
 ZmTaskEditView.prototype._populateForSave =
