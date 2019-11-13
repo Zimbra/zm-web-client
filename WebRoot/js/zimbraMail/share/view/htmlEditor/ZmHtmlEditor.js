@@ -1065,6 +1065,11 @@ function(id, autoFocus) {
 	}
 
 	var signatureHelpButton = null;
+	var editorSelectedLang = appCtxt.get(ZmSetting.LOCALE_NAME);
+	var hindiObj = editorSelectedLang == 'hi' ? '' : ' - ' + ZmMsg.localeName_hi_org;
+   	var tamilObj = editorSelectedLang == 'ta' ? '' : ' - ' + ZmMsg.localeName_ta_org;
+   	var odiaObj = editorSelectedLang == 'od' ? '' : ' - ' + ZmMsg.localeName_od_org;
+   	var englishObj = editorSelectedLang == 'en' ? '' : ' - ' + ZmMsg.localeName_en_org;
 	
 	var tinyMCEInitSignatureObj = {
 		mode :  (this._mode == Dwt.HTML)? "exact" : "none",
@@ -1081,19 +1086,19 @@ function(id, autoFocus) {
 		pramukhime_options: {
 			selected_value: getPramukhLanguageValue(appCtxt.get(ZmSetting.LOCALE_NAME)),
 			languages: [{
-					text: ZmMsg.localeName_hi,
+					text: ZmMsg.localeName_hi + hindiObj,
 					value: 'pramukhindic:hindi'
 				},
 				{
-					text: ZmMsg.localeName_ta,
+					text: ZmMsg.localeName_ta + tamilObj,
 					value: 'pramukhindic:tamil'
 				},
 				{
-					text: ZmMsg.localeName_od,
+					text: ZmMsg.localeName_od + odiaObj,
 					value: 'pramukhindic:odia'
 				},
 				{
-					text: ZmMsg.localeName_en,
+					text: ZmMsg.localeName_en + englishObj,
 					value: 'pramukhime:english'
 				}
 			]
@@ -1192,21 +1197,20 @@ function(id, autoFocus) {
 		fontsize_formats: AjxMsg.fontSizes || '',
 		pramukhime_options : {
 			selected_value: getPramukhLanguageValue(appCtxt.get(ZmSetting.LOCALE_NAME)),
-			languages: [
-				{
-					text: ZmMsg.localeName_hi,
+			languages: [{
+					text: ZmMsg.localeName_hi + hindiObj,
 					value: 'pramukhindic:hindi'
 				},
 				{
-					text: ZmMsg.localeName_ta,
+					text: ZmMsg.localeName_ta + tamilObj,
 					value: 'pramukhindic:tamil'
 				},
 				{
-					text: ZmMsg.localeName_od,
+					text: ZmMsg.localeName_od + odiaObj,
 					value: 'pramukhindic:odia'
 				},
 				{
-					text: ZmMsg.localeName_en,
+					text: ZmMsg.localeName_en + englishObj,
 					value: 'pramukhime:english'
 				}
 			]
