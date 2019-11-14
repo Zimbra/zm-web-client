@@ -299,9 +299,11 @@ function(bubbleId, skipNotify) {
 		this._setInputEnabled(true);
 	}
 
-	if(bubbleEmail) {
+	var oooUsersElement = document.getElementById(bubble.parent.parent._htmlElId+"_ooo_picker");
+
+	if(bubbleEmail && oooUsersElement) {
 		var tempArr = [];
-		var oooUsers = document.getElementById(bubble.parent.parent._htmlElId+"_ooo_picker").innerHTML;
+		var oooUsers = oooUsersElement.innerHTML;
 		if(oooUsers.indexOf(",")!==-1) {
 			var oooUsersArr = oooUsers.split(",");
 			for(var k=0; k<oooUsersArr.length-1; k++) {
