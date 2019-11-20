@@ -65,8 +65,8 @@
             		success: function (data,status,xhr) {   // success callback function 
                 		var historyData = data;
                         	var splashScreenTable = document.getElementById("SplashScreenTable");
-                        	var dataLength = historyData['all'].length;
-                        	if (historyData && dataLength > 0) {
+                        	var dataLength = historyData && historyData['all'] ? historyData['all'].length : 0;
+				if (historyData && dataLength > 0) {
                 	            	for(var i =0; i< 10; i++){
                         	        	var row = splashScreenTable.insertRow(i + 1);
                                 	    	var cell1 = row.insertCell(0);
@@ -80,11 +80,13 @@
                                 	    	cell4.innerHTML = historyData['all'][i].protocol;
                                     		cell5.innerHTML = historyData['all'][i].location;
                             		}
+     					showSplash();
+     					hideUserProfileScreen();
+					updateHtmlElements();
+					onTimer();
+				} else {
+					hideSplash();
 				}
-				showSplash();
-     				hideUserProfileScreen();
-     		                updateHtmlElements();
-     		                onTimer();
             		},
             		error: function (jqXhr, textStatus, errorMessage) { // error callback 
                 		console.log("Error in loading login history data on splash screen");
