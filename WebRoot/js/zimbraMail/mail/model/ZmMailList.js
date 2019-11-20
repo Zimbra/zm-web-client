@@ -254,6 +254,56 @@ function(params, result) {
 		if (params.childWin) {
 			params.childWin.close();
 		}
+		
+		if (!params.markAsSpam) {
+			var filterRules = new Array(),
+			movedItemsLength = movedItems.length;
+			appCtxt.getAppController().sendRequest({
+				jsonObj: {
+					GetFilterRulesRequest: {
+						_jsns: "urn:zimbraMail"
+					}
+				},
+				asyncMode: true,
+				callback: (new AjxCallback(this, function(filtersResponse) {
+					let filters = filtersResponse.getResponse().GetFilterRulesResponse && filtersResponse.getResponse().GetFilterRulesResponse.filterRules[0];
+					var initialFiltersLength;
+					
+					if (filters.filterRule) initialFiltersLength = filters.filterRule.length;
+
+					if (initialFiltersLength > 0) {
+						for (var i = 0; i < initialFiltersLength; i++) {
+							var rule = filters.filterRule[i];
+							var ruleToBePush = true;
+							for (var j = 0; j < movedItemsLength; j++) {
+								var fromAddress = movedItems[j].getAddresses(AjxEmailAddress.FROM, false, false, false).get(0).address;
+								var filterName = "Automatic Spam Filter: " + fromAddress;
+								if (rule.active && rule.name === filterName) {
+									ruleToBePush = false;
+									break;
+								}
+							}
+							ruleToBePush && filterRules.push(rule);
+						}
+						
+						var jsonObj = {
+								ModifyFilterRulesRequest: {
+									_jsns: "urn:zimbraMail",
+									filterRules: [{
+										filterRule: filterRules
+									}]
+								}
+						};
+						
+						appCtxt.getAppController().sendRequest({
+							jsonObj: jsonObj,
+							asyncMode: true,
+							callback: (new AjxCallback(this, function () {}))
+						});
+					}
+				}))
+			});
+		}
 	}
 	params.actionSummary = summary;
 	if (params.callback) {
