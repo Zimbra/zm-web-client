@@ -427,7 +427,7 @@ function(node, args) {
 		}
 		AjxUtil.hashUpdate(contact.attr, node._attrs);	// merge new attrs just in case we don't have them
 		contact.list = args.list || new ZmContactList(null);
-		contact._list = {};
+		contact._list = contact._list || {}; // We need to add new contact list in contact._list array which contains lists in which contact is present.
 		contact._list[contact.list.id] = true;
 	}
 	//S/MIME: If user certificate is present, include it into contact's object

@@ -283,6 +283,8 @@ function() {
 ZmContactController.prototype._setViewContents =
 function() {
 	var cv = this._contactView;
+	// We need to extract current i.e editing contact list and keep in this object while setting edit view, Because contact list of editing contact group can get changed from cache while changing contact lists in edit view.
+	this.editingContactList = this._contact.list;
 	cv.set(this._contact, this._contactDirty);
 	if (this._contactDirty) {
 		delete this._contactDirty;
@@ -360,6 +362,9 @@ ZmContactController.prototype._saveListener = function(ev, bIsPopCallback) {
 	view.enableInputs(false);
 
 	var contact = view.getContact();
+	if(this.editingContactList) {
+		contact.list = this.editingContactList;
+	}
 	if (mods && AjxUtil.arraySize(mods) > 0) {
 
 		// bug fix #22041 - when moving betw. shared/local folders, dont modify
