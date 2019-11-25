@@ -80,11 +80,12 @@
                                 	    	cell4.innerHTML = historyData['all'][i].protocol;
                                     		cell5.innerHTML = historyData['all'][i].location;
                             		}
+                	            	hideUserProfileScreen();
      					showSplash();
-     					hideUserProfileScreen();
 					updateHtmlElements();
 					onTimer();
 				} else {
+					hideUserProfileScreen();
 					hideSplash();
 				}
             		},
@@ -92,6 +93,7 @@
                 		console.log("Error in loading login history data on splash screen");
            		     	console.log(errorMessage);
                 		console.log(textStatus);
+                		hideUserProfileScreen();
 				hideSplash();
             		}
         	});
