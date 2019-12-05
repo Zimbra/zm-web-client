@@ -885,7 +885,7 @@ function(id, autoFocus) {
 					dashConsExample = ZmMsg.pramHindiDashConsExample;
 					vowelDashExample = ZmMsg.pramHindiVowelDashExample;
 					restOfExamples = '<li>' + AjxMessageFormat.format(ZmMsg.pramHindiNMTable, [ZmMsg.pramHindiNM, ZmMsg.pramHindiAnyOther]) +'</li>';
-					zwj = '<h2 id="#zwj">' + ZmMsg.pramZWJ + '</h2>' + ZmMsg.pramZWJDesc + '<br/><br/><ol>' +AjxMessageFormat.format(ZmMsg.pramZWJExample,[ZmMsg.pramZWJCons, ZmMsg.pramExample]) + '</ol>';
+					zwj = '';
 					examples = ZmMsg.pramHindiExamples;
 				break;
 			// tamil
