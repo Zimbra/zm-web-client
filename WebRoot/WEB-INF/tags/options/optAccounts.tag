@@ -109,11 +109,14 @@
                             <td style='padding-left:10px'>
                                 <select name="zimbraPrefFromAddress">
                                     <c:set var="fromAddr" value="${fn:toLowerCase(mailbox.defaultIdentity.fromAddress)}"/>
+				    <c:set var="disableDomain" value="@gov.in.local" />
                                     <c:forEach var="address" items="${mailbox.accountInfo.emailAddresses}">
-                                        <option value="${fn:escapeXml(address)}"
-											<c:if test="${fn:toLowerCase(address) eq fromAddr}"> selected</c:if> >
-											${fn:escapeXml(address)}
-                                        </option>
+					<c:set value="${fn:indexOf(fn:toLowerCase(address), disableDomain)}" var="indexOfDisabledomain"/>
+                                             <c:if test="${indexOfDisabledomain eq -1}">   
+                                        	<option value="${fn:escapeXml(address)}" <c:if test="${fn:toLowerCase(address) eq fromAddr}"> selected</c:if> >
+							${fn:escapeXml(address)}
+                                        	</option>
+					     </c:if>
                                     </c:forEach>
                                 </select>
                             </td>
