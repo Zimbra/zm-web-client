@@ -90,15 +90,12 @@ function(parent, viewId, htmlElId, fieldNames) {
     this._fieldNames = fieldNames;
 	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
 	var galEnabled = appCtxt.get(ZmSetting.GAL_ENABLED);
-	var acCallback = this._autocompleteOutOfOfficeCallback.bind(this);
-	this._htmlElIdOOO = htmlElId;
 
     	// init autocomplete list
     if (contactsEnabled || galEnabled || appCtxt.isOffline) {
 		var params = {
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
-			compCallback:		acCallback,
 			keyUpCallback:	this._acKeyupHandler.bind(this),
 			contextId:		this._contextId
 		};
@@ -176,76 +173,6 @@ function(parent, viewId, htmlElId, fieldNames) {
 			// Otherwise, it is set to 30px wide, which makes it rather hard to type into.
 			fieldEl.supportsAutoComplete = false;
 		}
-	}
-};
-
-ZmRecipients.prototype._getOutOfOfficeInfo =
-function(emailId) {
-	var isOutOfOfficeEnabled = appCtxt.getSettings().getInfoResponse.attrs._attrs.zimbraOutOfOfficeComposeEnabled;
-	var senderEmailId = appCtxt.getUsername();
-	if((isOutOfOfficeEnabled === "TRUE") && senderEmailId && emailId) {
-		var senderAr = senderEmailId.split("@");
-		var rcptAr = emailId.split("@");
-		if(senderAr[1]===rcptAr[1]) {
-			var soapDoc = AjxSoapDoc.create("GetOutOfOfficeRequest", "urn:zimbraMail");
-			soapDoc.setMethodAttribute("uid", emailId);
-			var fbCallback = new AjxCallback(this, this._handleResponseOutOfOffice);
-			var res = appCtxt.getAppController().sendRequest({
-				soapDoc: soapDoc,
-				asyncMode: true,
-				callback: fbCallback,
-			});
-		}
-	}
-};
-
-ZmRecipients.prototype._handleResponseOutOfOffice =
-	function(result) {
-		var args = result.getResponse().GetOutOfOfficeResponse.match || [];
-		for (var i = 0; i < args.length; i++) {
-			var user = args[i];
-			if(user && user.isOutOfOffice && user.email) {
-				var tempArr = [];
-				var oooUsers = document.getElementById(this._htmlElIdOOO+"_ooo_picker").innerHTML;
-				if(oooUsers.indexOf(",")!==-1) {
-					var oooUsersArr = oooUsers.split(",");
-					for(var k=0; k<oooUsersArr.length-1; k++) {
-						if(oooUsersArr[k] !== user.email.trim()) {
-							tempArr.push(oooUsersArr[k]);
-						}
-					}
-				}
-
-				tempArr.push(user.email.trim());
-				document.getElementById(this._htmlElIdOOO+"_ooo_picker").innerHTML = tempArr+",";
-				if(tempArr) {
-					var tempArrLength = tempArr.length;
-					if(tempArrLength>0) {
-						var outOfOfficeRecipients = "<table><tr>";
-						for(var count=0;count<tempArrLength;count++) {
-							outOfOfficeRecipients += "<td class='addrBubble'><div class='ImgContact' style='float:left;'></div>"+tempArr[count] +"</td>";
-						}
-						outOfOfficeRecipients += "<td style='color:red; padding-left:5px;'>"+ ZmMsg.outOfOffice +"</td>";
-						outOfOfficeRecipients += "</tr></table>";
-						document.getElementById(this._htmlElIdOOO+"_ooo_cell").innerHTML = outOfOfficeRecipients;
-						document.getElementById(this._htmlElIdOOO+"_ooo_row").style.display = "table-row";
-					} else {
-						document.getElementById(this._htmlElIdOOO+"_ooo_cell").innerHTML = "";
-						document.getElementById(this._htmlElIdOOO+"_ooo_row").style.display = "none;";
-					}
-				}
-			}
-		};
-	};
-
-ZmRecipients.prototype._autocompleteOutOfOfficeCallback =
-function(text, el, match) {
-	if (!match) {
-		DBG.println(AjxDebug.DBG1, "ZmApptEditView: match empty in autocomplete callback; text: " + text);
-		return;
-	}
-	if(match.email){
-		this._getOutOfOfficeInfo(match.email);
 	}
 };
 
