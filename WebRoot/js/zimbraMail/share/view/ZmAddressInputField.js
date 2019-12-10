@@ -195,7 +195,9 @@ function(params) {
 			params.address = addrs[i];
 			params.index = (params.index != null) ? params.index + i : null;
 			if (this._hasValidAddress(params)) {
-				this._addBubble(new ZmAddressBubble(params), params.index);
+				bubble = new ZmAddressBubble(params);
+				this._addBubble(bubble, params.index);
+				this._checkOutOfOfficeStatus(params.email, bubble.parent.parent._htmlElId);
 				bubbleAdded = true;
 			}
 		}
@@ -204,6 +206,7 @@ function(params) {
 		if (this._hasValidAddress(params)) {
 			bubble = new ZmAddressBubble(params);
 			this._addBubble(bubble, params.index, params.noFocus);
+			this._checkOutOfOfficeStatus(params.email, bubble.parent.parent._htmlElId);
 			bubbleAdded = true;
 		}
 		else {
@@ -246,6 +249,65 @@ function(bubble, index, noFocus) {
 
 	if (this._singleBubble) {
 		this._setInputEnabled(false);
+	}
+};
+
+ZmAddressInputField.prototype._checkOutOfOfficeStatus =
+function(emailId, _bubbleHtmlElId) {
+	var isOutOfOfficeEnabled = appCtxt.getSettings().getInfoResponse.attrs._attrs.zimbraOutOfOfficeComposeEnabled;
+	var senderEmailId = appCtxt.getUsername();
+	if((isOutOfOfficeEnabled === "TRUE") && senderEmailId && emailId) {
+		var senderAr = senderEmailId.split("@");
+		var rcptAr = emailId.split("@");
+		if(senderAr[1]===rcptAr[1]) {
+			var soapDoc = AjxSoapDoc.create("GetOutOfOfficeRequest", "urn:zimbraMail");
+			soapDoc.setMethodAttribute("uid", emailId);
+			var fbCallback = new AjxCallback(this, this._handleResponseOutOfOffice, [_bubbleHtmlElId]);
+			var res = appCtxt.getAppController().sendRequest({
+				soapDoc: soapDoc,
+				asyncMode: true,
+				callback: fbCallback,
+			});
+		}
+	}
+};
+
+ZmAddressInputField.prototype._handleResponseOutOfOffice =
+function(_bubbleHtmlElId, result) {
+	var args = result.getResponse().GetOutOfOfficeResponse.match || [];
+	for (var i = 0; i < args.length; i++) {
+		var user = args[i];
+		if(user && user.isOutOfOffice && user.email) {
+			var tempArr = [];
+			var oooUsers = document.getElementById(_bubbleHtmlElId+"_ooo_picker").innerHTML;
+			if(oooUsers.indexOf(",")!==-1) {
+				var oooUsersArr = oooUsers.split(",");
+				for(var k=0; k<oooUsersArr.length-1; k++) {
+					if(oooUsersArr[k] !== user.email.trim()) {
+						tempArr.push(oooUsersArr[k]);
+					}
+				}
+			}
+
+			tempArr.push(user.email.trim());
+			document.getElementById(_bubbleHtmlElId+"_ooo_picker").innerHTML = tempArr+",";
+			if(tempArr) {
+				var tempArrLength = tempArr.length;
+				if(tempArrLength>0) {
+					var outOfOfficeRecipients = "<table><tr>";
+					for(var count=0;count<tempArrLength;count++) {
+						outOfOfficeRecipients += "<td class='addrBubble'><div class='ImgContact' style='float:left;'></div>"+tempArr[count] +"</td>";
+					}
+					outOfOfficeRecipients += "<td style='color:red; padding-left:5px;'>"+ ZmMsg.outOfOffice +"</td>";
+					outOfOfficeRecipients += "</tr></table>";
+					document.getElementById(_bubbleHtmlElId+"_ooo_cell").innerHTML = outOfOfficeRecipients;
+					document.getElementById(_bubbleHtmlElId+"_ooo_row").style.display = "table-row";
+				} else {
+					document.getElementById(_bubbleHtmlElId+"_ooo_cell").innerHTML = "";
+					document.getElementById(_bubbleHtmlElId+"_ooo_row").style.display = "none;";
+				}
+			}
+		}
 	}
 };
 
