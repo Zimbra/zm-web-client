@@ -197,7 +197,9 @@ function(params) {
 			if (this._hasValidAddress(params)) {
 				bubble = new ZmAddressBubble(params);
 				this._addBubble(bubble, params.index);
-				this._checkOutOfOfficeStatus(params.email, bubble.parent.parent._htmlElId);
+				if (bubble.addrInput._inputId && bubble.addrInput._inputId.startsWith("zv__COMPOSE")) {
+					this._checkOutOfOfficeStatus(params.email, bubble.parent.parent._htmlElId);
+				}
 				bubbleAdded = true;
 			}
 		}
@@ -206,7 +208,9 @@ function(params) {
 		if (this._hasValidAddress(params)) {
 			bubble = new ZmAddressBubble(params);
 			this._addBubble(bubble, params.index, params.noFocus);
-			this._checkOutOfOfficeStatus(params.email, bubble.parent.parent._htmlElId);
+			if (bubble.addrInput._inputId && bubble.addrInput._inputId.startsWith("zv__COMPOSE")) {
+				this._checkOutOfOfficeStatus(params.email, bubble.parent.parent._htmlElId);
+			}
 			bubbleAdded = true;
 		}
 		else {
