@@ -573,15 +573,14 @@ ZmHtmlEditor.prototype.initTinyMCEEditor = function(params) {
     Dwt.setHandler(textEl, DwtEvent.ONKEYDOWN, this._handleTextareaKeyEvent.bind(this));
 
 	if (!window.tinyMCE) {
-        window.tinyMCEPreInit = {};
-        window.tinyMCEPreInit.suffix = '';
-        window.tinyMCEPreInit.base = appContextPath + ZmHtmlEditor.TINY_MCE_PATH; // SET PATH TO TINYMCE HERE
+		window.tinyMCEPreInit = {};
+		window.tinyMCEPreInit.suffix = '';
+		window.tinyMCEPreInit.base = appContextPath + ZmHtmlEditor.TINY_MCE_PATH; // SET PATH TO TINYMCE HERE
         // Tell TinyMCE that the page has already been loaded
         window.tinyMCE_GZ = {};
         window.tinyMCE_GZ.loaded = true;
-
 		var callback = this.initEditorManager.bind(this, id, params.autoFocus);
-        AjxDispatcher.require(["TinyMCE"], true, callback);
+		AjxDispatcher.require(["TinyMCE"], true, callback);
 	} else {
 		this.initEditorManager(id, params.autoFocus);
 	}
@@ -1144,38 +1143,44 @@ function(id, autoFocus) {
 		},
 		init_instance_callback: function () {
 			//allows typing in all text areas once tinyMCE has been loaded up
-			pramukhIME.addKeyboard('PramukhIndic');
-			let lang = pramukhIME.getLanguage();
-
-			pramukhIME.on('languagechange', function (e) {
-				e.language === 'english' ? defaultHelpButton && defaultHelpButton.disabled(true) : defaultHelpButton && defaultHelpButton.disabled(false);
-				e.language === 'english' ? signatureHelpButton && signatureHelpButton.disabled(true) : signatureHelpButton && signatureHelpButton.disabled(false);
-			});
-
-			//set the language a second time, because for some reason, the first time it stays in English
-			//(something to do with the selectors vs elements setting in the initObj - selectors works for starting with correct language but breaks other things)
-			//also, cannot pass a string var in to setLanguage, must pass actual string
-			switch (lang) {
-				case 'english':
-					pramukhIME.setLanguage('english', 'pramukhime');
-					break;
-				case 'hindi':
-					pramukhIME.setLanguage('hindi', 'pramukhindic');
-					break;
-				case 'tamil':
-					pramukhIME.setLanguage('tamil', 'pramukhindic');
-					break;
-				case 'odia':
-					pramukhIME.setLanguage('odia', 'pramukhindic');
-					break;
+			var intervalId;
+			var checkInit = function() {
+				if (typeof pramukhIME !== 'undefined' && typeof PramukhIndic !== 'undefined') {
+					clearInterval(intervalId);
+					pramukhIME.addKeyboard('PramukhIndic');
+					let lang = pramukhIME.getLanguage();
+		
+					pramukhIME.on('languagechange', function (e) {
+						e.language === 'english' ? defaultHelpButton && defaultHelpButton.disabled(true) : defaultHelpButton && defaultHelpButton.disabled(false);
+						e.language === 'english' ? signatureHelpButton && signatureHelpButton.disabled(true) : signatureHelpButton && signatureHelpButton.disabled(false);
+					});
+		
+					//set the language a second time, because for some reason, the first time it stays in English
+					//(something to do with the selectors vs elements setting in the initObj - selectors works for starting with correct language but breaks other things)
+					//also, cannot pass a string var in to setLanguage, must pass actual string
+					switch (lang) {
+						case 'english':
+							pramukhIME.setLanguage('english', 'pramukhime');
+							break;
+						case 'hindi':
+							pramukhIME.setLanguage('hindi', 'pramukhindic');
+							break;
+						case 'tamil':
+							pramukhIME.setLanguage('tamil', 'pramukhindic');
+							break;
+						case 'odia':
+							pramukhIME.setLanguage('odia', 'pramukhindic');
+							break;
+					}
+					pramukhIME.enable();
+		
+					if (pramukhIME.getLanguage().language === 'english') {
+						defaultHelpButton && defaultHelpButton.disabled(true);
+						signatureHelpButton && signatureHelpButton.disabled(true);
+					}
+				}
 			}
-			pramukhIME.enable();
-
-			if (pramukhIME.getLanguage().language === 'english') {
-				defaultHelpButton && defaultHelpButton.disabled(true);
-				signatureHelpButton && signatureHelpButton.disabled(true);
-			}
-
+			intervalId = setInterval(checkInit, 100);
 		}
 	};
 
@@ -1255,40 +1260,46 @@ function(id, autoFocus) {
 		},
 		init_instance_callback: function () {
 			//allows typing in all text areas once tinyMCE has been loaded up
-			pramukhIME.addKeyboard('PramukhIndic');
-			let lang = pramukhIME.getLanguage();
-
-			pramukhIME.on('languagechange', function (e) {
-				e.language === 'english' ? defaultHelpButton && defaultHelpButton.disabled(true) : defaultHelpButton && defaultHelpButton.disabled(false);
-				e.language === 'english' ? signatureHelpButton && signatureHelpButton.disabled(true) : signatureHelpButton && signatureHelpButton.disabled(false);
-			});
-
-			//set the language a second time, because for some reason, the first time it stays in English
-			//(something to do with the selectors vs elements setting in the initObj - selectors works for starting with correct language but breaks other things)
-			//also, cannot pass a string var in to setLanguage, must pass actual string
-			switch (lang) {
-				case 'english':
-					pramukhIME.setLanguage('english', 'pramukhime');
-					break;
-				case 'hindi':
-					pramukhIME.setLanguage('hindi', 'pramukhindic');
-					break;
-				case 'tamil':
-					pramukhIME.setLanguage('tamil', 'pramukhindic');
-					break;
-				case 'odia':
-					pramukhIME.setLanguage('odia', 'pramukhindic');
-					break;
+			var intervalId;
+			var checkInit = function() {
+				if (typeof pramukhIME !== 'undefined' && typeof PramukhIndic !== 'undefined') {
+					clearInterval(intervalId);
+					pramukhIME.addKeyboard('PramukhIndic');
+					let lang = pramukhIME.getLanguage();
+		
+					pramukhIME.on('languagechange', function (e) {
+						e.language === 'english' ? defaultHelpButton && defaultHelpButton.disabled(true) : defaultHelpButton && defaultHelpButton.disabled(false);
+						e.language === 'english' ? signatureHelpButton && signatureHelpButton.disabled(true) : signatureHelpButton && signatureHelpButton.disabled(false);
+					});
+		
+					//set the language a second time, because for some reason, the first time it stays in English
+					//(something to do with the selectors vs elements setting in the initObj - selectors works for starting with correct language but breaks other things)
+					//also, cannot pass a string var in to setLanguage, must pass actual string
+					switch (lang) {
+						case 'english':
+							pramukhIME.setLanguage('english', 'pramukhime');
+							break;
+						case 'hindi':
+							pramukhIME.setLanguage('hindi', 'pramukhindic');
+							break;
+						case 'tamil':
+							pramukhIME.setLanguage('tamil', 'pramukhindic');
+							break;
+						case 'odia':
+							pramukhIME.setLanguage('odia', 'pramukhindic');
+							break;
+					}
+					pramukhIME.enable();
+		
+					if (pramukhIME.getLanguage().language === 'english') {
+						defaultHelpButton && defaultHelpButton.disabled(true);
+						signatureHelpButton && signatureHelpButton.disabled(true);
+					}
+				}
 			}
-			pramukhIME.enable();
-
-			if (pramukhIME.getLanguage().language === 'english') {
-				defaultHelpButton && defaultHelpButton.disabled(true);
-				signatureHelpButton && signatureHelpButton.disabled(true);
-			}
-
+			intervalId = setInterval(checkInit, 100);
 		}
-    };
+	}
 	var tinyMCEInitObj = (id == 'TEXTAREA_SIGNATURE') ? tinyMCEInitSignatureObj: tinyMCEInitComposeObj;
 	tinyMCE.init(tinyMCEInitObj);
 	this._editor = this.getEditor();
