@@ -208,9 +208,29 @@
     <c:choose>
         <c:when test="${type eq 'Conv'}">
             <zm:markConversationSpam var="result" id="${ids}" spam="${false}"/>
+            <c:if test="${not empty cIdsArr}">
+                <c:forEach items="${cIdsArr}" var="id">
+                    <zm:getConversation var="conversation" id="${id}"/>
+                    <c:set var="summaries" value="${conversation.messageSummaries}"/>
+                    <c:set var="email" value="${summaries[0].sender.address}"/>
+                    <zm:deleteFilterRule name="Automatic Spam Filter: ${email}"/>
+                </c:forEach>
+            </c:if>
         </c:when>
         <c:otherwise>
             <zm:markMessageSpam var="result" id="${ids}" spam="${false}"/>
+            <c:forEach items="${mIdsArr}" var="id">
+                <zm:getMessage var="mMessage" id="${id}"/>
+                <c:set var="mAddresses" value="${mMessage.getEmailAddresses()}"/>
+                <c:set var="addressesLength" value="${fn:length(mAddresses)}"/>
+                <c:forEach items="${mAddresses}" var="mAddress">
+                    <c:if test="${mAddress.type == 'f'}">
+                        <c:set var="email" value="${mAddress.address}"/>
+                        <mo:constructAutoSpam var="filterRule" address="${email}"/>
+                        <zm:deleteFilterRule name="Automatic Spam Filter: ${email}"/>
+                    </c:if>
+                </c:forEach>
+            </c:forEach>
         </c:otherwise>
     </c:choose>
     <mo:status>

@@ -314,6 +314,19 @@
 						<fmt:param value="${result.idCount}"/>
 					</fmt:message>
 				</app:status>
+				<c:if test="${not empty messageIds}">
+				<c:forEach items="${messageIds}" var="id">
+					<zm:getMessage var="mMessage" id="${id}"/>
+					<c:set var="mAddresses" value="${mMessage.getEmailAddresses()}"/>
+					<c:set var="addressesLength" value="${fn:length(mAddresses)}"/>
+					<c:forEach items="${mAddresses}" var="mAddress">
+						<c:if test="${mAddress.type == 'f'}">
+							<c:set var="email" value="${mAddress.address}"/>
+							<zm:deleteFilterRule name="Automatic Spam Filter: ${email}"/>
+						</c:if>
+					</c:forEach>
+				</c:forEach>
+			</c:if>
 			</c:when>
 			<c:when test="${zm:actionSet(param, 'actionDelete')}">
 				<zm:checkCrumb crumb="${param.crumb}"/>
@@ -372,6 +385,10 @@
 						<fmt:param value="${result.idCount}"/>
 					</fmt:message>
 				</app:status>
+				<zm:getConversation var="conversation" id="${param.contextConvId}"/>
+					<c:set var="summaries" value="${conversation.messageSummaries}"/>
+					<c:set var="email" value="${summaries[0].sender.address}"/>
+					<zm:deleteFilterRule name="Automatic Spam Filter: ${email}"/>
 			</c:when>
 			<c:when test="${actionOp eq 'flag' or actionOp eq 'unflag'}">
 				<zm:checkCrumb crumb="${param.crumb}"/>

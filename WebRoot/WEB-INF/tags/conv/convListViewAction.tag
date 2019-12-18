@@ -435,6 +435,29 @@
                 </app:status>
             </c:when>
             </c:choose>
+            <%--wait for everything else to finish up, then Remove the filters--%>
+            <c:if test="${not empty idsArr}">
+                <c:forEach items="${idsArr}" var="id">
+                    <zm:getConversation var="conversation" id="${id}"/>
+                    <c:set var="summaries" value="${conversation.messageSummaries}"/>
+                    <c:set var="email" value="${summaries[0].sender.address}"/>
+                    <zm:deleteFilterRule name="Automatic Spam Filter: ${email}"/>
+                </c:forEach>
+            </c:if>
+            <c:if test="${not empty msgidsArr}">
+                <c:forEach items="${msgidsArr}" var="id">
+                    <zm:getMessage var="mMessage" id="${id}"/>
+                    <c:set var="mAddresses" value="${mMessage.getEmailAddresses()}"/>
+                    <c:set var="addressesLength" value="${fn:length(mAddresses)}"/>
+                    <c:forEach items="${mAddresses}" var="mAddress" varStatus="status">
+                        <c:if test="${mAddress.type == 'f'}">
+                            <c:set var="email" value="${mAddress.address}"/>
+                            <zm:deleteFilterRule name="Automatic Spam Filter: ${email}"/>
+                        </c:if>
+                    </c:forEach>
+                </c:forEach>
+            </c:if>
+            
 		</c:when>
 		<c:when test="${actionOp eq 'flag' or actionOp eq 'unflag'}">
             <c:choose>
