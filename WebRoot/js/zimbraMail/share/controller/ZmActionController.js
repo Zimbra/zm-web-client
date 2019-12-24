@@ -76,11 +76,7 @@ ZmActionController.prototype._handleActionComplete = function(action) {
 ZmActionController.prototype.getUndoLink = function(actionElement, text) {
 	if (actionElement instanceof ZmAction) {
 		var undoId = ZmActionController._registerCallback(new AjxCallback(this, this.undoCurrent));
-	    if(actionElement._toFolderId==4) {
-			return "";
- 		} else {
-			return ["<a onclick='ZmActionController.callRegisteredCallback(",undoId,")' href='javascript:;' class='undo'>", text || ZmMsg.undo, "</a>"].join("");
-		}	
+		return ["<a onclick='ZmActionController.callRegisteredCallback(",undoId,")' href='javascript:;' class='undo'>", text || ZmMsg.undo, "</a>"].join("");
 	} else return ""; // We can't risk displaying "null" or "undefined" wherever this function is called from, and an empty string is just as falsy
 };
 
@@ -106,6 +102,7 @@ ZmActionController.prototype.undoCurrent = function() {
 				this.dismiss();
 			}
 			this._actionStack.undo();
+			ZmActionController._undoFilter(this._actionStack);
 		} else {
 			this._actionStack.onComplete(new AjxCallback(this,function(action) {
 				// We must call this.undo on a timeout to allow the status message to transition in before dismissing
@@ -184,4 +181,22 @@ ZmActionController.callRegisteredCallback = function(id) {
 ZmActionController.prototype._outsideMouseDownListener =
 function(ev) {
 	this.dismiss();
+};
+
+ZmActionController._undoFilter = function(actionStack) {
+	if(actionStack._stack.length > 0 && actionStack._stack[0]._toFolderId == 4) {
+		var jsonObj = {
+			ModifyFilterRulesRequest: {
+				_jsns: "urn:zimbraMail",
+				filterRules: [{
+					filterRule: ""
+				}]
+			}
+		};
+		appCtxt.getAppController().sendRequest({
+			jsonObj: jsonObj,
+			asyncMode: true,
+			callback: (new AjxCallback(this, function () {}))
+		});
+	}
 };
