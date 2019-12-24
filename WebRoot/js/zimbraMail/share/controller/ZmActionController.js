@@ -180,3 +180,4 @@ ZmActionController.callRegisteredCallback = function(id) {
 ZmActionController.prototype._outsideMouseDownListener =
 function(ev) {
 	this.dismiss();
+};
