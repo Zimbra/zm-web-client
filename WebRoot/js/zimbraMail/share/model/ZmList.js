@@ -595,6 +595,9 @@ function(params, result) {
 		list._evt.item = item;	// placeholder
 		list._evt.items = movedItems;
 		list._notify(ZmEvent.E_MOVE, details);
+		if (params.fromFolderId == 4) {
+			list.spamItems(params);
+		}
 	}
 
 	if (params.callback) {
