@@ -91,6 +91,12 @@
 %>
 <c:set var="zimbraxSupported" value="<%=zimbraxSupported%>" />
 
+<!-- Adding the below code to support small screens and to have default option to zimbrax if zimbrax is Supported-->
+<c:if test ="${(zimbraxSupported eq true) and (touchSupported eq true)}">
+    <c:set var="touchSupported" value="false" />
+    <c:set var="mobileSupported" value="true" />
+</c:if>
+
 <c:catch var="loginException">
 	<c:choose>
 		<c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
@@ -476,8 +482,12 @@ if (application.getInitParameter("offlineMode") != null) {
                 <c:set var="client" value="preferred"/>
             </c:otherwise>
         </c:choose>
-	</c:if>
-	<c:set var="smallScreen" value="${client eq 'mobile' or client eq 'socialfox'}"/>
+    </c:if>
+    <c:set var="smallScreen" value="${client eq 'mobile' or client eq 'socialfox'}"/>
+    <c:if test="${mobileSupported and zimbraxSupported}">
+        <c:set var="client" value="zimbrax"/>
+        <c:set var="smallScreen" value="${mobileSupported}"/>
+    </c:if>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<title><fmt:message key="zimbraLoginTitle"/></title>
 	<c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
