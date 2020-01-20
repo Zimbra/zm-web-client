@@ -164,7 +164,7 @@ function() {
 	if (this._objectManager && this._objectManager.reset) {
 		this._objectManager.reset();
 	}
-	this.setScrollWithIframe(this._scrollWithIframe);
+	this.setScrollWithIframe(this._scrollWithIframe ? DwtControl.CLIP : DwtControl.SCROLL);
 };
 
 ZmMailMsgView.prototype.dispose =
@@ -2678,8 +2678,7 @@ function(self, attempt) {
 ZmMailMsgView.prototype.setScrollWithIframe =
 function(val) {
 	
-	if (!this._usingIframe) { return; }
-	
+	if (!this._usingIframe && typeof this._usingIframe !== 'undefined') { return; }
 	this._scrollWithIframe = val;
 	this._limitAttachments = this._scrollWithIframe ? 3 : 0; //making it local
 	this._attcMaxSize = this._limitAttachments * 16 + 8;
