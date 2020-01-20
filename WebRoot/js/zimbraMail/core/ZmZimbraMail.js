@@ -91,7 +91,9 @@ ZmZimbraMail = function(params) {
     this._requestMgr = new ZmRequestMgr(this); // NOTE: requires settings to be initialized
 	
 	// Get langId from launchZCS.jsp file and update in preferences
-	if (params.langId) {
+	var userLocale = appCtxt.getSettings().getInfoResponse.prefs._attrs.zimbraPrefLocale ? appCtxt.getSettings().getInfoResponse.prefs._attrs.zimbraPrefLocale : 'en';
+	userLocale = userLocale == 'en_US' ? 'en' : userLocale;
+	if (params.langId && params.langId != userLocale) {
 		var jsonObj = {
 			ModifyPrefsRequest: {
 				_attrs: {
