@@ -58,6 +58,7 @@ ZmUploadManager.ERROR_INVALID_SIZE      = "invalidSize";
 ZmUploadManager.ERROR_INVALID_EXTENSION = "invalidExtension";
 ZmUploadManager.ERROR_INVALID_FILENAME  = "invalidFilename";
 ZmUploadManager.ERROR_INVALID_FILE  = "invalidFile";
+ZmUploadManager._uploadBriefAttReq= "";
 
 /**
  * uploadMyComputerFile serializes a set of files uploads.  The responses are accumulated, and progress is provided to the
@@ -129,6 +130,7 @@ function(params) {
 
         DBG.println(AjxDebug.DBG1,"Uploading file: "  + fileName + " file type" + (file.type || "application/octet-stream") );
         this._uploadAttReq = req;
+		ZmUploadManager._uploadBriefAttReq = req;
         if (AjxEnv.supportsHTML5File) {
             if (params.progressCallback) {
                 req.upload.addEventListener("progress", params.progressCallback, false);
@@ -217,7 +219,7 @@ function(req, fileName, params){
 				// </UGLY>
 			}
 		}
-        if (response || this._uploadAttReq.aborted) {
+        if (response || this._uploadAttReq.aborted || ZmUploadManager._uploadBriefAttReq.aborted) {
 			allResponses.push(response  || null);
             if (aid) {
                 DBG.println(AjxDebug.DBG1,"Uploaded file: "  + fileName + "Successfully.");
@@ -232,6 +234,9 @@ function(req, fileName, params){
                 this.upload(params);
             }
             else {
+				if(ZmUploadManager._uploadBriefAttReq.aborted && files.length==1) {
+					status = 200;
+				}
                 // Uploads are all done
                 this._completeAll(params, allResponses, status);
             }

@@ -65,6 +65,8 @@ ZmUploadDialog.prototype._uploadCallback;
 
 ZmUploadDialog.prototype._extensions;
 
+var uploadedFileObj = [];
+var fileNameTmp = "";
 // Public methods
 /**
  * Enables the link title option.
@@ -268,6 +270,16 @@ ZmUploadDialog.prototype._upload = function(){
 	var newError;
     this.setFileExtensions();
 
+	try {
+		uploadedFileObj = [];
+		fileNameTmp = "";
+		var briefcaseProgressDiv= document.getElementById("briefcase_progress_div");
+		if(briefcaseProgressDiv) {
+			briefcaseProgressDiv.style.display = "";
+			briefcaseProgressDiv.innerHTML = "";
+		}
+	} catch(err) {}	
+
     var setLinkTitleText = (function(){
         if (this._showLinkTitleText) {
             var id = element.id;
@@ -393,9 +405,39 @@ ZmUploadDialog.prototype._upload = function(){
     }
 };
 
+ZmUploadDialog.prototype._initBriefProgressSpan =
+	function(fileName) {
+		try {
+			var briefcaseProgressDiv= document.getElementById("briefcase_progress_div");
+			if(briefcaseProgressDiv) {
+				briefcaseProgressDiv.innerHTML = "";
+				var firstBubble = briefcaseProgressDiv.getElementsByTagName("span")[0];
+				if (firstBubble) {
+					var tempBubbleWrapper = document.createElement("span");
+					tempBubbleWrapper.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentBubble", {fileName: fileName});
+					var newBubble = tempBubbleWrapper.firstChild;
+					firstBubble.parentNode.insertBefore(newBubble, firstBubble);
+				} else {
+					briefcaseProgressDiv.innerHTML = AjxTemplate.expand("mail.Message#UploadProgressContainer", {fileName: fileName});
+				}
+				this._loadingSpan = briefcaseProgressDiv.getElementsByTagName("span")[0];
+				uploadedFileObj.push(this._loadingSpan);
+			}
+		} catch(err) {}
+	};
+
 ZmUploadDialog.prototype._uploadFileProgress =
 	function(uploadButton, params, progress) {
 		if (!uploadButton || !params || !progress.lengthComputable || !params.totalSize) return;
+
+		try {
+			var file     = params.files[params.start];
+			var fileName = file.name || file.fileName;
+			if(fileNameTmp != fileName) {
+				fileNameTmp = fileName;
+				this._initBriefProgressSpan(fileName);
+			}
+		} catch(err) {}
 
 		// The 16x16 upload image has ImgUpload0 (no fill) .. ImgUpload12 (completely filled) variants to give a
 		// gross idea of the progress.  A tooltip indicating the progress will be added too.
@@ -413,6 +455,11 @@ ZmUploadDialog.prototype._uploadFileProgress =
 
 		var tooltip = AjxMessageFormat.format(ZmMsg.uploadPercentComplete, [ Math.round(fractionUploaded * 100) ] )
 		uploadButton.setToolTipContent(tooltip, true);
+
+		try {
+			var finishedSpan = uploadedFileObj[params.start].childNodes[0];
+			finishedSpan.style.width =  ((Math.round(fractionUploaded * 100))-10)  + "%";
+		} catch(err) {}
 	};
 
 ZmUploadDialog.prototype._enableUpload = function(uploadButton) {
@@ -421,6 +468,14 @@ ZmUploadDialog.prototype._enableUpload = function(uploadButton) {
 	ZmToolBar._setButtonStyle(uploadButton, null, ZmMsg.uploadNewFile, null);
 	uploadButton.setToolTipContent(ZmMsg.uploadNewFile, true);
 	this._inprogress = false;
+	try {
+		var briefcaseProgressDiv= document.getElementById("briefcase_progress_div");
+		if(briefcaseProgressDiv) {
+			briefcaseProgressDiv.style.display = "none";
+			briefcaseProgressDiv.innerHTML = "";
+			fileNameTmp = "";
+		}
+	} catch(err) {}
 };
 
 ZmUploadDialog.prototype._finishUpload = function(uploadButton, docFiles, uploadFolder) {
