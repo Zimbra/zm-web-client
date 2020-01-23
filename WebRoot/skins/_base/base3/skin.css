@@ -229,7 +229,9 @@ BODY									{	margin:0px; 	}
 	overflow:hidden;
 	@FontFamily-default@
 	@FontSize-normal@
-	@LoginScreen@
+	background-color: #0088c1;
+	background-image: url(../../../img/new-back-ground-image.png);
+    background-size: cover;
 }
 
 #modifiedLogin.LoginScreen{
@@ -267,10 +269,10 @@ BODY									{	margin:0px; 	}
 .SplashScreen .center, .SplashScreen .center-small,
 .ErrorScreen .center, .ErrorScreen .center-small {
 	left:50%;
-	overflow:visible;
-	position:absolute;
-	top:40%;
-	z-index:11;
+    overflow:visible;
+    position:absolute;
+    top:40%;
+    z-index:11;
 }
 
 
