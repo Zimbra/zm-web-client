@@ -158,14 +158,14 @@ function() {
 	var cancelbutton = this.getButton(ZmPasswordRecoveryDialog.CANCEL_BUTTON);
 	var accountKeyupHandler = this._accountHandleKeyUp.bind(this);
 	var codeKeyupHandler = this._codeHandleKeyUp.bind(this);
-	this.getButton(ZmPasswordRecoveryDialog.CANCEL_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	this.getButton(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	this.getButton(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	this.getButton(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	this.getButton(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	this.getButton(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	this.getButton(ZmPasswordRecoveryDialog.LOGIN_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	cancelbutton.setClassName('ZmPasswordRecoveryButton');
+	this.getButton(ZmPasswordRecoveryDialog.CANCEL_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryCancelButton');
+	this.getButton(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoverySubmitButton');
+	this.getButton(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryRequestButton');
+	this.getButton(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryResendButton');
+	this.getButton(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryVerifyButton');
+	this.getButton(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryResetButton');
+	this.getButton(ZmPasswordRecoveryDialog.LOGIN_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryLoginButton');
+	cancelbutton.setClassName('ZmPasswordRecoveryButton PasswordRecoveryBackToSignInButton');
 	// Create buttons
 	this._createRecoveryButtons('continueSessionsRecoveryButton', ZmMsg.recoveryEmailButtonContinueSession, true, false,
 					'_CONTINUE_BUTTON', '_finishButtonListener');

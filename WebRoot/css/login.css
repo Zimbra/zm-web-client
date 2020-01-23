@@ -43,6 +43,54 @@ FORM {
 	padding:0px;
 }
 
+.signIn {
+	font-size: 20px;
+	padding: 19px 40px;
+	color: @gray-darker@;
+	font-weight: bold;
+}
+
+.loginSection {
+	padding: 15px 40px;
+}
+
+.versionBlock {
+	padding: 20px 40px;
+	background: #eee;
+	position: relative;
+}
+
+.versionBlock label {
+	display: block;
+	padding-bottom: 3px;
+	color: @gray-darker@;
+}
+.LoginScreen div.logo{
+	padding: 30px 40px 0;
+}
+
+select#client {
+	width: 100%;
+	background: @white-color@;
+	height: 32px;
+	outline: none;
+}
+
+select#client:focus {
+	border-color: @brand-primary@;
+}
+
+.trustedDeviceDiv {
+	padding: 9px 0;
+	font-size: 13px;
+	color: @gray-darker@;
+}
+
+.verifyButtonWrapper{
+	padding: 12px 0;
+	clear: both; 
+	float:none;
+}
 
 /*
  *	Container for the splash screen
@@ -75,6 +123,28 @@ FORM {
  * major login zones
  */
 .LoginScreen FORM 	{ text-align:center; 	}  /* fixes IE centering of form */
+
+#zLoginForm{
+	text-align: left;
+}
+
+form#zLoginForm .form INPUT[type='text'], 
+form#zLoginForm .form INPUT[type='password'],
+.twoFactorForm INPUT[type="text"] { 
+	border: 1px solid @gray-lighter@;
+	padding: 6px 12px;
+	width: 100%;
+	height: 36px;
+	box-sizing: border-box;
+	margin-bottom: 10px;
+}
+form#zLoginForm .form INPUT[type='text']:focus, 
+form#zLoginForm .form INPUT[type='password']:focus,
+.twoFactorForm INPUT[type="text"]:focus{
+	border-color: @brand-primary@;
+}
+
+
 .form {
 	border-collapse:collapse;
 	color:@LoginLabelColor@;
@@ -98,6 +168,94 @@ FORM {
 .form INPUT[type='password']:focus 	{ border:1px solid @SelC@; 					}
 .form SELECT 						{ height:20px; width:165px; 				}
 .form .submitTD 					{ text-align:left; 							}
+
+
+.form .rememberCheckWrapper {
+	flex: 1;
+	padding-left: 20px;
+	justify-content: flex-end;
+}
+
+
+
+input.loginButton{ 
+	background-color: @brand-tertiary@;
+	color: @white-color@;
+	float: left;
+	font-size: 13px;
+	padding: 8px 23px;
+	border-radius: 4px;
+	cursor: pointer;
+	outline: none;
+	border: none;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+}
+
+#verifyButton:disabled{
+	background-color: @brand-primary@;
+	opacity: 0.4;
+	color: #fff;
+}
+
+#cancelButton{
+	background-color: @gray-lightest@;
+	color: @gray-darker@;
+	margin-left: 6px;
+}
+
+#cancelButton:hover{
+	background-color: @gray-lighter@;
+}
+
+
+input.loginButton[disabled]{border: none;}
+
+input.loginButton:hover,
+input.loginButton:focus{
+	background-color: @brand-primary@;
+}
+
+.hideTooltip{
+	display: none;
+}
+
+.twoFactorForm{
+	padding: 30px 40px 60px;;
+}
+input#remember {
+	outline: none;
+	float: left;
+}
+
+.rememberCheckWrapper span{
+	display: block;
+	overflow: hidden;
+	padding-top: 2px;
+}
+
+
+input#trustedDevice {
+	margin: 0;
+	outline: none;
+}
+
+label#remember {
+    color: @gray-darker@;
+}
+
+.twoFactorTitle{
+	font-size: 20px;
+	font-weight: bold;
+	padding: 17px 40px 0;
+	color: @gray-darker@;
+}
+
+#trustedDeviceLabel{
+	padding-left: 5px;
+	color: @gray-darker@;
+}
+
 .form .ZLoginButton					{ @LoginButton@ float:right; font-size:1em;}
 .form HR { 
 	border-color:transparent transparent @LoginLabelColor@; 
@@ -107,24 +265,97 @@ FORM {
 	position:relative;
 	z-index:20;
 }
+
+.alignWhatsThis{
+	position: absolute;
+	top: 9px;
+	left: 105%;
+}
+
 .LoginScreen #ZLoginWhatsThisAnchor {
-	color:@LoginLabelColor@;
-	font-size:.9em;
-	margin-left:5px;
+	color: #1e282ec2;
+	font-size: .9em;
+	margin-left: 8px;
+	position: absolute;
+	left: 100%;
+	top: 8px;
+	outline: none;
 }
+
+#dialogCloseButton {
+	position: absolute;
+	font-size: 20px;
+	right: 15px;
+	top: 10px;
+	cursor: pointer;
+}
+
 .LoginScreen #ZLoginForgotPassword {
-	color:@LoginLabelColor@;
-	font-size:.9em;
+	color:@brand-tertiary@;
+	font-size: 11px;
 	float: right;
+	padding: 2px;
+	outline: none;
 }
-.LoginScreen #ZLoginWhatsThis {
-	left:0px;
-	margin-left:-10em;
-	position:absolute;
-	top:25px;
-	width:40em;
-	z-index:30; 
+
+.LoginScreen #ZLoginForgotPassword:focus {
+	color:@gray-darker@;
 }
+
+
+.passwordWrapper {
+	position: relative;
+}
+
+.passwordWrapper #hideSpan{
+	position: absolute;
+	z-index: 2;
+	font-size: 10px;
+	color: @gray-darker@;
+	right: 10px;
+	top: 11px; 
+	cursor: pointer;
+}
+
+.passwordWrapper #showSpan{
+	position: absolute;
+	z-index: 2;
+	font-size: 10px;
+	color: @gray-darker@;
+	right: 10px;
+	top: 11px; 
+	cursor: pointer
+}
+
+.passwordWrapper #hideSpan:focus,
+.passwordWrapper #showSpan:focus,
+.passwordWrapper #hideSpan:hover,
+.passwordWrapper #showSpan:hover{
+	color: @brand-primary@;
+}
+
+.LoginScreen .ZLoginInfo {
+	position: absolute;
+	z-index: 3;
+	bottom: 50%;
+	left: 13px;
+	right: 13px;
+	padding: 24px 24px;
+	border: none;
+	border-radius: 5px;
+	background-color: @white-color@;
+	box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
+	color : @gray-darker@;
+}
+
+.LoginScreen .ZLoginInfo p {
+	font-size: 12px;
+}
+
+.LoginScreen .ZLoginInfo p strong{
+	font-size: 14px;
+}
+
 .LoginScreen .ZLoginInfoMessage {
 	background-color:@AppC@;	
 	border:1px solid @darken(AltC,25)@;
@@ -134,6 +365,20 @@ FORM {
 	@cssShadow@:0px 0px 2px black;
 }
 
+.loginTitle{
+	padding: 0 40px;
+	font-size: 13px;
+	color: @gray-darker@;
+}
+
+.signInAndLabel{
+	display: flex;
+}
+
+.signInAndLabel > div{
+	display: flex;
+	align-items: center;
+}
 
 /*DWT Buttons*/
 .DwtButton					{	@Button@ @ButtonBorder-normal@ 		}
@@ -235,4 +480,18 @@ FORM {
 }
 .Footer-small #ZLoginNotice {
 	display:none;
+}
+
+#ZLoginWhatsThis{
+	display: none;
+}
+
+#ZLoginWhatsThisButton {
+    background: url(../img/questionMark.png) center center no-repeat;
+    border: transparent;
+    outline: none;
+    width: 15px;
+    height: 15px;
+    padding: 0;
+    background-size: 15px 15px;
 }

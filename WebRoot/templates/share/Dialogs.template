@@ -722,69 +722,110 @@
 	</div>
 </template>
 
+<template id='share.Dialogs#ZmTwoFactorCustomLoginPage'>
+	<div class="ZmTwoFactorCustomSetupLoginPage">		
+		<div class="logo">
+			<a href="https://www.zimbra.com/"  style=" outline :none;" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'>
+				<img style="outline:none;" src="/img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
+			</a>
+		</div>
+		<div id='${id}_description'>
+			<h2 class="ZmTwoFactorCustomTitleLoginPage" ><$=ZmMsg.twoStepAuthSetup$></h2>
+			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthDescription$></p>
+		</div>
+		<div id='${id}_password'>
+			<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthPassword$></h2>
+			<p id='${id}_password_error' style="display:none;" class="ZmTwoFactorCustomSetupErrorLoginPage"><$=ZmMsg.offlinePasswordUpdateFailure$></p>
+			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthPasswordDescription$> "${username}".</p>
+			<label class="passwordCustomLabel" for="${id}_password_input"><$=ZmMsg.password$></label>
+			<div class="ZmTwoFactorCustomInputLoginPage">
+				<input class="inputTag" type="password" id="${id}_password_input" autocomplete="off"/>
+			</div>
+		</div>
+		<div id='${id}_authentication'>
+			<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthApp$></h2>
+			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthAppDescription$></p>
+			<p class="ZmTwoFactorCustomParaLoginPage">
+				<a href="<$=ZmMsg.twoStepAuthAppURL$>" target="_blank" title="<$=ZmMsg.twoStepAuthAppURL$>"><$=ZmMsg.twoStepAuthAppURL$></a>
+			</p>
+			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthAppFooter$></p>
+		</div>
+		<div id='${id}_email'>
+			<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthEmail$></h2>
+			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthEmailDescription$></p>
+			<div class="ZmTwoFactorCustomSetupContainerLoginPage">
+				<span id="${id}_email_key" class="email-key"></span>
+			</div>
+		</div>
+		<div id='${id}_code'>
+			<div id='${id}_code_description'>
+				<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthCode$></h2>
+				<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthCodeDescription$></p>
+			</div>
+			<div id='${id}_code_error' style="display:none;">
+				<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthCode$></h2>
+				<div class="ZmTwoFactorCustomSetupErrorLoginPage"><$=ZmMsg.twoStepAuthCodeError$></div>
+				<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthCodeErrorDescription$></p>
+			</div>
+			<div class="ZmTwoFactorCustomInputLoginPage">
+				<input class="numberInputTag" type="number" id="${id}_code_input" placeholder="e.g. 123456" autocomplete="off"/>
+			</div>
+		</div>
+		<div id='${id}_success'>
+			<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthSuccess$></h2>
+			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthSuccessDescription$></p>
+		</div>
+	</div>
+</template>
+
 <template id='share.Dialogs#ZmPasswordRecovery'>
 	<div class="ZmPasswordRecoverySetup">
-		<div class='ImgLoginBanner'></div>
+		<div class="ImgLoginBanner">
+			<a href="https://www.zimbra.com/"  style=" outline :none;" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'>
+				<img style="outline:none;" src="/img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
+			</a>
+		</div>
 		<div id='${id}_get_recovery_account'>
-			<p><$=ZmMsg.passwordRecoveryGetAccountDescription$></p>
+			<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.passwordRecoveryTitle$></h2>
+			<div id='${id}_account_input_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
+				<span id='${id}_account_input_error_message'><$=ZmMsg.offlinePasswordUpdateFailure$></span>	
+			</div>
+			<p class="ZmPasswordRecoveryCustomPara"><$=ZmMsg.passwordRecoveryGetAccountDescription$></p>
 			<div class='ZmPasswordRecoverySetupContainer'>
-				<div id='${id}_account_input_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
-					<table><tr>
-						<td><img class='ZLoginErrorIcon' altkey='ALT_ERROR' src='/img/dwt/ImgCritical_32.png' /></td>
-						<td id='${id}_account_input_error_message'><$=ZmMsg.offlinePasswordUpdateFailure$></td>
-					</tr></table>
-				</div>
-				<label for='${id}_account_input'><$=ZmMsg.passwordRecoveryAccountLabel$></label>
-				<input type='text' id='${id}_account_input' size='35' autocomplete='off'/>
+				<input type='text' id='${id}_account_input' placeholder="Email" size='35' autocomplete='off'/>
 			</div>
 		</div>
 		<div id='${id}_request_code'>
-			<p id='${id}_request_code_description'></p>
+			<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.passwordRecoveryTitle$></h2>
 			<div id='${id}_request_code_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
-				<table><tr>
-					<td><img class='ZLoginErrorIcon' altkey='ALT_ERROR' src='/img/dwt/ImgCritical_32.png' /></td>
-					<td id='${id}_request_code_error_message'><$=ZmMsg.offlinePasswordUpdateFailure$></td>
-				</tr></table>
+				<span id='${id}_request_code_error_message'><$=ZmMsg.offlinePasswordUpdateFailure$></span>
 			</div>
+			<p class="ZmPasswordRecoveryCustomPara" id='${id}_request_code_description'></p>
 		</div>
 		<div id='${id}_validate_code'>
-			<p id='${id}_validate_code_description'><$=ZmMsg.passwordRecoveryCodeValidationDescription$></p>
+			<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.passwordRecoveryTitle$></h2>
+			<div id='${id}_validate_code_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
+				<span id='${id}_validate_code_error_message'><$=ZmMsg.passwordRecoveryCodeValidationError$></span>
+			</div>
+			<p class="ZmPasswordRecoveryCustomPara" id='${id}_validate_code_description'><$=ZmMsg.passwordRecoveryCodeValidationDescription$></p>
 			<div class='ZmPasswordRecoverySetupContainer'>
-				<div id='${id}_validate_code_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
-					<table><tr>
-						<td><img class='ZLoginErrorIcon' altkey='ALT_ERROR' src='/img/dwt/ImgCritical_32.png' /></td>
-						<td id='${id}_validate_code_error_message'><$=ZmMsg.passwordRecoveryCodeValidationError$></td>
-					</tr></table>
-				</div>
-				<div id='${id}_validate_input'>
-					<label for='${id}_code_input'><$=ZmMsg.passwordRecoveryCodeLabel$></label>
-					<input type='text' id='${id}_code_input' size='35' autocomplete='off'/>
-				</div>
+				<input type='text' id='${id}_code_input' placeholder="Code" size='35' autocomplete='off'/>
 			</div>
 		</div>
 		<div id='${id}_code_success'>
-			<p><$=ZmMsg.passwordRecoveryCodeSuccessDescription$></p>
-			<table role='presentation' width=100% class='ZPropertySheet' cellspacing='6'>
-				<tr>
-					<td class='ZOptionsField'>
-						<button id='${id}_CONTINUE_BUTTON' class='ZmPasswordRecoveryButton' tabindex=0></button>
-					</td>
-					<td>
-						<button id='${id}_RESET_PASSWORD' class='ZmPasswordRecoveryButton' tabindex=0></button>
-					</td>
-				</tr>
-			</table>
+			<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.passwordRecoveryTitle$></h2>
+			<p class="ZmPasswordRecoveryCustomPara"><$=ZmMsg.passwordRecoveryCodeSuccessDescription$></p>
+			<div class="alignButton">
+				<button id='${id}_RESET_PASSWORD' class='ZmPasswordRecoveryButton' tabindex=0></button>	
+				<button id='${id}_CONTINUE_BUTTON' class='ZmPasswordRecoveryButton' tabindex=0></button>	
+			</div>
 		</div>
 		<div id='${id}_reset_password'>
 			<div id='${id}_reset_password_description'>
-				<p><$=ZmMsg.passwordRecoveryResetDescription$></p>
+				<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.recoveryEmailButtonResetPassword$></h2>
 			</div>
 			<div id='${id}_reset_password_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
-				<table><tr>
-					<td><img class='ZLoginErrorIcon' altkey='ALT_ERROR' src='/img/dwt/ImgCritical_32.png' /></td>
-					<td id='${id}_reset_password_error_message'><$=ZmMsg.passwordRecoveryResetError$>
-					</td>
-				</tr></table>
+					<span id='${id}_reset_password_error_message'><$=ZmMsg.passwordRecoveryResetError$></span>
 			</div>
 			<div class='ZmPasswordRecoverySetupContainer'>
 				<label for='${id}_password_new_input'><$=ZmMsg.passwordRecoveryResetNewLabel$></label>
@@ -793,15 +834,9 @@
 				<input type='password' id='${id}_password_confirm_input' size='35' autocomplete='off'/>
 			</div>
 		</div>
-		<div id='${id}_password_reset_success' style='margin-top: 60px;'>
-			<div class='ZmPasswordRecoverySetupContainer'>
-				<div class='ZmPasswordRecoverySetupInfo'>
-					<table><tr>
-						<td><img class='ZLoginInfoIcon' src='/img/dwt/ImgInformation_32.png' /></td>
-						<td><$=ZmMsg.passwordRecoveryResetSuccessDescription$></td>
-					</tr></table>
-				</div>
-			</div>
+		<div id='${id}_password_reset_success'>
+			<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.passwordRecoveryResetSuccessTitle$></h2>
+			<p class="ZmPasswordRecoveryCustomPara"><$=ZmMsg.passwordRecoveryResetSuccessDescription$></p>
 		</div>
 	</div>
 </template>
