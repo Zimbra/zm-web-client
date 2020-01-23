@@ -43,6 +43,46 @@ FORM {
 	padding:0px;
 }
 
+.signIn {
+	font-size: 20px;
+    text-align: left;
+    padding: 19px 40px;
+}
+
+.loginSection {
+	padding: 30px 40px;
+}
+
+.versionBlock {
+	padding: 20px 40px;
+    background: #eee;
+}
+
+.versionBlock label {
+    display: block;
+    padding-bottom: 3px;
+}
+.LoginScreen h1.logo{
+	margin: 0 30px;
+    overflow: hidden;
+}
+
+select#client {
+	width: 100%;
+    background: #fff;
+    height: 32px;
+}
+
+.trustedDeviceDiv {
+	padding: 9px 0px;
+    font-size: 14px;
+}
+
+.verifyButtonWrapper{
+	padding: 12px 0px;
+	clear: both; 
+	float:none;
+}
 
 /*
  *	Container for the splash screen
@@ -75,6 +115,33 @@ FORM {
  * major login zones
  */
 .LoginScreen FORM 	{ text-align:center; 	}  /* fixes IE centering of form */
+
+#zLoginForm{
+	text-align: left;
+}
+
+form#zLoginForm .form {
+	color: #1e282ec2;
+    position: inherit;
+}
+
+form#zLoginForm .form INPUT[type='text'], 
+form#zLoginForm .form INPUT[type='password'],
+.twoFactorForm INPUT[type="text"]	{ 
+	border: 1px solid #d9d9d9;
+    padding: 6px 12px;
+    width: 100%;
+    height: 36px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+form#zLoginForm .form INPUT[type='text']:focus, 
+form#zLoginForm .form INPUT[type='password']:focus,
+.twoFactorForm INPUT[type="text"]:focus{
+	border-color: #0088c1;
+}
+
+
 .form {
 	border-collapse:collapse;
 	color:@LoginLabelColor@;
@@ -98,6 +165,69 @@ FORM {
 .form INPUT[type='password']:focus 	{ border:1px solid @SelC@; 					}
 .form SELECT 						{ height:20px; width:165px; 				}
 .form .submitTD 					{ text-align:left; 							}
+
+
+.form .rememberCheckWrapper {
+	float: right;
+    padding-top: 8px;
+}
+
+input.loginButton{ 
+	background-color: #007CC3;
+    border-color: white;
+	color: #fff;
+    float: left;
+    font-size: 13px;
+    padding: 8px 23px;
+	border-radius: 4px;
+	cursor: pointer;
+	outline: none;
+}
+
+#verifyButton:disabled{
+	background-color:#aed4eae0;
+	color: #fff;
+}
+
+#cancelButton{
+	background-color: #f2f2f2;
+	color: #4d4d4d;
+}
+
+input.loginButton:disabled{ 
+	background-color: #0088c1;
+}
+
+input.loginButton:hover{
+	background-color: #0088c1;
+}
+
+.twoFactorForm{
+	padding: 30px 40px 60px;;
+}
+input#remember {
+	outline: none;
+}
+
+
+input#trustedDevice {
+	margin: 0px;
+	outline: none;
+}
+
+
+.twoFactorTitle{
+	font-size: 20px;
+    font-weight: 500;
+    padding: 17px 40px 0;
+    color: #4d4d4d;
+}
+
+#trustedDeviceLabel{
+	padding-left: 5px;
+	color: #4d4d4d;
+}
+
 .form .ZLoginButton					{ @LoginButton@ float:right; font-size:1em;}
 .form HR { 
 	border-color:transparent transparent @LoginLabelColor@; 
@@ -107,23 +237,56 @@ FORM {
 	position:relative;
 	z-index:20;
 }
+
 .LoginScreen #ZLoginWhatsThisAnchor {
-	color:@LoginLabelColor@;
-	font-size:.9em;
-	margin-left:5px;
+	color: #1e282ec2;
+    font-size: .9em;
+    margin-left: 8px;
+  	position: absolute;
+    left: 100%;
+	TOP: 8px;
+	outline: none;
 }
-.LoginScreen #ZLoginForgotPassword {
-	color:@LoginLabelColor@;
-	font-size:.9em;
+
+#dialogCloseButton {
 	float: right;
+    width: 10;
+    height: 10;
+    margin: -6px -18px 0px 0px;
 }
+
+.LoginScreen #ZLoginForgotPassword {
+	color: #59a3dd;
+    font-size: .9em;
+    float: right;
+	padding: 2px;
+	outline: none;
+}
+.passwordWrapper {
+	position: relative;
+}
+
+.passwordWrapper #showAndHide{
+	position: absolute;
+    z-index: 2;
+    font-size: 12px;
+    color: #828282;
+    right: 10px;
+	top: 11px;
+	cursor: pointer;
+}
+
 .LoginScreen #ZLoginWhatsThis {
-	left:0px;
-	margin-left:-10em;
-	position:absolute;
-	top:25px;
-	width:40em;
-	z-index:30; 
+    margin: 0em 1em 0 -2em;
+    position: absolute;
+    top: 25px;
+    z-index: 3;
+    height: 350px;
+    font-size: 14px;
+    padding: 24px 32px;
+	border-radius: 5px;
+	border-style: none;
+	box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
 }
 .LoginScreen .ZLoginInfoMessage {
 	background-color:@AppC@;	
@@ -134,6 +297,10 @@ FORM {
 	@cssShadow@:0px 0px 2px black;
 }
 
+.loginTitle{
+	padding: 0px 40px;
+    text-align: left;
+}
 
 /*DWT Buttons*/
 .DwtButton					{	@Button@ @ButtonBorder-normal@ 		}

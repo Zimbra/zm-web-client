@@ -229,13 +229,19 @@ BODY									{	margin:0px; 	}
 	overflow:hidden;
 	@FontFamily-default@
 	@FontSize-normal@
-	@LoginScreen@
+	background-color: #0088c1;
+	background-image: url(../../../img/new-back-ground-image.png);
+    background-size: cover;
 }
 .LoginScreen .center,
 .SplashScreen .center,
 .ErrorScreen .center {
 	margin-top:-160px;
 	margin-left:-250px;
+}
+
+.LoginScreen .modernCenter{
+	height: 100%;
 }
 
 .LoginScreen .center-small,
@@ -250,11 +256,24 @@ BODY									{	margin:0px; 	}
 .SplashScreen .center, .SplashScreen .center-small,
 .ErrorScreen .center, .ErrorScreen .center-small {
 	left:50%;
-	overflow:visible;
-	position:absolute;
-	top:40%;
-	z-index:11;
+    overflow:visible;
+    position:absolute;
+    top:40%;
+    z-index:11;
 }
+
+
+.LoginScreen .modernContentBox {
+	background-color: #fff;
+    box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
+    padding: 0;
+    max-width: 340px;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+} 
+
 .LoginScreen .contentBox,
 .SplashScreen .contentBox,
 .ErrorScreen .contentBox {
@@ -285,6 +304,25 @@ BODY									{	margin:0px; 	}
 	cursor:pointer;
 	display:block;
 }
+
+span.ImgLoginBanner {
+    padding: 29px 9px 3px 10px;
+}
+
+.LoginScreen .errorMessage{
+	border: 0;
+    background-color: #efcbcb;
+    padding: 16px 40px;
+    font-size: 14px;
+    color: #191515b8;
+    font-stretch: expanded;
+	text-align: left;
+	border-bottom: solid;
+	border-width: 1px;
+	border-color:#f72525;
+}
+
+
 .LoginScreen #ZLoginErrorPanel,
 .ErrorScreen .InlineErrorPanel {
 	border:0px;
@@ -307,25 +345,45 @@ BODY									{	margin:0px; 	}
 	width:100%;
 	z-index:10;
 }
-.LoginScreen .copyright,
-.LoginScreen #ZLoginNotice,
+
 .SplashScreen .copyright {
 	cursor:default;
 	margin-bottom:5px;
 	@FontSize-normal@
 	@LoginFooterColor@
 }
+
+.LoginScreen .copyright,
+.LoginScreen #ZLoginNotice{
+	cursor:default;
+	margin-bottom:5px;
+	@FontSize-normal@
+	color: #f4f4f4;
+}
 /* Login Screen Only Items */
 .LoginScreen .zLoginField {
 @roundCorners(5px)@
 }
+
+.LoginScreen .zLoginFieldInput {
+	display: block;
+    border-radius: 2px;
+    outline: none;
+/* @roundCorners(0px)@ */
+}
+
+.LoginScreen .zLoginFieldLabel {
+	display: inline-block;
+	padding: 2px 0px 4px;
+}
+
 .LoginScreen INPUT[disabled] {
 	background-color:white;
 }
 .LoginScreen .decor1			{ @Decor1L@ }
 .LoginScreen .decor2			{ @Decor2L@ }
 .LoginScreen #ZLoginNotice A {
-	@LoginFooterColor@
+	color: #f4f4f4;
 }
 
 /*Splash Screen Only Items*/
@@ -374,7 +432,7 @@ BODY									{	margin:0px; 	}
 /** Logo Images **/
 .center-small .ImgLoginBanner,
 .ImgAppBanner			{	background-repeat:no-repeat; @AppBanner@	}
-.ImgLoginBanner			{	background-repeat:no-repeat; @LoginBannerPosition@ @LoginBanner@	}
+.ImgLoginBanner			{	background-repeat:no-repeat;}
 #IFDEF MSIE
 #skin_container_logo A, #skin_container_logo A:hover, #skin_container_logo A:link {
 	background-color:transparent;}
