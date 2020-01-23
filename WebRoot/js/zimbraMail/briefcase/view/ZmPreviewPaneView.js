@@ -477,6 +477,13 @@ function(item){
     this._expand(item);
 };
 
+ZmPreviewPaneView.prototype._abortUploadFile =
+function() {
+	if(ZmUploadManager._uploadBriefAttReq) {
+		ZmUploadManager._uploadBriefAttReq.aborted = true;
+    	ZmUploadManager._uploadBriefAttReq.abort();
+  	}
+};
 
 //ZmPreviewView
 
