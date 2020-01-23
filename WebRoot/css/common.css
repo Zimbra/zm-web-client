@@ -429,14 +429,13 @@ TD.vSpace {
 	background-color:transparent;
 }
 
-
 .VeilOverlay TABLE {
 	@DisabledCursor@
 	@VeilColor@
 }
 
 .VeilOverlay-linux TABLE {
-	@DisabledCursor@
+	@LoginScreen@
 }
 
 .CurtainOverlay TABLE {
@@ -445,7 +444,7 @@ TD.vSpace {
 
 /*Applies only for two factor setup page redirected from login page.*/
 html[data-istwofactorsetuppage] .VeilOverlay TABLE {
-	@VeilOverlayGrad@
+	@LoginScreen@	
 	opacity:1;
 }
 

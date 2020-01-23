@@ -50,8 +50,8 @@ ZmTwoFactorSetupDialog = function(params) {
 		extraButtons : [previousButton, beginSetupButton, nextButton, finishButton, cancelButton]
 	};
 	DwtDialog.call(this, newParams);
-	this.setContent(this._contentHtml());
-	this._createControls();
+	this.setContent(this._contentHtml(params.isFromLoginPage));
+	this._createControls(params.isFromLoginPage);
 	this._setAllowSelection();
 };
 
@@ -76,7 +76,7 @@ function() {
  * @private
  */
 ZmTwoFactorSetupDialog.prototype._contentHtml =
-function() {
+function(isFromLoginPage) {
 	var id = this._htmlElId;
 	this._descriptionDivId = id + "_description";
 	this._passwordDivId = id + "_password";
@@ -88,16 +88,23 @@ function() {
 	this._codeErrorDivId = id + "_code_error";
 	this._successDivId = id + "_success";
 	this._divIdArray = [this._descriptionDivId, this._passwordDivId, this._authenticationDivId, this._emailDivId, this._codeDivId, this._successDivId];
-	return AjxTemplate.expand("share.Dialogs#ZmTwoFactorSetup", {id : id, username : this.username});
+	return isFromLoginPage ? AjxTemplate.expand("share.Dialogs#ZmTwoFactorCustomLoginPage", {id : id, username : this.username}) : AjxTemplate.expand("share.Dialogs#ZmTwoFactorSetup", {id : id, username : this.username});
 };
 
 ZmTwoFactorSetupDialog.prototype._createControls =
-function() {
+function(isFromLoginPage) {
 	var id = this._htmlElId;
 	this._passwordInput = Dwt.getElement(id + "_password_input");
 	this._codeInput = Dwt.getElement(id + "_code_input");
 	this._keySpan = Dwt.getElement(id + "_email_key");
 	var keyupHandler = this._handleKeyUp.bind(this);
+	if(isFromLoginPage) {
+		this.getButton(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON).setClassName('ZmTwoFactorPreviousButton');
+		this.getButton(ZmTwoFactorSetupDialog.BEGIN_SETUP_BUTTON).setClassName('ZmTwoFactorBeginButton');
+		this.getButton(ZmTwoFactorSetupDialog.NEXT_BUTTON).setClassName('ZmTwoFactorNextButton');
+		this.getButton(ZmTwoFactorSetupDialog.FINISH_BUTTON).setClassName('ZmTwoFactorFinishButton');
+		this.getButton(ZmTwoFactorSetupDialog.CANCEL_BUTTON).setClassName('ZmTwoFactorCancelButton');
+	}
 	Dwt.setHandler(this._passwordInput, DwtEvent.ONKEYUP, keyupHandler);
 	Dwt.setHandler(this._passwordInput, DwtEvent.ONINPUT, keyupHandler);
 	Dwt.setHandler(this._codeInput, DwtEvent.ONKEYUP, keyupHandler);

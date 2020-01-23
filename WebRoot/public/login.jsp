@@ -424,19 +424,22 @@ if (application.getInitParameter("offlineMode") != null) {
 <c:set value="/img" var="iconPath" scope="request"/>
 <body onload="onLoad();">
 
-	<div class="LoginScreen">
-		<div class="${smallScreen?'center-small':'center'}">
-			<div class="contentBox">
-				<h1><a href="https://www.zimbra.com/" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'><span class="ScreenReaderOnly"><fmt:message key="zimbraTitle"/></span>
-					<span class="Img${smallScreen?'App':'Login'}Banner"></span>
-				</a></h1>
-				<div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div>
+	<div id="modifiedLogin" class="LoginScreen" >
+		<div class="modernCenter" >
+                <div class="modernContentBox">
+                    <div class="logo">
+                        <a href="https://www.zimbra.com/" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'><span class="ScreenReaderOnly"><fmt:message key="zimbraTitle"/></span>
+                            <span class="Img${smallScreen?'App':'Login'}Banner">
+                                <img src="../img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
+                            </span>
+                        </a>
+                    </div>				
 				<c:choose>
 					<c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
-								<form method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
+								<form id="zLoginForm" method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
 					</c:when>
 					<c:otherwise>
-								<form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
+								<form id="zLoginForm" method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
 								<input type="hidden" name="loginOp" value="login"/>
 								<input type="hidden" name="login_csrf" value="${login_csrf}"/>
 
@@ -446,133 +449,131 @@ if (application.getInitParameter("offlineMode") != null) {
 								</c:if>
 					</c:otherwise>
 				</c:choose>
-				<c:if test="${errorCode != null}">
-					<div id="ZLoginErrorPanel">
-						<table><tr>
-							<td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
-							<td><c:out value="${errorMessage}"/></td>
-						</tr></table>
-					</div>
-				</c:if>
+				
                 <c:choose>
                     <c:when test="${totpAuthRequired || errorCode eq 'account.TWO_FACTOR_AUTH_FAILED'}">
-                        <table class="form" id="totpTable" style="height:140px;width:350px;">
-                            <tbody>
-                                <tr>
-                                    <td><label for="totpcode"><fmt:message key="twoFactorAuthCodeLabel"/>:</label></td>
-                                    <td><input id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" style="margin-right:20px" autocomplete="off"></td>
-                                    <td class="submitTD"><input type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton"></td>
-                                </tr>
+                        <div class="twoFactorTitle" ><fmt:message key="twoStepAuth"/></div>
+                        <c:if test="${errorCode != null}">
+                                <div class="errorMessage">
+                                    <c:out value="${errorMessage}"/>
+                                </div>
+                            </c:if>
+                        <div class="twoFactorForm">
+                                <div>
+                                    <label  class="zLoginFieldLabel" for="totpcode" style="float: left;"><fmt:message key="twoFactorAuthCodeLabel"/></label>
+                                   <input tabindex="0" class="zLoginFieldInput" id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocomplete="off" onkeyup="disableEnable(this)"></td>
+                                </div>
                                 <c:if test="${authResult.trustedDevicesEnabled eq true}">
-                                    <tr style="vertical-align:top">
-                                        <td/>
-                                        <td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">
-                                        <label for="trustedDevice"><fmt:message key="twoFactorAuthTrustComputer"/></label>
-                                        </td>
-                                    </tr>
+                                    <div class="trustedDeviceDiv">
+                                        <input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">
+                                        <label id="trustedDeviceLabel"  tabindex="1" for="trustedDevice"><fmt:message key="twoFactorAuthTrustDevice"/></label>
+                                    </div>
                                 </c:if>
-                            </tbody>
-                        </table>
+                                <div class="verifyButtonWrapper">
+                                    <input id="verifyButton" class="loginButton" tabindex="2" type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton" disabled = "true">
+                                    <input id="cancelButton" class="loginButton" tabindex="3" type="submit" value="<fmt:message key='cancel'/>" class="ZLoginButton DwtButton">
+                                </div>
+                        </div>
                     </c:when>
                     <c:otherwise>
-                        <table class="form">
+                        <div class="signIn"><fmt:message key="login"/></div>
+                        <div class="form">
+                            <c:if test="${errorCode != null}">
+                                <div class="errorMessage">
+                                    <c:out value="${errorMessage}"/>
+                                </div>
+                            </c:if>
                         <c:choose>
                             <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
-                                <tr>
-                                <td colspan="2">
                                 <div class="LaunchButton">
-                                <input type="submit" value="<fmt:message key="launch"/>" >
+                                    <input type="submit" value="<fmt:message key="launch"/>" >
                                 </div>
-                                </td>
-                                </tr>
-                            </c:when>
+                                </c:when>
                             <c:otherwise>
-                                <c:choose>
-                                    <c:when test="${not empty virtualacctdomain or not empty param.virtualacctdomain}">
-                                        <%--External/Guest user login - *email* & password input fields--%>
-                                        <tr>
-                                        <td><label for="username"><fmt:message key="email"/>:</label></td>
-                                        <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-                                        </tr>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <%--Internal user login - username & password input fields--%>
-                                        <tr>
-                                        <td><label for="username"><fmt:message key="username"/>:</label></td>
-                                        <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocapitalize="off" autocorrect="off"/></td>
-                                        </tr>
+                                <div class="loginSection">
+                                    <c:choose>
+                                        <c:when test="${not empty virtualacctdomain or not empty param.virtualacctdomain}">
+                                            <%--External/Guest user login - *email* & password input fields--%>
+                                            
+                                            <label for="username" class="zLoginFieldLabel"><fmt:message key="email"/></label>
+                                            <input id="username" tabindex="0" class="zLoginFieldInput" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                            
+                                        </c:when>
+                                        <c:otherwise>
+                                            <%--Internal user login - username & password input fields--%>
+                                            
+                                            <label for="username" class="zLoginFieldLabel"><fmt:message key="username"/></label>
+                                            <input id="username" tabindex="1" class="zLoginFieldInput" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocapitalize="off" autocorrect="off"/>
                                         </c:otherwise>
-                                </c:choose>
-                                <tr>
-                                <td><label for="password"><fmt:message key="password"/>:</label></td>
-                                <td><input id="password" autocomplete="off" class="zLoginField" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-                                </tr>
-                                <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
-                                    <tr>
-                                    <td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
-                                    <td><input id="loginNewPassword" autocomplete="off" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-                                    </tr>
-                                    <tr>
-                                    <td><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
-                                    <td><input id="confirmNew" autocomplete="off" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-                                    </tr>
-                                </c:if>
-                                <tr>
-                                <td>&nbsp;</td>
-                                <td class="submitTD">
-                                <c:set var="isSignedInDisabled" value="${domainInfo.attrs.zimbraWebClientStaySignedInDisabled}"/>
-                                <c:if test="${isSignedInDisabled eq false}">
-                                    <input id="remember" value="1" type="checkbox" name="zrememberme" />
-                                    <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label>
-                                </c:if>
-                                <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
-                                </td>
-                                </tr>
-			
-				<c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">	
-                                    <tr>
-                                        <td>&nbsp;</td>
-                                        <td class="submitTD">
-                                            <a href="#" onclick="forgotPassword();" id="ZLoginForgotPassword" aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
-                                        </td>
-                                    </tr>
-                                </c:if>
+                                    </c:choose>
+                                
+                                    <label for="password" class="zLoginFieldLabel"><fmt:message key="password"/></label>
+                                    <c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">
+                                        <a href="#" onclick="forgotPassword();" id="ZLoginForgotPassword" tabindex="7" aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
+                                    </c:if>
+                                    <div class="passwordWrapper">
+                                        <input id="password" tabindex="2" autocomplete="off" class="zLoginFieldInput" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                        <span toggle="#password" onClick="showPassword();" id="showSpan" style="display: block;"><fmt:message key="show"/></span>
+                                        <span toggle="#password" onClick="showPassword();" id="hideSpan" style="display: none;"><fmt:message key="hide"/></span>
+                                    </div>
+                                    <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
+                                        <div><label for="loginNewPassword"  class="zLoginFieldLabel"><fmt:message key="newPassword"/></label></div>
+                                        <input id="loginNewPassword" tabindex="3" autocomplete="off" class="zLoginFieldInput" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                        <div><label for="confirmNew" class="zLoginFieldLabel"><fmt:message key="confirm"/></label></div>
+                                        <input id="confirmNew" tabindex="4" autocomplete="off" class="zLoginFieldInput" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                    </c:if>
+                                    <div class="signInAndLabel">
+                                        <div>
+                                            <input type="submit" tabindex="5" class="loginButton" value="<fmt:message key="login"/>" />
+                                        </div>
+                                        <c:set var="isSignedInDisabled" value="${domainInfo.attrs.zimbraWebClientStaySignedInDisabled}"/>
+                                        <c:if test="${isSignedInDisabled eq false}">
+                                            <div class="rememberCheckWrapper"> 
+                                                <input id="remember" tabindex="6" value="1" type="checkbox" name="zrememberme" />
+                                                <label id="remember" for="remember"><fmt:message key="rememberMe"/></label>
+                                            </div>
+                                        </c:if>
+                                    </div>
+                                </div>
                             </c:otherwise>
                         </c:choose>
                         <c:if test="${empty param.virtualacctdomain}">
-                            <tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
-                            <td colspan="2"><hr/></td>
-                            </tr>
-                            <tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
-                            <td>
-                            <label for="client"><fmt:message key="versionLabel"/></label>
-                            </td>
-                            <td>
-                            <div class="positioning">
-                            <c:choose>
-                                <c:when test="${client eq 'socialfox'}">
-                                    <input type="hidden" name="client" value="socialfox"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
-                                    <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
-                                    <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
-                                    <c:if test="${modernSupported}">
-                                        <option value="modern" <c:if test="${client eq 'modern'}">selected</c:if>> <fmt:message key="clientModern"/></option>
-                                    </c:if>
-                                    </select>
-                                </c:otherwise>
-                            </c:choose>
-                        <script TYPE="text/javascript">
-                        document.write("<a href='#' onclick='showWhatsThis();' id='ZLoginWhatsThisAnchor' aria-controls='ZLoginWhatsThis' aria-expanded='false'><fmt:message key='whatsThis'/></a>");
-                        </script>
-                        <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessageWithoutTablet"/></div>
-                        <div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
+                            <div <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
+                            <hr/>
+                            </div>
+                            <div <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
+                            <div class="versionBlock">
+                                <label for="client"><fmt:message key="versionHeaderLabel"/></label>
+                                <div style="position: relative;">
+                                    <c:choose>
+                                        <c:when test="${client eq 'socialfox'}">
+                                        <input type="hidden" name="client" value="socialfox"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
+                                                <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
+                                                <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
+                                                <c:if test="${modernSupported}">
+                                                    <option value="modern" <c:if test="${client eq 'modern'}">selected</c:if>> <fmt:message key="clientModern"/></option>
+                                                </c:if>
+                                            </select>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <input type="button" class="alignWhatsThis" onclick="showTooltip();" id='ZLoginWhatsThisButton' />
+                                </div>
+                           
+                                <div id="ZLoginWhatsThis">
+                                    <div class="ZLoginInfo">
+                                        <span id="dialogCloseButton" onclick="hideTooltip();">&times;</span>
+                                        <fmt:message key="clientWhatsThisMessageWithoutTablet"/>
+                                    </div>
+                                </div>
+                           
+                            
                         </div>
-                        </td>
-                        </tr>
+                    </div>
                         </c:if>
-                        </table>
+                        </div>
                     </c:otherwise>
                 </c:choose>
 			</form>
@@ -580,18 +581,8 @@ if (application.getInitParameter("offlineMode") != null) {
 			<div class="decor1"></div>
 		</div>
 
-		<div class="${smallScreen?'Footer-small':'Footer'}">
-			<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="clientLoginNotice"/></div>
-			<div class="copyright">
-			<c:choose>
-				<c:when test="${mobileSupported}">
-							<fmt:message bundle="${zhmsg}" key="splashScreenCopyright"/>
-				</c:when>
-				<c:otherwise>
-							<fmt:message key="splashScreenCopyright"/>
-				</c:otherwise>
-			</c:choose>
-			</div>
+		<div class="Footer">
+			<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="splashScreenCopyright"/></div>
 		</div>
 		<div class="decor2"></div>
 	</div>
@@ -623,14 +614,6 @@ function clientChange(selectValue) {
 	div.style.display = 'none';
 }
 
-// if they have JS, write out a "what's this?" link that shows the message below
-function showWhatsThis() {
-	var anchor = document.getElementById('ZLoginWhatsThisAnchor'),
-        tooltip = document.getElementById("ZLoginWhatsThis"),
-        doHide = (tooltip.style.display === "block");
-    tooltip.style.display = doHide ? "none" : "block";
-    anchor.setAttribute("aria-expanded", doHide ? "false" : "true");
-}
 
 function forgotPassword() {
 	var accountInput = document.getElementById("username").value;
@@ -642,6 +625,39 @@ function forgotPassword() {
 	}
 
 	window.location.href = url;
+}
+
+function disableEnable(txt) {
+    var bt = document.getElementById('verifyButton');
+    if (txt.value != '') {
+        bt.disabled = false;
+    }
+    else {
+        bt.disabled = true;
+    }
+} 
+function hideTooltip() {
+    document.getElementById('ZLoginWhatsThis').style.display='none';
+}
+function showTooltip(){
+    document.getElementById('ZLoginWhatsThis').style.display="block"
+}
+
+
+function showPassword() {
+    var x = document.getElementById("password");
+    var y = document.getElementById("showSpan")
+    var z = document.getElementById("hideSpan")
+    if (x.type === "password") {
+        x.type = "text";   
+        y.style.display = "none";
+        z.style.display = "block";
+    } 
+    else {
+        x.type = "password";
+        y.style.display = "block";
+        z.style.display = "none";
+    }
 }
 
 
