@@ -518,12 +518,14 @@ if (application.getInitParameter("offlineMode") != null) {
 
 	<div class="LoginScreen" >
 		<div class="modernCenter" >
-			<div class="modernContentBox">
-				<h1 class="logo"><a href="https://www.zimbra.com/" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'><span class="ScreenReaderOnly"><fmt:message key="zimbraTitle"/></span>
-					<span class="Img${smallScreen?'App':'Login'}Banner">
-                        <img src="../img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
-                    </span>
-				</a></h1>				
+                <div class="modernContentBox">
+                    <h1 class="logo">
+                        <a href="https://www.zimbra.com/" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'><span class="ScreenReaderOnly"><fmt:message key="zimbraTitle"/></span>
+                            <span class="Img${smallScreen?'App':'Login'}Banner">
+                                <img src="../img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
+                            </span>
+                        </a>
+                </h1>				
 				<c:choose>
 					<c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
 								<form id="zLoginForm" method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
@@ -564,11 +566,10 @@ if (application.getInitParameter("offlineMode") != null) {
                         <div class="signIn"><fmt:message key="signInTitle"/></div>
                         <div class="form">
                             <c:if test="${errorCode != null}">
-					            <div class="errorMessage">
-						            <c:out value="${errorMessage}"/>
+                                <div class="errorMessage">
+                                    <c:out value="${errorMessage}"/>
                                 </div>
                             </c:if>
-			
                             <c:if test="${errorCode == null}">
                                 <div class="loginTitle">
                                     <fmt:message key='zimbraLoginSubTitle'/>
@@ -594,9 +595,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                             <%--Internal user login - username & password input fields--%>
                                             
                                             <label for="username" class="zLoginFieldLabel"><fmt:message key="username"/></label>
-                                                <input id="username"  class="zLoginFieldInput" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocapitalize="off" autocorrect="off"/>
-                                                
-                                            </c:otherwise>
+                                            <input id="username"  class="zLoginFieldInput" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocapitalize="off" autocorrect="off"/>
+                                        </c:otherwise>
                                     </c:choose>
                                 
                                     <label for="password" class="zLoginFieldLabel"><fmt:message key="password"/></label>
@@ -739,26 +739,27 @@ function forgotPassword() {
 }
 
 function diableEnable(txt) {
-        var bt = document.getElementById('verifyButton');
-        if (txt.value != '') {
-            bt.disabled = false;
-        }
-        else {
-            bt.disabled = true;
-        }
-    } 
+    var bt = document.getElementById('verifyButton');
+    if (txt.value != '') {
+        bt.disabled = false;
+    }
+    else {
+        bt.disabled = true;
+    }
+} 
 
 
 function showPassword() {
     var x = document.getElementById("password");
     var y = document.getElementById("showAndHide")
-  if (x.type === "password") {
-    x.type = "text";
-    y.innerHTML = "HIDE";
-  } else {
-    x.type = "password";
-    y.innerHTML = "SHOW";
-  }
+    if (x.type === "password") {
+        x.type = "text";
+        y.innerHTML = "HIDE";
+    } 
+    else {
+        x.type = "password";
+        y.innerHTML = "SHOW";
+    }
 }
 
 
