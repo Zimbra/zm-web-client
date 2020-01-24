@@ -231,7 +231,7 @@ BODY									{	margin:0px; 	}
 	@FontSize-normal@
 	background-color: #0088c1;
 	background-image: url(../../../img/new-back-ground-image.png);
-    background-size: cover;
+	background-size: cover;
 }
 .LoginScreen .center,
 .SplashScreen .center,
@@ -256,22 +256,22 @@ BODY									{	margin:0px; 	}
 .SplashScreen .center, .SplashScreen .center-small,
 .ErrorScreen .center, .ErrorScreen .center-small {
 	left:50%;
-    overflow:visible;
-    position:absolute;
-    top:40%;
-    z-index:11;
+	overflow:visible;
+	position:absolute;
+	top:40%;
+	z-index:11;
 }
 
 
 .LoginScreen .modernContentBox {
 	background-color: #fff;
-    box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
-    padding: 0;
-    max-width: 340px;
-    margin: 0 auto;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
+	box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
+	padding: 0;
+	max-width: 340px;
+	margin: 0 auto;
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
 } 
 
 .LoginScreen .contentBox,
@@ -311,11 +311,11 @@ span.ImgLoginBanner {
 
 .LoginScreen .errorMessage{
 	border: 0;
-    background-color: #efcbcb;
-    padding: 16px 40px;
-    font-size: 14px;
-    color: #191515b8;
-    font-stretch: expanded;
+	background-color: #efcbcb;
+	padding: 16px 40px;
+	font-size: 14px;
+	color: #191515b8;
+	font-stretch: expanded;
 	text-align: left;
 	border-bottom: solid;
 	border-width: 1px;
@@ -367,9 +367,8 @@ span.ImgLoginBanner {
 
 .LoginScreen .zLoginFieldInput {
 	display: block;
-    border-radius: 2px;
-    outline: none;
-/* @roundCorners(0px)@ */
+	border-radius: 2px;
+	outline: none;
 }
 
 .LoginScreen .zLoginFieldLabel {
