@@ -275,15 +275,16 @@ input#trustedDevice {
 
 .LoginScreen #ZLoginWhatsThis {
 	position: absolute;
-    top: 23px;
-    z-index: 3;
-    height: 350px;
-    font-size: 14px;
-    left: 15px;
-    right: 15px;
-    padding: 24px 32px;
-    border: 5px none;
-    box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
+	top: 23px;
+	z-index: 3;
+	height: 350px;
+	font-size: 14px;
+	left: 15px;
+	right: 15px;
+	padding: 24px 32px;
+	border: 5px;
+	border-radius: 5px;
+	box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
 }
 
 .LoginScreen .ZLoginInfoMessage {
