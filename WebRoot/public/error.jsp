@@ -39,9 +39,12 @@
 </c:if>
 
 <%
-	Object errorCode = request.getAttribute("javax.servlet.error.status_code");
-	String errorTitle = errorCode+"Title";
-	String errorMsg = errorCode+"Msg";
+	Object errorCode = (Object) request.getParameter("errCode");
+    if (errorCode == null) {
+        errorCode = request.getAttribute("javax.servlet.error.status_code");
+    }
+    String errorTitle = errorCode+"Title";
+    String errorMsg = errorCode+"Msg";
 %>
 
 <c:set var="errCode" value="<%=errorCode%>"/>

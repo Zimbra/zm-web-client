@@ -21,7 +21,6 @@
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
-<c:set var="touchSupported" value="${ua.isIos6_0up or ua.isAndroid4_0up}"/>
 <c:set var="mobileSupported" value="${ua.isMobile && ((ua.isOsWindows && (ua.isWindowsPhone || not ua.isWindowsNT))
                                                         || (ua.isOsBlackBerry)
                                                         || (ua.isOsAndroid && not ua.isAndroid4_0up)
@@ -58,44 +57,25 @@
 </c:if>
 
 <%
-    // Touch client exists only in network edition
-
-    Boolean touchLoginPageExists = (Boolean) application.getAttribute("touchLoginPageExists");
-    if(touchLoginPageExists == null) {
-        try {
-            touchLoginPageExists = new java.io.File(application.getRealPath("/public/loginTouch.jsp")).exists();
-        } catch (Exception ignored) {
-            // Just in case there's anException
-            touchLoginPageExists = true;
-        }
-        application.setAttribute("touchLoginPageExists", touchLoginPageExists);
-    }
     //Fetch the IP address of the client
     String remoteAddr = ZJspSession.getRemoteAddr(pageContext);
     pageContext.setAttribute("remoteAddr", remoteAddr);
 %>
-<c:set var="touchLoginPageExists" value="<%=touchLoginPageExists%>"/>
 
 <%
-    // check if zimbrax package exists
-    Boolean zimbraxSupported = (Boolean) application.getAttribute("zimbraxSupported");
-    if(zimbraxSupported == null) {
+    // check if modern package exists
+    Boolean modernSupported = (Boolean) application.getAttribute("modernSupported");
+    if(modernSupported == null) {
         try {
-            zimbraxSupported = new java.io.File(application.getRealPath("/zimbrax/index.html")).exists();
+            modernSupported = new java.io.File(application.getRealPath("/modern/index.html")).exists();
         } catch (Exception ignored) {
             // Just in case there's anException
-            zimbraxSupported = true;
+            modernSupported = true;
         }
-        application.setAttribute("zimbraxSupported", zimbraxSupported);
+        application.setAttribute("modernSupported", modernSupported);
     }
 %>
-<c:set var="zimbraxSupported" value="<%=zimbraxSupported%>" />
-
-<!-- Adding the below code to support small screens and to have default option to zimbrax if zimbrax is Supported-->
-<c:if test ="${(zimbraxSupported eq true) and (touchSupported eq true)}">
-    <c:set var="touchSupported" value="false" />
-    <c:set var="mobileSupported" value="true" />
-</c:if>
+<c:set var="modernSupported" value="<%=modernSupported%>" />
 
 <c:catch var="loginException">
 	<c:choose>
@@ -120,12 +100,6 @@
                 <c:when test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (isAllowedIP eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
                     <zm:logout/>
                     <c:redirect url="${logoutRedirectUrl}"/>
-                </c:when>
-                <c:when test="${touchSupported and touchLoginPageExists and (empty param.client or param.client eq 'touch') and
-                    (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
-                    <%--Redirect to loginTouch only if the device supports touch client, the touch login page exists
-                    and the user has not specified the client param as "mobile" or anything else.--%>
-                    <jsp:forward page="/public/loginTouch.jsp"/>
                 </c:when>
                 <c:otherwise>
                     <zm:logout/>
@@ -198,7 +172,7 @@
             <c:when test="${authResult.twoFactorAuthRequired eq true}">
                 <c:set var="totpAuthRequired" value="true"/>
             </c:when>
-            <c:otherwise>
+          <c:otherwise>
                 <c:set var="refer" value="${authResult.refer}"/>
                 <c:set var="serverName" value="${pageContext.request.serverName}"/>
                 <c:choose>
@@ -213,7 +187,7 @@
                                 <jsp:forward page="/h/postLoginRedirect">
                                     <jsp:param name="zauthtoken" value="${authResult.authToken.value}"/>
                                     <jsp:param name="client" value="${param.client}"/>
-                                </jsp:forward>
+                                </jsp:forward> 
                             </c:when>
                             <c:otherwise>
                                 <c:choose>
@@ -231,14 +205,8 @@
                     </c:when>
                     <c:otherwise>
                         <c:set var="client" value="${param.client}"/>
-                        <c:if test="${empty client and touchSupported}">
-                            <c:set var="client" value="${touchLoginPageExists ? 'touch' : 'mobile'}"/>
-                        </c:if>
-                        <c:if test="${empty client and mobileSupported}">
-                            <c:set var="client" value="mobile"/>
-                        </c:if>
                         <c:if test="${empty client or client eq 'preferred'}">
-                            <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
+                            <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0] eq 'advanced' ? 'advanced' : 'modern'}"/>
                         </c:if>
                         <c:choose>
                             <c:when test="${client eq 'socialfox'}">
@@ -276,50 +244,8 @@
                                     </c:otherwise>
                                 </c:choose>
                             </c:when>
-                            <c:when test="${client eq 'standard'}">
-                                <c:redirect url="/h/search">
-                                    <c:param name="mesg" value='welcome'/>
-                                    <c:param name="init" value='true'/>
-                                    <c:if test="${not empty param.app}">
-                                        <c:param name="app" value='${param.app}'/>
-                                    </c:if>
-                                    <c:forEach var="p" items="${paramValues}">
-                                        <c:forEach var='value' items='${p.value}'>
-                                        <c:set var="testKey" value=",${p.key},"/>
-                                        <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
-                                                <c:param name="${p.key}" value='${value}'/>
-                                            </c:if>
-                                        </c:forEach>
-                                    </c:forEach>
-                                </c:redirect>
-                            </c:when>
-                            <c:when test="${client eq 'mobile'}">
-                                <c:set var="mobURL" value="/m/zmain"/>
-                                <c:redirect url="${mobURL}">
-                                    <c:forEach var="p" items="${paramValues}">
-                                        <c:forEach var='value' items='${p.value}'>
-                                        <c:set var="testKey" value=",${p.key},"/>
-                                        <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
-                                                <c:param name="${p.key}" value='${value}'/>
-                                            </c:if>
-                                        </c:forEach>
-                                    </c:forEach>
-                                </c:redirect>
-                            </c:when>
-                            <c:when test="${client eq 'zimbrax' and zimbraxSupported}">
-                                    <jsp:forward page="/public/zimbrax.jsp"/>
-                            </c:when>
-                            <c:when test="${client eq 'touch'}">
-                                <c:redirect url="${param.dev eq '1' ? '/tdebug' : '/t'}">
-                                    <c:forEach var="p" items="${paramValues}">
-                                        <c:forEach var='value' items='${p.value}'>
-                                            <c:set var="testKey" value=",${p.key},"/>
-                                            <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
-                                                <c:param name="${p.key}" value='${value}'/>
-                                            </c:if>
-                                        </c:forEach>
-                                    </c:forEach>
-                                </c:redirect>
+                            <c:when test="${client eq 'modern' and modernSupported}">
+                                    <jsp:forward page="/public/modern.jsp"/>
                             </c:when>
                             <c:otherwise>
                                 <jsp:forward page="/public/launchZCS.jsp"/>
@@ -400,10 +326,6 @@ if (application.getInitParameter("offlineMode") != null) {
 	</c:redirect>
 </c:if>
 
-<c:if test="${(empty param.client or param.client eq 'touch') and touchSupported and touchLoginPageExists}">
-    <jsp:forward page="/public/loginTouch.jsp"/>
-</c:if>
-
 <c:url var="formActionUrl" value="/">
 	<c:forEach var="p" items="${paramValues}">
 		<c:forEach var='value' items='${p.value}'>
@@ -465,27 +387,13 @@ if (application.getInitParameter("offlineMode") != null) {
  * ***** END LICENSE BLOCK *****
 -->
 	<c:set var="client" value="${param.client}"/>
-	<c:set var="useStandard" value="${not (ua.isFirefox3up or ua.isGecko1_9up or ua.isIE9up or ua.isSafari4Up or ua.isChrome or ua.isModernIE)}"/>
-	<c:if test="${empty client}">
+    <c:if test="${empty client}">
 		<%-- set client select default based on user agent. --%>
-        <c:choose>
-            <c:when test="${touchSupported}">
-                <c:set var="client" value="${touchLoginPageExists ? 'touch' : 'mobile'}"/>
-            </c:when>
-            <c:when test="${mobileSupported}">
-                <c:set var="client" value="mobile"/>
-            </c:when>
-            <c:when test="${useStandard}">
-                <c:set var="client" value="standard"/>
-            </c:when>
-            <c:otherwise>
-                <c:set var="client" value="preferred"/>
-            </c:otherwise>
-        </c:choose>
+            <c:set var="client" value="preferred"/>
     </c:if>
     <c:set var="smallScreen" value="${client eq 'mobile' or client eq 'socialfox'}"/>
-    <c:if test="${mobileSupported and zimbraxSupported}">
-        <c:set var="client" value="zimbrax"/>
+    <c:if test="${mobileSupported and modernSupported}">
+        <c:set var="client" value="modern"/>
         <c:set var="smallScreen" value="${mobileSupported}"/>
     </c:if>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
@@ -559,7 +467,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <tr style="vertical-align:top">
                                         <td/>
                                         <td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">
-                                        <label for="trustedDevice"><fmt:message key="${mobileSupported || touchSupported ? 'twoFactorAuthTrustDevice' : 'twoFactorAuthTrustComputer'}"/></label>
+                                        <label for="trustedDevice"><fmt:message key="twoFactorAuthTrustComputer"/></label>
                                         </td>
                                     </tr>
                                 </c:if>
@@ -649,13 +557,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
                                     <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
                                     <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
-                                    <option value="standard" <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
-                                    <option value="mobile" <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
-                                    <c:if test="${zimbraxSupported}">
-                                        <option value="zimbrax" <c:if test="${client eq 'zimbrax'}">selected</c:if>> <fmt:message key="clientZimbrax"/></option>
-                                    </c:if>
-                                    <c:if test="${touchLoginPageExists}">
-                                        <option value="touch" <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
+                                    <c:if test="${modernSupported}">
+                                        <option value="modern" <c:if test="${client eq 'modern'}">selected</c:if>> <fmt:message key="clientModern"/></option>
                                     </c:if>
                                     </select>
                                 </c:otherwise>
@@ -663,14 +566,7 @@ if (application.getInitParameter("offlineMode") != null) {
                         <script TYPE="text/javascript">
                         document.write("<a href='#' onclick='showWhatsThis();' id='ZLoginWhatsThisAnchor' aria-controls='ZLoginWhatsThis' aria-expanded='false'><fmt:message key='whatsThis'/></a>");
                         </script>
-                        <c:choose>
-                        <c:when test="${touchLoginPageExists}">
-                            <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessage"/></div>
-                        </c:when>
-                        <c:otherwise>
-                            <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessageWithoutTablet"/></div>
-                        </c:otherwise>
-                        </c:choose>
+                        <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessageWithoutTablet"/></div>
                         <div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
                         </div>
                         </td>
@@ -722,11 +618,9 @@ if (link) {
 
 // show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
 function clientChange(selectValue) {
-	var useStandard = ${useStandard ? 'true' : 'false'};
-	useStandard = useStandard || (screen && (screen.width <= 800 && screen.height <= 600));
 	var div = document.getElementById("ZLoginUnsupported");
 	if (div)
-	div.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
+	div.style.display = 'none';
 }
 
 // if they have JS, write out a "what's this?" link that shows the message below

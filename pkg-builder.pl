@@ -84,7 +84,6 @@ my %PKG_GRAPH = (
                      '/opt/zimbra/jetty_base/webapps/zimbra/h/*',
                      '/opt/zimbra/jetty_base/webapps/zimbra/img/*',
                      '/opt/zimbra/jetty_base/webapps/zimbra/js/*',
-                     '/opt/zimbra/jetty_base/webapps/zimbra/m/*',
                      '/opt/zimbra/jetty_base/webapps/zimbra/qunit/*',
                      '/opt/zimbra/jetty_base/webapps/zimbra/skins/*',
                      '/opt/zimbra/jetty_base/webapps/zimbra/templates/*',

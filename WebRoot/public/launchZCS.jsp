@@ -184,19 +184,19 @@
 -->
 
 <%
-    // check if zimbrax package exists
-    Boolean zimbraxSupported = (Boolean) application.getAttribute("zimbraxSupported");
-    if(zimbraxSupported == null) {
+    // check if modern package exists
+    Boolean modernSupported = (Boolean) application.getAttribute("modernSupported");
+    if(modernSupported == null) {
         try {
-            zimbraxSupported = new java.io.File(application.getRealPath("/zimbrax/index.html")).exists();
+            modernSupported = new java.io.File(application.getRealPath("/modern/index.html")).exists();
         } catch (Exception ignored) {
             // Just in case there's anException
-            zimbraxSupported = true;
+            modernSupported = true;
         }
-        application.setAttribute("zimbraxSupported", zimbraxSupported);
+        application.setAttribute("modernSupported", modernSupported);
     }
 %>
-<c:set var="zimbraxSupported" value="<%=zimbraxSupported%>" />
+<c:set var="modernSupported" value="<%=modernSupported%>" />
 
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <meta http-equiv="cache-control" content="no-cache"/>
@@ -248,7 +248,7 @@
 	window.csrfToken            = "${csrfToken}";
 	window.appLang              = "${lang}";
 	localStorage.setItem("csrfToken" , "${csrfToken}");
-	window.zimbraxSupported     = ${zimbraxSupported}
+	window.modernSupported     = ${modernSupported}
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
