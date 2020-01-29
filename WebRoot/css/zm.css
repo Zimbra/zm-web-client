@@ -5896,6 +5896,22 @@ RBC, RTC {
 	@FontFamily-system@
 }
 
+.user_font_system .Footer{
+	bottom:0px;
+	position:absolute;
+	text-align:center;
+	width:100%;
+	z-index:701;
+}
+
+
+.user_font_system #ZLoginNotice {
+	cursor: default;
+	margin-bottom: 5px;
+	font-size: 1rem;
+	color: #f4f4f4;
+}
+
 .user_font_size_small .mce-widget button SPAN,
 .user_font_size_small .mce-menu-item SPAN {
 	font-size:@UserFontSize-small@
@@ -5925,9 +5941,72 @@ RBC, RTC {
 	height:180px;
 }
 
+.ZmTwoFactorSetupLoginPage {
+	text-align: left;
+	width: 340px;
+}
+
+.ZmTwoFactorPagelogo {
+	padding: 0px 40px;
+}
+
+div.ZmTwoFactorInputLoginPage1 {
+	padding: 0 40px;
+	margin: 1px 0px 10px 0px;
+}
+
+h2.ZmTwoFactorTitleLoginPage1 {
+	padding: 0px 40px;
+	color: #4d4d4de8;
+	letter-spacing: 0.4px;
+}
+
+h1.logo{
+	padding: 20px 40px 0px;
+}
+
+.ZmTwoFactorParaLoginPage1 {
+	padding: 0px 40px;
+	font-size: 13px;
+	color: #4d4d4de8;
+	line-height: 1.4;
+}
+
+.numberInputTag ,
+.inputTag {
+	box-sizing: border-box!important;
+	height: 36px !important;
+	width: 100%!important;
+	padding: 10px 10px!important;
+	border: 1px solid #d9d9d9!important;
+	border-radius: 2px!important;
+	background-color: #fff!important;
+	outline: none !important;
+}
+
+.numberInputTag:focus,
+.inputTag:focus{
+	border-color:#0088c1 !important;
+	outline: none !important;
+}
+
 .ZmTwoFactorSetupContainer {
 	margin:20px;
 	text-align:center;
+}
+
+.ZmTwoFactorSetupContainerLoginPage1 {
+	padding: 0px 30px;
+}
+
+.ZmTwoFactorSetupContainerLoginPage1 SPAN.email-key {
+	padding: 10px;
+	font-weight: bold;
+	background-color: #FFE599;
+	letter-spacing: 3px;
+	display: inline-block;
+	margin: 10px;
+	color: #4d4d4d;
 }
 
 .ZmTwoFactorSetupContainer label {
@@ -5947,6 +6026,18 @@ RBC, RTC {
 .ZmTwoFactorSetupError {
 	color:#990000;
 	font-weight:bold;
+}
+
+
+.ZmTwoFactorSetupErrorLoginPage1 {
+	border: 0;
+	background-color: #efcbcb;
+	padding: 16px 40px;
+	font-size: 13px;
+	color: #4d4d4d;
+	border-bottom: solid;
+	border-width: 1px;
+	border-color: #f72525;
 }
 /* Two-Factor Setup dialog end*/
 

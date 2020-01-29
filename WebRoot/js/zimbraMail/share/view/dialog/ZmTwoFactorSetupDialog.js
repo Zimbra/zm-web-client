@@ -50,7 +50,7 @@ ZmTwoFactorSetupDialog = function(params) {
 		extraButtons : [previousButton, beginSetupButton, nextButton, finishButton, cancelButton]
 	};
 	DwtDialog.call(this, newParams);
-	this.setContent(this._contentHtml());
+	this.setContent(this._contentHtml(params.isFromLoginPage));
 	this._createControls();
 	this._setAllowSelection();
 };
@@ -76,7 +76,7 @@ function() {
  * @private
  */
 ZmTwoFactorSetupDialog.prototype._contentHtml =
-function() {
+function(isFromLoginPage) {
 	var id = this._htmlElId;
 	this._descriptionDivId = id + "_description";
 	this._passwordDivId = id + "_password";
@@ -88,7 +88,7 @@ function() {
 	this._codeErrorDivId = id + "_code_error";
 	this._successDivId = id + "_success";
 	this._divIdArray = [this._descriptionDivId, this._passwordDivId, this._authenticationDivId, this._emailDivId, this._codeDivId, this._successDivId];
-	return AjxTemplate.expand("share.Dialogs#ZmTwoFactorSetup", {id : id, username : this.username});
+	return isFromLoginPage ? AjxTemplate.expand("share.Dialogs#ZmTwoFactorLoginPageSetup", {id : id, username : this.username}) : AjxTemplate.expand("share.Dialogs#ZmTwoFactorSetup", {id : id, username : this.username});
 };
 
 ZmTwoFactorSetupDialog.prototype._createControls =
