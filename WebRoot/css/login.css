@@ -46,6 +46,8 @@ FORM {
 .signIn {
 	font-size: 20px;
 	padding: 19px 40px;
+	color: #4d4d4d;
+	font-weight: bold;
 }
 
 .loginSection {
@@ -60,20 +62,27 @@ FORM {
 .versionBlock label {
 	display: block;
 	padding-bottom: 3px;
+	color: #4d4d4d;
 }
-.LoginScreen h1.logo{
-	margin: 0 30px;
+.LoginScreen div.logo{
+	padding: 30px 40px 0px;
 }
 
 select#client {
 	width: 100%;
 	background: #fff;
 	height: 32px;
+	outline: none;
+}
+
+select#client:focus {
+	border-color: #0088c1;
 }
 
 .trustedDeviceDiv {
-	padding: 9px 0px;
-	font-size: 14px;
+	padding: 9px 0;
+	font-size: 13px;
+	color: #4d4d4d;
 }
 
 .verifyButtonWrapper{
@@ -212,10 +221,13 @@ input#trustedDevice {
 	outline: none;
 }
 
+label#remember {
+    color: #4d4d4d;
+}
 
 .twoFactorTitle{
 	font-size: 20px;
-	font-weight: 500;
+	font-weight: bold;
 	padding: 17px 40px 0;
 	color: #4d4d4d;
 }
@@ -247,9 +259,7 @@ input#trustedDevice {
 
 #dialogCloseButton {
 	float: right;
-	width: 10;
-	height: 10;
-	margin: -6px -18px 0px 0px;
+    margin: -6px -10px 0 0;
 }
 
 .LoginScreen #ZLoginForgotPassword {
@@ -275,16 +285,16 @@ input#trustedDevice {
 
 .LoginScreen #ZLoginWhatsThis {
 	position: absolute;
-	top: 23px;
-	z-index: 3;
-	height: 350px;
-	font-size: 14px;
-	left: 15px;
-	right: 15px;
-	padding: 24px 32px;
-	border: 5px;
-	border-radius: 5px;
-	box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
+    top: 13px;
+    z-index: 3;
+    height: 280px;
+    font-size: 14px;
+    left: 13px;
+    right: 13px;
+    padding: 24px 24px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
 }
 
 .LoginScreen .ZLoginInfoMessage {
@@ -298,6 +308,8 @@ input#trustedDevice {
 
 .loginTitle{
 	padding: 0px 40px;
+	font-size: 13px;
+	color: #4d4d4d;
 }
 
 /*DWT Buttons*/
