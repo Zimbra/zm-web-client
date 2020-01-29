@@ -516,16 +516,16 @@ if (application.getInitParameter("offlineMode") != null) {
 <c:set value="/img" var="iconPath" scope="request"/>
 <body onload="onLoad();">
 
-	<div class="LoginScreen" >
+	<div id="modifiedLogin" class="LoginScreen" >
 		<div class="modernCenter" >
                 <div class="modernContentBox">
-                    <h1 class="logo">
+                    <div class="logo">
                         <a href="https://www.zimbra.com/" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'><span class="ScreenReaderOnly"><fmt:message key="zimbraTitle"/></span>
                             <span class="Img${smallScreen?'App':'Login'}Banner">
                                 <img src="../img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
                             </span>
                         </a>
-                </h1>				
+                    </div>				
 				<c:choose>
 					<c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
 								<form id="zLoginForm" method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
@@ -608,10 +608,10 @@ if (application.getInitParameter("offlineMode") != null) {
                                         <span toggle="#password" onClick="showPassword();" id="showAndHide">SHOW</span toggle="#password" onClick="showPassword();">
                                     </div>
                                     <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
-                                        <div><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></div>
-                                        <input id="loginNewPassword" autocomplete="off" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
-                                        <div><label for="confirmNew"><fmt:message key="confirm"/>:</label></div>
-                                        <input id="confirmNew" autocomplete="off" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                        <div><label for="loginNewPassword"  class="zLoginFieldLabel"><fmt:message key="newPassword"/></label></div>
+                                        <input id="loginNewPassword" autocomplete="off" class="zLoginFieldInput" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                        <div><label for="confirmNew" class="zLoginFieldLabel"><fmt:message key="confirm"/></label></div>
+                                        <input id="confirmNew" autocomplete="off" class="zLoginFieldInput" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
                                     </c:if>
                                     <input type="submit" class="loginButton" value="<fmt:message key="login"/>" />
                                     
@@ -631,7 +631,7 @@ if (application.getInitParameter("offlineMode") != null) {
                             </div>
                             <div <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
                             <div class="versionBlock">
-                                <label for="client"><fmt:message key="versionLabel"/></label>
+                                <label for="client"><fmt:message key="newVersionLabel"/></label>
                                 <div style="position: relative;">
                                     <c:choose>
                                         <c:when test="${client eq 'socialfox'}">
@@ -659,8 +659,9 @@ if (application.getInitParameter("offlineMode") != null) {
                          
                            
                                 <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" role="tooltip">
-                                   <div id="dialogCloseButton" onclick='showWhatsThis();'><img  src="../img/close.png" width="10" height="10" ></div>
-                                    <fmt:message key="clientWhatsThisMessageWithoutTablet"/></div>
+                                    <div id="dialogCloseButton" onclick='showWhatsThis();'><img  src="../img/close.png" width="10" height="10" ></div>
+                                    <fmt:message key="clientWhatsThisMessageWithoutTablet"/>
+                                </div>
                            
                             
                         </div>
