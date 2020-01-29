@@ -229,9 +229,7 @@ BODY									{	margin:0px; 	}
 	overflow:hidden;
 	@FontFamily-default@
 	@FontSize-normal@
-	background-color: #0088c1;
-	background-image: url(../../../img/new-back-ground-image.png);
-    background-size: cover;
+	@LoginScreen@
 }
 
 #modifiedLogin.LoginScreen{
