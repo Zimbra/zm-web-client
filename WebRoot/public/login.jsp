@@ -461,7 +461,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <c:if test="${authResult.trustedDevicesEnabled eq true}">
                                     <div class="trustedDeviceDiv">
                                         <input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">
-                                        <label id="trustedDeviceLabel" for="trustedDevice"><fmt:message key='twoFactorAuthTrustComputer'/></label>
+                                        <label id="trustedDeviceLabel" for="trustedDevice"><fmt:message key="twoFactorAuthTrustComputer"/></label>
                                     </div>
                                 </c:if>
                                 <div class="verifyButtonWrapper">
