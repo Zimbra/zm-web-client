@@ -88,7 +88,7 @@ function(isFromLoginPage) {
 	this._codeErrorDivId = id + "_code_error";
 	this._successDivId = id + "_success";
 	this._divIdArray = [this._descriptionDivId, this._passwordDivId, this._authenticationDivId, this._emailDivId, this._codeDivId, this._successDivId];
-	return isFromLoginPage ? AjxTemplate.expand("share.Dialogs#ZmTwoFactorLoginPageSetup", {id : id, username : this.username}) : AjxTemplate.expand("share.Dialogs#ZmTwoFactorSetup", {id : id, username : this.username});
+	return isFromLoginPage ? AjxTemplate.expand("share.Dialogs#ZmTwoFactorCustomLoginPage", {id : id, username : this.username}) : AjxTemplate.expand("share.Dialogs#ZmTwoFactorSetup", {id : id, username : this.username});
 };
 
 ZmTwoFactorSetupDialog.prototype._createControls =

@@ -722,60 +722,60 @@
 	</div>
 </template>
 
-<template id='share.Dialogs#ZmTwoFactorLoginPageSetup'>
-		<div class="ZmTwoFactorSetupLoginPage">		
-			<h1 class="logo">
+<template id='share.Dialogs#ZmTwoFactorCustomLoginPage'>
+		<div class="ZmTwoFactorCustomSetupLoginPage">		
+			<div class="logo">
 				<a href="https://www.zimbra.com/"  style=" outline :none;" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'>
 					<img style="outline:none;" src="/img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
 				</a>
-			</h1>
+			</div>
 			<div id='${id}_description'>
-				<h2 class="ZmTwoFactorTitleLoginPage1" ><$=ZmMsg.twoStepAuthSetupLoginPage$></h2>
-				<p class="ZmTwoFactorParaLoginPage1"><$=ZmMsg.twoStepAuthDescriptionLoginPage$></p>
+				<h2 class="ZmTwoFactorCustomTitleLoginPage" ><$=ZmMsg.twoStepAuthSetupLoginPage$></h2>
+				<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthDescriptionLoginPage$></p>
 			</div>
 			<div id='${id}_password'>
-				<h2 class="ZmTwoFactorTitleLoginPage1"><$=ZmMsg.twoStepAuthPassword$></h2>
-				<p id='${id}_password_error' style="display:none;" class="ZmTwoFactorSetupErrorLoginPage1"><$=ZmMsg.offlinePasswordUpdateFailure$></p>
-				<p class="ZmTwoFactorParaLoginPage1"><$=ZmMsg.twoStepAuthPasswordDescription$> "${username}".</p>
-				<label style="padding: 0px 40px; color: #4d4d4d;font-size: 13px;" for="${id}_password_input"><$=ZmMsg.twoStepAuthPasswordLabel$></label>
-				<div class="ZmTwoFactorInputLoginPage1">
+				<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthPassword$></h2>
+				<p id='${id}_password_error' style="display:none;" class="ZmTwoFactorCustomSetupErrorLoginPage"><$=ZmMsg.offlinePasswordUpdateFailure$></p>
+				<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthPasswordDescription$> "${username}".</p>
+				<label class="passwordCustomLabel" for="${id}_password_input"><$=ZmMsg.twoStepAuthPasswordLabel$></label>
+				<div class="ZmTwoFactorCustomInputLoginPage">
 					<input class="inputTag" type="password" id="${id}_password_input" autocomplete="off"/>
 				</div>
 			</div>
 			<div id='${id}_authentication'>
-				<h2 class="ZmTwoFactorTitleLoginPage1"><$=ZmMsg.twoStepAuthAppLoginPage$></h2>
-				<p class="ZmTwoFactorParaLoginPage1"><$=ZmMsg.twoStepAuthAppDescriptionLoginPage$></p>
-				<p class="ZmTwoFactorParaLoginPage1">
+				<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthAppLoginPage$></h2>
+				<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthAppDescriptionLoginPage$></p>
+				<p class="ZmTwoFactorCustomParaLoginPage">
 					<a href="<$=ZmMsg.twoStepAuthAppURL$>" target="_blank" title="<$=ZmMsg.twoStepAuthAppURL$>"><$=ZmMsg.twoStepAuthAppURL$></a>
 				</p>
-				<p class="ZmTwoFactorParaLoginPage1">
+				<p class="ZmTwoFactorCustomParaLoginPage">
 					<$=ZmMsg.twoStepAuthAppFooterLoginPage$>
 				</p>
 			</div>
 			<div id='${id}_email'>
-				<h2 class="ZmTwoFactorTitleLoginPage1"><$=ZmMsg.twoStepAuthEmail$></h2>
-				<p class="ZmTwoFactorParaLoginPage1"><$=ZmMsg.twoStepAuthEmailDescriptionLoginPage$></p>
-				<div class="ZmTwoFactorSetupContainerLoginPage1">
+				<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthEmail$></h2>
+				<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthEmailDescriptionLoginPage$></p>
+				<div class="ZmTwoFactorCustomSetupContainerLoginPage">
 					<span id="${id}_email_key" class="email-key"></span>
 				</div>
-				<p class="ZmTwoFactorParaLoginPage1"><$=ZmMsg.twoStepAuthGenerateSecureCodeLoginPage$></p>
+				<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthGenerateSecureCodeLoginPage$></p>
 			</div>
 			<div id='${id}_code'>
 				<div id='${id}_code_description'>
-					<h2 class="ZmTwoFactorTitleLoginPage1"><$=ZmMsg.twoStepAuthCodeLoginPage$></h2>
-					<p class="ZmTwoFactorParaLoginPage1"><$=ZmMsg.twoStepAuthCodeDescriptionLoginPage$></p>
+					<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthCodeLoginPage$></h2>
+					<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthCodeDescriptionLoginPage$></p>
 				</div>
 				<div id='${id}_code_error' style="display:none;">
-					<div class="ZmTwoFactorSetupErrorLoginPage1"><$=ZmMsg.twoStepAuthCodeErrorLoginPage$></div>
-					<p class="ZmTwoFactorParaLoginPage1"><$=ZmMsg.twoStepAuthCodeDescriptionLoginPage$></p>
+					<div class="ZmTwoFactorCustomSetupErrorLoginPage"><$=ZmMsg.twoStepAuthCodeErrorLoginPage$></div>
+					<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthCodeDescriptionLoginPage$></p>
 				</div>
-				<div class="ZmTwoFactorInputLoginPage1">
+				<div class="ZmTwoFactorInputLoginPage">
 					<input class="numberInputTag" type="number" id="${id}_code_input" placeholder="e.g. 123456" autocomplete="off"/>
 				</div>
 			</div>
 			<div id='${id}_success'>
-				<h2 class="ZmTwoFactorTitleLoginPage1"><$=ZmMsg.twoStepAuthSuccess$></h2>
-				<p class="ZmTwoFactorParaLoginPage1"><$=ZmMsg.twoStepAuthSuccessDescription$></p>
+				<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthSuccess$></h2>
+				<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthSuccessDescription$></p>
 			</div>
 		</div>
 	</div>
