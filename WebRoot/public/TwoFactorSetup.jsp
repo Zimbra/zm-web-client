@@ -98,7 +98,6 @@
 			top: 50% !important;
 			left: 50% !important;
 			transform: translateX(-50%) translateY(-50%) !important;
-			max-width: 340px;
 		}
 
 		.WindowInnerContainer {
@@ -115,14 +114,14 @@
 		div.DwtDialogButtonBar {
 			padding: 20px 40px 40px 40px;
 		}
-		td[align="left"]{
-			padding: 0px !important;
+		.DwtDialogButtonBar td[align="left"]{
+			padding: 0px;
 		}
-		div[aria-label="Begin Setup"],
-		div[aria-label="Finish"],
-		div[aria-label="Previous"] {
-			margin-left: 0px !important;
-			height: 32px !important;
+		.DwtDialogButtonBar div[aria-label="Begin Setup"],
+		.DwtDialogButtonBar div[aria-label="Finish"],
+		.DwtDialogButtonBar div[aria-label="Previous"] {
+			margin-left: 0px;
+			height: 32px;
 			outline: none;
 		}
 
@@ -130,69 +129,69 @@
 		div[aria-label="Previous"] .ZButtonTable:hover ,
 		div[aria-label="Finish"] .ZButtonTable:hover,
 		div[aria-label="Next"] .ZButtonBorder:hover  {
-			background-color: #009adb !important;
+			background-color: #009adb;
 		}
 
 		div[aria-label="Begin Setup"] .ZButtonBorder,
 		div[aria-label="Previous"] .ZButtonBorder,
 		div[aria-label="Finish"] .ZButtonBorder,
 		div[aria-label="Next"] .ZButtonBorder {
-			border-radius: 3px !important;
-			border: solid 1px transparent !important;
-			background-color: #0088c1 !important;
+			border-radius: 3px;
+			border: solid 1px transparent;
+			background-color: #0088c1;
 		}
 
 
-		div[aria-label="Begin Setup"] .ZWidgetTitle,
-		div[aria-label="Previous"] .ZWidgetTitle,
-		div[aria-label="Next"] .ZWidgetTitle,
-		div[aria-label="Finish"] .ZWidgetTitle {
-			color: #fff !important;
+		div[aria-label="Begin Setup"] .ZButtonTable .ZWidgetTitle,
+		div[aria-label="Previous"] .ZButtonTable .ZWidgetTitle,
+		div[aria-label="Next"] .ZButtonTable .ZWidgetTitle,
+		div[aria-label="Finish"] .ZButtonTable .ZWidgetTitle {
+			color: #fff;
 			font-size: 12px;
 		}
 
 		div[aria-label="Begin Setup"] .ZButtonBorder {
-			padding: 0px 12px !important;
+			padding: 0px 12px ;
 		}
 		
 		div[aria-label="Previous"] .ZButtonBorder {
-			padding: 0px 10px !important;
+			padding: 0px 10px;
 		}
 
 		div[aria-label="Finish"] .ZButtonBorder {
-			padding: 0px 17px !important;
+			padding: 0px 17px;
 		}
 
-		div[aria-label="Next"],
-		div[aria-label="Cancel"]{
-			margin-left: 10px !important;
-			height: 32px !important;
+		.DwtDialogButtonBar div[aria-label="Next"],
+		.DwtDialogButtonBar div[aria-label="Cancel"]{
+			margin-left: 10px;
+			height: 32px;
 			outline: none;
 		}
 		
 		div[aria-label="Next"] .ZButtonBorder {
-			padding: 0px 21px !important;
+			padding: 0px 21px;
 		}
 
 		div[aria-label="Next"].ZDisabled .ZButtonBorder,
 		div[aria-label="Next"].ZDisabled .ZButtonBorder:hover {
-			background-color: #0088c15c !important;
+			background-color: #0088c15c;
 		}
 	
 		div[aria-label="Cancel"] .ZButtonBorder {
-			padding: 0px 14px 0px 15px!important;
-			border: solid 1px transparent !important;
-			background-color: #f2f2f2 !important;
-			border-radius: 3px !important;
+			padding: 0px 14px 0px 15px;
+			border: solid 1px transparent;
+			background-color: #f2f2f2 ;
+			border-radius: 3px;
 		}
 
 		div[aria-label="Cancel"].ZHasText .ZButtonTable:hover {
-			background-color: #e5e5e5 !important;
+			background-color: #e5e5e5;
 		}
 
-		div[aria-label="Cancel"] .ZWidgetTitle {
-			color: #4d4d4d !important;
-			font-size: 12px !important;
+		div[aria-label="Cancel"] .ZButtonTable .ZWidgetTitle {
+			color: #4d4d4d;
+			font-size: 12px;
 		}
 
 		

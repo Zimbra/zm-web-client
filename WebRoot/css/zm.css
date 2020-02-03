@@ -5941,7 +5941,7 @@ RBC, RTC {
 	height:180px;
 }
 
-.ZmTwoFactorSetupLoginPage {
+.ZmTwoFactorCustomSetupLoginPage {
 	text-align: left;
 	width: 340px;
 }
@@ -5950,42 +5950,48 @@ RBC, RTC {
 	padding: 0px 40px;
 }
 
-div.ZmTwoFactorInputLoginPage1 {
+div.ZmTwoFactorCustomInputLoginPage {
 	padding: 0 40px;
-	margin: 1px 0px 10px 0px;
+	margin: 4px 0px 10px 0px;
 }
 
-h2.ZmTwoFactorTitleLoginPage1 {
+h2.ZmTwoFactorCustomTitleLoginPage {
 	padding: 0px 40px;
-	color: #4d4d4de8;
+	color: #4d4d4d;
 	letter-spacing: 0.4px;
 }
 
-h1.logo{
-	padding: 20px 40px 0px;
+.ZmTwoFactorCustomSetupLoginPage .logo{
+	padding: 30px 40px 0px;
 }
 
-.ZmTwoFactorParaLoginPage1 {
+.ZmTwoFactorCustomParaLoginPage {
 	padding: 0px 40px;
 	font-size: 13px;
-	color: #4d4d4de8;
+	color: #4d4d4d;
 	line-height: 1.4;
 }
 
-.numberInputTag ,
-.inputTag {
-	box-sizing: border-box!important;
-	height: 36px !important;
-	width: 100%!important;
-	padding: 10px 10px!important;
-	border: 1px solid #d9d9d9!important;
-	border-radius: 2px!important;
-	background-color: #fff!important;
-	outline: none !important;
+.passwordCustomLabel {
+	padding: 0px 40px; 
+	color: #4d4d4d;
+	font-size: 13px;
 }
 
-.numberInputTag:focus,
-.inputTag:focus{
+.ZmTwoFactorCustomInputLoginPage .numberInputTag[type="number"] ,
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"] {
+	box-sizing: border-box;
+	height: 36px ;
+	width: 100%;
+	padding: 10px 10px;
+	border: 1px solid #d9d9d9;
+	border-radius: 2px;
+	background-color: #fff;
+	outline: none;
+}
+
+.ZmTwoFactorCustomInputLoginPage .numberInputTag[type="number"]:focus ,
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"]:focus {
 	border-color:#0088c1 !important;
 	outline: none !important;
 }
@@ -5995,11 +6001,11 @@ h1.logo{
 	text-align:center;
 }
 
-.ZmTwoFactorSetupContainerLoginPage1 {
+.ZmTwoFactorCustomSetupContainerLoginPage {
 	padding: 0px 30px;
 }
 
-.ZmTwoFactorSetupContainerLoginPage1 SPAN.email-key {
+.ZmTwoFactorSetupContainerLoginPage SPAN.email-key {
 	padding: 10px;
 	font-weight: bold;
 	background-color: #FFE599;
@@ -6029,7 +6035,7 @@ h1.logo{
 }
 
 
-.ZmTwoFactorSetupErrorLoginPage1 {
+.ZmTwoFactorCustomSetupErrorLoginPage {
 	border: 0;
 	background-color: #efcbcb;
 	padding: 16px 40px;
