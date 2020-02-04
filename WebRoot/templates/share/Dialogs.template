@@ -748,6 +748,7 @@
 			<p class="ZmTwoFactorCustomParaLoginPage">
 				<a href="<$=ZmMsg.twoStepAuthAppURL$>" target="_blank" title="<$=ZmMsg.twoStepAuthAppURL$>"><$=ZmMsg.twoStepAuthAppURL$></a>
 			</p>
+			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthAppFooter$></p>
 		</div>
 		<div id='${id}_email'>
 			<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthEmail$></h2>
