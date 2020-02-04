@@ -5897,11 +5897,12 @@ RBC, RTC {
 }
 
 .user_font_system .Footer{
-	bottom:0px;
-	position:absolute;
-	text-align:center;
-	width:100%;
-	z-index:701;
+	bottom: 0;
+	position: absolute;
+	text-align: center;
+	left: 0;
+	right: 0; 
+	z-index: 701;
 }
 
 
