@@ -5948,12 +5948,12 @@ RBC, RTC {
 }
 
 .ZmTwoFactorPagelogo {
-	padding: 0px 40px;
+	padding: 0 40px;
 }
 
 div.ZmTwoFactorCustomInputLoginPage {
 	padding: 0 40px;
-	margin: 4px 0px 10px 0px;
+	margin: 4px 0 10px 0;
 }
 
 h2.ZmTwoFactorCustomTitleLoginPage {
@@ -5974,7 +5974,7 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 }
 
 .passwordCustomLabel {
-	padding: 0px 40px; 
+	padding: 0 40px; 
 	color: #4d4d4d;
 	font-size: 13px;
 }
@@ -6003,10 +6003,10 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 }
 
 .ZmTwoFactorCustomSetupContainerLoginPage {
-	padding: 0px 30px;
+	padding: 0 30px;
 }
 
-.ZmTwoFactorSetupContainerLoginPage SPAN.email-key {
+.ZmTwoFactorCustomSetupContainerLoginPage SPAN.email-key {
 	padding: 10px;
 	font-weight: bold;
 	background-color: #FFE599;
