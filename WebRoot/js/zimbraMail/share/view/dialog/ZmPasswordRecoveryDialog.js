@@ -158,14 +158,14 @@ function() {
 	var cancelbutton = this.getButton(ZmPasswordRecoveryDialog.CANCEL_BUTTON);
 	var accountKeyupHandler = this._accountHandleKeyUp.bind(this);
 	var codeKeyupHandler = this._codeHandleKeyUp.bind(this);
-	this.getButton(ZmPasswordRecoveryDialog.CANCEL_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	this.getButton(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	this.getButton(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	this.getButton(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	this.getButton(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	this.getButton(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	this.getButton(ZmPasswordRecoveryDialog.LOGIN_BUTTON).setClassName('ZmPasswordRecoveryButton');
-	cancelbutton.setClassName('ZmPasswordRecoveryButton');
+	this.getButton(ZmPasswordRecoveryDialog.CANCEL_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryCancelButton');
+	this.getButton(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoverySubmitButton');
+	this.getButton(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryRequestButton');
+	this.getButton(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryResendButton');
+	this.getButton(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryVerifyButton');
+	this.getButton(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryResetButton');
+	this.getButton(ZmPasswordRecoveryDialog.LOGIN_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryLoginButton');
+	cancelbutton.setClassName('ZmPasswordRecoveryButton PasswordRecoveryCancelButton1');
 	// Create buttons
 	this._createRecoveryButtons('continueSessionsRecoveryButton', ZmMsg.recoveryEmailButtonContinueSession, true, false,
 					'_CONTINUE_BUTTON', '_finishButtonListener');
@@ -566,6 +566,11 @@ function(result) {
 		window.csrfToken = response.Body.AuthResponse.csrfToken._content;
 		Dwt.hide(this._validateCodeDivId);
 		Dwt.show(this._codeSuccessDivId);
+		// changeTag = document.querySelectorAll('div[aria-label="Reset Password"]');
+		// if(changeTag[0].style.cssText == "position: static; overflow: visible; display: block;"){
+		// var getTag = document.getElementsByClassName("DwtDialogButtonBar")
+		// getTag[0].style.cssText= "padding: 20px 40px 20px 40px;"
+		// }
 		this.continueSessionsRecoveryButton.setVisible(true);
 		this.resetPasswordRecoveryButton.setVisible(true); // set to true once methods are ready.
 		this.setButtonVisible(ZmPasswordRecoveryDialog.CANCEL_BUTTON, false);

@@ -92,12 +92,19 @@ function(isFromLoginPage) {
 };
 
 ZmTwoFactorSetupDialog.prototype._createControls =
-function() {
+function(isFromLoginPage) {
 	var id = this._htmlElId;
 	this._passwordInput = Dwt.getElement(id + "_password_input");
 	this._codeInput = Dwt.getElement(id + "_code_input");
 	this._keySpan = Dwt.getElement(id + "_email_key");
 	var keyupHandler = this._handleKeyUp.bind(this);
+	if(isFromLoginPage) {
+		this.getButton(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON).setClassName('ZmTwoFactorPreviousButton');
+		this.getButton(ZmTwoFactorSetupDialog.BEGIN_SETUP_BUTTON).setClassName('ZmTwoFactorBeginButton');
+		this.getButton(ZmTwoFactorSetupDialog.NEXT_BUTTON).setClassName('ZmTwoFactorNextButton');
+		this.getButton(ZmTwoFactorSetupDialog.FINISH_BUTTON).setClassName('ZmTwoFactorFinishButton');
+		this.getButton(ZmTwoFactorSetupDialog.CANCEL_BUTTON).setClassName('ZmTwoFactorCancelButton');
+	}
 	Dwt.setHandler(this._passwordInput, DwtEvent.ONKEYUP, keyupHandler);
 	Dwt.setHandler(this._passwordInput, DwtEvent.ONINPUT, keyupHandler);
 	Dwt.setHandler(this._codeInput, DwtEvent.ONKEYUP, keyupHandler);

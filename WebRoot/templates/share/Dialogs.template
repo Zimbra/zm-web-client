@@ -815,15 +815,9 @@
 		<div id='${id}_code_success'>
 			<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.passwordRecoveryTitle$></h2>
 			<p class="ZmPasswordRecoveryCustomPara"><$=ZmMsg.passwordRecoveryCodeSuccessDescription$></p>
-			<div role='presentation' width=100% class='ZPropertySheet' cellspacing='6'>
-				<div>
-					<span class='ZOptionsField'>
-						<button id='${id}_CONTINUE_BUTTON' class='ZmPasswordRecoveryButton' tabindex=0></button>
-					</span>
-					<span>
-						<button id='${id}_RESET_PASSWORD' class='ZmPasswordRecoveryButton' tabindex=0></button>
-					</span>
-				</div>
+			<div class="alignButton">
+				<button id='${id}_RESET_PASSWORD' class='ZmPasswordRecoveryButton' tabindex=0></button>	
+				<button id='${id}_CONTINUE_BUTTON' class='ZmPasswordRecoveryButton' tabindex=0></button>	
 			</div>
 		</div>
 		<div id='${id}_reset_password'>

@@ -117,79 +117,79 @@
 		.DwtDialogButtonBar td[align="left"]{
 			padding: 0;
 		}
-		.DwtDialogButtonBar div[aria-label="Begin Setup"],
-		.DwtDialogButtonBar div[aria-label="Finish"],
-		.DwtDialogButtonBar div[aria-label="Previous"] {
+		.DwtDialogButtonBar .ZmTwoFactorBeginButton,
+		.DwtDialogButtonBar .ZmTwoFactorFinishButton,
+		.DwtDialogButtonBar .ZmTwoFactorPreviousButton {
 			margin-left: 0;
 			height: 32px;
 			outline: none;
 		}
 
-		div[aria-label="Begin Setup"] .ZButtonTable:hover,
-		div[aria-label="Previous"] .ZButtonTable:hover ,
-		div[aria-label="Finish"] .ZButtonTable:hover,
-		div[aria-label="Next"] .ZButtonBorder:hover  {
+		.ZmTwoFactorBeginButton .ZButtonTable:hover,
+		.ZmTwoFactorPreviousButton .ZButtonTable:hover ,
+		.ZmTwoFactorFinishButton .ZButtonTable:hover,
+		.ZmTwoFactorNextButton .ZButtonBorder:hover  {
 			background-color: #009adb;
 		}
 
-		div[aria-label="Begin Setup"] .ZButtonBorder,
-		div[aria-label="Previous"] .ZButtonBorder,
-		div[aria-label="Finish"] .ZButtonBorder,
-		div[aria-label="Next"] .ZButtonBorder {
+		.ZmTwoFactorBeginButton .ZButtonBorder,
+		.ZmTwoFactorPreviousButton .ZButtonBorder,
+		.ZmTwoFactorFinishButton .ZButtonBorder,
+		.ZmTwoFactorNextButton .ZButtonBorder {
 			border-radius: 3px;
 			border: solid 1px transparent;
 			background-color: #0088c1;
 		}
 
 
-		div[aria-label="Begin Setup"] .ZButtonTable .ZWidgetTitle,
-		div[aria-label="Previous"] .ZButtonTable .ZWidgetTitle,
-		div[aria-label="Next"] .ZButtonTable .ZWidgetTitle,
-		div[aria-label="Finish"] .ZButtonTable .ZWidgetTitle {
+		.ZmTwoFactorBeginButton .ZButtonTable .ZWidgetTitle,
+		.ZmTwoFactorPreviousButton .ZButtonTable .ZWidgetTitle,
+		.ZmTwoFactorNextButton .ZButtonTable .ZWidgetTitle,
+		.ZmTwoFactorFinishButton .ZButtonTable .ZWidgetTitle {
 			color: #fff;
 			font-size: 12px;
 		}
 
-		div[aria-label="Begin Setup"] .ZButtonBorder {
+		.ZmTwoFactorBeginButton .ZButtonBorder {
 			padding: 0 12px ;
 		}
 		
-		div[aria-label="Previous"] .ZButtonBorder {
+		.ZmTwoFactorPreviousButton .ZButtonBorder {
 			padding: 0 10px;
 		}
 
-		div[aria-label="Finish"] .ZButtonBorder {
+		.ZmTwoFactorFinishButton .ZButtonBorder {
 			padding: 0 17px;
 		}
 
-		.DwtDialogButtonBar div[aria-label="Next"],
-		.DwtDialogButtonBar div[aria-label="Cancel"]{
+		.DwtDialogButtonBar .ZmTwoFactorNextButton,
+		.DwtDialogButtonBar .ZmTwoFactorCancelButton{
 			margin-left: 10px;
 			height: 32px;
 			outline: none;
 		}
 		
-		div[aria-label="Next"] .ZButtonBorder {
+		.ZmTwoFactorNextButton .ZButtonBorder {
 			padding: 0 21px;
 		}
 
-		div[aria-label="Next"].ZDisabled .ZButtonBorder,
-		div[aria-label="Next"].ZDisabled .ZButtonBorder:hover {
+		.ZmTwoFactorNextButton.ZDisabled .ZButtonBorder,
+		.ZmTwoFactorNextButton.ZDisabled .ZButtonBorder:hover {
 			background-color: #0088c15c;
 		}
 	
-		div[aria-label="Cancel"] .ZButtonBorder {
+		.ZmTwoFactorCancelButton .ZButtonBorder {
 			padding: 0 14px 0 15px;
 			border: solid 1px transparent;
 			background-color: #f2f2f2 ;
 			border-radius: 3px;
 		}
 
-		div[aria-label="Cancel"].ZHasText .ZButtonTable:hover {
+		.ZmTwoFactorCancelButton.ZHasText .ZButtonTable:hover {
 			background-color: #e5e5e5;
 		}
 
-		div[aria-label="Cancel"] .ZButtonTable .ZWidgetTitle {
+		.ZmTwoFactorCancelButton .ZButtonTable .ZWidgetTitle {
 			color: #4d4d4d;
 			font-size: 12px;
 		}

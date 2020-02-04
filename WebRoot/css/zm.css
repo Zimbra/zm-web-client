@@ -6080,8 +6080,60 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	height: 32px;
 }
 
-.DwtDialogButtonBar div[aria-label="Back to sign in"] .ZButtonBorder{
-	padding: 0px 6px;	
+.DwtDialogButtonBar .PasswordRecoveryCancelButton1 .ZButtonBorder,
+.DwtDialogButtonBar .PasswordRecoveryCancelButton .ZButtonBorder{
+	padding: 0px 4px;	
+}
+
+.DwtDialogButtonBar .PasswordRecoverySubmitButton .ZButtonBorder{
+	padding: 0px 14px;	
+	margin-left: 5px;
+}
+
+
+.DwtDialogButtonBar .PasswordRecoveryRequestButton .ZButtonBorder{
+	padding: 0px 4px;
+	margin-left: 5px;
+}
+
+.DwtDialogButtonBar .PasswordRecoveryResendButton .ZButtonBorder{
+	padding: 0px 4px;
+	margin-left: 4px
+}
+
+.DwtDialogButtonBar .PasswordRecoveryVerifyButton .ZButtonBorder{
+	padding: 0px 4px;
+	margin-left: 8px;
+}
+
+.DwtDialogButtonBar .PasswordRecoveryResetButton .ZButtonBorder{
+	padding: 0px 14px;;
+	margin-left: 8px;
+}
+
+.DwtDialogButtonBar .PasswordRecoveryLoginButton .ZButtonBorder{
+	padding: 0px 8px;
+}
+
+div.PasswordRecoveryCancelButton1 .ZButtonBorder,
+.DwtDialogButtonBar .PasswordRecoveryResendButton .ZButtonBorder,
+#continueSessionsRecoveryButton .ZButtonBorder {
+	background-color: #f2f2f2;
+}
+
+div.PasswordRecoveryCancelButton1 .ZButtonBorder:hover,
+.DwtDialogButtonBar .PasswordRecoveryResendButton .ZButtonBorder:hover,
+#continueSessionsRecoveryButton .ZButtonBorder:hover {
+	background-color: #e5e5e5;
+}
+
+div.PasswordRecoveryCancelButton1 .ZButtonTable:hover .ZWidgetTitle,
+div.PasswordRecoveryCancelButton1 .ZButtonTable .ZWidgetTitle,
+div.PasswordRecoveryResendButton .ZButtonTable .ZWidgetTitle ,
+div.PasswordRecoveryResendButton .ZButtonTable:hover .ZWidgetTitle,
+#continueSessionsRecoveryButton .ZButtonTable .ZWidgetTitle ,
+#continueSessionsRecoveryButton .ZButtonTable:hover .ZWidgetTitle {
+	color : #4d4d4d;
 }
 
 .ZmPasswordRecoveryButton .ZButtonBorder {
@@ -6093,19 +6145,21 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	background-color: #009adb;
 }
 
-#resetPasswordRecoveryButton,
-#continueSessionsRecoveryButton {
-	width: 145px;
-	margin: 50px auto 0;
+.alignButton{
+	padding: 0px 36px;
 }
 
-.ZmPasswordRecoveryButton.ZDisabled:hover,
-.ZmPasswordRecoveryButton.ZDisabled {
+.ZmPasswordRecoveryButton.ZDisabled .ZButtonBorder:hover,
+.ZmPasswordRecoveryButton.ZDisabled .ZButtonBorder {
 	background-color: #0088c15c;
 }
 
 .ZmPasswordRecoveryButton.ZHasText .ZButtonTable {
 	width: 100%;
+}
+
+div#resetPasswordRecoveryButton {
+    margin-bottom: 10px;
 }
 
 .ZmPasswordRecoveryButton.ZDisabled:hover .ZButtonTable .ZWidgetTitle,
@@ -6121,7 +6175,7 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 .ZmPasswordRecoveryButton.ZFocused:hover .ZButtonTable .ZWidgetTitle,
 .ZmPasswordRecoveryButton.ZFocused:hover .ZWidgetTitle  {
 	color:#fff;
-	font-size: 13px;
+	font-size: 12px;
 }
 
 .ZmPasswordRecoverySetup {

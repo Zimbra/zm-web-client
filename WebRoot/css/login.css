@@ -51,12 +51,13 @@ FORM {
 }
 
 .loginSection {
-	padding: 30px 40px;
+	padding: 15px 40px;
 }
 
 .versionBlock {
 	padding: 20px 40px;
 	background: #eee;
+	position: relative;
 }
 
 .versionBlock label {
@@ -174,13 +175,13 @@ form#zLoginForm .form INPUT[type='password']:focus,
 
 
 .form .rememberCheckWrapper {
-	float: right;
 	padding-top: 8px;
+    flex: 1;
+    padding-left: 20px;
 }
 
 input.loginButton{ 
 	background-color: #007CC3;
-	border-color: white;
 	color: #fff;
 	float: left;
 	font-size: 13px;
@@ -188,6 +189,7 @@ input.loginButton{
 	border-radius: 4px;
 	cursor: pointer;
 	outline: none;
+	border: none;
 }
 
 #verifyButton:disabled{
@@ -200,19 +202,34 @@ input.loginButton{
 	color: #4d4d4d;
 }
 
-input.loginButton:disabled{ 
+input.loginButton:disabled,
+input.loginButton:hover,
+input.loginButton:focus{
 	background-color: #0088c1;
 }
 
-input.loginButton:hover{
-	background-color: #0088c1;
+.hideTooltip{
+	display: none;
 }
+
 
 .twoFactorForm{
 	padding: 30px 40px 60px;;
 }
 input#remember {
 	outline: none;
+	float: left;
+}
+input#remember:focus{
+	outline-color: #0088c1;
+	outline-style: solid;
+	outline-width: 1px;
+}
+
+.rememberCheckWrapper span{
+	display: block;
+	overflow: HIDDEN;
+	padding-top: 2px;
 }
 
 
@@ -247,6 +264,22 @@ label#remember {
 	z-index:20;
 }
 
+
+#ZLoginWhatsThisButton{
+    background: transparent;
+    background-image: url(../img/questionMark.png);
+    background-size: 100% 100%;
+    border: transparent;
+    outline: none;
+}
+
+.alignWhatsThis{
+	position: absolute;
+	display: inline-flex;
+	top: 9px;
+	left: 105%;
+}
+
 .LoginScreen #ZLoginWhatsThisAnchor {
 	color: #1e282ec2;
 	font-size: .9em;
@@ -258,8 +291,10 @@ label#remember {
 }
 
 #dialogCloseButton {
-	float: right;
-    margin: -6px -10px 0 0;
+	position: absolute;
+    font-size: 20px;
+    right: 15px;
+    top: 10px;
 }
 
 .LoginScreen #ZLoginForgotPassword {
@@ -269,31 +304,53 @@ label#remember {
 	padding: 2px;
 	outline: none;
 }
+.LoginScreen #ZLoginForgotPassword:focus {
+	color:#1e282ec2;
+}
+
+
 .passwordWrapper {
 	position: relative;
 }
 
-.passwordWrapper #showAndHide{
+.passwordWrapper #hideSpan{
 	position: absolute;
 	z-index: 2;
-	font-size: 12px;
+	font-size: 10px;
 	color: #828282;
 	right: 10px;
-	top: 11px;
+	top: 11px; 
 	cursor: pointer;
 }
 
-.LoginScreen #ZLoginWhatsThis {
+.passwordWrapper #showSpan{
 	position: absolute;
-    top: 13px;
+	z-index: 2;
+	font-size: 10px;
+	color: #828282;
+	right: 10px;
+	top: 11px; 
+	cursor: pointer
+}
+
+.passwordWrapper #hideSpan:focus,
+.passwordWrapper #showSpan:focus,
+.passwordWrapper #hideSpan:hover,
+.passwordWrapper #showSpan:hover{
+	color: #0088c1;
+}
+
+.LoginScreen .ZLoginInfo {
+	position: absolute;
     z-index: 3;
-    height: 280px;
+    bottom: 50%;
     font-size: 14px;
     left: 13px;
     right: 13px;
     padding: 24px 24px;
     border: none;
-    border-radius: 5px;
+	border-radius: 5px;
+	background-color: #fff;
     box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
 }
 
@@ -310,6 +367,10 @@ label#remember {
 	padding: 0px 40px;
 	font-size: 13px;
 	color: #4d4d4d;
+}
+
+.signInAndLabel{
+	display: flex;
 }
 
 /*DWT Buttons*/

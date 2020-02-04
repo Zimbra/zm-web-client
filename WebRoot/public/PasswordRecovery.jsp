@@ -1,6 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
+ *
  * Copyright (C) 2018 Synacor, Inc.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -104,10 +105,16 @@
 		changeTag.outerHTML = "";
 		changeTag = document.getElementsByClassName("horizSep")[0];
 		changeTag.outerHTML = "";
-		// changeTag = document.querySelectorAll('[align=right]');
-		// changeTag[0].align="left";
+		changeTag = document.querySelectorAll('[align=right]');
+		changeTag[0].align="left";
 		changeTag = document.querySelectorAll('table[role="presentation"][width="100%"]');
 		changeTag[0].removeAttribute("width");
+		// changeTag = document.querySelectorAll('div[aria-label="Reset Password"]');
+		// if(changeTag[0].style.cssText == "position: static; overflow: visible; display: block;"){
+		// 	var getTag = document.getElementsByClassName("DwtDialogButtonBar")
+		// 	getTag[0].style.cssText= "padding: 20px 40px 20px 40px;"
+		// }
+
 	</script>
 	<style type="text/css" rel="stylesheet">
 		.DwtDialog[role="dialog"] {
