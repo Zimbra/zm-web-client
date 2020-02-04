@@ -198,7 +198,7 @@
 
 	</style>
 	<div class="Footer">
-		<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="clientUpdatedLoginNotice"/></div>
+		<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="splashScreenCopyright"/></div>
 	</div>
 </body>
 </html>

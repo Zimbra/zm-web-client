@@ -762,6 +762,7 @@
 				<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthCodeDescription$></p>
 			</div>
 			<div id='${id}_code_error' style="display:none;">
+				<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthCode$></h2>
 				<div class="ZmTwoFactorCustomSetupErrorLoginPage"><$=ZmMsg.twoStepAuthCodeError$></div>
 				<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthCodeErrorDescription$></p>
 			</div>
