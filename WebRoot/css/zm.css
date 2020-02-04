@@ -6052,18 +6052,22 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 html[data-ispasswordrecoverypage] .VeilOverlay TABLE {
 	@FontFamily-default@
 	@FontSize-normal@
-	@LoginScreen@
+	background: #0088c1 url(../img/new-back-ground-image.png) 0 0/cover no-repeat;
+	opacity: 1;
 }
 
 html[data-ispasswordrecoverypage] .WindowInnerContainer {
-	background-color: transparent;
+	background-color:  #fff;
+	border-radius: 2px;    
+	border-top: none;
+	padding: 0px;
 }
 
 html[data-ispasswordrecoverypage] .WindowOuterContainer {
-	@LoginContentBox@
-	box-shadow: none;
-	border-color: transparent;
-	padding: 22px;
+	box-shadow: 0 4px 6px 0 rgba(0, 0, 0, .4);
+    border-radius: 2px;
+    background-color: #fff;
+    border: none;
 }
 
 html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
@@ -6071,23 +6075,22 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 }
 
 .ZmPasswordRecoveryButton {
-	background-color: #007cc3;
 	border-radius: 3px;
-	border: 1px solid #fff;
-	color: #fff;
 	cursor: pointer;
-	font-size: 1em;
-	margin: 0 0.4em;
+	height: 32px;
+}
+
+.DwtDialogButtonBar div[aria-label="Back to sign in"] .ZButtonBorder{
+	padding: 0px 6px;	
 }
 
 .ZmPasswordRecoveryButton .ZButtonBorder {
-	background-color: transparent;
+	background-color:  #0088c1;
 	border: 1px solid transparent;
-	padding: 2px;
 }
 
-.ZmPasswordRecoveryButton:hover {
-	background-color: #3f9cd2;
+.ZmPasswordRecoveryButton .ZButtonBorder:hover {
+	background-color: #009adb;
 }
 
 #resetPasswordRecoveryButton,
@@ -6098,9 +6101,7 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 
 .ZmPasswordRecoveryButton.ZDisabled:hover,
 .ZmPasswordRecoveryButton.ZDisabled {
-	background-color: #007cc3;
-	border: 1px solid #ccc;
-	color: #ccc;
+	background-color: #0088c15c;
 }
 
 .ZmPasswordRecoveryButton.ZHasText .ZButtonTable {
@@ -6110,51 +6111,67 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 .ZmPasswordRecoveryButton.ZDisabled:hover .ZButtonTable .ZWidgetTitle,
 .ZmPasswordRecoveryButton.ZDisabled:hover .ZWidgetTitle,
 .ZmPasswordRecoveryButton.ZDisabled .ZButtonTable .ZWidgetTitle,
-.ZmPasswordRecoveryButton.ZDisabled .ZWidgetTitle {
-	color: #ccc;
-}
-
+.ZmPasswordRecoveryButton.ZDisabled .ZWidgetTitle,
 .ZmPasswordRecoveryButton .ZWidgetTitle,
 .ZmPasswordRecoveryButton .ZButtonTable .ZWidgetTitle,
 .ZmPasswordRecoveryButton.ZFocused .ZButtonTable .ZWidgetTitle,
-.ZmPasswordRecoveryButton.ZFocused .ZWidgetTitle {
-	color: #fff;
-}
-
+.ZmPasswordRecoveryButton.ZFocused .ZWidgetTitle,
 .ZmPasswordRecoveryButton:hover .ZWidgetTitle,
 .ZmPasswordRecoveryButton:hover .ZButtonTable .ZWidgetTitle,
 .ZmPasswordRecoveryButton.ZFocused:hover .ZButtonTable .ZWidgetTitle,
-.ZmPasswordRecoveryButton.ZFocused:hover .ZWidgetTitle {
-	color: #333;
+.ZmPasswordRecoveryButton.ZFocused:hover .ZWidgetTitle  {
+	color:#fff;
+	font-size: 13px;
 }
 
 .ZmPasswordRecoverySetup {
-	width: 475px;
-	min-height: 205px;
-	color: white;
+	width: 340px;
+	color:#4d4d4d;
 }
 
 .ZmPasswordRecoverySetupContainer {
-	margin:20px;
+	padding: 0px 40px;
 }
 
 .ZmPasswordRecoverySetupContainer label {
-	display:inline-block;
-	margin:5px;
+	display: inline-block;
+	font-size: 13px;
+	padding: 5px 0px;
 }
 
 .ZmPasswordRecoverySetupContainer INPUT[type="text"], 
 .ZmPasswordRecoverySetupContainer INPUT[type="password"] {
-	float: right;
-	border: 1px solid #fff;
-	padding: 0;
-	width: 235px;
-	height: 20px;
-	border-radius: 5px;
+	box-sizing: border-box;
+	height: 36px ;
+	width: 100%;
+	padding: 10px 10px;
+	border: 1px solid #d9d9d9;
+	border-radius: 2px;
+	background-color: #fff;
+	outline: none;
+}
+
+.ZmPasswordRecoverySetupContainer INPUT[type="text"]:focus, 
+.ZmPasswordRecoverySetupContainer INPUT[type="password"]:focus {
+	border-color:#0088c1 !important;
+	outline: none !important;
 }
 
 .ZmPasswordRecoverySetup .ImgLoginBanner {
-	height: 36px;
+	padding: 40px 40px 0px;
+}
+
+.ZmPasswordRecoveryCustomTitle {
+	padding: 0px 40px;
+	color: #4d4d4d;
+	letter-spacing: 0.4px;
+}
+
+.ZmPasswordRecoveryCustomPara {
+	padding: 0px 40px;
+	font-size: 13px;
+	color: #4d4d4d;
+	line-height: 1.4;
 }
 
 .ZmPasswordRecoverySetupContainer SPAN.email-key, .ZmAppPasscode {
@@ -6166,8 +6183,11 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	margin:10px
 }
 
-.ZmPasswordRecoverySetupInfo,
-.ZmPasswordRecoverySetupError {
+.DwtDialogButtonBar div[aria-label="Back to sign in"]{
+			
+}
+
+.ZmPasswordRecoverySetupInfo {
 	position: relative;
 	color: #000;
 	border: 0;
@@ -6177,6 +6197,18 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	background-color: #ff9;
 	padding: .5em 1em;
 	border-radius: 8px;
+}
+
+
+.ZmPasswordRecoverySetupError {
+	border: 0;
+	background-color: #efcbcb;
+	padding: 16px 40px;
+	font-size: 13px;
+	color: #4d4d4d;
+	border-bottom: solid;
+	border-width: 1px;
+	border-color: #f72525;
 }
 
 .ZmPasswordRecoverySetupInfo .ZLoginInfoIcon,

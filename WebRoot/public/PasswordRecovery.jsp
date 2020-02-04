@@ -75,6 +75,8 @@
 				<c:param name="customerDomain" value="${param.customerDomain}" />
 			</c:if>
 		</c:url>" rel="stylesheet" type="text/css" />
+		
+		<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no,maximum-scale=1,user-scalable=0">
 
 	<jsp:include page="Resources.jsp">
 		<jsp:param name="res" value="I18nMsg,AjxMsg,ZmMsg" />
@@ -98,6 +100,31 @@
 			accountInput : "<%=accountInput%>"
 		};
 		new ZmPasswordRecoveryDialog(params).popup();
+		var changeTag = document.getElementsByClassName("DwtDialogTitle")[0];
+		changeTag.outerHTML = "";
+		changeTag = document.getElementsByClassName("horizSep")[0];
+		changeTag.outerHTML = "";
+		// changeTag = document.querySelectorAll('[align=right]');
+		// changeTag[0].align="left";
+		changeTag = document.querySelectorAll('table[role="presentation"][width="100%"]');
+		changeTag[0].removeAttribute("width");
 	</script>
+	<style type="text/css" rel="stylesheet">
+		.DwtDialog[role="dialog"] {
+			top: 50% !important;
+			left: 50% !important;
+			transform: translateX(-50%) translateY(-50%) !important;
+		}
+
+		div.DwtDialogButtonBar {
+			padding: 20px 40px 40px 40px;
+		}
+
+		.DwtDialogButtonBar td[align="left"]{
+			padding: 0;
+		}
+
+	</style>
+
 </body>
 </html>
