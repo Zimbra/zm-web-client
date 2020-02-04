@@ -5957,17 +5957,17 @@ div.ZmTwoFactorCustomInputLoginPage {
 }
 
 h2.ZmTwoFactorCustomTitleLoginPage {
-	padding: 0px 40px;
+	padding: 0 40px;
 	color: #4d4d4d;
 	letter-spacing: 0.4px;
 }
 
 .ZmTwoFactorCustomSetupLoginPage .logo{
-	padding: 30px 40px 0px;
+	padding: 30px 40px 0;
 }
 
 .ZmTwoFactorCustomParaLoginPage {
-	padding: 0px 40px;
+	padding: 0 40px;
 	font-size: 13px;
 	color: #4d4d4d;
 	line-height: 1.4;

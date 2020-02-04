@@ -102,7 +102,7 @@
 
 		.WindowInnerContainer {
 			background-color: #fff;
-			padding: 0px ;
+			padding: 0 ;
 			border-radius: 4px ;
 		}
 		.DwtDialog.WindowOuterContainer {
@@ -115,12 +115,12 @@
 			padding: 20px 40px 40px 40px;
 		}
 		.DwtDialogButtonBar td[align="left"]{
-			padding: 0px;
+			padding: 0;
 		}
 		.DwtDialogButtonBar div[aria-label="Begin Setup"],
 		.DwtDialogButtonBar div[aria-label="Finish"],
 		.DwtDialogButtonBar div[aria-label="Previous"] {
-			margin-left: 0px;
+			margin-left: 0;
 			height: 32px;
 			outline: none;
 		}
@@ -151,15 +151,15 @@
 		}
 
 		div[aria-label="Begin Setup"] .ZButtonBorder {
-			padding: 0px 12px ;
+			padding: 0 12px ;
 		}
 		
 		div[aria-label="Previous"] .ZButtonBorder {
-			padding: 0px 10px;
+			padding: 0 10px;
 		}
 
 		div[aria-label="Finish"] .ZButtonBorder {
-			padding: 0px 17px;
+			padding: 0 17px;
 		}
 
 		.DwtDialogButtonBar div[aria-label="Next"],
@@ -170,7 +170,7 @@
 		}
 		
 		div[aria-label="Next"] .ZButtonBorder {
-			padding: 0px 21px;
+			padding: 0 21px;
 		}
 
 		div[aria-label="Next"].ZDisabled .ZButtonBorder,
@@ -179,7 +179,7 @@
 		}
 	
 		div[aria-label="Cancel"] .ZButtonBorder {
-			padding: 0px 14px 0px 15px;
+			padding: 0 14px 0 15px;
 			border: solid 1px transparent;
 			background-color: #f2f2f2 ;
 			border-radius: 3px;
