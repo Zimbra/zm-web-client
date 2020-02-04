@@ -579,7 +579,7 @@ if (application.getInitParameter("offlineMode") != null) {
 		</div>
 
 		<div class="Footer">
-			<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="clientUpdatedLoginNotice"/></div>
+			<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="splashScreenCopyright"/></div>
 		</div>
 		<div class="decor2"></div>
 	</div>
