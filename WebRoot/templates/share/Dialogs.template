@@ -822,10 +822,10 @@
 		</div>
 		<div id='${id}_reset_password'>
 			<div id='${id}_reset_password_description'>
-				<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.recoveryEmailButtonResetPassword$></p>
+				<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.recoveryEmailButtonResetPassword$></h2>
 			</div>
 			<div id='${id}_reset_password_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
-					<span id='${id}_reset_password_error_message'><$=ZmMsg.passwordRecoveryResetError$>
+					<span id='${id}_reset_password_error_message'><$=ZmMsg.passwordRecoveryResetError$></span>
 			</div>
 			<div class='ZmPasswordRecoverySetupContainer'>
 				<label for='${id}_password_new_input'><$=ZmMsg.passwordRecoveryResetNewLabel$></label>

@@ -208,7 +208,6 @@ input.loginButton:focus{
 	display: none;
 }
 
-
 .twoFactorForm{
 	padding: 30px 40px 60px;;
 }
@@ -224,7 +223,7 @@ input#remember:focus{
 
 .rememberCheckWrapper span{
 	display: block;
-	overflow: HIDDEN;
+	overflow: hidden;
 	padding-top: 2px;
 }
 
