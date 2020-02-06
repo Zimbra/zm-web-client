@@ -77,7 +77,7 @@ select#client {
 }
 
 select#client:focus {
-	border-color: #0088c1;
+	border-color: @brand-primary@;
 }
 
 .trustedDeviceDiv {
@@ -141,7 +141,7 @@ form#zLoginForm .form INPUT[type='password'],
 form#zLoginForm .form INPUT[type='text']:focus, 
 form#zLoginForm .form INPUT[type='password']:focus,
 .twoFactorForm INPUT[type="text"]:focus{
-	border-color: #0088c1;
+	border-color: @brand-primary@;
 }
 
 
@@ -201,7 +201,7 @@ input.loginButton{
 input.loginButton:disabled,
 input.loginButton:hover,
 input.loginButton:focus{
-	background-color: #0088c1;
+	background-color: @brand-primary@;
 }
 
 .hideTooltip{
@@ -217,7 +217,7 @@ input#remember {
 	float: left;
 }
 input#remember:focus{
-	outline-color: #0088c1;
+	outline-color: @brand-primary@;
 	outline-style: solid;
 	outline-width: 1px;
 }
@@ -333,7 +333,7 @@ label#remember {
 .passwordWrapper #showSpan:focus,
 .passwordWrapper #hideSpan:hover,
 .passwordWrapper #showSpan:hover{
-	color: #0088c1;
+	color: @brand-primary@;
 }
 
 .LoginScreen .ZLoginInfo {

@@ -241,7 +241,7 @@ BODY									{	margin:0px; 	}
 	overflow:hidden;
 	@FontFamily-default@
 	@FontSize-normal@
-	background: #0088c1 url(../../../img/new-back-ground-image.png) 0 0/cover no-repeat;
+	@LoginScreen@
 }
 
 .LoginScreen .center,

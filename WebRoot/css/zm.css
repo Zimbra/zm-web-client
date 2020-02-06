@@ -5993,7 +5993,7 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 
 .ZmTwoFactorCustomInputLoginPage .numberInputTag[type="number"]:focus ,
 .ZmTwoFactorCustomInputLoginPage .inputTag[type="password"]:focus {
-	border-color:#0088c1 !important;
+	border-color:@brand-primary@ !important;
 	outline: none !important;
 }
 
@@ -6137,7 +6137,7 @@ div.PasswordRecoveryResendButton .ZButtonTable:hover .ZWidgetTitle,
 }
 
 .ZmPasswordRecoveryButton .ZButtonBorder {
-	background-color:  #0088c1;
+	background-color:  @brand-primary@;
 	border: 1px solid transparent;
 }
 
@@ -6207,7 +6207,7 @@ div#resetPasswordRecoveryButton {
 
 .ZmPasswordRecoverySetupContainer INPUT[type="text"]:focus, 
 .ZmPasswordRecoverySetupContainer INPUT[type="password"]:focus {
-	border-color:#0088c1 !important;
+	border-color:@brand-primary@ !important;
 	outline: none !important;
 }
 
@@ -6492,7 +6492,7 @@ textarea[readonly].ZmMobileConfigTextarea{
 .ZmTwoFactorNextButton .ZButtonBorder {
 	border-radius: 3px;
 	border: solid 1px transparent;
-	background-color: #0088c1;
+	background-color: @brand-primary@;
 }
 
 
