@@ -445,7 +445,7 @@ TD.vSpace {
 
 /*Applies only for two factor setup page redirected from login page.*/
 html[data-istwofactorsetuppage] .VeilOverlay TABLE {
-	background: #0088c1 url(../img/new-back-ground-image.png) 0 0/cover no-repeat;
+	@LoginScreen@	
 	opacity:1;
 }
 

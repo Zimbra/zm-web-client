@@ -275,7 +275,7 @@ BODY									{	margin:0px; 	}
 
 
 .LoginScreen .modernContentBox {
-	background-color: #fff;
+	background-color: @white-color@;
 	box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
 	padding: 0;
 	max-width: 340px;
@@ -318,15 +318,15 @@ BODY									{	margin:0px; 	}
 
 .LoginScreen .errorMessage{
 	border: 0;
-	background-color: #efcbcb;
+	background-color: @error-primary@;
 	padding: 16px 40px;
 	font-size: 13px;
-	color: #4d4d4d;
+	color: @gray-darker@;
 	font-stretch: expanded;
 	text-align: left;
 	border-bottom: solid;
 	border-width: 1px;
-	border-color: #f72525;
+	border-color: @error-teritary@;
 }
 
 
@@ -381,7 +381,7 @@ BODY									{	margin:0px; 	}
 .LoginScreen .zLoginFieldLabel {
 	display: inline-block;
 	padding: 2px 0px 4px;
-	color: #4d4d4d;
+	color: @gray-darker@;
 }
 
 .LoginScreen INPUT[disabled] {
@@ -390,7 +390,7 @@ BODY									{	margin:0px; 	}
 .LoginScreen .decor1			{ @Decor1L@ }
 .LoginScreen .decor2			{ @Decor2L@ }
 .LoginScreen #ZLoginNotice A {
-	color: #f4f4f4;
+	color: @white-color@;
 }
 
 /*Splash Screen Only Items*/

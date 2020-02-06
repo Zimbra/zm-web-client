@@ -109,11 +109,6 @@
 		changeTag[0].align="left";
 		changeTag = document.querySelectorAll('table[role="presentation"][width="100%"]');
 		changeTag[0].removeAttribute("width");
-		// changeTag = document.querySelectorAll('div[aria-label="Reset Password"]');
-		// if(changeTag[0].style.cssText == "position: static; overflow: visible; display: block;"){
-		// 	var getTag = document.getElementsByClassName("DwtDialogButtonBar")
-		// 	getTag[0].style.cssText= "padding: 20px 40px 20px 40px;"
-		// }
 
 	</script>
 	<style type="text/css" rel="stylesheet">

@@ -5958,7 +5958,7 @@ div.ZmTwoFactorCustomInputLoginPage {
 
 h2.ZmTwoFactorCustomTitleLoginPage {
 	padding: 0 40px;
-	color: #4d4d4d;
+	color: @gray-darker@;
 	letter-spacing: 0.4px;
 }
 
@@ -5969,13 +5969,13 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 .ZmTwoFactorCustomParaLoginPage {
 	padding: 0 40px;
 	font-size: 13px;
-	color: #4d4d4d;
+	color: @gray-darker@;
 	line-height: 1.4;
 }
 
 .passwordCustomLabel {
 	padding: 0 40px; 
-	color: #4d4d4d;
+	color: @gray-darker@;
 	font-size: 13px;
 }
 
@@ -5985,9 +5985,9 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	height: 36px ;
 	width: 100%;
 	padding: 10px 10px;
-	border: 1px solid #d9d9d9;
+	border: 1px solid @gray-lighter@;
 	border-radius: 2px;
-	background-color: #fff;
+	background-color: @white-color@;
 	outline: none;
 }
 
@@ -6013,7 +6013,7 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	letter-spacing: 3px;
 	display: inline-block;
 	margin: 10px;
-	color: #4d4d4d;
+	color: @gray-darker@;
 }
 
 .ZmTwoFactorSetupContainer label {
@@ -6038,13 +6038,13 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 
 .ZmTwoFactorCustomSetupErrorLoginPage {
 	border: 0;
-	background-color: #efcbcb;
+	background-color: @error-primary@;
 	padding: 16px 40px;
 	font-size: 13px;
-	color: #4d4d4d;
+	color: @gray-darker@;
 	border-bottom: solid;
 	border-width: 1px;
-	border-color: #f72525;
+	border-color: @error-teritary@;
 }
 /* Two-Factor Setup dialog end*/
 
@@ -6052,21 +6052,21 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 html[data-ispasswordrecoverypage] .VeilOverlay TABLE {
 	@FontFamily-default@
 	@FontSize-normal@
-	background: #0088c1 url(../img/new-back-ground-image.png) 0 0/cover no-repeat;
+	@LoginScreen@
 	opacity: 1;
 }
 
 html[data-ispasswordrecoverypage] .WindowInnerContainer {
-	background-color:  #fff;
+	background-color:  @white-color@;
 	border-radius: 2px;    
 	border-top: none;
-	padding: 0px;
+	padding: 0;
 }
 
 html[data-ispasswordrecoverypage] .WindowOuterContainer {
 	box-shadow: 0 4px 6px 0 rgba(0, 0, 0, .4);
     border-radius: 2px;
-    background-color: #fff;
+    background-color: @white-color@;
     border: none;
 }
 
@@ -6082,49 +6082,49 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 
 .DwtDialogButtonBar .PasswordRecoveryCancelButton1 .ZButtonBorder,
 .DwtDialogButtonBar .PasswordRecoveryCancelButton .ZButtonBorder{
-	padding: 0px 4px;	
+	padding: 0 4px;	
 }
 
 .DwtDialogButtonBar .PasswordRecoverySubmitButton .ZButtonBorder{
-	padding: 0px 14px;	
+	padding: 0 14px;	
 	margin-left: 5px;
 }
 
 
 .DwtDialogButtonBar .PasswordRecoveryRequestButton .ZButtonBorder{
-	padding: 0px 4px;
+	padding: 0 4px;
 	margin-left: 5px;
 }
 
 .DwtDialogButtonBar .PasswordRecoveryResendButton .ZButtonBorder{
-	padding: 0px 4px;
+	padding: 0 4px;
 	margin-left: 4px
 }
 
 .DwtDialogButtonBar .PasswordRecoveryVerifyButton .ZButtonBorder{
-	padding: 0px 4px;
+	padding: 0 4px;
 	margin-left: 8px;
 }
 
 .DwtDialogButtonBar .PasswordRecoveryResetButton .ZButtonBorder{
-	padding: 0px 14px;;
+	padding: 0 14px;;
 	margin-left: 8px;
 }
 
 .DwtDialogButtonBar .PasswordRecoveryLoginButton .ZButtonBorder{
-	padding: 0px 8px;
+	padding: 0 8px;
 }
 
 div.PasswordRecoveryCancelButton1 .ZButtonBorder,
 .DwtDialogButtonBar .PasswordRecoveryResendButton .ZButtonBorder,
 #continueSessionsRecoveryButton .ZButtonBorder {
-	background-color: #f2f2f2;
+	background-color: @gray-lightest@;
 }
 
 div.PasswordRecoveryCancelButton1 .ZButtonBorder:hover,
 .DwtDialogButtonBar .PasswordRecoveryResendButton .ZButtonBorder:hover,
 #continueSessionsRecoveryButton .ZButtonBorder:hover {
-	background-color: #e5e5e5;
+	background-color: @gray-hover@;
 }
 
 div.PasswordRecoveryCancelButton1 .ZButtonTable:hover .ZWidgetTitle,
@@ -6133,7 +6133,7 @@ div.PasswordRecoveryResendButton .ZButtonTable .ZWidgetTitle ,
 div.PasswordRecoveryResendButton .ZButtonTable:hover .ZWidgetTitle,
 #continueSessionsRecoveryButton .ZButtonTable .ZWidgetTitle ,
 #continueSessionsRecoveryButton .ZButtonTable:hover .ZWidgetTitle {
-	color : #4d4d4d;
+	color : @gray-darker@;
 }
 
 .ZmPasswordRecoveryButton .ZButtonBorder {
@@ -6142,16 +6142,16 @@ div.PasswordRecoveryResendButton .ZButtonTable:hover .ZWidgetTitle,
 }
 
 .ZmPasswordRecoveryButton .ZButtonBorder:hover {
-	background-color: #009adb;
+	background-color: @brand-hover@;
 }
 
 .alignButton{
-	padding: 0px 36px;
+	padding: 0 36px;
 }
 
 .ZmPasswordRecoveryButton.ZDisabled .ZButtonBorder:hover,
 .ZmPasswordRecoveryButton.ZDisabled .ZButtonBorder {
-	background-color: #0088c15c;
+	background-color: @brancd-lighter@;
 }
 
 .ZmPasswordRecoveryButton.ZHasText .ZButtonTable {
@@ -6159,7 +6159,7 @@ div.PasswordRecoveryResendButton .ZButtonTable:hover .ZWidgetTitle,
 }
 
 div#resetPasswordRecoveryButton {
-    margin-bottom: 10px;
+	margin-bottom: 10px;
 }
 
 .ZmPasswordRecoveryButton.ZDisabled:hover .ZButtonTable .ZWidgetTitle,
@@ -6174,23 +6174,23 @@ div#resetPasswordRecoveryButton {
 .ZmPasswordRecoveryButton:hover .ZButtonTable .ZWidgetTitle,
 .ZmPasswordRecoveryButton.ZFocused:hover .ZButtonTable .ZWidgetTitle,
 .ZmPasswordRecoveryButton.ZFocused:hover .ZWidgetTitle  {
-	color:#fff;
+	color:@white-color@;
 	font-size: 12px;
 }
 
 .ZmPasswordRecoverySetup {
 	width: 340px;
-	color:#4d4d4d;
+	color:@gray-darker@;
 }
 
 .ZmPasswordRecoverySetupContainer {
-	padding: 0px 40px;
+	padding: 0 40px;
 }
 
 .ZmPasswordRecoverySetupContainer label {
 	display: inline-block;
 	font-size: 13px;
-	padding: 5px 0px;
+	padding: 5px 0;
 }
 
 .ZmPasswordRecoverySetupContainer INPUT[type="text"], 
@@ -6199,9 +6199,9 @@ div#resetPasswordRecoveryButton {
 	height: 36px ;
 	width: 100%;
 	padding: 10px 10px;
-	border: 1px solid #d9d9d9;
+	border: 1px solid @gray-lighter@;
 	border-radius: 2px;
-	background-color: #fff;
+	background-color: @white-color@;
 	outline: none;
 }
 
@@ -6212,19 +6212,19 @@ div#resetPasswordRecoveryButton {
 }
 
 .ZmPasswordRecoverySetup .ImgLoginBanner {
-	padding: 40px 40px 0px;
+	padding: 40px 40px 0;
 }
 
 .ZmPasswordRecoveryCustomTitle {
-	padding: 0px 40px;
-	color: #4d4d4d;
+	padding: 0 40px;
+	color: @gray-darker@;
 	letter-spacing: 0.4px;
 }
 
 .ZmPasswordRecoveryCustomPara {
-	padding: 0px 40px;
+	padding: 0 40px;
 	font-size: 13px;
-	color: #4d4d4d;
+	color: @gray-darker@;
 	line-height: 1.4;
 }
 
@@ -6235,10 +6235,6 @@ div#resetPasswordRecoveryButton {
 	letter-spacing: 3px;
 	display:inline-block;
 	margin:10px
-}
-
-.DwtDialogButtonBar div[aria-label="Back to sign in"]{
-			
 }
 
 .ZmPasswordRecoverySetupInfo {
@@ -6256,13 +6252,13 @@ div#resetPasswordRecoveryButton {
 
 .ZmPasswordRecoverySetupError {
 	border: 0;
-	background-color: #efcbcb;
+	background-color: @error-primary@;
 	padding: 16px 40px;
 	font-size: 13px;
-	color: #4d4d4d;
+	color: @gray-darker@;
 	border-bottom: solid;
 	border-width: 1px;
-	border-color: #f72525;
+	border-color: @error-teritary@;
 }
 
 .ZmPasswordRecoverySetupInfo .ZLoginInfoIcon,
@@ -6472,3 +6468,83 @@ textarea[readonly].ZmMobileConfigTextarea{
     outline: none;
 }
 /*MObile Configuration end*/
+
+
+/*runtime css properties for reskin of 2fa buttons*/
+.DwtDialogButtonBar .ZmTwoFactorBeginButton,
+.DwtDialogButtonBar .ZmTwoFactorFinishButton,
+.DwtDialogButtonBar .ZmTwoFactorPreviousButton {
+	margin-left: 0;
+	height: 32px;
+	outline: none;
+}
+
+.ZmTwoFactorBeginButton .ZButtonTable:hover,
+.ZmTwoFactorPreviousButton .ZButtonTable:hover ,
+.ZmTwoFactorFinishButton .ZButtonTable:hover,
+.ZmTwoFactorNextButton .ZButtonBorder:hover  {
+	background-color: @brand-hover@;
+}
+
+.ZmTwoFactorBeginButton .ZButtonBorder,
+.ZmTwoFactorPreviousButton .ZButtonBorder,
+.ZmTwoFactorFinishButton .ZButtonBorder,
+.ZmTwoFactorNextButton .ZButtonBorder {
+	border-radius: 3px;
+	border: solid 1px transparent;
+	background-color: #0088c1;
+}
+
+
+.ZmTwoFactorBeginButton .ZButtonTable .ZWidgetTitle,
+.ZmTwoFactorPreviousButton .ZButtonTable .ZWidgetTitle,
+.ZmTwoFactorNextButton .ZButtonTable .ZWidgetTitle,
+.ZmTwoFactorFinishButton .ZButtonTable .ZWidgetTitle {
+	color: @white-color@;
+	font-size: 12px;
+}
+
+.ZmTwoFactorBeginButton .ZButtonBorder {
+	padding: 0 12px ;
+}
+
+.ZmTwoFactorPreviousButton .ZButtonBorder {
+	padding: 0 10px;
+}
+
+.ZmTwoFactorFinishButton .ZButtonBorder {
+	padding: 0 17px;
+}
+
+.DwtDialogButtonBar .ZmTwoFactorNextButton,
+.DwtDialogButtonBar .ZmTwoFactorCancelButton{
+	margin-left: 10px;
+	height: 32px;
+	outline: none;
+}
+
+.ZmTwoFactorNextButton .ZButtonBorder {
+	padding: 0 21px;
+}
+
+.ZmTwoFactorNextButton.ZDisabled .ZButtonBorder,
+.ZmTwoFactorNextButton.ZDisabled .ZButtonBorder:hover {
+	background-color: @brancd-lighter@;
+}
+
+.ZmTwoFactorCancelButton .ZButtonBorder {
+	padding: 0 14px 0 15px;
+	border: solid 1px transparent;
+	background-color: @gray-lightest@ ;
+	border-radius: 3px;
+}
+
+div.ZmTwoFactorCancelButton.ZHover .ZButtonBorder:hover {
+	background-color: @gray-hover@;
+}
+
+.ZmTwoFactorCancelButton .ZButtonTable .ZWidgetTitle {
+	color: @gray-darker@;
+	font-size: 12px;
+}
+

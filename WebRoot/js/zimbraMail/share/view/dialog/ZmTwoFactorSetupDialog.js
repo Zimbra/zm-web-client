@@ -51,7 +51,7 @@ ZmTwoFactorSetupDialog = function(params) {
 	};
 	DwtDialog.call(this, newParams);
 	this.setContent(this._contentHtml(params.isFromLoginPage));
-	this._createControls();
+	this._createControls(params.isFromLoginPage);
 	this._setAllowSelection();
 };
 

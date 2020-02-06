@@ -46,7 +46,7 @@ FORM {
 .signIn {
 	font-size: 20px;
 	padding: 19px 40px;
-	color: #4d4d4d;
+	color: @gray-darker@;
 	font-weight: bold;
 }
 
@@ -63,15 +63,15 @@ FORM {
 .versionBlock label {
 	display: block;
 	padding-bottom: 3px;
-	color: #4d4d4d;
+	color: @gray-darker@;
 }
 .LoginScreen div.logo{
-	padding: 30px 40px 0px;
+	padding: 30px 40px 0;
 }
 
 select#client {
 	width: 100%;
-	background: #fff;
+	background: @white-color@;
 	height: 32px;
 	outline: none;
 }
@@ -83,11 +83,11 @@ select#client:focus {
 .trustedDeviceDiv {
 	padding: 9px 0;
 	font-size: 13px;
-	color: #4d4d4d;
+	color: @gray-darker@;
 }
 
 .verifyButtonWrapper{
-	padding: 12px 0px;
+	padding: 12px 0;
 	clear: both; 
 	float:none;
 }
@@ -128,14 +128,10 @@ select#client:focus {
 	text-align: left;
 }
 
-form#zLoginForm .form {
-	color: #1e282ec2;
-}
-
 form#zLoginForm .form INPUT[type='text'], 
 form#zLoginForm .form INPUT[type='password'],
 .twoFactorForm INPUT[type="text"] { 
-	border: 1px solid #d9d9d9;
+	border: 1px solid @gray-lighter@;
 	padding: 6px 12px;
 	width: 100%;
 	height: 36px;
@@ -176,13 +172,13 @@ form#zLoginForm .form INPUT[type='password']:focus,
 
 .form .rememberCheckWrapper {
 	padding-top: 8px;
-    flex: 1;
-    padding-left: 20px;
+	flex: 1;
+	padding-left: 20px;
 }
 
 input.loginButton{ 
-	background-color: #007CC3;
-	color: #fff;
+	background-color: @brand-teritary@;
+	color: @white-color@;
 	float: left;
 	font-size: 13px;
 	padding: 8px 23px;
@@ -194,12 +190,12 @@ input.loginButton{
 
 #verifyButton:disabled{
 	background-color:#aed4eae0;
-	color: #fff;
+	color: @white-color@;
 }
 
 #cancelButton{
-	background-color: #f2f2f2;
-	color: #4d4d4d;
+	background-color: @gray-lightest@;
+	color: @gray-darker@;
 }
 
 input.loginButton:disabled,
@@ -234,24 +230,24 @@ input#remember:focus{
 
 
 input#trustedDevice {
-	margin: 0px;
+	margin: 0;
 	outline: none;
 }
 
 label#remember {
-    color: #4d4d4d;
+    color: @gray-darker@;
 }
 
 .twoFactorTitle{
 	font-size: 20px;
 	font-weight: bold;
 	padding: 17px 40px 0;
-	color: #4d4d4d;
+	color: @gray-darker@;
 }
 
 #trustedDeviceLabel{
 	padding-left: 5px;
-	color: #4d4d4d;
+	color: @gray-darker@;
 }
 
 .form .ZLoginButton					{ @LoginButton@ float:right; font-size:1em;}
@@ -266,11 +262,11 @@ label#remember {
 
 
 #ZLoginWhatsThisButton{
-    background: transparent;
-    background-image: url(../img/questionMark.png);
-    background-size: 100% 100%;
-    border: transparent;
-    outline: none;
+	background: transparent;
+	background-image: url(../img/questionMark.png);
+	background-size: 100% 100%;
+	border: transparent;
+	outline: none;
 }
 
 .alignWhatsThis{
@@ -292,20 +288,20 @@ label#remember {
 
 #dialogCloseButton {
 	position: absolute;
-    font-size: 20px;
-    right: 15px;
-    top: 10px;
+	font-size: 20px;
+	right: 15px;
+	top: 10px;
 }
 
 .LoginScreen #ZLoginForgotPassword {
-	color:#0568ae;
+	color:@brand-teritary@;
 	font-size: .9em;
 	float: right;
 	padding: 2px;
 	outline: none;
 }
 .LoginScreen #ZLoginForgotPassword:focus {
-	color:#1e282ec2;
+	color:@gray-darker@;
 }
 
 
@@ -317,7 +313,7 @@ label#remember {
 	position: absolute;
 	z-index: 2;
 	font-size: 10px;
-	color: #828282;
+	color: @gray-darker@;
 	right: 10px;
 	top: 11px; 
 	cursor: pointer;
@@ -327,7 +323,7 @@ label#remember {
 	position: absolute;
 	z-index: 2;
 	font-size: 10px;
-	color: #828282;
+	color: @gray-darker@;
 	right: 10px;
 	top: 11px; 
 	cursor: pointer
@@ -342,16 +338,16 @@ label#remember {
 
 .LoginScreen .ZLoginInfo {
 	position: absolute;
-    z-index: 3;
-    bottom: 50%;
-    font-size: 14px;
-    left: 13px;
-    right: 13px;
-    padding: 24px 24px;
-    border: none;
+	z-index: 3;
+	bottom: 50%;
+	font-size: 14px;
+	left: 13px;
+	right: 13px;
+	padding: 24px 24px;
+	border: none;
 	border-radius: 5px;
-	background-color: #fff;
-    box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
+	background-color: @white-color@;
+	box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
 }
 
 .LoginScreen .ZLoginInfoMessage {
@@ -364,9 +360,9 @@ label#remember {
 }
 
 .loginTitle{
-	padding: 0px 40px;
+	padding: 0 40px;
 	font-size: 13px;
-	color: #4d4d4d;
+	color: @gray-darker@;
 }
 
 .signInAndLabel{
