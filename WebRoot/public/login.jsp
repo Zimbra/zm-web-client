@@ -508,7 +508,9 @@ if (application.getInitParameter("offlineMode") != null) {
                                     </c:choose>
                                 
                                     <label for="password" class="zLoginFieldLabel"><fmt:message key="password"/></label>
+                                    <c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">
                                         <a href="#" onclick="forgotPassword();" id="ZLoginForgotPassword" tabindex="7" aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
+                                    </c:if>
                                     <div class="passwordWrapper">
                                         <input id="password" tabindex="2" autocomplete="off" class="zLoginFieldInput" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
                                         <span toggle="#password" onClick="showPassword();" id="showSpan" style="display: block;"><fmt:message key="show"/></span>
