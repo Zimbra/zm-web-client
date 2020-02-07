@@ -557,13 +557,10 @@ if (application.getInitParameter("offlineMode") != null) {
                                             </select>
                                         </c:otherwise>
                                     </c:choose>
-                                    <div class="alignWhatsThis">
-                                       <div type="button" onclick="showTooltip();" id='ZLoginWhatsThisButton'><img src='../img/questionMark.png' width='15' height='15' border='0'></div>
-                                    </div>
+                                    <input type="button" class="alignWhatsThis" onclick="showTooltip();" id='ZLoginWhatsThisButton' />
                                 </div>
-                         
                            
-                                <div id="ZLoginWhatsThis" style="display: none;">
+                                <div id="ZLoginWhatsThis">
                                     <div class="ZLoginInfo">
                                         <span id="dialogCloseButton" onclick="hideTooltip();">&times;</span>
                                         <fmt:message key="clientWhatsThisMessageWithoutTablet"/>
@@ -628,15 +625,6 @@ function forgotPassword() {
 	window.location.href = url;
 }
 
-var modal = document.getElementById('ZLoginWhatsThis');
-window.addEventListener('mouseup', function(event) { 
-    if (event.target.closest(".ZLoginInfo"))
-    {
-         return ;
-    }
-    modal.style.display = "none";
-});
-
 function disableEnable(txt) {
     var bt = document.getElementById('verifyButton');
     if (txt.value != '') {
@@ -650,7 +638,7 @@ function hideTooltip() {
     document.getElementById('ZLoginWhatsThis').style.display='none';
 }
 function showTooltip(){
-    document.getElementById('ZLoginWhatsThis').style.display='block';
+    document.getElementById('ZLoginWhatsThis').style.display="block"
 }
 
 

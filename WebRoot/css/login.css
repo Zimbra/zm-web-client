@@ -172,7 +172,8 @@ form#zLoginForm .form INPUT[type='password']:focus,
 
 .form .rememberCheckWrapper {
 	flex: 1;
-	padding-left: 70px;
+	padding-left: 20px;
+	justify-content: flex-end;
 }
 
 
@@ -257,7 +258,6 @@ label#remember {
 
 .alignWhatsThis{
 	position: absolute;
-	display: inline-flex;
 	top: 9px;
 	left: 105%;
 }
@@ -277,6 +277,7 @@ label#remember {
 	font-size: 20px;
 	right: 15px;
 	top: 10px;
+	cursor: pointer;
 }
 
 .LoginScreen #ZLoginForgotPassword {
@@ -327,7 +328,6 @@ label#remember {
 	position: absolute;
 	z-index: 3;
 	bottom: 50%;
-	font-size: 14px;
 	left: 13px;
 	right: 13px;
 	padding: 24px 24px;
@@ -336,6 +336,14 @@ label#remember {
 	background-color: @white-color@;
 	box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
 	color : @gray-darker@;
+}
+
+.LoginScreen .ZLoginInfo p {
+	font-size: 12px;
+}
+
+.LoginScreen .ZLoginInfo p strong{
+	font-size: 14px;
 }
 
 .LoginScreen .ZLoginInfoMessage {
@@ -462,4 +470,18 @@ label#remember {
 }
 .Footer-small #ZLoginNotice {
 	display:none;
+}
+
+#ZLoginWhatsThis{
+	display: none;
+}
+
+#ZLoginWhatsThisButton {
+    background: url(../img/questionMark.png) center center no-repeat;
+    border: transparent;
+    outline: none;
+    width: 15px;
+    height: 15px;
+    padding: 0;
+    background-size: 15px 15px;
 }
