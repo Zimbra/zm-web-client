@@ -5993,8 +5993,8 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 
 .ZmTwoFactorCustomInputLoginPage .numberInputTag[type="number"]:focus ,
 .ZmTwoFactorCustomInputLoginPage .inputTag[type="password"]:focus {
-	border-color:@brand-primary@ !important;
-	outline: none !important;
+	border-color:@brand-primary@;
+	outline: none;
 }
 
 .ZmTwoFactorSetupContainer {
@@ -6044,7 +6044,7 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	color: @gray-darker@;
 	border-bottom: solid;
 	border-width: 1px;
-	border-color: @error-teritary@;
+	border-color: @error-tertiary@;
 }
 /* Two-Factor Setup dialog end*/
 
@@ -6080,7 +6080,7 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	height: 32px;
 }
 
-.DwtDialogButtonBar .PasswordRecoveryCancelButton1 .ZButtonBorder,
+.DwtDialogButtonBar .PasswordRecoveryBackToSignInButton .ZButtonBorder,
 .DwtDialogButtonBar .PasswordRecoveryCancelButton .ZButtonBorder{
 	padding: 0 4px;	
 }
@@ -6115,20 +6115,20 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	padding: 0 8px;
 }
 
-div.PasswordRecoveryCancelButton1 .ZButtonBorder,
+div.PasswordRecoveryBackToSignInButton .ZButtonBorder,
 .DwtDialogButtonBar .PasswordRecoveryResendButton .ZButtonBorder,
 #continueSessionsRecoveryButton .ZButtonBorder {
 	background-color: @gray-lightest@;
 }
 
-div.PasswordRecoveryCancelButton1 .ZButtonBorder:hover,
+div.PasswordRecoveryBackToSignInButton .ZButtonBorder:hover,
 .DwtDialogButtonBar .PasswordRecoveryResendButton .ZButtonBorder:hover,
 #continueSessionsRecoveryButton .ZButtonBorder:hover {
 	background-color: @gray-hover@;
 }
 
-div.PasswordRecoveryCancelButton1 .ZButtonTable:hover .ZWidgetTitle,
-div.PasswordRecoveryCancelButton1 .ZButtonTable .ZWidgetTitle,
+div.PasswordRecoveryBackToSignInButton .ZButtonTable:hover .ZWidgetTitle,
+div.PasswordRecoveryBackToSignInButton .ZButtonTable .ZWidgetTitle,
 div.PasswordRecoveryResendButton .ZButtonTable .ZWidgetTitle ,
 div.PasswordRecoveryResendButton .ZButtonTable:hover .ZWidgetTitle,
 #continueSessionsRecoveryButton .ZButtonTable .ZWidgetTitle ,
@@ -6151,7 +6151,7 @@ div.PasswordRecoveryResendButton .ZButtonTable:hover .ZWidgetTitle,
 
 .ZmPasswordRecoveryButton.ZDisabled .ZButtonBorder:hover,
 .ZmPasswordRecoveryButton.ZDisabled .ZButtonBorder {
-	background-color: @brancd-lighter@;
+	background-color: @brand-lighter@;
 }
 
 .ZmPasswordRecoveryButton.ZHasText .ZButtonTable {
@@ -6258,7 +6258,7 @@ div#resetPasswordRecoveryButton {
 	color: @gray-darker@;
 	border-bottom: solid;
 	border-width: 1px;
-	border-color: @error-teritary@;
+	border-color: @error-tertiary@;
 }
 
 .ZmPasswordRecoverySetupInfo .ZLoginInfoIcon,
@@ -6529,7 +6529,7 @@ textarea[readonly].ZmMobileConfigTextarea{
 
 .ZmTwoFactorNextButton.ZDisabled .ZButtonBorder,
 .ZmTwoFactorNextButton.ZDisabled .ZButtonBorder:hover {
-	background-color: @brancd-lighter@;
+	background-color: @brand-lighter@;
 }
 
 .ZmTwoFactorCancelButton .ZButtonBorder {

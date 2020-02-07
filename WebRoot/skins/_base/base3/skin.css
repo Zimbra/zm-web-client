@@ -326,7 +326,7 @@ BODY									{	margin:0px; 	}
 	text-align: left;
 	border-bottom: solid;
 	border-width: 1px;
-	border-color: @error-teritary@;
+	border-color: @error-tertiary@;
 }
 
 

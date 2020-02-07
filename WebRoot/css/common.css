@@ -429,14 +429,13 @@ TD.vSpace {
 	background-color:transparent;
 }
 
-
 .VeilOverlay TABLE {
 	@DisabledCursor@
 	@VeilColor@
 }
 
 .VeilOverlay-linux TABLE {
-	@DisabledCursor@
+	@LoginScreen@
 }
 
 .CurtainOverlay TABLE {

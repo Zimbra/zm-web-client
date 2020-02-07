@@ -466,7 +466,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <c:if test="${authResult.trustedDevicesEnabled eq true}">
                                     <div class="trustedDeviceDiv">
                                         <input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">
-                                        <label id="trustedDeviceLabel"  tabindex="1" for="trustedDevice"><fmt:message key="twoFactorAuthTrustComputer"/></label>
+                                        <label id="trustedDeviceLabel"  tabindex="1" for="trustedDevice"><fmt:message key="twoFactorAuthTrustDevice"/></label>
                                     </div>
                                 </c:if>
                                 <div class="verifyButtonWrapper">
@@ -527,7 +527,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                         <c:set var="isSignedInDisabled" value="${domainInfo.attrs.zimbraWebClientStaySignedInDisabled}"/>
                                         <c:if test="${isSignedInDisabled eq false}">
                                             <div class="rememberCheckWrapper"> 
-                                                <label id="remember" for="remember"><input id="remember" tabindex="6" value="1" type="checkbox" name="zrememberme" /><span><fmt:message key="rememberMe"/></span></label>
+                                                <input id="remember" tabindex="6" value="1" type="checkbox" name="zrememberme" />
+                                                <label id="remember" for="remember"><fmt:message key="rememberMe"/></label>
                                             </div>
                                         </c:if>
                                     </div>
@@ -557,14 +558,14 @@ if (application.getInitParameter("offlineMode") != null) {
                                         </c:otherwise>
                                     </c:choose>
                                     <div class="alignWhatsThis">
-                                       <input type="button" onclick="document.getElementById('ZLoginWhatsThis').style.display='block'" id='ZLoginWhatsThisButton'/>
+                                       <div type="button" onclick="showTooltip();" id='ZLoginWhatsThisButton'><img src='../img/questionMark.png' width='15' height='15' border='0'></div>
                                     </div>
                                 </div>
                          
                            
                                 <div id="ZLoginWhatsThis" style="display: none;">
                                     <div class="ZLoginInfo">
-                                        <span id="dialogCloseButton" onclick="document.getElementById('ZLoginWhatsThis').style.display='none'">&times;</span>
+                                        <span id="dialogCloseButton" onclick="hideTooltip();">&times;</span>
                                         <fmt:message key="clientWhatsThisMessageWithoutTablet"/>
                                     </div>
                                 </div>
@@ -645,6 +646,12 @@ function disableEnable(txt) {
         bt.disabled = true;
     }
 } 
+function hideTooltip() {
+    document.getElementById('ZLoginWhatsThis').style.display='none';
+}
+function showTooltip(){
+    document.getElementById('ZLoginWhatsThis').style.display='block';
+}
 
 
 function showPassword() {

@@ -171,13 +171,14 @@ form#zLoginForm .form INPUT[type='password']:focus,
 
 
 .form .rememberCheckWrapper {
-	padding-top: 8px;
 	flex: 1;
-	padding-left: 20px;
+	padding-left: 70px;
 }
 
+
+
 input.loginButton{ 
-	background-color: @brand-teritary@;
+	background-color: @brand-tertiary@;
 	color: @white-color@;
 	float: left;
 	font-size: 13px;
@@ -214,11 +215,6 @@ input.loginButton:focus{
 input#remember {
 	outline: none;
 	float: left;
-}
-input#remember:focus{
-	outline-color: @brand-primary@;
-	outline-style: solid;
-	outline-width: 1px;
 }
 
 .rememberCheckWrapper span{
@@ -259,15 +255,6 @@ label#remember {
 	z-index:20;
 }
 
-
-#ZLoginWhatsThisButton{
-	background: transparent;
-	background-image: url(../img/questionMark.png);
-	background-size: 100% 100%;
-	border: transparent;
-	outline: none;
-}
-
 .alignWhatsThis{
 	position: absolute;
 	display: inline-flex;
@@ -293,12 +280,13 @@ label#remember {
 }
 
 .LoginScreen #ZLoginForgotPassword {
-	color:@brand-teritary@;
-	font-size: .9em;
+	color:@brand-tertiary@;
+	font-size: 11px;
 	float: right;
 	padding: 2px;
 	outline: none;
 }
+
 .LoginScreen #ZLoginForgotPassword:focus {
 	color:@gray-darker@;
 }
@@ -347,6 +335,7 @@ label#remember {
 	border-radius: 5px;
 	background-color: @white-color@;
 	box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
+	color : @gray-darker@;
 }
 
 .LoginScreen .ZLoginInfoMessage {
@@ -366,6 +355,11 @@ label#remember {
 
 .signInAndLabel{
 	display: flex;
+}
+
+.signInAndLabel > div{
+	display: flex;
+	align-items: center;
 }
 
 /*DWT Buttons*/
