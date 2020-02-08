@@ -5896,7 +5896,7 @@ RBC, RTC {
 	@FontFamily-system@
 }
 
-.user_font_system .Footer{
+.user_font_modern .Footer{
 	bottom: 0;
 	position: absolute;
 	text-align: center;
@@ -5906,7 +5906,7 @@ RBC, RTC {
 }
 
 
-.user_font_system #ZLoginNotice {
+.user_font_modern #ZLoginNotice {
 	cursor: default;
 	margin-bottom: 5px;
 	font-size: 1rem;

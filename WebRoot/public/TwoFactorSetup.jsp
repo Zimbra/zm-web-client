@@ -74,7 +74,7 @@
 		<script src="${contextPath}/js/TwoFactor_all.js<%=ext%>?v=${version}"></script>
 	<% } %>
 </head>
-<body class="user_font_system">
+<body class="user_font_modern">
 	<script>
 		if(!window.DBG) {
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);

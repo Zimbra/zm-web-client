@@ -543,7 +543,7 @@ if (application.getInitParameter("offlineMode") != null) {
                             </div>
                             <div <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
                             <div class="versionBlock">
-                                <label for="client"><fmt:message key="versionLabel"/></label>
+                                <label for="client"><fmt:message key="versionHeaderLabel"/></label>
                                 <div style="position: relative;">
                                     <c:choose>
                                         <c:when test="${client eq 'socialfox'}">
