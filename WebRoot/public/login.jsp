@@ -481,7 +481,10 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <tr>
                                     <td><label for="totpcode"><fmt:message key="twoFactorAuthCodeLabel"/>:</label></td>
                                     <td><input id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" style="margin-right:20px" autocomplete="off"></td>
-                                    <td class="submitTD"><input type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton"></td>
+                                </tr>
+                                <tr style="vertical-align:top">
+                                    <td/>
+                                    <td style="padding: 0;"><input style="float:left;" type="submit" value="Verify" class="ZLoginButton DwtButton"></td>
                                 </tr>
                                 <c:if test="${authResult.trustedDevicesEnabled eq true}">
                                     <tr style="vertical-align:top">
