@@ -34,27 +34,27 @@ function(params) {
 
 	var emailSubmitButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON,
 								ZmMsg.passwordRecoveryButtonSubmit,
-								DwtDialog.ALIGN_RIGHT,
+								DwtDialog.ALIGN_LEFT,
 								this._emailSubmitButtonListener.bind(this));
 
 	var requestCodeButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON,
 								ZmMsg.recoveryEmailButtonRequest,
-								DwtDialog.ALIGN_RIGHT,
+								DwtDialog.ALIGN_LEFT,
 								this._requestCodeButtonListener.bind(this));
 
 	var verifyCodeButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON,
 								ZmMsg.recoveryEmailButtonValidate,
-								DwtDialog.ALIGN_RIGHT,
+								DwtDialog.ALIGN_LEFT,
 								this._verifyCodeButtonListener.bind(this));
 
 	var resendOptionButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON,
 								ZmMsg.recoveryEmailButtonResend,
-								DwtDialog.ALIGN_RIGHT,
+								DwtDialog.ALIGN_LEFT,
 								this._resendOptionButtonListener.bind(this));
 
 	var resetSubmitButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON,
 								ZmMsg.passwordRecoveryButtonSubmit,
-								DwtDialog.ALIGN_RIGHT,
+								DwtDialog.ALIGN_LEFT,
 								this._resetSubmitButtonListener.bind(this));
 
 	var cancelButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.CANCEL_BUTTON,
@@ -64,7 +64,7 @@ function(params) {
 
 	var loginButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.LOGIN_BUTTON,
 								ZmMsg.passwordRecoveryButtonCancel,
-								DwtDialog.ALIGN_RIGHT,
+								DwtDialog.ALIGN_LEFT,
 								this._finishButtonListener.bind(this));
 
 	var shell = typeof appCtxt !== 'undefined' ? appCtxt.getShell() : new DwtShell({});
@@ -72,7 +72,7 @@ function(params) {
 		parent : shell,
 		title : ZmMsg.passwordRecoveryTitle,
 		standardButtons : [DwtDialog.NO_BUTTONS],
-		extraButtons : [cancelButton, emailSubmitButton, requestCodeButton, resendOptionButton, verifyCodeButton, resetSubmitButton, loginButton]
+		extraButtons : [ emailSubmitButton, requestCodeButton, verifyCodeButton, resendOptionButton, resetSubmitButton, loginButton, cancelButton]
 	};
 	DwtDialog.call(this, newParams);
 	this.setContent(this._contentHtml());

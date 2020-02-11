@@ -106,16 +106,27 @@
 			border-radius: 4px ;
 		}
 		.DwtDialog.WindowOuterContainer {
-    			box-shadow: 0 4px 6px 0 rgba(0, 0, 0, .4);
+			box-shadow: 0 4px 6px 0 rgba(0, 0, 0, .4);
 			border-radius: 2px;
 			background-color: none;
 			border:none;
 		}
 		div.DwtDialogButtonBar {
-			padding: 20px 40px 40px 40px;
+			padding: 20px 40px;
 		}
 		.DwtDialogButtonBar td[align="left"]{
 			padding: 0;
+		}
+		
+		.DwtDialogButtonBar > table > tbody > tr > td > table,
+		.DwtDialogButtonBar > table > tbody > tr > td > table > tbody,
+		.DwtDialogButtonBar > table > tbody > tr > td > table > tbody > tr,
+		.DwtDialogButtonBar > table > tbody > tr > td > table > tbody > tr > td {
+			display: block;
+		}
+
+		.DwtDialogButtonBar > table > tbody > tr > td > table > tbody > tr > td > div{
+			margin: 0 0 12px 0;
 		}
 
 	</style>

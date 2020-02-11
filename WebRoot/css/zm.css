@@ -6003,7 +6003,7 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 }
 
 .ZmTwoFactorCustomSetupContainerLoginPage {
-	padding: 0 30px;
+	text-align: center;
 }
 
 .ZmTwoFactorCustomSetupContainerLoginPage SPAN.email-key {
@@ -6078,41 +6078,6 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 	border-radius: 3px;
 	cursor: pointer;
 	height: 32px;
-}
-
-.DwtDialogButtonBar .PasswordRecoveryBackToSignInButton .ZButtonBorder,
-.DwtDialogButtonBar .PasswordRecoveryCancelButton .ZButtonBorder{
-	padding: 0 4px;	
-}
-
-.DwtDialogButtonBar .PasswordRecoverySubmitButton .ZButtonBorder{
-	padding: 0 14px;	
-	margin-left: 5px;
-}
-
-
-.DwtDialogButtonBar .PasswordRecoveryRequestButton .ZButtonBorder{
-	padding: 0 4px;
-	margin-left: 5px;
-}
-
-.DwtDialogButtonBar .PasswordRecoveryResendButton .ZButtonBorder{
-	padding: 0 4px;
-	margin-left: 4px
-}
-
-.DwtDialogButtonBar .PasswordRecoveryVerifyButton .ZButtonBorder{
-	padding: 0 4px;
-	margin-left: 8px;
-}
-
-.DwtDialogButtonBar .PasswordRecoveryResetButton .ZButtonBorder{
-	padding: 0 14px;;
-	margin-left: 8px;
-}
-
-.DwtDialogButtonBar .PasswordRecoveryLoginButton .ZButtonBorder{
-	padding: 0 8px;
 }
 
 div.PasswordRecoveryBackToSignInButton .ZButtonBorder,
@@ -6474,21 +6439,21 @@ textarea[readonly].ZmMobileConfigTextarea{
 /*runtime css properties for reskin of 2fa buttons*/
 .DwtDialogButtonBar .ZmTwoFactorBeginButton,
 .DwtDialogButtonBar .ZmTwoFactorFinishButton,
-.DwtDialogButtonBar .ZmTwoFactorPreviousButton {
-	margin-left: 0;
+.DwtDialogButtonBar .ZmTwoFactorPreviousButton,
+.DwtDialogButtonBar .ZmTwoFactorNextButton,
+.DwtDialogButtonBar .ZmTwoFactorCancelButton{
 	height: 32px;
 	outline: none;
+	cursor: pointer;
 }
 
 .ZmTwoFactorBeginButton .ZButtonTable:hover,
-.ZmTwoFactorPreviousButton .ZButtonTable:hover ,
 .ZmTwoFactorFinishButton .ZButtonTable:hover,
 .ZmTwoFactorNextButton .ZButtonBorder:hover  {
 	background-color: @brand-hover@;
 }
 
 .ZmTwoFactorBeginButton .ZButtonBorder,
-.ZmTwoFactorPreviousButton .ZButtonBorder,
 .ZmTwoFactorFinishButton .ZButtonBorder,
 .ZmTwoFactorNextButton .ZButtonBorder {
 	border-radius: 3px;
@@ -6498,34 +6463,10 @@ textarea[readonly].ZmMobileConfigTextarea{
 
 
 .ZmTwoFactorBeginButton .ZButtonTable .ZWidgetTitle,
-.ZmTwoFactorPreviousButton .ZButtonTable .ZWidgetTitle,
 .ZmTwoFactorNextButton .ZButtonTable .ZWidgetTitle,
 .ZmTwoFactorFinishButton .ZButtonTable .ZWidgetTitle {
 	color: @white-color@;
 	font-size: 12px;
-}
-
-.ZmTwoFactorBeginButton .ZButtonBorder {
-	padding: 0 12px ;
-}
-
-.ZmTwoFactorPreviousButton .ZButtonBorder {
-	padding: 0 10px;
-}
-
-.ZmTwoFactorFinishButton .ZButtonBorder {
-	padding: 0 17px;
-}
-
-.DwtDialogButtonBar .ZmTwoFactorNextButton,
-.DwtDialogButtonBar .ZmTwoFactorCancelButton{
-	margin-left: 10px;
-	height: 32px;
-	outline: none;
-}
-
-.ZmTwoFactorNextButton .ZButtonBorder {
-	padding: 0 21px;
 }
 
 .ZmTwoFactorNextButton.ZDisabled .ZButtonBorder,
@@ -6534,17 +6475,19 @@ textarea[readonly].ZmMobileConfigTextarea{
 	opacity: 0.4;
 }
 
-.ZmTwoFactorCancelButton .ZButtonBorder {
-	padding: 0 14px 0 15px;
+.ZmTwoFactorCancelButton .ZButtonBorder,
+.ZmTwoFactorPreviousButton .ZButtonBorder {
 	border: solid 1px transparent;
 	background-color: @gray-lightest@ ;
 	border-radius: 3px;
 }
 
-div.ZmTwoFactorCancelButton.ZHover .ZButtonBorder:hover {
+div.ZmTwoFactorCancelButton.ZHover .ZButtonBorder:hover,
+.ZmTwoFactorPreviousButton.ZHover .ZButtonTable:hover {
 	background-color: @gray-hover@;
 }
 
+.ZmTwoFactorPreviousButton .ZButtonTable .ZWidgetTitle,
 .ZmTwoFactorCancelButton .ZButtonTable .ZWidgetTitle {
 	color: @gray-darker@;
 	font-size: 12px;

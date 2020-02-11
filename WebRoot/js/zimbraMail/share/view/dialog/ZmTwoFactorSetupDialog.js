@@ -47,7 +47,7 @@ ZmTwoFactorSetupDialog = function(params) {
 		parent : shell,
 		title : ZmMsg.twoStepAuthSetup,
 		standardButtons : [DwtDialog.NO_BUTTONS],
-		extraButtons : [previousButton, beginSetupButton, nextButton, finishButton, cancelButton]
+		extraButtons : params.isFromLoginPage ? [nextButton, previousButton, beginSetupButton, finishButton, cancelButton] : [previousButton, beginSetupButton, nextButton, finishButton, cancelButton]
 	};
 	DwtDialog.call(this, newParams);
 	this.setContent(this._contentHtml(params.isFromLoginPage));

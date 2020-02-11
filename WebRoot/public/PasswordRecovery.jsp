@@ -105,10 +105,6 @@
 		changeTag.outerHTML = "";
 		changeTag = document.getElementsByClassName("horizSep")[0];
 		changeTag.outerHTML = "";
-		changeTag = document.querySelectorAll('[align=right]');
-		changeTag[0].align="left";
-		changeTag = document.querySelectorAll('table[role="presentation"][width="100%"]');
-		changeTag[0].removeAttribute("width");
 
 	</script>
 	<style type="text/css" rel="stylesheet">
@@ -119,11 +115,22 @@
 		}
 
 		div.DwtDialogButtonBar {
-			padding: 20px 40px 40px 40px;
+			padding: 20px 40px;
 		}
 
 		.DwtDialogButtonBar td[align="left"]{
 			padding: 0;
+		}
+
+		.DwtDialogButtonBar > table > tbody > tr > td > table,
+		.DwtDialogButtonBar > table > tbody > tr > td > table > tbody,
+		.DwtDialogButtonBar > table > tbody > tr > td > table > tbody > tr,
+		.DwtDialogButtonBar > table > tbody > tr > td > table > tbody > tr > td {
+			display: block;
+		}
+
+		.DwtDialogButtonBar > table > tbody > tr > td > table > tbody > tr > td > div {
+			margin: 0 0 12px 0;
 		}
 
 	</style>
