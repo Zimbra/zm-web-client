@@ -87,7 +87,7 @@
         }
 
     </script>
-	<script type="text/javascript" src="../yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js"></script>
+	<script type="text/javascript" src="../yui/2.9.0-alfresco-20141223/yahoo-dom-event/yahoo-dom-event.js"></script>
     <c:if test="${param.selected eq 'signatures'}">
         <app:yuiInclude/>
     </c:if>

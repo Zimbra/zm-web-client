@@ -121,7 +121,7 @@
     </c:if>
 
     <!-- YUI Library for Charts -->
-    <c:set var="yuiPath" value="${pageContext.request.contextPath}/yui/2.7.0" />
+    <c:set var="yuiPath" value="${pageContext.request.contextPath}/yui/2.9.0-alfresco-20141223" />
     <link rel="stylesheet" type="text/css" href="${yuiPath}/assets/skins/sam/skin.css" />
     <!-- Dependencies -->
 	<script type="text/javascript" src="${yuiPath}/yahoo-dom-event/yahoo-dom-event.js"></script>
