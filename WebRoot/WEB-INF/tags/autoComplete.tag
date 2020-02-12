@@ -23,11 +23,11 @@
 
 <c:set var="yahooDomEvent" value="true" scope="request"/>
 
-<script type="text/javascript" src="<c:url value='/yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.7.0/connection/connection-min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.7.0/datasource/datasource-min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.7.0/json/json-min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.7.0/autocomplete/autocomplete-debug.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.9.0-alfresco-20141223/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.9.0-alfresco-20141223/connection/connection-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.9.0-alfresco-20141223/datasource/datasource-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.9.0-alfresco-20141223/json/json-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.9.0-alfresco-20141223/autocomplete/autocomplete-debug.js'/>"></script>
 
 <script type="text/javascript">
     <!--
