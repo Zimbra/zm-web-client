@@ -1200,7 +1200,7 @@ function(params, msg, finalChoice) {
 		}
 
 		// forward multiple msgs as attachments
-		if (selCount > 1 || params.origAction === ZmOperation.FORWARD_CONV) {
+		if (selCount > 1 || params.origAction === ZmOperation.FORWARD_CONV || action === ZmOperation.FORWARD_ATT) {
 			action = params.action = ZmOperation.FORWARD_ATT;
 			this._handleLoadMsgs(params, selection);
 			return;
