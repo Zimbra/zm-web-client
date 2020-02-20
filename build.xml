@@ -87,7 +87,7 @@
 
     <property name="modernizr.version" value="2.8.3"/>
     <property name="yui.version" value="2.7.0"/>
-    <property name="jquery.version" value="3.3.1-1"/>
+    <property name="jquery.version" value="3.4.1"/>
 
     <!-- TINY_MCE INTEGRATION -->
     <property name="tinymce.version" value="4.7.9"/>
