@@ -22,23 +22,23 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 <c:set var="yahooDomEvent" value="true" scope="request"/>
-<%--script type="text/javascript" src="<c:url value='/yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.5.1/connection/connection-min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.5.1/autocomplete/autocomplete-min.js'/>"></script--%>
+<%--script type="text/javascript" src="<c:url value='/yui/2.9.0/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.9.0/connection/connection-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.9.0/autocomplete/autocomplete-min.js'/>"></script--%>
 
 <script type="text/javascript">
     <!--
     var script = document.createElement('script');
 
     script.setAttribute('type', 'text/javascript');
-    script.setAttribute('src', '<c:url value='/yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js'/>');
+    script.setAttribute('src', '<c:url value='/yui/2.9.0/yahoo-dom-event/yahoo-dom-event.js'/>');
     document.getElementsByTagName('HEAD')[0].appendChild(script);
 
     setTimeout(function() {
         script = document.createElement('script');
         script.setAttribute('type', 'text/javascript');
 
-        script.setAttribute('src', '<c:url value='/yui/2.5.1/connection/connection-min.js'/>');
+        script.setAttribute('src', '<c:url value='/yui/2.9.0/connection/connection-min.js'/>');
         document.getElementsByTagName('HEAD')[0].appendChild(script);
     }, 300);
 
@@ -47,7 +47,7 @@
         script = document.createElement('script');
         script.setAttribute('type', 'text/javascript');
 
-        script.setAttribute('src', '<c:url value='/yui/2.5.1/autocomplete/autocomplete-min.js'/>');
+        script.setAttribute('src', '<c:url value='/yui/2.9.0/autocomplete/autocomplete-min.js'/>');
         document.getElementsByTagName('HEAD')[0].appendChild(script);
     }, 400);
 

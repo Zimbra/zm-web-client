@@ -22,7 +22,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
  
-<link rel="stylesheet" type="text/css" href="../yui/2.7.0/assets/skins/sam/skin.css" />
+<link rel="stylesheet" type="text/css" href="../yui/2.9.0-alfresco-20140211/assets/skins/sam/skin.css" />
 <style type="text/css" media="screen">
     .yui-skin-sam .yui-toolbar-container .yui-toolbar-spellcheck span.yui-toolbar-icon {
         background-image: url( ../yui/spellcheck/img/ImgSpellCheck.gif );
@@ -44,13 +44,13 @@
     }
 </style>
 
-<script type="text/javascript" src="../yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript" src="../yui/2.7.0/animation/animation-min.js"></script>
-<script type="text/javascript" src="../yui/2.7.0/element/element-min.js"></script>
+<script type="text/javascript" src="../yui/2.9.0-alfresco-20140211/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../yui/2.9.0-alfresco-20140211/animation/animation-min.js"></script>
+<script type="text/javascript" src="../yui/2.9.0-alfresco-20140211/element/element-min.js"></script>
 <!-- Needed for Menus, Buttons and Overlays used in the Toolbar -->
-<script type="text/javascript" src="../yui/2.7.0/container/container_core-min.js"></script>
-<script type="text/javascript" src="../yui/2.7.0/menu/menu-min.js"></script>
-<script type="text/javascript" src="../yui/2.7.0/button/button-min.js"></script>
+<script type="text/javascript" src="../yui/2.9.0-alfresco-20140211/container/container_core-min.js"></script>
+<script type="text/javascript" src="../yui/2.9.0-alfresco-20140211/menu/menu-min.js"></script>
+<script type="text/javascript" src="../yui/2.9.0-alfresco-20140211/button/button-min.js"></script>
 <!-- Source file for Rich Text Editor-->
-<script type="text/javascript" src="../yui/2.7.0/editor/editor-min.js"></script>
+<script type="text/javascript" src="../yui/2.9.0-alfresco-20140211/editor/editor-min.js"></script>
 <app:spellcheck/>
