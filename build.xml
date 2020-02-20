@@ -86,7 +86,7 @@
     <property name="3rdparty.dir" value="${build.js.dir}/ajax/3rdparty" />
 
     <property name="modernizr.version" value="2.8.3"/>
-    <property name="yui.version" value="2.7.0"/>
+    <property name="yui.version" value="2.9.0-alfresco-20140211"/>
     <property name="jquery.version" value="3.3.1-1"/>
 
     <!-- TINY_MCE INTEGRATION -->
@@ -137,7 +137,7 @@
     <target name='client' depends='common'>
         <property name='deploy.app' value='zimbra'/>
         <property name='skins.dir' value='${web.dir}/skins'/>
-        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/2.7.0/**,qunit/**'/>
+        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/2.9.0-alfresco-20140211/**,qunit/**'/>
         <property name='web.excludes' value='${common.web.excludes}'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
