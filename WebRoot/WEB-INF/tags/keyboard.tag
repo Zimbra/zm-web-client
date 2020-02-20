@@ -153,7 +153,7 @@
 
 <c:if test="${not requestScope.yahooDomEvent}">
     <script type="text/javascript"
-            src="<c:url value='/yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
+            src="<c:url value='/yui/2.9.0-alfresco-20140211/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
 </c:if>
 
 ${sessionScope.keyboardCache[cache]}
