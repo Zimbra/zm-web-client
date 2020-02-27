@@ -2333,9 +2333,6 @@ function(parent, parentElement, adminUrl) {
 	    mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.adminLinkCallback, adminUrl));
 	}
 
-    mi = menu.createMenuItem("standardHtmlLink", {text: ZmMsg.htmlClient});
-    mi.addSelectionListener(ZmZimbraMail.standardHtmlLinkCallback);
-
 	menu.createSeparator();
 
 	if (supportedHelps.indexOf("productHelp") !== -1) {
