@@ -179,7 +179,7 @@ form#zLoginForm .form INPUT[type='password']:focus,
 
 
 input.loginButton{ 
-	background-color: @brand-tertiary@;
+	background-color: @brand-primary@;
 	color: @white-color@;
 	float: left;
 	font-size: 13px;
@@ -193,7 +193,7 @@ input.loginButton{
 }
 
 input.twoFactorButton { 
-	background-color: @brand-tertiary@;
+	background-color: @brand-primary@;
 	color: @white-color@;
 	font-size: 13px;
 	padding: 8px;
@@ -208,29 +208,12 @@ input.twoFactorButton {
 #verifyButton{
 	background-color: @brand-primary@;
 	color: #fff;
-	width: 100%;
 	height: 32px;
 }
 
-#verifyButton:hover {
+#verifyButton:hover,
+#verifyButton:focus {
 	background-color: @brand-hover@;
-}
-
-#verifyButton:disabled{
-	background-color: @brand-primary@;
-	opacity: 0.4;
-}
-
-#cancelButton{
-	background-color: @gray-lightest@;
-	color: @gray-darker@;
-	margin-top: 12px;
-	width: 100%;
-	height: 32px;
-}
-
-#cancelButton:hover{
-	background-color: @gray-lighter@;
 }
 
 input.twoFactorButton[disabled]
@@ -239,7 +222,7 @@ input.twoFactorButton[disabled]
 
 input.loginButton:hover,
 input.loginButton:focus {
-	background-color: @brand-primary@;
+	background-color: @brand-hover@;
 }
 
 .hideTooltip{
@@ -247,7 +230,7 @@ input.loginButton:focus {
 }
 
 .twoFactorForm{
-	padding: 30px 40px;
+	padding: 20px 40px 60px;
 }
 input#remember {
 	outline: none;
@@ -273,7 +256,7 @@ label#remember {
 .twoFactorTitle{
 	font-size: 20px;
 	font-weight: bold;
-	padding: 17px 40px 0;
+	padding: 17px 40px;
 	color: @gray-darker@;
 }
 
