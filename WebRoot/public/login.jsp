@@ -2,7 +2,9 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
 <%@ page import="java.util.UUID" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="com.zimbra.cs.taglib.ZJspSession"%>
+<%@ page import="com.zimbra.cs.account.TokenUtil" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -167,12 +169,13 @@
 	</c:choose>
 </c:catch>
 
-<c:if test="${not empty authResult}">
+<c:if test="${not empty authResult and param.loginOp ne 'relogin'}">
         <c:choose>
             <c:when test="${authResult.twoFactorAuthRequired eq true}">
                 <c:set var="totpAuthRequired" value="true"/>
             </c:when>
           <c:otherwise>
+                <c:set var="authtoken" value="${authResult.authToken.value}" />
                 <c:set var="refer" value="${authResult.refer}"/>
                 <c:set var="serverName" value="${pageContext.request.serverName}"/>
                 <c:choose>
@@ -205,8 +208,23 @@
                     </c:when>
                     <c:otherwise>
                         <c:set var="client" value="${param.client}"/>
+                        <%
+                            String userToken = (String) pageContext.getAttribute("authtoken");
+                            if (userToken != null && userToken.length() > 0) {
+                                String[] tokenParts = userToken.split("_");
+                                String versionPart = tokenParts[2];
+                                Map<?, ?> decodedTokenMap = TokenUtil.getAttrs(versionPart);
+                                String version = (String) decodedTokenMap.get("version");
+                                pageContext.setAttribute("isZ9Mailbox", version.startsWith("9"));
+                            }
+                        %>
+                        
+                        <c:set var="isZ9Mailbox" value="${isZ9Mailbox}" />
+                        <c:set var="prefClientType" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}" />
+                        
                         <c:if test="${empty client or client eq 'preferred'}">
-                            <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0] eq 'advanced' ? 'advanced' : 'modern'}"/>
+                            <c:set var="client"
+                                value="${isZ9Mailbox ? prefClientType eq 'advanced' ? 'advanced' : 'modern' : prefClientType}" />
                         </c:if>
                         <c:choose>
                             <c:when test="${client eq 'socialfox'}">
@@ -220,6 +238,23 @@
                                                 </c:if>
                                             </c:forEach>
                                         </c:forEach>
+                                </c:redirect>
+                            </c:when>
+                            <c:when test="${client eq 'standard'}">
+                                <c:redirect url="/h/search">
+                                    <c:param name="mesg" value='welcome' />
+                                    <c:param name="init" value='true' />
+                                    <c:if test="${not empty param.app}">
+                                        <c:param name="app" value='${param.app}' />
+                                    </c:if>
+                                    <c:forEach var="p" items="${paramValues}">
+                                        <c:forEach var='value' items='${p.value}'>
+                                            <c:set var="testKey" value=",${p.key}," />
+                                            <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
+                                                <c:param name="${p.key}" value='${value}' />
+                                            </c:if>
+                                        </c:forEach>
+                                    </c:forEach>
                                 </c:redirect>
                             </c:when>
                             <c:when test="${client eq 'advanced'}">
@@ -244,7 +279,7 @@
                                     </c:otherwise>
                                 </c:choose>
                             </c:when>
-                            <c:when test="${client eq 'modern' and modernSupported}">
+                            <c:when test="${client eq 'modern' and modernSupported and isZ9Mailbox}">
                                     <jsp:forward page="/public/modern.jsp"/>
                             </c:when>
                             <c:otherwise>
@@ -471,10 +506,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                 </c:if>
                                 <div class="verifyButtonWrapper">
                                     <div>
-                                        <input id="verifyButton" class="twoFactorButton" tabindex="2" type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton" disabled = "true">
-                                    </div>
-                                    <div>
-                                        <input id="cancelButton" class="twoFactorButton" tabindex="3" type="submit" value="<fmt:message key='cancel'/>" class="ZLoginButton DwtButton">
+                                        <input id="verifyButton" class="loginButton ZLoginButton DwtButton" tabindex="2" type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>">
                                     </div>
                                 </div>
                         </div>

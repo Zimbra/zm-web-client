@@ -317,7 +317,7 @@ function() {
 ZmPasswordRecoveryDialog.prototype._finishButtonListener =
 function() {
 	// If the user clicks finish button, redirect to the login page
-	location.replace(location.origin);
+	location.replace(location.origin + '?loginOp=relogin');
 };
 
 /**
