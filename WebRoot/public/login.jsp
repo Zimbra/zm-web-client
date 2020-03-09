@@ -471,10 +471,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                 </c:if>
                                 <div class="verifyButtonWrapper">
                                     <div>
-                                        <input id="verifyButton" class="twoFactorButton" tabindex="2" type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton" disabled = "true">
-                                    </div>
-                                    <div>
-                                        <input id="cancelButton" class="twoFactorButton" tabindex="3" type="submit" value="<fmt:message key='cancel'/>" class="ZLoginButton DwtButton">
+                                        <input id="verifyButton" class="loginButton ZLoginButton DwtButton" tabindex="2" type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>">
                                     </div>
                                 </div>
                         </div>
