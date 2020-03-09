@@ -521,3 +521,40 @@ label#remember {
     padding: 0;
     background-size: 15px 15px;
 }
+
+.errorBox {
+	background: #fff;
+	border-radius: 3px;
+	max-width: 400px;
+	margin: 10% auto;
+	padding: 24px;
+	box-shadow: 0 5px 8px rgba(0,0,0,0.3);
+}
+
+.errorBox h2 {
+	margin: 0 0 24px;
+	font-size: 20px;
+	font-weight: normal;
+}
+
+.errorBox p {
+	@FontSize-slightly-big@;
+}
+
+.ErrorScreen a.errGoBack:active,.ErrorScreen a.errGoBack:visited {
+	outline: none ;
+	color:@brand-tertiary@;
+	text-decoration: none ;
+}
+
+.ErrorScreen a.errGoBack:hover {
+	outline: none ;
+	color: @brand-tertiary@;
+	text-decoration: underline ;
+}
+
+.ErrorScreen a.errGoBack:focus {
+	outline: none ;
+	color: @gray-darker@;
+	text-decoration: underline ;
+}

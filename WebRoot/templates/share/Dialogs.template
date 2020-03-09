@@ -725,9 +725,7 @@
 <template id='share.Dialogs#ZmTwoFactorCustomLoginPage'>
 	<div class="ZmTwoFactorCustomSetupLoginPage">		
 		<div class="logo">
-			<a href="https://www.zimbra.com/"  style=" outline :none;" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'>
-				<img style="outline:none;" src="/img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
-			</a>
+			<img style="outline:none;" src="/img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
 		</div>
 		<div id='${id}_description'>
 			<h2 class="ZmTwoFactorCustomTitleLoginPage" ><$=ZmMsg.twoStepAuthSetup$></h2>
@@ -781,9 +779,7 @@
 <template id='share.Dialogs#ZmPasswordRecovery'>
 	<div class="ZmPasswordRecoverySetup">
 		<div class="ImgLoginBanner">
-			<a href="https://www.zimbra.com/"  style=" outline :none;" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'>
-				<img style="outline:none;" src="/img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
-			</a>
+			<img style="outline:none;" src="/img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
 		</div>
 		<div id='${id}_get_recovery_account'>
 			<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.passwordRecoveryTitle$></h2>
