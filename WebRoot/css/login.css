@@ -230,7 +230,7 @@ input.loginButton:focus {
 }
 
 .twoFactorForm{
-	padding: 30px 40px 60px;
+	padding: 20px 40px 60px;
 }
 input#remember {
 	outline: none;
