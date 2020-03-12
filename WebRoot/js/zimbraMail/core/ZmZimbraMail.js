@@ -2333,6 +2333,9 @@ function(parent, parentElement, adminUrl) {
 	    mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.adminLinkCallback, adminUrl));
 	}
 
+	mi = menu.createMenuItem("modernClientLink", {text: ZmMsg.modernClient});
+	mi.addSelectionListener(ZmZimbraMail.modernClientLinkCallback);	
+
 	menu.createSeparator();
 
 	if (supportedHelps.indexOf("productHelp") !== -1) {
@@ -2851,12 +2854,12 @@ function(url) {
 /**
  * @private
  */
-ZmZimbraMail.standardHtmlLinkCallback =
+ZmZimbraMail.modernClientLinkCallback =
 function() {
 	var urlParams = {
 		path: appContextPath,
 		qsArgs: {
-			client: "standard"
+			client: "modern"
 		}
 	};
 	var url = AjxUtil.formatUrl(urlParams);
