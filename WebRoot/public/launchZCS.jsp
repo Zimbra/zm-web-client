@@ -200,17 +200,17 @@
 	pageContext.setAttribute("csrfToken", authResult.getCsrfToken());
 	pageContext.setAttribute("langId", langId);
 	pageContext.setAttribute("showUserProfile", showUserProfile);
-	pageContext.setAttribute("user_initials", user_initials);
-	pageContext.setAttribute("user_givenName", user_givenName);
-   	pageContext.setAttribute("user_sn", user_sn);
-   	pageContext.setAttribute("user_telephoneNumber", user_telephoneNumber);
-   	pageContext.setAttribute("user_mobile", user_mobile);
-   	pageContext.setAttribute("user_postalAddress", user_postalAddress);
-	pageContext.setAttribute("user_legacyDateOfBirth", user_legacyDateOfBirth);
-	pageContext.setAttribute("user_legacyAccountExpDate", user_legacyAccountExpDate);
-	pageContext.setAttribute("user_legacyDateOfRetirement", user_legacyDateOfRetirement);
-	pageContext.setAttribute("user_legacyEmployee", user_legacyEmployee);
-	pageContext.setAttribute("user_legacyEmployeeNum", user_legacyEmployeeNum);
+	//pageContext.setAttribute("user_initials", user_initials);
+	//pageContext.setAttribute("user_givenName", user_givenName);
+   	//pageContext.setAttribute("user_sn", user_sn);
+   	//pageContext.setAttribute("user_telephoneNumber", user_telephoneNumber);
+   	//pageContext.setAttribute("user_mobile", user_mobile);
+   	//pageContext.setAttribute("user_postalAddress", user_postalAddress);
+	//pageContext.setAttribute("user_legacyDateOfBirth", user_legacyDateOfBirth);
+	//pageContext.setAttribute("user_legacyAccountExpDate", user_legacyAccountExpDate);
+	//pageContext.setAttribute("user_legacyDateOfRetirement", user_legacyDateOfRetirement);
+	//pageContext.setAttribute("user_legacyEmployee", user_legacyEmployee);
+	//pageContext.setAttribute("user_legacyEmployeeNum", user_legacyEmployeeNum);
 %>
 <c:set var="lang" value="${fn:substring(pageContext.request.locale, 0, 2)}"/>
 <html class="user_font_size_normal" lang="${lang}">
@@ -284,17 +284,6 @@
     	window.appLang              = "${lang}";
 	window.loginHistoryTimeout  = ${loginHistoryTimeout};
 	window.showUserProfile  = ${showUserProfile};
-	window.user_initials = "${user_initials}";
-	window.user_givenName  = "${user_givenName}";
-	window.user_sn  = "${user_sn}";
-	window.user_telephoneNumber  = "${user_telephoneNumber}";
-	window.user_mobile  = "${user_mobile}";
-	window.user_postalAddress  = "${user_postalAddress}";
-	window.user_legacyDateOfBirth = "${user_legacyDateOfBirth}";
-	window.user_legacyAccountExpDate = "${user_legacyAccountExpDate}";
-	window.user_legacyDateOfRetirement = "${user_legacyDateOfRetirement}";
-	window.user_legacyEmployee = ${user_legacyEmployee};
-	window.user_legacyEmployeeNum = "${user_legacyEmployeeNum}";
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
