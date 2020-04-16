@@ -164,7 +164,7 @@ function() {
 	if (this._objectManager && this._objectManager.reset) {
 		this._objectManager.reset();
 	}
-	this.setScrollWithIframe(this._scrollWithIframe);
+	this.setScrollWithIframe(this._scrollWithIframe ? DwtControl.CLIP : DwtControl.SCROLL);
 };
 
 ZmMailMsgView.prototype.dispose =
@@ -987,6 +987,18 @@ function(params) {
 
 	var html = params.html || "";
 	
+	if (html.search(/(<form)(?![^>]+action)(.*?>)/g)) {
+		html = html.replace(/(<form)(?![^>]+action)(.*?>)/ig, function(form) {
+				if (form.match(/target/g)) {
+					form = form.replace(/(<.*)(target=.*)(.*>)/g, '$1action="SAMEHOSTFORMPOST-BLOCKED" target="_blank"$3');
+				}
+				else {
+					form = form.replace(/(<form)(?![^>]+action)(.*?>)/g, '$1 action="SAMEHOSTFORMPOST-BLOCKED" target="_blank"$2');
+				}
+		return form;
+		});
+	}
+
 	if (!params.isTextMsg) {
 		//Microsoft silly smilies
 		html = html.replace(/<span style="font-family:Wingdings">J<\/span>/g, "\u263a"); // :)
@@ -2666,8 +2678,7 @@ function(self, attempt) {
 ZmMailMsgView.prototype.setScrollWithIframe =
 function(val) {
 	
-	if (!this._usingIframe) { return; }
-	
+	if (!this._usingIframe && typeof this._usingIframe !== 'undefined') { return; }
 	this._scrollWithIframe = val;
 	this._limitAttachments = this._scrollWithIframe ? 3 : 0; //making it local
 	this._attcMaxSize = this._limitAttachments * 16 + 8;

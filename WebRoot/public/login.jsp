@@ -2,7 +2,9 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
 <%@ page import="java.util.UUID" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="com.zimbra.cs.taglib.ZJspSession"%>
+<%@ page import="com.zimbra.cs.account.TokenUtil" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -21,7 +23,6 @@
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
-<c:set var="touchSupported" value="${ua.isIos6_0up or ua.isAndroid4_0up}"/>
 <c:set var="mobileSupported" value="${ua.isMobile && ((ua.isOsWindows && (ua.isWindowsPhone || not ua.isWindowsNT))
                                                         || (ua.isOsBlackBerry)
                                                         || (ua.isOsAndroid && not ua.isAndroid4_0up)
@@ -58,23 +59,25 @@
 </c:if>
 
 <%
-    // Touch client exists only in network edition
-
-    Boolean touchLoginPageExists = (Boolean) application.getAttribute("touchLoginPageExists");
-    if(touchLoginPageExists == null) {
-        try {
-            touchLoginPageExists = new java.io.File(application.getRealPath("/public/loginTouch.jsp")).exists();
-        } catch (Exception ignored) {
-            // Just in case there's anException
-            touchLoginPageExists = true;
-        }
-        application.setAttribute("touchLoginPageExists", touchLoginPageExists);
-    }
     //Fetch the IP address of the client
     String remoteAddr = ZJspSession.getRemoteAddr(pageContext);
     pageContext.setAttribute("remoteAddr", remoteAddr);
 %>
-<c:set var="touchLoginPageExists" value="<%=touchLoginPageExists%>"/>
+
+<%
+    // check if modern package exists
+    Boolean modernSupported = (Boolean) application.getAttribute("modernSupported");
+    if(modernSupported == null) {
+        try {
+            modernSupported = new java.io.File(application.getRealPath("/modern/index.html")).exists();
+        } catch (Exception ignored) {
+            // Just in case there's anException
+            modernSupported = true;
+        }
+        application.setAttribute("modernSupported", modernSupported);
+    }
+%>
+<c:set var="modernSupported" value="<%=modernSupported%>" />
 
 <c:catch var="loginException">
 	<c:choose>
@@ -99,12 +102,6 @@
                 <c:when test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (isAllowedIP eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
                     <zm:logout/>
                     <c:redirect url="${logoutRedirectUrl}"/>
-                </c:when>
-                <c:when test="${touchSupported and touchLoginPageExists and (empty param.client or param.client eq 'touch') and
-                    (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
-                    <%--Redirect to loginTouch only if the device supports touch client, the touch login page exists
-                    and the user has not specified the client param as "mobile" or anything else.--%>
-                    <jsp:forward page="/public/loginTouch.jsp"/>
                 </c:when>
                 <c:otherwise>
                     <zm:logout/>
@@ -172,12 +169,13 @@
 	</c:choose>
 </c:catch>
 
-<c:if test="${not empty authResult}">
+<c:if test="${not empty authResult and param.loginOp ne 'relogin'}">
         <c:choose>
             <c:when test="${authResult.twoFactorAuthRequired eq true}">
                 <c:set var="totpAuthRequired" value="true"/>
             </c:when>
-            <c:otherwise>
+          <c:otherwise>
+                <c:set var="authtoken" value="${authResult.authToken.value}" />
                 <c:set var="refer" value="${authResult.refer}"/>
                 <c:set var="serverName" value="${pageContext.request.serverName}"/>
                 <c:choose>
@@ -192,7 +190,7 @@
                                 <jsp:forward page="/h/postLoginRedirect">
                                     <jsp:param name="zauthtoken" value="${authResult.authToken.value}"/>
                                     <jsp:param name="client" value="${param.client}"/>
-                                </jsp:forward>
+                                </jsp:forward> 
                             </c:when>
                             <c:otherwise>
                                 <c:choose>
@@ -210,14 +208,23 @@
                     </c:when>
                     <c:otherwise>
                         <c:set var="client" value="${param.client}"/>
-                        <c:if test="${empty client and touchSupported}">
-                            <c:set var="client" value="${touchLoginPageExists ? 'touch' : 'mobile'}"/>
-                        </c:if>
-                        <c:if test="${empty client and mobileSupported}">
-                            <c:set var="client" value="mobile"/>
-                        </c:if>
+                        <%
+                            String userToken = (String) pageContext.getAttribute("authtoken");
+                            if (userToken != null && userToken.length() > 0) {
+                                String[] tokenParts = userToken.split("_");
+                                String versionPart = tokenParts[2];
+                                Map<?, ?> decodedTokenMap = TokenUtil.getAttrs(versionPart);
+                                String version = (String) decodedTokenMap.get("version");
+                                pageContext.setAttribute("isZ9Mailbox", version.startsWith("9"));
+                            }
+                        %>
+                        
+                        <c:set var="isZ9Mailbox" value="${isZ9Mailbox}" />
+                        <c:set var="prefClientType" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}" />
+                        
                         <c:if test="${empty client or client eq 'preferred'}">
-                            <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
+                            <c:set var="client"
+                                value="${isZ9Mailbox ? prefClientType eq 'advanced' ? 'advanced' : 'modern' : prefClientType}" />
                         </c:if>
                         <c:choose>
                             <c:when test="${client eq 'socialfox'}">
@@ -231,6 +238,23 @@
                                                 </c:if>
                                             </c:forEach>
                                         </c:forEach>
+                                </c:redirect>
+                            </c:when>
+                            <c:when test="${client eq 'standard'}">
+                                <c:redirect url="/h/search">
+                                    <c:param name="mesg" value='welcome' />
+                                    <c:param name="init" value='true' />
+                                    <c:if test="${not empty param.app}">
+                                        <c:param name="app" value='${param.app}' />
+                                    </c:if>
+                                    <c:forEach var="p" items="${paramValues}">
+                                        <c:forEach var='value' items='${p.value}'>
+                                            <c:set var="testKey" value=",${p.key}," />
+                                            <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
+                                                <c:param name="${p.key}" value='${value}' />
+                                            </c:if>
+                                        </c:forEach>
+                                    </c:forEach>
                                 </c:redirect>
                             </c:when>
                             <c:when test="${client eq 'advanced'}">
@@ -255,47 +279,8 @@
                                     </c:otherwise>
                                 </c:choose>
                             </c:when>
-                            <c:when test="${client eq 'standard'}">
-                                <c:redirect url="/h/search">
-                                    <c:param name="mesg" value='welcome'/>
-                                    <c:param name="init" value='true'/>
-                                    <c:if test="${not empty param.app}">
-                                        <c:param name="app" value='${param.app}'/>
-                                    </c:if>
-                                    <c:forEach var="p" items="${paramValues}">
-                                        <c:forEach var='value' items='${p.value}'>
-                                        <c:set var="testKey" value=",${p.key},"/>
-                                        <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
-                                                <c:param name="${p.key}" value='${value}'/>
-                                            </c:if>
-                                        </c:forEach>
-                                    </c:forEach>
-                                </c:redirect>
-                            </c:when>
-                            <c:when test="${client eq 'mobile'}">
-                                <c:set var="mobURL" value="/m/zmain"/>
-                                <c:redirect url="${mobURL}">
-                                    <c:forEach var="p" items="${paramValues}">
-                                        <c:forEach var='value' items='${p.value}'>
-                                        <c:set var="testKey" value=",${p.key},"/>
-                                        <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
-                                                <c:param name="${p.key}" value='${value}'/>
-                                            </c:if>
-                                        </c:forEach>
-                                    </c:forEach>
-                                </c:redirect>
-                            </c:when>
-                            <c:when test="${client eq 'touch'}">
-                                <c:redirect url="${param.dev eq '1' ? '/tdebug' : '/t'}">
-                                    <c:forEach var="p" items="${paramValues}">
-                                        <c:forEach var='value' items='${p.value}'>
-                                            <c:set var="testKey" value=",${p.key},"/>
-                                            <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
-                                                <c:param name="${p.key}" value='${value}'/>
-                                            </c:if>
-                                        </c:forEach>
-                                    </c:forEach>
-                                </c:redirect>
+                            <c:when test="${client eq 'modern' and modernSupported and isZ9Mailbox}">
+                                    <jsp:forward page="/public/modern.jsp"/>
                             </c:when>
                             <c:otherwise>
                                 <jsp:forward page="/public/launchZCS.jsp"/>
@@ -376,10 +361,6 @@ if (application.getInitParameter("offlineMode") != null) {
 	</c:redirect>
 </c:if>
 
-<c:if test="${(empty param.client or param.client eq 'touch') and touchSupported and touchLoginPageExists}">
-    <jsp:forward page="/public/loginTouch.jsp"/>
-</c:if>
-
 <c:url var="formActionUrl" value="/">
 	<c:forEach var="p" items="${paramValues}">
 		<c:forEach var='value' items='${p.value}'>
@@ -441,25 +422,15 @@ if (application.getInitParameter("offlineMode") != null) {
  * ***** END LICENSE BLOCK *****
 -->
 	<c:set var="client" value="${param.client}"/>
-	<c:set var="useStandard" value="${not (ua.isFirefox3up or ua.isGecko1_9up or ua.isIE9up or ua.isSafari4Up or ua.isChrome or ua.isModernIE)}"/>
-	<c:if test="${empty client}">
+    <c:if test="${empty client}">
 		<%-- set client select default based on user agent. --%>
-        <c:choose>
-            <c:when test="${touchSupported}">
-                <c:set var="client" value="${touchLoginPageExists ? 'touch' : 'mobile'}"/>
-            </c:when>
-            <c:when test="${mobileSupported}">
-                <c:set var="client" value="mobile"/>
-            </c:when>
-            <c:when test="${useStandard}">
-                <c:set var="client" value="standard"/>
-            </c:when>
-            <c:otherwise>
-                <c:set var="client" value="preferred"/>
-            </c:otherwise>
-        </c:choose>
-	</c:if>
-	<c:set var="smallScreen" value="${client eq 'mobile' or client eq 'socialfox'}"/>
+            <c:set var="client" value="preferred"/>
+    </c:if>
+    <c:set var="smallScreen" value="${client eq 'mobile' or client eq 'socialfox'}"/>
+    <c:if test="${mobileSupported and modernSupported}">
+        <c:set var="client" value="modern"/>
+        <c:set var="smallScreen" value="${mobileSupported}"/>
+    </c:if>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<title><fmt:message key="zimbraLoginTitle"/></title>
 	<c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
@@ -488,19 +459,22 @@ if (application.getInitParameter("offlineMode") != null) {
 <c:set value="/img" var="iconPath" scope="request"/>
 <body onload="onLoad();">
 
-	<div class="LoginScreen">
-		<div class="${smallScreen?'center-small':'center'}">
-			<div class="contentBox">
-				<h1><a href="https://www.zimbra.com/" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'><span class="ScreenReaderOnly"><fmt:message key="zimbraTitle"/></span>
-					<span class="Img${smallScreen?'App':'Login'}Banner"></span>
-				</a></h1>
-				<div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div>
+	<div id="modifiedLogin" class="LoginScreen" >
+		<div class="modernCenter" >
+                <div class="modernContentBox">
+                    <div class="logo">
+                        <a href="https://www.zimbra.com/" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'><span class="ScreenReaderOnly"><fmt:message key="zimbraTitle"/></span>
+                            <span class="Img${smallScreen?'App':'Login'}Banner">
+                                <img src="../img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
+                            </span>
+                        </a>
+                    </div>				
 				<c:choose>
 					<c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
-								<form method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
+								<form id="zLoginForm" method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
 					</c:when>
 					<c:otherwise>
-								<form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
+								<form id="zLoginForm" method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
 								<input type="hidden" name="loginOp" value="login"/>
 								<input type="hidden" name="login_csrf" value="${login_csrf}"/>
 
@@ -510,142 +484,132 @@ if (application.getInitParameter("offlineMode") != null) {
 								</c:if>
 					</c:otherwise>
 				</c:choose>
-				<c:if test="${errorCode != null}">
-					<div id="ZLoginErrorPanel">
-						<table><tr>
-							<td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
-							<td><c:out value="${errorMessage}"/></td>
-						</tr></table>
-					</div>
-				</c:if>
+				
                 <c:choose>
                     <c:when test="${totpAuthRequired || errorCode eq 'account.TWO_FACTOR_AUTH_FAILED'}">
-                        <table class="form" id="totpTable" style="height:140px;width:350px;">
-                            <tbody>
-                                <tr>
-                                    <td><label for="totpcode"><fmt:message key="twoFactorAuthCodeLabel"/>:</label></td>
-                                    <td><input id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" style="margin-right:20px" autocomplete="off"></td>
-                                    <td class="submitTD"><input type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" class="ZLoginButton DwtButton"></td>
-                                </tr>
+                        <div class="twoFactorTitle" ><fmt:message key="twoStepAuth"/></div>
+                        <c:if test="${errorCode != null}">
+                                <div class="errorMessage">
+                                    <c:out value="${errorMessage}"/>
+                                </div>
+                            </c:if>
+                        <div class="twoFactorForm">
+                                <div>
+                                    <label  class="zLoginFieldLabel" for="totpcode" style="float: left;"><fmt:message key="twoFactorAuthCodeLabel"/></label>
+                                   <input tabindex="0" class="zLoginFieldInput" id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocomplete="off" onkeyup="disableEnable(this)"></td>
+                                </div>
                                 <c:if test="${authResult.trustedDevicesEnabled eq true}">
-                                    <tr style="vertical-align:top">
-                                        <td/>
-                                        <td><input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">
-                                        <label for="trustedDevice"><fmt:message key="${mobileSupported || touchSupported ? 'twoFactorAuthTrustDevice' : 'twoFactorAuthTrustComputer'}"/></label>
-                                        </td>
-                                    </tr>
+                                    <div class="trustedDeviceDiv">
+                                        <input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice">
+                                        <label id="trustedDeviceLabel"  tabindex="1" for="trustedDevice"><fmt:message key="twoFactorAuthTrustDevice"/></label>
+                                    </div>
                                 </c:if>
-                            </tbody>
-                        </table>
+                                <div class="verifyButtonWrapper">
+                                    <div>
+                                        <input id="verifyButton" class="loginButton ZLoginButton DwtButton" tabindex="2" type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>">
+                                    </div>
+                                </div>
+                        </div>
                     </c:when>
                     <c:otherwise>
-                        <table class="form">
+                        <div class="signIn"><fmt:message key="login"/></div>
+                        <div class="form">
+                            <c:if test="${errorCode != null}">
+                                <div class="errorMessage">
+                                    <c:out value="${errorMessage}"/>
+                                </div>
+                            </c:if>
                         <c:choose>
                             <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
-                                <tr>
-                                <td colspan="2">
                                 <div class="LaunchButton">
-                                <input type="submit" value="<fmt:message key="launch"/>" >
+                                    <input type="submit" value="<fmt:message key="launch"/>" >
                                 </div>
-                                </td>
-                                </tr>
-                            </c:when>
+                                </c:when>
                             <c:otherwise>
-                                <c:choose>
-                                    <c:when test="${not empty virtualacctdomain or not empty param.virtualacctdomain}">
-                                        <%--External/Guest user login - *email* & password input fields--%>
-                                        <tr>
-                                        <td><label for="username"><fmt:message key="email"/>:</label></td>
-                                        <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-                                        </tr>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <%--Internal user login - username & password input fields--%>
-                                        <tr>
-                                        <td><label for="username"><fmt:message key="username"/>:</label></td>
-                                        <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocapitalize="off" autocorrect="off"/></td>
-                                        </tr>
+                                <div class="loginSection">
+                                    <c:choose>
+                                        <c:when test="${not empty virtualacctdomain or not empty param.virtualacctdomain}">
+                                            <%--External/Guest user login - *email* & password input fields--%>
+                                            
+                                            <label for="username" class="zLoginFieldLabel"><fmt:message key="email"/></label>
+                                            <input id="username" tabindex="0" class="zLoginFieldInput" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                            
+                                        </c:when>
+                                        <c:otherwise>
+                                            <%--Internal user login - username & password input fields--%>
+                                            
+                                            <label for="username" class="zLoginFieldLabel"><fmt:message key="username"/></label>
+                                            <input id="username" tabindex="1" class="zLoginFieldInput" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocapitalize="off" autocorrect="off"/>
                                         </c:otherwise>
-                                </c:choose>
-                                <tr>
-                                <td><label for="password"><fmt:message key="password"/>:</label></td>
-                                <td><input id="password" autocomplete="off" class="zLoginField" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-                                </tr>
-                                <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
-                                    <tr>
-                                    <td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
-                                    <td><input id="loginNewPassword" autocomplete="off" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-                                    </tr>
-                                    <tr>
-                                    <td><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
-                                    <td><input id="confirmNew" autocomplete="off" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-                                    </tr>
-                                </c:if>
-                                <tr>
-                                <td>&nbsp;</td>
-                                <td class="submitTD">
-                                <c:set var="isSignedInDisabled" value="${domainInfo.attrs.zimbraWebClientStaySignedInDisabled}"/>
-                                <c:if test="${isSignedInDisabled eq false}">
-                                    <input id="remember" value="1" type="checkbox" name="zrememberme" />
-                                    <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label>
-                                </c:if>
-                                <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
-                                </td>
-                                </tr>
-			
-				<c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">	
-                                    <tr>
-                                        <td>&nbsp;</td>
-                                        <td class="submitTD">
-                                            <a href="#" onclick="forgotPassword();" id="ZLoginForgotPassword" aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
-                                        </td>
-                                    </tr>
-                                </c:if>
+                                    </c:choose>
+                                
+                                    <label for="password" class="zLoginFieldLabel"><fmt:message key="password"/></label>
+                                    <c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">
+                                        <a href="#" onclick="forgotPassword();" id="ZLoginForgotPassword" tabindex="7" aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
+                                    </c:if>
+                                    <div class="passwordWrapper">
+                                        <input id="password" tabindex="2" autocomplete="off" class="zLoginFieldInput" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                        <span toggle="#password" onClick="showPassword();" id="showSpan" style="display: block;"><fmt:message key="show"/></span>
+                                        <span toggle="#password" onClick="showPassword();" id="hideSpan" style="display: none;"><fmt:message key="hide"/></span>
+                                    </div>
+                                    <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
+                                        <div><label for="loginNewPassword"  class="zLoginFieldLabel"><fmt:message key="newPassword"/></label></div>
+                                        <input id="loginNewPassword" tabindex="3" autocomplete="off" class="zLoginFieldInput" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                        <div><label for="confirmNew" class="zLoginFieldLabel"><fmt:message key="confirm"/></label></div>
+                                        <input id="confirmNew" tabindex="4" autocomplete="off" class="zLoginFieldInput" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                    </c:if>
+                                    <div class="signInAndLabel">
+                                        <div>
+                                            <input type="submit" tabindex="5" class="loginButton" value="<fmt:message key="login"/>" />
+                                        </div>
+                                        <c:set var="isSignedInDisabled" value="${domainInfo.attrs.zimbraWebClientStaySignedInDisabled}"/>
+                                        <c:if test="${isSignedInDisabled eq false}">
+                                            <div class="rememberCheckWrapper"> 
+                                                <input id="remember" tabindex="6" value="1" type="checkbox" name="zrememberme" />
+                                                <label id="remember" for="remember"><fmt:message key="rememberMe"/></label>
+                                            </div>
+                                        </c:if>
+                                    </div>
+                                </div>
                             </c:otherwise>
                         </c:choose>
                         <c:if test="${empty param.virtualacctdomain}">
-                            <tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
-                            <td colspan="2"><hr/></td>
-                            </tr>
-                            <tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
-                            <td>
-                            <label for="client"><fmt:message key="versionLabel"/></label>
-                            </td>
-                            <td>
-                            <div class="positioning">
-                            <c:choose>
-                                <c:when test="${client eq 'socialfox'}">
-                                    <input type="hidden" name="client" value="socialfox"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
-                                    <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
-                                    <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
-                                    <option value="standard" <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
-                                    <option value="mobile" <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
-                                    <c:if test="${touchLoginPageExists}">
-                                        <option value="touch" <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
-                                    </c:if>
-                                    </select>
-                                </c:otherwise>
-                            </c:choose>
-                        <script TYPE="text/javascript">
-                        document.write("<a href='#' onclick='showWhatsThis();' id='ZLoginWhatsThisAnchor' aria-controls='ZLoginWhatsThis' aria-expanded='false'><fmt:message key='whatsThis'/></a>");
-                        </script>
-                        <c:choose>
-                        <c:when test="${touchLoginPageExists}">
-                            <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessage"/></div>
-                        </c:when>
-                        <c:otherwise>
-                            <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessageWithoutTablet"/></div>
-                        </c:otherwise>
-                        </c:choose>
-                        <div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
+                            <div <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
+                            <hr/>
+                            </div>
+                            <div <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
+                            <div class="versionBlock">
+                                <label for="client"><fmt:message key="versionHeaderLabel"/></label>
+                                <div style="position: relative;">
+                                    <c:choose>
+                                        <c:when test="${client eq 'socialfox'}">
+                                        <input type="hidden" name="client" value="socialfox"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
+                                                <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
+                                                <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
+                                                <c:if test="${modernSupported}">
+                                                    <option value="modern" <c:if test="${client eq 'modern'}">selected</c:if>> <fmt:message key="clientModern"/></option>
+                                                </c:if>
+                                            </select>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <input type="button" class="alignWhatsThis" onclick="showTooltip();" id='ZLoginWhatsThisButton' />
+                                </div>
+                           
+                                <div id="ZLoginWhatsThis">
+                                    <div class="ZLoginInfo">
+                                        <span id="dialogCloseButton" onclick="hideTooltip();">&times;</span>
+                                        <fmt:message key="clientWhatsThisMessageWithoutTablet"/>
+                                    </div>
+                                </div>
+                           
+                            
                         </div>
-                        </td>
-                        </tr>
+                    </div>
                         </c:if>
-                        </table>
+                        </div>
                     </c:otherwise>
                 </c:choose>
 			</form>
@@ -653,18 +617,8 @@ if (application.getInitParameter("offlineMode") != null) {
 			<div class="decor1"></div>
 		</div>
 
-		<div class="${smallScreen?'Footer-small':'Footer'}">
-			<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="clientLoginNotice"/></div>
-			<div class="copyright">
-			<c:choose>
-				<c:when test="${mobileSupported}">
-							<fmt:message bundle="${zhmsg}" key="splashScreenCopyright"/>
-				</c:when>
-				<c:otherwise>
-							<fmt:message key="splashScreenCopyright"/>
-				</c:otherwise>
-			</c:choose>
-			</div>
+		<div class="Footer">
+			<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="splashScreenCopyright"/></div>
 		</div>
 		<div class="decor2"></div>
 	</div>
@@ -691,21 +645,11 @@ if (link) {
 
 // show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
 function clientChange(selectValue) {
-	var useStandard = ${useStandard ? 'true' : 'false'};
-	useStandard = useStandard || (screen && (screen.width <= 800 && screen.height <= 600));
 	var div = document.getElementById("ZLoginUnsupported");
 	if (div)
-	div.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
+	div.style.display = 'none';
 }
 
-// if they have JS, write out a "what's this?" link that shows the message below
-function showWhatsThis() {
-	var anchor = document.getElementById('ZLoginWhatsThisAnchor'),
-        tooltip = document.getElementById("ZLoginWhatsThis"),
-        doHide = (tooltip.style.display === "block");
-    tooltip.style.display = doHide ? "none" : "block";
-    anchor.setAttribute("aria-expanded", doHide ? "false" : "true");
-}
 
 function forgotPassword() {
 	var accountInput = document.getElementById("username").value;
@@ -717,6 +661,39 @@ function forgotPassword() {
 	}
 
 	window.location.href = url;
+}
+
+function disableEnable(txt) {
+    var bt = document.getElementById('verifyButton');
+    if (txt.value != '') {
+        bt.disabled = false;
+    }
+    else {
+        bt.disabled = true;
+    }
+} 
+function hideTooltip() {
+    document.getElementById('ZLoginWhatsThis').style.display='none';
+}
+function showTooltip(){
+    document.getElementById('ZLoginWhatsThis').style.display="block"
+}
+
+
+function showPassword() {
+    var x = document.getElementById("password");
+    var y = document.getElementById("showSpan")
+    var z = document.getElementById("hideSpan")
+    if (x.type === "password") {
+        x.type = "text";   
+        y.style.display = "none";
+        z.style.display = "block";
+    } 
+    else {
+        x.type = "password";
+        y.style.display = "block";
+        z.style.display = "none";
+    }
 }
 
 

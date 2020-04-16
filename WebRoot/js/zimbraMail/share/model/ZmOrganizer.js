@@ -839,11 +839,21 @@ function(noRemote) {
  */
 ZmOrganizer.prototype.getOwnerRestUrl =
 function(){
-  var restUrl=this.restUrl;
-  var path = AjxStringUtil.urlEncode(this.oname).replace("#","%23");
+	var node = this;
+	var restUrl;
+	var path = "";
 
-  // return REST URL as seen by the GetInfoResponse
-  return ([restUrl, "/", path].join(""));
+	while (node && !node.restUrl) {
+		path = node.name + "/" + path;
+		node = node.parent;
+	}
+	restUrl = node.restUrl;
+	path = node.oname + "/" + path;
+
+	path = AjxStringUtil.urlEncode(path).replace("#", "%23").replace(new RegExp("/$"), "");
+
+	// return REST URL as seen by the GetInfoResponse
+	return ([restUrl, "/", path].join(""));
 };
 
 ZmOrganizer.prototype._generateRestUrl =

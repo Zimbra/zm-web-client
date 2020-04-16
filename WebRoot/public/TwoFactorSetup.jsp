@@ -61,12 +61,11 @@
 				<c:param name="customerDomain" value="${param.customerDomain}" />
 			</c:if>
 		</c:url>" rel="stylesheet" type="text/css" />
-
+	<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no,maximum-scale=1,user-scalable=0">
 	<jsp:include page="Resources.jsp">
 		<jsp:param name="res" value="I18nMsg,AjxMsg,ZmMsg" />
 		<jsp:param name="skin" value="${skin}" />
 	</jsp:include>
-
 	<jsp:include page="Boot.jsp"/>
 
 	<% if (isDebugMode != null) { %>
@@ -75,7 +74,7 @@
 		<script src="${contextPath}/js/TwoFactor_all.js<%=ext%>?v=${version}"></script>
 	<% } %>
 </head>
-<body class="user_font_system">
+<body class="user_font_modern">
 	<script>
 		if(!window.DBG) {
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
@@ -85,6 +84,54 @@
 			isFromLoginPage : true
 		};
 		new ZmTwoFactorSetupDialog(params).popup();
+		var changeTag = document.getElementsByClassName("DwtDialogTitle")[0];
+		changeTag.outerHTML = "";
+		changeTag = document.getElementsByClassName("horizSep")[0];
+		changeTag.outerHTML = "";
+		changeTag = document.querySelectorAll('[align=right]');
+		changeTag[0].align="left";
+
 	</script>
+
+	<style type="text/css" rel="stylesheet">
+		.DwtDialog[role="dialog"] {
+			top: 50% !important;
+			left: 50% !important;
+			transform: translateX(-50%) translateY(-50%) !important;
+		}
+
+		.WindowInnerContainer {
+			background-color: #fff;
+			padding: 0 ;
+			border-radius: 4px ;
+		}
+		.DwtDialog.WindowOuterContainer {
+			box-shadow: 0 4px 6px 0 rgba(0, 0, 0, .4);
+			border-radius: 2px;
+			background-color: none;
+			border:none;
+		}
+		div.DwtDialogButtonBar {
+			padding: 20px 40px;
+		}
+		.DwtDialogButtonBar td[align="left"]{
+			padding: 0;
+		}
+		
+		.DwtDialogButtonBar > table > tbody > tr > td > table,
+		.DwtDialogButtonBar > table > tbody > tr > td > table > tbody,
+		.DwtDialogButtonBar > table > tbody > tr > td > table > tbody > tr,
+		.DwtDialogButtonBar > table > tbody > tr > td > table > tbody > tr > td {
+			display: block;
+		}
+
+		.DwtDialogButtonBar > table > tbody > tr > td > table > tbody > tr > td > div{
+			margin: 0 0 12px 0;
+		}
+
+	</style>
+	<div class="Footer">
+		<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="splashScreenCopyright"/></div>
+	</div>
 </body>
 </html>

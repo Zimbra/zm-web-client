@@ -427,7 +427,7 @@ function(node, args) {
 		}
 		AjxUtil.hashUpdate(contact.attr, node._attrs);	// merge new attrs just in case we don't have them
 		contact.list = args.list || new ZmContactList(null);
-		contact._list = {};
+		contact._list = contact._list || {}; // We need to add new contact list in contact._list array which contains lists in which contact is present.
 		contact._list[contact.list.id] = true;
 	}
 	//S/MIME: If user certificate is present, include it into contact's object
@@ -2094,7 +2094,7 @@ function(html){
     }
     if (appCtxt.get(ZmSetting.LOCALE_NAME) === "ja") {
         var fileAsId = this.getAttr(ZmContact.F_fileAs);
-        if (!AjxUtil.isEmpty(fileAsId) && fileAsId !== "1" && fileAsId !== "4" && fileAsId !== "6") {
+        if (!AjxUtil.isEmpty(fileAsId) && fileAsId !== "1" && fileAsId !== "4" && fileAsId !== "6" && fileAsId.slice(0, 1) !== "8") {
             /* When Japanese locale is selected, in the most every case, the name should be
              * displayed as "Last First" which is set by the default pattern (ZmMsg_ja.fullname).
              * But if the contact entry's fileAs field explicitly specifies the display

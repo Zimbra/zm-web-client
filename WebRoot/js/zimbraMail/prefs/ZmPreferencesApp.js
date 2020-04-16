@@ -534,8 +534,8 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		displayName:		ZmMsg.clientType,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
 		orientation:		ZmPref.ORIENT_VERTICAL,
-		displayOptions: 	[ZmMsg.clientAdvanced, ZmMsg.clientStandard],
-		options: 			[ZmSetting.CLIENT_ADVANCED, ZmSetting.CLIENT_STANDARD]
+		displayOptions:     window.modernSupported ? [ZmMsg.clientAdvanced, ZmMsg.clientModern] : [ZmMsg.clientAdvanced],
+		options:            window.modernSupported ? [ZmSetting.CLIENT_ADVANCED, ZmSetting.CLIENT_MODERN] : [ZmSetting.CLIENT_ADVANCED]
 	});
 
 	ZmPref.registerPref("COMPOSE_AS_FORMAT", {

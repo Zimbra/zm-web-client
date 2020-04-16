@@ -6,7 +6,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+<c:set var="locale" value="${not empty requestScope.zimbra_target_account_prefLocale ? requestScope.zimbra_target_account_prefLocale : pageContext.request.locale}"/>
+<fmt:setLocale value='${locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 
 <fmt:setTimeZone var="timezone" value="${zm:getTimeZone(not empty param.tz ? param.tz : requestScope.zimbra_target_account_prefTimeZoneId)}" scope="request"/>

@@ -619,7 +619,7 @@ UL.DwtListView-Rows {
 
 /* Outer container (div) for the entire dialog.
 	Class "WindowOuterBorder[-light]" is also applied to this element */
-.DwtDialog	{	}
+.DwtDialog	{ }
 
 .WindowOuterContainer 		{		@WindowOuterBorder@				}
 .WindowInnerContainer 		{		@WindowInnerBorder@				}

@@ -164,7 +164,7 @@ ZmSetting.CAL_WORK_WEEK			= "workWeek";
 ZmSetting.CAL_VISIBILITY_PRIV	= "private";
 ZmSetting.CAL_VISIBILITY_PUB	= "public";
 ZmSetting.CLIENT_ADVANCED		= "advanced";				// zimbraPrefClientType
-ZmSetting.CLIENT_STANDARD		= "standard";
+ZmSetting.CLIENT_MODERN			= "modern";
 ZmSetting.COMPOSE_FONT_COLOR	= "#000000";	 			// zimbraPrefHtmlEditorDefaultFontColor
 ZmSetting.COMPOSE_FONT_FAM 		= "arial,helvetica,sans-serif";		// zimbraPrefHtmlEditorDefaultFontFamily
 ZmSetting.COMPOSE_FONT_SIZE 	= AjxMessageFormat.format(ZmMsg.pt,"12"); 			// zimbraPrefHtmlEditorDefaultFontSize
@@ -270,6 +270,7 @@ ZmSetting.MAIL_UPSELL_ENABLED		= "MAIL_UPSELL_ENABLED";
 ZmSetting.SOCIAL_EXTERNAL_ENABLED   = "SOCIAL_EXTERNAL_ENABLED";
 ZmSetting.SOCIAL_EXTERNAL_URL	    = "SOCIAL_EXTERNAL_URL";
 ZmSetting.VOICE_UPSELL_ENABLED		= "VOICE_UPSELL_ENABLED";
+ZmSetting.SHARING_ENABLED			= "SHARING_ENABLED";
 
 //user selected font
 ZmSetting.FONT_CLASSIC	= "classic";

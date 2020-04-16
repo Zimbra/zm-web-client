@@ -2159,7 +2159,7 @@ function(view) {
 				if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && stb) {
 					var value = currentSearch ? currentSearch.query : app.currentQuery;
 					value = appName === ZmApp.SEARCH ? "" : value;
-					stb.setSearchFieldValue(value + " " || "");
+					stb.setSearchFieldValue(value ? value + " " : "");
 				}
 			}
 
@@ -2333,8 +2333,8 @@ function(parent, parentElement, adminUrl) {
 	    mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.adminLinkCallback, adminUrl));
 	}
 
-    mi = menu.createMenuItem("standardHtmlLink", {text: ZmMsg.htmlClient});
-    mi.addSelectionListener(ZmZimbraMail.standardHtmlLinkCallback);
+	mi = menu.createMenuItem("modernClientLink", {text: ZmMsg.modernClient});
+	mi.addSelectionListener(ZmZimbraMail.modernClientLinkCallback);	
 
 	menu.createSeparator();
 
@@ -2763,7 +2763,10 @@ function(ev, relogin) {
 	}
 	if (appCtxt.isWebClientOfflineSupported && (ev || relogin)) {
 		return ZmOffline.handleLogOff(ev, relogin);
-    }
+	}
+	if (localStorage.hasOwnProperty('csrfToken') ==  true ){
+		localStorage.removeItem('csrfToken');
+	}
 
 	ZmZimbraMail._isLogOff = true;
 
@@ -2851,12 +2854,12 @@ function(url) {
 /**
  * @private
  */
-ZmZimbraMail.standardHtmlLinkCallback =
+ZmZimbraMail.modernClientLinkCallback =
 function() {
 	var urlParams = {
 		path: appContextPath,
 		qsArgs: {
-			client: "standard"
+			client: "modern"
 		}
 	};
 	var url = AjxUtil.formatUrl(urlParams);

@@ -183,6 +183,21 @@
  * ***** END LICENSE BLOCK *****
 -->
 
+<%
+    // check if modern package exists
+    Boolean modernSupported = (Boolean) application.getAttribute("modernSupported");
+    if(modernSupported == null) {
+        try {
+            modernSupported = new java.io.File(application.getRealPath("/modern/index.html")).exists();
+        } catch (Exception ignored) {
+            // Just in case there's anException
+            modernSupported = true;
+        }
+        application.setAttribute("modernSupported", modernSupported);
+    }
+%>
+<c:set var="modernSupported" value="<%=modernSupported%>" />
+
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <meta http-equiv="cache-control" content="no-cache"/>
 <meta http-equiv="Pragma" content="no-cache"/>
@@ -231,7 +246,9 @@
     window.isPerfMetric			= ${isPerfMetric};
 	window.authTokenExpires     = <%= authResult.getExpires()%>;
 	window.csrfToken            = "${csrfToken}";
-    window.appLang              = "${lang}";
+	window.appLang              = "${lang}";
+	localStorage.setItem("csrfToken" , "${csrfToken}");
+	window.modernSupported     = ${modernSupported}
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
