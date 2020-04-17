@@ -273,6 +273,14 @@ BODY									{	margin:0px; 	}
     z-index:11;
 }
 
+table#modernForm td {
+	padding: 2px;
+}
+
+table#modernForm td.zLoginFieldSubmit {
+	text-align:right;
+	padding-bottom: 20px;
+}
 
 .LoginScreen .modernContentBox {
 	background-color: @white-color@;

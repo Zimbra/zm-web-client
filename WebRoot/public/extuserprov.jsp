@@ -56,18 +56,17 @@
 <body>
 
 <div class="LoginScreen">
-		<div class="center">
-			<div class="contentBox">
+		<div class="modernCenter">
+			<div class="modernContentBox">
 			<h1><a href="<fmt:message key="splashScreenCompanyURL" />" id="bannerLink" target="_new">
 				<span class="ImgLoginBanner"></span>
 			</a></h1>
 
-			<form action="/service/extuserprov/" method="post" onsubmit="return checkPasswords();">
+			<form id="zLoginForm" action="/service/extuserprov/" method="post" onsubmit="return checkPasswords();">
 
-			<div id="ZLoginErrorPanel" style="${not empty validationErrorCode ? 'display:block': 'display:none'}">
+			<div class="errorMessage" style="${not empty validationErrorCode ? 'display:block': 'display:none'}">
 				<table>
 					<tr>
-						<td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
 						<td id="errorMessage">
 							<c:if test="${not empty validationErrorCode}"> 
 								<fmt:message bundle="${zhmsg}" key='${validationErrorCode}'/>
@@ -77,37 +76,44 @@
 				</table>
 			</div>
 
-			<table class="form">
-				<c:choose>
-				<c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
-					<tr>
-						<td colspan="2">
-							<div class="LaunchButton">
-								<input type="submit" value="<fmt:message key="launch"/>" >
-							</div>
-						</td>
-					</tr>
-				</c:when>
-				<c:otherwise>
-					<tr>
-						<td><label for="displayname"><fmt:message key="displayName"/>:</label></td>
-						<td><input id="displayname" class="zLoginField" name="displayname" type="text" value="${fn:escapeXml(param.displayname)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-					</tr>
-					<tr>
-						<td><label for="password"><fmt:message key="password"/>:</label></td>
-						<td><input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-					</tr>
-					<tr id="confirmPassword" style="display:none">
-						<td><label for="password2"><fmt:message key="confirm"/>:</label></td>
-						<td><input id="password2" class="zLoginField" name="password2" type="password" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-					</tr>
-					<tr>
-						<td>&nbsp;</td>
-						<td style="text-align:right">
-							<input type="submit" class="zLoginButton" value="<fmt:message key="register"/>" style="float:left;"/>
-					</tr>
-				</c:otherwise>
-				</c:choose>
+			<table id="modernForm" class="form">
+				<div class="loginSection">
+					<c:choose>
+					<c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
+						<tr>
+							<td colspan="2">
+								<div class="LaunchButton">
+									<input type="submit" value="<fmt:message key="launch"/>" >
+								</div>
+							</td>
+						</tr>
+					</c:when>
+					<c:otherwise>
+						<tr>
+							<td><label class="zLoginFieldLabel" for="displayname"><fmt:message key="displayName"/></label></td>
+						</tr>
+						<tr>
+							<td><input id="displayname" class="zLoginFieldInput" name="displayname" type="text" value="${fn:escapeXml(param.displayname)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+						</tr>
+						<tr>
+							<td><label class="zLoginFieldLabel" for="password"><fmt:message key="password"/></label></td>
+						</tr>
+						<tr>
+							<td><input id="password" class="zLoginFieldInput" name="password" type="password" value="${fn:escapeXml(param.password)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+						</tr>
+						<tr id="confirmPassword" style="display:none">
+							<td><label class="zLoginFieldLabel" for="password2"><fmt:message key="confirm"/></label></td>
+						</tr>
+						<tr>
+							<td><input id="password2" class="zLoginFieldInput" name="password2" type="password" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+						</tr>
+						<tr>
+							<td class="zLoginFieldSubmit">
+								<input type="submit" class="loginButton" value="<fmt:message key="register"/>" style="float:left;"/>
+						</tr>
+					</c:otherwise>
+					</c:choose>
+				</div>
 			</table>
 
 			</form>
