@@ -452,8 +452,8 @@ function() {
     var zimletsLoaded = appCtxt.getZimletMgr().isLoaded();
 	for (var i = 0; i <  allz.length; i++) {
 		var name = allz[i].zimlet[0].name;
-		if (allz[i].zimletContext[0].presence == "mandatory") {
-			continue; // skip mandatory zimlets to be shown in prefs
+		if (allz[i].zimletContext[0].presence == "mandatory" || allz[i].zimlet[0].zimbraXZimletCompatibleSemVer) {
+			continue; // skip mandatory zimlets and modern zimlets to be shown in prefs
 		}
 		var desc = allz[i].zimlet[0].description;
 		var label = allz[i].zimlet[0].label || name.replace(/^.*_/,"");
