@@ -624,7 +624,7 @@ function(ev) {
 			if (index === row.rowIndex - 1) {	// header row doesn't count
 				var span = document.getElementById(id + "_name");
 				if (span) {
-					span.innerHTML = identity.name + ":";
+					span.innerHTML = AjxStringUtil.htmlEncode(identity.name) + ":";
 				}
 			}
 			else {
