@@ -1656,13 +1656,37 @@ ext = BeanUtils.cook(ext);
         </copy>
     </target>
 
+    <property name="DOCKER_REPO_PUSH_NS" value="zimbra" />
+    <property name="DOCKER_BUILD_TAG" value="1.0.0" />
+    <property name="DOCKER_PUSH_TAG" value="${DOCKER_BUILD_TAG}" />
+
+    <target name="build-image" depends="prod-build">
+       <exec executable="docker" failonerror="true">
+            <arg value="build" />
+            <arg value="--build-arg" />
+            <arg value="DOCKER_REPO_NS=${DOCKER_REPO_PUSH_NS}" />
+            <arg value="--cache-from" />
+            <arg value="${DOCKER_REPO_PUSH_NS}/zms-classic-webclient:${DOCKER_BUILD_TAG}" />
+            <arg value="--tag" />
+            <arg value="${DOCKER_REPO_PUSH_NS}/zms-classic-webclient:${DOCKER_BUILD_TAG}" />
+            <arg value="." />
+        </exec>
+    </target>
+
+    <target name="push-image" depends="build-image">
+        <exec executable="docker" failonerror="true">
+            <arg value="push" />
+            <arg value="${DOCKER_REPO_PUSH_NS}/zms-classic-webclient:${DOCKER_PUSH_TAG}" />
+        </exec>
+    </target>
+
     <target name="pkg" depends="clean-pkg, prod-war, jspc.build">
         <exec dir="." executable="./pkg-builder.pl" failonerror="true">
-	<arg value="-v"/>
-	<arg value="${wclient.ext.patch.version}"/>
-	<arg value="-r"/>
-	<arg value="${wclient.ext.patch.revision}"/>
-	</exec>
+            <arg value="-v"/>
+            <arg value="${wclient.ext.patch.version}"/>
+            <arg value="-r"/>
+            <arg value="${wclient.ext.patch.revision}"/>
+        </exec>
     </target>
 
     <target name="clean-pkg">
