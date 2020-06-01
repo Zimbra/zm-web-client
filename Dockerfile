@@ -11,4 +11,6 @@ COPY build/dist/jetty/work/ /opt/zimbra/jetty_base/
 COPY WebRoot/templates/* /opt/zimbra/conf/templates/
 COPY build/web.xml /opt/zimbra/jetty_base/etc/zimbra.web.xml.in
 
-RUN cat /opt/zimbra/jetty_base/etc/zimbra.web.xml.in | sed -e '/REDIRECTBEGIN/ s/\$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' > /opt/zimbra/jetty_base/etc/zimbra.web.xml.in
+# https://stackoverflow.com/questions/47081507/why-does-rewriting-a-file-with-envsubst-file-file-leave-it-empty?rq=1
+RUN cd /opt/zimbra/jetty_base/etc/ && cat zimbra.web.xml.in | sed -e '/REDIRECTBEGIN/ s/\$/ %%comment VAR:zimbraMailMode,-->,redirect%%/' -e '/REDIRECTEND/ s/^/%%comment VAR:zimbraMailMode,<!--,redirect%% /' > zimbra.web.xml.in.tmp
+RUN cd /opt/zimbra/jetty_base/etc/ && mv zimbra.web.xml.in.tmp zimbra.web.xml.in
