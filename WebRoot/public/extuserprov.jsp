@@ -58,9 +58,9 @@
 <div class="LoginScreen">
 		<div class="modernCenter">
 			<div class="modernContentBox">
-			<h1><a href="<fmt:message key="splashScreenCompanyURL" />" id="bannerLink" target="_new">
+			<div class="extuserprovLogo"><a href="<fmt:message key="splashScreenCompanyURL" />" id="bannerLink" target="_new">
 				<span class="ImgLoginBanner"></span>
-			</a></h1>
+			</a></div>
 
 			<form id="zLoginForm" action="/service/extuserprov/" method="post" onsubmit="return checkPasswords();">
 

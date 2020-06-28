@@ -464,9 +464,7 @@ if (application.getInitParameter("offlineMode") != null) {
                 <div class="modernContentBox">
                     <div class="logo">
                         <a href="https://www.zimbra.com/" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'><span class="ScreenReaderOnly"><fmt:message key="zimbraTitle"/></span>
-                            <span class="Img${smallScreen?'App':'Login'}Banner">
-                                <img src="../img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
-                            </span>
+                            <span class="Img${smallScreen?'App':'Login'}Banner"></span>
                         </a>
                     </div>				
 				<c:choose>
