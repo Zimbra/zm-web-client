@@ -315,6 +315,11 @@ table#modernForm td.zLoginFieldSubmit {
 .LoginScreen H1,
 .SplashScreen H1 	{	@LoginH1@ 		}
 
+
+.extuserprovLogo {
+	padding: 30px 40px 0;
+}
+
 #ZLoginAppName 		{	@LoginAppName@ 	}
 
 .LoginScreen .ImgLoginBanner, 
@@ -447,7 +452,7 @@ table#modernForm td.zLoginFieldSubmit {
 /** Logo Images **/
 .center-small .ImgLoginBanner,
 .ImgAppBanner			{	background-repeat:no-repeat; @AppBanner@	}
-.ImgLoginBanner			{	background-repeat:no-repeat;}
+.ImgLoginBanner			{	background-repeat:no-repeat; @LoginBannerPosition@	@LoginBannerSize@   @LoginBanner@	}
 #IFDEF MSIE
 #skin_container_logo A, #skin_container_logo A:hover, #skin_container_logo A:link {
 	background-color:transparent;}
