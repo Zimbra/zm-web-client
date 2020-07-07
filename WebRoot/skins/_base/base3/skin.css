@@ -285,8 +285,8 @@ table#modernForm td.zLoginFieldSubmit {
 .LoginScreen .modernContentBox {
 	background-color: @white-color@;
 	box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
-	padding: 0;
-	max-width: 340px;
+	padding: 40px;
+	max-width: 300px;
 	margin: 0 auto;
 	position: relative;
 	top: 50%;
@@ -340,8 +340,22 @@ table#modernForm td.zLoginFieldSubmit {
 	border-bottom: solid;
 	border-width: 1px;
 	border-color: @error-tertiary@;
+	margin: 0 -40px;
 }
 
+.LoginScreen .infoMessage{
+	border: 0;
+	background-color: @darkseagreen@;
+	padding: 16px 40px;
+	font-size: 13px;
+	color: @gray-darker@;
+	font-stretch: expanded;
+	text-align: left;
+	border-bottom: solid;
+	border-width: 1px;
+	border-color: @darkgreen@;
+	margin: 0 -40px;
+}
 
 .LoginScreen #ZLoginErrorPanel,
 .ErrorScreen .InlineErrorPanel {
@@ -404,6 +418,12 @@ table#modernForm td.zLoginFieldSubmit {
 .LoginScreen .decor2			{ @Decor2L@ }
 .LoginScreen #ZLoginNotice A {
 	color: @white-color@;
+}
+
+.passwordRuleList {
+	padding: 2px 0 4px;
+	color: @gray-darker@;
+	list-style: none;
 }
 
 /*Splash Screen Only Items*/
