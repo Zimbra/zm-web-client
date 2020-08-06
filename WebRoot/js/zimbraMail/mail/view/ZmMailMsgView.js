@@ -1128,7 +1128,11 @@ function(params) {
 		// assign the right class name to the iframe body
 		idoc.body.className = this._getBodyClass() + (params.isTextMsg ? " MsgBody-text" : " MsgBody-html");
 
+		var docOffsetWidth = idoc.body.offsetWidth;
+
 		idoc.body.style.height = "auto"; //see bug 56899 - if the body has height such as 100% or 94%, it causes a problem in FF in calcualting the iframe height. Make sure the height is clear.
+		idoc.body.style.width = (docOffsetWidth - 20) + "px";
+		idoc.body.style.position = "absolute";
 
 		ifw.getIframe().onload = this._onloadIframe.bind(this, ifw);
 
