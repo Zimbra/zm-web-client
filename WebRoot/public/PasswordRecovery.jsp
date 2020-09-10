@@ -53,6 +53,7 @@
 %>
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
+<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <!DOCTYPE html>
 <html class="user_font_size_normal" data-ispasswordrecoverypage="true">
 <head>

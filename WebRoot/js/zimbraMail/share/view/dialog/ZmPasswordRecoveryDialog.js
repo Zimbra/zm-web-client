@@ -185,6 +185,27 @@ function() {
 	this._resetPasswordErrorMessageDiv = Dwt.getElement(id + '_reset_password_error_message');
 	this._codeInput = Dwt.getElement(id + '_code_input');
 	this._passwordNewInput = Dwt.getElement(id + '_password_new_input');
+
+	this._passwordRuleList = Dwt.getElement(id + '_password_rule_list');
+	this._passwordAllowedCharsLI = Dwt.getElement(id + '_allowed_char');
+	this._passwordAllowedCharsLabel = Dwt.getElement(id + '_allowed_char_label');
+	this._passwordMinLengthRule = Dwt.getElement(id + '_min_length');
+	this._passwordMinLengthLabel = Dwt.getElement(id + '_min_length_label');
+	this._passwordMinUpperCaseCharsRule = Dwt.getElement(id + '_min_upper_case_chars');
+	this._passwordMinUpperCaseCharsLabel = Dwt.getElement(id + '_min_upper_case_chars_label');
+	this._passwordMinLowerCaseCharsRule = Dwt.getElement(id + '_min_lower_case_chars');
+	this._passwordMinLowerCaseCharsLabel = Dwt.getElement(id + '_min_lower_case_chars_label');
+	this._passwordMinPunctuationCharsRule = Dwt.getElement(id + '_min_punctuation_chars');
+	this._passwordMinPunctuationCharsLabel = Dwt.getElement(id + '_min_punctuation_chars_label');
+	this._passwordMinNumericCharsRule = Dwt.getElement(id + '_min_numeric_chars');
+	this._passwordMinNumericCharsLabel = Dwt.getElement(id + '_min_numeric_chars_label');
+	this._passwordMinDigitsOrPunctuationRule = Dwt.getElement(id + '_min_digits_or_punctuations');
+	this._passwordMinDigitsOrPunctuationLabel = Dwt.getElement(id + '_min_digits_or_punctuations_label');
+	this._passwordEnforceHistoryRule = Dwt.getElement(id + '_enforce_history');
+	this._passwordEnforceHistoryLabel = Dwt.getElement(id + '_enforce_history_label');
+	this._passwordBlockCommonPasswordRule = Dwt.getElement(id + '_block_common_password');
+	this._passwordBlockCommonPasswordLabel = Dwt.getElement(id + '_block_common_password_label');
+
 	this._passwordConfirmInput = Dwt.getElement(id + '_password_confirm_input');
 	this._requestCodeDescription = Dwt.getElement(id + '_request_code_description');
 	Dwt.setHandler(this._accountInput, DwtEvent.ONKEYUP, accountKeyupHandler);
@@ -580,16 +601,450 @@ function(result) {
  */
 ZmPasswordRecoveryDialog.prototype._setResetPasswordDialog =
 function() {
-		Dwt.hide(this._codeSuccessDivId);
-		Dwt.show(this._resetPasswordDivId);
-		this.continueSessionsRecoveryButton.setVisible(false);
-		this.resetPasswordRecoveryButton.setVisible(false);
-		this.getButton(ZmPasswordRecoveryDialog.CANCEL_BUTTON).setText(ZmMsg.recoveryEmailButtonContinueSession);
-		this.setButtonVisible(ZmPasswordRecoveryDialog.CANCEL_BUTTON, true);
-		this.setButtonVisible(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, false);
-		this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
-		this.setButtonVisible(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, true);
+	var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
+	var command = new ZmCsfeCommand();
+	var callback = new AjxCallback(this, this._handleGetAccountInfo, []);
+	
+	command.invoke({soapDoc: soapDoc, noAuthToken:true, noSession: true, asyncMode: true, callback: callback, serverUri:'/service/soap/'});
 };
+
+// Function to check special character
+function isAsciiPunc(ch) {
+	return (ch >= 33 && ch <= 47) || // ! " # $ % & ' ( ) * + , - . /
+	(ch >= 58 && ch <= 64) || // : ; < = > ? @
+	(ch >= 91 && ch <= 96) || // [ \ ] ^ _ `
+	(ch >= 123 && ch <= 126); // { | } ~
+}
+
+function parseCharsFromPassword(passwordString, zimbraPasswordAllowedChars, zimbraPasswordAllowedPunctuationChars) {
+	var uppers = [],
+		lowers = [],
+		numbers = [],
+		punctuations = [],
+		invalidChars = [];
+
+	var characters = passwordString.split('') || [];
+	var isInvalid = false;
+
+	for(var i=0; i<characters.length;i++){
+		var character = characters[i];
+		var charCode = character.charCodeAt(0);
+
+		if (zimbraPasswordAllowedChars) {
+			try {
+				if (!character.match(new RegExp(zimbraPasswordAllowedChars, 'g'))) {
+					invalidChars.push(character);
+					isInvalid = true;
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		}
+
+		if (!isInvalid) {
+			if (charCode >= 65 && charCode <= 90) {
+				uppers.push(character);
+			} else if (charCode >= 97 && charCode <= 122) {
+				lowers.push(character);
+			} else if (charCode >= 48 && charCode <= 57) {
+				numbers.push(character);
+			} else if (zimbraPasswordAllowedPunctuationChars) {
+				try {
+					if (character.match(new RegExp(zimbraPasswordAllowedPunctuationChars, 'g'))) {
+						punctuations.push(character);
+					} else {
+						invalidChars.push(character);
+					}
+				} catch (error) {
+					console.log(error);
+				}
+			} else if (isAsciiPunc(charCode)) {
+				punctuations.push(character);
+			}
+		}
+	}
+
+	return {
+		uppers: uppers,
+		lowers: lowers,
+		numbers: numbers,
+		punctuations: punctuations,
+		invalidChars: invalidChars
+	};
+};
+
+function showPassword(passElem, showSpanElem, hideSpanElem) {
+	if (passElem.type === "password") {
+		passElem.type = "text";
+		showSpanElem.style.display = "none";
+		hideSpanElem.style.display = "block";
+	} else {
+		passElem.type = "password";
+		showSpanElem.style.display = "block";
+		hideSpanElem.style.display = "none";
+	}
+}
+
+function showNewPassword() {
+	showPassword(this._passwordNewInput, newPasswordShowSpan, newPasswordHideSpan);
+}
+
+function showConfirmPassword() {
+	showPassword(this._passwordConfirmInput, confirmShowSpan, confirmHideSpan);
+}
+
+function check(checkImg, closeImg) {
+	closeImg.style.display = "none";
+	checkImg.style.display = "inline";
+}
+
+function unCheck(checkImg, closeImg) {
+	closeImg.style.display = "inline";
+	checkImg.style.display = "none";
+}
+
+function resetImg(condition, checkImg, closeImg){
+	condition ? check(checkImg, closeImg) : unCheck(checkImg, closeImg);
+}
+
+
+function handleErrorMessageDiv(condition, errorMessage, msgDiv, errorDiv) {
+	if (condition) {
+		msgDiv.style.display = "block";
+		msgDiv.innerHTML = errorMessage;
+		Dwt.show(errorDiv);
+	} else {
+		msgDiv.style.display = "none";
+		Dwt.hide(errorDiv);
+	}
+}
+
+ZmPasswordRecoveryDialog.prototype._handleGetAccountInfo = 
+function (result) {
+
+	var response = result.getResponse();
+	var getInfoResponse = response.Body.GetInfoResponse
+	var attributes = getInfoResponse.attrs._attrs;
+
+	var zimbraPasswordMinLength = parseInt(attributes.zimbraPasswordMinLength || 0);
+	var zimbraPasswordMinUpperCaseChars = parseInt(attributes.zimbraPasswordMinUpperCaseChars || 0);
+	var zimbraPasswordMinLowerCaseChars = parseInt(attributes.zimbraPasswordMinLowerCaseChars || 0);
+	var zimbraPasswordMinPunctuationChars = parseInt(attributes.zimbraPasswordMinPunctuationChars || 0);
+	var zimbraPasswordMinNumericChars = parseInt(attributes.zimbraPasswordMinNumericChars || 0);
+	var zimbraPasswordMinDigitsOrPuncs = parseInt(attributes.zimbraPasswordMinDigitsOrPuncs || 0);
+	var zimbraPasswordEnforceHistory = parseInt(attributes.zimbraPasswordEnforceHistory || 0);
+	var zimbraPasswordBlockCommonEnabled = parseFloat(attributes.zimbraPasswordBlockCommonEnabled || 0);
+
+	var zimbraPasswordAllowedChars = attributes.zimbraPasswordAllowedChars || false;
+	var zimbraPasswordAllowedPunctuationChars = attributes.zimbraPasswordAllowedPunctuationChars || false;
+
+	var enabledLocalRules = [];
+	var enabledRemoteRules = [];
+	var matchedLocalRule = [];
+	var matchedRemoteRules = [];
+	var debounceTimer;
+	var awaitingResponse = false;
+	
+	var supportedRules = [
+		{
+			type : "zimbraPasswordMinLength",
+			checkImg : Dwt.getElement("minLengthCheckImg"),
+			closeImg : Dwt.getElement("minLengthCloseImg")
+		},
+		{
+			type : "zimbraPasswordMinUpperCaseChars",
+			checkImg : Dwt.getElement("minUpperCaseCheckImg"),
+			closeImg : Dwt.getElement("minUpperCaseCloseImg")
+		},
+		{
+			type : "zimbraPasswordMinLowerCaseChars",
+			checkImg : Dwt.getElement("minLowerCaseCheckImg"),
+			closeImg : Dwt.getElement("minLowerCaseCloseImg")
+		},
+		{
+			type : "zimbraPasswordMinNumericChars",
+			checkImg : Dwt.getElement("minNumericCharsCheckImg"),
+			closeImg : Dwt.getElement("minNumericCharsCloseImg")
+		},
+		{
+			type : "zimbraPasswordMinPunctuationChars",
+			checkImg : Dwt.getElement("minPunctuationCharsCheckImg"),
+			closeImg : Dwt.getElement("minPunctuationCharsCloseImg")
+		},
+		{
+			type : "zimbraPasswordMinDigitsOrPuncs",
+			checkImg : Dwt.getElement("minDigitsOrPuncsCheckImg"),
+			closeImg : Dwt.getElement("minDigitsOrPuncsCloseImg")
+		},
+		{
+			type : "zimbraPasswordEnforceHistory",
+			checkImg : Dwt.getElement("enforceHistoryCheckImg"),
+			closeImg : Dwt.getElement("enforceHistoryCloseImg")
+		},
+		{
+			type : "zimbraPasswordBlockCommonEnabled",
+			checkImg : Dwt.getElement("blockCommonCheckImg"),
+			closeImg : Dwt.getElement("blockCommonCloseImg")
+		}
+	];
+
+	Dwt.hide(this._passwordMinLengthRule);
+	Dwt.hide(this._passwordMinUpperCaseCharsRule);
+	Dwt.hide(this._passwordMinLowerCaseCharsRule);
+	Dwt.hide(this._passwordMinPunctuationCharsRule);
+	Dwt.hide(this._passwordMinNumericCharsRule);
+	Dwt.hide(this._passwordMinDigitsOrPunctuationRule);
+	Dwt.hide(this._passwordEnforceHistoryRule);
+	Dwt.hide(this._passwordBlockCommonPasswordRule);
+
+	function debounce(func, delay) {
+		const context = this;
+		const args = arguments;
+		clearTimeout(debounceTimer);
+		debounceTimer = setTimeout(function(){ func.apply(context, args) }, delay);
+	}
+
+	
+	function findRule(ruleType) {
+		if (!Array.prototype.find) {
+			var matchingRule;
+			supportedRules.forEach(function(rule){ if(rule.type === ruleType) 
+				{ matchingRule = rule; } 
+			});
+			return matchingRule;
+		} else {
+			return supportedRules.find(function(rule){ return rule.type === ruleType });
+		}
+	}
+
+	function removeRule(ruleType) {
+		for (var i = 0; i < matchedRemoteRules.length; i++) {
+			if (matchedRemoteRules[i].type === ruleType) { 
+				matchedRemoteRules.splice(i, 1);
+				break;
+			}
+		}
+	}
+
+	function compareMatchedRemoteRules(matchedRule) {
+		enabledRemoteRules.forEach(function(rule) {
+			if (matchedRule.findIndex(function(mRule) { return mRule.type === rule.type}) >= 0) {
+				check(rule.checkImg, rule.closeImg);
+			} else {
+				unCheck(rule.checkImg, rule.closeImg);
+			}
+		})
+	}
+	
+	if (zimbraPasswordMinLength){
+		var minLengthMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordMinLength, [zimbraPasswordMinLength.toString()]);
+		
+		enabledLocalRules.push(findRule("zimbraPasswordMinLength"));
+		Dwt.setInnerHtml(this._passwordMinLengthLabel, minLengthMsg);
+		Dwt.show(this._passwordMinLengthRule);
+	}
+
+	if (zimbraPasswordMinUpperCaseChars) {
+		var minUpperCaseCharsMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordMinUpperCaseChars, [zimbraPasswordMinUpperCaseChars.toString()]);
+
+		enabledLocalRules.push(findRule("zimbraPasswordMinUpperCaseChars"));
+		Dwt.setInnerHtml(this._passwordMinUpperCaseCharsLabel, minUpperCaseCharsMsg);
+		Dwt.show(this._passwordMinUpperCaseCharsRule);
+	}
+
+	if (zimbraPasswordMinLowerCaseChars) {
+		var minLowerCaseCharsMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordMinLowerCaseChars, [zimbraPasswordMinLowerCaseChars.toString()]);
+
+		enabledLocalRules.push(findRule("zimbraPasswordMinLowerCaseChars"));
+		Dwt.setInnerHtml(this._passwordMinLowerCaseCharsLabel, minLowerCaseCharsMsg);
+		Dwt.show(this._passwordMinLowerCaseCharsRule);
+	}
+
+	if (zimbraPasswordMinNumericChars) {
+		var minNumericCharsMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordMinNumericChars, [zimbraPasswordMinNumericChars.toString()]);
+
+		enabledLocalRules.push(findRule("zimbraPasswordMinNumericChars"));
+		Dwt.setInnerHtml(this._passwordMinNumericCharsLabel, minNumericCharsMsg);
+		Dwt.show(this._passwordMinNumericCharsRule);
+	}
+
+	if (zimbraPasswordMinPunctuationChars) {
+		var minPunctuationCharsMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordMinPunctuationChars, [zimbraPasswordMinPunctuationChars.toString()]);
+		enabledLocalRules.push(findRule("zimbraPasswordMinPunctuationChars"));
+
+		Dwt.setInnerHtml(this._passwordMinPunctuationCharsLabel, minPunctuationCharsMsg);
+		Dwt.show(this._passwordMinPunctuationCharsRule);
+	}
+
+	if(zimbraPasswordMinDigitsOrPuncs) {
+		var minDigitsOrPuncsMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordMinDigitsOrPuncs, [zimbraPasswordMinDigitsOrPuncs.toString()]);
+		enabledLocalRules.push(findRule("zimbraPasswordMinDigitsOrPuncs"));
+
+		Dwt.setInnerHtml(this._passwordMinDigitsOrPunctuationLabel, minDigitsOrPuncsMsg);
+		Dwt.show(this._passwordMinDigitsOrPunctuationRule);
+	}
+
+	if(zimbraPasswordEnforceHistory) {
+		var enforceHistoryMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordEnforceHistory, [zimbraPasswordEnforceHistory.toString()]);
+
+		enabledRemoteRules.push(findRule("zimbraPasswordEnforceHistory"));
+		Dwt.setInnerHtml(this._passwordEnforceHistoryLabel, enforceHistoryMsg);
+		Dwt.show(this._passwordEnforceHistoryRule);
+	}
+
+	if(zimbraPasswordBlockCommonEnabled) {
+		enabledRemoteRules.push(findRule("zimbraPasswordBlockCommonEnabled"));
+		Dwt.setInnerHtml(this._passwordBlockCommonPasswordLabel, ZmMsg.zimbraPasswordBlockCommonEnabled);
+		Dwt.show(this._passwordBlockCommonPasswordRule);
+	}
+	
+	if((enabledLocalRules.length + enabledRemoteRules.length) === 0) {
+		Dwt.hide(this._passwordRuleList);
+	}
+
+	var newPasswordShowSpan = Dwt.getElement("newPasswordShowSpan");
+	var newPasswordHideSpan = Dwt.getElement("newPasswordHideSpan");
+	var confirmShowSpan = Dwt.getElement("confirmShowSpan");
+	var confirmHideSpan = Dwt.getElement("confirmHideSpan");
+
+	newPasswordShowSpan.addEventListener("click", showNewPassword.bind(this), null);
+	newPasswordHideSpan.addEventListener("click", showNewPassword.bind(this), null);
+	confirmShowSpan.addEventListener("click", showConfirmPassword.bind(this), null);
+	confirmHideSpan.addEventListener("click", showConfirmPassword.bind(this), null);
+
+	function handleNewPasswordChange() {
+		var currentValue = this._passwordNewInput.value;
+		var parsedChars = parseCharsFromPassword(currentValue, zimbraPasswordAllowedChars, zimbraPasswordAllowedPunctuationChars);
+
+		matchedLocalRule = [];
+
+		if (zimbraPasswordMinLength){
+			if (currentValue.length >= zimbraPasswordMinLength) {
+				matchedLocalRule.push({type : "zimbraPasswordMinLength"});
+			}
+		}
+
+		if (zimbraPasswordMinUpperCaseChars) {
+			if (parsedChars.uppers.length >= zimbraPasswordMinUpperCaseChars) {
+				matchedLocalRule.push({type : "zimbraPasswordMinUpperCaseChars"});
+			}
+		}
+
+		if (zimbraPasswordMinLowerCaseChars) {
+			if (parsedChars.lowers.length >= zimbraPasswordMinLowerCaseChars) {
+				matchedLocalRule.push({type : "zimbraPasswordMinLowerCaseChars"});
+			}
+		}
+
+		if (zimbraPasswordMinNumericChars) {
+			if (parsedChars.numbers.length >= zimbraPasswordMinNumericChars) {
+				matchedLocalRule.push({type : "zimbraPasswordMinNumericChars"});
+			}
+		}
+
+		if (zimbraPasswordMinPunctuationChars) {
+			if (parsedChars.punctuations.length >= zimbraPasswordMinPunctuationChars) {
+				matchedLocalRule.push({type : "zimbraPasswordMinPunctuationChars"});
+			}
+		}
+
+		if(zimbraPasswordMinDigitsOrPuncs) {
+			if (parsedChars.punctuations.length + parsedChars.numbers.length >= zimbraPasswordMinDigitsOrPuncs) {
+				matchedLocalRule.push({type : "zimbraPasswordMinDigitsOrPuncs"});
+			}
+		}
+
+		enabledLocalRules.forEach(function(rule) {
+			if (matchedLocalRule.findIndex(function(mRule) { return mRule.type === rule.type}) >= 0) {
+				check(rule.checkImg, rule.closeImg);
+			} else {
+				unCheck(rule.checkImg, rule.closeImg);
+			}
+		})
+
+		if(enabledLocalRules.length === matchedLocalRule.length) {
+			awaitingResponse = true;
+			debounce(dryRun.bind(this), 2000);
+		}
+
+		handleErrorMessageDiv(parsedChars.invalidChars.length > 0, parsedChars.invalidChars.join(", ") + ZmMsg.zimbraPasswordAllowedChars, this._resetPasswordErrorMessageDiv, this._resetPasswordErrorDiv);
+
+		resetImg(this._passwordConfirmInput.value && this._passwordConfirmInput.value === this._passwordNewInput.value, Dwt.getElement("mustMatchCheckImg"), Dwt.getElement("mustMatchCloseImg"));
+		
+		var totalEnabledRules = (enabledLocalRules.length + enabledRemoteRules.length);
+		var totalMatchedRules = (matchedLocalRule.length + matchedRemoteRules.length);
+		if (awaitingResponse || (totalEnabledRules !== totalMatchedRules || this._passwordConfirmInput.value !== this._passwordNewInput.value)) {
+			this.setButtonEnabled(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, false);
+		} else {
+			this.setButtonEnabled(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, true);
+		}
+	};
+
+	function handleConfirmPasswordChange() {
+		resetImg(this._passwordConfirmInput.value === this._passwordNewInput.value, Dwt.getElement("mustMatchCheckImg"), Dwt.getElement("mustMatchCloseImg"));
+		
+		var totalEnabledRules = (enabledLocalRules.length + enabledRemoteRules.length);
+		var totalMatchedRules = (matchedLocalRule.length + matchedRemoteRules.length);
+		if (awaitingResponse || (totalEnabledRules !== totalMatchedRules || this._passwordConfirmInput.value !== this._passwordNewInput.value)) {
+			this.setButtonEnabled(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, false);
+		} else {
+			this.setButtonEnabled(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, true);
+		}
+	};
+
+	function dryRun() {
+		var command = new ZmCsfeCommand();
+		var soapDoc = AjxSoapDoc.create('ResetPasswordRequest', 'urn:zimbraAccount');
+		var respCallback = resetPasswordDryRunCallback.bind(this);
+
+		soapDoc.set('password', this._passwordNewInput.value);
+		soapDoc.set('dryRun', "1");
+		command.invoke({soapDoc: soapDoc, noAuthToken:true, noSession: true, asyncMode: true, callback: respCallback, serverUri:'/service/soap/'})
+
+		matchedRemoteRules = enabledRemoteRules.slice();
+	}
+
+	function resetPasswordDryRunCallback(result) {
+		var resultData = result._data;
+		
+		try {
+			if(resultData.Body && resultData.Body.ResetPasswordResponse) {
+				compareMatchedRemoteRules(matchedRemoteRules);
+			} else {	
+				if (resultData.code == "account.PASSWORD_RECENTLY_USED") {
+					removeRule("zimbraPasswordEnforceHistory");
+				} else if (resultData.code == "account.INVALID_PASSWORD") {
+					if (resultData.a[0].n == "zimbraPasswordBlockCommonEnabled") {
+						removeRule("zimbraPasswordBlockCommonEnabled");
+					}
+				} else if (resultData.code == "service.AUTH_EXPIRED") {
+					handleErrorMessageDiv(true, ZmMsg.AUTH_FAILED_passwordChangeFailed, this._resetPasswordErrorMessageDiv, this._resetPasswordErrorDiv);
+				}
+		
+				compareMatchedRemoteRules(matchedRemoteRules);
+			}
+		} catch(error) {
+			console.log(error);
+		}
+		awaitingResponse = false;
+	}
+
+	this._passwordNewInput.addEventListener("input", handleNewPasswordChange.bind(this), null);
+	this._passwordConfirmInput.addEventListener("input", handleConfirmPasswordChange.bind(this), null);
+	
+
+	Dwt.hide(this._codeSuccessDivId);
+	Dwt.show(this._resetPasswordDivId);
+	this.continueSessionsRecoveryButton.setVisible(false);
+	this.resetPasswordRecoveryButton.setVisible(false);
+	
+	this.getButton(ZmPasswordRecoveryDialog.CANCEL_BUTTON).setText(ZmMsg.recoveryEmailButtonContinueSession);
+	this.setButtonVisible(ZmPasswordRecoveryDialog.CANCEL_BUTTON, true);
+	this.setButtonVisible(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, false);
+	this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
+	this.setButtonVisible(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, true);
+	this.setButtonEnabled(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, false);
+}
 
 /**
  * Prepare and send in a request to change the password.
@@ -629,5 +1084,3 @@ function(result) {
 		this.setButtonVisible(ZmPasswordRecoveryDialog.LOGIN_BUTTON, true);
 	}
 };
-
-
