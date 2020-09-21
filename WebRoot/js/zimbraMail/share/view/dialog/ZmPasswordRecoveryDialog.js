@@ -961,6 +961,7 @@ function() {
 	var result = {};
 	if (pwdNewValue !== pwdConfirmValue) {
 		result.code = 'service.FEATURE_RESET_PASSWORD_MISMATCH';
+		this._resetPasswordErrorMessageDiv.style.display = "block";
 		this._handleResetPasswordError(this._resetPasswordErrorDiv, this._resetPasswordErrorMessageDiv, result);
 		return;
 	}
@@ -976,6 +977,7 @@ function() {
 ZmPasswordRecoveryDialog.prototype._resetPasswordCallback =
 function(result) {
 	if (!result || result.isException()) {
+		this._resetPasswordErrorMessageDiv.style.display = "block";
 		this._handleResetPasswordError(this._resetPasswordErrorDiv, this._resetPasswordErrorMessageDiv, result.getException());
 	} else {
 		Dwt.hide(this._resetPasswordDivId);
