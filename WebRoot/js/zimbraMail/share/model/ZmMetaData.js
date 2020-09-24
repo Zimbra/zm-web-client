@@ -105,8 +105,13 @@ function(section, data, batchCommand, callback, errorCallback, sensitive) {
 		if (AjxUtil.isObject(d)) {
 			d = ZmSetting.serialize(d, ZmSetting.D_HASH);
 		}
-		var a = soapDoc.set("a", d, metaNode);
-		a.setAttribute("n", i);
+
+		// If we want to remove any data from SetMailboxMetadataRequest then don't send it as part of request,
+		// server will automatically remove it
+		if (d !== null && d !== "") {
+			var a = soapDoc.set("a", d, metaNode);
+			a.setAttribute("n", i);
+		}
 	}
 
 	if (batchCommand) {
