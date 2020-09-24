@@ -1203,11 +1203,14 @@ ZmSettings.prototype._showConfirmDialog = function(text, callback, style) {
 
 ZmSettings.prototype._implicitChangeListener =
 function(ev) {
-	if (!appCtxt.get(ZmSetting.OPTIONS_ENABLED)) {
+	var id = ev.source.id;
+	var sourceType = ev.source.type;
+
+	// Allow to perform implicit settings save (e.g folder expand) if the source type is META even when zimbraFeatureOptionsEnabled is false.
+	if (!appCtxt.get(ZmSetting.OPTIONS_ENABLED) && ZmSetting.T_METADATA !== sourceType) {
 		return;
 	}
 	if (ev.type != ZmEvent.S_SETTING) { return; }
-	var id = ev.source.id;
 	var setting = this.getSetting(id);
 	if (id == ZmSetting.FOLDERS_EXPANDED && window.duringExpandAll) {
 		if (!window.afterExpandAllCallback) {
