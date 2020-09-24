@@ -426,6 +426,19 @@ table#modernForm td.zLoginFieldSubmit {
 	list-style: none;
 }
 
+.resetPasswordRuleList {
+	padding: 2px 0 4px;
+	list-style: none;
+	color: @gray-darker@;
+}
+
+.confirmResetPasswordRuleList {
+	color: @gray-darker@;
+	padding-left: 0;
+	margin-bottom: 0;
+	list-style: none;
+} 
+
 /*Splash Screen Only Items*/
 .SplashScreen .content {
 	color:@LoginLabelColor@;
