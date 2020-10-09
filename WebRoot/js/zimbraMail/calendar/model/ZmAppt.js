@@ -235,7 +235,7 @@ function() {
 ZmAppt.prototype.getToolTip =
 function(controller) {
 	var appt = this.apptClone || this._orig || this;
-	var needDetails = (!appt._toolTip || (appt.otherAttendees && !appt.ptstHashMap));
+	var needDetails = (!appt._toolTip || (appt.otherAttendees && !appt.personPtStHashMap));
 	if (needDetails) {
         return {callback:appt._getToolTip.bind(appt, controller), loading:false};
 	} else {
@@ -250,6 +250,42 @@ function(controller, callback) {
 	this.apptClone = ZmAppt.quickClone(this);
 	var respCallback = this._handleResponseGetToolTip.bind(this.apptClone, controller, callback); //run the callback on the clone - otherwise we lost data such as freeBusy
 	this.apptClone.getDetails(null, respCallback);
+};
+
+ZmAppt.prototype._getItemAttributes =
+function (hashMap, itemType) {
+		var ptstStatus = {};
+		var statusAttendees;
+		var attendeesText;
+		var hideAttendees = true;
+
+		statusAttendees = ptstStatus[ZmMsg.ptstAccept] = this._getPtstStatus(hashMap, ZmCalBaseItem.PSTATUS_ACCEPT);
+		hideAttendees = hideAttendees && !statusAttendees.count;
+
+		statusAttendees = ptstStatus[ZmMsg.ptstDeclined] = this._getPtstStatus(hashMap, ZmCalBaseItem.PSTATUS_DECLINED);
+		hideAttendees = hideAttendees && !statusAttendees.count;
+
+		statusAttendees = ptstStatus[ZmMsg.ptstTentative] = this._getPtstStatus(hashMap, ZmCalBaseItem.PSTATUS_TENTATIVE);
+		hideAttendees = hideAttendees && !statusAttendees.count;
+
+		statusAttendees = ptstStatus[ZmMsg.ptstNeedsAction] = this._getPtstStatus(hashMap, ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
+		hideAttendees = hideAttendees && !statusAttendees.count;
+
+		var attendees = [];
+		if (!this.rsvp) {
+			var attendees = this._attendees[itemType];
+			for (var i = 0; i < personAttendees.length; i++) {
+				var attendee = personAttendees[i];
+				attendees.push(attendee.getAttendeeText(null, true));
+			}
+			attendeesText = this.getAttendeeToolTipString(attendees);
+		}
+
+		return {
+			hideAttendees: hideAttendees,
+			ptstStatus: ptstStatus,
+			attendeesText: attendeesText
+		}
 };
 
 ZmAppt.prototype._handleResponseGetToolTip =
@@ -277,38 +313,32 @@ function(controller, callback) {
 		when: this.getDurationText(false, false),
 		location: this.getLocation(),
 		width: "250",
-		hideAttendees: true
+		hideAttendees: true,
+		hideLocations: true,
+		hideEquipments: true
 	};
 
 	this.updateParticipantStatus();
-	if (this.ptstHashMap != null) {
-		var ptstStatus = {};
-		var statusAttendees;
-		var hideAttendees = true;
+	
+	if (this.personPtStHashMap != null) {
+		var personAttributes = this._getItemAttributes(this.personPtStHashMap, ZmCalBaseItem.PERSON);
+		params.hideAttendees = personAttributes.hideAttendees;
+		params.attendeesPtStStatus = personAttributes.ptstStatus;
+		params.attendeesText = personAttributes.attendeesText;
+	}
 
-		statusAttendees = ptstStatus[ZmMsg.ptstAccept] = this._getPtstStatus(ZmCalBaseItem.PSTATUS_ACCEPT);
-		hideAttendees = hideAttendees && !statusAttendees.count;
+	if (this.locationPtStHashMap != null) {
+		var locationAttributes = this._getItemAttributes(this.locationPtStHashMap, ZmCalBaseItem.LOCATION);
+		params.hideLocations = locationAttributes.hideAttendees;
+		params.locationPtStStatus = locationAttributes.ptstStatus;
+		params.locationText = locationAttributes.attendeesText;
+	}
 
-		statusAttendees = ptstStatus[ZmMsg.ptstDeclined] = this._getPtstStatus(ZmCalBaseItem.PSTATUS_DECLINED);
-		hideAttendees = hideAttendees && !statusAttendees.count;
-
-		statusAttendees = ptstStatus[ZmMsg.ptstTentative] = this._getPtstStatus(ZmCalBaseItem.PSTATUS_TENTATIVE);
-		hideAttendees = hideAttendees && !statusAttendees.count;
-
-		statusAttendees = ptstStatus[ZmMsg.ptstNeedsAction] = this._getPtstStatus(ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
-		hideAttendees = hideAttendees && !statusAttendees.count;
-		params.hideAttendees = hideAttendees;
-		params.ptstStatus = ptstStatus;
-
-		var attendees = [];
-		if (!this.rsvp) {
-			var personAttendees = this._attendees[ZmCalBaseItem.PERSON];
-			for (var i = 0; i < personAttendees.length; i++) {
-				var attendee = personAttendees[i];
-				attendees.push(attendee.getAttendeeText(null, true));
-			}
-			params.attendeesText = this.getAttendeeToolTipString(attendees);
-		}
+	if (this.equipmentPtStHashMap != null) {
+		var equipmentAttributes = this._getItemAttributes(this.equipmentPtStHashMap, ZmCalBaseItem.EQUIPMENT);
+		params.hideEquipments = equipmentAttributes.hideAttendees;
+		params.equipmentPtStStatus = equipmentAttributes.ptstStatus;
+		params.equipmentText = equipmentAttributes.attendeesText;
 	}
 
 	var toolTip = this._toolTip = AjxTemplate.expand("calendar.Appointment#Tooltip", params);
@@ -320,8 +350,8 @@ function(controller, callback) {
 };
 
 ZmAppt.prototype._getPtstStatus =
-function(ptstHashKey) {
-	var ptstString = this.ptstHashMap[ptstHashKey];
+function(ptstHashMap,ptstHashKey) {
+	var ptstString = ptstHashMap[ptstHashKey];
 
 	return {
 		count: ptstString ? ptstString.length : 0,
@@ -987,23 +1017,35 @@ function() {
 	return this.rsvp;
 };
 
-ZmAppt.prototype.updateParticipantStatus =
-function() {
-	if (this._orig) {
-		return this._orig.updateParticipantStatus();
-	}
-
+ZmAppt.prototype.getHashMap =
+function(attendees) {
 	var ptstHashMap = {};
-	var personAttendees = this._attendees[ZmCalBaseItem.PERSON];
-	for (var i = 0; i < personAttendees.length; i++) {
-		var attendee = personAttendees[i];
+
+	for (var i = 0; i < attendees.length; i++) {
+		var attendee = attendees[i];
 		var ptst = attendee.getParticipantStatus() || "NE";
 		if (!ptstHashMap[ptst]) {
 			ptstHashMap[ptst] = [];
 		}
 		ptstHashMap[ptst].push(attendee.getAttendeeText(null, true));
 	}
-	this.ptstHashMap = ptstHashMap;
+
+	return ptstHashMap;
+};
+
+ZmAppt.prototype.updateParticipantStatus =
+function() {
+	if (this._orig) {
+		return this._orig.updateParticipantStatus();
+	}
+
+	var personAttendees = this._attendees[ZmCalBaseItem.PERSON];
+	var locationAttendees = this._attendees[ZmCalBaseItem.LOCATION];
+	var equipmentAttendees = this._attendees[ZmCalBaseItem.EQUIPMENT];
+	
+	this.personPtStHashMap = this.getHashMap(personAttendees);
+	this.locationPtStHashMap = this.getHashMap(locationAttendees);
+	this.equipmentPtStHashMap = this.getHashMap(equipmentAttendees);
 };
 
 ZmAppt.prototype.addAttendeesToChckConflictsRequest =
