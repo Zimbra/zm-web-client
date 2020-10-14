@@ -193,7 +193,17 @@ function(list, setDefault, skipNotify, skipImplicit) {
 				var value = {};
 				for (var j = 0; j < pairs.length; j++) {
 					var fields = pairs[j].split(":");
-					value[fields[0]] = fields[1];
+					
+					// In case of shared folder there can be more than two element in
+					// fields array as shared folder id can be "859095ad-90d5-4db3-919d-630ac30de5a9:465"
+					// so consider all the elements as key except last item of the fields array.
+					if(setting.name === "zimbraPrefFoldersExpanded" && fields.length > 2) {
+						var fieldValue = fields.pop();
+						var fieldKey = fields.join(':');
+						value[fieldKey] = fieldValue;
+					} else {
+						value[fields[0]] = fields[1];
+					}
 				}
 				val = value;
 			}
