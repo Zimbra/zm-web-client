@@ -130,12 +130,14 @@ function(email) {
 };
 
 ZmResource.prototype.getAttendeeText =
-function(type, shortForm) {
+function(type, shortForm, noName) {
 	var text = "";
 	var name = this.getFullName();
 	var email = this._lookupEmail || this.getEmail();
 	if (shortForm) {
 		text = name || email || "";
+	} else if (noName) {
+		text = email;
 	} else {
 		var e = new AjxEmailAddress(email, null, name);
 		text = e.toString();

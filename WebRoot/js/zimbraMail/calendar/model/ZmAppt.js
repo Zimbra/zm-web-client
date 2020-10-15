@@ -255,28 +255,27 @@ function(controller, callback) {
 ZmAppt.prototype._getItemAttributes =
 function (hashMap, itemType) {
 		var ptstStatus = {};
-		var statusAttendees;
 		var attendeesText;
 		var hideAttendees = true;
 
-		statusAttendees = ptstStatus[ZmMsg.ptstAccept] = this._getPtstStatus(hashMap, ZmCalBaseItem.PSTATUS_ACCEPT);
-		hideAttendees = hideAttendees && !statusAttendees.count;
+		ptstStatus[ZmMsg.ptstAccept] = this._getPtstStatus(hashMap, ZmCalBaseItem.PSTATUS_ACCEPT);
+		hideAttendees = hideAttendees && !ptstStatus[ZmMsg.ptstAccept].count;
 
-		statusAttendees = ptstStatus[ZmMsg.ptstDeclined] = this._getPtstStatus(hashMap, ZmCalBaseItem.PSTATUS_DECLINED);
-		hideAttendees = hideAttendees && !statusAttendees.count;
+		ptstStatus[ZmMsg.ptstDeclined] = this._getPtstStatus(hashMap, ZmCalBaseItem.PSTATUS_DECLINED);
+		hideAttendees = hideAttendees && !ptstStatus[ZmMsg.ptstDeclined].count;
 
-		statusAttendees = ptstStatus[ZmMsg.ptstTentative] = this._getPtstStatus(hashMap, ZmCalBaseItem.PSTATUS_TENTATIVE);
-		hideAttendees = hideAttendees && !statusAttendees.count;
+		ptstStatus[ZmMsg.ptstTentative] = this._getPtstStatus(hashMap, ZmCalBaseItem.PSTATUS_TENTATIVE);
+		hideAttendees = hideAttendees && !ptstStatus[ZmMsg.ptstTentative].count;
 
-		statusAttendees = ptstStatus[ZmMsg.ptstNeedsAction] = this._getPtstStatus(hashMap, ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
-		hideAttendees = hideAttendees && !statusAttendees.count;
+		ptstStatus[ZmMsg.ptstNeedsAction] = this._getPtstStatus(hashMap, ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
+		hideAttendees = hideAttendees && !ptstStatus[ZmMsg.ptstNeedsAction].count;
 
 		var attendees = [];
 		if (!this.rsvp) {
-			var attendees = this._attendees[itemType];
-			for (var i = 0; i < personAttendees.length; i++) {
-				var attendee = personAttendees[i];
-				attendees.push(attendee.getAttendeeText(null, true));
+			var itemAttendees = this._attendees[itemType];
+			for (var i = 0; i < itemAttendees.length; i++) {
+				var attendee = itemAttendees[i];
+				attendees.push(attendee.getAttendeeText(itemType, false, true));
 			}
 			attendeesText = this.getAttendeeToolTipString(attendees);
 		}
@@ -1027,7 +1026,7 @@ function(attendees) {
 		if (!ptstHashMap[ptst]) {
 			ptstHashMap[ptst] = [];
 		}
-		ptstHashMap[ptst].push(attendee.getAttendeeText(null, true));
+		ptstHashMap[ptst].push(attendee.getAttendeeText(null, false, true));
 	}
 
 	return ptstHashMap;
