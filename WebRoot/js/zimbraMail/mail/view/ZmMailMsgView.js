@@ -164,7 +164,7 @@ function() {
 	if (this._objectManager && this._objectManager.reset) {
 		this._objectManager.reset();
 	}
-	this.setScrollWithIframe(this._scrollWithIframe ? DwtControl.CLIP : DwtControl.SCROLL);
+	this.setScrollWithIframe(this._scrollWithIframe);
 };
 
 ZmMailMsgView.prototype.dispose =
