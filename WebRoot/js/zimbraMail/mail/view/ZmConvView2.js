@@ -36,7 +36,7 @@
  */
 ZmConvView2 = function(params) {
 
-	params.className = params.className || "ZmConvView2";
+	params.className = params.className || "ZmConvView2 ZmConvView2FullWidth";
 	ZmMailItemView.call(this, params);
 
 	this._mode = params.mode;
