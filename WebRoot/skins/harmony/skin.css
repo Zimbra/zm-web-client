@@ -70,6 +70,10 @@
 	background-color:@AppC@;
 }
 
+.ZmConvView2FullWidth {
+	width: 100%;
+}
+
 .ZmMailMsgView>DIV {
 	background-color:white;
 }
