@@ -31,7 +31,7 @@
         <c:when test="${error.code eq 'ztaglib.SERVER_REDIRECT'}">
             <c:redirect url="${not empty requestScope.SERVIER_REDIRECT_URL ? requestScope.SERVIER_REDIRECT_URL : '/'}"/>
         </c:when>
-        <c:when test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
+        <c:when test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED' or error.code eq 'account.WEB_CLIENT_ACCESS_NOT_ALLOWED'}">
             <c:redirect url="/?loginOp=relogin&client=standard&loginErrorCode=${error.code}"/>
         </c:when>
         <c:when test="${error.code eq 'mail.QUERY_PARSE_ERROR' and empty param.sq}">

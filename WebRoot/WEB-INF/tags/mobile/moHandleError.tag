@@ -30,7 +30,7 @@
         <c:when test="${error.code eq 'ztaglib.SERVER_REDIRECT'}">
             <c:redirect url="${not empty requestScope.SERVIER_REDIRECT_URL ? requestScope.SERVIER_REDIRECT_URL : '/'}"/>
         </c:when>
-        <c:when test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
+        <c:when test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED' or error.code eq 'account.WEB_CLIENT_ACCESS_NOT_ALLOWED'}">
             <c:choose>
                 <c:when test="${not empty (paramValues.ajax[0]||param.ajax)}">
                     <script type="text/javascript">
