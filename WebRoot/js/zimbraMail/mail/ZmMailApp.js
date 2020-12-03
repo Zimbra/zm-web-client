@@ -251,6 +251,8 @@ function(settings) {
 	settings.registerSetting("SIGNATURE_STYLE",					{name:"zimbraPrefMailSignatureStyle", type:ZmSetting.T_PREF, defaultValue:ZmSetting.SIG_OUTLOOK});
 	settings.registerSetting("START_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
     settings.registerSetting("TAB_IN_EDITOR",			        {name:"zimbraPrefTabInEditorEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("PREF_IMAP_ENABLED",				{name:"zimbraPrefImapEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN});
+	settings.registerSetting("PREF_POP_ENABLED",				{name:"zimbraPrefPop3Enabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN});
     settings.registerSetting("USE_SEND_MSG_SHORTCUT",			{name:"zimbraPrefUseSendMsgShortcut", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
     settings.registerSetting("USER_FOLDERS_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
     settings.registerSetting("VACATION_DURATION_ENABLED",		{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -309,6 +311,8 @@ function() {
 				ZmSetting.OFFLINE_NOTIFY_NEWMAIL_ON_INBOX,
 				ZmSetting.OPEN_MAIL_IN_NEW_WIN,
 				ZmSetting.PAGE_SIZE,
+				ZmSetting.PREF_POP_ENABLED,
+				ZmSetting.PREF_IMAP_ENABLED,
 				ZmSetting.POP_DOWNLOAD_SINCE_VALUE,
 				ZmSetting.POP_DOWNLOAD_SINCE,
                 ZmSetting.POP_DELETE_OPTION,
@@ -562,9 +566,22 @@ function() {
 		precondition:		ZmSetting.DETACH_MAILVIEW_ENABLED
 	});
 
+
+	ZmPref.registerPref("PREF_POP_ENABLED", {
+		displayName:		ZmMsg.popAccess,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		precondition:		this.popEnabledPrecondition.bind(this)
+	});
+
+	ZmPref.registerPref("PREF_IMAP_ENABLED", {
+		displayName:		ZmMsg.imapAccess,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		precondition:		this.imapEnabledPrecondition.bind(this)
+	});
+
 	ZmPref.registerPref("POP_DOWNLOAD_SINCE_VALUE", {
 		displayContainer:	ZmPref.TYPE_STATIC,
-		precondition:		ZmSetting.POP_ENABLED
+		precondition:		this.popEnabledPrecondition.bind(this)
 	});
 	ZmPref.registerPref("POP_DOWNLOAD_SINCE", {
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
@@ -578,7 +595,7 @@ function() {
 							],
 		displayFunction:	ZmPref.downloadSinceDisplay,
 		valueFunction:		ZmPref.downloadSinceValue,
-		precondition:		ZmSetting.POP_ENABLED
+		precondition:		this.popEnabledPrecondition.bind(this)
 	});
 	ZmPref.registerPref("POP_DELETE_OPTION", {
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
@@ -592,7 +609,7 @@ function() {
                                 ZmMailApp.POP_DELETE_OPTION_READ,
                                 ZmMailApp.POP_DELETE_OPTION_KEEP
                             ],
-		precondition:       ZmSetting.POP_ENABLED
+		precondition:		this.popEnabledPrecondition.bind(this)
 	});
 	ZmPref.registerPref("POP_INCLUDE_SPAM", {
 		displayName:		ZmMsg.popIncludeSpam,
@@ -753,6 +770,14 @@ ZmMailApp.prototype.formatKeySeq = function(keySeq) {
 	// Make sure the modifierKey list is created.  This will create the modifierKeys and cache them, but not display them
 	new ZmShortcutList({cols:[]});
 	return ZmShortcutList._formatDisplay(keySeq);
+}
+
+ZmMailApp.prototype.popEnabledPrecondition = function() {
+	return appCtxt.get(ZmSetting.POP_ENABLED) === true || appCtxt.get(ZmSetting.PREF_POP_ENABLED) !== null;
+}
+
+ZmMailApp.prototype.imapEnabledPrecondition = function() {
+	return appCtxt.get(ZmSetting.PREF_IMAP_ENABLED) !== null;
 }
 
 /**
