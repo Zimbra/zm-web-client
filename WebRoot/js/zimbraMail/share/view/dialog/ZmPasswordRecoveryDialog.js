@@ -67,12 +67,17 @@ function(params) {
 								DwtDialog.ALIGN_LEFT,
 								this._finishButtonListener.bind(this));
 
+	var twoFactorVerifyButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.TWO_FACTOR_VERIFY_BUTTON,
+								ZmMsg.recoveryEmailButtonValidate,
+								DwtDialog.ALIGN_LEFT,
+								this._twoFactorCodeButtonVerifyListener.bind(this));
+
 	var shell = typeof appCtxt !== 'undefined' ? appCtxt.getShell() : new DwtShell({});
 	var newParams = {
 		parent : shell,
 		title : ZmMsg.passwordRecoveryTitle,
 		standardButtons : [DwtDialog.NO_BUTTONS],
-		extraButtons : [ emailSubmitButton, requestCodeButton, verifyCodeButton, resendOptionButton, resetSubmitButton, loginButton, cancelButton]
+		extraButtons : [ emailSubmitButton, requestCodeButton, verifyCodeButton, resendOptionButton, resetSubmitButton, loginButton, cancelButton, twoFactorVerifyButton ]
 	};
 	DwtDialog.call(this, newParams);
 	this.setContent(this._contentHtml());
@@ -92,6 +97,7 @@ ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON = ++DwtDialog.LAST_BUTTON;
 ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON = ++DwtDialog.LAST_BUTTON;
 ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON = ++DwtDialog.LAST_BUTTON;
 ZmPasswordRecoveryDialog.LOGIN_BUTTON = ++DwtDialog.LAST_BUTTON;
+ZmPasswordRecoveryDialog.TWO_FACTOR_VERIFY_BUTTON = ++DwtDialog.LAST_BUTTON;
 
 /**
  * Returns the strng name of this class.
@@ -117,7 +123,8 @@ function() {
 	this._resetPasswordDivId = id + '_reset_password';
 	this._resetPasswordDescriptionDivId = id + '_reset_password_description';
 	this._passwordResetSuccessDivId = id + '_password_reset_success';
-	this._divIdArray = [this._getRecoveryAccountDivId, this._requestCodeDivId, this._validateCodeDivId, this._codeSuccessDivId, this._resetPasswordDivId, this._passwordResetSuccessDivId];
+	this._twoFactorCodeDivId = id + '_two_factor_code';
+	this._divIdArray = [this._getRecoveryAccountDivId, this._requestCodeDivId, this._validateCodeDivId, this._codeSuccessDivId, this._resetPasswordDivId, this._passwordResetSuccessDivId, this._twoFactorCodeDivId];
 	return AjxTemplate.expand('share.Dialogs#ZmPasswordRecovery', {id : id, accountInput : this.accountInput});
 };
 
@@ -165,6 +172,7 @@ function() {
 	this.getButton(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryVerifyButton');
 	this.getButton(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryResetButton');
 	this.getButton(ZmPasswordRecoveryDialog.LOGIN_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryLoginButton');
+	this.getButton(ZmPasswordRecoveryDialog.TWO_FACTOR_VERIFY_BUTTON).setClassName('ZmPasswordRecoveryButton');
 	cancelbutton.setClassName('ZmPasswordRecoveryButton PasswordRecoveryBackToSignInButton');
 	// Create buttons
 	this._createRecoveryButtons('continueSessionsRecoveryButton', ZmMsg.recoveryEmailButtonContinueSession, true, false,
@@ -185,6 +193,11 @@ function() {
 	this._resetPasswordErrorMessageDiv = Dwt.getElement(id + '_reset_password_error_message');
 	this._codeInput = Dwt.getElement(id + '_code_input');
 	this._passwordNewInput = Dwt.getElement(id + '_password_new_input');
+	this._twoFactorCodeInput = Dwt.getElement(id + '_two_factor_code_input');
+	this._trustedDeviceInput = Dwt.getElement(id + '_trust_device_input');
+	this._trustedDeviceDiv = Dwt.getElement(id + '_trust_device_section');
+	this._validateTwoFactorErrorDiv = Dwt.getElement(id + '_validate_two_factor_code_error');
+	this._validateTwoFactorErrorMessageDiv = Dwt.getElement(id + '_validate_two_factor_code_error_message');
 
 	this._passwordRuleList = Dwt.getElement(id + '_password_rule_list');
 	this._passwordAllowedCharsLI = Dwt.getElement(id + '_allowed_char');
@@ -217,7 +230,7 @@ function() {
 */
 ZmPasswordRecoveryDialog.prototype._getInputFields =
 function() {
-	return [this._accountInput, this._codeInput, this._passwordNewInput, this._passwordConfirmInput];
+	return [this._accountInput, this._codeInput, this._passwordNewInput, this._passwordConfirmInput, this._twoFactorCodeInput];
 };
 
 /**
@@ -258,6 +271,7 @@ function() {
 	Dwt.hide(this._resetPasswordDivId);
 	Dwt.hide(this._resetPasswordErrorDivId);
 	Dwt.hide(this._passwordResetSuccessDivId);
+	Dwt.hide(this._twoFactorCodeDivId);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.CANCEL_BUTTON, true);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON, true);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON, false);
@@ -265,6 +279,7 @@ function() {
 	this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, false);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.LOGIN_BUTTON, false);
+	this.setButtonVisible(ZmPasswordRecoveryDialog.TWO_FACTOR_VERIFY_BUTTON, false);
 	this._divIdArrayIndex = 0;
 	this._resendCount = 0;
 	DwtDialog.prototype.reset.call(this);
@@ -345,6 +360,11 @@ ZmPasswordRecoveryDialog.prototype._cancelButtonListener =
 function() {
 	//If the user clicks cancel button, redirect to the login page
 	location.replace(location.origin);
+};
+
+ZmPasswordRecoveryDialog.prototype._twoFactorCodeButtonVerifyListener =
+function() {
+	this._validateTwoFactorCode();
 };
 
 /**
@@ -451,7 +471,9 @@ function(errorDivId, errorMessageDivId, exception) {
 		Dwt.hide(this._validateCodeDescription);
 		Dwt.hide(this._validateInputDiv);
 		Dwt.setInnerHtml(errorMessageDivId, ZmMsg['service.CONTACT_ADMIN']);
-	} else {
+	} else if(errorCode === 'account.TWO_FACTOR_AUTH_FAILED')  {
+		Dwt.setInnerHtml(errorMessageDivId, ZMsg['account.TWO_FACTOR_AUTH_FAILED']);	
+	}else {
 		Dwt.setInnerHtml(errorMessageDivId, ZmMsg[errorCode]);
 	}
 	Dwt.show(errorDivId);
@@ -580,16 +602,46 @@ function(result) {
 		this._handleResetPasswordError(this._validateErrorDiv, this._validateErrorMessageDiv, result.getException());
 	} else {
 		var response = result.getResponse();
-		window.csrfToken = response.Body.AuthResponse.csrfToken._content;
+		if(response.Body.AuthResponse.csrfToken) {
+			window.csrfToken = response.Body.AuthResponse.csrfToken._content;
+		}
 		Dwt.hide(this._validateCodeDivId);
-		Dwt.show(this._codeSuccessDivId);
-		this.continueSessionsRecoveryButton.setVisible(true);
-		this.resetPasswordRecoveryButton.setVisible(true); // set to true once methods are ready.
+		if(response.Body.AuthResponse.twoFactorAuthRequired && response.Body.AuthResponse.twoFactorAuthRequired._content) {
+			Dwt.show(this._twoFactorCodeDivId);
+			this.setButtonVisible(ZmPasswordRecoveryDialog.TWO_FACTOR_VERIFY_BUTTON, true);
+			this._twoFactorCodeInput.focus();
+			this._twoFactorAuthToken = response.Body.AuthResponse.authToken[0]._content;
+			if(!response.Body.AuthResponse.trustedDevicesEnabled._content) {
+				Dwt.hide(this._trustedDeviceDiv);
+			}
+		} else {
+			Dwt.show(this._codeSuccessDivId);
+			this.continueSessionsRecoveryButton.setVisible(true);
+			this.resetPasswordRecoveryButton.setVisible(true); // set to true once methods are ready.
+		}
+		
 		this.setButtonVisible(ZmPasswordRecoveryDialog.CANCEL_BUTTON, false);
 		this.setButtonVisible(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, false);
 		this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
 	}
 };
+
+/**
+ * Callback for retrieving validation of the two factor code
+ *
+ * @param {object} result The returned result object
+ */
+ZmPasswordRecoveryDialog.prototype._verifyTwoFactorCodeAuthCallback =
+function(result) {
+	if (!result || result.isException()) {
+		this._handleResetPasswordError(this._validateTwoFactorErrorDiv, this._validateTwoFactorErrorMessageDiv, result.getException());
+	} else {
+		Dwt.hide(this._twoFactorCodeDivId);
+		this.setButtonVisible(ZmPasswordRecoveryDialog.TWO_FACTOR_VERIFY_BUTTON, false);
+		this._verifyRecoveryCodeCallback(result);
+	}
+}
+
 
 /**
  * Update the view to support reset password.
@@ -987,3 +1039,25 @@ function(result) {
 		this.setButtonVisible(ZmPasswordRecoveryDialog.LOGIN_BUTTON, true);
 	}
 };
+
+/**
+ * Callback for retrieving validation of the two factor code
+ *
+ * @param {object} result The returned result object
+ */
+ZmPasswordRecoveryDialog.prototype._validateTwoFactorCode =
+function() {
+	var elBy;
+	var command = new ZmCsfeCommand();
+	var soapDoc = AjxSoapDoc.create('AuthRequest', 'urn:zimbraAccount');
+	var respCallback = this._verifyTwoFactorCodeAuthCallback.bind(this);
+	var twoFactorCode = this._twoFactorCodeInput.value;
+	var trustedDevice = this._trustedDeviceInput.value;
+	soapDoc.set('twoFactorCode', twoFactorCode);
+	soapDoc.set('deviceTrusted', trustedDevice);
+	elBy = soapDoc.set('authToken', this._twoFactorAuthToken);
+	elBy.setAttribute('verifyAccount', '0');
+
+	command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true, asyncMode: true, callback: respCallback, serverUri:'/service/soap/'})
+};
+

@@ -881,5 +881,19 @@
 			<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.passwordRecoveryResetSuccessTitle$></h2>
 			<p class="ZmPasswordRecoveryCustomPara"><$=ZmMsg.passwordRecoveryResetSuccessDescription$></p>
 		</div>
+		<div id='${id}_two_factor_code'>
+			<h2 class="ZmPasswordRecoveryTwoFactorTitle"><$=ZmMsg.twoStepAuth$></h2>
+			<div id='${id}_validate_two_factor_code_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
+				<span id='${id}_validate_two_factor_code_error_message'><$=ZmMsg.passwordRecoveryCodeValidationError$></span>
+			</div>
+			<div class='ZmPasswordRecoverySetupContainer'>
+				<label for='${id}_two_factor_code_input'><$=ZmMsg.twoFactorAuthCodeLabel$></label>
+				<input type='text' id='${id}_two_factor_code_input' size='35' autocomplete='off' class="ZmPasswordRecoveryTwoFactorCodeInout"/>
+				<div id='${id}_trust_device_section'>
+					<td><input type="checkbox" id="${id}_trust_device_input" /></td>
+					<td><label for="${id}_trust_device_input" class="ZmPasswordRecoveryTrustDevice"><$=ZmMsg.twoFactorAuthTrustDevice$></label></td>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>

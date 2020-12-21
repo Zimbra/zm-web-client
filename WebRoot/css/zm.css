@@ -6163,6 +6163,19 @@ div#resetPasswordRecoveryButton {
 	position: fixed;
 }
 
+.ZmPasswordRecoveryTwoFactorTitle {
+	font-size: 20px;
+	padding: 0 40px;
+}
+
+.ZmPasswordRecoveryTwoFactorCodeInout {
+	margin-bottom: 20px !important;
+}
+
+.ZmPasswordRecoveryTrustDevice {
+	padding-left: 5px !important;
+}
+
 .passwordWrapper {
 	position: relative;
 }
