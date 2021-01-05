@@ -1555,15 +1555,13 @@ function() {
 			continue;
 		}
 
-		var id = cal.link ? cal.getRemoteId() : cal.id;
-
 		var image = appCtxt.multiAccounts ? acct.getIcon() : cal.getIconWithColor();
 		var name = AjxStringUtil.htmlDecode(appCtxt.multiAccounts
 			? ([cal.getName(), " (", acct.getDisplayName(), ")"].join(""))
 			: cal.getName());
 
 		displayOptions.push(name);
-		options.push(id);
+		options.push(cal.id);
 		images.push(image);
 	}
 
