@@ -324,6 +324,9 @@
         <%--Forward the user to the initial two factor authentication set up page--%>
         <jsp:forward page="${twoFactorSetupURL}" />
     </c:if>
+    <c:if test="${errorCode eq 'account.WEB_CLIENT_ACCESS_NOT_ALLOWED'}">
+        <zm:logout/>
+    </c:if>
 </c:if>
 <%
 if (application.getInitParameter("offlineMode") != null) {
