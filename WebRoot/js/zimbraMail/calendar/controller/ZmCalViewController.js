@@ -2233,17 +2233,17 @@ function(appt, mode) {
 			choiceLabel2 : ZmMsg.notifyOrganizer
 		});
 	}
-    if(this._deleteMode != mode){
-        var msg = ZmMsg.confirmCancelAppt;
-        if(appt.isRecurring()){
-            msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE)
-    			? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, AjxStringUtil.htmlEncode(appt.name))
-    			: ZmMsg.confirmCancelApptSeries;
-        }
-        var msgDiv = document.getElementById(this._deleteNotifyDialog._confirmMessageDivId);
-        msgDiv.innerHTML = msg;
-        this._deleteMode = mode;
-    }
+
+	var msg = ZmMsg.confirmCancelAppt;
+	if(appt.isRecurring()){
+		msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE)
+			? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, AjxStringUtil.htmlEncode(appt.name))
+			: ZmMsg.confirmCancelApptSeries;
+	}
+	var msgDiv = document.getElementById(this._deleteNotifyDialog._confirmMessageDivId);
+	msgDiv.innerHTML = msg;
+	this._deleteMode = mode;
+
 	this._deleteNotifyDialog.popup(new AjxCallback(this, this._deleteNotifyYesCallback, [appt,mode]));
 };
 
