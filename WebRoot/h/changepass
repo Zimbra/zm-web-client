@@ -65,7 +65,7 @@
     <c:set var="zimbraPasswordAllowedChars" value="${mailbox.accountInfo.attrs.zimbraPasswordAllowedChars[0]}"/>
     <c:set var="zimbraPasswordAllowedPunctuationChars" value="${mailbox.accountInfo.attrs.zimbraPasswordAllowedPunctuationChars[0]}"/>
     <c:set var="zimbraPasswordEnforceHistory" value="${mailbox.accountInfo.attrs.zimbraPasswordEnforceHistory[0]}"/>
-    <c:set var="zimbraPasswordBlockCommonEnabled" value="${not empty mailbox.accountInfo.attrs.zimbraPasswordBlockCommonEnabled[0] ? mailbox.accountInfo.attrs.zimbraPasswordBlockCommonEnabled[0] : 0}"/>
+    <c:set var="zimbraPasswordBlockCommonEnabled" value="${not empty mailbox.accountInfo.attrs.zimbraPasswordBlockCommonEnabled[0] ? mailbox.accountInfo.attrs.zimbraPasswordBlockCommonEnabled[0] : FALSE}"/>
 </app:handleError>
 
 <html>
@@ -189,7 +189,7 @@
                                             ${enforceHistoryMsg}
                                         </li>
                                     </c:if>
-                                    <c:if test="${zimbraPasswordBlockCommonEnabled ne 0}">
+                                    <c:if test="${zm:boolean(zimbraPasswordBlockCommonEnabled)}">
                                         <li>
                                             <fmt:message key="zimbraPasswordBlockCommonEnabled" var="blockCommonMsg"></fmt:message>
                                             <img src="/img/zimbra/ImgCloseGrayModern.png" id="blockCommonCloseImg" style="display: inline;"/>
@@ -328,7 +328,7 @@
             enabledRemoteRules.push(findRule("zimbraPasswordEnforceHistory"));
         }
 
-        if(${zimbraPasswordBlockCommonEnabled}) {
+        if("${zimbraPasswordBlockCommonEnabled}" === "TRUE") {
             enabledRemoteRules.push(findRule("zimbraPasswordBlockCommonEnabled"));
         }
 
