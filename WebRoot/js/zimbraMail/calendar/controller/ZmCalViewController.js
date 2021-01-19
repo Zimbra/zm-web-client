@@ -2242,7 +2242,6 @@ function(appt, mode) {
 	}
 	var msgDiv = document.getElementById(this._deleteNotifyDialog._confirmMessageDivId);
 	msgDiv.innerHTML = msg;
-	this._deleteMode = mode;
 
 	this._deleteNotifyDialog.popup(new AjxCallback(this, this._deleteNotifyYesCallback, [appt,mode]));
 };
