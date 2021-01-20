@@ -1000,8 +1000,10 @@ function(params) {
 	// - there are <img> tags OR tags with dfbackground set
 	var isSpam = (this._msg && this._msg.folderId == ZmOrganizer.ID_SPAM);
 	var imagesNotShown = (!this._msg || !this._msg.showImages);
-	this._needToShowInfoBar = (!params.isTextMsg &&
-		(!appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || isSpam) &&
+	
+	// As Per ZCS-10127 we need to always show the info bar if its an spam
+	this._needToShowInfoBar = isSpam || (!params.isTextMsg &&
+		(!appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES)) &&
 		imagesNotShown &&
 		(/<img/i.test(html) || /<[^>]+dfbackground/.test(html)));
 
