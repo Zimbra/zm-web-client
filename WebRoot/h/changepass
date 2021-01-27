@@ -599,10 +599,13 @@
                     var isRecentlyUsed = true;
                     var jsonResponse = JSON.parse(xmlhttp.responseText);
                     var errorDetails = jsonResponse.Body.Fault.Detail.Error;
+                    var errorReason = jsonResponse.Body.Fault.Reason;
                     if (errorDetails.Code == "account.PASSWORD_RECENTLY_USED") {
                         removeRule("zimbraPasswordEnforceHistory");
                     } else if (errorDetails.Code == "account.INVALID_PASSWORD") {
-                        if (errorDetails.a[0].n == "zimbraPasswordBlockCommonEnabled") {
+                        if (errorDetails.a && errorDetails.a[0].n == "zimbraPasswordBlockCommonEnabled") {
+                            removeRule("zimbraPasswordBlockCommonEnabled");
+                        } else if (errorReason.Text.indexOf('zimbraPasswordBlockCommonEnabled') !== -1) {
                             removeRule("zimbraPasswordBlockCommonEnabled");
                         }
                     } else if (errorDetails.Code == "account.AUTH_FAILED") {
