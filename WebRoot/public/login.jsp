@@ -244,23 +244,6 @@
                                         </c:forEach>
                                 </c:redirect>
                             </c:when>
-                            <c:when test="${client eq 'standard'}">
-                                <c:redirect url="/h/search">
-                                    <c:param name="mesg" value='welcome' />
-                                    <c:param name="init" value='true' />
-                                    <c:if test="${not empty param.app}">
-                                        <c:param name="app" value='${param.app}' />
-                                    </c:if>
-                                    <c:forEach var="p" items="${paramValues}">
-                                        <c:forEach var='value' items='${p.value}'>
-                                            <c:set var="testKey" value=",${p.key}," />
-                                            <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
-                                                <c:param name="${p.key}" value='${value}' />
-                                            </c:if>
-                                        </c:forEach>
-                                    </c:forEach>
-                                </c:redirect>
-                            </c:when>
                             <c:when test="${client eq 'advanced'}">
                                 <c:choose>
                                     <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
