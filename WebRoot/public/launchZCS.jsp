@@ -250,9 +250,7 @@
 	localStorage.setItem("csrfToken" , "${csrfToken}");
 	window.modernSupported     = ${modernSupported}
 </script>
-<noscript>
-<meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
-</noscript>
+<noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
 </head>
 <body>
 
