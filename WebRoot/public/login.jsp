@@ -82,7 +82,9 @@
     }
 %>
 <c:set var="modernSupported" value="<%=modernSupported%>" />
-
+<c:if test="${ua.isModernIE}">
+	<c:set var="modernSupported" value="false" />
+</c:if>
 <c:catch var="loginException">
 	<c:choose>
 		<c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
