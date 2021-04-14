@@ -29,8 +29,8 @@
 <zm:getUserAgent var="ua" session="false"/>
 <c:set var="mobileSupported" value="${ua.isMobile && ((ua.isOsWindows && (ua.isWindowsPhone || not ua.isWindowsNT))
                                                         || (ua.isOsBlackBerry)
-                                                        || (ua.isOsAndroid && not ua.isAndroid4_0up)
-                                                        || (ua.isIos && not ua.isIos6_0up))}"/>
+                                                        || (ua.isOsAndroid)
+                                                        || (ua.isIos))}"/>
 <c:set var="totpAuthRequired" value="false"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
@@ -230,7 +230,7 @@
                         
                         <c:if test="${empty client or client eq 'preferred'}">
                             <c:set var="client"
-                                value="${isZ9Mailbox ? prefClientType eq 'advanced' ? 'advanced' : 'modern' : prefClientType}" />
+                                value="${isZ9Mailbox ? mobileSupported && modernSupported ? 'modern' : prefClientType eq 'advanced' ? 'advanced' : 'modern' : prefClientType}" />
                         </c:if>
                         <c:choose>
                             <c:when test="${client eq 'socialfox'}">
@@ -456,7 +456,7 @@ if (application.getInitParameter("offlineMode") != null) {
                 <div class="modernContentBox">
                     <div class="logo">
                         <a href="https://www.zimbra.com/" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'><span class="ScreenReaderOnly"><fmt:message key="zimbraTitle"/></span>
-                            <span class="Img${smallScreen?'App':'Login'}Banner"></span>
+                            <span class="ImgLoginBanner"></span>
                         </a>
                     </div>				
 				<c:choose>
@@ -690,35 +690,37 @@ if (application.getInitParameter("offlineMode") != null) {
                             <hr/>
                             </div>
                             <div <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
-                            <div class="versionBlock">
-                                <label for="client"><fmt:message key="versionHeaderLabel"/></label>
-                                <div style="position: relative;">
-                                    <c:choose>
-                                        <c:when test="${client eq 'socialfox'}">
-                                        <input type="hidden" name="client" value="socialfox"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
-                                                <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
-                                                <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
-                                                <c:if test="${modernSupported}">
-                                                    <option value="modern" <c:if test="${client eq 'modern'}">selected</c:if>> <fmt:message key="clientModern"/></option>
-                                                </c:if>
-                                            </select>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <input type="button" class="alignWhatsThis" onclick="showTooltip();" id='ZLoginWhatsThisButton' />
-                                </div>
-                           
-                                <div id="ZLoginWhatsThis">
-                                    <div class="ZLoginInfo">
-                                        <span id="dialogCloseButton" onclick="hideTooltip();">&times;</span>
-                                        <fmt:message key="clientWhatsThisMessageWithoutTablet"/>
+                            <c:if test="${!(mobileSupported && modernSupported)}">
+                                <div class="versionBlock">
+                                    <label for="client"><fmt:message key="versionHeaderLabel"/></label>
+                                    <div style="position: relative;">
+                                        <c:choose>
+                                            <c:when test="${client eq 'socialfox'}">
+                                            <input type="hidden" name="client" value="socialfox"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
+                                                    <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
+                                                    <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
+                                                    <c:if test="${modernSupported}">
+                                                        <option value="modern" <c:if test="${client eq 'modern'}">selected</c:if>> <fmt:message key="clientModern"/></option>
+                                                    </c:if>
+                                                </select>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        <input type="button" class="alignWhatsThis" onclick="showTooltip();" id='ZLoginWhatsThisButton' />
                                     </div>
-                                </div>
+                            
+                                    <div id="ZLoginWhatsThis">
+                                        <div class="ZLoginInfo">
+                                            <span id="dialogCloseButton" onclick="hideTooltip();">&times;</span>
+                                            <fmt:message key="clientWhatsThisMessageWithoutTablet"/>
+                                        </div>
+                                    </div>
                            
                             
-                        </div>
+                            </div>
+                        </c:if>    
                     </div>
                         </c:if>
                         </div>
