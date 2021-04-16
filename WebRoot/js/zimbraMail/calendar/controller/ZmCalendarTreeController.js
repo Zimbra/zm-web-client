@@ -523,10 +523,10 @@ function(params) {
 * Returns an "External Calendar" dialog.
 */
 ZmCalendarTreeController.prototype.getExternalCalendarDialog =
-function() {
+function(isGoogleAuthConfigured) {
     if(!this._externalCalendarDialog) {
         AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
-	    this._externalCalendarDialog = new ZmExternalCalendarDialog({parent: this._shell, controller: this});
+	    this._externalCalendarDialog = new ZmExternalCalendarDialog({parent: this._shell, controller: this, isGoogleAuthConfigured: isGoogleAuthConfigured});
     }
     return this._externalCalendarDialog;
 };
@@ -538,10 +538,20 @@ function() {
 */
 ZmCalendarTreeController.prototype._addExternalCalendarListener =
 function() {
-	var dialog = this.getExternalCalendarDialog();
-    dialog.popup();
+	return AjxRpc.invoke(null, "/service/extension/oauth2/info/google", null, new AjxCallback(this, this._handleGoogleConfig), true);
 };
 
+ZmCalendarTreeController.prototype._handleGoogleConfig =
+function(response){
+	try {
+		var responseJson = JSON.parse(response.text);
+	} catch(e) {
+		console.error("unable to handle Google Config get info response => ", e);
+	}
+
+	var dialog = this.getExternalCalendarDialog(responseJson && responseJson.data && responseJson.data.client_id);
+	dialog.popup();
+};
 
 ZmCalendarTreeController.prototype._changeListener =
 function(ev, treeView, overviewId) {
