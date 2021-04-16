@@ -27,6 +27,7 @@ ZmExternalCalendarDialog = function(params) {
     var cancel = new DwtDialog_ButtonDescriptor(ZmExternalCalendarDialog.SHARE_CANCEL_BUTTON, ZmMsg.cancel, DwtDialog.ALIGN_RIGHT);
     var parent = params.parent || appCtxt.getShell();
     this._controller = params.controller;
+    this._isGoogleAuthConfigured = params.isGoogleAuthConfigured;
     ZmDialog.call(this, {parent:parent, className:"ZmExternalCalendarDialog", standardButtons:[DwtDialog.NO_BUTTONS], extraButtons: [back, next, cancel], id:'ADD_EXTERNAL_CAL_DIALOG'});
 
 	this.setButtonListener(ZmExternalCalendarDialog.BACK_BUTTON, new AjxListener(this, this._backButtonListener));
@@ -74,7 +75,7 @@ function() {
 
 ZmExternalCalendarDialog.prototype.getDefaultContent =
 function() {
-    var html = AjxTemplate.expand(ZmExternalCalendarDialog.TEMPLATE, {id: this._htmlElId});
+    var html = AjxTemplate.expand(ZmExternalCalendarDialog.TEMPLATE, {id: this._htmlElId, isGoogleAuthConfigured: this._isGoogleAuthConfigured});
     return html;
 };
 
@@ -379,4 +380,3 @@ function() {
     this._controller.setExternalCalendarData(null);
     this.popdown();
 };
-
