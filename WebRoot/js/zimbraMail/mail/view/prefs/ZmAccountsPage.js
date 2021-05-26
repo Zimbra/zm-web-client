@@ -32,6 +32,7 @@ ZmAccountsPage = function(parent, section, controller) {
 	this._sectionDivs = {};
 	this._accounts = new AjxVector();
 	this._deletedAccounts = [];
+	this._deleteResponseReceived = [];
 };
 ZmAccountsPage.prototype = new ZmPreferencesPage;
 ZmAccountsPage.prototype.constructor = ZmAccountsPage;
@@ -1666,7 +1667,7 @@ function(batchCmd) {
 			var name = account.getName();
 			var folder = root.getByName(name);
 			if (folder && !folder.isSystem()) {
-				callback = new AjxCallback(this, this._promptToDeleteFolder, [folder]);
+				callback = new AjxCallback(this, this._doDeleteCallback, [folder]);
 			}
 		}
 		this._deletedAccounts[i].doDelete(callback, null, batchCmd);
@@ -3167,16 +3168,25 @@ function(account, resp) {
 	account._needsSync = true;
 };
 
+ZmAccountsPage.prototype._doDeleteCallback = function(organizer) {
+	this._deleteResponseReceived.push(organizer);
+	if (this._deletedAccounts.length === this._deleteResponseReceived.length) {
+		this._promptToDeleteFolder(this._deleteResponseReceived);
+	}
+};
+
 ZmAccountsPage.prototype._promptToDeleteFolder = function(organizer) {
 	var dialog = appCtxt.getConfirmationDialog();
-	var prompt = AjxMessageFormat.format(ZmMsg.accountDeleteFolder, [organizer.getName()]);
+	var folderName = AjxUtil.map(organizer, function(o) { return o.getName()});
+	var prompt = AjxMessageFormat.format(ZmMsg.accountDeleteFolder, [folderName.join(", ")]);
 	var callback = new AjxCallback(this, this._handleDeleteFolder, [organizer]);
 	dialog.popup(prompt, callback);
 };
 
 ZmAccountsPage.prototype._handleDeleteFolder = function(organizer) {
 	var trash = appCtxt.getById(ZmOrganizer.ID_TRASH);
-	organizer.move(trash);
+	organizer.forEach(function(o){o.move(trash)});
+	this._deleteResponseReceived = [];
 };
 
 
