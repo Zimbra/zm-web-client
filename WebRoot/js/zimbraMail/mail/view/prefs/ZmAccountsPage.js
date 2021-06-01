@@ -3169,8 +3169,10 @@ function(account, resp) {
 };
 
 ZmAccountsPage.prototype._doDeleteCallback = function(organizer) {
+	// Filter the accounts and skip persona if there is any in this particular delete operation
+	var onlyAccounts = AjxUtil.filter(this._deletedAccounts, function(a) { if(a.type !== ZmAccount.TYPE_PERSONA) {return a} });
 	this._deleteResponseReceived.push(organizer);
-	if (this._deletedAccounts.length === this._deleteResponseReceived.length) {
+	if (onlyAccounts.length === this._deleteResponseReceived.length) {
 		this._promptToDeleteFolder(this._deleteResponseReceived);
 	}
 };
