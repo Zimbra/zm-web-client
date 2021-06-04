@@ -93,7 +93,7 @@
 		</c:when>
 		<c:when test="${param.loginOp eq 'relogin' and not empty param.loginErrorCode}">
 			<zm:logout/>
-			<c:set var="errorCode" value="${param.loginErrorCode}"/>
+			<c:set var="errorCode" value="${zm:cook(param.loginErrorCode)}"/>
 			<fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
 			<c:if test = "${fn:contains(errorMessage, errorCode)}">
 				<fmt:message var="errorMessage" key="unknownError"/>
