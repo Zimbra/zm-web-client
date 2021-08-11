@@ -4190,8 +4190,8 @@ function() {
 		if (needsRefresh) {
             var rt = view.getTimeRange();
 			var params = {
-				start: rt.start,
-				end: rt.end,
+				start: rt.start - (31 * 24 * 60 * 60 * 1000), // Previous month
+				end: rt.end + (31 * 24 * 60 * 60 * 1000) + (31 * 24 * 60 * 60 * 1000), // to next two months
 				fanoutAllDay: view._fanoutAllDay(),
 				callback: (new AjxCallback(this, this._maintGetApptCallback, [work, view])),
 				accountFolderIds: ([].concat(this._checkedAccountCalendarIds)), // pass in a copy, not a reference
