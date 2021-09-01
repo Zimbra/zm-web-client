@@ -1586,7 +1586,7 @@ function(startDate, duration, folderId, mailItem) {
 ZmCalViewController.prototype._newApptObject =
 function(startDate, duration, folderId, mailItem) {
 	var newAppt = new ZmAppt();
-	newAppt.setStartDate(AjxDateUtil.roundTimeMins(startDate, 30));
+	newAppt.setStartDate(AjxDateUtil.roundTimeMins(startDate, parseInt(appCtxt.get(ZmSetting.CAL_SCALING), 10)));
 	newAppt.setEndDate(newAppt.getStartTime() + (duration ? duration : ZmCalViewController.DEFAULT_APPOINTMENT_DURATION));
 	newAppt.resetRepeatWeeklyDays();
 	newAppt.resetRepeatMonthlyDayList();
