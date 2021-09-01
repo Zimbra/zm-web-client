@@ -201,6 +201,7 @@ function(settings) {
     settings.registerSetting("CAL_EXCEPTION_ON_SERIES_TIME_CHANGE",	    {name: "zimbraCalendarKeepExceptionsOnSeriesTimeChange", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
     settings.registerSetting("CAL_LOCATION_FIELDS_DISABLED",{name: "zimbraCalendarLocationDisabledFields", type: ZmSetting.T_COS, dataType: ZmSetting.D_STRING, defaultValue: false, isGlobal:true});
     settings.registerSetting("CAL_DEFAULT_ID",				{name:"zimbraPrefDefaultCalendarId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue: "10"});
+	settings.registerSetting("CAL_SCALING",					{name:"zimbraPrefCalenderScaling", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue: "30"});
 };
 
 ZmCalendarApp.prototype._registerPrefs =
