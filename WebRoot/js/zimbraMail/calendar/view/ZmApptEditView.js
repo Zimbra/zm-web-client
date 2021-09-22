@@ -489,6 +489,7 @@ function() {
 	if (this._resourcesContainer) {
         this.showResourceField(false);
         this._resourceInputField.clear();
+        this._resourcesShown = false;
 	}
 
 	this._allDayCheckbox.checked = false;
