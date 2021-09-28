@@ -1404,6 +1404,8 @@ function(idTag, attType, params) {
 	var inputId = this.parent._htmlElId + idTag + "_input";
 	var cellId = this._htmlElId + idTag;
 	var input;
+	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
+
 	if (!params.noAddrBubbles) {
 		var aifParams = {
 			label:					params.label,
@@ -1415,6 +1417,9 @@ function(idTag, attType, params) {
 			strictMode:				params.strictMode
 		}
 		var input = this._attInputField[attType] = new ZmAddressInputField(aifParams);
+		if (!contactsEnabled && input._input) {
+			input._input.supportsAutoComplete = false;
+		}
 		input.reparentHtmlElement(cellId);
 	} else {
 		var params = {
