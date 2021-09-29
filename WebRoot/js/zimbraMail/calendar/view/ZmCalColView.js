@@ -24,7 +24,12 @@
 ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, scheduleMode, readonly, isInviteMessage, isRight) {
 	if (arguments.length == 0) { return; }
 
-	if (appCtxt.get(ZmSetting.CAL_SCALING) == "15") {
+	if (appCtxt.get(ZmSetting.CAL_SCALING) == "10") {
+		ZmCalColView._MINIMUM_APPT_HEIGHT = 10;
+		ZmCalColView._SNAP_MINUTES = 10;
+		ZmCalColView._HOUR_HEIGHT = 126;
+		ZmCalColView._MSEC_DURATION = AjxDateUtil.MSEC_PER_MINUTE*10;
+	} else if (appCtxt.get(ZmSetting.CAL_SCALING) == "15") {
 		ZmCalColView._MINIMUM_APPT_HEIGHT = 15;
 		ZmCalColView._SNAP_MINUTES = 15;
 		ZmCalColView._HOUR_HEIGHT = 84;
