@@ -259,8 +259,8 @@ function(type, used, addAsContact, dontUpdateUsed) {
 				var contact = addr;
 				if (addAsContact) {
 					var cl = AjxDispatcher.run("GetContacts");
-					contact = cl.getContactByEmail(email);
-					if (contact == null) {
+					contact = cl && cl.getContactByEmail(email);
+					if (contact == null || !cl) {
 						contact = new ZmContact(null);
 						contact.initFromEmail(addr);
 					}
