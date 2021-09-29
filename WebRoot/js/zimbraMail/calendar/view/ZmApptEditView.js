@@ -1070,7 +1070,9 @@ function(calItem, mode) {
         //enable forward field/picker if its not propose time view
         this._setAddresses(this._forwardToField, this._isProposeTime ? calItem.getOrganizer() : "");
         this._forwardToField.setEnabled(!this._isProposeTime);
-        this._forwardPicker.setEnabled(!this._isProposeTime);
+        if (this._forwardPicker) {
+            this._forwardPicker.setEnabled(!this._isProposeTime);
+        }
 
         for (var t = 0; t < this._attTypes.length; t++) {
 		    var type = this._attTypes[t];
@@ -1402,6 +1404,8 @@ function(idTag, attType, params) {
 	var inputId = this.parent._htmlElId + idTag + "_input";
 	var cellId = this._htmlElId + idTag;
 	var input;
+	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
+
 	if (!params.noAddrBubbles) {
 		var aifParams = {
 			label:					params.label,
@@ -1413,6 +1417,9 @@ function(idTag, attType, params) {
 			strictMode:				params.strictMode
 		}
 		var input = this._attInputField[attType] = new ZmAddressInputField(aifParams);
+		if (!contactsEnabled && input._input) {
+			input._input.supportsAutoComplete = false;
+		}
 		input.reparentHtmlElement(cellId);
 	} else {
 		var params = {
@@ -1698,6 +1705,9 @@ function(ev) {
     this._forwardToField.setEnabled(false);
 	if (!this._contactPicker) {
 		AjxDispatcher.require("ContactsCore");
+		if (!appCtxt.getApp(ZmApp.CONTACTS)) {
+			appCtxt.getAppController()._createApp(ZmApp.CONTACTS);
+		}
 		var buttonInfo = [
 			{ id: AjxEmailAddress.TO,	label: ZmMsg.toLabel }
 		];
@@ -1722,6 +1732,9 @@ function(addrType, ev) {
     var contactPicker = this._attendeePicker[addrType];
 	if (!contactPicker) {
 		AjxDispatcher.require("ContactsCore");
+		if (!appCtxt.getApp(ZmApp.CONTACTS)) {
+			appCtxt.getAppController()._createApp(ZmApp.CONTACTS);
+		}
 		var buttonInfo = [
 			{ id: AjxEmailAddress.TO,	label: ZmMsg.toLabel }
 		];

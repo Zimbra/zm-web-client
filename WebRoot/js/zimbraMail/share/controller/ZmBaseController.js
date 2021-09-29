@@ -1330,7 +1330,9 @@ ZmBaseController.prototype._getBubbleActionMenuOps = function() {
 	}
 	ops.push(ZmOperation.SEARCH_MENU);
 	ops.push(ZmOperation.NEW_MESSAGE);
-	ops.push(ZmOperation.CONTACT);
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		ops.push(ZmOperation.CONTACT);
+	}
 	ops.push(ZmOperation.GO_TO_URL);
 
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED) && this._filterListener) {
@@ -1384,7 +1386,7 @@ ZmBaseController.prototype._loadContactForMenu = function(menu, address, ev, imI
 	}
 
 	// first check if contact is cached, and no server call is needed
-	var contact = contactsApp.getContactByEmail(email);
+	var contact = contactsApp && contactsApp.getContactByEmail(email);
 	if (contact) {
 		this._handleResponseGetContact(menu, address, ev, imItem, contact);
 		return;
@@ -1404,7 +1406,7 @@ ZmBaseController.prototype._loadContactForMenu = function(menu, address, ev, imI
 	}
 	menu.popup(0, ev.docX || ev.item.getXW(), ev.docY || ev.item.getYH());
 	var respCallback = this._handleResponseGetContact.bind(this, menu, address, ev, imItem);
-	contactsApp.getContactByEmail(email, respCallback);
+	contactsApp && contactsApp.getContactByEmail(email, respCallback);
 };
 
 ZmBaseController.prototype._handleResponseGetContact = function(menu, address, ev, imItem, contact) {
