@@ -1019,7 +1019,7 @@ function() {
     var satsun = new Array();
     for (var i = 0; i < 7; i++) {
 		//this._weeklySelect.addOption(dayFormatter.format(day), false, i);
-        var mi = new DwtMenuItem({parent:wMenu, style:DwtMenuItem.CHECK_STYLE, radioGroupId:i});
+        var mi = new DwtMenuItem({parent:wMenu, radioGroupId:i});
         mi.setText(dayFormatter.format(day));
         mi.addSelectionListener(selectChangeListener);
         mi.setData("index",i);
