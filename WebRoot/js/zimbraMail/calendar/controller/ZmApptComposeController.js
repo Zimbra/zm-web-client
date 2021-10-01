@@ -831,7 +831,7 @@ function(appt, originalStartDate, numRecurrence) {
     var range = recurrence.repeatCustomCount * numRecurrence;
     if (recurrence.repeatType == ZmRecurrence.NONE) {
         if (appt.allDayEvent === "1") {
-            endDate = new Date(appt.endDate.getTime() + 24 * 60 * 60 * 1000);
+            endDate = new Date(appt.endDate.getTime() + AjxDateUtil.MSEC_PER_DAY);
         } else {
             endDate = appt.endDate;
         }
@@ -846,7 +846,7 @@ function(appt, originalStartDate, numRecurrence) {
     }
     var endTime = endDate.getTime();
     if (recurrence.repeatEndDate) {
-        var repeatEndTime = recurrence.repeatEndDate.getTime();
+        var repeatEndTime = recurrence.repeatEndDate.getTime() + AjxDateUtil.MSEC_PER_DAY;
         if (endTime > repeatEndTime) {
             endTime = repeatEndTime;
         }
