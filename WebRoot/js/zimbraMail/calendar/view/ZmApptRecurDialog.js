@@ -1695,7 +1695,7 @@ function(ev) {
 
 ZmApptRecurDialog.prototype._selectChangeListener = 
 function(ev) {
-    if(ev.item && ev.item instanceof DwtMenuItem){
+    if(ev.item && ev.item instanceof DwtMenuItem && this.getSelectedRepeatValue() == ZmRecurrence.WEEKLY){
        this._weeklyDefaultRadio.checked = true;
        this._weeklySelectButton.setText(ev.item.getText());
        this._weeklySelectButton._selected = ev.item.getData("index");
