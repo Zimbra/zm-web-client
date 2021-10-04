@@ -141,6 +141,8 @@ ZmApptRecurDialog.prototype.setRepeatEndValues =
 function(appt) {
     var recur = appt._recurrence;
 	recur.repeatEndType = this._getRadioOptionValue(this._repeatEndName);
+	recur.repeatEndDate = null;
+	recur.repeatEndCount = null;
 
 	// add any details for the select option
 	if (recur.repeatEndType == "A")
