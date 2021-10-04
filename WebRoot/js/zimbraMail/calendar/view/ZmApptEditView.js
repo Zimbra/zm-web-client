@@ -2527,12 +2527,37 @@ function(ev) {
     var newSelectVal = ev._args.newValue;
     if (newSelectVal != "CUS") {
         // CUS (Custom) launches a dialog. Otherwise act upon the change here
+        this._resetRecurrence(this._calItem);
+        this._resetRecurrence(this._locationConflictAppt);
+
         this._locationConflictAppt.setRecurType(newSelectVal);
         this.locationConflictChecker();
     }
     if (newSelectVal === "WEE") {
         this._calItem._recurrence.repeatCustom =1;
     }
+};
+
+ZmApptEditView.prototype._resetRecurrence =
+function(calItem) {
+    // see ZmRecurrence
+    var recur = calItem._recurrence;
+    var startDate = recur._startDate || calItem.startDate;
+    recur.repeatBySetPos = 1;
+    recur.repeatCustom = 0;
+    recur.repeatCustomCount = 1;
+    recur.repeatCustomDayOfWeek = ZmCalItem.SERVER_WEEK_DAYS[startDate.getDay()];
+    recur.repeatCustomDays = null;
+    recur.repeatCustomMonthDay = startDate.getDate();
+    recur.repeatCustomOrdinal = null;
+    recur.repeatCustomType = "S";
+    recur.repeatEndCount = 1;
+    recur.repeatEndDate = null;
+    recur.repeatEndType = "N";
+    recur.repeatMonthlyDayList = [startDate.getDate()];
+    recur.repeatWeekday = false;
+    recur.repeatWeeklyDays = [ZmCalItem.SERVER_WEEK_DAYS[startDate.getDay()]];
+    recur.repeatYearlyMonthsList = startDate.getMonth()+1;
 };
 
 /**
