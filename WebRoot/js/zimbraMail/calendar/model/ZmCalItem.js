@@ -2463,7 +2463,7 @@ function(request, comp, extractAllDay) {
             }
             e.d = ed;
 		} else if (extractAllDay) {
-			var ed = new Date(this.endDate.getTime() + 24 * 60 * 60 * 1000);
+			var ed = new Date(this.endDate.getTime() + AjxDateUtil.MSEC_PER_DAY);
 			e.d = AjxDateUtil.getServerDateTime(ed, this.endsInUTC);
 			if (!this.endsInUTC && tz && tz.length) {
 				e.tz = tz;
