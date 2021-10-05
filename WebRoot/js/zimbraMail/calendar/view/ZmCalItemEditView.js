@@ -1193,8 +1193,15 @@ function(ev) {
 					this._endDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
 					this.startDate = temp._recurrence._startDate;
 					this.endDate = temp._recurrence._startDate;
-					this._calItem._startDate = this.startDate ;
-					this._calItem._endDate = this.startDate ;
+
+					var durationInfo = this.getDurationInfo();
+					this._calItem.startDate = new Date(durationInfo.startTime);
+					this._calItem.endDate = new Date(durationInfo.endTime);
+					ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+					if (this._locationConflictAppt) {
+						this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
+						this._locationConflictAppt.endDate = new Date(durationInfo.endTime);
+					}
 					this._setRepeatDesc(temp);
 				}
 
@@ -1236,9 +1243,17 @@ function(startDate,  endDate, sd, temp) {
 	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
 	this.startDate = temp._recurrence._startDate;
 	this.endDate = temp._recurrence._startDate;
-	this._calItem._startDate = this.startDate ;
-	this._calItem._endDate = this.startDate ;
+
+	var durationInfo = this.getDurationInfo();
+	this._calItem.startDate = new Date(durationInfo.startTime);
+	this._calItem.endDate = new Date(durationInfo.endTime);
+	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+	if (this._locationConflictAppt) {
+		this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
+		this._locationConflictAppt.endDate = new Date(durationInfo.endTime);
+	}
 	this._setRepeatDesc(temp);
+	this.locationConflictChecker && this.locationConflictChecker();
 };
 
 ZmCalItemEditView.prototype._ignoreDateChangeCallback =
@@ -1249,13 +1264,21 @@ function(startDate,  endDate, sd, temp) {
 		this._endDateField.value = AjxDateUtil.simpleComputeDateStr(this._oldEndDate);
 		this.startDate = this._oldStartDate;
 		this.endDate = this._oldEndDate;
-		this._calItem._startDate = this.startDate;
-		this._calItem._endDate = this.endDate;
-		if (this._calItem._recurrence) {
-			this._calItem._recurrence._startDate.setTime(this.startDate.getTime());
-		}
-		this._setRepeatDesc(this._calItem);
 	}
+
+	var durationInfo = this.getDurationInfo();
+	this._calItem.startDate = new Date(durationInfo.startTime);
+	this._calItem.endDate = new Date(durationInfo.endTime);
+	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+	if (this._locationConflictAppt) {
+		this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
+		this._locationConflictAppt.endDate = new Date(durationInfo.endTime);
+	}
+	if (this._calItem._recurrence) {
+		this._calItem._recurrence._startDate.setTime(this.startDate.getTime());
+	}
+	this._setRepeatDesc(this._calItem);
+	this.locationConflictChecker && this.locationConflictChecker();
 };
 
 ZmCalItemEditView.prototype._recurCancelListener =
