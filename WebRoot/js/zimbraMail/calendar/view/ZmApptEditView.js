@@ -2886,8 +2886,7 @@ function(el) {
 
         var durationInfo = this.getDurationInfo();
         this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
-        this._locationConflictAppt.endDate = new Date(durationInfo.startTime +
-            AjxDateUtil.MSEC_PER_DAY);
+        this._locationConflictAppt.endDate = new Date(durationInfo.endTime);
         this._locationConflictAppt.allDayEvent = el.checked ? "1" : "0";
         this.locationConflictChecker();
 
