@@ -356,15 +356,17 @@ function(appt) {
         var today = new Date(this._origRefDate);
         var diff = (today -dt);
         var isInPast = today.getTime() > dt.getTime();
+        var ignoreOffset = true;
         if(diff >= AjxDateUtil.MSEC_PER_DAY || isInPast){ // In the past
             d.setFullYear(d.getFullYear()+1);
             if(appt._recurrence.repeatBySetPos < 0){ // we want last day
                 d.setDate(AjxDateUtil.daysInMonth(d.getFullYear(),d.getMonth()));
             }else{
                 d.setDate(1);
+                ignoreOffset = false;
             }
         }
-        appt._recurrence._startDate = this.getPossibleStartDate(this._yearlyWeekdaySelect.getValue(), d, appt._recurrence.repeatBySetPos, true);
+        appt._recurrence._startDate = this.getPossibleStartDate(this._yearlyWeekdaySelect.getValue(), d, appt._recurrence.repeatBySetPos, ignoreOffset);
         appt._recurrence._endDate = appt._recurrence._startDate;
     }
 };
