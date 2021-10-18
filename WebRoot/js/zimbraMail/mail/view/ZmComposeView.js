@@ -493,15 +493,27 @@ function(msg, handleInlineDocs){
 					msg.addInlineAttachmentId(cid, mid, part, true);
 					handled = true;
 				} else {
+					var mid = null;
 					ci = "<" + cid + ">";
 					inlineAtt = msg.findInlineAtt(ci);
 					if (!inlineAtt && this._msg) {
 						inlineAtt = this._msg.findInlineAtt(ci);
 					}
-						if (inlineAtt) {
+					// handle a pasted image
+					if (!inlineAtt && images[i].src) {
+						// See ZmMailMsg.getUrlForPart
+						var escapedUri = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+						var re = new RegExp('^' + escapedUri + '&loc=' + AjxEnv.DEFAULT_LOCALE + '&id=(\\d+).*&part=([\\d|\\.]+)$');
+						var attrInfo = images[i].src.match(re);
+						if (attrInfo && attrInfo.length == 3) {
+							mid = attrInfo[1];
+							inlineAtt = { part: attrInfo[2] };
+						}
+					}
+					if (inlineAtt) {
 						var id = [cid, inlineAtt.part].join("_");
 						if (!attached[id]) {
-							msg.addInlineAttachmentId(cid, null, inlineAtt.part);
+							msg.addInlineAttachmentId(cid, mid, inlineAtt.part, (mid != null));
 							handled = true;
 							attached[id] = true;
 						}
