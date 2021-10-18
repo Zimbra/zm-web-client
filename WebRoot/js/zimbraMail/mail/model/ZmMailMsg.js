@@ -1662,7 +1662,7 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 							} else {
 								var id = inlineAtts[j].mid
 									|| (isDraft || this.isDraft)
-									? (oboDraftMsgId || this.id || this.origId)
+									? (inlineAtts[j].mid || oboDraftMsgId || this.id || this.origId)
 									: (this.origId || this.id);
 
 								if (!id && this._origMsg) {
