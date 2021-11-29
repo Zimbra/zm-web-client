@@ -4054,6 +4054,12 @@ ZmCalViewController.prototype._refreshAction =
 function(dontClearCache) {
 	DBG.println(AjxDebug.DBG1, "ZmCalViewController: _refreshAction: " + dontClearCache);
 	var forceMaintenance = false;
+
+	if (dontClearCache) {
+		var reminderParams = this._app.getReminderController().getRefreshParams();
+		var mergeKey = this.apptCache._getCachedMergedKey(reminderParams);
+		dontClearCache = Boolean(this.apptCache._cachedMergedApptVectors[mergeKey]);
+	}
 	// reset cache
 	if (!dontClearCache) {
 		this.apptCache.clearCache();
