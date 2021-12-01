@@ -319,12 +319,26 @@ function(abook) {
     // Fix for bug: 66603. Attaching a scroll function.
     document.getElementById(this._tabsContainerDivId).onscroll = func;
 
+	if (AjxEnv.isModernIE) {
+		func = AjxCallback.simpleClosure(ZmCalDayView.__onMouseWheel, this, this._bodyDivId);
+		document.getElementById(this._bodyDivId).onmousewheel = func;
+		func = AjxCallback.simpleClosure(ZmCalDayView.__onMouseWheel, this, this._allDayApptScrollDivId);
+		document.getElementById(this._allDayApptScrollDivId).onmousewheel = func;
+	}
+
 	ids = [this._apptBodyDivId, this._bodyHourDivId, this._allDayDivId, this._allDaySepDivId];
 	types = [ZmCalBaseView.TYPE_APPTS_DAYGRID, ZmCalBaseView.TYPE_HOURS_COL, ZmCalBaseView.TYPE_ALL_DAY, ZmCalBaseView.TYPE_DAY_SEP];
 	for (i = 0; i < ids.length; i++) {
 		this.associateItemWithElement(null, document.getElementById(ids[i]), types[i], ids[i]);
 	}
 	this._scrollToTime(8);
+};
+
+ZmCalDayView.__onMouseWheel =
+function(elementId, event) {
+	// stop smooth scrolling
+	event.preventDefault();
+	document.getElementById(elementId).scrollTop -= event.wheelDelta / 2;
 };
 
 ZmCalDayTabView.prototype._layout =
