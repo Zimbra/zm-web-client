@@ -338,7 +338,8 @@ ZmCalDayView.__onMouseWheel =
 function(elementId, event) {
 	// stop smooth scrolling
 	event.preventDefault();
-	document.getElementById(elementId).scrollTop -= event.wheelDelta / 2;
+	var elm = document.getElementById(elementId);
+	elm.scrollTop -= event.wheelDelta / 2;
 };
 
 ZmCalDayTabView.prototype._layout =
