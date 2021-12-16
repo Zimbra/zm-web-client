@@ -356,6 +356,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
         ZmSetting.USERNAME,                 info.name,
 		ZmSetting.EMAIL_VALIDATION_REGEX, 	info.zimbraMailAddressValidationRegex,
 		ZmSetting.HAB_ROOT,                 (info.habRoots && info.habRoots.hab ? info.habRoots.hab : false),
+		ZmSetting.SPELL_CHECK_ENABLED, 		info.isSpellCheckEnabled,
 		ZmSetting.DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE, 	(info.domainSettings && info.domainSettings.zimbraZimletDataSensitiveInMixedModeDisabled ? info.domainSettings.zimbraZimletDataSensitiveInMixedModeDisabled : "FALSE")
     ];
     for (var i = 0; i < settings.length; i += 2) {
@@ -1010,7 +1011,7 @@ function() {
 	this.registerSetting("SEARCH_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("SHORTCUT_LIST_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("OFFLINE_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:appCtxt.isOffline});
-	this.registerSetting("SPELL_CHECK_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:!appCtxt.isOffline && (!AjxEnv.isSafari || AjxEnv.isSafari3up || AjxEnv.isChrome)});
+	this.registerSetting("SPELL_CHECK_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN});
 	this.registerSetting("SPELL_CHECK_ADD_WORD_ENABLED",	{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:!AjxEnv.isSafari || AjxEnv.isSafari3up || AjxEnv.isChrome});
 
 	//SETTINGS SET AT DOMAIN LEVEL
