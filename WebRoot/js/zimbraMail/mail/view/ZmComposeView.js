@@ -583,7 +583,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 	}
 
 	// Mandatory Spell Check
-	if ((!isDraft || forceBail) && appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED) && 
+	if ((!isDraft || forceBail) && appCtxt.isSpellCheckerAvailable() && 
 		appCtxt.get(ZmSetting.MAIL_MANDATORY_SPELLCHECK) && !this._spellCheckOkay) {
 		if (this._htmlEditor.checkMisspelledWords(this._spellCheckShield.bind(this), null, this._spellCheckErrorShield.bind(this))) {
 			return;

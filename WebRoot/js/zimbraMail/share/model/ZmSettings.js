@@ -356,7 +356,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
         ZmSetting.USERNAME,                 info.name,
 		ZmSetting.EMAIL_VALIDATION_REGEX, 	info.zimbraMailAddressValidationRegex,
 		ZmSetting.HAB_ROOT,                 (info.habRoots && info.habRoots.hab ? info.habRoots.hab : false),
-		ZmSetting.SPELL_CHECK_ENABLED, 		info.isSpellCheckEnabled,
+		ZmSetting.SPELL_CHECK_ENABLED, 		info.isSpellCheckAvailable,
 		ZmSetting.DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE, 	(info.domainSettings && info.domainSettings.zimbraZimletDataSensitiveInMixedModeDisabled ? info.domainSettings.zimbraZimletDataSensitiveInMixedModeDisabled : "FALSE")
     ];
     for (var i = 0; i < settings.length; i += 2) {
