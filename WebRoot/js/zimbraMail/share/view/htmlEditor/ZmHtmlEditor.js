@@ -882,7 +882,7 @@ ZmHtmlEditor.prototype.onPaste = function(ev) {
 
 	if (item && item.getAsFile) {
 		file = item.getAsFile();
-		name = file && file.fileName;
+		name = file && file.name;
 		type = file && file.type;
 	} else if (item && item.type) {
 		file = item;
@@ -897,7 +897,6 @@ ZmHtmlEditor.prototype.onPaste = function(ev) {
 			"Cache-Control": "no-cache",
 			"X-Requested-With": "XMLHttpRequest",
 			"Content-Type": type,
-			//For paste from clipboard filename is undefined
 			"Content-Disposition": 'attachment; filename="' + (name ? AjxUtil.convertToEntities(name) : ev.timeStamp || new Date().getTime()) + '"'
 		};
 		var url = (appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI) +
