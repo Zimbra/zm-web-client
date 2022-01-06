@@ -1177,7 +1177,8 @@ ZmAppCtxt.AVAILABLE_DICTIONARY_LOCALES = ["ar", "da", "de", "de_AT", "de_CH", "d
  */
 ZmAppCtxt.prototype.isSpellCheckerAvailable = function () {
 
-	if (!appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED)) {
+	var isSpellCheckServiceEnabled = appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED) && !appCtxt.get(ZmSetting.OFFLINE_ENABLED) && (!AjxEnv.isSafari || AjxEnv.isSafari3up || AjxEnv.isChrome);
+	if (!isSpellCheckServiceEnabled) {
 		return false;
 	}
 
