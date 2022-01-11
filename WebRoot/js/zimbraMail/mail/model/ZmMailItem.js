@@ -176,6 +176,11 @@ function(node) {
 			contact = contactList && contactList.getContactByEmail(node.a),
 			fullName = contact && contact.getFullNameForDisplay(false);
 
+		// unless it's just the start of the email address (ZBUG-2236)
+		if (node.p != null && node.a != null && node.a.startsWith(fullName + "@")) {
+			fullName = node.p; // Update contacts with prettier name?
+		}
+
 		var addr = new AjxEmailAddress(node.a, type, fullName || node.p, node.d, node.isGroup, node.isGroup && node.exp);
 		var ac = window.parentAppCtxt || window.appCtxt;
 		ac.setIsExpandableDL(node.a, addr.canExpand);
