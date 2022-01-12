@@ -177,7 +177,7 @@ function(node) {
 			fullName = contact && contact.getFullNameForDisplay(false);
 
 		// unless it's just the start of the email address (ZBUG-2236)
-		if (node.p != null && node.a != null && node.a.startsWith(fullName + "@")) {
+		if (node.p && node.a && node.a.startsWith(fullName + "@")) {
 			fullName = node.p; // Update contacts with prettier name?
 		}
 
