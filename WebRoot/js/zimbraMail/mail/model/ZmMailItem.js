@@ -178,7 +178,7 @@ function(node) {
 
 		// unless it's just the start of the email address (ZBUG-2236)
 		if (node.p && node.a && node.a.startsWith(fullName + "@")) {
-			fullName = node.p; // Update contacts with prettier name?
+			fullName = node.p;
 		}
 
 		var addr = new AjxEmailAddress(node.a, type, fullName || node.p, node.d, node.isGroup, node.isGroup && node.exp);
