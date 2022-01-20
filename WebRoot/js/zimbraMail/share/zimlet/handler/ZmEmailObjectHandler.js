@@ -41,9 +41,8 @@ ZmEmailObjectHandler.prototype.toString = function() {
 };
 
 // email regex that recognizes mailto: links as well
-//ZmEmailObjectHandler.RE = /\b(mailto:[ ]*)?([0-9a-zA-Z]+[.&#!$%'*+-\/=?^_`{}|~])*[0-9a-zA-Z_-]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}([\w\/_\.]*(\?\S+)?)/gi;
-ZmEmailObjectHandler.RE = /\b(mailto:[ ]*)?([0-9a-zA-Z\u00C0-\u00ff]+[.&#!$%'*+-\/=?^_`{}|~])*[0-9a-zA-Z_-\u00C0-\u00ff]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}([\w\/_\.]*(\?\S+)?)/gi;
-
+// Reference: RFC 2234, 3986 and 6068
+ZmEmailObjectHandler.RE = /\b(mailto:[ ]*)?([0-9a-zA-Z\u00C0-\u00ff]+[.&#!$%'*+-\/=?^_`{}|~])*[0-9a-zA-Z_-\u00C0-\u00ff]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}([\w\/_\.]*(\?[-0-9a-zA-Z_\.~%!$'\(\)\*\+,;:@=&]+)?)/gi;
 
 ZmEmailObjectHandler.prototype.match = function(content, startIndex, objectMgr) {
 
@@ -83,8 +82,9 @@ ZmEmailObjectHandler.prototype.clicked = function(spanElement, contentObjText, m
 		action:         ZmOperation.NEW_MESSAGE,
 		inNewWindow:    ctlr && ctlr._app && ctlr._app._inNewWindow(ev),
 		toOverride:     parts.to,
-		subjOverride:   parts.subject,
-		extraBodyText:  parts.body
+		subjOverride:   AjxStringUtil.htmlEncode(parts.subject),
+		extraBodyText:  AjxStringUtil.htmlEncode(parts.body),
+		extraBodyTextIsExternal: Boolean(parts.body)
 	};
 
 	AjxDispatcher.run("Compose", params);
