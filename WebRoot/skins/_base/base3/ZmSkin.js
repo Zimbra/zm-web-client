@@ -78,14 +78,7 @@ ZmSkin.hints = {
 
 	hideSearchInCompose:	true,
 
-	notificationBanner:		"@NotificationBanner@",
-
-	socialfox:	{
-		iconURL: 		"@SocialfoxIconURL@",
-		icon32URL: 		"@SocialfoxIcon32URL@",
-		icon64URL: 		"@SocialfoxIcon64URL@",
-		mailIconURL: 	"@SocialfoxMailIconURL@"
-	}
+	notificationBanner:		"@NotificationBanner@"
 
 };
 
