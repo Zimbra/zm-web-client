@@ -2328,3 +2328,25 @@ ZmAppCtxt.prototype.showError = function(params) {
     dlg.setMessage(errMsg, params.details, params.style || DwtMessageDialog.WARNING_STYLE, params.title);
     dlg.popup(null, params.noReport !== false);
 };
+
+/**
+ * Get sharing folders
+ *
+ * @param {Object} folder     current node
+ * @param {string} type       folder type
+ * @param {Array}  result     an array of sharing folders
+ */
+ZmAppCtxt.prototype.getSharingFolders =
+function(folder, type, result) {
+    if (!folder || !folder instanceof ZmFolder || !type || !Array.isArray(result)) {
+        return;
+    }
+    var children = folder.children && folder.children.getArray();
+    for (var i = 0; i < children.length; i++) {
+        appCtxt.getSharingFolders(children[i], type, result);
+    }
+    // a sharing folder has an owner
+    if (folder.owner && folder.type == type && !folder.noSuchFolder) {
+        result.push(folder);
+    }
+};

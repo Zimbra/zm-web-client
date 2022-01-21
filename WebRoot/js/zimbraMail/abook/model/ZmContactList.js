@@ -160,8 +160,37 @@ function(callback, errorCallback, accountName) {
 	DBG.println(AjxDebug.DBG1, "loading contacts from " + params.restUri);
 	appCtxt.getAppController().sendRequest(params);
 
+	// wait for Contacts package to be loaded
+	AjxDispatcher.addPackageLoadFunction("Contacts", new AjxCallback(this, this._loadSharingFolders));
+
 	ZmContactList.addDlFolder();
 	
+};
+
+ZmContactList.prototype._loadSharingFolders =
+function() {
+	DBG.println(AjxDebug.DBG1, "loading sharing folders in Contacts");
+	var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
+	var sharingFolder = [];
+	appCtxt.getSharingFolders(root, ZmOrganizer.ADDRBOOK, sharingFolder);
+	if (sharingFolder.length) {
+		var query = "";
+		for (var i = 0; i < sharingFolder.length; i++) {
+			query += sharingFolder[i].createQuery() + " or ";
+		}
+		query = query.replace(/\sor\s$/, '');
+		var sc = appCtxt.getSearchController();
+		sc.setDefaultSearchType(ZmItem.CONTACT);
+		var params = {
+			query: query,
+			searchFor: ZmItem.CONTACT,
+			fetch: true,
+			sortBy: ZmSearch.NAME_ASC,
+			callback: null,
+			noRender: true
+		};
+		sc.search(params);
+	}
 };
 
 /**
