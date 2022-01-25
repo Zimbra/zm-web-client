@@ -169,14 +169,14 @@ function(callback, errorCallback, accountName) {
 
 ZmContactList.prototype._loadSharedFolders =
 function() {
-	DBG.println(AjxDebug.DBG1, "loading sharing folders in Contacts");
+	DBG.println(AjxDebug.DBG1, "loading shared folders in Contacts");
 	var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
-	var sharingFolder = [];
-	appCtxt.getSharedFolders(root, ZmOrganizer.ADDRBOOK, sharingFolder);
-	if (sharingFolder.length) {
+	var sharedFolder = [];
+	appCtxt.getSharedFolders(root, ZmOrganizer.ADDRBOOK, sharedFolder);
+	if (sharedFolder.length) {
 		var query = "";
-		for (var i = 0; i < sharingFolder.length; i++) {
-			query += sharingFolder[i].createQuery() + " or ";
+		for (var i = 0; i < sharedFolder.length; i++) {
+			query += sharedFolder[i].createQuery() + " or ";
 		}
 		query = query.replace(/\sor\s$/, '');
 		var sc = appCtxt.getSearchController();

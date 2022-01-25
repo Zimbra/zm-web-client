@@ -2330,11 +2330,11 @@ ZmAppCtxt.prototype.showError = function(params) {
 };
 
 /**
- * Get sharing folders
+ * Get shared folders
  *
  * @param {Object} folder     current node
  * @param {string} type       folder type
- * @param {Array}  result     an array of sharing folders
+ * @param {Array}  result     an array of shared folders
  */
 ZmAppCtxt.prototype.getSharedFolders =
 function(folder, type, result) {
@@ -2345,7 +2345,7 @@ function(folder, type, result) {
     for (var i = 0; i < children.length; i++) {
         appCtxt.getSharedFolders(children[i], type, result);
     }
-    // a sharing folder has an owner
+    // a shared folder has an owner
     if (folder.owner && folder.type == type && !folder.noSuchFolder) {
         result.push(folder);
     }
