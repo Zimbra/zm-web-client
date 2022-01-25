@@ -1168,7 +1168,7 @@ function() {
  *      (use only the items whose format is "<Primary-tag> *( "_" <Subtag> )")
  * When Aspell is upgraded and more locales are added, please update this list too.
  */
-ZmAppCtxt.AVAILABLE_DICTIONARY_LOCALES = ["ar", "da", "de", "de_AT", "de_CH", "de_DE", "en", "en_CA", "en_GB", "en_US", "es", "fr", "fr_CH", "fr_FR", "hi", "hu", "it", "nl", "pl", "pt_BR", "ru", "sv"];
+ZmAppCtxt.AVAILABLE_DICTIONARY_LOCALES = ["ar", "ca", "da", "de", "de_AT", "de_CH", "de_DE", "en", "en_CA", "en_GB", "en_US", "es", "fr", "fr_CH", "fr_FR", "hi", "hu", "it", "nl", "pl", "pt_BR", "ru", "sv"];
 
 /**
  * Gets the availability of the spell check feature based on the current locale and user's configuration
