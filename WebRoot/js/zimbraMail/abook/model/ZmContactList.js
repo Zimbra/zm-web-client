@@ -161,18 +161,18 @@ function(callback, errorCallback, accountName) {
 	appCtxt.getAppController().sendRequest(params);
 
 	// wait for Contacts package to be loaded
-	AjxDispatcher.addPackageLoadFunction("Contacts", new AjxCallback(this, this._loadSharingFolders));
+	AjxDispatcher.addPackageLoadFunction("Contacts", new AjxCallback(this, this._loadSharedFolders));
 
 	ZmContactList.addDlFolder();
 	
 };
 
-ZmContactList.prototype._loadSharingFolders =
+ZmContactList.prototype._loadSharedFolders =
 function() {
 	DBG.println(AjxDebug.DBG1, "loading sharing folders in Contacts");
 	var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
 	var sharingFolder = [];
-	appCtxt.getSharingFolders(root, ZmOrganizer.ADDRBOOK, sharingFolder);
+	appCtxt.getSharedFolders(root, ZmOrganizer.ADDRBOOK, sharingFolder);
 	if (sharingFolder.length) {
 		var query = "";
 		for (var i = 0; i < sharingFolder.length; i++) {

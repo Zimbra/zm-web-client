@@ -2336,14 +2336,14 @@ ZmAppCtxt.prototype.showError = function(params) {
  * @param {string} type       folder type
  * @param {Array}  result     an array of sharing folders
  */
-ZmAppCtxt.prototype.getSharingFolders =
+ZmAppCtxt.prototype.getSharedFolders =
 function(folder, type, result) {
     if (!folder || !folder instanceof ZmFolder || !type || !Array.isArray(result)) {
         return;
     }
     var children = folder.children && folder.children.getArray();
     for (var i = 0; i < children.length; i++) {
-        appCtxt.getSharingFolders(children[i], type, result);
+        appCtxt.getSharedFolders(children[i], type, result);
     }
     // a sharing folder has an owner
     if (folder.owner && folder.type == type && !folder.noSuchFolder) {
