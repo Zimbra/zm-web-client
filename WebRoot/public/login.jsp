@@ -235,19 +235,6 @@
                             <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
                         </c:if>
                         <c:choose>
-                            <c:when test="${client eq 'socialfox'}">
-                                    <c:set var="sbURL" value="/public/launchSidebar.jsp"/>
-                                    <c:redirect url="${sbURL}">
-                                        <c:forEach var="p" items="${paramValues}">
-                                            <c:forEach var='value' items='${p.value}'>
-                                                <c:set var="testKey" value=",${p.key},"/>
-                                                <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
-                                                    <c:param name="${p.key}" value='${value}'/>
-                                                </c:if>
-                                            </c:forEach>
-                                        </c:forEach>
-                                </c:redirect>
-                            </c:when>
                             <c:when test="${client eq 'advanced'}">
                                 <c:choose>
                                     <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
@@ -477,7 +464,7 @@ if (application.getInitParameter("offlineMode") != null) {
             </c:otherwise>
         </c:choose>
 	</c:if>
-	<c:set var="smallScreen" value="${client eq 'mobile' or client eq 'socialfox'}"/>
+	<c:set var="smallScreen" value="${client eq 'mobile'}"/>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<title><fmt:message key="zimbraLoginTitle"/></title>
 	<c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
@@ -625,21 +612,16 @@ if (application.getInitParameter("offlineMode") != null) {
                             </c:otherwise>
                         </c:choose>
                         <c:if test="${empty param.virtualacctdomain}">
-                            <tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
+                            <tr>
                             <td colspan="2"><hr/></td>
                             </tr>
-                            <tr <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
+                            <tr>
                             <td>
                             <label for="client"><fmt:message key="versionLabel"/></label>
                             </td>
                             <td>
                             <div class="positioning">
-                            <c:choose>
-                                <c:when test="${client eq 'socialfox'}">
-                                    <input type="hidden" name="client" value="socialfox"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
+                                <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
                                     <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
                                     <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
                                     <option value="standard" <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
@@ -650,24 +632,22 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <c:if test="${touchLoginPageExists}">
                                         <option value="touch" <c:if test="${client eq 'touch'}">selected</c:if>> <fmt:message key="clientTouch"/></option>
                                     </c:if>
-                                    </select>
-                                </c:otherwise>
-                            </c:choose>
-                        <script TYPE="text/javascript">
-                        document.write("<a href='#' onclick='showWhatsThis();' id='ZLoginWhatsThisAnchor' aria-controls='ZLoginWhatsThis' aria-expanded='false'><fmt:message key='whatsThis'/></a>");
-                        </script>
-                        <c:choose>
-                        <c:when test="${touchLoginPageExists}">
-                            <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessage"/></div>
-                        </c:when>
-                        <c:otherwise>
-                            <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessageWithoutTablet"/></div>
-                        </c:otherwise>
-                        </c:choose>
-                        <div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
-                        </div>
-                        </td>
-                        </tr>
+                                </select>
+                                <script TYPE="text/javascript">
+                                document.write("<a href='#' onclick='showWhatsThis();' id='ZLoginWhatsThisAnchor' aria-controls='ZLoginWhatsThis' aria-expanded='false'><fmt:message key='whatsThis'/></a>");
+                                </script>
+                                <c:choose>
+                                   <c:when test="${touchLoginPageExists}">
+                                       <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessage"/></div>
+                                   </c:when>
+                                   <c:otherwise>
+                                       <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;" onclick='showWhatsThis();' role="tooltip"><fmt:message key="clientWhatsThisMessageWithoutTablet"/></div>
+                                   </c:otherwise>
+                                </c:choose>
+                                <div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
+                            </div>
+                            </td>
+                            </tr>
                         </c:if>
                         </table>
                     </c:otherwise>
@@ -755,18 +735,6 @@ function onLoad() {
 		}
 	}
 	clientChange("${zm:cook(client)}");
-    //check if the login page is loaded in the sidebar.
-    if (navigator.mozSocial) {
-        //send a ping so that worker knows about this page.
-        navigator.mozSocial.getWorker().port.postMessage({topic: "worker.reload", data: true});
-        //this page is loaded in firefox sidebar so listen for message from worker.
-        navigator.mozSocial.getWorker().port.onmessage = function onmessage(e) {
-            var topic = e.data.topic;
-            if (topic && topic == "sidebar.authenticated") {
-                window.location.href = "/public/launchSidebar.jsp";
-            }
-        };
-    }
 	if (${totpAuthRequired} && loginForm.totpcode) {
         loginForm.totpcode.focus();
 	}
