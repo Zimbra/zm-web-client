@@ -2369,11 +2369,6 @@ function(parent, parentElement, adminUrl) {
         mi.addSelectionListener(new AjxListener(this, this._offlineSettingsListener));
     }
 
-	if (AjxEnv.isFirefox && (AjxEnv.browserVersion >= 23.0) && !appCtxt.isExternalAccount()) {
-		mi = menu.createMenuItem("socialfoxSettings", {text: ZmMsg.socialfoxEnableSidebar});
-		mi.addSelectionListener(this._socialfoxSettingsListener.bind(this));
-	}
-
 	if (appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED)) {
         mi = menu.createMenuItem("changePassword", {text: ZmMsg.changePassword});
         mi.addSelectionListener(new AjxListener(this, this._changePasswordListener));
@@ -2615,13 +2610,6 @@ function(ev) {
     }
     dialog.popup();
 };
-
-ZmZimbraMail.prototype._socialfoxSettingsListener =
-function(ev) {
-    var dialog = new ZmSocialfoxActivationDialog();
-    dialog.popup();
-};
-
 
 ZmZimbraMail.prototype._initOfflineUserInfo =
 function() {
