@@ -422,21 +422,10 @@ TD.vSpace {
 	@BusyCursor@
 	background-color:transparent;	/* ??? */
 }
-/* As of 07/22/05 Linux (or rather X) has a nasty issue that causes a huge perf problem with opacity.*/
-
-.BusyOverlay-linux TABLE, .VeilOverlay-linux TABLE {
-	@BusyCursor@
-	background-color:transparent;
-}
-
 
 .VeilOverlay TABLE {
 	@DisabledCursor@
 	@VeilColor@
-}
-
-.VeilOverlay-linux TABLE {
-	@DisabledCursor@
 }
 
 .CurtainOverlay TABLE {
