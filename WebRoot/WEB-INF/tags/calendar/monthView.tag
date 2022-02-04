@@ -124,7 +124,7 @@
                                 </c:when>
                                 <c:otherwise>
                                     <app:calendarUrl var="monthZoomUrl" view="month" zoom="${true}" timezone="${timezone}" rawdate="${currentDay}"/>
-                                    <td width="11%" onclick='javascript:dayClick(event, "${monthZoomUrl}");' class='ZhCalMonthDay${currentDay.timeInMillis eq date.timeInMillis ? 'Selected':''}'>
+                                    <td width="11%" onclick='javascript:dayClick(event, "${fn:escapeXml(monthZoomUrl)}");' class='ZhCalMonthDay${currentDay.timeInMillis eq date.timeInMillis ? 'Selected':''}'>
                                             <table width="100%" cellspacing="2" >
                                                 <tr>
                                                     <c:set var="T" value="${zm:isSameDate(currentDay, today) ? 'T' : ''}"/>
