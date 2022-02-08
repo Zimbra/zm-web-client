@@ -49,7 +49,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<title>${errCode} - <fmt:message key="${errTitle}"/></title>
+	<title>${fn:escapeXml(errCode)} - <fmt:message key="${errTitle}"/></title>
 	<meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
 	<meta name="description" content="<fmt:message bundle="${zmmsg}" key="zimbraLoginMetaDesc"/>">
 	<link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml,skin.css'>
@@ -74,14 +74,14 @@
 								<img src="<c:url value='/img/dwt/ImgWarning_32.png?v=${version}' />"
 									 title="Error" alt="Error" id="ZErrorIcon">
 							</td>
-							<td><h2 style="margin:0;"><fmt:message key="${errTitle}"/></h2></td>
+							<td><h2 style="margin:0;"><fmt:message key="${fn:escapeXml(errTitle)}"/></h2></td>
 						</tr>
 						<tr>
 							<td></td>
 							<td style="border-top:1px solid #333;">
-								<p style="margin:1em 0 2em;"><fmt:message key="${errMsg}"/><br/>
+								<p style="margin:1em 0 2em;"><fmt:message key="${fn:escapeXml(errMsg)}"/><br/>
 									<fmt:message key="errorTryAgainLater"/></p>
-								<p style="margin-bottom:2em;">ERROR: ${errCode}</p>
+								<p style="margin-bottom:2em;">ERROR: ${fn:escapeXml(errCode)}</p>
 								<p style="font-size:1.2em;font-weight:bold;margin-bottom:1em;">
 									<a href="/">
 										<span style="font-size:1.5em;">&laquo;</span>
