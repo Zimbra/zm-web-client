@@ -33,10 +33,8 @@
                           Pattern.matches("^[0-9A-Za-z]+$", skin));
 %>
 
-<c:if test="${skinOK}">
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZmMsg" var="zmmsg" scope="request"/>
-</c:if>
 
 <%
 	Object errorCode = request.getAttribute("javax.servlet.error.status_code");
