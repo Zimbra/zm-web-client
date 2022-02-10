@@ -29,8 +29,9 @@
 	String controller = request.getParameter("controller");
 	String template = request.getParameter("template");
 	String skin = request.getParameter("skin");
-	if (skin == null || !Pattern.matches("^[0-9A-Za-z]+$", skin))
+	if (skin == null || !Pattern.matches("^[0-9A-Za-z]+$", skin)) {
 		skin = application.getInitParameter("zimbraDefaultSkin");
+	}
 
     pageContext.setAttribute("template", template);
     pageContext.setAttribute("controller", controller);
