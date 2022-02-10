@@ -28,15 +28,14 @@
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 
 <%
-        String skin = request.getParameter("skin");
-        boolean skinOK = (skin != null &&
-                          Pattern.matches("^[0-9A-Za-z]+$", skin));
+	String skin = request.getParameter("skin");
+	if (skin == null || !Pattern.matches("^[0-9A-Za-z]+$", skin)) {
+		skin = application.getInitParameter("zimbraDefaultSkin");
+	}
 %>
 
-<c:if test="${skinOK}">
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZmMsg" var="zmmsg" scope="request"/>
-</c:if>
 
 <%
 	Object errorCode = request.getAttribute("javax.servlet.error.status_code");
