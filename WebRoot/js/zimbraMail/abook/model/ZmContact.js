@@ -175,6 +175,7 @@ ZmContact.F_workState				= "workState";
 ZmContact.F_workStreet				= "workStreet";
 ZmContact.F_workURL					= "workURL";
 ZmContact.F_imagepart               = "imagepart";          // New field for bug 73146 - Contacts call does not return the image information
+ZmContact.F_thumbnailPhoto          = "thumbnailPhoto";
 ZmContact.F_zimletImage				= "zimletImage";
 ZmContact.X_fileAs					= "fileAs";				// extra fields
 ZmContact.X_firstLast				= "firstLast";
@@ -336,7 +337,7 @@ ZmContact.IGNORE_FIELDS = [].concat(
 	ZmContact.GAL_FIELDS,
 	ZmContact.MYCARD_FIELDS,
 	ZmContact.X_FIELDS,
-	[ZmContact.F_imagepart]
+	[ZmContact.F_imagepart, ZmContact.F_thumbnailPhoto]
 );
 
 ZmContact.ALL_FIELDS = [].concat(
@@ -2218,6 +2219,10 @@ ZmContact.NO_MAX_IMAGE_WIDTH = ZmContact.NO_MAX_IMAGE_HEIGHT = - 1;
  */
 ZmContact.prototype.getImageUrl =
 function(maxWidth, maxHeight) {
+	if (this.getAttr(ZmContact.F_thumbnailPhoto)) {
+		return "data:;base64," + this.getAttr(ZmContact.F_thumbnailPhoto);
+	}
+
   	var image = this.getAttr(ZmContact.F_image);
 	var imagePart  = image && image.part || this.getAttr(ZmContact.F_imagepart); //see bug 73146
 
