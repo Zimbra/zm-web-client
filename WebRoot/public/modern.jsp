@@ -8,6 +8,20 @@
 %>
 <script TYPE="text/javascript">
     localStorage.setItem("csrfToken" , "${csrfToken}");
-    var url = window.location.origin + "/modern/"
-    window.location.href = url;
+    
+    const currentURL = new URL(window.location.href);
+    const redirectToPath = currentURL.searchParams.get("RelayState") || '';
+
+    /**
+     * After sucessful login app will redirect to RelayState path if it exist and it start with /modern/ and'
+     * if redirectToPath doesn't contains /../ (i.e. parent directory access)
+     * i.e. https://<server>/?RelayState=%2Fmodern%2Fcalendar on this case app will 
+     * redirect to https://<server>/modern/calendar
+     */
+    if (redirectToPath.indexOf('/modern/') === 0 && !redirectToPath.includes('/../')) {
+        window.location.href = window.location.origin + redirectToPath;
+    } else {
+        var url = window.location.origin + "/modern/"
+        window.location.href = url;
+    }
 </script>
