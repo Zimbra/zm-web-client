@@ -890,7 +890,23 @@ function() {
         items = AjxStringUtil.trim(this._inputEl.getValue(), true);
 	if (items.length) {
         items = AjxStringUtil.split(items, [',', ';', ' ']);
-        for(var i=0; i<items.length; i++) {
+        var invalidItems = [];
+        for (var i = 0; i < items.length; i++) {
+            if (items[i] && !ZmWhiteBlackList._validate(items[i])) {
+                invalidItems.push(AjxStringUtil.htmlEncode(items[i]));
+            }
+        }
+        if (invalidItems.length > 0) {
+            dialog = appCtxt.getMsgDialog();
+            var msg = ZmMsg.invalidAddressOrDomainError + "<br><br>" +
+                      "<b>" + ZmMsg.invalidAddressOrDomain + "</b><br>" +
+                      invalidItems.join("<br>");
+            dialog.setMessage(msg);
+            dialog.popup();
+            return;
+        }
+
+        for (var i = 0; i < items.length; i++) {
             val = items[i];
             if(val) {
                 this._addEmail(AjxStringUtil.htmlEncode(val));
@@ -906,6 +922,32 @@ function() {
 		this.updateNumUsed();
 	}
 };
+
+ZmWhiteBlackList._validate =
+function(str) {
+    if (!str) {
+        return false;
+    }
+    if (str.indexOf('@') > 0) {
+        return AjxEmailAddress.validateAddress(str);
+    } else {
+        return ZmWhiteBlackList.validDomain.test(str);
+    }
+};
+
+/*
+ * When a sender address is sender@domain1.zimbra.com, for example,
+ * the domain is parsed by amavis as follows:
+ *    @domain1.zimbra.com  @.domain1.zimbra.com  @.zimbra.com  @.com  @.
+ *    domain1.zimbra.com  zimbra.com  com
+ *
+ * Domain of an email address must support IPv4 and IPv6 formats defined in RFC 5321.
+ *    e.g. sender@[192.168.0.1], sender@[IPv6:1234:5678:90ab:cdef]
+ * The domain is parsed by amavis as follows, respectively:
+ *    @[192.168.0.1]  @.
+ *    @[IPv6:1234:5678:90ab:cdef]  @.
+ */
+ZmWhiteBlackList.validDomain = /(^@(\.?[a-z\-0-9]+)+$)|(^@\.$)|(^[a-z\-0-9]+(\.[a-z\-0-9]+)*$)|(^@\[([0-9]{1,3}\.){3}[0-9]{1,3}\]$)|(^@\[IPv6:[a-z0-9:]+\]$)/i;
 
 ZmWhiteBlackList.prototype._removeListener =
 function() {
