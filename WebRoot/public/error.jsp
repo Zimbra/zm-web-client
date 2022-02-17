@@ -64,7 +64,7 @@
 	<c:if test="${empty favIconUrl}">
 		<fmt:message key="favIconUrl" var="favIconUrl"/>
 	</c:if>
-	<link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
+	<link rel="SHORTCUT ICON" href="<c:url value='${fn:escapeXml(favIconUrl)}'/>">
 </head>
 <c:set value="/img" var="iconPath" scope="request"/>
 <body>
