@@ -107,7 +107,7 @@ ZmEmailObjectHandler.prototype.getActionMenu = function(obj, span, context, ev) 
 		this._actionMenu = ctlr._getBubbleActionMenu();
 	}
 
-	ctlr._bubbleActionListener(ev, obj);
+	ctlr._bubbleActionListener(ev, ctlr._actionEv.address);
 
 	return this._actionMenu;
 };
