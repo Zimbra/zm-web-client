@@ -40,9 +40,9 @@
  * @extends		ZmApp
  */
 ZmContactsApp = function(container, parentController) {
-
+	
 	ZmApp.call(this, ZmApp.CONTACTS, container, parentController);
-
+	console.log("rabab is trying");
 	this.contactsLoaded = {};
 	this._contactList = {};		// canonical list by acct ID
 	this._initialized = false;
