@@ -230,7 +230,7 @@
             <c:set var="find" value="\n"/>
             <c:set var="theBody" value="${zm:replaceAll(theBody, find,'<br>')}"/>
         </c:if>
-        <textarea class='MsgCompose' name="body" id="body" rows="20" cols="80" style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${theBody}</textarea>
+        <textarea class='MsgCompose' name="body" id="body" rows="20" cols="80" style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${fn:escapeXml(theBody)}</textarea>
         <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' />
 
     </td>
