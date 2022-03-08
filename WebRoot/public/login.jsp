@@ -102,17 +102,20 @@
 		<c:when test="${param.loginOp eq 'logout'}">
 			<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 			<c:set var="logoutRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLogoutURL}" />
+			<c:set var="skipLogoff" value="${domainInfo.attrs.zimbraWebClientSkipLogoff}" />
 			<c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLogoutURLAllowedUA)}"/>
-            <c:set var="isAllowedIP" value="${zm:isAllowedIP(remoteAddr, domainInfo.webClientLogoutURLAllowedIP)}"/>
-            <c:choose>
-                <c:when test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (isAllowedIP eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
-                    <zm:logout/>
-                    <c:redirect url="${logoutRedirectUrl}"/>
-                </c:when>
-                <c:otherwise>
-                    <zm:logout/>
-                </c:otherwise>
-            </c:choose>
+			<c:set var="isAllowedIP" value="${zm:isAllowedIP(remoteAddr, domainInfo.webClientLogoutURLAllowedIP)}"/>
+			<c:choose>
+				<c:when test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (isAllowedIP eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
+					<c:if test="${skipLogoff ne 'true'}">
+						<zm:logout/>
+					</c:if>
+					<c:redirect url="${logoutRedirectUrl}"/>
+				</c:when>
+				<c:otherwise>
+					<zm:logout/>
+				</c:otherwise>
+			</c:choose>
 		</c:when>
 		<c:when test="${(param.loginOp eq 'login') && !(empty fullUserName) && !(empty param.password) && (pageContext.request.method eq 'POST')}">
 			<c:choose>
