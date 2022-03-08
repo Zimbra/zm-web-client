@@ -108,11 +108,14 @@
 		<c:when test="${param.loginOp eq 'logout'}">
 			<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 			<c:set var="logoutRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLogoutURL}" />
+			<c:set var="skipLogoff" value="${domainInfo.attrs.zimbraWebClientSkipLogoff}" />
 			<c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLogoutURLAllowedUA)}"/>
             <c:set var="isAllowedIP" value="${zm:isAllowedIP(remoteAddr, domainInfo.webClientLogoutURLAllowedIP)}"/>
             <c:choose>
                 <c:when test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (isAllowedIP eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
-                    <zm:logout/>
+                    <c:if test="${skipLogoff ne 'true'}">
+                        <zm:logout/>
+                    </c:if>
                     <c:redirect url="${logoutRedirectUrl}"/>
                 </c:when>
                 <c:when test="${touchSupported and touchLoginPageExists and (empty param.client or param.client eq 'touch') and
