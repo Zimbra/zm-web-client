@@ -26,6 +26,14 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <zm:getUserAgent var="ua" session="true"/>
+
+<c:forEach var="part" items="${message.attachments}">
+    <c:set var="cid" value="${fn:replace(part.contentId,'<' ,'')}"/>
+    <c:set var="cid" value="cid:${fn:replace(cid,'>' ,'')}"/>
+    <c:set var="imageUrl" value="/service/home/~/?id=${message.id}&amp;part=${part.partName}&amp;auth=co"/>
+    <c:set var="theBody" value="${fn:replace(theBody,cid,imageUrl)}"/>
+</c:forEach>
+
 <c:choose>
     <c:when test="${ua.isiPhone or ua.isiPod or ua.isiPad or ua.isOsAndroid}">
         <c:choose>
