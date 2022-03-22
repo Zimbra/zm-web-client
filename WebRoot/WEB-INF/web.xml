@@ -467,7 +467,6 @@
     <welcome-file>login</welcome-file>
     <welcome-file>public/login.jsp</welcome-file>
     <welcome-file>public/admin.jsp</welcome-file>
-    <welcome-file>launchTouch.jsp</welcome-file>
     <welcome-file>modern/index.html</welcome-file>
   </welcome-file-list>
 
