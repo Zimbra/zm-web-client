@@ -26,6 +26,6 @@
 <c:set var="last" value="${searchResult.offset+searchResult.size}"/>    
 <span class='Paging'>
 ${first} <c:if test="${first ne last}"> - ${last}</c:if>
-<c:if test="${!empty max}"> of ${max} </c:if>
+<c:if test="${!empty max}"> of ${fn:escapeXml(max)} </c:if>
 <c:if test="${empty max and !searchResult.hasMore}">&nbsp;<fmt:message key="of"/>&nbsp;${last} </c:if>
 </span>
