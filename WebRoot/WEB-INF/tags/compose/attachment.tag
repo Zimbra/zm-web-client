@@ -47,7 +47,7 @@
         <table cellpadding="0" cellspacing="0" border="0">
             <tr valign="middle">
                 <td>
-                    <input <c:if test="${checked}">checked </c:if>type=checkbox name="${name}" value="${value}">
+                    <input <c:if test="${checked}">checked </c:if>type=checkbox name="${name}" value="${fn:escapeXml(value)}">
                 </td>
                 <td>&nbsp;</td>
                 <td>
