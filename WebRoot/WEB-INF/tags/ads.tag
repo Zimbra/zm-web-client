@@ -22,7 +22,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <c:url var="url" value="/h/ads">
-   <c:param name="f" value="${content}"/>
+   <c:param name="f" value="${fn:escapeXml(content)}"/>
 </c:url>
-<!-- ||${content}|| -->
+<!-- ||${fn:escapeXml(content)}|| -->
 <iframe width="163" height="606" frameborder="0" scrolling="no" src="${url}"></iframe>
