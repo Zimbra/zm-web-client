@@ -96,7 +96,7 @@
     </c:choose>
     <c:forEach items="${dynattrs}" var="a">
         <c:if test="${not empty a.value}">
-            <c:param name='${a.key}' value='${a.value}'/>
+            <c:param name='${a.key}' value='${fn:escapeXml(a.value)}'/>
         </c:if>
     </c:forEach>
 </c:url>
