@@ -11,21 +11,6 @@
     <uri>com.zimbra.htmlclient</uri>
 
     <tag-file>
-        <name>overviewFolder</name>
-        <path>/WEB-INF/tags/overview/overviewFolder.tag</path>
-    </tag-file>
-
-   <tag-file>
-        <name>contactAddListView</name>
-        <path>/WEB-INF/tags/contact/contactAddListView.tag</path>
-    </tag-file>
-
-   <tag-file>
-        <name>contactListViewAction</name>
-        <path>/WEB-INF/tags/contact/contactListViewAction.tag</path>
-    </tag-file>
-
-    <tag-file>
          <name>contactDisplayName</name>
          <path>/WEB-INF/tags/contact/contactDisplayName.tag</path>
      </tag-file>
@@ -36,222 +21,6 @@
      </tag-file>
 
     <tag-file>
-        <name>taskListView</name>
-        <path>/WEB-INF/tags/task/taskListView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>taskListAction</name>
-        <path>/WEB-INF/tags/overview/taskListAction.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>taskAction</name>
-        <path>/WEB-INF/tags/task/taskAction.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>taskListViewToolbar</name>
-        <path>/WEB-INF/tags/task/taskListViewToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>taskFolder</name>
-        <path>/WEB-INF/tags/task/taskFolder.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>editTaskCheck</name>
-        <path>/WEB-INF/tags/task/editTaskCheck.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>taskFolderTree</name>
-        <path>/WEB-INF/tags/task/taskFolderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>newBriefCheck</name>
-        <path>/WEB-INF/tags/briefcase/newBriefCheck.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseAction</name>
-        <path>/WEB-INF/tags/overview/briefcaseAction.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseListViewAction</name>
-        <path>/WEB-INF/tags/briefcase/briefcaseListViewAction.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseListView</name>
-        <path>/WEB-INF/tags/briefcase/briefcaseListView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseListViewToolbar</name>
-        <path>/WEB-INF/tags/briefcase/briefcaseListViewToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseExplorerView</name>
-        <path>/WEB-INF/tags/briefcase/briefcaseExplorerView.tag</path>
-    </tag-file>
-
-     <tag-file>
-        <name>mimeTable</name>
-        <path>/WEB-INF/tags/briefcase/mimeTable.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>notebookListViewAction</name>
-        <path>/WEB-INF/tags/notebook/notebookListViewAction.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>notebookListView</name>
-        <path>/WEB-INF/tags/notebook/notebookListView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>notebookRestView</name>
-        <path>/WEB-INF/tags/notebook/notebookRestView.tag</path>
-    </tag-file>
-
-    <tag-file>
-            <name>notebookFolderTree</name>
-            <path>/WEB-INF/tags/notebook/notebookFolderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>notebookFolder</name>
-        <path>/WEB-INF/tags/notebook/notebookFolder.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseFolderTree</name>
-        <path>/WEB-INF/tags/briefcase/briefcaseFolderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>briefcaseFolder</name>
-        <path>/WEB-INF/tags/briefcase/briefcaseFolder.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>convColumnView</name>
-        <path>/WEB-INF/tags/conv/convColumnView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>convRowView</name>
-        <path>/WEB-INF/tags/conv/convRowView.tag</path>
-    </tag-file>
-
-    <tag-file>
-       <name>convListView</name>
-        <path>/WEB-INF/tags/conv/convListView.tag</path>
-    </tag-file>
-
-   <tag-file>
-       <name>convView</name>
-        <path>/WEB-INF/tags/conv/convView.tag</path>
-    </tag-file>
-
-   <tag-file>
-        <name>convListViewToolbar</name>
-        <path>/WEB-INF/tags/conv/convListViewToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-         <name>convListViewAction</name>
-         <path>/WEB-INF/tags/conv/convListViewAction.tag</path>
-     </tag-file>
-
-   <tag-file>
-       <name>convView2</name>
-        <path>/WEB-INF/tags/conv/convView2.tag</path>
-    </tag-file>
-
-   <tag-file>
-       <name>convToolbar2</name>
-        <path>/WEB-INF/tags/conv/convToolbar2.tag</path>
-    </tag-file>
-
-   <tag-file>
-       <name>convToolbar2Top</name>
-        <path>/WEB-INF/tags/conv/convToolbar2Top.tag</path>
-    </tag-file>
-
-
-   <tag-file>
-         <name>messageAction</name>
-         <path>/WEB-INF/tags/message/messageAction.tag</path>
-     </tag-file>
-
-    <tag-file>
-         <name>tagAction</name>
-         <path>/WEB-INF/tags/overview/tagAction.tag</path>
-     </tag-file>
-
-    <tag-file>
-         <name>editFolder</name>
-         <path>/WEB-INF/tags/overview/editFolder.tag</path>
-     </tag-file>
-
-    <tag-file>
-         <name>newFolder</name>
-         <path>/WEB-INF/tags/overview/newFolder.tag</path>
-     </tag-file>
-
-    <tag-file>
-         <name>folderAction</name>
-         <path>/WEB-INF/tags/overview/folderAction.tag</path>
-     </tag-file>
-
-    <tag-file>
-         <name>addressBookAction</name>
-         <path>/WEB-INF/tags/overview/addressBookAction.tag</path>
-     </tag-file>
-
-    <tag-file>
-         <name>calendarAction</name>
-         <path>/WEB-INF/tags/overview/calendarAction.tag</path>
-     </tag-file>
-
-    <tag-file>
-        <name>convToolbar</name>
-        <path>/WEB-INF/tags/conv/convToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>contactListViewToolbar</name>
-        <path>/WEB-INF/tags/contact/contactListViewToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>contactView</name>
-        <path>/WEB-INF/tags/contact/contactView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>contactToolbar</name>
-        <path>/WEB-INF/tags/contact/contactToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>editContactToolbar</name>
-        <path>/WEB-INF/tags/contact/editContactToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>htmlCompose</name>
-        <path>/WEB-INF/tags/compose/htmlCompose.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>yuiInclude</name>
         <path>/WEB-INF/tags/compose/yuiInclude.tag</path>
     </tag-file>
@@ -259,21 +28,6 @@
     <tag-file>
         <name>spellcheck</name>
         <path>/WEB-INF/tags/spellcheck.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>composeValidation</name>
-        <path>/WEB-INF/tags/compose/composeValidation.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>attachment</name>
-        <path>/WEB-INF/tags/compose/attachment.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>composeCheck</name>
-        <path>/WEB-INF/tags/compose/composeCheck.tag</path>
     </tag-file>
 
     <tag-file>
@@ -300,52 +54,6 @@
         <name>messageIframe</name>
         <path>/WEB-INF/tags/message/messageIframe.tag</path>
     </tag-file>
-
-    <tag-file>
-        <name>messageColumnView</name>
-        <path>/WEB-INF/tags/message/messageColumnView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>messageRowView</name>
-        <path>/WEB-INF/tags/message/messageRowView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>messageListView</name>
-        <path>/WEB-INF/tags/message/messageListView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>messageListViewToolbar</name>
-        <path>/WEB-INF/tags/message/messageListViewToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>messageView</name>
-        <path>/WEB-INF/tags/message/messageView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>messageViewToolbar</name>
-        <path>/WEB-INF/tags/message/messageViewToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>overviewSearchFolder</name>
-        <path>/WEB-INF/tags/overview/overviewSearchFolder.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>overviewTag</name>
-        <path>/WEB-INF/tags/overview/overviewTag.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>contactListView</name>
-        <path>/WEB-INF/tags/contact/contactListView.tag</path>
-    </tag-file>
-
 
     <tag-file>
         <name>contactPhone</name>
@@ -378,78 +86,13 @@
     </tag-file>
 
     <tag-file>
-        <name>contactFileAs</name>
-        <path>/WEB-INF/tags/contact/contactFileAs.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>contactEditField</name>
-        <path>/WEB-INF/tags/contact/contactEditField.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>contactEditIMField</name>
-        <path>/WEB-INF/tags/contact/contactEditIMField.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>contactLine</name>
-        <path>/WEB-INF/tags/contact/contactLine.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>appTabs</name>
-        <path>/WEB-INF/tags/infra/appTabs.tag</path>
-    </tag-file>
-    <tag-file>
-        <name>footer</name>
-        <path>/WEB-INF/tags/footer.tag</path>
-    </tag-file>
-    <tag-file>
-        <name>appTop</name>
-        <path>/WEB-INF/tags/infra/appTop.tag</path>
-    </tag-file>
-	<tag-file>
-        <name>appTopUser</name>
-        <path>/WEB-INF/tags/infra/appTopUser.tag</path>
-    </tag-file>
-    <tag-file>
-        <name>appTopYSearch</name>
-        <path>/WEB-INF/tags/infra/appTopYSearch.tag</path>
-    </tag-file>
-    <tag-file>
-        <name>appStatus</name>
-        <path>/WEB-INF/tags/infra/appStatusArea.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>status</name>
         <path>/WEB-INF/tags/infra/status.tag</path>
     </tag-file>
 
     <tag-file>
-        <name>view</name>
-        <path>/WEB-INF/tags/infra/view.tag</path>
-    </tag-file>
-
-    <tag-file>
-         <name>searchTitle</name>
-         <path>/WEB-INF/tags/infra/searchTitle.tag</path>
-     </tag-file>
-
-    <tag-file>
-         <name>tagOptions</name>
-         <path>/WEB-INF/tags/infra/tagOptions.tag</path>
-     </tag-file>
-
-    <tag-file>
         <name>handleError</name>
         <path>/WEB-INF/tags/infra/handleError.tag</path>
-    </tag-file>
-
-     <tag-file>
-        <name>handleViewError</name>
-        <path>/WEB-INF/tags/infra/handleViewError.tag</path>
     </tag-file>
 
     <tag-file>
@@ -463,73 +106,8 @@
     </tag-file>
 
     <tag-file>
-        <name>tagTree</name>
-        <path>/WEB-INF/tags/overview/tagTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>editTag</name>
-        <path>/WEB-INF/tags/overview/editTag.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>newTag</name>
-        <path>/WEB-INF/tags/overview/newTag.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>folderTree</name>
-        <path>/WEB-INF/tags/overview/folderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>doFolderTree</name>
-        <path>/WEB-INF/tags/overview/doFolderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>searchFolderTree</name>
-        <path>/WEB-INF/tags/overview/searchFolderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>contactFolderTree</name>
-        <path>/WEB-INF/tags/contact/contactFolderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>contactFolder</name>
-        <path>/WEB-INF/tags/contact/contactFolder.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>myCardFolder</name>
-        <path>/WEB-INF/tags/contact/myCardFolder.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>overviewTree</name>
-        <path>/WEB-INF/tags/overview/overviewTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>doContactFolderTree</name>
-        <path>/WEB-INF/tags/contact/doContactFolderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>displayContact</name>
         <path>/WEB-INF/tags/contact/displayContact.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>editContact</name>
-        <path>/WEB-INF/tags/contact/editContact.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>editContactAction</name>
-        <path>/WEB-INF/tags/contact/editContactAction.tag</path>
     </tag-file>
 
     <tag-file>
@@ -557,24 +135,14 @@
         <path>/WEB-INF/tags/imginfo.tag</path>
     </tag-file>
 
-	<tag-file>
-		<name>skin</name>
-		<path>/WEB-INF/tags/infra/skin.tag</path>
-	</tag-file>
-
-	<tag-file>
-		<name>skinAndRedirect</name>
-		<path>/WEB-INF/tags/infra/skinAndRedirect.tag</path>
-	</tag-file>
-
-	<tag-file>
-		<name>loadTinyMCE</name>
-		<path>/WEB-INF/tags/infra/loadTinyMCE.tag</path>
-	</tag-file>
+    <tag-file>
+        <name>skin</name>
+        <path>/WEB-INF/tags/infra/skin.tag</path>
+    </tag-file>
 
     <tag-file>
-        <name>button</name>
-        <path>/WEB-INF/tags/button.tag</path>
+        <name>skinAndRedirect</name>
+        <path>/WEB-INF/tags/infra/skinAndRedirect.tag</path>
     </tag-file>
 
     <tag-file>
@@ -588,218 +156,18 @@
     </tag-file>
 
     <tag-file>
-        <name>priorityImage</name>
-        <path>/WEB-INF/tags/priorityImage.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>attachmentImage</name>
-        <path>/WEB-INF/tags/attachmentImage.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>searchPageLeft</name>
-        <path>/WEB-INF/tags/searchPageLeft.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>searchPageRight</name>
-        <path>/WEB-INF/tags/searchPageRight.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>searchPageOffset</name>
-        <path>/WEB-INF/tags/searchPageOffset.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>ads</name>
-        <path>/WEB-INF/tags/ads.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optGeneral</name>
-        <path>/WEB-INF/tags/options/optGeneral.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optTabs</name>
-        <path>/WEB-INF/tags/options/optTabs.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optSubToolbar</name>
-        <path>/WEB-INF/tags/options/optSubToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optSignatures</name>
-        <path>/WEB-INF/tags/options/optSignatures.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optAccounts</name>
-        <path>/WEB-INF/tags/options/optAccounts.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optComposing</name>
-        <path>/WEB-INF/tags/options/optComposing.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optMail</name>
-        <path>/WEB-INF/tags/options/optMail.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optMailFilter</name>
-        <path>/WEB-INF/tags/options/optMailFilter.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>displayRule</name>
-        <path>/WEB-INF/tags/options/displayRule.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>editRule</name>
-        <path>/WEB-INF/tags/options/editRule.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>constructRule</name>
-        <path>/WEB-INF/tags/options/constructRule.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optAddressBook</name>
-        <path>/WEB-INF/tags/options/optAddressBook.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optCalendar</name>
-        <path>/WEB-INF/tags/options/optCalendar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optShortcuts</name>
-        <path>/WEB-INF/tags/options/optShortcuts.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optShortcutSection</name>
-        <path>/WEB-INF/tags/options/optShortcutSection.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optShortcutKey</name>
-        <path>/WEB-INF/tags/options/optShortcutKey.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optCheckbox</name>
-        <path>/WEB-INF/tags/options/optCheckbox.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optSeparator</name>
-        <path>/WEB-INF/tags/options/optSeparator.tag</path>
-    </tag-file>
-
-   <tag-file>
-        <name>optSection</name>
-        <path>/WEB-INF/tags/options/optSection.tag</path>
-    </tag-file>
-
-   <tag-file>
-        <name>optText</name>
-        <path>/WEB-INF/tags/options/optText.tag</path>
-    </tag-file>
-
-   <tag-file>
-        <name>optTextArea</name>
-        <path>/WEB-INF/tags/options/optTextArea.tag</path>
-    </tag-file>
-
-   <tag-file>
-        <name>optAction</name>
-        <path>/WEB-INF/tags/options/optAction.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>editapptCheck</name>
-        <path>/WEB-INF/tags/calendar/editapptCheck.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>displayAppointment</name>
-        <path>/WEB-INF/tags/calendar/displayAppointment.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>apptView</name>
-        <path>/WEB-INF/tags/calendar/apptView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>apptViewToolbar</name>
-        <path>/WEB-INF/tags/calendar/apptViewToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>calendarFolderTree</name>
-        <path>/WEB-INF/tags/calendar/calendarFolderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>calendarFolder</name>
-        <path>/WEB-INF/tags/calendar/calendarFolder.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>calendarUrl</name>
         <path>/WEB-INF/tags/calendar/calendarUrl.tag</path>
     </tag-file>
 
     <tag-file>
-        <name>calendarViewToolbar</name>
-        <path>/WEB-INF/tags/calendar/calendarViewToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>calendarViewBottomToolbar</name>
-        <path>/WEB-INF/tags/calendar/calendarViewBottomToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>multiDayView</name>
-        <path>/WEB-INF/tags/calendar/multiDayView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>listView</name>
-        <path>/WEB-INF/tags/calendar/listView.tag</path>
-    </tag-file>
-
-    <tag-file>
-            <name>zoomView</name>
-            <path>/WEB-INF/tags/calendar/zoomView.tag</path>
-    </tag-file>
-
-    <tag-file>
-            <name>multiDayPrintView</name>
-            <path>/WEB-INF/tags/calendar/multiDayPrintView.tag</path>
+        <name>multiDayPrintView</name>
+        <path>/WEB-INF/tags/calendar/multiDayPrintView.tag</path>
     </tag-file>
 
     <tag-file>
         <name>multiDay</name>
         <path>/WEB-INF/tags/calendar/multiDay.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>monthView</name>
-        <path>/WEB-INF/tags/calendar/monthView.tag</path>
     </tag-file>
 
     <tag-file>
@@ -820,96 +188,6 @@
     <tag-file>
         <name>miniCal</name>
         <path>/WEB-INF/tags/calendar/miniCal.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>apptGadget</name>
-        <path>/WEB-INF/tags/calendar/apptPortalGadget.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>autoComplete</name>
-        <path>/WEB-INF/tags/autoComplete.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>keyboard</name>
-        <path>/WEB-INF/tags/keyboard.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>voiceMailListView</name>
-        <path>/WEB-INF/tags/voice/voiceMailListView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>voiceMailListViewAction</name>
-        <path>/WEB-INF/tags/voice/voiceMailListViewAction.tag</path>
-    </tag-file>
-
-	<tag-file>
-		<name>voiceMailView</name>
-		<path>/WEB-INF/tags/voice/voiceMailView.tag</path>
-	</tag-file>
-
-	<tag-file>
-		<name>voiceMailViewAction</name>
-		<path>/WEB-INF/tags/voice/voiceMailViewAction.tag</path>
-	</tag-file>
-
-	<tag-file>
-		<name>voiceMailViewToolbar</name>
-		<path>/WEB-INF/tags/voice/voiceMailViewToolbar.tag</path>
-	</tag-file>
-
-    <tag-file>
-        <name>voiceFolderTree</name>
-        <path>/WEB-INF/tags/voice/voiceFolderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>voiceFolder</name>
-        <path>/WEB-INF/tags/voice/voiceFolder.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>doVoiceFolderTree</name>
-        <path>/WEB-INF/tags/voice/doVoiceFolderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-         <name>voiceMailListViewToolbar</name>
-         <path>/WEB-INF/tags/voice/voiceMailListViewToolbar.tag</path>
-     </tag-file>
-
-    <tag-file>
-        <name>callListView</name>
-        <path>/WEB-INF/tags/voice/callListView.tag</path>
-    </tag-file>
-
-    <tag-file>
-         <name>callListViewToolbar</name>
-         <path>/WEB-INF/tags/voice/callListViewToolbar.tag</path>
-     </tag-file>
-
-    <tag-file>
-        <name>optVoice</name>
-        <path>/WEB-INF/tags/options/optVoice.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optVoiceAction</name>
-        <path>/WEB-INF/tags/options/optVoiceAction.tag</path>
-    </tag-file>
-    
-    <tag-file>
-        <name>forwardFromRow</name>
-        <path>/WEB-INF/tags/voice/forwardFromRow.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>getCallFeatures</name>
-        <path>/WEB-INF/tags/voice/getCallFeatures.tag</path>
     </tag-file>
 
     <function>

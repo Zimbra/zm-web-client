@@ -137,7 +137,7 @@
     <target name='client' depends='common'>
         <property name='deploy.app' value='zimbra'/>
         <property name='skins.dir' value='${web.dir}/skins'/>
-        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/2.9.0-alfresco-20140211/**,qunit/**'/>
+        <property name='web.includes' value='${common.web.includes},h/**,portals/**,sounds/**,test/**,yui/2.9.0-alfresco-20140211/**,qunit/**'/>
         <property name='web.excludes' value='${common.web.excludes}'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
@@ -455,7 +455,7 @@
 					<then>
 						<fileset id='customer.web.fileset'
 								 dir='${customer.web.dir}'
-								 includes='${custom.web.includes},h/**,m/**,skins/**,portals/**,js/**'
+								 includes='${custom.web.includes},h/**,skins/**,portals/**,js/**'
 								 excludes='${custom.web.excludes},**/*.template'
 						/>
 						<pathconvert property='customer.web.files' refid='customer.web.fileset' pathsep=','>
@@ -831,7 +831,7 @@
                     />
             <fileset dir='${build.web.dir}' includes='skins/${skinname}/**'/>
             <fileset dir='${customer.web.dir}' includes='portals/${skinname}/**'/>
-            <fileset dir='${customer.web.dir}' includes='${custom.web.jsp.includes},h/**,m/**,js/**'/>
+            <fileset dir='${customer.web.dir}' includes='${custom.web.jsp.includes},h/**,js/**'/>
             <fileset dir='${customer.web.dir}' includes='WEB-INF/**'/>
         </zip>
     </target>
@@ -1396,9 +1396,9 @@ ext = BeanUtils.cook(ext);
         <mkdir dir="${jspc.build.dir}"/>
         <mkdir dir="${jspc.src.dir}"/>
         <copy todir="${jspc.src.dir}" preservelastmodified="true">
-            <fileset dir='${web.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp,WEB-INF/**"/>
+            <fileset dir='${web.dir}' includes="${custom.web.jsp.includes},h/**,public/*.jsp,WEB-INF/**"/>
         </copy>
-        <fileset id='jspc.fileset1' dir='${jspc.src.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp"/>
+        <fileset id='jspc.fileset1' dir='${jspc.src.dir}' includes="${custom.web.jsp.includes},h/**,public/*.jsp"/>
         <pathconvert property='jspc.files1' refid='jspc.fileset1' pathsep=',' />
         <antcall target="jspc" inheritRefs="true">
             <param name="param.jspfiles" value="${jspc.files1}" />
