@@ -596,7 +596,7 @@ function(columnItem, bSortAsc) {
     if (sortBy) {
 		this._sortByString = sortBy;
         if (!appCtxt.isExternalAccount()) {
-		    appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
+            appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this._controller._folderId || this.view);
         }
 	}
 
@@ -685,6 +685,34 @@ function(parent) {
         hList.push(new DwtListHeaderItem({field:ZmItem.F_SORTED_BY, text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg[sortBy]), sortable:field, resizeable:false}));
 	}
 	return hList;
+};
+
+ZmTaskListView.prototype.createHeaderHtml =
+function(defaultColumnSort) {
+	DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort, this._isMultiColumn);
+
+	var activeSortBy = this.getActiveSearchSortBy();
+	var col = Dwt.byId(this._currentColId);
+    var headerCol = this._isMultiColumn ? this._headerHash[ZmItem.F_DATE] :
+		            (col && this.getItemFromElement(col)) || (this._headerHash && this._headerHash[ZmItem.F_SORTED_BY]) || null;
+	if (headerCol) {
+		if (activeSortBy && ZmTaskListView.SORTBY_HASH[activeSortBy]){
+			var msg = ZmTaskListView.SORTBY_HASH[activeSortBy].msg;
+			var field = ZmTaskListView.SORTBY_HASH[activeSortBy].field;
+			if (msg) {
+				colLabel = AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg[msg]);
+			}
+			if (field) {
+				headerCol._sortable = field;
+			}
+		}
+		
+		//Set column label; for multi-column this changes the received text. For single column this sets to the sort by text
+		var colSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
+		if (colSpan) {
+			colSpan.innerHTML = colLabel;
+		}
+	}
 };
 
 ZmTaskListView.prototype._createHeader =
