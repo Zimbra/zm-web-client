@@ -408,12 +408,15 @@ function(folder, startDate, endDate, callback, accountName) {
     var query = folder ? folder.createQuery() : "";
     query = query || (appCtxt.isExternalAccount() ? "inid:" + this.getDefaultFolderId() : "in:tasks");
 
+    var sortBy = (folder && appCtxt.get(ZmSetting.SORTING_PREF, folder.nId)) || appCtxt.get(ZmSetting.SORTING_PREF, "TKL-main") || ZmSearch.DUE_DATE_ASC;
+
 	var params = {
 		query:			query,
 		types:			[ZmItem.TASK],
 		limit:			this.getLimit(),
 		searchFor:		ZmItem.TASK,
 		callback:		callback,
+		sortBy:			sortBy,
 		accountName:	(accountName || (folder && folder.getAccount().name))
 	};
 	var sc = appCtxt.getSearchController();
