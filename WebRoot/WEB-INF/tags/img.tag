@@ -30,7 +30,7 @@
 <c:if test="${not empty altkey}"><fmt:message key="${altkey}" var="alt"/></c:if>
 <c:if test="${not empty title and not rawtitle}"><fmt:message key="${title}" var="title"/></c:if> 
 <c:if test="${zm:boolean(disabled)}"><c:set var="clazz" value="${clazz} ImgDisabled"/></c:if>
-<app:imginfo var="info" value="${src}" />
+<app:imginfo var="info" value="${fn:escapeXml(src)}" />
 <zm:getUserAgent var="ua" session="false" /><img <c:choose>
         <c:when test="${fn:endsWith(fn:toLowerCase(src),'.png') and ua.isIE and not ua.isIE7up}"> 
             src="<c:url value='/img/zimbra/ImgBlank_1.gif' />"
@@ -40,9 +40,9 @@
         <c:otherwise> src="${info.src}" </c:otherwise>
     </c:choose>
     <c:choose>
-        <c:when test="${not empty title}"> title='${title}' </c:when>
-        <c:when test="${not empty alt}"> title='${alt}' </c:when>
+        <c:when test="${not empty title}"> title='${fn:escapeXml(title)}' </c:when>
+        <c:when test="${not empty alt}"> title='${fn:escapeXml(alt)}' </c:when>
     </c:choose>
     <c:if test="${not empty alt}"> alt="${fn:escapeXml(alt)}" </c:if>
-    <c:if test="${not empty clazz}"> class='${clazz}' </c:if>
-    <c:forEach items="${dynattrs}" var="a"> ${a.key}="${a.value}" </c:forEach> >
+    <c:if test="${not empty clazz}"> class='${fn:escapeXml(clazz)}' </c:if>
+    <c:forEach items="${dynattrs}" var="a"> ${a.key}="${fn:escapeXml(a.value)}" </c:forEach> >
