@@ -2771,9 +2771,9 @@ function(ev, relogin) {
                         loginOp: relogin ? 'relogin' : 'logout'
                     }
                 };
-	if (relogin) {
-		urlParams.qsArgs.username = appCtxt.getLoggedInUsername();
-	}
+	// Formerly, only set below when "relogin" is true.
+	urlParams.qsArgs.username = appCtxt.getLoggedInUsername();
+
     if(appCtxt.isExternalAccount()) {
         var vAcctDomain = appCtxt.getUserDomain();
         urlParams.qsArgs.virtualacctdomain = vAcctDomain ? vAcctDomain : "";
