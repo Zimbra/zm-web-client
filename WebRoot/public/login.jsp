@@ -957,7 +957,7 @@ function parseCharsFromPassword(passwordString) {
                     isInvalid = true;
                 }
             } catch (error) {
-                console.error({ error });
+                console.error(error);
             }
         }
 
@@ -974,7 +974,7 @@ function parseCharsFromPassword(passwordString) {
                         ? punctuations.push(char)
                         : invalidPuncs.push(char);
                 } catch (error) {
-                    console.error({ error });
+                    console.error(error);
                 }
             } else if (isAsciiPunc(charCode)) {
                 punctuations.push(char);
@@ -983,12 +983,12 @@ function parseCharsFromPassword(passwordString) {
     });
 
     return {
-        uppers,
-        lowers,
-        numbers,
-        punctuations,
-        invalidChars,
-        invalidPuncs
+        uppers: uppers,
+        lowers: lowers,
+        numbers: numbers,
+        punctuations: punctuations,
+        invalidChars: invalidChars,
+        invalidPuncs: invalidPuncs
     };
 };
 
