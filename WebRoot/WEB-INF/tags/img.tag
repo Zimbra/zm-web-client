@@ -44,5 +44,5 @@
         <c:when test="${not empty alt}"> title='${alt}' </c:when>
     </c:choose>
     <c:if test="${not empty alt}"> alt="${fn:escapeXml(alt)}" </c:if>
-    <c:if test="${not empty clazz}"> class='${clazz}' </c:if>
+    <c:if test="${not empty clazz}"> class='${fn:escapeXml(clazz)}' </c:if>
     <c:forEach items="${dynattrs}" var="a"> ${a.key}="${a.value}" </c:forEach> >

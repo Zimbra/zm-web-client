@@ -32,8 +32,8 @@
 <c:if test="${not empty text}"><fmt:message key="${text}" var="text"/></c:if>
 <c:if test="${not empty tooltip}"><fmt:message key="${tooltip}" var="tooltip"/></c:if>
 <c:choose>
-<c:when test="${app:boolean(disabled)}"><c:set var="clazz" value="${clazz} ImgDisabled"/></c:when>
-<c:otherwise> <c:set var="clazz" value="${clazz}"/> </c:otherwise>
+<c:when test="${app:boolean(disabled)}"><c:set var="clazz" value="${fn:escapeXml(clazz)} ImgDisabled"/></c:when>
+<c:otherwise> <c:set var="clazz" value="${fn:escapeXml(clazz)}"/> </c:otherwise>
 </c:choose>
 <c:if test="${app:boolean(width)}"><c:set var="width" value="${width}"/></c:if>
 <c:if test="${not empty src}">
