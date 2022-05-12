@@ -63,6 +63,7 @@
     <c:set var="zimbraPasswordMinNumericChars" value="${mailbox.accountInfo.attrs.zimbraPasswordMinNumericChars[0]}"/>
     <c:set var="zimbraPasswordMinDigitsOrPuncs" value="${mailbox.accountInfo.attrs.zimbraPasswordMinDigitsOrPuncs[0]}"/>
     <c:set var="zimbraPasswordAllowedChars" value="${mailbox.accountInfo.attrs.zimbraPasswordAllowedChars[0]}"/>
+    <c:set var="zimbraPasswordAllowUsername" value="${not empty mailbox.accountInfo.attrs.zimbraPasswordAllowUsername[0] ? zm:boolean(mailbox.accountInfo.attrs.zimbraPasswordAllowUsername[0]) : false}"/>
     <c:set var="zimbraPasswordAllowedPunctuationChars" value="${mailbox.accountInfo.attrs.zimbraPasswordAllowedPunctuationChars[0]}"/>
     <c:set var="zimbraPasswordEnforceHistory" value="${mailbox.accountInfo.attrs.zimbraPasswordEnforceHistory[0]}"/>
     <c:set var="zimbraPasswordBlockCommonEnabled" value="${not empty mailbox.accountInfo.attrs.zimbraPasswordBlockCommonEnabled[0] ? mailbox.accountInfo.attrs.zimbraPasswordBlockCommonEnabled[0] : FALSE}"/>
@@ -179,6 +180,14 @@
                                             ${minDigitsOrPuncsMsg}
                                         </li>
                                     </c:if>
+                                    <c:if test="${!zm:boolean(zimbraPasswordAllowUsername)}">
+                                        <li>
+                                            <fmt:message key="zimbraPasswordAllowUsername" var="allowUsernameMsg"></fmt:message>
+                                            <img src="/img/zimbra/ImgCloseGrayModern.png" id="allowUsernameCloseImg" style="display: inline;"/>
+                                            <img src="/img/zimbra/ImgCheckModern.png" id="allowUsernameCheckImg" style="display: none;"/>
+                                            ${allowUsernameMsg}
+                                        </li>
+                                    </c:if>
                                     <c:if test="${zimbraPasswordEnforceHistory ne 0}">
                                         <li>
                                             <fmt:message key="zimbraPasswordEnforceHistory" var="enforceHistoryMsg">
@@ -270,6 +279,11 @@
                 closeImg : getElement("minDigitsOrPuncsCloseImg")
             },
             {
+                type : "zimbraPasswordAllowUsername",
+                checkImg : getElement("allowUsernameCheckImg"),
+                closeImg : getElement("allowUsernameCloseImg")
+            },
+            {
                 type : "zimbraPasswordEnforceHistory",
                 checkImg : getElement("enforceHistoryCheckImg"),
                 closeImg : getElement("enforceHistoryCloseImg")
@@ -322,6 +336,10 @@
 
         if(${zimbraPasswordMinDigitsOrPuncs}) {
             enabledLocalRules.push(findRule("zimbraPasswordMinDigitsOrPuncs"));
+        }
+
+        if(${!zimbraPasswordAllowUsername}) {
+            enabledLocalRules.push(findRule("zimbraPasswordAllowUsername"));
         }
 
         if(${zimbraPasswordEnforceHistory}) {
@@ -532,9 +550,16 @@
                 }
             }
 
-            if(${zimbraPasswordMinDigitsOrPuncs}) {
+            if (${zimbraPasswordMinDigitsOrPuncs}) {
                 if (parsedChars.punctuations.length + parsedChars.numbers.length >= ${zimbraPasswordMinDigitsOrPuncs}) {
                     matchedLocalRule.push({type : "zimbraPasswordMinDigitsOrPuncs"});
+                }
+            }
+
+            if (${!zimbraPasswordAllowUsername}) {
+                var username = "${mailbox.name}".split("@")[0];
+                if (!currentValue.includes(username)) {
+                    matchedLocalRule.push({type : "zimbraPasswordAllowUsername"});
                 }
             }
 

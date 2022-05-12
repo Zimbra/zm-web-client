@@ -547,6 +547,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                             int zimbraPasswordMinPunctuationChars = 0;
                                             int zimbraPasswordMinNumericChars = 0;
                                             int zimbraPasswordMinDigitsOrPuncs = 0;
+                                            boolean zimbraPasswordAllowUsername = false;
                                             String zimbraPasswordAllowedChars = null;
                                             String zimbraPasswordAllowedPunctuationChars = null;
 
@@ -560,6 +561,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                                 zimbraPasswordMinPunctuationChars = acct.getPasswordMinPunctuationChars();
                                                 zimbraPasswordMinNumericChars = acct.getPasswordMinNumericChars();
                                                 zimbraPasswordMinDigitsOrPuncs = acct.getPasswordMinDigitsOrPuncs();
+                                                zimbraPasswordAllowUsername =  acct.getAllowUsernameWithinPassword();
                                                 zimbraPasswordAllowedChars = acct.getPasswordAllowedChars();
                                                 zimbraPasswordAllowedPunctuationChars = acct.getPasswordAllowedPunctuationChars();
                                             }
@@ -569,6 +571,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                             application.setAttribute("zimbraPasswordMinPunctuationChars", zimbraPasswordMinPunctuationChars);
                                             application.setAttribute("zimbraPasswordMinNumericChars", zimbraPasswordMinNumericChars);
                                             application.setAttribute("zimbraPasswordMinDigitsOrPuncs", zimbraPasswordMinDigitsOrPuncs);
+                                            application.setAttribute("zimbraPasswordAllowUsername", zimbraPasswordAllowUsername);
                                             application.setAttribute("zimbraPasswordAllowedChars", zimbraPasswordAllowedChars);
                                             application.setAttribute("zimbraPasswordAllowedPunctuationChars", zimbraPasswordAllowedPunctuationChars);
                                         %>
@@ -578,6 +581,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                         <c:set var="zimbraPasswordMinPunctuationChars" value="<%=zimbraPasswordMinPunctuationChars%>"/>
                                         <c:set var="zimbraPasswordMinNumericChars" value="<%=zimbraPasswordMinNumericChars%>"/>
                                         <c:set var="zimbraPasswordMinDigitsOrPuncs" value="<%=zimbraPasswordMinDigitsOrPuncs%>"/>
+                                        <c:set var="zimbraPasswordAllowUsername" value="<%=zimbraPasswordAllowUsername%>"/>
                                         <c:set var="zimbraPasswordAllowedChars" value="<%=zimbraPasswordAllowedChars%>"/>
                                         <c:set var="zimbraPasswordAllowedPunctuationChars" value="<%=zimbraPasswordAllowedChars%>"/>
                                         <label for="newPassword" class="zLoginFieldLabel"><fmt:message key="passwordRecoveryResetNewLabel"/></label>
@@ -640,6 +644,13 @@ if (application.getInitParameter("offlineMode") != null) {
                                                     <fmt:message key="zimbraPasswordMinDigitsOrPuncs">
                                                         <fmt:param value="${zimbraPasswordMinDigitsOrPuncs}"/>
                                                     </fmt:message>
+                                                </li>
+                                            </c:if>
+                                            <c:if test="${zm:boolean(!zimbraPasswordAllowUsername)}">
+                                                <li>
+                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="allowUsernameCloseImg" style="display: inline;"/>
+                                                    <img src="/img/zimbra/ImgCheckModern.png" id="allowUsernameCheckImg" style="display: none;"/>
+                                                    <fmt:message key="zimbraPasswordAllowUsername"></fmt:message>
                                                 </li>
                                             </c:if>
                                         </ul>
@@ -858,6 +869,11 @@ var supportedRules = [
         type : "zimbraPasswordMinDigitsOrPuncs",
         checkImg : getElement("minDigitsOrPuncsCheckImg"),
         closeImg : getElement("minDigitsOrPuncsCloseImg")
+    },
+    {
+        type : "zimbraPasswordAllowUsername",
+        checkImg : getElement("allowUsernameCheckImg"),
+        closeImg : getElement("allowUsernameCloseImg")
     }
 ];
 
@@ -881,8 +897,12 @@ if (${zimbraPasswordMinPunctuationChars}) {
     enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinPunctuationChars"}));
 }
 
-if(${zimbraPasswordMinDigitsOrPuncs}) {
+if (${zimbraPasswordMinDigitsOrPuncs}) {
     enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinDigitsOrPuncs"}));
+}
+
+if (${!zimbraPasswordAllowUsername}) {
+    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordAllowUsername"}));
 }
 
 function compareConfirmPass() {
@@ -1027,9 +1047,15 @@ function handleNewPasswordChange() {
         }
     }
 
-    if(${zimbraPasswordMinDigitsOrPuncs}) {
+    if (${zimbraPasswordMinDigitsOrPuncs}) {
         if (parsedChars.punctuations.length + parsedChars.numbers.length >= ${zimbraPasswordMinDigitsOrPuncs}) {
             matchedRule.push({type : "zimbraPasswordMinDigitsOrPuncs"});
+        }
+    }
+    
+    if (${!zimbraPasswordAllowUsername}) {
+        if (!currentValue.includes("${trimmedUserName.split('@')[0]}")) {
+            matchedRule.push({type : "zimbraPasswordAllowUsername"});
         }
     }
 
