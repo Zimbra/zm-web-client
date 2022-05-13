@@ -2840,13 +2840,14 @@ function(ev) {
 	if (data.dndStarted) {
 		data.gridEl.style.cursor = 'auto';
         var col = data.view._getColFromX(data.gridX);
+		var folderId = col && col.cal && col.cal.id;
 		Dwt.setVisible(data.newApptDivEl, false);
 		if (data.isAllDay) {
-			appCtxt.getCurrentController().newAllDayAppointmentHelper(data.startDate, data.endDate, null, mouseEv.shiftKey);
+			appCtxt.getCurrentController().newAllDayAppointmentHelper(data.startDate, data.endDate, folderId, mouseEv.shiftKey);
 		} else {
 			var duration = (data.endDate.getTime() - data.startDate.getTime());
 			if (duration < ZmCalColView._MSEC_DURATION) duration = ZmCalColView._MSEC_DURATION;
-			appCtxt.getCurrentController().newAppointmentHelper(data.startDate, duration, null, mouseEv.shiftKey);
+			appCtxt.getCurrentController().newAppointmentHelper(data.startDate, duration, folderId, mouseEv.shiftKey);
 		}
 	}
 
