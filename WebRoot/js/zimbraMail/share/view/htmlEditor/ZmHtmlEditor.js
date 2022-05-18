@@ -835,6 +835,8 @@ function(id, autoFocus) {
         font_formats : fonts.join(";"),
         fontsize_formats : AjxMsg.fontSizes || '',
 		convert_urls : false,
+		anchor_top: false,
+		anchor_bottom: false,
 		verify_html : false,
 		browser_spellcheck : true,
         content_css : appContextPath + '/css/tinymce-content.css?v=' + cacheKillerVersion,
