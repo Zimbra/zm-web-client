@@ -180,7 +180,7 @@ function() {
 		}
 		query = query.replace(/\sor\s$/, '');
 		var sc = appCtxt.getSearchController();
-		sc.setDefaultSearchType(ZmItem.CONTACT);
+		var originalSearchFieldValue = sc.getSearchFieldValue();
 		var params = {
 			query: query,
 			searchFor: ZmItem.CONTACT,
@@ -190,6 +190,7 @@ function() {
 			noRender: true
 		};
 		sc.search(params);
+		sc.setSearchField(originalSearchFieldValue);
 	}
 };
 
