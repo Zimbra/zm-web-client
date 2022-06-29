@@ -269,6 +269,14 @@ function() {
 ZmAddrBookTreeController.prototype._shareAddrBookListener = 
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
+	
+	// This is a transient fix untill we find actual steps to reproduce problem and find exact root cause
+	if (this._pendingActionData.id === "1") {
+		var ex = new AjxException("Root folder sharing is not allowed, ignoring action.", AjxException.INVALID_PARAM);
+		appCtxt.getAppController()._handleException(ex);
+		return;
+	}
+
 	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
 };
 
