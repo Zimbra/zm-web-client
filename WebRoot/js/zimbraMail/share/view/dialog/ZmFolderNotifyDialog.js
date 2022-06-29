@@ -101,6 +101,14 @@ function() {
 ZmFolderNotifyDialog.prototype._handleAddShareButton =
 function(event) {
 	var sharePropsDialog = appCtxt.getSharePropsDialog();
+
+    // This is a transient fix untill we find actual steps to reproduce problem and find exact root cause
+	if (this._organizer.id === "1") {
+		var ex = new AjxException("Root folder sharing is not allowed, ignoring action.", AjxException.INVALID_PARAM);
+		appCtxt.getAppController()._handleException(ex);
+		return;
+	}
+
 	sharePropsDialog.popup(ZmSharePropsDialog.NEW, this._organizer, null);
 };
 
