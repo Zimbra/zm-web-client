@@ -549,6 +549,9 @@ function(callback, batchCmd) {
  */
 ZmOrganizer.getViewName =
 function(organizerType) {
+	if (organizerType === ZmItem.BRIEFCASE_ITEM) {
+		return ZmItem.BRIEFCASE_ITEM;
+	}
 	return ZmOrganizer.VIEWS[organizerType][0];
 };
 

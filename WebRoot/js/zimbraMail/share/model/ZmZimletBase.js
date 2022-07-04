@@ -381,6 +381,16 @@ ZmZimletBase.prototype.onParticipantActionMenuInitialized = function(controller,
 ZmZimletBase.prototype.onActionMenuInitialized = function(controller, actionMenu) {};
 
 /**
+ * This method gets called by the Zimlet framework when the action menu is initialized
+ * on the briefcase item.
+ * 
+ * 
+ * @param	{ZmController}		controller		the controller
+ * @param	{ZmActionMenu}		actionMenu		the action menu
+ */
+ZmZimletBase.prototype.onBriefcaseActionMenuInitialized = function(controller, actionMenu) {};
+
+/**
  * This method is called by the Zimlet framework when an email message is flagged.
  * 
  * @param	{ZmMailMsg[]|ZmConv[]}		items		an array of items
