@@ -534,6 +534,9 @@ ZmShare.prototype.hasPrivateAccess = function() { return this.isPermAllowed(ZmSh
  */
 ZmShare._getFolderType =
 function(view) {
+	if (view === ZmItem.BRIEFCASE_ITEM) {
+		return ZmMsg.briefcaseFile;
+	}
 	var folderKey = (view && ZmOrganizer.FOLDER_KEY[ZmOrganizer.TYPE[view]]) || "folder";
 	return ZmMsg[folderKey];
 };
@@ -637,7 +640,8 @@ function(perm, pw, notes, replyType, shareAction, batchCmd) {
  */
 ZmShare.prototype._handleResponseGrant =
 function(notes, replyType, shareAction, result) {
-	var action = result.getResponse().FolderActionResponse.action;
+	var actionResponseType = this.isBriefcaseDocument() ? "DocumentActionResponse": "FolderActionResponse";
+	var action = result.getResponse()[actionResponseType].action;
 	this.grantee.id = action.zid;
 	this.grantee.email = action.d;
     if(replyType != ZmShareReply.NONE && action.d && action.zid) {
@@ -842,6 +846,10 @@ function() {
 	return ZmShare._XML;
 };
 
+ZmShare.prototype.isBriefcaseDocument =
+function () {
+	return this.object instanceof ZmBriefcaseItem;
+};
 
 /**
  * General method for handling the SOAP call. 
@@ -852,7 +860,8 @@ function() {
  */
 ZmShare.prototype._shareAction =
 function(operation, actionAttrs, grantAttrs, callback, batchCmd, notes) {
-	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
+	var actionRequest = this.isBriefcaseDocument() ? "DocumentActionRequest": "FolderActionRequest";
+	var soapDoc = AjxSoapDoc.create(actionRequest, "urn:zimbraMail");
 
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("op", operation);
