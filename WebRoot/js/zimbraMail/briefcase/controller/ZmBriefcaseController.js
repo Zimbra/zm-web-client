@@ -850,6 +850,14 @@ function(){
     return this._checkinDlg;
 };
 
+ZmBriefcaseController.prototype._initializeActionMenu = 
+function () {
+	ZmListController.prototype._initializeActionMenu.call(this);
+
+	//notify Zimlet before showing
+	appCtxt.notifyZimlets("onBriefcaseActionMenuInitialized", [this, this._actionMenu]);
+}
+
 //End of Checkin/Checkout
 
 ZmBriefcaseController.prototype._getActionMenuOps =
