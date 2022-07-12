@@ -861,11 +861,6 @@
 						<img src="/img/zimbra/ImgCheckModern.png" id="minDigitsOrPuncsCheckImg" style="display: none;"/>
 						<label id="${id}_min_digits_or_punctuations_label" class="ZmPasswordRecoveryRule"/>
 					</li>
-					<li id="${id}_password_allow_username">
-						<img src="/img/zimbra/ImgCloseGrayModern.png" id="allowUsernameCloseImg" style="display: inline;"/>
-						<img src="/img/zimbra/ImgCheckModern.png" id="allowUsernameCheckImg" style="display: none;"/>
-						<label id="${id}_password_allow_username_label" class="ZmPasswordRecoveryRule"/>
-					</li>
 				</ul>
 				<label for='${id}_password_confirm_input'><$=ZmMsg.passwordRecoveryResetConfirmLabel$></label>
 				<div class="passwordWrapper">

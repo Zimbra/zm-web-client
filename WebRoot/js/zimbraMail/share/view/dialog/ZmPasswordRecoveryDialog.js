@@ -215,8 +215,6 @@ function() {
 	this._passwordMinNumericCharsLabel = Dwt.getElement(id + '_min_numeric_chars_label');
 	this._passwordMinDigitsOrPunctuationRule = Dwt.getElement(id + '_min_digits_or_punctuations');
 	this._passwordMinDigitsOrPunctuationLabel = Dwt.getElement(id + '_min_digits_or_punctuations_label');
-	this._passwordAllowUsernameRule = Dwt.getElement(id + '_password_allow_username');
-	this._passwordAllowUsernameLabel = Dwt.getElement(id + '_password_allow_username_label');
 
 	this._passwordConfirmInput = Dwt.getElement(id + '_password_confirm_input');
 	this._requestCodeDescription = Dwt.getElement(id + '_request_code_description');
@@ -793,7 +791,6 @@ function (result) {
 	var zimbraPasswordMinPunctuationChars = parseInt(attributes.zimbraPasswordMinPunctuationChars);
 	var zimbraPasswordMinNumericChars = parseInt(attributes.zimbraPasswordMinNumericChars);
 	var zimbraPasswordMinDigitsOrPuncs = parseInt(attributes.zimbraPasswordMinDigitsOrPuncs);
-	var zimbraPasswordAllowUsername = attributes.zimbraPasswordAllowUsername ? attributes.zimbraPasswordAllowUsername.toLowerCase() === "true" : false;
 
 	var zimbraPasswordAllowedChars = attributes.zimbraPasswordAllowedChars || false;
 	var zimbraPasswordAllowedPunctuationChars = attributes.zimbraPasswordAllowedPunctuationChars || false;
@@ -841,11 +838,6 @@ function (result) {
 			type : "zimbraPasswordBlockCommonEnabled",
 			checkImg : Dwt.getElement("blockCommonCheckImg"),
 			closeImg : Dwt.getElement("blockCommonCloseImg")
-		},
-		{
-			type : "zimbraPasswordAllowUsername",
-			checkImg : Dwt.getElement("allowUsernameCheckImg"),
-			closeImg : Dwt.getElement("allowUsernameCloseImg")
 		}
 	];
 
@@ -855,7 +847,6 @@ function (result) {
 	Dwt.hide(this._passwordMinPunctuationCharsRule);
 	Dwt.hide(this._passwordMinNumericCharsRule);
 	Dwt.hide(this._passwordMinDigitsOrPunctuationRule);
-	Dwt.hide(this._passwordAllowUsernameRule);
 	
 	function findRule(ruleType) {
 		if (!Array.prototype.find) {
@@ -917,14 +908,6 @@ function (result) {
 		Dwt.show(this._passwordMinDigitsOrPunctuationRule);
 	}
 
-	if(!zimbraPasswordAllowUsername) {
-		var allowUsernameMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordAllowUsername);
-		enabledLocalRules.push(findRule("zimbraPasswordAllowUsername"));
-
-		Dwt.setInnerHtml(this._passwordAllowUsernameLabel, allowUsernameMsg);
-		Dwt.show(this._passwordAllowUsernameRule);
-	}
-
 	
 	if(enabledLocalRules.length === 0) {
 		Dwt.hide(this._passwordRuleList);
@@ -979,13 +962,6 @@ function (result) {
 		if(zimbraPasswordMinDigitsOrPuncs) {
 			if (parsedChars.punctuations.length + parsedChars.numbers.length >= zimbraPasswordMinDigitsOrPuncs) {
 				matchedLocalRules.push({type : "zimbraPasswordMinDigitsOrPuncs"});
-			}
-		}
-
-		if(!zimbraPasswordAllowUsername) {
-			var username = this._accountInput.value.includes("@") ? this._accountInput.value.split("@")[0] : this._accountInput.value;
-			if (!currentValue.includes(username)) {
-				matchedLocalRules.push({type : "zimbraPasswordAllowUsername"});
 			}
 		}
 
