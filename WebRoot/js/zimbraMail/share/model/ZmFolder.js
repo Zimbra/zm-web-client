@@ -92,6 +92,7 @@ ZmFolder.ID_OUTBOX	 							= ZmOrganizer.ID_OUTBOX;
 ZmFolder.ID_CHATS	 							= ZmOrganizer.ID_CHATS;
 ZmFolder.ID_ATTACHMENTS                         = ZmOrganizer.ID_ATTACHMENTS;
 ZmFolder.ID_DLS									= ZmOrganizer.ID_DLS;
+ZmFolder.ID_FILE_SHARED_WITH_ME					= ZmOrganizer.ID_FILE_SHARED_WITH_ME;
 
 // system folder names
 ZmFolder.MSG_KEY = {};
@@ -111,6 +112,7 @@ ZmFolder.MSG_KEY[ZmOrganizer.ID_ALL_MAILBOXES]	= "allMailboxes";
 ZmFolder.MSG_KEY[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.MSG_KEY[ZmFolder.ID_SYNC_FAILURES]		= "errorReports";
 ZmFolder.MSG_KEY[ZmFolder.ID_ATTACHMENTS]       = "attachments";
+ZmFolder.MSG_KEY[ZmFolder.ID_FILE_SHARED_WITH_ME]	= "filesSharedWithMe";
 
 // system folder icons
 ZmFolder.ICON = {};
@@ -140,6 +142,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_AUTO_ADDED]		= "Emailed Contacts";
 ZmFolder.QUERY_NAME[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= "Error Reports";
+ZmFolder.QUERY_NAME[ZmFolder.ID_FILE_SHARED_WITH_ME]	= "Files shared with me";
 
 ZmFolder.QUERY_ID = AjxUtil.valueHash(ZmFolder.QUERY_NAME);
 
