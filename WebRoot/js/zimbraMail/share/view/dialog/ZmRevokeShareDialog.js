@@ -36,6 +36,8 @@
  * @extends		DwtDialog
  */
 ZmRevokeShareDialog = function(parent, className) {
+	if (arguments.length == 0) return;
+
 	className = className || "ZmRevokeShareDialog";
 	var title = ZmMsg.revokeShare;
 	var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON ];

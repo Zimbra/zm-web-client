@@ -97,3 +97,5 @@ AjxPackage.require("zimbraMail.calendar.view.ZmQuickReminderDialog");
 
 AjxPackage.require("zimbraMail.mail.view.ZmRetentionWarningDialog");
 AjxPackage.require("zimbraMail.offline.ZmOffline");
+// This ZmRevokeShareDialog is require in zimlet (zimbra-zimlet-classic-document-editor)
+AjxPackage.require("zimbraMail.share.view.dialog.ZmRevokeShareDialog");

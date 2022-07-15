@@ -62,6 +62,14 @@ function() {
 	return "ZmBriefcaseTreeController";
 };
 
+ZmBriefcaseTreeController.prototype.getItemActionMenu = function(ev, item) {
+	var actionMenu = null;
+	if (item.id != ZmFolder.ID_FILE_SHARED_WITH_ME) {
+		actionMenu = ZmTreeController.prototype.getItemActionMenu.apply(this, arguments);
+	}
+	return actionMenu;
+}
+
 // Public methods
 
 ZmBriefcaseTreeController.prototype.resetOperations =
