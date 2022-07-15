@@ -327,6 +327,7 @@ function() {
 	this._omit[ZmFolder.ID_DRAFTS] = true;
 	this._omit[ZmFolder.ID_SYNC_FAILURES] = true;
 	this._omit[ZmFolder.ID_OUTBOX] = true;
+	this._omit[ZmFolder.ID_FILE_SHARED_WITH_ME] = true;
 
 	//Bug#68799: no special handling needed for sync issues folder
 	/*var folderTree = appCtxt.getFolderTree();

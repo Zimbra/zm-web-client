@@ -271,12 +271,25 @@ function(parent, num) {
     }
     var isTrash = (briefcase && briefcase.nId == ZmOrganizer.ID_TRASH);
     var isShared = ((briefcase && briefcase.nId != ZmOrganizer.ID_TRASH && briefcase.isShared()));
+	var isFileSharedWithMeFolder = this._folderId == ZmFolder.ID_FILE_SHARED_WITH_ME;
 	var isReadOnly = briefcase ? briefcase.isReadOnly() : false;
 	var isMultiFolder = (noOfFolders > 1);
 	var isItemSelected = (num>0);
 	var isZimbraAccount = appCtxt.getActiveAccount().isZimbraAccount;
 	var isMailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
     var isAdmin = briefcase && briefcase.isAdmin(); 
+
+	if (isFileSharedWithMeFolder) {
+		parent.enable(ZmOperation.SAVE_FILE, num == 1);
+		this.setFileOperations(parent, false);
+		// Hide core file Open option for 'Files shared' with me folder
+		if (parent && parent instanceof ZmActionMenu) {
+			parent.getOp(ZmOperation.OPEN_FILE) && parent.getOp(ZmOperation.OPEN_FILE).setVisible(false);
+		}
+		return;
+	} else {
+		this.setFileOperations(parent, true);
+	}
 
     var item = items[0];
     //bug 65351
@@ -399,6 +412,46 @@ function(parent, num) {
         }
     }
 };
+
+// Show / hide file toolbar and context menu options.
+ZmBriefcaseController.prototype.setFileOperations =
+function(parent, show) {
+	var fileOperations = [
+		ZmOperation.SEND_FILE,
+		ZmOperation.SEND_FILE_AS_ATT,
+		ZmOperation.RENAME_FILE,
+		ZmOperation.MOVE,
+		ZmOperation.MOVE_MENU,
+		ZmOperation.NEW_FILE,
+		ZmOperation.TAG_MENU,
+		ZmOperation.EDIT_FILE,
+		ZmOperation.CHECKIN,
+		ZmOperation.CHECKOUT,
+		ZmOperation.DISCARD_CHECKOUT,
+		ZmOperation.RESTORE_VERSION,
+		ZmOperation.DETACH_WIN,
+		ZmOperation.SEP,
+		ZmOperation.DELETE ];
+
+	for (var i = 0; i < fileOperations.length; i++) {
+		op = parent.getOp(fileOperations[i]);
+		if (op) {
+			op.setVisible(show);
+		}
+	}
+
+	if (parent && parent instanceof ZmActionMenu) {
+		for (var k=0; k< parent.opList.length; k++) {
+			if (parent.opList[k] == "SEP") {
+				parent._children._array[k].setVisible(show);
+			}
+		}
+	}
+
+	if (parent && parent instanceof ZmButtonToolBar) {
+		parent.getActionsButton().setVisible(show);
+	}
+}
 
 ZmBriefcaseController.prototype._getTagMenuMsg =
 function() {
@@ -795,6 +848,14 @@ function(item, callback){
     this.unlockItem(item, callback);
 };
 
+ZmBriefcaseController.prototype._initializeActionMenu = 
+function () {
+	ZmListController.prototype._initializeActionMenu.call(this);
+
+	//notify Zimlet before showing
+	appCtxt.notifyZimlets("onBriefcaseActionMenuInitialized", [this, this._actionMenu]);
+};
+
 ZmBriefcaseController.prototype.unlockItem =
 function(item, callback){
    item.unlock(callback, new AjxCallback(this, this._handleErrorResponse, item)); 
@@ -1017,7 +1078,7 @@ function(items){
         item = AjxUtil.isArray(items) ? items[0] : items;
         restUrl = item.getRestUrl();
         restUrl += ( restUrl.indexOf('?') == -1 ) ? "?" : "&";
-        restUrl += "disp=a"+(item.version ? "&ver="+item.version : "");
+        restUrl += "disp=a" + (item.version && item.folderId != ZmFolder.ID_FILE_SHARED_WITH_ME ? "&ver=" + item.version : "");
     }
 
     if (!restUrl) {

@@ -275,6 +275,12 @@ function(treeIds, overview) {
 			ti.setData(ZmTreeView.KEY_TYPE, treeId);
 		}
 
+		// Do not show "Files shared with me" folder on Move dialog.
+		var tiFileShareWithMe = treeView.getTreeItemById(ZmFolder.ID_FILE_SHARED_WITH_ME);
+		if (tiFileShareWithMe) {
+			tiFileShareWithMe.setVisible(false);
+		}
+
 		treeView.removeSelectionListener(this._treeViewListener);
 		treeView.addSelectionListener(this._treeViewListener);
 	}
@@ -431,7 +437,7 @@ function() {
 					continue;
 				}
 				var folder = items[i].getData(Dwt.KEY_OBJECT);
-				if (!folder || folder.nId == ZmOrganizer.ID_ROOT) {
+				if (!folder || folder.nId == ZmOrganizer.ID_ROOT || folder.nId == ZmOrganizer.ID_FILE_SHARED_WITH_ME) {
 					continue;
 				}
 				var name = folder.getName(false, null, true, true).toLowerCase();
