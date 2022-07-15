@@ -592,6 +592,11 @@ ZmBriefcaseController.prototype.show =
 function(results) {
 
 	this._folderId = results && results.search && results.search.folderId;
+
+	if (results && results.search && results.search.isFileShareWithMeFolder) {
+		this._folderId = ZmOrganizer.ID_FILE_SHARED_WITH_ME;
+	}
+
 	this.setList(results.getResults(ZmItem.BRIEFCASE_ITEM));
 	this._list.setHasMore(results.getAttribute("more"));
 

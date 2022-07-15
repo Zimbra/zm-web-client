@@ -214,7 +214,7 @@ function() {
 ZmBriefcaseTreeController.prototype._itemClicked =
 function(folder) {
 	appCtxt.getApp(ZmApp.BRIEFCASE).search({
-        folderId:folder.id,
+        folderId:folder.id == ZmOrganizer.ID_FILE_SHARED_WITH_ME ? '16': folder.id,
         callback: new AjxCallback(this, this._handleSearchResponse, [folder]),
 		isFileShareWithMeFolder: folder.id === ZmOrganizer.ID_FILE_SHARED_WITH_ME
     });
