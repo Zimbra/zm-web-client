@@ -391,7 +391,8 @@ function(params) {
 		searchFor:		ZmId.ITEM_BRIEFCASE,
 		callback:		params.callback,
 		accountName:	params.accountName,
-		noRender:		params.noRender
+		noRender:		params.noRender,
+		isFileShareWithMeFolder: params.isFileShareWithMeFolder
 	};
 	var sc = appCtxt.getSearchController();
 	sc.searchAllAccounts = false;

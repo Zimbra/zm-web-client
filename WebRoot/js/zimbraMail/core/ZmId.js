@@ -826,6 +826,7 @@ ZmId.FLD_ITEM_ROW		= "rw";
 ZmId.FLD_ITEM_ROW_3PANE	= "r3";
 ZmId.FLD_LOCATION		= "lo";
 ZmId.FLD_LOCK           = "loid";
+ZmId.FLD_SHARES			= "shares";
 ZmId.FLD_MSG_PRIORITY   = "mp"; //message prioritization
 ZmId.FLD_NAME			= "na";
 ZmId.FLD_NOTES			= "no";

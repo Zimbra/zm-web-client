@@ -62,6 +62,14 @@ function() {
 	return "ZmBriefcaseTreeController";
 };
 
+ZmBriefcaseTreeController.prototype.getItemActionMenu = function(ev, item) {
+	var actionMenu = null;
+	if (item.id != ZmOrganizer.ID_FILE_SHARED_WITH_ME) {
+		actionMenu = ZmTreeController.prototype.getItemActionMenu.apply(this, arguments);
+	}
+	return actionMenu;
+}
+
 // Public methods
 
 ZmBriefcaseTreeController.prototype.resetOperations =
@@ -207,7 +215,8 @@ ZmBriefcaseTreeController.prototype._itemClicked =
 function(folder) {
 	appCtxt.getApp(ZmApp.BRIEFCASE).search({
         folderId:folder.id,
-        callback: new AjxCallback(this, this._handleSearchResponse, [folder])
+        callback: new AjxCallback(this, this._handleSearchResponse, [folder]),
+		isFileShareWithMeFolder: folder.id === ZmOrganizer.ID_FILE_SHARED_WITH_ME
     });
 };
 

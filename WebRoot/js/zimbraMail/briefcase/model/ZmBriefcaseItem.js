@@ -367,6 +367,19 @@ function(node) {
 	if (node.name)	{ this.name = node.name; }
 	if (node.cr)	{ this.creator = node.cr; }
 
+	this.shares = this.shares || [];
+
+	if (node.acl && node.acl.grant) {
+		this.acl = node.acl;
+
+		if (node.acl.grant.length > 0) {
+			for (var i = 0; i < node.acl.grant.length; i++) {
+				var grant = node.acl.grant[i];
+				this.shares.push(ZmShare.createFromJs(this, grant));
+			}
+		}
+	}
+
 	if (node.cd)	{ this.createDate = new Date(Number(node.cd)); }
 	if (node.md)	{ //node.md is seconds since epoch
         var mdMilliSecs = Number(node.md)*1000;
@@ -540,6 +553,19 @@ function(data) {
 	if (data.name) this.name = data.name;
 	if (data.cr)   this.creator = data.cr;
 	if (data.cd)   this.createDate = new Date(Number(data.cd));
+
+	if (data.acl) {
+		this.acl = data.acl;
+		this.shares = [];
+
+		if (data.acl.grant && data.acl.grant.length > 0) {
+			for (var i = 0; i < data.acl.grant.length; i++) {
+				var grant = data.acl.grant[i];
+				this.shares.push(ZmShare.createFromJs(this, grant));
+			}
+		}
+	}
+	
 	if (data.md)	{ //node.md is seconds since epoch
 		var mdMilliSecs = Number(data.md)*1000;
 		this.modifyDate = new Date(mdMilliSecs);

@@ -130,6 +130,7 @@ ZmOrganizer.SHARE               = ZmEvent.S_SHARE;
 ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 ZmOrganizer.HAB					= ZmEvent.S_HAB;
+ZmOrganizer.SHARING				= ZmEvent.S_SHARING;
 
 // folder IDs defined in com.zimbra.cs.mailbox.Mailbox
 // Note: since these are defined as Numbers, and IDs come into our system as Strings,
@@ -144,6 +145,7 @@ ZmOrganizer.ID_AUTO_ADDED 		= 13;
 ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;
 ZmOrganizer.ID_BRIEFCASE		= 16;
+ZmOrganizer.ID_FILE_SHARED_WITH_ME	= 248;
 ZmOrganizer.ID_ALL_MAILBOXES	= 249; 
 ZmOrganizer.ID_NOTIFICATION_MP	= 250;
 ZmOrganizer.ID_SYNC_FAILURES	= 252;		// offline only

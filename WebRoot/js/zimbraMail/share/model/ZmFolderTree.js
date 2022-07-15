@@ -282,6 +282,10 @@ function(type, parent, obj, tree, path, elementType, account) {
 		params.mail = obj._attrs ? obj._attrs.mail : undefined;
 	}
 
+	if (obj.id === ZmOrganizer.ID_FILE_SHARED_WITH_ME) {
+		params.noTooltip = true;
+	}
+
 	var folder = new orgClass(params);
 	ZmFolderTree._fillInFolder(folder, obj, path);
 	ZmFolderTree.IS_PARSED[type] = true;

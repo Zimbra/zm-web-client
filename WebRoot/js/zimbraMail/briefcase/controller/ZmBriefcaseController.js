@@ -162,6 +162,7 @@ function() {
 ZmBriefcaseController.prototype._getToolBarOps =
 function() {
     var ops = [ZmOperation.NEW_FILE,
+			ZmOperation.OPEN_FILE,
             ZmOperation.SAVE_FILE,
 			ZmOperation.SEP,
             ZmOperation.EDIT_FILE,
@@ -271,12 +272,29 @@ function(parent, num) {
     }
     var isTrash = (briefcase && briefcase.nId == ZmOrganizer.ID_TRASH);
     var isShared = ((briefcase && briefcase.nId != ZmOrganizer.ID_TRASH && briefcase.isShared()));
+	var isFileSharedWithMeFolder = this._folderId == ZmOrganizer.ID_FILE_SHARED_WITH_ME;
 	var isReadOnly = briefcase ? briefcase.isReadOnly() : false;
 	var isMultiFolder = (noOfFolders > 1);
 	var isItemSelected = (num>0);
 	var isZimbraAccount = appCtxt.getActiveAccount().isZimbraAccount;
 	var isMailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
     var isAdmin = briefcase && briefcase.isAdmin(); 
+
+	if (isFileSharedWithMeFolder) {
+		// file shared with me folder selected.
+		parent.enable(ZmOperation.OPEN_FILE, num == 1);
+		if(parent &&  parent instanceof ZmActionMenu){
+			parent.getOp(ZmOperation.OPEN_FILE) && parent.getOp(ZmOperation.OPEN_FILE).setVisible(isItemSelected && !isMultiFolder);
+		}
+		parent.getOp(ZmOperation.OPEN_FILE).setVisible(true);
+		parent.enable(ZmOperation.SAVE_FILE, num >0 && (!isFolderSelected || isBriefcaseItemSelected));
+		this.setFileOperations(parent, false);
+		return;
+	} else {
+		// Remove open option from Top toolbar
+		parent.getOp(ZmOperation.OPEN_FILE).setVisible(false);
+		this.setFileOperations(parent, true);
+	}
 
     var item = items[0];
     //bug 65351
@@ -399,6 +417,46 @@ function(parent, num) {
         }
     }
 };
+
+ZmBriefcaseController.prototype.setFileOperations =
+function(parent, allow) {
+
+	var fileOperations = [ZmOperation.SEND_FILE,
+		ZmOperation.SEND_FILE_AS_ATT,
+		ZmOperation.RENAME_FILE,
+		ZmOperation.MOVE,
+		ZmOperation.MOVE_MENU,
+		ZmOperation.NEW_FILE,
+		ZmOperation.TAG_MENU,
+		ZmOperation.EDIT_FILE,
+		ZmOperation.CHECKIN,
+		ZmOperation.CHECKOUT,
+		ZmOperation.DISCARD_CHECKOUT,
+		ZmOperation.RESTORE_VERSION,
+		ZmOperation.DETACH_WIN,
+		ZmOperation.SEP,
+		ZmOperation.DELETE ];
+
+	for (var i=0; i< fileOperations.length; i++) {
+		op = parent.getOp(fileOperations[i]);
+		if (op) {
+			op.setVisible(allow);
+		}
+	}
+
+	if(parent &&  parent instanceof ZmActionMenu){
+		for (var k=0; k< parent.opList.length; k++) {
+			if (parent.opList[k] == "SEP") {
+				parent._children._array[k].setVisible(allow);
+			}
+		}
+	}
+
+	if (parent && parent instanceof ZmButtonToolBar) {
+		parent.getActionsButton().setVisible(allow);
+
+	}
+}
 
 ZmBriefcaseController.prototype._getTagMenuMsg =
 function() {

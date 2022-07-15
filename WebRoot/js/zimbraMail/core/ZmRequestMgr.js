@@ -431,6 +431,7 @@ function(hdr) {
 
 	if (ctxt.refresh) {
 		this._controller.runAppFunction("_clearDeferredFolders");
+		ZmRequestMgr.setFilesShareWithMe(ctxt);
 		this._loadTrees(ctxt.refresh);
 		this._controller.runAppFunction("_createVirtualFolders");
 		this._highestNotifySeen = 0;
@@ -950,4 +951,24 @@ function(params, reqId) {
 	// submit form
 	var form = iframeDoc.getElementById(iframe.id+"-form");
 	form.submit();
+};
+
+ZmRequestMgr.setFilesShareWithMe = 
+function (context) {
+	
+	var isSharingEnabled = appCtxt.get(ZmSetting.SHARING_ENABLED);
+	var isDocumentEditorEnabled = appCtxt.get(ZmSetting.DOCUMENT_EDITOR_ENABLED);
+
+	if (!isDocumentEditorEnabled || !isSharingEnabled) return;
+
+	var fileShareWithMeFolder = {
+		id: ZmOrganizer.ID_FILE_SHARED_WITH_ME,
+		name: ZmMsg.filesSharedWithMe,
+		l: 1,
+		view :"document",
+		perm: "r",
+		zid: "0"
+	};
+
+	context.refresh.folder[0].folder.push(fileShareWithMeFolder);
 };
