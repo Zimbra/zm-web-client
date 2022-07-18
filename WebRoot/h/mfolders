@@ -59,7 +59,7 @@
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' folders="true" searches="true" editmode="true" keys="true"
-        onload="var e=document.getElementById('newName'); if (e) e.focus();">
+        onload="newName">
 
     <form action="" method="post" accept-charset="utf-8">
         <table width="100%" cellspacing="0" cellpadding="0">
@@ -180,6 +180,10 @@
     var znext = function() { if (zindex+1 < zrc) zget(zindex+1);}
 
     //-->
+    var el = document.getElementById("newName");
+    if(el) {
+        el.focus();
+    }
     </SCRIPT>
     <app:keyboard cache="mail.mfolders" mailbox="${mailbox}" passspecial="true" globals="true">
         <zm:bindKey message="global.Cancel" id="OPCLOSE"/>
@@ -192,5 +196,4 @@
         <zm:bindKey message="global.PreviousItem" func="zprev"/>
         <zm:bindKey message="global.NextItem" func="znext"/>
     </app:keyboard>
-    
 </app:view>

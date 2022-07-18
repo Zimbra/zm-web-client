@@ -136,7 +136,7 @@
 						<c:choose>
 							<c:when test="${context.folder.isTrash}">
 								<td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
-								<app:button extra="onclick='return validatefn();'" name="actionEmpty" src="startup/ImgDelete.png" tooltip="emptyTrash" text="emptyTrash"/>
+								<app:button name="actionEmpty" src="startup/ImgDelete.png" tooltip="emptyTrash" text="emptyTrash"/>
 								<input type="hidden" name="confirmed" value="0"/>
 								<script type="text/javascript">
 									var validatefn = function(){
@@ -153,6 +153,10 @@
 											}
 											return false;
 										}
+									}
+									var el = document.getElementsByName("actionEmpty");
+									if(el) {
+										el[0].onclick = validatefn;
 									}
 								</script>
 							</c:when>

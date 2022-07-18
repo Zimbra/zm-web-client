@@ -92,7 +92,7 @@
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false" date="${requestScope.dateContext}"
-    onload="var e=document.getElementById('findField'); if (e) e.focus();">
+    onload="findField">
 
 <c:set var="toolbar">
     <table width=100%>
@@ -572,4 +572,10 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
         <input type="hidden" name="repeatEndDate" value="${fn:escapeXml(compose.repeatEndDate)}"/>
         <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 </form>
+<script type="text/javascript">
+    var el = document.getElementById("findField");
+    if(el) {
+        el.focus();
+    }
+</script>
 </app:view>

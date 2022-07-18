@@ -93,7 +93,7 @@
                     </c:if>    
                     <c:if test="${zm:boolean(context.folder.isTrash)}">
                         <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
-                        <app:button extra="onclick='return validatefn();'" name="actionEmpty" tooltip="emptyTrash" text="emptyTrash"/>
+                        <app:button name="actionEmpty" tooltip="emptyTrash" text="emptyTrash"/>
                         <input type="hidden" name="confirmed" value="0"/>
                         <script type="text/javascript">
                             var validatefn = function(){
@@ -110,6 +110,10 @@
                                     }
                                     return false;
                                 }
+                            }
+                            var el = document.getElementsByName("actionEmpty");
+                            if(el) {
+                                el[0].onclick = validatefn;
                             }
                         </script>
                     </c:if>
