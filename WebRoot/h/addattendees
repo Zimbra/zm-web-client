@@ -91,8 +91,7 @@
     </c:choose>
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false" date="${requestScope.dateContext}"
-    onload="findField">
+<app:view mailbox="${mailbox}" title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false" date="${requestScope.dateContext}">
 
 <c:set var="toolbar">
     <table width=100%>
@@ -574,7 +573,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
 </form>
 <script type="text/javascript">
     var el = document.getElementById("findField");
-    if(el) {
+    if(el && el[0]) {
         el.focus();
     }
 </script>

@@ -118,8 +118,7 @@
 </c:set>
 
 
-<app:view mailbox="${mailbox}" title="${title}" context="${context}" selected="contacts" contacts="true" tags="true" keys="false"
-          onload="${focusField}">
+<app:view mailbox="${mailbox}" title="${title}" context="${context}" selected="contacts" contacts="true" tags="true" keys="false">
 
 <zm:currentResultUrl var="currentUrl" disp="${isCreate ? 0 : 1}" value="" action="actionNewGroup" context="${context}"/>
 <form action="${currentUrl}" method="post" accept-charset="utf-8">
@@ -251,7 +250,7 @@ var checkEnter = function(f,e) {var k;if (window.event) k = window.event.keyCode
 if (k == 13) { document.getElementById("doSearch").click();return false;} else {return true;}}
 //-->
 var el = document.getElementById('${focusField}');
-if(el) {
+if(el && el[0]) {
     el.focus();
 }
 </SCRIPT>

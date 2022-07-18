@@ -84,8 +84,7 @@
     
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='tasks' tasks="true" context="${null}" keys="false" date="${requestScope.dateContext}" tags="true"
-     onload="subject">
+<app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='tasks' tasks="true" context="${null}" keys="false" date="${requestScope.dateContext}" tags="true">
 
     <form action="" name="taskForm" method="post" enctype="multipart/form-data" accept-charset="utf-8">
         <table width="100%" style='height:100%;'>
@@ -499,7 +498,7 @@
     //-->
 
     var el = document.getElementById("subject");
-    if(el) {
+    if(el && el[0]) {
         el.focus();
     }
     </SCRIPT>

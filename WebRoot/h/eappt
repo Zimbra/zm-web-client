@@ -86,8 +86,7 @@
 
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='calendar' calendars="true" minical="true" context="${null}" keys="false" date="${requestScope.dateContext}" tags="true"
-     onload="subject">
+<app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='calendar' calendars="true" minical="true" context="${null}" keys="false" date="${requestScope.dateContext}" tags="true">
     <c:set var="toolbar">
         <table width="100%" class='Tb'>
             <tr valign='middle'>
@@ -669,7 +668,7 @@
     var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
     //-->
     var el = document.getElementById("subject");
-    if(el) {
+    if(el && el[0]) {
         el.focus();
     }
    </SCRIPT>

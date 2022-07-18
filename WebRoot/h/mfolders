@@ -58,8 +58,7 @@
 
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' folders="true" searches="true" editmode="true" keys="true"
-        onload="newName">
+<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' folders="true" searches="true" editmode="true" keys="true">
 
     <form action="" method="post" accept-charset="utf-8">
         <table width="100%" cellspacing="0" cellpadding="0">
@@ -181,7 +180,7 @@
 
     //-->
     var el = document.getElementById("newName");
-    if(el) {
+    if(el && el[0]) {
         el.focus();
     }
     </SCRIPT>

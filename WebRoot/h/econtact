@@ -77,8 +77,7 @@
 
 <c:set var="focusField" value="${isGroup ? 'nickname' : 'lastName'}"/>
 
-<app:view mailbox="${mailbox}" title="${title}" context="${context}" selected="contacts" contacts="true" tags="true" keys="false"
-          onload="${focusField}">
+<app:view mailbox="${mailbox}" title="${title}" context="${context}" selected="contacts" contacts="true" tags="true" keys="false">
 
     <zm:currentResultUrl var="currentUrl" disp="${isCreate ? 0 : 1}" value="" action="${param.action}" context="${context}"/>
     <form action="${currentUrl}" name="contactForm" method="post" accept-charset="utf-8" onsubmit="cancelOnbeforeUnload();">
@@ -174,7 +173,7 @@ cancelOnbeforeUnload = function(){
 }
 
 var el = document.getElementById('${focusField}');
-if(el) {
+if(el && el[0]) {
     el.focus();
 }
 </script>

@@ -29,7 +29,6 @@
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
 <%@ attribute name="title" rtexprvalue="true" required="true" %>
 <%@ attribute name="ads" rtexprvalue="true" required="false" %>
-<%@ attribute name="onload" rtexprvalue="true" required="false" %>
 <%@ attribute name="tags" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>

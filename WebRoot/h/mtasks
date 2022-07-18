@@ -45,8 +45,7 @@
 
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='tasks'  tasks="true" editmode="true" keys="true"
-     onload="newName">
+<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='tasks'  tasks="true" editmode="true" keys="true">
 
     <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
         <table width="100%" cellspacing="0" cellpadding="0">
@@ -140,7 +139,7 @@
     var znext = function() { if (zindex+1 < zrc) zget(zindex+1);}
     //-->
     var el = document.getElementById("newName");
-    if(el) {
+    if(el && el[0]) {
         el.focus();
     }
     </SCRIPT>

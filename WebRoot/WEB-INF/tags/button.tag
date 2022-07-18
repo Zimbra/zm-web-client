@@ -23,7 +23,6 @@
 <%@ attribute name="text" rtexprvalue="true" required="false" %>
 <%@ attribute name="id" rtexprvalue="true" required="false" %>
 <%@ attribute name="width" rtexprvalue="true" required="false" %>
-<%@ attribute name="extra" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>

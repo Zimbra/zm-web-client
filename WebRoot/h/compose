@@ -76,8 +76,7 @@
 </app:handleError>
 
 <c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/>
-<app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
-          onload="${focusField}" >
+<app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
 <body class="yui-skin-sam">
 <form action="" method="post" name="composeForm" enctype="multipart/form-data" accept-charset="utf-8">
 <table width="100%">
@@ -375,7 +374,7 @@ var zselect = function(id) { var e = document.getElementById(id); if (e) { e.sel
 showBccWhenNotNull();        
 // -->
 var el = document.getElementById('${focusField}');
-if(el) {
+if(el && el[0]) {
     el.focus();
     if (el.setSelectionRange) {
         el.setSelectionRange(0,0);

@@ -155,7 +155,7 @@
 										}
 									}
 									var el = document.getElementsByName("actionEmpty");
-									if(el) {
+									if(el && el[0]) {
 										el[0].onclick = validatefn;
 									}
 								</script>
