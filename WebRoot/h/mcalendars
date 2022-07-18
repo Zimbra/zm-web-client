@@ -164,11 +164,12 @@
     var zget = function(i) { var e = document.getElementById("A"+i); if (e && e.href) window.location = e.href; }
     var zprev = function() { if (zindex > 0) zget(zindex-1);}
     var znext = function() { if (zindex+1 < zrc) zget(zindex+1);}
-    //-->
+    
     var el = document.getElementById("newName");
-    if(el && el[0]) {
+    if(el) {
         el.focus();
     }
+    //-->
     </SCRIPT>
     <app:keyboard cache="cal.mcalendars" mailbox="${mailbox}" globals="true" passspecial="true">
         <zm:bindKey message="global.Cancel" id="OPCLOSE"/>

@@ -372,14 +372,15 @@ var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(
 var zselect = function(id) { var e = document.getElementById(id); if (e) { e.selected = true; }}
 
 showBccWhenNotNull();        
-// -->
+
 var el = document.getElementById('${focusField}');
-if(el && el[0]) {
+if(el) {
     el.focus();
     if (el.setSelectionRange) {
         el.setSelectionRange(0,0);
     }
 }
+//-->
 </script>
 <app:composeValidation isHtml="${isHtml}" />
 

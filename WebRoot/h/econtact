@@ -173,7 +173,7 @@ cancelOnbeforeUnload = function(){
 }
 
 var el = document.getElementById('${focusField}');
-if(el && el[0]) {
+if(el) {
     el.focus();
 }
 </script>

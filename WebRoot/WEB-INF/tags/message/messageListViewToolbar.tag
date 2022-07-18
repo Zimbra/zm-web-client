@@ -124,6 +124,7 @@
 								<app:button name="actionEmpty" src="startup/ImgDelete.png" tooltip="emptyTrash" text="emptyTrash"/>
 								<input type="hidden" name="confirmed" value="0"/>
 								<script type="text/javascript">
+									<!--
 									var validatefn = function(){
 										if(confirm('<fmt:message key="confirmEmptyTrashFolder"><fmt:param value=""/><fmt:param value=""/><fmt:param value=""/></fmt:message>')){
 											if(document.forms.zform.confirmed.length > 1){
@@ -139,10 +140,12 @@
 											return false;
 										}
 									}
+
 									var el = document.getElementsByName("actionEmpty");
-									if(el) {
+									if(el && el[0]) {
 										el[0].onclick = validatefn;
 									}
+									//-->
 								</script>
 							</c:when>
 							<c:when test="${context.folder.isSpam}">

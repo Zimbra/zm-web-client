@@ -302,9 +302,11 @@
             </tr>
         </table>
         <script type="text/javascript">
+            <!--
             var el = document.getElementById("subject");
-            if(el && el[0]) {
+            if(el) {
                 el.focus();
             }
+            //-->
         </script>
 </app:view>

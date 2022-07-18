@@ -666,11 +666,12 @@
     }
     
     var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
-    //-->
+
     var el = document.getElementById("subject");
-    if(el && el[0]) {
+    if(el) {
         el.focus();
     }
+    //-->
    </SCRIPT>
     <app:keyboard cache="cal.eappt" globals="false" passspecial="true" mailbox="${mailbox}">
         <zm:bindKey message="editAppointment.Save" func="function() { zclick('SOPSAVE')}"/>

@@ -297,9 +297,11 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
     <input type="hidden" name="instCompNum" value="${fn:escapeXml(compose.instanceCompNum)}"/>
 </form>
 <script type="text/javascript">
+    <!--
     var el = document.getElementById("findField");
-    if(el && el[0]) {
+    if(el) {
         el.focus();
     }
+    //-->
 </script>
 </app:view>
