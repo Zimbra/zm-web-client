@@ -422,11 +422,7 @@ ZmSearchController.prototype.updateOverview = function(searchObj) {
 			type = ZmOrganizer.SEARCH;
 		}
         else if (search.folderId) {
-			if (search.isFileShareWithMeFolder) {
-				id = ZmOrganizer.ID_FILE_SHARED_WITH_ME;
-			} else {
-				id = this._getNormalizedId(search.folderId);
-			}
+			id = this._getNormalizedId(search.folderId);
 			var folderTree = appCtxt.getFolderTree(),
 			    folder = folderTree && folderTree.getById(id);
 

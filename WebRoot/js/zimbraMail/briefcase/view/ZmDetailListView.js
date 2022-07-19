@@ -220,7 +220,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_LOCK) {
 		idx = this._getImageHtml(htmlArr, idx, (item.locked ? "Padlock" : "Blank_16") , this._getFieldId(item, field)); //AjxImg.getImageHtml(item.locked ? "Padlock" : "Blank_16");
 	} else if (field == ZmItem.F_SHARES) {
-		idx = this._getImageHtml(htmlArr, idx, (item.shares && item.shares.length > 0 ? "SharedContact" : "Blank_16") , this._getFieldId(item, field)); //AjxImg.getImageHtml(item.locked ? "Padlock" : "Blank_16");
+		idx = this._getImageHtml(htmlArr, idx, (item.shares && item.shares.length > 0 ? "SharedContact" : "Blank_16") , this._getFieldId(item, field));
 	}  else if (field == ZmItem.F_VERSION) {
 		htmlArr[idx++] = item.version;
 	} else if (field == ZmItem.F_NAME || field == ZmItem.F_SUBJECT) {
@@ -317,7 +317,7 @@ function(item, colIdx) {
     html[idx++] = "</table>";
 
     html[idx++] = "<table width=100% class='BottomRow'><tr>";
-	html[idx++] = "<td style='padding-left:30px;' width=" + width + " id='" + this._getFieldId(item, ZmItem.F_SHARES)+"'> ";
+	html[idx++] = "<td style='padding-left:28px;' width=20 id='" + this._getFieldId(item, ZmItem.F_SHARES)+"'> ";
     idx =   this._getImageHtml(html, idx, (item.shares && item.shares.length > 0 ? "SharedContact" : "Blank_16") , this._getFieldId(item, ZmItem.F_SHARES));
 	html[idx++] = "</td>";
     html[idx++] = "<td style='vertical-align:middle;'>";

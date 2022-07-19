@@ -272,7 +272,7 @@ function(parent, num) {
     }
     var isTrash = (briefcase && briefcase.nId == ZmOrganizer.ID_TRASH);
     var isShared = ((briefcase && briefcase.nId != ZmOrganizer.ID_TRASH && briefcase.isShared()));
-	var isFileSharedWithMeFolder = this._folderId == ZmOrganizer.ID_FILE_SHARED_WITH_ME;
+	var isFileSharedWithMeFolder = this._folderId == ZmFolder.ID_FILE_SHARED_WITH_ME;
 	var isReadOnly = briefcase ? briefcase.isReadOnly() : false;
 	var isMultiFolder = (noOfFolders > 1);
 	var isItemSelected = (num>0);
@@ -282,11 +282,11 @@ function(parent, num) {
 
 	if (isFileSharedWithMeFolder) {
 		// file shared with me folder selected.
-		parent.enable(ZmOperation.OPEN_FILE, num == 1);
 		if(parent &&  parent instanceof ZmActionMenu){
 			parent.getOp(ZmOperation.OPEN_FILE) && parent.getOp(ZmOperation.OPEN_FILE).setVisible(isItemSelected && !isMultiFolder);
 		}
 		parent.getOp(ZmOperation.OPEN_FILE).setVisible(true);
+		parent.enable(ZmOperation.OPEN_FILE, num == 1 && appCtxt.get(ZmSetting.DOCUMENT_EDITOR_ENABLED));
 		parent.enable(ZmOperation.SAVE_FILE, num >0 && (!isFolderSelected || isBriefcaseItemSelected));
 		this.setFileOperations(parent, false);
 		return;
@@ -418,8 +418,9 @@ function(parent, num) {
     }
 };
 
+// Show / hide file toolbar and context menu options.
 ZmBriefcaseController.prototype.setFileOperations =
-function(parent, allow) {
+function(parent, show) {
 
 	var fileOperations = [ZmOperation.SEND_FILE,
 		ZmOperation.SEND_FILE_AS_ATT,
@@ -440,20 +441,20 @@ function(parent, allow) {
 	for (var i=0; i< fileOperations.length; i++) {
 		op = parent.getOp(fileOperations[i]);
 		if (op) {
-			op.setVisible(allow);
+			op.setVisible(show);
 		}
 	}
 
 	if(parent &&  parent instanceof ZmActionMenu){
 		for (var k=0; k< parent.opList.length; k++) {
 			if (parent.opList[k] == "SEP") {
-				parent._children._array[k].setVisible(allow);
+				parent._children._array[k].setVisible(show);
 			}
 		}
 	}
 
 	if (parent && parent instanceof ZmButtonToolBar) {
-		parent.getActionsButton().setVisible(allow);
+		parent.getActionsButton().setVisible(show);
 
 	}
 }
@@ -592,11 +593,6 @@ ZmBriefcaseController.prototype.show =
 function(results) {
 
 	this._folderId = results && results.search && results.search.folderId;
-
-	if (results && results.search && results.search.isFileShareWithMeFolder) {
-		this._folderId = ZmOrganizer.ID_FILE_SHARED_WITH_ME;
-	}
-
 	this.setList(results.getResults(ZmItem.BRIEFCASE_ITEM));
 	this._list.setHasMore(results.getAttribute("more"));
 
@@ -1015,6 +1011,10 @@ function(items){
     items = AjxUtil.toArray(items);
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
+		if (item.folderId == ZmFolder.ID_FILE_SHARED_WITH_ME) {
+			item.getDocServerUrl(this.openFileOnDocServer.bind(this, item.name));
+			continue;
+		}
 		var restUrl = item.getRestUrl(false, false, true);
 		if (!restUrl) {
 			continue;
@@ -1035,6 +1035,13 @@ function(items){
         appCtxt.handlePopupBlocker(win);
 	}
 };
+
+ZmBriefcaseController.prototype.openFileOnDocServer =
+function(name, url) {
+
+	var win = window.open(url, this._getWindowName(name));
+	appCtxt.handlePopupBlocker(win);
+}
 
 ZmBriefcaseController.prototype._saveFileListener =
 function() {
@@ -1064,15 +1071,19 @@ function(items){
 				} else {
 					itemId = item.getNormalizedItemId();
 				}
-				params.push((item.isRevision ? item.parent.id : itemId )+"."+item.version);
+				if (organizer.id == ZmFolder.ID_FILE_SHARED_WITH_ME) {
+					params.push(item.id);
+				} else {
+					params.push((item.isRevision ? item.parent.id : itemId )+"."+item.version);
+				}
 	        }
         }
-        restUrl = [ ((organizer.isShared() && !appCtxt.isOffline ) ? organizer.getOwnerRestUrl() : organizer.getRestUrl()), "?fmt=zip&list=", params.join(',')].join('');
+        restUrl = [ ((organizer.isShared() && !appCtxt.isOffline && organizer.id != ZmFolder.ID_FILE_SHARED_WITH_ME ) ? organizer.getOwnerRestUrl() : organizer.getRestUrl()), "?fmt=zip&list=", params.join(',')].join('');
     }else{
         item = AjxUtil.isArray(items) ? items[0] : items;
         restUrl = item.getRestUrl();
         restUrl += ( restUrl.indexOf('?') == -1 ) ? "?" : "&";
-        restUrl += "disp=a"+(item.version ? "&ver="+item.version : "");
+        restUrl += "disp=a"+(item.version && item.folderId != ZmFolder.ID_FILE_SHARED_WITH_ME ? "&ver="+item.version : "");
     }
 
     if (!restUrl) {

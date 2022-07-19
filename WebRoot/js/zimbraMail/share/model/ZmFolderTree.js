@@ -92,7 +92,7 @@ function(rootObj, elementType, account) {
 ZmFolderTree.createFromJs =
 function(parent, obj, tree, elementType, path, account) {
 	if (!(obj && obj.id)) { return; }
-	if (obj && obj.owner && !appCtxt.get(ZmSetting.SHARING_ENABLED)) { return; }
+	if (obj && (obj.owner || obj.id == ZmFolder.ID_FILE_SHARED_WITH_ME) && !appCtxt.get(ZmSetting.SHARING_ENABLED)) { return; }
 
 	var folder;
 	if (elementType == "search") {
@@ -280,10 +280,6 @@ function(type, parent, obj, tree, path, elementType, account) {
 	if (elementType == "hab") {
 		params.name = obj._attrs ? obj._attrs.displayName : obj.name;
 		params.mail = obj._attrs ? obj._attrs.mail : undefined;
-	}
-
-	if (obj.id === ZmOrganizer.ID_FILE_SHARED_WITH_ME) {
-		params.noTooltip = true;
 	}
 
 	var folder = new orgClass(params);

@@ -205,6 +205,33 @@ function() {
 	return briefcase && briefcase.link;
 };
 
+ZmBriefcaseBaseItem.prototype.getDocServerUrl =
+function(callback){
+
+    var json = {
+		GetDocumentShareURLRequest: {
+			_jsns: "urn:zimbraMail",
+			item: {
+				id:	this.id
+			}
+		}
+	};
+
+	var params = {
+		jsonObj:		json,
+		asyncMode:		true,
+		callback:		(new AjxCallback(this, this._handleResponseDocumentShareUrl, [callback])),
+	};
+	return appCtxt.getAppController().sendRequest(params);
+};
+
+ZmBriefcaseBaseItem.prototype._handleResponseDocumentShareUrl =
+function (callbackfn, response) {
+	var publicURL = response.getResponse().GetDocumentShareURLResponse._content;
+	this.documentShareURL = publicURL;
+	callbackfn(publicURL);
+}
+
 /**
  * Creates an item from an attachment.
  * 

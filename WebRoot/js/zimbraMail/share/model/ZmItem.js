@@ -433,6 +433,10 @@ function() {
 		? ([organizer.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(this.name)].join(""))
 		: null;
 
+	if (url && this.folderId == ZmFolder.ID_FILE_SHARED_WITH_ME) {
+		url = [url, "?", "id=", this.id].join("");
+	}
+
 	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);
 
 	return url;

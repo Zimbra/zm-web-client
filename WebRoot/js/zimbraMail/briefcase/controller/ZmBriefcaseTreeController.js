@@ -64,7 +64,7 @@ function() {
 
 ZmBriefcaseTreeController.prototype.getItemActionMenu = function(ev, item) {
 	var actionMenu = null;
-	if (item.id != ZmOrganizer.ID_FILE_SHARED_WITH_ME) {
+	if (item.id != ZmFolder.ID_FILE_SHARED_WITH_ME) {
 		actionMenu = ZmTreeController.prototype.getItemActionMenu.apply(this, arguments);
 	}
 	return actionMenu;
@@ -214,9 +214,8 @@ function() {
 ZmBriefcaseTreeController.prototype._itemClicked =
 function(folder) {
 	appCtxt.getApp(ZmApp.BRIEFCASE).search({
-        folderId:folder.id == ZmOrganizer.ID_FILE_SHARED_WITH_ME ? '16': folder.id,
-        callback: new AjxCallback(this, this._handleSearchResponse, [folder]),
-		isFileShareWithMeFolder: folder.id === ZmOrganizer.ID_FILE_SHARED_WITH_ME
+        folderId:folder.id,
+        callback: new AjxCallback(this, this._handleSearchResponse, [folder])
     });
 };
 

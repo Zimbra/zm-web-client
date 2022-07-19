@@ -26,3 +26,4 @@
  */
 AjxPackage.require("zimbraMail.briefcase.model.ZmBriefcase");
 AjxPackage.require("zimbraMail.briefcase.model.ZmBriefcaseItem");
+AjxPackage.require("zimbraMail.share.model.ZmShare");
