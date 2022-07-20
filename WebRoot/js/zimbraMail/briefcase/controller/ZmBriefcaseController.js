@@ -287,7 +287,7 @@ function(parent, num) {
 		}
 		parent.getOp(ZmOperation.OPEN_FILE).setVisible(true);
 		parent.enable(ZmOperation.OPEN_FILE, num == 1 && appCtxt.get(ZmSetting.DOCUMENT_EDITOR_ENABLED));
-		parent.enable(ZmOperation.SAVE_FILE, num >0 && (!isFolderSelected || isBriefcaseItemSelected));
+		parent.enable(ZmOperation.SAVE_FILE, num == 1 && (!isFolderSelected || isBriefcaseItemSelected));
 		this.setFileOperations(parent, false);
 		return;
 	} else {
@@ -1071,14 +1071,10 @@ function(items){
 				} else {
 					itemId = item.getNormalizedItemId();
 				}
-				if (organizer.id == ZmFolder.ID_FILE_SHARED_WITH_ME) {
-					params.push(item.id);
-				} else {
-					params.push((item.isRevision ? item.parent.id : itemId )+"."+item.version);
-				}
+				params.push((item.isRevision ? item.parent.id : itemId )+"."+item.version);
 	        }
         }
-        restUrl = [ ((organizer.isShared() && !appCtxt.isOffline && organizer.id != ZmFolder.ID_FILE_SHARED_WITH_ME ) ? organizer.getOwnerRestUrl() : organizer.getRestUrl()), "?fmt=zip&list=", params.join(',')].join('');
+        restUrl = [ ((organizer.isShared() && !appCtxt.isOffline ) ? organizer.getOwnerRestUrl() : organizer.getRestUrl()), "?fmt=zip&list=", params.join(',')].join('');
     }else{
         item = AjxUtil.isArray(items) ? items[0] : items;
         restUrl = item.getRestUrl();
