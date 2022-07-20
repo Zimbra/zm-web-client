@@ -207,7 +207,6 @@ function() {
 
 ZmBriefcaseBaseItem.prototype.getDocServerUrl =
 function(callback){
-
     var json = {
 		GetDocumentShareURLRequest: {
 			_jsns: "urn:zimbraMail",

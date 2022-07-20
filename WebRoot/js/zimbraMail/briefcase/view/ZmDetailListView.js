@@ -144,7 +144,7 @@ function(parent) {
         }
         headers.push(
                 new DwtListHeaderItem({field:ZmItem.F_LOCK, icon: "Padlock", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.lock}),
-				new DwtListHeaderItem({field:ZmItem.F_SHARES, icon: "SharedContact", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.lock}),
+                new DwtListHeaderItem({field:ZmItem.F_SHARES, icon: "SharedContact", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.lock}),
                 new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"GenericDoc", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.icon}),
                 new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, sortable:ZmItem.F_NAME}),
                 new DwtListHeaderItem({field:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmMsg.COLUMN_WIDTH_TYPE_DLV}),
@@ -317,9 +317,9 @@ function(item, colIdx) {
     html[idx++] = "</table>";
 
     html[idx++] = "<table width=100% class='BottomRow'><tr>";
-	html[idx++] = "<td style='padding-left:28px;' width=20 id='" + this._getFieldId(item, ZmItem.F_SHARES)+"'> ";
-    idx =   this._getImageHtml(html, idx, (item.shares && item.shares.length > 0 ? "SharedContact" : "Blank_16") , this._getFieldId(item, ZmItem.F_SHARES));
-	html[idx++] = "</td>";
+    html[idx++] = "<td style='padding-left:28px;' width=20 id='" + this._getFieldId(item, ZmItem.F_SHARES)+"'> ";
+    idx = this._getImageHtml(html, idx, (item.shares && item.shares.length > 0 ? "SharedContact" : "Blank_16") , this._getFieldId(item, ZmItem.F_SHARES));
+    html[idx++] = "</td>";
     html[idx++] = "<td style='vertical-align:middle;'>";
     idx = this._getCellContents(html, idx, item, ZmItem.F_FROM, colIdx);
     html[idx++] = "<td style='vertical-align:middle;text-align:right;'>";

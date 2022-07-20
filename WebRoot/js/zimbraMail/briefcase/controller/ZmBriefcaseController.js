@@ -282,12 +282,12 @@ function(parent, num) {
 
 	if (isFileSharedWithMeFolder) {
 		// file shared with me folder selected.
-		if(parent &&  parent instanceof ZmActionMenu){
+		if (parent && parent instanceof ZmActionMenu) {
 			parent.getOp(ZmOperation.OPEN_FILE) && parent.getOp(ZmOperation.OPEN_FILE).setVisible(isItemSelected && !isMultiFolder);
 		}
 		parent.getOp(ZmOperation.OPEN_FILE).setVisible(true);
 		parent.enable(ZmOperation.OPEN_FILE, num == 1 && appCtxt.get(ZmSetting.DOCUMENT_EDITOR_ENABLED));
-		parent.enable(ZmOperation.SAVE_FILE, num == 1 && (!isFolderSelected || isBriefcaseItemSelected));
+		parent.enable(ZmOperation.SAVE_FILE, num == 1);
 		this.setFileOperations(parent, false);
 		return;
 	} else {
@@ -421,7 +421,6 @@ function(parent, num) {
 // Show / hide file toolbar and context menu options.
 ZmBriefcaseController.prototype.setFileOperations =
 function(parent, show) {
-
 	var fileOperations = [ZmOperation.SEND_FILE,
 		ZmOperation.SEND_FILE_AS_ATT,
 		ZmOperation.RENAME_FILE,
@@ -438,14 +437,14 @@ function(parent, show) {
 		ZmOperation.SEP,
 		ZmOperation.DELETE ];
 
-	for (var i=0; i< fileOperations.length; i++) {
+	for (var i = 0; i < fileOperations.length; i++) {
 		op = parent.getOp(fileOperations[i]);
 		if (op) {
 			op.setVisible(show);
 		}
 	}
 
-	if(parent &&  parent instanceof ZmActionMenu){
+	if (parent && parent instanceof ZmActionMenu) {
 		for (var k=0; k< parent.opList.length; k++) {
 			if (parent.opList[k] == "SEP") {
 				parent._children._array[k].setVisible(show);
@@ -455,7 +454,6 @@ function(parent, show) {
 
 	if (parent && parent instanceof ZmButtonToolBar) {
 		parent.getActionsButton().setVisible(show);
-
 	}
 }
 
@@ -1038,7 +1036,6 @@ function(items){
 
 ZmBriefcaseController.prototype.openFileOnDocServer =
 function(name, url) {
-
 	var win = window.open(url, this._getWindowName(name));
 	appCtxt.handlePopupBlocker(win);
 }
@@ -1079,7 +1076,7 @@ function(items){
         item = AjxUtil.isArray(items) ? items[0] : items;
         restUrl = item.getRestUrl();
         restUrl += ( restUrl.indexOf('?') == -1 ) ? "?" : "&";
-        restUrl += "disp=a"+(item.version && item.folderId != ZmFolder.ID_FILE_SHARED_WITH_ME ? "&ver="+item.version : "");
+        restUrl += "disp=a" + (item.version && item.folderId != ZmFolder.ID_FILE_SHARED_WITH_ME ? "&ver=" + item.version : "");
     }
 
     if (!restUrl) {
