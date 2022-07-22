@@ -84,8 +84,7 @@
     
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='tasks' tasks="true" context="${null}" keys="false" date="${requestScope.dateContext}" tags="true"
-     onload="var e=document.getElementById('subject'); if (e) e.focus();">
+<app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='tasks' tasks="true" context="${null}" keys="false" date="${requestScope.dateContext}" tags="true">
 
     <form action="" name="taskForm" method="post" enctype="multipart/form-data" accept-charset="utf-8">
         <table width="100%" style='height:100%;'>
@@ -496,8 +495,13 @@
     }
             
     /* end */
+
+    var el = document.getElementById("subject");
+    if(el) {
+        el.focus();
+    }
     //-->
-   </SCRIPT>
+    </SCRIPT>
 
     <app:keyboard cache="cal.eappt" globals="false" passspecial="true" mailbox="${mailbox}">
         <zm:bindKey message="editAppointment.Save" func="function() { zclick('SOPSAVE')}"/>

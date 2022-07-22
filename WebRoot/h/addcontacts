@@ -68,8 +68,7 @@
     </c:choose>
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
-        onload="var e=document.getElementById('findField'); if (e) e.focus();">
+<app:view mailbox="${mailbox}" title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
 
 <c:set var="toolbar">
     <table width=100% cellspacing=0>
@@ -297,4 +296,12 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
     <input type="hidden" name="compNum" value="${fn:escapeXml(compose.compNum)}"/>
     <input type="hidden" name="instCompNum" value="${fn:escapeXml(compose.instanceCompNum)}"/>
 </form>
+<script type="text/javascript">
+    <!--
+    var el = document.getElementById("findField");
+    if(el) {
+        el.focus();
+    }
+    //-->
+</script>
 </app:view>
