@@ -1418,25 +1418,27 @@ function(modifies){
     if (view) {
         var removeSelection = false;
         var selectedItems = view.getSelection();
-        var selecteItemsId = [];
+        if (selectedItems.length) {
+            var selectedItemIds = [];
 
-        for (var i = 0; i < selectedItems.length; i++) {
-            selecteItemsId.push(selectedItems[i].id);
-        }
+            for (var i = 0; i < selectedItems.length; i++) {
+                selectedItemIds.push(selectedItems[i].id);
+            }
 
-        for (var i = 0; i < modifies.doc.length; i++) {
-            var modifiedDoc = modifies.doc[i];
-            if ((typeof modifiedDoc.ver != 'undefined' || typeof modifiedDoc.loid != 'undefined') && selecteItemsId.indexOf(modifiedDoc.id) !== -1) {
-                removeSelection = true;
-                break;
+            for (var i = 0; i < modifies.doc.length; i++) {
+                var modifiedDoc = modifies.doc[i];
+                if ((typeof modifiedDoc.ver != 'undefined' || typeof modifiedDoc.loid != 'undefined') && selectedItemIds.indexOf(modifiedDoc.id) !== -1) {
+                    removeSelection = true;
+                    break;
+                }
+            }
+
+            // Unselect item when user upload item with new version of selected item or perform Checkout/Checkin on item.
+            if (removeSelection) {
+                view.deselectAll();
             }
         }
-
-        // Unselect item when user upload item with new version of selected item or perform Checkout/Checkin on item.
-        if (removeSelection) {
-            view.deselectAll();
-        }
-	}
+    }
     this._resetToolbarOperations();
 };
 
