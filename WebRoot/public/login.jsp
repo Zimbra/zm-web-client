@@ -224,16 +224,16 @@
                                 String versionPart = tokenParts[2];
                                 Map<?, ?> decodedTokenMap = TokenUtil.getAttrs(versionPart);
                                 String version = (String) decodedTokenMap.get("version");
-                                pageContext.setAttribute("isZ9Mailbox", version.startsWith("9"));
+                                pageContext.setAttribute("isUpgradedMailbox", version.startsWith("9") || version.startsWith("10"));
                             }
                         %>
                         
-                        <c:set var="isZ9Mailbox" value="${isZ9Mailbox}" />
+                        <c:set var="isUpgradedMailbox" value="${isUpgradedMailbox}" />
                         <c:set var="prefClientType" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}" />
                         
                         <c:if test="${empty client or client eq 'preferred'}">
                             <c:set var="client"
-                                value="${isZ9Mailbox ? mobileSupported && modernSupported ? 'modern' : prefClientType eq 'advanced' ? 'advanced' : 'modern' : prefClientType}" />
+                                value="${isUpgradedMailbox ? mobileSupported && modernSupported ? 'modern' : prefClientType eq 'advanced' ? 'advanced' : 'modern' : prefClientType}" />
                         </c:if>
                         <c:choose>
                             <c:when test="${client eq 'advanced'}">
@@ -258,7 +258,7 @@
                                     </c:otherwise>
                                 </c:choose>
                             </c:when>
-                            <c:when test="${client eq 'modern' and modernSupported and isZ9Mailbox}">
+                            <c:when test="${client eq 'modern' and modernSupported and isUpgradedMailbox}">
                                     <jsp:forward page="/public/modern.jsp"/>
                             </c:when>
                             <c:otherwise>
