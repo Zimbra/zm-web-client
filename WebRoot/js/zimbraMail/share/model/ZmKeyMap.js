@@ -44,8 +44,9 @@
  * 
  * @extends		DwtKeyMap
  */
-ZmKeyMap = function() {
-	
+ZmKeyMap = function(subclassInit) {
+	if (subclassInit) { return };
+
 	ZmKeyMap._setPreconditions();
 	DwtKeyMap.call(this);
 	this._load(this._map, ZmKeys);
