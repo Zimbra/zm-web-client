@@ -1416,8 +1416,29 @@ ZmBriefcaseController.prototype.handleModifyNotify =
 function(modifies){
     var view = this._listView[this._currentViewId];
     if (view) {
-        view.deselectAll();
-	}
+        var removeSelection = false;
+        var selectedItems = view.getSelection();
+        if (selectedItems.length) {
+            var selectedItemIds = [];
+
+            for (var i = 0; i < selectedItems.length; i++) {
+                selectedItemIds.push(selectedItems[i].id);
+            }
+
+            for (var i = 0; i < modifies.doc.length; i++) {
+                var modifiedDoc = modifies.doc[i];
+                if ((typeof modifiedDoc.ver != 'undefined' || typeof modifiedDoc.loid != 'undefined') && selectedItemIds.indexOf(modifiedDoc.id) !== -1) {
+                    removeSelection = true;
+                    break;
+                }
+            }
+
+            // Unselect item when user upload item with new version of selected item or perform Checkout/Checkin on item.
+            if (removeSelection) {
+                view.deselectAll();
+            }
+        }
+    }
     this._resetToolbarOperations();
 };
 
