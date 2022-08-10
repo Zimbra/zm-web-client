@@ -11,10 +11,10 @@ This change ensures the for attribute value matches the id attribute
 of the INPUT field, but adding explicit support for the trick used by
 comboboxes for pointing to their INPUT element.
 ---
-diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/Form.ts tinymce-4.7.9/src/ui/main/ts/Form.ts
---- /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/Form.ts	2018-02-27 07:36:50.000000000 -0500
-+++ tinymce-4.7.9/src/ui/main/ts/Form.ts	2018-03-12 05:47:55.359847177 -0400
-@@ -65,17 +65,25 @@
+diff -aur -x node_modules /tmp/root/tinymce-4.9.11/src/ui/main/ts/Form.ts tinymce-4.9.11/src/ui/main/ts/Form.ts
+--- /tmp/root/tinymce-4.9.11/src/ui/main/ts/Form.ts	2020-07-13 04:14:19.000000000 +0000
++++ tinymce-4.9.11/src/ui/main/ts/Form.ts	2022-08-10 05:58:01.755201122 +0000
+@@ -62,17 +62,25 @@
  
      // Wrap any labeled items in FormItems
      items.each(function (ctrl) {
@@ -42,10 +42,3 @@ diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/Form.ts tinym
              disabled: ctrl.disabled()
            }
          }, self.settings.formItemDefaults));
-@@ -154,4 +162,4 @@
-     self.on('show', recalcLabels);
-     recalcLabels();
-   }
--});
-\ No newline at end of file
-+});
