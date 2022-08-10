@@ -9,7 +9,7 @@ In order to build TinyMCE, you'll need a few extra packages beyond the regular
 requirements of Zimbra:
 
 - node (aka. nodejs or node-js)
-- npm (occassionally included with node)
+- yarn
 - curl
 - GNU Make
 - diff & patch
