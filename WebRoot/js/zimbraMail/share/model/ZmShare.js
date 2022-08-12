@@ -848,7 +848,7 @@ function() {
 
 ZmShare.prototype.isBriefcaseDocument =
 function () {
-	return this.object instanceof ZmBriefcaseItem;
+	return this.object.type == ZmItem.BRIEFCASE_ITEM;
 };
 
 /**
