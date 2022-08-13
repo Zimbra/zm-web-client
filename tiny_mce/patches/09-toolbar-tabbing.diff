@@ -1,7 +1,7 @@
-diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/themes/modern/main/ts/ui/Toolbar.ts tinymce-4.7.9/src/themes/modern/main/ts/ui/Toolbar.ts
---- /tmp/zimbra/tinymce-4.7.9/src/themes/modern/main/ts/ui/Toolbar.ts	2018-02-27 07:36:50.000000000 -0500
-+++ tinymce-4.7.9/src/themes/modern/main/ts/ui/Toolbar.ts	2018-03-12 09:00:30.999944210 -0400
-@@ -104,7 +104,8 @@
+diff -aur -x node_modules /tmp/root/tinymce-4.9.11/src/themes/modern/main/ts/ui/Toolbar.ts tinymce-4.9.11/src/themes/modern/main/ts/ui/Toolbar.ts
+--- /tmp/root/tinymce-4.9.11/src/themes/modern/main/ts/ui/Toolbar.ts	2020-07-13 04:14:19.000000000 +0000
++++ tinymce-4.9.11/src/themes/modern/main/ts/ui/Toolbar.ts	2022-08-10 06:19:45.884202736 +0000
+@@ -101,7 +101,8 @@
        classes: 'toolbar-grp',
        ariaRoot: true,
        ariaRemember: true,
@@ -11,17 +11,10 @@ diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/themes/modern/main/ts/ui
      };
    }
  };
-@@ -112,4 +113,4 @@
- export default {
-   createToolbar,
-   createToolbars
--};
-\ No newline at end of file
-+};
-diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts
---- /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts	2018-03-12 09:04:04.944885403 -0400
-+++ tinymce-4.7.9/src/ui/main/ts/KeyboardNavigation.ts	2018-03-12 08:57:22.439014086 -0400
-@@ -331,7 +331,10 @@
+diff -aur -x node_modules /tmp/root/tinymce-4.9.11/src/ui/main/ts/KeyboardNavigation.ts tinymce-4.9.11/src/ui/main/ts/KeyboardNavigation.ts
+--- /tmp/root/tinymce-4.9.11/src/ui/main/ts/KeyboardNavigation.ts	2022-08-10 06:21:18.757981758 +0000
++++ tinymce-4.9.11/src/ui/main/ts/KeyboardNavigation.ts	2022-08-10 06:20:35.253148504 +0000
+@@ -330,7 +330,10 @@
  
        return true;
      } else {

@@ -90,7 +90,7 @@
     <property name="yui.version" value="2.9.0-alfresco-20140211"/>
 
     <!-- TINY_MCE INTEGRATION -->
-    <property name="tinymce.version" value="4.7.9"/>
+    <property name="tinymce.version" value="4.9.11"/>
     <property name='tinymce.dir' value='${3rdparty.dir}/tinymce'/>
     <property name='tinymce.root.dir' value='tiny_mce' />
     <property name='tinymce.js.dir' value='${tinymce.root.dir}/tinymce-${tinymce.version}/js/tinymce' />

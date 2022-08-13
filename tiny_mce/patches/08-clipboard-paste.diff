@@ -1,7 +1,7 @@
-diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/plugins/paste/main/ts/core/Clipboard.ts tinymce-4.7.9/src/plugins/paste/main/ts/core/Clipboard.ts
---- /tmp/zimbra/tinymce-4.7.9/src/plugins/paste/main/ts/core/Clipboard.ts	2018-02-27 07:36:50.000000000 -0500
-+++ tinymce-4.7.9/src/plugins/paste/main/ts/core/Clipboard.ts	2018-03-12 08:48:54.423633425 -0400
-@@ -361,7 +361,9 @@
+diff -aur -x node_modules /tmp/root/tinymce-4.9.11/src/plugins/paste/main/ts/core/Clipboard.ts tinymce-4.9.11/src/plugins/paste/main/ts/core/Clipboard.ts
+--- /tmp/root/tinymce-4.9.11/src/plugins/paste/main/ts/core/Clipboard.ts	2020-07-13 04:14:19.000000000 +0000
++++ tinymce-4.9.11/src/plugins/paste/main/ts/core/Clipboard.ts	2022-08-10 06:17:11.765248972 +0000
+@@ -375,7 +375,9 @@
      }
  
      // Not a keyboard paste prevent default paste and try to grab the clipboard contents using different APIs
@@ -12,10 +12,3 @@ diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/plugins/paste/main/ts/co
        e.preventDefault();
      }
  
-@@ -469,4 +471,4 @@
-   getDataTransferItems,
-   hasHtmlOrText,
-   hasContentType
--};
-\ No newline at end of file
-+};
