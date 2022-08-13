@@ -19,8 +19,8 @@ MKDIR = mkdir -p
 
 CURL = curl
 NODE = node
-NPM = npm --loglevel error --color false
-GRUNT = $(NPMBINDIR)/grunt --no-color
+YARN = yarn
+GRUNT = $(YARNBINDIR)/grunt --no-color
 TAR = tar
 ANT = ant -emacs
 PATCH = patch
@@ -30,7 +30,7 @@ TINYMCE_VERS := $(shell $(ANT) -q -f ../build.xml get-tinymce-version | head -1)
 TINYMCE_URL = https://github.com/tinymce/tinymce/archive/$(TINYMCE_VERS).tar.gz
 
 TINYMCEDIR = tinymce-$(TINYMCE_VERS)
-NPMBINDIR = $(shell cd $(TINYMCEDIR); npm bin)
+YARNBINDIR = $(shell cd $(TINYMCEDIR); yarn bin)
 
 # may not be set on Linux
 TMPDIR ?= /tmp/$(USER)
@@ -44,7 +44,7 @@ all: build
 # install required Node packages locally and build TinyMCE
 #
 build:
-	cd $(TINYMCEDIR) && $(NPM) install
+	cd $(TINYMCEDIR) && $(YARN) install
 	cd $(TINYMCEDIR) && $(GRUNT)
 
 #
