@@ -3,17 +3,17 @@ From: Dan Villiom Podlaski Christiansen <dchristiansen@zimbra.com>
 Date: Mon, 13 Oct 2014 12:21:13 +0200
 Subject: [PATCH] add grunt-cli to list of dependancies
 
-This allows a single 'npm install' to install everything required to
+This allows a single 'yarn install' to install everything required to
 build TinyMCE.
 ---
-diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/package.json tinymce-4.7.9/package.json
---- /tmp/zimbra/tinymce-4.7.9/package.json	2018-02-27 07:36:50.000000000 -0500
-+++ tinymce-4.7.9/package.json	2018-03-12 04:56:52.131348695 -0400
-@@ -36,6 +36,7 @@
-     "@ephox/swag": "latest",
-     "awesome-typescript-loader": "^3.4.1",
-     "grunt": "~1.0.1",
+diff -aur -x node_modules /tmp/root/tinymce-4.9.11/package.json tinymce-4.9.11/package.json
+--- /tmp/root/tinymce-4.9.11/package.json	2020-07-13 04:14:19.000000000 +0000
++++ tinymce-4.9.11/package.json	2022-08-10 05:30:02.971158352 +0000
+@@ -42,6 +42,7 @@
+     "@ephox/wrap-jsverify": "2.0.1",
+     "awesome-typescript-loader": "^5.2.0",
+     "grunt": "~1.0.2",
 +    "grunt-cli": "^1.2.0",
      "grunt-contrib-clean": "~1.1.0",
      "grunt-contrib-copy": "~1.0.0",
-     "grunt-contrib-less": "~1.4.0",
+     "grunt-contrib-less": "~1.4.1",
