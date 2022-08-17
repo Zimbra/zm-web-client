@@ -696,6 +696,7 @@ function(defaultColumnSort) {
     var headerCol = this._isMultiColumn ? this._headerHash[ZmItem.F_DATE] :
 		            (col && this.getItemFromElement(col)) || (this._headerHash && this._headerHash[ZmItem.F_SORTED_BY]) || null;
 	if (headerCol) {
+		var colLabel = "";
 		if (activeSortBy && ZmTaskListView.SORTBY_HASH[activeSortBy]){
 			var msg = ZmTaskListView.SORTBY_HASH[activeSortBy].msg;
 			var field = ZmTaskListView.SORTBY_HASH[activeSortBy].field;
@@ -705,12 +706,12 @@ function(defaultColumnSort) {
 			if (field) {
 				headerCol._sortable = field;
 			}
-		}
-		
-		//Set column label; for multi-column this changes the received text. For single column this sets to the sort by text
-		var colSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
-		if (colSpan) {
-			colSpan.innerHTML = colLabel;
+
+			//Set column label; for multi-column this changes the received text. For single column this sets to the sort by text
+			var colSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
+			if (colSpan) {
+				colSpan.innerHTML = colLabel;
+			}
 		}
 	}
 };
