@@ -376,6 +376,8 @@ table#modernForm td.zLoginFieldSubmit {
 .SplashScreen .Footer,
 .LoginScreen .Footer-small,
 .SplashScreen .Footer-small {
+	bottom:0;
+	position:absolute;
 	text-align:center;
 	width:100%;
 	z-index:10;
