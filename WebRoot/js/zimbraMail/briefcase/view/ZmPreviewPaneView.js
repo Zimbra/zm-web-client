@@ -660,7 +660,7 @@ ZmPreviewView.prototype.set = function(item) {
 
         //Send everything trough ConvertD
         restUrl = this._setupErrorCallback(restUrl);
-        restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "fmt=native&view=html";
+        restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "view=html";
     }
 
     this._iframePreview.setSrc(restUrl);
