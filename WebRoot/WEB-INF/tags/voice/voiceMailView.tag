@@ -62,7 +62,7 @@
 		<table width="100%" cellpadding="0" cellspacing="0">
 			<tr>
 				<td class='TbTop'>
-					<app:voiceMailViewToolbar context="${context}" keys="true" heard="${heard}" isPrivate="${message.isPrivate}" saveAsUrl="/service/extension/voice/~/voicemail?phone=${param.phone}&id=${message.id}&disp=a"/>
+					<app:voiceMailViewToolbar context="${context}" keys="true" heard="${heard}" isPrivate="${message.isPrivate}" saveAsUrl="/service/extension/voice/~/voicemail?phone=${fn:escapeXml(param.phone)}&id=${message.id}&disp=a"/>
 				</td>
 			</tr>
 			<tr>
