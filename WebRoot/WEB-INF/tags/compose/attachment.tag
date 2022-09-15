@@ -52,7 +52,7 @@
                 <td>&nbsp;</td>
                 <td>
                     <c:if test="${not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked')}">
-                    <a target="_blank" title="${fn:escapeXml(displayName)}" href="${fn:escapeXml(url)}&amp;disp=i">${zm:truncate(fn:escapeXml(displayName),80,true)}</a>&nbsp;<c:if test="${not empty displaySize}">(${fn:trim(displaySize)})</c:if>
+                    <a target="_blank" title="${fn:escapeXml(displayName)}" href="${fn:escapeXml(zm:replaceAll(url,'(?i)javascript:',''))}&amp;disp=i">${zm:truncate(fn:escapeXml(displayName),80,true)}</a>&nbsp;<c:if test="${not empty displaySize}">(${fn:trim(displaySize)})</c:if>
                     </c:if>
                     <c:if test="${zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked')}">
                     ${zm:truncate(fn:escapeXml(displayName),80,true)}&nbsp;<c:if test="${not empty displaySize}">(${fn:trim(displaySize)})</c:if>
