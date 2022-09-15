@@ -40,7 +40,7 @@
                 <c:url var="searchUrl" value="/h/search"/>
             </c:otherwise>
         </c:choose>
-        <form method="get" onsubmit="return searchClick(this);" action="${fn:escapeXml(zm:replaceAll(searchUrl,'javascript:',''))}">
+        <form method="get" onsubmit="return searchClick(this);" action="${fn:escapeXml(zm:replaceAll(searchUrl,'(?i)javascript:',''))}">
             <c:set var="query">${fn:escapeXml((!empty query and mailbox.prefs.showSearchString and empty param.incShared) ? query : param.sq)}</c:set>
             <c:if test="${voice}">
                 <c:set var="query"/>
