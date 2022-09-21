@@ -133,7 +133,7 @@ function(search) {
 	this._settingSearch = true;
 	this._searchField.clear(true);
 	var tokens = search.getTokens();
-	if (tokens && tokens.length) {
+	if (search.query && tokens && tokens.length) {
 		for (var i = 0, len = tokens.length; i < len; i++) {
 			var token = tokens[i], prevToken = tokens[i - 1], nextToken = tokens[i + 1];
 			var showAnd = (prevToken && prevToken.op == ZmParsedQuery.GROUP_CLOSE) || (nextToken && nextToken.op == ZmParsedQuery.GROUP_OPEN);

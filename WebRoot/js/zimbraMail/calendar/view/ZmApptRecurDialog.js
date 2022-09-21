@@ -141,6 +141,8 @@ ZmApptRecurDialog.prototype.setRepeatEndValues =
 function(appt) {
     var recur = appt._recurrence;
 	recur.repeatEndType = this._getRadioOptionValue(this._repeatEndName);
+	recur.repeatEndDate = null;
+	recur.repeatEndCount = null;
 
 	// add any details for the select option
 	if (recur.repeatEndType == "A")
@@ -299,7 +301,7 @@ function(appt) {
             if(diff >= AjxDateUtil.MSEC_PER_DAY || isInPast){ //In the past
                 // Go for next month, find the date as per rule
                 first.setMonth(first.getMonth() + 1);//Next month
-                recur._startDate = this.getPossibleStartDate(this._monthlyWeekdaySelect.getValue(), first, recur.repeatBySetPos);
+                recur._startDate = this.getPossibleStartDate(this._monthlyWeekdaySelect.getValue(), first, recur.repeatBySetPos, true);
             }
         }
     }
@@ -354,15 +356,17 @@ function(appt) {
         var today = new Date(this._origRefDate);
         var diff = (today -dt);
         var isInPast = today.getTime() > dt.getTime();
+        var ignoreOffset = true;
         if(diff >= AjxDateUtil.MSEC_PER_DAY || isInPast){ // In the past
             d.setFullYear(d.getFullYear()+1);
             if(appt._recurrence.repeatBySetPos < 0){ // we want last day
                 d.setDate(AjxDateUtil.daysInMonth(d.getFullYear(),d.getMonth()));
             }else{
                 d.setDate(1);
+                ignoreOffset = false;
             }
         }
-        appt._recurrence._startDate = this.getPossibleStartDate(this._yearlyWeekdaySelect.getValue(), d, appt._recurrence.repeatBySetPos);
+        appt._recurrence._startDate = this.getPossibleStartDate(this._yearlyWeekdaySelect.getValue(), d, appt._recurrence.repeatBySetPos, ignoreOffset);
         appt._recurrence._endDate = appt._recurrence._startDate;
     }
 };
@@ -1019,7 +1023,7 @@ function() {
     var satsun = new Array();
     for (var i = 0; i < 7; i++) {
 		//this._weeklySelect.addOption(dayFormatter.format(day), false, i);
-        var mi = new DwtMenuItem({parent:wMenu, style:DwtMenuItem.CHECK_STYLE, radioGroupId:i});
+        var mi = new DwtMenuItem({parent:wMenu, radioGroupId:i});
         mi.setText(dayFormatter.format(day));
         mi.addSelectionListener(selectChangeListener);
         mi.setData("index",i);
@@ -1664,12 +1668,12 @@ function(weekDaySelect) {
 };
 
 ZmApptRecurDialog.prototype.getPossibleStartDate =
-function(weekDayVal, lastDate, repeatBySetPos) {
+function(weekDayVal, lastDate, repeatBySetPos, ignoreOffset) {
     //weekday select might contain normal weekdays, day, weekend values also
     if(ZmCalItem.SERVER_WEEK_DAYS[weekDayVal]) {
         return AjxDateUtil.getDateForThisDay(lastDate, weekDayVal, repeatBySetPos); //Last day of next month/year
     }else if(weekDayVal == ZmRecurrence.RECURRENCE_DAY) {
-        var dayOffset = ((repeatBySetPos==-1)? 0 : (repeatBySetPos-1));
+        var dayOffset = ((repeatBySetPos==-1 || ignoreOffset) ? 0 : (repeatBySetPos-1));
         lastDate.setDate(lastDate.getDate() + dayOffset);
         return lastDate;
     }else if(weekDayVal == ZmRecurrence.RECURRENCE_WEEKDAY) {
@@ -1695,7 +1699,7 @@ function(ev) {
 
 ZmApptRecurDialog.prototype._selectChangeListener = 
 function(ev) {
-    if(ev.item && ev.item instanceof DwtMenuItem){
+    if(ev.item && ev.item instanceof DwtMenuItem && this.getSelectedRepeatValue() == ZmRecurrence.WEEKLY){
        this._weeklyDefaultRadio.checked = true;
        this._weeklySelectButton.setText(ev.item.getText());
        this._weeklySelectButton._selected = ev.item.getData("index");

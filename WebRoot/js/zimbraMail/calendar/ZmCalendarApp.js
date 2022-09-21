@@ -123,6 +123,7 @@ ZmCalendarApp.METHOD_COUNTER			= "COUNTER";
 
 ZmCalendarApp.DEFAULT_WORKING_HOURS			= "1:N:0800:1700,2:Y:0800:1700,3:Y:0800:1700,4:Y:0800:1700,5:Y:0800:1700,6:Y:0800:1700,7:N:0800:1700";
 ZmCalendarApp.DEFAULT_APPT_DURATION         = "60"; //60minutes
+ZmCalendarApp.DEFAULT_CAL_SCALING           = "30"; //30minutes
 
 ZmCalendarApp.reminderTimeWarningDisplayMsgs = [
 	ZmMsg.apptRemindNever,
@@ -201,6 +202,7 @@ function(settings) {
     settings.registerSetting("CAL_EXCEPTION_ON_SERIES_TIME_CHANGE",	    {name: "zimbraCalendarKeepExceptionsOnSeriesTimeChange", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
     settings.registerSetting("CAL_LOCATION_FIELDS_DISABLED",{name: "zimbraCalendarLocationDisabledFields", type: ZmSetting.T_COS, dataType: ZmSetting.D_STRING, defaultValue: false, isGlobal:true});
     settings.registerSetting("CAL_DEFAULT_ID",				{name:"zimbraPrefDefaultCalendarId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue: "10"});
+	settings.registerSetting("CAL_SCALING",					{name:"zimbraPrefCalenderScaling", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmCalendarApp.DEFAULT_CAL_SCALING});
 };
 
 ZmCalendarApp.prototype._registerPrefs =
@@ -239,8 +241,9 @@ function() {
 				ZmSetting.CAL_INV_FORWARDING_ADDRESS,
 				ZmSetting.CAL_SHOW_PAST_DUE_REMINDERS,
 				ZmSetting.CAL_SHOW_CALENDAR_WEEK,
-                ZmSetting.CAL_DEFAULT_APPT_DURATION,
-                ZmSetting.CAL_LOCATION_FIELDS_DISABLED
+				ZmSetting.CAL_DEFAULT_APPT_DURATION,
+				ZmSetting.CAL_LOCATION_FIELDS_DISABLED,
+				ZmSetting.CAL_SCALING,
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
@@ -426,6 +429,13 @@ function() {
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		["30","60","90","120"],
 		options:			["1800", "3600", "5400", "7200"]
+	});
+
+	ZmPref.registerPref("CAL_SCALING", {
+		displayName:		ZmMsg.calendarScaling,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		["10","15","30"],
+		options:			["10", "15", "30"]
 	});
 };
 
@@ -1555,15 +1565,13 @@ function() {
 			continue;
 		}
 
-		var id = cal.link ? cal.getRemoteId() : cal.id;
-
 		var image = appCtxt.multiAccounts ? acct.getIcon() : cal.getIconWithColor();
 		var name = AjxStringUtil.htmlDecode(appCtxt.multiAccounts
 			? ([cal.getName(), " (", acct.getDisplayName(), ")"].join(""))
 			: cal.getName());
 
 		displayOptions.push(name);
-		options.push(id);
+		options.push(cal.id);
 		images.push(image);
 	}
 

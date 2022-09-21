@@ -53,7 +53,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<title>${errCode} - <fmt:message key="${errTitle}"/></title>
+	<title>${fn:escapeXml(errCode)} - <fmt:message key="${errTitle}"/></title>
 	<meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
 	<meta name="description" content="<fmt:message bundle="${zmmsg}" key="zimbraLoginMetaDesc"/>">
 	<link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml,skin.css'>
@@ -64,17 +64,17 @@
 	<c:if test="${empty favIconUrl}">
 		<fmt:message key="favIconUrl" var="favIconUrl"/>
 	</c:if>
-	<link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
+	<link rel="SHORTCUT ICON" href="<c:url value='${fn:escapeXml(favIconUrl)}'/>">
 </head>
 <c:set value="/img" var="iconPath" scope="request"/>
 <body>
 	<div class="ErrorScreen">
 		<div class="errorBox">
-			<h2><fmt:message key="${errTitle}"/></h2>
+			<h2><fmt:message key="${fn:escapeXml(errTitle)}"/></h2>
 			<p>
-				<fmt:message key="${errMsg}"/><br/>
+				<fmt:message key="${fn:escapeXml(errMsg)}"/><br/>
 				<fmt:message key="errorTryAgainLater"/><br/><br/>
-				Error ${errCode}
+				Error ${fn:escapeXml(errCode)}
 				<br/><br/>
 				<a class="errGoBack" href="/"><fmt:message key="errorGoBack"/></a>
 			</p>

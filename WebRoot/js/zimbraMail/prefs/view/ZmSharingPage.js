@@ -563,6 +563,14 @@ function(chooserDialog, org) {
 
 	chooserDialog.popdown();
 	var shareDialog = appCtxt.getSharePropsDialog();
+	
+	// This is a transient fix untill we find actual steps to reproduce problem and find exact root cause
+	if (org.id === "1") {
+		var ex = new AjxException("Root folder sharing is not allowed, ignoring action.", AjxException.INVALID_PARAM);
+		appCtxt.getAppController()._handleException(ex);
+		return;
+	}
+
 	shareDialog.popup(ZmSharePropsDialog.NEW, org);
 };
 

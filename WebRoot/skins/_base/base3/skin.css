@@ -237,8 +237,10 @@ BODY									{	margin:0px; 	}
 	left:0px;
 	top:0px;
 	width:100%;
-	height:100%;
-	overflow:hidden;
+	min-height:100%;
+	overflow:auto;
+	display: flex;
+	flex-direction: column;
 	@FontFamily-default@
 	@FontSize-normal@
 	@LoginScreen@
@@ -252,7 +254,8 @@ BODY									{	margin:0px; 	}
 }
 
 .LoginScreen .modernCenter{
-	height: 100%;
+	flex: 1;
+	padding: 20px 0;
 }
 
 .LoginScreen .center-small,
@@ -273,12 +276,20 @@ BODY									{	margin:0px; 	}
     z-index:11;
 }
 
+table#modernForm td {
+	padding: 2px;
+}
+
+table#modernForm td.zLoginFieldSubmit {
+	text-align:right;
+	padding-bottom: 20px;
+}
 
 .LoginScreen .modernContentBox {
 	background-color: @white-color@;
 	box-shadow: 0 4px 6px 0 rgba(0,0,0,.4);
-	padding: 0;
-	max-width: 340px;
+	padding: 40px;
+	max-width: 300px;
 	margin: 0 auto;
 	position: relative;
 	top: 50%;
@@ -307,6 +318,11 @@ BODY									{	margin:0px; 	}
 .LoginScreen H1,
 .SplashScreen H1 	{	@LoginH1@ 		}
 
+
+.extuserprovLogo {
+	padding: 30px 40px 0;
+}
+
 #ZLoginAppName 		{	@LoginAppName@ 	}
 
 .LoginScreen .ImgLoginBanner, 
@@ -327,8 +343,22 @@ BODY									{	margin:0px; 	}
 	border-bottom: solid;
 	border-width: 1px;
 	border-color: @error-tertiary@;
+	margin: 0 -40px;
 }
 
+.LoginScreen .infoMessage{
+	border: 0;
+	background-color: @darkseagreen@;
+	padding: 16px 40px;
+	font-size: 13px;
+	color: @gray-darker@;
+	font-stretch: expanded;
+	text-align: left;
+	border-bottom: solid;
+	border-width: 1px;
+	border-color: @darkgreen@;
+	margin: 0 -40px;
+}
 
 .LoginScreen #ZLoginErrorPanel,
 .ErrorScreen .InlineErrorPanel {
@@ -346,7 +376,7 @@ BODY									{	margin:0px; 	}
 .SplashScreen .Footer,
 .LoginScreen .Footer-small,
 .SplashScreen .Footer-small {
-	bottom:0px;
+	bottom:0;
 	position:absolute;
 	text-align:center;
 	width:100%;
@@ -392,6 +422,25 @@ BODY									{	margin:0px; 	}
 .LoginScreen #ZLoginNotice A {
 	color: @white-color@;
 }
+
+.passwordRuleList {
+	padding: 2px 0 4px;
+	color: @gray-darker@;
+	list-style: none;
+}
+
+.resetPasswordRuleList {
+	padding: 2px 0 4px;
+	list-style: none;
+	color: @gray-darker@;
+}
+
+.confirmResetPasswordRuleList {
+	color: @gray-darker@;
+	padding-left: 0;
+	margin-bottom: 0;
+	list-style: none;
+} 
 
 /*Splash Screen Only Items*/
 .SplashScreen .content {
@@ -439,7 +488,7 @@ BODY									{	margin:0px; 	}
 /** Logo Images **/
 .center-small .ImgLoginBanner,
 .ImgAppBanner			{	background-repeat:no-repeat; @AppBanner@	}
-.ImgLoginBanner			{	background-repeat:no-repeat;}
+.ImgLoginBanner			{	background-repeat:no-repeat; @LoginBannerPosition@	@LoginBannerSize@   @LoginBanner@	}
 #IFDEF MSIE
 #skin_container_logo A, #skin_container_logo A:hover, #skin_container_logo A:link {
 	background-color:transparent;}

@@ -63,16 +63,21 @@ function(params) {
 								this._cancelButtonListener.bind(this));
 
 	var loginButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.LOGIN_BUTTON,
-								ZmMsg.passwordRecoveryButtonCancel,
+								ZmMsg.login,
 								DwtDialog.ALIGN_LEFT,
 								this._finishButtonListener.bind(this));
+
+	var twoFactorVerifyButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.TWO_FACTOR_VERIFY_BUTTON,
+									ZmMsg.recoveryEmailButtonValidate,
+									DwtDialog.ALIGN_LEFT,
+									this._twoFactorCodeButtonVerifyListener.bind(this));
 
 	var shell = typeof appCtxt !== 'undefined' ? appCtxt.getShell() : new DwtShell({});
 	var newParams = {
 		parent : shell,
 		title : ZmMsg.passwordRecoveryTitle,
 		standardButtons : [DwtDialog.NO_BUTTONS],
-		extraButtons : [ emailSubmitButton, requestCodeButton, verifyCodeButton, resendOptionButton, resetSubmitButton, loginButton, cancelButton]
+		extraButtons : [ emailSubmitButton, requestCodeButton, verifyCodeButton, resendOptionButton, resetSubmitButton, loginButton, cancelButton, twoFactorVerifyButton ]
 	};
 	DwtDialog.call(this, newParams);
 	this.setContent(this._contentHtml());
@@ -92,6 +97,7 @@ ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON = ++DwtDialog.LAST_BUTTON;
 ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON = ++DwtDialog.LAST_BUTTON;
 ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON = ++DwtDialog.LAST_BUTTON;
 ZmPasswordRecoveryDialog.LOGIN_BUTTON = ++DwtDialog.LAST_BUTTON;
+ZmPasswordRecoveryDialog.TWO_FACTOR_VERIFY_BUTTON = ++DwtDialog.LAST_BUTTON;
 
 /**
  * Returns the strng name of this class.
@@ -117,7 +123,9 @@ function() {
 	this._resetPasswordDivId = id + '_reset_password';
 	this._resetPasswordDescriptionDivId = id + '_reset_password_description';
 	this._passwordResetSuccessDivId = id + '_password_reset_success';
-	this._divIdArray = [this._getRecoveryAccountDivId, this._requestCodeDivId, this._validateCodeDivId, this._codeSuccessDivId, this._resetPasswordDivId, this._passwordResetSuccessDivId];
+	this._twoFactorCodeDivId = id + '_two_factor_code';
+
+	this._divIdArray = [this._getRecoveryAccountDivId, this._requestCodeDivId, this._validateCodeDivId, this._codeSuccessDivId, this._resetPasswordDivId, this._passwordResetSuccessDivId, this._twoFactorCodeDivId];
 	return AjxTemplate.expand('share.Dialogs#ZmPasswordRecovery', {id : id, accountInput : this.accountInput});
 };
 
@@ -165,10 +173,11 @@ function() {
 	this.getButton(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryVerifyButton');
 	this.getButton(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryResetButton');
 	this.getButton(ZmPasswordRecoveryDialog.LOGIN_BUTTON).setClassName('ZmPasswordRecoveryButton PasswordRecoveryLoginButton');
+	this.getButton(ZmPasswordRecoveryDialog.TWO_FACTOR_VERIFY_BUTTON).setClassName('ZmPasswordRecoveryButton');
 	cancelbutton.setClassName('ZmPasswordRecoveryButton PasswordRecoveryBackToSignInButton');
 	// Create buttons
-	this._createRecoveryButtons('continueSessionsRecoveryButton', ZmMsg.recoveryEmailButtonContinueSession, true, false,
-					'_CONTINUE_BUTTON', '_finishButtonListener');
+	this._createRecoveryButtons('cancelRecoveryButton', ZmMsg.passwordRecoveryButtonCancel, true, false,
+					'_CONTINUE_BUTTON', '_cancelButtonListener');
 	this._createRecoveryButtons('resetPasswordRecoveryButton', ZmMsg.recoveryEmailButtonResetPassword, true, false,
 					'_RESET_PASSWORD', '_resetButtonListener');
 	this._accountInput = Dwt.getElement(id + '_account_input');
@@ -185,6 +194,30 @@ function() {
 	this._resetPasswordErrorMessageDiv = Dwt.getElement(id + '_reset_password_error_message');
 	this._codeInput = Dwt.getElement(id + '_code_input');
 	this._passwordNewInput = Dwt.getElement(id + '_password_new_input');
+	this._twoFactorCodeInput = Dwt.getElement(id + '_two_factor_code_input');
+	this._trustedDeviceInput = Dwt.getElement(id + '_trust_device_input');
+	this._trustedDeviceDiv = Dwt.getElement(id + '_trust_device_section');
+	this._validateTwoFactorErrorDiv = Dwt.getElement(id + '_validate_two_factor_code_error');
+	this._validateTwoFactorErrorMessageDiv = Dwt.getElement(id + '_validate_two_factor_code_error_message');
+
+	this._passwordRuleList = Dwt.getElement(id + '_password_rule_list');
+	this._passwordAllowedCharsLI = Dwt.getElement(id + '_allowed_char');
+	this._passwordAllowedCharsLabel = Dwt.getElement(id + '_allowed_char_label');
+	this._passwordMinLengthRule = Dwt.getElement(id + '_min_length');
+	this._passwordMinLengthLabel = Dwt.getElement(id + '_min_length_label');
+	this._passwordMinUpperCaseCharsRule = Dwt.getElement(id + '_min_upper_case_chars');
+	this._passwordMinUpperCaseCharsLabel = Dwt.getElement(id + '_min_upper_case_chars_label');
+	this._passwordMinLowerCaseCharsRule = Dwt.getElement(id + '_min_lower_case_chars');
+	this._passwordMinLowerCaseCharsLabel = Dwt.getElement(id + '_min_lower_case_chars_label');
+	this._passwordMinPunctuationCharsRule = Dwt.getElement(id + '_min_punctuation_chars');
+	this._passwordMinPunctuationCharsLabel = Dwt.getElement(id + '_min_punctuation_chars_label');
+	this._passwordMinNumericCharsRule = Dwt.getElement(id + '_min_numeric_chars');
+	this._passwordMinNumericCharsLabel = Dwt.getElement(id + '_min_numeric_chars_label');
+	this._passwordMinDigitsOrPunctuationRule = Dwt.getElement(id + '_min_digits_or_punctuations');
+	this._passwordMinDigitsOrPunctuationLabel = Dwt.getElement(id + '_min_digits_or_punctuations_label');
+	this._passwordAllowUsernameRule = Dwt.getElement(id + '_password_allow_username');
+	this._passwordAllowUsernameLabel = Dwt.getElement(id + '_password_allow_username_label');
+
 	this._passwordConfirmInput = Dwt.getElement(id + '_password_confirm_input');
 	this._requestCodeDescription = Dwt.getElement(id + '_request_code_description');
 	Dwt.setHandler(this._accountInput, DwtEvent.ONKEYUP, accountKeyupHandler);
@@ -200,7 +233,7 @@ function() {
 */
 ZmPasswordRecoveryDialog.prototype._getInputFields =
 function() {
-	return [this._accountInput, this._codeInput, this._passwordNewInput, this._passwordConfirmInput];
+	return [this._accountInput, this._codeInput, this._passwordNewInput, this._passwordConfirmInput, this._twoFactorCodeInput];
 };
 
 /**
@@ -241,6 +274,7 @@ function() {
 	Dwt.hide(this._resetPasswordDivId);
 	Dwt.hide(this._resetPasswordErrorDivId);
 	Dwt.hide(this._passwordResetSuccessDivId);
+	Dwt.hide(this._twoFactorCodeDivId);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.CANCEL_BUTTON, true);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON, true);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.REQUEST_CODE_BUTTON, false);
@@ -248,6 +282,7 @@ function() {
 	this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, false);
 	this.setButtonVisible(ZmPasswordRecoveryDialog.LOGIN_BUTTON, false);
+	this.setButtonVisible(ZmPasswordRecoveryDialog.TWO_FACTOR_VERIFY_BUTTON, false);
 	this._divIdArrayIndex = 0;
 	this._resendCount = 0;
 	DwtDialog.prototype.reset.call(this);
@@ -311,14 +346,50 @@ function() {
 };
 
 /**
- * Listener for Back to Login Button.
+ * Listener for Login Button.
  *
  */
 ZmPasswordRecoveryDialog.prototype._finishButtonListener =
 function() {
-	// If the user clicks finish button, redirect to the login page
-	location.replace(location.origin + '?loginOp=relogin');
+
+	var command = new ZmCsfeCommand();
+	var soapDoc = AjxSoapDoc.create('AuthRequest', 'urn:zimbraAccount');
+	var respCallback = this._loginButtonAuthCallback.bind(this);
+	var elBy, recoveryCode;
+	soapDoc.setMethodAttribute('csrfTokenSecured', 1);
+	elBy = soapDoc.set('account', this._accountInput.value);
+	elBy.setAttribute('by', 'name');
+	var pwdConfirmValue = this._passwordConfirmInput.value;
+	recoveryCode = soapDoc.set('password', pwdConfirmValue);
+	command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true, asyncMode: true, callback: respCallback, serverUri:'/service/soap/'})
 };
+
+/**
+ * Callback for login button auth request.
+ *
+ */
+ZmPasswordRecoveryDialog.prototype._loginButtonAuthCallback = 
+function(result) {
+	var response = result.getResponse();
+	if(response.Body.AuthResponse.csrfToken) {
+		window.csrfToken = response.Body.AuthResponse.csrfToken._content;
+	}
+
+	if(response.Body.AuthResponse.twoFactorAuthRequired && response.Body.AuthResponse.twoFactorAuthRequired._content) {
+		Dwt.hide(this._passwordResetSuccessDivId);
+		this.setButtonVisible(ZmPasswordRecoveryDialog.LOGIN_BUTTON, false);
+		Dwt.show(this._twoFactorCodeDivId);
+		this.setButtonVisible(ZmPasswordRecoveryDialog.TWO_FACTOR_VERIFY_BUTTON, true);
+		this._twoFactorCodeInput.focus();
+		this._twoFactorAuthToken = response.Body.AuthResponse.authToken[0]._content;
+		if(!response.Body.AuthResponse.trustedDevicesEnabled._content) {
+			Dwt.hide(this._trustedDeviceDiv);
+		}
+	} else {
+		location.replace(location.origin);
+	}
+
+}
 
 /**
  * Listener for Email Cancel Button.
@@ -326,8 +397,13 @@ function() {
  */
 ZmPasswordRecoveryDialog.prototype._cancelButtonListener =
 function() {
-	//If the user clicks cancel button, redirect to the login page
-	location.replace(location.origin);
+	//If the user clicks cancel button, clear cookie and redirect to the login page
+	this.cancelResetPasswordRequest();
+};
+
+ZmPasswordRecoveryDialog.prototype._twoFactorCodeButtonVerifyListener =
+function() {
+	this._validateTwoFactorCode();
 };
 
 /**
@@ -434,6 +510,8 @@ function(errorDivId, errorMessageDivId, exception) {
 		Dwt.hide(this._validateCodeDescription);
 		Dwt.hide(this._validateInputDiv);
 		Dwt.setInnerHtml(errorMessageDivId, ZmMsg['service.CONTACT_ADMIN']);
+	} else if(errorCode === 'account.TWO_FACTOR_AUTH_FAILED')  {
+		Dwt.setInnerHtml(errorMessageDivId, ZMsg['account.TWO_FACTOR_AUTH_FAILED']);	
 	} else {
 		Dwt.setInnerHtml(errorMessageDivId, ZmMsg[errorCode]);
 	}
@@ -563,11 +641,14 @@ function(result) {
 		this._handleResetPasswordError(this._validateErrorDiv, this._validateErrorMessageDiv, result.getException());
 	} else {
 		var response = result.getResponse();
-		window.csrfToken = response.Body.AuthResponse.csrfToken._content;
+		if(response.Body.AuthResponse.csrfToken) {
+			window.csrfToken = response.Body.AuthResponse.csrfToken._content;
+		}
 		Dwt.hide(this._validateCodeDivId);
 		Dwt.show(this._codeSuccessDivId);
-		this.continueSessionsRecoveryButton.setVisible(true);
+		this.cancelRecoveryButton.setVisible(true);
 		this.resetPasswordRecoveryButton.setVisible(true); // set to true once methods are ready.
+		
 		this.setButtonVisible(ZmPasswordRecoveryDialog.CANCEL_BUTTON, false);
 		this.setButtonVisible(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, false);
 		this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
@@ -580,16 +661,377 @@ function(result) {
  */
 ZmPasswordRecoveryDialog.prototype._setResetPasswordDialog =
 function() {
-		Dwt.hide(this._codeSuccessDivId);
-		Dwt.show(this._resetPasswordDivId);
-		this.continueSessionsRecoveryButton.setVisible(false);
-		this.resetPasswordRecoveryButton.setVisible(false);
-		this.getButton(ZmPasswordRecoveryDialog.CANCEL_BUTTON).setText(ZmMsg.recoveryEmailButtonContinueSession);
-		this.setButtonVisible(ZmPasswordRecoveryDialog.CANCEL_BUTTON, true);
-		this.setButtonVisible(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, false);
-		this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
-		this.setButtonVisible(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, true);
+	var soapDoc = AjxSoapDoc.create("ResetPasswordRequest", "urn:zimbraAccount");
+	soapDoc.set('getPasswordRules', true);
+	var command = new ZmCsfeCommand();
+	var callback = new AjxCallback(this, this._handleResetPasswordRulesInfo, []);
+	
+	command.invoke({soapDoc: soapDoc, noAuthToken:true, noSession: true, asyncMode: true, callback: callback, serverUri:'/service/soap/'});
 };
+
+// Function to check special character
+function isAsciiPunc(ch) {
+	return (ch >= 33 && ch <= 47) || // ! " # $ % & ' ( ) * + , - . /
+	(ch >= 58 && ch <= 64) || // : ; < = > ? @
+	(ch >= 91 && ch <= 96) || // [ \ ] ^ _ `
+	(ch >= 123 && ch <= 126); // { | } ~
+}
+
+function parseCharsFromPassword(passwordString, zimbraPasswordAllowedChars, zimbraPasswordAllowedPunctuationChars) {
+	var uppers = [],
+		lowers = [],
+		numbers = [],
+		punctuations = [],
+		invalidChars = [];
+
+	var characters = passwordString.split('') || [];
+	var isInvalid = false;
+
+	for(var i=0; i<characters.length;i++){
+		var character = characters[i];
+		var charCode = character.charCodeAt(0);
+
+		if (zimbraPasswordAllowedChars) {
+			try {
+				if (!character.match(new RegExp(zimbraPasswordAllowedChars, 'g'))) {
+					invalidChars.push(character);
+					isInvalid = true;
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		}
+
+		if (!isInvalid) {
+			if (charCode >= 65 && charCode <= 90) {
+				uppers.push(character);
+			} else if (charCode >= 97 && charCode <= 122) {
+				lowers.push(character);
+			} else if (charCode >= 48 && charCode <= 57) {
+				numbers.push(character);
+			} else if (zimbraPasswordAllowedPunctuationChars) {
+				try {
+					if (character.match(new RegExp(zimbraPasswordAllowedPunctuationChars, 'g'))) {
+						punctuations.push(character);
+					} else {
+						invalidChars.push(character);
+					}
+				} catch (error) {
+					console.log(error);
+				}
+			} else if (isAsciiPunc(charCode)) {
+				punctuations.push(character);
+			}
+		}
+	}
+
+	return {
+		uppers: uppers,
+		lowers: lowers,
+		numbers: numbers,
+		punctuations: punctuations,
+		invalidChars: invalidChars
+	};
+};
+
+function showPassword(passElem, showSpanElem, hideSpanElem) {
+	if (passElem.type === "password") {
+		passElem.type = "text";
+		showSpanElem.style.display = "none";
+		hideSpanElem.style.display = "block";
+	} else {
+		passElem.type = "password";
+		showSpanElem.style.display = "block";
+		hideSpanElem.style.display = "none";
+	}
+}
+
+function showNewPassword() {
+	showPassword(this._passwordNewInput, newPasswordShowSpan, newPasswordHideSpan);
+}
+
+function showConfirmPassword() {
+	showPassword(this._passwordConfirmInput, confirmShowSpan, confirmHideSpan);
+}
+
+function check(checkImg, closeImg) {
+	closeImg.style.display = "none";
+	checkImg.style.display = "inline";
+}
+
+function unCheck(checkImg, closeImg) {
+	closeImg.style.display = "inline";
+	checkImg.style.display = "none";
+}
+
+function resetImg(condition, checkImg, closeImg){
+	condition ? check(checkImg, closeImg) : unCheck(checkImg, closeImg);
+}
+
+
+function handleErrorMessageDiv(condition, errorMessage, msgDiv, errorDiv) {
+	if (condition) {
+		msgDiv.style.display = "block";
+		msgDiv.innerHTML = errorMessage;
+		Dwt.show(errorDiv);
+	} else {
+		msgDiv.style.display = "none";
+		Dwt.hide(errorDiv);
+	}
+}
+
+ZmPasswordRecoveryDialog.prototype._handleResetPasswordRulesInfo = 
+function (result) {
+
+	var response = result.getResponse();
+	var getInfoResponse = response.Body.ResetPasswordResponse
+	var attributes = getInfoResponse.attrs._attrs;
+
+	var zimbraPasswordMinLength = parseInt(attributes.zimbraPasswordMinLength);
+	var zimbraPasswordMinUpperCaseChars = parseInt(attributes.zimbraPasswordMinUpperCaseChars);
+	var zimbraPasswordMinLowerCaseChars = parseInt(attributes.zimbraPasswordMinLowerCaseChars);
+	var zimbraPasswordMinPunctuationChars = parseInt(attributes.zimbraPasswordMinPunctuationChars);
+	var zimbraPasswordMinNumericChars = parseInt(attributes.zimbraPasswordMinNumericChars);
+	var zimbraPasswordMinDigitsOrPuncs = parseInt(attributes.zimbraPasswordMinDigitsOrPuncs);
+	var zimbraPasswordAllowUsername = attributes.zimbraPasswordAllowUsername ? attributes.zimbraPasswordAllowUsername.toLowerCase() === "true" : false;
+
+	var zimbraPasswordAllowedChars = attributes.zimbraPasswordAllowedChars || false;
+	var zimbraPasswordAllowedPunctuationChars = attributes.zimbraPasswordAllowedPunctuationChars || false;
+
+	var enabledLocalRules = [];
+	var matchedLocalRules = [];
+	
+	var supportedRules = [
+		{
+			type : "zimbraPasswordMinLength",
+			checkImg : Dwt.getElement("minLengthCheckImg"),
+			closeImg : Dwt.getElement("minLengthCloseImg")
+		},
+		{
+			type : "zimbraPasswordMinUpperCaseChars",
+			checkImg : Dwt.getElement("minUpperCaseCheckImg"),
+			closeImg : Dwt.getElement("minUpperCaseCloseImg")
+		},
+		{
+			type : "zimbraPasswordMinLowerCaseChars",
+			checkImg : Dwt.getElement("minLowerCaseCheckImg"),
+			closeImg : Dwt.getElement("minLowerCaseCloseImg")
+		},
+		{
+			type : "zimbraPasswordMinNumericChars",
+			checkImg : Dwt.getElement("minNumericCharsCheckImg"),
+			closeImg : Dwt.getElement("minNumericCharsCloseImg")
+		},
+		{
+			type : "zimbraPasswordMinPunctuationChars",
+			checkImg : Dwt.getElement("minPunctuationCharsCheckImg"),
+			closeImg : Dwt.getElement("minPunctuationCharsCloseImg")
+		},
+		{
+			type : "zimbraPasswordMinDigitsOrPuncs",
+			checkImg : Dwt.getElement("minDigitsOrPuncsCheckImg"),
+			closeImg : Dwt.getElement("minDigitsOrPuncsCloseImg")
+		},
+		{
+			type : "zimbraPasswordEnforceHistory",
+			checkImg : Dwt.getElement("enforceHistoryCheckImg"),
+			closeImg : Dwt.getElement("enforceHistoryCloseImg")
+		},
+		{
+			type : "zimbraPasswordBlockCommonEnabled",
+			checkImg : Dwt.getElement("blockCommonCheckImg"),
+			closeImg : Dwt.getElement("blockCommonCloseImg")
+		},
+		{
+			type : "zimbraPasswordAllowUsername",
+			checkImg : Dwt.getElement("allowUsernameCheckImg"),
+			closeImg : Dwt.getElement("allowUsernameCloseImg")
+		}
+	];
+
+	Dwt.hide(this._passwordMinLengthRule);
+	Dwt.hide(this._passwordMinUpperCaseCharsRule);
+	Dwt.hide(this._passwordMinLowerCaseCharsRule);
+	Dwt.hide(this._passwordMinPunctuationCharsRule);
+	Dwt.hide(this._passwordMinNumericCharsRule);
+	Dwt.hide(this._passwordMinDigitsOrPunctuationRule);
+	Dwt.hide(this._passwordAllowUsernameRule);
+	
+	function findRule(ruleType) {
+		if (!Array.prototype.find) {
+			var matchingRule;
+			supportedRules.forEach(function(rule){ if(rule.type === ruleType) 
+				{ matchingRule = rule; } 
+			});
+			return matchingRule;
+		} else {
+			return supportedRules.find(function(rule){ return rule.type === ruleType });
+		}
+	}
+	
+	if (zimbraPasswordMinLength){
+		var minLengthMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordMinLength, [zimbraPasswordMinLength.toString()]);
+		
+		enabledLocalRules.push(findRule("zimbraPasswordMinLength"));
+		Dwt.setInnerHtml(this._passwordMinLengthLabel, minLengthMsg);
+		Dwt.show(this._passwordMinLengthRule);
+	}
+
+	if (zimbraPasswordMinUpperCaseChars) {
+		var minUpperCaseCharsMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordMinUpperCaseChars, [zimbraPasswordMinUpperCaseChars.toString()]);
+
+		enabledLocalRules.push(findRule("zimbraPasswordMinUpperCaseChars"));
+		Dwt.setInnerHtml(this._passwordMinUpperCaseCharsLabel, minUpperCaseCharsMsg);
+		Dwt.show(this._passwordMinUpperCaseCharsRule);
+	}
+
+	if (zimbraPasswordMinLowerCaseChars) {
+		var minLowerCaseCharsMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordMinLowerCaseChars, [zimbraPasswordMinLowerCaseChars.toString()]);
+
+		enabledLocalRules.push(findRule("zimbraPasswordMinLowerCaseChars"));
+		Dwt.setInnerHtml(this._passwordMinLowerCaseCharsLabel, minLowerCaseCharsMsg);
+		Dwt.show(this._passwordMinLowerCaseCharsRule);
+	}
+
+	if (zimbraPasswordMinNumericChars) {
+		var minNumericCharsMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordMinNumericChars, [zimbraPasswordMinNumericChars.toString()]);
+
+		enabledLocalRules.push(findRule("zimbraPasswordMinNumericChars"));
+		Dwt.setInnerHtml(this._passwordMinNumericCharsLabel, minNumericCharsMsg);
+		Dwt.show(this._passwordMinNumericCharsRule);
+	}
+
+	if (zimbraPasswordMinPunctuationChars) {
+		var minPunctuationCharsMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordMinPunctuationChars, [zimbraPasswordMinPunctuationChars.toString()]);
+		enabledLocalRules.push(findRule("zimbraPasswordMinPunctuationChars"));
+
+		Dwt.setInnerHtml(this._passwordMinPunctuationCharsLabel, minPunctuationCharsMsg);
+		Dwt.show(this._passwordMinPunctuationCharsRule);
+	}
+
+	if(zimbraPasswordMinDigitsOrPuncs) {
+		var minDigitsOrPuncsMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordMinDigitsOrPuncs, [zimbraPasswordMinDigitsOrPuncs.toString()]);
+		enabledLocalRules.push(findRule("zimbraPasswordMinDigitsOrPuncs"));
+
+		Dwt.setInnerHtml(this._passwordMinDigitsOrPunctuationLabel, minDigitsOrPuncsMsg);
+		Dwt.show(this._passwordMinDigitsOrPunctuationRule);
+	}
+
+	if(!zimbraPasswordAllowUsername) {
+		var allowUsernameMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordAllowUsername);
+		enabledLocalRules.push(findRule("zimbraPasswordAllowUsername"));
+
+		Dwt.setInnerHtml(this._passwordAllowUsernameLabel, allowUsernameMsg);
+		Dwt.show(this._passwordAllowUsernameRule);
+	}
+
+	
+	if(enabledLocalRules.length === 0) {
+		Dwt.hide(this._passwordRuleList);
+	}
+
+	var newPasswordShowSpan = Dwt.getElement("newPasswordShowSpan");
+	var newPasswordHideSpan = Dwt.getElement("newPasswordHideSpan");
+	var confirmShowSpan = Dwt.getElement("confirmShowSpan");
+	var confirmHideSpan = Dwt.getElement("confirmHideSpan");
+
+	newPasswordShowSpan.addEventListener("click", showNewPassword.bind(this), null);
+	newPasswordHideSpan.addEventListener("click", showNewPassword.bind(this), null);
+	confirmShowSpan.addEventListener("click", showConfirmPassword.bind(this), null);
+	confirmHideSpan.addEventListener("click", showConfirmPassword.bind(this), null);
+
+	function handleNewPasswordChange() {
+		var currentValue = this._passwordNewInput.value;
+		var parsedChars = parseCharsFromPassword(currentValue, zimbraPasswordAllowedChars, zimbraPasswordAllowedPunctuationChars);
+
+		matchedLocalRules = [];
+
+		if (zimbraPasswordMinLength){
+			if (currentValue.length >= zimbraPasswordMinLength) {
+				matchedLocalRules.push({type : "zimbraPasswordMinLength"});
+			}
+		}
+
+		if (zimbraPasswordMinUpperCaseChars) {
+			if (parsedChars.uppers.length >= zimbraPasswordMinUpperCaseChars) {
+				matchedLocalRules.push({type : "zimbraPasswordMinUpperCaseChars"});
+			}
+		}
+
+		if (zimbraPasswordMinLowerCaseChars) {
+			if (parsedChars.lowers.length >= zimbraPasswordMinLowerCaseChars) {
+				matchedLocalRules.push({type : "zimbraPasswordMinLowerCaseChars"});
+			}
+		}
+
+		if (zimbraPasswordMinNumericChars) {
+			if (parsedChars.numbers.length >= zimbraPasswordMinNumericChars) {
+				matchedLocalRules.push({type : "zimbraPasswordMinNumericChars"});
+			}
+		}
+
+		if (zimbraPasswordMinPunctuationChars) {
+			if (parsedChars.punctuations.length >= zimbraPasswordMinPunctuationChars) {
+				matchedLocalRules.push({type : "zimbraPasswordMinPunctuationChars"});
+			}
+		}
+
+		if(zimbraPasswordMinDigitsOrPuncs) {
+			if (parsedChars.punctuations.length + parsedChars.numbers.length >= zimbraPasswordMinDigitsOrPuncs) {
+				matchedLocalRules.push({type : "zimbraPasswordMinDigitsOrPuncs"});
+			}
+		}
+
+		if(!zimbraPasswordAllowUsername) {
+			var username = this._accountInput.value.includes("@") ? this._accountInput.value.split("@")[0] : this._accountInput.value;
+			if (!currentValue.includes(username)) {
+				matchedLocalRules.push({type : "zimbraPasswordAllowUsername"});
+			}
+		}
+
+		enabledLocalRules.forEach(function(rule) {
+			if (matchedLocalRules.findIndex(function(mRule) { return mRule.type === rule.type}) >= 0) {
+				check(rule.checkImg, rule.closeImg);
+			} else {
+				unCheck(rule.checkImg, rule.closeImg);
+			}
+		})
+
+		handleErrorMessageDiv(parsedChars.invalidChars.length > 0, [parsedChars.invalidChars.join(", "), ZmMsg.zimbraPasswordAllowedChars].join(' '), this._resetPasswordErrorMessageDiv, this._resetPasswordErrorDiv);
+
+		resetImg(this._passwordConfirmInput.value && this._passwordConfirmInput.value === this._passwordNewInput.value, Dwt.getElement("mustMatchCheckImg"), Dwt.getElement("mustMatchCloseImg"));
+		
+		if (enabledLocalRules.length !== matchedLocalRules.length || this._passwordConfirmInput.value !== this._passwordNewInput.value) {
+			this.setButtonEnabled(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, false);
+		} else {
+			this.setButtonEnabled(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, true);
+		}
+	};
+
+	function handleConfirmPasswordChange() {
+		resetImg(this._passwordConfirmInput.value && this._passwordConfirmInput.value === this._passwordNewInput.value, Dwt.getElement("mustMatchCheckImg"), Dwt.getElement("mustMatchCloseImg"));
+		
+		if (enabledLocalRules.length !== matchedLocalRules.length || this._passwordConfirmInput.value !== this._passwordNewInput.value) {
+			this.setButtonEnabled(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, false);
+		} else {
+			this.setButtonEnabled(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, true);
+		}
+	};
+
+	this._passwordNewInput.addEventListener("input", handleNewPasswordChange.bind(this), null);
+	this._passwordConfirmInput.addEventListener("input", handleConfirmPasswordChange.bind(this), null);
+	
+	Dwt.hide(this._codeSuccessDivId);
+	Dwt.show(this._resetPasswordDivId);
+	this.cancelRecoveryButton.setVisible(false);
+	this.resetPasswordRecoveryButton.setVisible(false);
+	
+	this.setButtonVisible(ZmPasswordRecoveryDialog.CANCEL_BUTTON, true);
+	this.setButtonVisible(ZmPasswordRecoveryDialog.VERIFY_CODE_BUTTON, false);
+	this.setButtonVisible(ZmPasswordRecoveryDialog.RESEND_OPTION_BUTTON, false);
+	this.setButtonVisible(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, true);
+	this.setButtonEnabled(ZmPasswordRecoveryDialog.RESET_SUBMIT_BUTTON, false);
+}
 
 /**
  * Prepare and send in a request to change the password.
@@ -605,6 +1047,7 @@ function() {
 	var result = {};
 	if (pwdNewValue !== pwdConfirmValue) {
 		result.code = 'service.FEATURE_RESET_PASSWORD_MISMATCH';
+		this._resetPasswordErrorMessageDiv.style.display = "block";
 		this._handleResetPasswordError(this._resetPasswordErrorDiv, this._resetPasswordErrorMessageDiv, result);
 		return;
 	}
@@ -620,6 +1063,7 @@ function() {
 ZmPasswordRecoveryDialog.prototype._resetPasswordCallback =
 function(result) {
 	if (!result || result.isException()) {
+		this._resetPasswordErrorMessageDiv.style.display = "block";
 		this._handleResetPasswordError(this._resetPasswordErrorDiv, this._resetPasswordErrorMessageDiv, result.getException());
 	} else {
 		Dwt.hide(this._resetPasswordDivId);
@@ -631,3 +1075,52 @@ function(result) {
 };
 
 
+ZmPasswordRecoveryDialog.prototype.cancelResetPasswordRequest = 
+function() {
+	var soapDoc = AjxSoapDoc.create("ResetPasswordRequest", "urn:zimbraAccount");
+	soapDoc.set('cancelResetPassword', true);
+	var command = new ZmCsfeCommand();
+	var callback = new AjxCallback(this, this._handleCancelResetPasswordRequest, []);
+	
+	command.invoke({soapDoc: soapDoc, noAuthToken:true, noSession: true, asyncMode: true, callback: callback, serverUri:'/service/soap/'});
+}
+
+ZmPasswordRecoveryDialog.prototype._handleCancelResetPasswordRequest = 
+function () {
+	location.replace(location.origin);
+}
+
+/**
+ * Listener for two factor verify button
+ */
+ZmPasswordRecoveryDialog.prototype._validateTwoFactorCode =
+function() {
+	var elBy;
+	var command = new ZmCsfeCommand();
+	var soapDoc = AjxSoapDoc.create('AuthRequest', 'urn:zimbraAccount');
+	var respCallback = this._verifyTwoFactorCodeAuthCallback.bind(this);
+	var twoFactorCode = this._twoFactorCodeInput.value;
+	var trustedDevice = this._trustedDeviceInput.checked;
+	soapDoc.set('twoFactorCode', twoFactorCode);
+	soapDoc.set('deviceTrusted', trustedDevice)
+	elBy = soapDoc.set('authToken', this._twoFactorAuthToken);
+	elBy.setAttribute('verifyAccount', '0');
+
+	command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true, asyncMode: true, callback: respCallback, serverUri:'/service/soap/'})
+};
+
+
+/**
+ * Callback for verifying two factor code via auth request
+ *
+ * @param {object} result The returned result object
+ */
+ZmPasswordRecoveryDialog.prototype._verifyTwoFactorCodeAuthCallback =
+function(result) {
+	if (!result || result.isException()) {
+		this._handleResetPasswordError(this._validateTwoFactorErrorDiv, this._validateTwoFactorErrorMessageDiv, result.getException());
+	} else {
+		this.setButtonEnabled(ZmPasswordRecoveryDialog.TWO_FACTOR_VERIFY_BUTTON, false);
+		location.replace(location.origin);
+	}
+}

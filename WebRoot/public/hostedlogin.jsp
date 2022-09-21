@@ -39,7 +39,7 @@
         </c:when>
         <c:when test="${param.loginOp eq 'relogin'}">
             <zm:logout/>
-            <c:set var="errorCode" value="${param.loginErrorCode}"/>
+            <c:set var="errorCode" value="${zm:cook(param.loginErrorCode)}"/>
             <fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
         </c:when>
         <c:when test="${param.loginOp eq 'logout'}">

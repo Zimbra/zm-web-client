@@ -771,8 +771,9 @@ function(ev) {
 	this._resetOperations();
 
 	var email = bubble.email;
-	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-	if (email && contactsApp) {
+	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
+	if (email && contactsEnabled) {
+		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		// first check if contact is cached, and no server call is needed
 		var contact = contactsApp.getContactByEmail(email);
 		if (contact) {
@@ -785,10 +786,14 @@ function(ev) {
 	}
 	else {
 		var actionMenu = this.getActionMenu();
-		actionMenu.getOp(ZmOperation.CONTACT).setVisible(false);
-		actionMenu.getOp(ZmOperation.EXPAND).setVisible(false);
+		if (actionMenu.getOp(ZmOperation.CONTACT)) {
+			actionMenu.getOp(ZmOperation.CONTACT).setVisible(false);
+			this._setContactText(null);
+		}
+		if (actionMenu.getOp(ZmOperation.EXPAND)) {
+			actionMenu.getOp(ZmOperation.EXPAND).setVisible(false);
+		}
 
-		this._setContactText(null);
 		menu.popup(0, ev.docX || bubble.getXW(), ev.docY || bubble.getYH());
 	}
 
@@ -893,9 +898,10 @@ function() {
 		ops.push(ZmOperation.COPY);
 	};
 	ops.push(ZmOperation.EDIT);
-	ops.push(ZmOperation.EXPAND);
-	ops.push(ZmOperation.CONTACT);
-	
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		ops.push(ZmOperation.EXPAND);
+		ops.push(ZmOperation.CONTACT);
+	}
 	return ops;
 };
 

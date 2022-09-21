@@ -86,11 +86,11 @@
     <property name="3rdparty.dir" value="${build.js.dir}/ajax/3rdparty" />
 
     <property name="modernizr.version" value="2.8.3"/>
-    <property name="yui.version" value="2.7.0"/>
-    <property name="jquery.version" value="3.4.1"/>
+    <property name="jquery.version" value="3.5.1"/>
+    <property name="yui.version" value="2.9.0-alfresco-20140211"/>
 
     <!-- TINY_MCE INTEGRATION -->
-    <property name="tinymce.version" value="4.7.9"/>
+    <property name="tinymce.version" value="4.9.11"/>
     <property name='tinymce.dir' value='${3rdparty.dir}/tinymce'/>
     <property name='tinymce.root.dir' value='tiny_mce' />
     <property name='tinymce.js.dir' value='${tinymce.root.dir}/tinymce-${tinymce.version}/js/tinymce' />
@@ -137,7 +137,7 @@
     <target name='client' depends='common'>
         <property name='deploy.app' value='zimbra'/>
         <property name='skins.dir' value='${web.dir}/skins'/>
-        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/2.7.0/**,qunit/**'/>
+        <property name='web.includes' value='${common.web.includes},h/**,portals/**,sounds/**,test/**,yui/2.9.0-alfresco-20140211/**,qunit/**'/>
         <property name='web.excludes' value='${common.web.excludes}'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
@@ -209,7 +209,7 @@
         <ivy:install organisation="javax.xml.bind" module="jaxb-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="com.sun.xml.bind" module="jaxb-impl" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="javax.xml.ws" module="jaxws-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
-        <ivy:install organisation="com.sun.xml.ws" module="jaxws-rt" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="com.sun.xml.ws" module="jaxws-rt" revision="4.0.0" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="javax.jws" module="jsr181-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="com.sun.xml.ws" module="policy" revision="2.3.1" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="org.jvnet.staxex" module="stax-ex" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
@@ -278,7 +278,7 @@
         <ivy:install organisation="javax.xml.bind" module="jaxb-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="com.sun.xml.bind" module="jaxb-impl" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="javax.xml.ws" module="jaxws-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
-        <ivy:install organisation="com.sun.xml.ws" module="jaxws-rt" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
+        <ivy:install organisation="com.sun.xml.ws" module="jaxws-rt" revision="4.0.0" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="javax.jws" module="jsr181-api" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="com.sun.xml.ws" module="policy" revision="2.3.1" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
         <ivy:install organisation="org.jvnet.staxex" module="stax-ex" revision="2.2.6" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
@@ -455,7 +455,7 @@
 					<then>
 						<fileset id='customer.web.fileset'
 								 dir='${customer.web.dir}'
-								 includes='${custom.web.includes},h/**,m/**,skins/**,portals/**,js/**'
+								 includes='${custom.web.includes},h/**,skins/**,portals/**,js/**'
 								 excludes='${custom.web.excludes},**/*.template'
 						/>
 						<pathconvert property='customer.web.files' refid='customer.web.fileset' pathsep=','>
@@ -831,7 +831,7 @@
                     />
             <fileset dir='${build.web.dir}' includes='skins/${skinname}/**'/>
             <fileset dir='${customer.web.dir}' includes='portals/${skinname}/**'/>
-            <fileset dir='${customer.web.dir}' includes='${custom.web.jsp.includes},h/**,m/**,js/**'/>
+            <fileset dir='${customer.web.dir}' includes='${custom.web.jsp.includes},h/**,js/**'/>
             <fileset dir='${customer.web.dir}' includes='WEB-INF/**'/>
         </zip>
     </target>
@@ -1396,9 +1396,9 @@ ext = BeanUtils.cook(ext);
         <mkdir dir="${jspc.build.dir}"/>
         <mkdir dir="${jspc.src.dir}"/>
         <copy todir="${jspc.src.dir}" preservelastmodified="true">
-            <fileset dir='${web.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp,WEB-INF/**"/>
+            <fileset dir='${web.dir}' includes="${custom.web.jsp.includes},h/**,public/*.jsp,WEB-INF/**"/>
         </copy>
-        <fileset id='jspc.fileset1' dir='${jspc.src.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp"/>
+        <fileset id='jspc.fileset1' dir='${jspc.src.dir}' includes="${custom.web.jsp.includes},h/**,public/*.jsp"/>
         <pathconvert property='jspc.files1' refid='jspc.fileset1' pathsep=',' />
         <antcall target="jspc" inheritRefs="true">
             <param name="param.jspfiles" value="${jspc.files1}" />
@@ -1656,13 +1656,37 @@ ext = BeanUtils.cook(ext);
         </copy>
     </target>
 
+    <property name="DOCKER_REPO_PUSH_NS" value="zimbra" />
+    <property name="DOCKER_BUILD_TAG" value="1.0.0" />
+    <property name="DOCKER_PUSH_TAG" value="${DOCKER_BUILD_TAG}" />
+
+    <target name="build-image" depends="prod-build">
+       <exec executable="docker" failonerror="true">
+            <arg value="build" />
+            <arg value="--build-arg" />
+            <arg value="DOCKER_REPO_NS=${DOCKER_REPO_PUSH_NS}" />
+            <arg value="--cache-from" />
+            <arg value="${DOCKER_REPO_PUSH_NS}/zms-classic-webclient:${DOCKER_BUILD_TAG}" />
+            <arg value="--tag" />
+            <arg value="${DOCKER_REPO_PUSH_NS}/zms-classic-webclient:${DOCKER_BUILD_TAG}" />
+            <arg value="." />
+        </exec>
+    </target>
+
+    <target name="push-image" depends="build-image">
+        <exec executable="docker" failonerror="true">
+            <arg value="push" />
+            <arg value="${DOCKER_REPO_PUSH_NS}/zms-classic-webclient:${DOCKER_PUSH_TAG}" />
+        </exec>
+    </target>
+
     <target name="pkg" depends="clean-pkg, prod-war, jspc.build">
         <exec dir="." executable="./pkg-builder.pl" failonerror="true">
-	<arg value="-v"/>
-	<arg value="${wclient.ext.patch.version}"/>
-	<arg value="-r"/>
-	<arg value="${wclient.ext.patch.revision}"/>
-	</exec>
+            <arg value="-v"/>
+            <arg value="${wclient.ext.patch.version}"/>
+            <arg value="-r"/>
+            <arg value="${wclient.ext.patch.revision}"/>
+        </exec>
     </target>
 
     <target name="clean-pkg">

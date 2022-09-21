@@ -62,6 +62,14 @@ function() {
 	return "ZmBriefcaseTreeController";
 };
 
+ZmBriefcaseTreeController.prototype.getItemActionMenu = function(ev, item) {
+	var actionMenu = null;
+	if (item.id != ZmFolder.ID_FILE_SHARED_WITH_ME) {
+		actionMenu = ZmTreeController.prototype.getItemActionMenu.apply(this, arguments);
+	}
+	return actionMenu;
+}
+
 // Public methods
 
 ZmBriefcaseTreeController.prototype.resetOperations =
@@ -219,6 +227,13 @@ function(ev) {
 
 	var briefcase = this._pendingActionData;
 	var share = null;
+
+	// This is a transient fix untill we find actual steps to reproduce problem and find exact root cause
+	if (briefcase.id === "1") {
+		var ex = new AjxException("Root folder sharing is not allowed, ignoring action.", AjxException.INVALID_PARAM);
+		appCtxt.getAppController()._handleException(ex);
+		return;
+	}
 
 	var sharePropsDialog = appCtxt.getSharePropsDialog();
 	sharePropsDialog.popup(ZmSharePropsDialog.NEW, briefcase, share);

@@ -136,6 +136,7 @@ ZmItem.F_TYPE			= ZmId.FLD_TYPE;
 ZmItem.F_VERSION        = ZmId.FLD_VERSION;
 ZmItem.F_WORK_PHONE		= ZmId.FLD_WORK_PHONE;
 ZmItem.F_LOCK           = ZmId.FLD_LOCK;
+ZmItem.F_SHARES			= ZmId.FLD_SHARES;
 ZmItem.F_MSG_PRIORITY   = ZmId.FLD_MSG_PRIORITY;
 ZmItem.F_APP_PASSCODE_CREATED = ZmId.FLD_CREATED;
 ZmItem.F_APP_PASSCODE_LAST_USED = ZmId.FLD_LAST_USED;
@@ -431,6 +432,10 @@ function() {
 	var url = organizer
 		? ([organizer.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(this.name)].join(""))
 		: null;
+
+	if (url && this.folderId == ZmFolder.ID_FILE_SHARED_WITH_ME) {
+		url = [url, "?", "id=", this.id].join("");
+	}
 
 	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);
 

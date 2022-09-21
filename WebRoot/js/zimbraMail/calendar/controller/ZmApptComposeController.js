@@ -749,7 +749,7 @@ function(appt, numRecurrence, callback, showAll, displayConflictDialog,
 	}
 
 
-    appt._addDateTimeToRequest(request, comp);
+    appt._addDateTimeToRequest(request, comp, true);
 
     //preserve the EXDATE (exclude recur) information
     if(recurInfo) {
@@ -830,7 +830,11 @@ function(appt, originalStartDate, numRecurrence) {
     var endDate;
     var range = recurrence.repeatCustomCount * numRecurrence;
     if (recurrence.repeatType == ZmRecurrence.NONE) {
-        endDate = appt.endDate;
+        if (appt.allDayEvent === "1") {
+            endDate = new Date(appt.endDate.getTime() + AjxDateUtil.MSEC_PER_DAY);
+        } else {
+            endDate = appt.endDate;
+        }
     } else if (recurrence.repeatType == ZmRecurrence.DAILY) {
         endDate = AjxDateUtil.roll(startDate, AjxDateUtil.DAY, range);
     } else if (recurrence.repeatType == ZmRecurrence.WEEKLY) {
@@ -842,7 +846,7 @@ function(appt, originalStartDate, numRecurrence) {
     }
     var endTime = endDate.getTime();
     if (recurrence.repeatEndDate) {
-        var repeatEndTime = recurrence.repeatEndDate.getTime();
+        var repeatEndTime = recurrence.repeatEndDate.getTime() + AjxDateUtil.MSEC_PER_DAY;
         if (endTime > repeatEndTime) {
             endTime = repeatEndTime;
         }

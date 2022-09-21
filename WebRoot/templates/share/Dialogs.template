@@ -725,7 +725,7 @@
 <template id='share.Dialogs#ZmTwoFactorCustomLoginPage'>
 	<div class="ZmTwoFactorCustomSetupLoginPage">		
 		<div class="logo">
-			<img style="outline:none;" src="/img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
+			<div class="ImgLoginBanner"></div>
 		</div>
 		<div id='${id}_description'>
 			<h2 class="ZmTwoFactorCustomTitleLoginPage" ><$=ZmMsg.twoStepAuthSetup$></h2>
@@ -778,8 +778,8 @@
 
 <template id='share.Dialogs#ZmPasswordRecovery'>
 	<div class="ZmPasswordRecoverySetup">
-		<div class="ImgLoginBanner">
-			<img style="outline:none;" src="/img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
+		<div class="logo">
+			<div class="ImgLoginBanner"></div>
 		</div>
 		<div id='${id}_get_recovery_account'>
 			<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.passwordRecoveryTitle$></h2>
@@ -821,18 +821,84 @@
 				<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.recoveryEmailButtonResetPassword$></h2>
 			</div>
 			<div id='${id}_reset_password_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
-					<span id='${id}_reset_password_error_message'><$=ZmMsg.passwordRecoveryResetError$></span>
+				<span id='${id}_reset_password_error_message'><$=ZmMsg.passwordRecoveryResetError$></span>
 			</div>
 			<div class='ZmPasswordRecoverySetupContainer'>
 				<label for='${id}_password_new_input'><$=ZmMsg.passwordRecoveryResetNewLabel$></label>
-				<input type='password' id='${id}_password_new_input' size='35' autocomplete='off'/><br /><br />
+				<div class="passwordWrapper">
+					<input type='password' id='${id}_password_new_input' size='35' autocomplete='off'/>
+					<span id="newPasswordShowSpan" style="display: block;"><$=ZmMsg.show$></span>
+					<span id="newPasswordHideSpan" style="display: none;"><$=ZmMsg.hide$></span>
+				</div>
+				<ul id="${id}_password_rule_list" class="resetPasswordRuleList">
+					<li id="${id}_min_length">
+						<img src="/img/zimbra/ImgCloseGrayModern.png" id="minLengthCloseImg" style="display: inline;"/>
+						<img src="/img/zimbra/ImgCheckModern.png" id="minLengthCheckImg" style="display: none;"/>
+						<label id="${id}_min_length_label" class="ZmPasswordRecoveryRule"/>
+					</li>
+					<li id="${id}_min_upper_case_chars">
+						<img src="/img/zimbra/ImgCloseGrayModern.png" id="minUpperCaseCloseImg" style="display: inline;"/>
+						<img src="/img/zimbra/ImgCheckModern.png" id="minUpperCaseCheckImg" style="display: none;"/>
+						<label id="${id}_min_upper_case_chars_label" class="ZmPasswordRecoveryRule"/>
+					</li>
+					<li id="${id}_min_lower_case_chars">
+						<img src="/img/zimbra/ImgCloseGrayModern.png" id="minLowerCaseCloseImg" style="display: inline;"/>
+						<img src="/img/zimbra/ImgCheckModern.png" id="minLowerCaseCheckImg" style="display: none;"/>
+						<label id="${id}_min_lower_case_chars_label" class="ZmPasswordRecoveryRule"/>
+					</li>
+					<li id="${id}_min_punctuation_chars">
+						<img src="/img/zimbra/ImgCloseGrayModern.png" id="minPunctuationCharsCloseImg" style="display: inline;"/>
+						<img src="/img/zimbra/ImgCheckModern.png" id="minPunctuationCharsCheckImg" style="display: none;"/>
+						<label id="${id}_min_punctuation_chars_label" class="ZmPasswordRecoveryRule"/>
+					</li>
+					<li id="${id}_min_numeric_chars">
+						<img src="/img/zimbra/ImgCloseGrayModern.png" id="minNumericCharsCloseImg" style="display: inline;"/>
+						<img src="/img/zimbra/ImgCheckModern.png" id="minNumericCharsCheckImg" style="display: none;"/>
+						<label id="${id}_min_numeric_chars_label" class="ZmPasswordRecoveryRule"/>
+					</li>
+					<li id="${id}_min_digits_or_punctuations">
+						<img src="/img/zimbra/ImgCloseGrayModern.png" id="minDigitsOrPuncsCloseImg" style="display: inline;"/>
+						<img src="/img/zimbra/ImgCheckModern.png" id="minDigitsOrPuncsCheckImg" style="display: none;"/>
+						<label id="${id}_min_digits_or_punctuations_label" class="ZmPasswordRecoveryRule"/>
+					</li>
+					<li id="${id}_password_allow_username">
+						<img src="/img/zimbra/ImgCloseGrayModern.png" id="allowUsernameCloseImg" style="display: inline;"/>
+						<img src="/img/zimbra/ImgCheckModern.png" id="allowUsernameCheckImg" style="display: none;"/>
+						<label id="${id}_password_allow_username_label" class="ZmPasswordRecoveryRule"/>
+					</li>
+				</ul>
 				<label for='${id}_password_confirm_input'><$=ZmMsg.passwordRecoveryResetConfirmLabel$></label>
-				<input type='password' id='${id}_password_confirm_input' size='35' autocomplete='off'/>
+				<div class="passwordWrapper">
+					<input type='password' id='${id}_password_confirm_input' size='35' autocomplete='off'/>
+					<span id="confirmShowSpan" style="display: block;"><$=ZmMsg.show$></span>
+					<span id="confirmHideSpan" style="display: none;"><$=ZmMsg.hide$></span>
+				</div>
+				 <ul class="confirmResetPasswordRuleList">
+					<li>
+						<img src="/img/zimbra/ImgCloseGrayModern.png" id="mustMatchCloseImg" style="display: inline;"/>
+						<img src="/img/zimbra/ImgCheckModern.png" id="mustMatchCheckImg" style="display: none;"/>
+						<label class="ZmPasswordRecoveryRule"><$=ZmMsg.zimbraPasswordMustMatch$><label>
+					</li>
+				</ul>
 			</div>
 		</div>
 		<div id='${id}_password_reset_success'>
 			<h2 class="ZmPasswordRecoveryCustomTitle"><$=ZmMsg.passwordRecoveryResetSuccessTitle$></h2>
 			<p class="ZmPasswordRecoveryCustomPara"><$=ZmMsg.passwordRecoveryResetSuccessDescription$></p>
+		</div>
+		<div id='${id}_two_factor_code'>
+			<h2 class="ZmPasswordRecoveryTwoFactorTitle"><$=ZmMsg.twoStepAuth$></h2>
+			<div id='${id}_validate_two_factor_code_error' style='display:none;' class='ZmPasswordRecoverySetupError'>
+				<span id='${id}_validate_two_factor_code_error_message'><$=ZmMsg.passwordRecoveryCodeValidationError$></span>
+			</div>
+			<div class='ZmPasswordRecoverySetupContainer'>
+				<label for='${id}_two_factor_code_input'><$=ZmMsg.twoFactorAuthCodeLabel$></label>
+				<input type='text' id='${id}_two_factor_code_input' size='35' autocomplete='off' class="ZmPasswordRecoveryTwoFactorCodeInout"/>
+				<div id='${id}_trust_device_section'>
+					<td><input type="checkbox" id="${id}_trust_device_input" name="${id}_trust_device_input" value="true"/></td>
+					<td><label for="${id}_trust_device_input" class="ZmPasswordRecoveryTrustDevice"><$=ZmMsg.twoFactorAuthTrustDevice$></label></td>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>

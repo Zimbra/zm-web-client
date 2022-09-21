@@ -83,6 +83,7 @@ function() {
 ZmBriefcase.prototype.getIcon = 
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
+	if (this.nId == ZmOrganizer.ID_FILE_SHARED_WITH_ME)	{ return "SharedContact"; }
 	if (this.link)							{ return "SharedMailFolder"; }
 	return "Folder";
 };

@@ -976,42 +976,70 @@
 		</tr>
 	<$ } $>
 
-	<$ if (!data.appt.isDraft && data.appt.isOrganizer() && data.appt.otherAttendees && !data.hideAttendees) { $>
-		<tr valign='center'>
-			<td colspan='2'>
-				<div class='calendar_tooltip_attendees'>
-					<$= AjxStringUtil.htmlEncode(ZmMsg.attendees) $>
-				</div>
-			</td>
-		</tr>
+	<$ if (!data.appt.isDraft && data.appt.isOrganizer() && data.appt.otherAttendees) { 
+		var attendeeTypes = [ZmMsg.attendees,ZmMsg.location,ZmMsg.equipmentAttendee];
 
-		<$
-			if (data.attendeesText) {
-		$>
-			<tr valign='top'>
-				<td colspan='2' align='left' style='padding-right:5px;'>
-					<$= AjxStringUtil.htmlEncode(data.attendeesText) $>
-				</td>
-			</tr>
-		<$
+		for (var k in attendeeTypes) {
+			var ptstStatus = [];
+			var displayText = "";
+			var zmMsgKey;
+			var attendeeType = attendeeTypes[k];
+
+			if(attendeeType == ZmMsg.attendees) {
+				if(data.hideAttendees) { continue; }
+
+				ptstStatus = data.attendeesPtStStatus;
+				displayText = data.attendeesText;
+
+			} else if(attendeeType == ZmMsg.location) {
+				if(data.hideLocations) { continue; }
+
+				ptstStatus = data.locationPtStStatus;
+				displayText = data.locationText;
+
 			} else {
-				var ptstStatus = data.ptstStatus;
-				for (var i in ptstStatus) {
-					if (!ptstStatus[i].attendees) { continue; }
-		$>
-				<tr valign='top'>
-					<td align='right' style='padding-right:5px;' nowrap>
-						<b><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(i) + "&nbsp;(&nbsp;" + ptstStatus[i].count + "&nbsp;)&nbsp;") $></b>
-					</td>
-					<td nowrap>
-						<$= AjxStringUtil.htmlEncode(ptstStatus[i].attendees) $>
+				if(data.hideEquipments) { continue; }
+
+				ptstStatus = data.equipmentPtStStatus;
+				displayText = data.equipmentText;
+			}
+			$>
+				<tr valign='center'>
+					<td colspan='2'>
+						<div class='calendar_tooltip_attendees'>
+							<br />
+							<$= AjxStringUtil.htmlEncode(attendeeType) $>
+						</div>
 					</td>
 				</tr>
-		<$
+			<$
+				if (displayText) {
+			$>
+				<tr valign='top'>
+					<td colspan='2' align='left' style='padding-right:5px;'>
+						<$= AjxStringUtil.htmlEncode(displayText) $>
+					</td>
+				</tr>
+			<$
+				} else {
+					for (var i in ptstStatus) {
+						if (!ptstStatus[i].attendees) { continue; }
+			$>
+					<tr valign='top'>
+						<td align='right' style='padding-right:5px;' nowrap>
+							<b><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(i) + "&nbsp;(&nbsp;" + ptstStatus[i].count + "&nbsp;)") $></b>
+						</td>
+						<td nowrap>
+							<$= AjxStringUtil.htmlEncode(ptstStatus[i].attendees) $>
+						</td>
+					</tr>
+			<$
 				}
 			}
+		}
 	}
 	$>
+
 
 	<$ if (appCtxt.accountList.size() > 1) { $>
 		<tr valign='top'>

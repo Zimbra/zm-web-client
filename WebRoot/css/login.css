@@ -45,28 +45,26 @@ FORM {
 
 .signIn {
 	font-size: 20px;
-	padding: 19px 40px;
+	padding: 19px 0px;
 	color: @gray-darker@;
 	font-weight: bold;
 }
 
 .loginSection {
-	padding: 15px 40px;
+	padding: 15px 0px;
 }
 
 .versionBlock {
 	padding: 20px 40px;
 	background: #eee;
 	position: relative;
+	margin: 0 -40px -40px;
 }
 
 .versionBlock label {
 	display: block;
 	padding-bottom: 3px;
 	color: @gray-darker@;
-}
-.LoginScreen div.logo{
-	padding: 30px 40px 0;
 }
 
 select#client {
@@ -178,7 +176,7 @@ form#zLoginForm .form INPUT[type='password']:focus,
 
 
 
-input.loginButton{ 
+input.loginButton, button.loginButton{ 
 	background-color: @brand-primary@;
 	color: @white-color@;
 	float: left;
@@ -316,7 +314,7 @@ label#remember {
 	position: relative;
 }
 
-.passwordWrapper #hideSpan{
+.passwordWrapper #hideSpan, #oldPasswordHideSpan, #newPasswordHideSpan, #confirmHideSpan {
 	position: absolute;
 	z-index: 2;
 	font-size: 10px;
@@ -326,7 +324,7 @@ label#remember {
 	cursor: pointer;
 }
 
-.passwordWrapper #showSpan{
+.passwordWrapper #showSpan, #oldPasswordShowSpan, #newPasswordShowSpan, #confirmShowSpan {
 	position: absolute;
 	z-index: 2;
 	font-size: 10px;
@@ -387,6 +385,25 @@ label#remember {
 .signInAndLabel > div{
 	display: flex;
 	align-items: center;
+}
+
+.cancelButton {
+	border-radius: 4px;
+	margin: 5px;
+	background-color: @gray-lighter@;
+	color: @gray-darker@;
+	padding: 8px 23px;
+	font-size: 13px;
+	cursor: pointer;
+	outline: none;
+	border: none;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+}
+
+button.loginButton[disabled] {
+	opacity: 0.4;
+	pointer-events: none;
 }
 
 /*DWT Buttons*/

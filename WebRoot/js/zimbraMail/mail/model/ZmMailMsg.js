@@ -259,8 +259,8 @@ function(type, used, addAsContact, dontUpdateUsed) {
 				var contact = addr;
 				if (addAsContact) {
 					var cl = AjxDispatcher.run("GetContacts");
-					contact = cl.getContactByEmail(email);
-					if (contact == null) {
+					contact = cl && cl.getContactByEmail(email);
+					if (contact == null || !cl) {
 						contact = new ZmContact(null);
 						contact.initFromEmail(addr);
 					}
@@ -1662,7 +1662,7 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 							} else {
 								var id = inlineAtts[j].mid
 									|| (isDraft || this.isDraft)
-									? (oboDraftMsgId || this.id || this.origId)
+									? (inlineAtts[j].mid || oboDraftMsgId || this.id || this.origId)
 									: (this.origId || this.id);
 
 								if (!id && this._origMsg) {
@@ -2153,7 +2153,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 			if (!this.isRealAttachment(attach) ||
 					(attach.contentType.match(/^image/) && attach.contentId && attach.foundInMsgBody && !includeInlineImages) ||
 					(attach.contentDisposition == "inline" && attach.fileName && ZmMimeTable.isRenderableText(attach.contentType, attach.isBody) && !includeInlineAtts) ||
-					(attach.contentDisposition == "inline" && attach.contentType === "application/pdf" && attach.contentId && attach.foundInMsgBody)) {
+					(attach.contentDisposition == "inline" && (attach.contentType === "application/pdf" || attach.contentType === "text/html") && attach.contentId && attach.foundInMsgBody)) {
 				continue;
 			}
 

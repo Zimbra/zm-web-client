@@ -375,7 +375,21 @@ ZmHtmlEditor.prototype._setContentStyles = function(ed) {
 		parentNode = styles[i].parentNode;
 		if (parentNode.tagName.toLowerCase() != 'body') {
 			parentNode.removeChild(styles[i]);
-			body.insertBefore(styles[i], body.childNodes[0]);
+
+			// while replying we were adding the incoming css styles to the first element present 
+			// in the body which was <br/> tag which causes issue after performing multiple backspace
+			// now we are searching for the data-marker of replying message i.e  '__QUOTED_TEXT__'
+			// and inserting css div style before the '__QUOTED_TEXT__' data marker.
+			for(var j=0; j < body.childElementCount; j++){
+				if(body.children[j].hasAttribute('data-marker')) {
+					const dataMarker = body.children[j].getAttribute('data-marker');
+
+					if(dataMarker === '__' + ZmComposeView.BC_QUOTED_TEXT + '__'){
+						body.insertBefore(styles[i], body.childNodes[j]);
+						return
+					}
+				}
+			}
 		}
 	}
 }
@@ -821,6 +835,8 @@ function(id, autoFocus) {
         font_formats : fonts.join(";"),
         fontsize_formats : AjxMsg.fontSizes || '',
 		convert_urls : false,
+		anchor_top: false,
+		anchor_bottom: false,
 		verify_html : false,
 		browser_spellcheck : true,
         content_css : appContextPath + '/css/tinymce-content.css?v=' + cacheKillerVersion,
@@ -868,7 +884,7 @@ ZmHtmlEditor.prototype.onPaste = function(ev) {
 
 	if (item && item.getAsFile) {
 		file = item.getAsFile();
-		name = file && file.fileName;
+		name = file && file.name;
 		type = file && file.type;
 	} else if (item && item.type) {
 		file = item;
@@ -883,7 +899,6 @@ ZmHtmlEditor.prototype.onPaste = function(ev) {
 			"Cache-Control": "no-cache",
 			"X-Requested-With": "XMLHttpRequest",
 			"Content-Type": type,
-			//For paste from clipboard filename is undefined
 			"Content-Disposition": 'attachment; filename="' + (name ? AjxUtil.convertToEntities(name) : ev.timeStamp || new Date().getTime()) + '"'
 		};
 		var url = (appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI) +

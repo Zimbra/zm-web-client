@@ -5,18 +5,18 @@ Subject: [PATCH] Use the combobox role for menu buttons located elsewhere than
  menus.
 
 ---
-diff -aur -x node_modules /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/MenuButton.ts tinymce-4.7.9/src/ui/main/ts/MenuButton.ts
---- /tmp/zimbra/tinymce-4.7.9/src/ui/main/ts/MenuButton.ts	2018-03-12 06:17:32.202425508 -0400
-+++ tinymce-4.7.9/src/ui/main/ts/MenuButton.ts	2018-03-12 06:14:14.755685797 -0400
-@@ -10,7 +10,6 @@
+diff -aur -x node_modules /tmp/root/tinymce-4.9.11/src/ui/main/ts/MenuButton.ts tinymce-4.9.11/src/ui/main/ts/MenuButton.ts
+--- /tmp/root/tinymce-4.9.11/src/ui/main/ts/MenuButton.ts	2022-08-10 06:02:57.084832274 +0000
++++ tinymce-4.9.11/src/ui/main/ts/MenuButton.ts	2022-08-10 06:02:08.659908981 +0000
+@@ -7,7 +7,6 @@
  
  import Factory from 'tinymce/core/api/ui/Factory';
  import Button from './Button';
 -import MenuBar from './MenuBar';
+ import { window } from '@ephox/dom-globals';
  
  /**
-  * Creates a new menu button.
-@@ -188,7 +187,12 @@
+@@ -195,7 +194,12 @@
  
      icon = self.settings.icon ? prefix + 'ico ' + prefix + 'i-' + icon : '';
  

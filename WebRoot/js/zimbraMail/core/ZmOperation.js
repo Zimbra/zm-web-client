@@ -306,9 +306,9 @@ ZmOperation.defineOperation =
 function(baseId, overrides) {
 	var id = (overrides && overrides.id) || (baseId && baseId.id) || baseId || Dwt.getNextId();
 	var textKey = (overrides && overrides.textKey) || ZmOperation.getProp(baseId, "textKey");
-	var text = textKey && ZmMsg[textKey];
+	var text = ZmOperation.getProp(baseId, "translatedText") || (textKey && ZmMsg[textKey]);
 	var tooltipKey = (overrides && overrides.tooltipKey) || ZmOperation.getProp(baseId, "tooltipKey");
-	var tooltip = tooltipKey && ZmMsg[tooltipKey];
+	var tooltip = ZmOperation.getProp(baseId, "translatedTooltip") || (tooltipKey && ZmMsg[tooltipKey]);
 	var image = ZmOperation.getProp(baseId, "image");
 	var showImageInToolbar = ZmOperation.getProp(baseId, "showImageInToolbar");
 	var showTextInToolbar = ZmOperation.getProp(baseId, "showTextInToolbar");

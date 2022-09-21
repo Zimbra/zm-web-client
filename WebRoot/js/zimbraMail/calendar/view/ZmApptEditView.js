@@ -489,6 +489,7 @@ function() {
 	if (this._resourcesContainer) {
         this.showResourceField(false);
         this._resourceInputField.clear();
+        this._resourcesShown = false;
 	}
 
 	this._allDayCheckbox.checked = false;
@@ -1070,7 +1071,9 @@ function(calItem, mode) {
         //enable forward field/picker if its not propose time view
         this._setAddresses(this._forwardToField, this._isProposeTime ? calItem.getOrganizer() : "");
         this._forwardToField.setEnabled(!this._isProposeTime);
-        this._forwardPicker.setEnabled(!this._isProposeTime);
+        if (this._forwardPicker) {
+            this._forwardPicker.setEnabled(!this._isProposeTime);
+        }
 
         for (var t = 0; t < this._attTypes.length; t++) {
 		    var type = this._attTypes[t];
@@ -1402,6 +1405,8 @@ function(idTag, attType, params) {
 	var inputId = this.parent._htmlElId + idTag + "_input";
 	var cellId = this._htmlElId + idTag;
 	var input;
+	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
+
 	if (!params.noAddrBubbles) {
 		var aifParams = {
 			label:					params.label,
@@ -1413,6 +1418,9 @@ function(idTag, attType, params) {
 			strictMode:				params.strictMode
 		}
 		var input = this._attInputField[attType] = new ZmAddressInputField(aifParams);
+		if (!contactsEnabled && input._input) {
+			input._input.supportsAutoComplete = false;
+		}
 		input.reparentHtmlElement(cellId);
 	} else {
 		var params = {
@@ -1698,6 +1706,9 @@ function(ev) {
     this._forwardToField.setEnabled(false);
 	if (!this._contactPicker) {
 		AjxDispatcher.require("ContactsCore");
+		if (!appCtxt.getApp(ZmApp.CONTACTS)) {
+			appCtxt.getAppController()._createApp(ZmApp.CONTACTS);
+		}
 		var buttonInfo = [
 			{ id: AjxEmailAddress.TO,	label: ZmMsg.toLabel }
 		];
@@ -1722,6 +1733,9 @@ function(addrType, ev) {
     var contactPicker = this._attendeePicker[addrType];
 	if (!contactPicker) {
 		AjxDispatcher.require("ContactsCore");
+		if (!appCtxt.getApp(ZmApp.CONTACTS)) {
+			appCtxt.getAppController()._createApp(ZmApp.CONTACTS);
+		}
 		var buttonInfo = [
 			{ id: AjxEmailAddress.TO,	label: ZmMsg.toLabel }
 		];
@@ -2513,12 +2527,37 @@ function(ev) {
     var newSelectVal = ev._args.newValue;
     if (newSelectVal != "CUS") {
         // CUS (Custom) launches a dialog. Otherwise act upon the change here
+        this._resetRecurrence(this._calItem);
+        this._resetRecurrence(this._locationConflictAppt);
+
         this._locationConflictAppt.setRecurType(newSelectVal);
         this.locationConflictChecker();
     }
     if (newSelectVal === "WEE") {
         this._calItem._recurrence.repeatCustom =1;
     }
+};
+
+ZmApptEditView.prototype._resetRecurrence =
+function(calItem) {
+    // see ZmRecurrence
+    var recur = calItem._recurrence;
+    var startDate = recur._startDate || calItem.startDate;
+    recur.repeatBySetPos = 1;
+    recur.repeatCustom = 0;
+    recur.repeatCustomCount = 1;
+    recur.repeatCustomDayOfWeek = ZmCalItem.SERVER_WEEK_DAYS[startDate.getDay()];
+    recur.repeatCustomDays = null;
+    recur.repeatCustomMonthDay = startDate.getDate();
+    recur.repeatCustomOrdinal = null;
+    recur.repeatCustomType = "S";
+    recur.repeatEndCount = 1;
+    recur.repeatEndDate = null;
+    recur.repeatEndType = "N";
+    recur.repeatMonthlyDayList = [startDate.getDate()];
+    recur.repeatWeekday = false;
+    recur.repeatWeeklyDays = [ZmCalItem.SERVER_WEEK_DAYS[startDate.getDay()]];
+    recur.repeatYearlyMonthsList = startDate.getMonth()+1;
 };
 
 /**
@@ -2847,8 +2886,7 @@ function(el) {
 
         var durationInfo = this.getDurationInfo();
         this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
-        this._locationConflictAppt.endDate = new Date(durationInfo.startTime +
-            AjxDateUtil.MSEC_PER_DAY);
+        this._locationConflictAppt.endDate = new Date(durationInfo.endTime);
         this._locationConflictAppt.allDayEvent = el.checked ? "1" : "0";
         this.locationConflictChecker();
 

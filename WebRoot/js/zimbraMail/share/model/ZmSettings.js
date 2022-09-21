@@ -193,7 +193,17 @@ function(list, setDefault, skipNotify, skipImplicit) {
 				var value = {};
 				for (var j = 0; j < pairs.length; j++) {
 					var fields = pairs[j].split(":");
-					value[fields[0]] = fields[1];
+					
+					// In case of shared folder there can be more than two element in
+					// fields array as shared folder id can be "859095ad-90d5-4db3-919d-630ac30de5a9:465"
+					// so consider all the elements as key except last item of the fields array.
+					if(setting.name === "zimbraPrefFoldersExpanded" && fields.length > 2) {
+						var fieldValue = fields.pop();
+						var fieldKey = fields.join(':');
+						value[fieldKey] = fieldValue;
+					} else {
+						value[fields[0]] = fields[1];
+					}
 				}
 				val = value;
 			}
@@ -346,6 +356,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
         ZmSetting.USERNAME,                 info.name,
 		ZmSetting.EMAIL_VALIDATION_REGEX, 	info.zimbraMailAddressValidationRegex,
 		ZmSetting.HAB_ROOT,                 (info.habRoots && info.habRoots.hab ? info.habRoots.hab : false),
+		ZmSetting.SPELL_CHECK_ENABLED, 		info.isSpellCheckAvailable,
 		ZmSetting.DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE, 	(info.domainSettings && info.domainSettings.zimbraZimletDataSensitiveInMixedModeDisabled ? info.domainSettings.zimbraZimletDataSensitiveInMixedModeDisabled : "FALSE")
     ];
     for (var i = 0; i < settings.length; i += 2) {
@@ -878,6 +889,7 @@ function() {
 
 	// COS SETTINGS - APPS
 	this.registerSetting("BRIEFCASE_ENABLED",				{name:"zimbraFeatureBriefcasesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("DOCUMENT_EDITOR_ENABLED",			{name:"zimbraFeatureDocumentEditingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("ATTACHMENTS_BLOCKED",				{name:"zimbraAttachmentsBlocked", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("CALENDAR_ENABLED",				{name:"zimbraFeatureCalendarEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("CALENDAR_UPSELL_ENABLED",			{name:"zimbraFeatureCalendarUpsellEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -1000,7 +1012,7 @@ function() {
 	this.registerSetting("SEARCH_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("SHORTCUT_LIST_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("OFFLINE_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:appCtxt.isOffline});
-	this.registerSetting("SPELL_CHECK_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:!appCtxt.isOffline && (!AjxEnv.isSafari || AjxEnv.isSafari3up || AjxEnv.isChrome)});
+	this.registerSetting("SPELL_CHECK_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN});
 	this.registerSetting("SPELL_CHECK_ADD_WORD_ENABLED",	{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:!AjxEnv.isSafari || AjxEnv.isSafari3up || AjxEnv.isChrome});
 
 	//SETTINGS SET AT DOMAIN LEVEL
@@ -1203,11 +1215,14 @@ ZmSettings.prototype._showConfirmDialog = function(text, callback, style) {
 
 ZmSettings.prototype._implicitChangeListener =
 function(ev) {
-	if (!appCtxt.get(ZmSetting.OPTIONS_ENABLED)) {
+	var id = ev.source.id;
+	var sourceType = ev.source.type;
+
+	// Allow to perform implicit settings save (e.g folder expand) if the source type is META even when zimbraFeatureOptionsEnabled is false.
+	if (!appCtxt.get(ZmSetting.OPTIONS_ENABLED) && ZmSetting.T_METADATA !== sourceType) {
 		return;
 	}
 	if (ev.type != ZmEvent.S_SETTING) { return; }
-	var id = ev.source.id;
 	var setting = this.getSetting(id);
 	if (id == ZmSetting.FOLDERS_EXPANDED && window.duringExpandAll) {
 		if (!window.afterExpandAllCallback) {

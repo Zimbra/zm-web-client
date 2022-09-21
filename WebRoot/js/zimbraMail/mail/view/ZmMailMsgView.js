@@ -164,7 +164,7 @@ function() {
 	if (this._objectManager && this._objectManager.reset) {
 		this._objectManager.reset();
 	}
-	this.setScrollWithIframe(this._scrollWithIframe ? DwtControl.CLIP : DwtControl.SCROLL);
+	this.setScrollWithIframe(this._scrollWithIframe);
 };
 
 ZmMailMsgView.prototype.dispose =
@@ -987,18 +987,6 @@ function(params) {
 
 	var html = params.html || "";
 	
-	if (html.search(/(<form)(?![^>]+action)(.*?>)/g)) {
-		html = html.replace(/(<form)(?![^>]+action)(.*?>)/ig, function(form) {
-				if (form.match(/target/g)) {
-					form = form.replace(/(<.*)(target=.*)(.*>)/g, '$1action="SAMEHOSTFORMPOST-BLOCKED" target="_blank"$3');
-				}
-				else {
-					form = form.replace(/(<form)(?![^>]+action)(.*?>)/g, '$1 action="SAMEHOSTFORMPOST-BLOCKED" target="_blank"$2');
-				}
-		return form;
-		});
-	}
-
 	if (!params.isTextMsg) {
 		//Microsoft silly smilies
 		html = html.replace(/<span style="font-family:Wingdings">J<\/span>/g, "\u263a"); // :)
@@ -1012,8 +1000,10 @@ function(params) {
 	// - there are <img> tags OR tags with dfbackground set
 	var isSpam = (this._msg && this._msg.folderId == ZmOrganizer.ID_SPAM);
 	var imagesNotShown = (!this._msg || !this._msg.showImages);
-	this._needToShowInfoBar = (!params.isTextMsg &&
-		(!appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || isSpam) &&
+	
+	// As Per ZCS-10127 we need to always show the info bar if its an spam
+	this._needToShowInfoBar = isSpam || (!params.isTextMsg &&
+		(!appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES)) &&
 		imagesNotShown &&
 		(/<img/i.test(html) || /<[^>]+dfbackground/.test(html)));
 
@@ -1128,7 +1118,11 @@ function(params) {
 		// assign the right class name to the iframe body
 		idoc.body.className = this._getBodyClass() + (params.isTextMsg ? " MsgBody-text" : " MsgBody-html");
 
+		var docOffsetWidth = idoc.body.offsetWidth;
+
 		idoc.body.style.height = "auto"; //see bug 56899 - if the body has height such as 100% or 94%, it causes a problem in FF in calcualting the iframe height. Make sure the height is clear.
+		idoc.body.style.width = (docOffsetWidth - 20) + "px";
+		idoc.body.style.position = "absolute";
 
 		ifw.getIframe().onload = this._onloadIframe.bind(this, ifw);
 
@@ -2311,7 +2305,7 @@ function(params) {
 	html[i++] = !params.noUnderline ? "style='text-decoration:underline' " : "";
 	html[i++] = params.blankTarget ? "target='_blank' " : "";
 	var href = params.href || (params.jsHref && "javascript:;");
-	html[i++] = href ? "href='" + AjxStringUtil.htmlEncode(href) + "' " : "";
+	html[i++] = href ? "href='" + AjxStringUtil.encodeQuotes(AjxStringUtil.htmlEncode(href)) + "' " : "";
     html[i++] = params.download ? (" download='"+(params.downloadLabel||"") + "'") : "";
 	if (params.isRfc822) {
 		html[i++] = " onclick='ZmMailMsgView.rfc822Callback(\"";

@@ -24,6 +24,27 @@
 ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, scheduleMode, readonly, isInviteMessage, isRight) {
 	if (arguments.length == 0) { return; }
 
+	if (appCtxt.get(ZmSetting.CAL_SCALING) == "10") {
+		ZmCalColView._MINIMUM_APPT_HEIGHT = 10;
+		ZmCalColView._SNAP_MINUTES = 10;
+		ZmCalColView._HOUR_HEIGHT = 126;
+		ZmCalColView._MSEC_DURATION = AjxDateUtil.MSEC_PER_MINUTE*10;
+	} else if (appCtxt.get(ZmSetting.CAL_SCALING) == "15") {
+		ZmCalColView._MINIMUM_APPT_HEIGHT = 15;
+		ZmCalColView._SNAP_MINUTES = 15;
+		ZmCalColView._HOUR_HEIGHT = 84;
+		ZmCalColView._MSEC_DURATION = AjxDateUtil.MSEC_PER_FIFTEEN_MINUTES;
+	} else {
+		ZmCalColView._MINIMUM_APPT_HEIGHT = 22;
+		ZmCalColView._SNAP_MINUTES = 30;
+		ZmCalColView._HOUR_HEIGHT = 42;
+		ZmCalColView._MSEC_DURATION = AjxDateUtil.MSEC_PER_HALF_HOUR;
+	}
+
+	ZmCalColView._HALF_HOUR_HEIGHT = ZmCalColView._HOUR_HEIGHT/2;
+	ZmCalColView._15_MINUTE_HEIGHT = ZmCalColView._HOUR_HEIGHT/4;
+	ZmCalColView._DAY_HEIGHT = ZmCalColView._HOUR_HEIGHT*24;
+
 	view = view || ZmId.VIEW_CAL_DAY;
 	// set before call to parent
 	this._scheduleMode = scheduleMode;
@@ -79,8 +100,6 @@ ZmCalColView.MIN_COLUMN_WIDTH = 120;
 // max number of all day appts before we turn on vertical scrollbars
 ZmCalColView.MAX_ALLDAY_APPTS = 4;
 
-ZmCalColView.HALF_HOUR_HEIGHT = 21;
-
 ZmCalColView._OPACITY_APPT_NORMAL = 100;
 ZmCalColView._OPACITY_APPT_DECLINED = 20;
 ZmCalColView._OPACITY_APPT_TENTATIVE = 60;
@@ -105,11 +124,6 @@ ZmCalColView._APPT_X_FUDGE = 0; // due to border stuff
 ZmCalColView._APPT_Y_FUDGE = -1; // ditto
 ZmCalColView._APPT_WIDTH_FUDGE = (AjxEnv.isIE ? 0 : 0); // due to border stuff
 ZmCalColView._APPT_HEIGHT_FUDGE = (AjxEnv.isIE ? 0 : 0); // ditto
-
-ZmCalColView._HOUR_HEIGHT = 42;
-ZmCalColView._HALF_HOUR_HEIGHT = ZmCalColView._HOUR_HEIGHT/2;
-ZmCalColView._15_MINUTE_HEIGHT = ZmCalColView._HOUR_HEIGHT/4;
-ZmCalColView._DAY_HEIGHT = ZmCalColView._HOUR_HEIGHT*24;
 
 ZmCalColView._STATUS_FREE       = "F";
 ZmCalColView._STATUS_TENTATIVE  = "T";
@@ -194,9 +208,9 @@ function() {
 	var e = document.getElementById(this._timeSelectionDivId);
 	if (!e) return;
 
-	var bounds = this._getBoundsForDate(this._date,  AjxDateUtil.MSEC_PER_HALF_HOUR);
+	var bounds = this._getBoundsForDate(this._date, ZmCalColView._MSEC_DURATION);
 	if (bounds == null) return;
-	var snap = this._snapXY(bounds.x, bounds.y, 30);
+	var snap = this._snapXY(bounds.x, bounds.y, ZmCalColView._SNAP_MINUTES);
 	if (snap == null) return;
 
 	Dwt.setLocation(e, snap.x, snap.y);
@@ -681,8 +695,8 @@ ZmCalColView.prototype._createItemHtml = function(appt) {
 	    id = this._getItemId(appt),
 	    calendar = appCtxt.getById(appt.folderId),
 	    isRemote = Boolean(calendar.url),
-	    is30 = appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR,
-	    is60 = appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HOUR,
+	    is30 = appt._orig.getDuration() <= ZmCalColView._MSEC_DURATION,
+	    is60 = appt._orig.getDuration() <= ZmCalColView._MSEC_DURATION * 2,
 		apptName = AjxStringUtil.htmlEncode(appt.getName());
 
 	// normalize location
@@ -1499,7 +1513,7 @@ function(appt) {
 ZmCalColView.prototype._getBoundsForDate =
 function(d, duration, col) {
 	var durationMinutes = duration / 1000 / 60;
-	durationMinutes = Math.max(durationMinutes, 22);
+	durationMinutes = Math.max(durationMinutes, ZmCalColView._MINIMUM_APPT_HEIGHT);
 	var h = d.getHours();
 	var m = d.getMinutes();
 	if (col == null && !this._scheduleMode) {
@@ -1514,7 +1528,7 @@ function(d, duration, col) {
 ZmCalColView.prototype._getBoundsForCalendar =
 function(d, duration, folderId) {
 	var durationMinutes = duration / 1000 / 60;
-	durationMinutes = Math.max(durationMinutes, 22);
+	durationMinutes = Math.max(durationMinutes, ZmCalColView._MINIMUM_APPT_HEIGHT);
 	var h = d.getHours();
 	var m = d.getMinutes();
 	var col= this._getColForFolderId(folderId);
@@ -1765,9 +1779,9 @@ function(dayIndex, workingHourIndex){
         endMin = (endTime%100)/15,
         startWorkingHour = 2 * Math.floor(startTime/100),
         endWorkingHour = 2 * Math.floor(endTime/100),
-        fifteenMinHeight = ZmCalColView.HALF_HOUR_HEIGHT/2,
-        topPosition = startWorkingHour*ZmCalColView.HALF_HOUR_HEIGHT,
-        bottomPosition = endWorkingHour*ZmCalColView.HALF_HOUR_HEIGHT,
+        fifteenMinHeight = ZmCalColView._HALF_HOUR_HEIGHT/2,
+        topPosition = startWorkingHour*ZmCalColView._HALF_HOUR_HEIGHT,
+        bottomPosition = endWorkingHour*ZmCalColView._HALF_HOUR_HEIGHT,
         workingDivHeight = bottomPosition - topPosition;//duration*halfHourHeight;
     return {
         topPosition : topPosition,
@@ -2212,14 +2226,14 @@ function(ev, div) {
 ZmCalColView.prototype._timeSelectionAction =
 function(ev, div, dblclick) {
 	var date;
-	var duration = AjxDateUtil.MSEC_PER_HALF_HOUR;
+	var duration = ZmCalColView._MSEC_DURATION;
 	var isAllDay = false;
 	var gridLoc;
 	var type = this._getItemData(div, "type");
 	switch (type) {
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
 			gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div, true);
-			date = this._getDateFromXY(gridLoc.x, gridLoc.y, 30);
+			date = this._getDateFromXY(gridLoc.x, gridLoc.y, ZmCalColView._SNAP_MINUTES);
 			break;
 		case ZmCalBaseView.TYPE_ALL_DAY:
 			gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div, true);
@@ -2738,17 +2752,17 @@ function(ev) {
 	}
 
 	// snap new location to grid
-	var snap = data.view._snapXY(data.gridX + deltaX, data.gridY + deltaY, 30);
+	var snap = data.view._snapXY(data.gridX + deltaX, data.gridY + deltaY, ZmCalColView._SNAP_MINUTES);
 	if (snap == null) return false;
 
 	var newStart, newEnd;
 
 	if (deltaY >= 0) { // dragging down
-		newStart = data.view._snapXY(data.gridX, data.gridY, 30);
-		newEnd = data.view._snapXY(data.gridX, data.gridY + deltaY, 30, true);
+		newStart = data.view._snapXY(data.gridX, data.gridY, ZmCalColView._SNAP_MINUTES);
+		newEnd = data.view._snapXY(data.gridX, data.gridY + deltaY, ZmCalColView._SNAP_MINUTES, true);
 	} else { // dragging up
-		newEnd = data.view._snapXY(data.gridX, data.gridY, 30);
-		newStart = data.view._snapXY(data.gridX, data.gridY + deltaY, 30);
+		newEnd = data.view._snapXY(data.gridX, data.gridY, ZmCalColView._SNAP_MINUTES);
+		newStart = data.view._snapXY(data.gridX, data.gridY + deltaY, ZmCalColView._SNAP_MINUTES);
 	}
 
 	if (newStart == null || newEnd == null) return false;
@@ -2760,13 +2774,13 @@ function(ev) {
 		data.start = newStart;
 		data.end = newEnd;
 
-		data.startDate = data.view._getDateFromXY(data.start.x, data.start.y, 30, false);
-		data.endDate = data.view._getDateFromXY(data.end.x, data.end.y, 30, false);
+		data.startDate = data.view._getDateFromXY(data.start.x, data.start.y, ZmCalColView._SNAP_MINUTES, false);
+		data.endDate = data.view._getDateFromXY(data.end.x, data.end.y, ZmCalColView._SNAP_MINUTES, false);
 
 		var e = data.newApptDivEl;
 		if (!e) return;
 		var duration = (data.endDate.getTime() - data.startDate.getTime());
-		if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;
+		if (duration < ZmCalColView._MSEC_DURATION) duration = ZmCalColView._MSEC_DURATION;
 
 		var bounds = data.view._getBoundsForDate(data.startDate, duration, newStart.col);
 		if (bounds == null) return false;
@@ -2794,11 +2808,11 @@ function(ev) {
         var deltaY = mouseEv.docY - data.docY;
 
         if (deltaY >= 0) { // dragging down
-            newStart = data.view._snapXY(data.gridX, data.gridY, 30);
-            newEnd = data.view._snapXY(data.gridX, data.gridY + deltaY, 30, true);
+            newStart = data.view._snapXY(data.gridX, data.gridY, ZmCalColView._SNAP_MINUTES);
+            newEnd = data.view._snapXY(data.gridX, data.gridY + deltaY, ZmCalColView._SNAP_MINUTES, true);
         } else { // dragging up
-            newEnd = data.view._snapXY(data.gridX, data.gridY, 30);
-            newStart = data.view._snapXY(data.gridX, data.gridY + deltaY, 30);
+            newEnd = data.view._snapXY(data.gridX, data.gridY, ZmCalColView._SNAP_MINUTES);
+            newStart = data.view._snapXY(data.gridX, data.gridY + deltaY, ZmCalColView._SNAP_MINUTES);
         }
 
         if (newStart == null || newEnd == null) return false;
@@ -2812,8 +2826,8 @@ function(ev) {
             data.start = newStart;
             data.end = newEnd;
 
-            data.startDate = data.view._getDateFromXY(data.start.x, data.start.y, 30, false);
-            data.endDate = data.view._getDateFromXY(data.end.x, data.end.y, 30, false);
+            data.startDate = data.view._getDateFromXY(data.start.x, data.start.y, ZmCalColView._SNAP_MINUTES, false);
+            data.endDate = data.view._getDateFromXY(data.end.x, data.end.y, ZmCalColView._SNAP_MINUTES, false);
         }
 
         if (data.isAllDay) {
@@ -2826,13 +2840,14 @@ function(ev) {
 	if (data.dndStarted) {
 		data.gridEl.style.cursor = 'auto';
         var col = data.view._getColFromX(data.gridX);
+		var folderId = col && col.cal && col.cal.id;
 		Dwt.setVisible(data.newApptDivEl, false);
 		if (data.isAllDay) {
-			appCtxt.getCurrentController().newAllDayAppointmentHelper(data.startDate, data.endDate, null, mouseEv.shiftKey);
+			appCtxt.getCurrentController().newAllDayAppointmentHelper(data.startDate, data.endDate, folderId, mouseEv.shiftKey);
 		} else {
 			var duration = (data.endDate.getTime() - data.startDate.getTime());
-			if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;
-			appCtxt.getCurrentController().newAppointmentHelper(data.startDate, duration, null, mouseEv.shiftKey);
+			if (duration < ZmCalColView._MSEC_DURATION) duration = ZmCalColView._MSEC_DURATION;
+			appCtxt.getCurrentController().newAppointmentHelper(data.startDate, duration, folderId, mouseEv.shiftKey);
 		}
 	}
 
@@ -2868,7 +2883,7 @@ function(ev) {
 	}
 
 	// snap new location to grid
-	var snap = data.view._snapXY(data.gridX + deltaX, data.gridY + deltaY, 30);
+	var snap = data.view._snapXY(data.gridX + deltaX, data.gridY + deltaY, ZmCalColView._SNAP_MINUTES);
 	if (snap == null) return false;
 
 	var newStart, newEnd;

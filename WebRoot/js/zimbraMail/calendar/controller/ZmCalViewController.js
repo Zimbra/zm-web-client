@@ -1586,7 +1586,7 @@ function(startDate, duration, folderId, mailItem) {
 ZmCalViewController.prototype._newApptObject =
 function(startDate, duration, folderId, mailItem) {
 	var newAppt = new ZmAppt();
-	newAppt.setStartDate(AjxDateUtil.roundTimeMins(startDate, 30));
+	newAppt.setStartDate(AjxDateUtil.roundTimeMins(startDate, parseInt(appCtxt.get(ZmSetting.CAL_SCALING), 10)));
 	newAppt.setEndDate(newAppt.getStartTime() + (duration ? duration : ZmCalViewController.DEFAULT_APPOINTMENT_DURATION));
 	newAppt.resetRepeatWeeklyDays();
 	newAppt.resetRepeatMonthlyDayList();
@@ -2233,17 +2233,16 @@ function(appt, mode) {
 			choiceLabel2 : ZmMsg.notifyOrganizer
 		});
 	}
-    if(this._deleteMode != mode){
-        var msg = ZmMsg.confirmCancelAppt;
-        if(appt.isRecurring()){
-            msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE)
-    			? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, AjxStringUtil.htmlEncode(appt.name))
-    			: ZmMsg.confirmCancelApptSeries;
-        }
-        var msgDiv = document.getElementById(this._deleteNotifyDialog._confirmMessageDivId);
-        msgDiv.innerHTML = msg;
-        this._deleteMode = mode;
-    }
+
+	var msg = ZmMsg.confirmCancelAppt;
+	if(appt.isRecurring()){
+		msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE)
+			? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, AjxStringUtil.htmlEncode(appt.name))
+			: ZmMsg.confirmCancelApptSeries;
+	}
+	var msgDiv = document.getElementById(this._deleteNotifyDialog._confirmMessageDivId);
+	msgDiv.innerHTML = msg;
+
 	this._deleteNotifyDialog.popup(new AjxCallback(this, this._deleteNotifyYesCallback, [appt,mode]));
 };
 
@@ -4055,6 +4054,12 @@ ZmCalViewController.prototype._refreshAction =
 function(dontClearCache) {
 	DBG.println(AjxDebug.DBG1, "ZmCalViewController: _refreshAction: " + dontClearCache);
 	var forceMaintenance = false;
+
+	if (dontClearCache) {
+		var reminderParams = this._app.getReminderController().getRefreshParams();
+		var mergeKey = this.apptCache._getCachedMergedKey(reminderParams);
+		dontClearCache = Boolean(this.apptCache._cachedMergedApptVectors[mergeKey]);
+	}
 	// reset cache
 	if (!dontClearCache) {
 		this.apptCache.clearCache();

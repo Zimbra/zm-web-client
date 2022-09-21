@@ -1168,7 +1168,7 @@ function() {
  *      (use only the items whose format is "<Primary-tag> *( "_" <Subtag> )")
  * When Aspell is upgraded and more locales are added, please update this list too.
  */
-ZmAppCtxt.AVAILABLE_DICTIONARY_LOCALES = ["ar", "da", "de", "de_AT", "de_CH", "de_DE", "en", "en_CA", "en_GB", "en_US", "es", "fr", "fr_CH", "fr_FR", "hi", "hu", "it", "nl", "pl", "pt_BR", "ru", "sv"];
+ZmAppCtxt.AVAILABLE_DICTIONARY_LOCALES = ["ar", "ca", "da", "de", "de_AT", "de_CH", "de_DE", "en", "en_CA", "en_GB", "en_US", "es", "fr", "fr_CH", "fr_FR", "hi", "hu", "it", "nl", "pl", "pt_BR", "ru", "sv"];
 
 /**
  * Gets the availability of the spell check feature based on the current locale and user's configuration
@@ -1177,7 +1177,8 @@ ZmAppCtxt.AVAILABLE_DICTIONARY_LOCALES = ["ar", "da", "de", "de_AT", "de_CH", "d
  */
 ZmAppCtxt.prototype.isSpellCheckerAvailable = function () {
 
-	if (!appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED)) {
+	var isSpellCheckServiceEnabled = appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED) && !appCtxt.get(ZmSetting.OFFLINE_ENABLED) && (!AjxEnv.isSafari || AjxEnv.isSafari3up || AjxEnv.isChrome);
+	if (!isSpellCheckServiceEnabled) {
 		return false;
 	}
 
@@ -1970,7 +1971,7 @@ function(ev) {
     		url = AjxUtil.formatUrl({protocol: proto, port: port, path: path, qsReset: true, qsArgs: qsArgs});
     	}
 
-    	var args  = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
+    	var args  = "height=675,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
     	window.open(url,'ChangePasswordWindow', args);
 };
 
@@ -2326,4 +2327,26 @@ ZmAppCtxt.prototype.showError = function(params) {
     dlg.reset();
     dlg.setMessage(errMsg, params.details, params.style || DwtMessageDialog.WARNING_STYLE, params.title);
     dlg.popup(null, params.noReport !== false);
+};
+
+/**
+ * Get shared folders
+ *
+ * @param {Object} folder     current node
+ * @param {string} type       folder type
+ * @param {Array}  result     an array of shared folders
+ */
+ZmAppCtxt.prototype.getSharedFolders =
+function(folder, type, result) {
+    if (!folder || !folder instanceof ZmFolder || !type || !Array.isArray(result)) {
+        return;
+    }
+    var children = folder.children && folder.children.getArray();
+    for (var i = 0; i < children.length; i++) {
+        appCtxt.getSharedFolders(children[i], type, result);
+    }
+    // a shared folder has an owner
+    if (folder.owner && folder.type == type && !folder.noSuchFolder) {
+        result.push(folder);
+    }
 };

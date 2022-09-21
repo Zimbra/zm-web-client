@@ -10,6 +10,10 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ page import="com.zimbra.soap.type.AccountSelector" %>
+<%@ page import="com.zimbra.cs.account.Account" %>
+<%@ page import="com.zimbra.cs.account.Provisioning" %>
+<%@ page import="com.zimbra.soap.type.AccountBy" %>
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
 <app:skinAndRedirect />
@@ -25,8 +29,8 @@
 <zm:getUserAgent var="ua" session="false"/>
 <c:set var="mobileSupported" value="${ua.isMobile && ((ua.isOsWindows && (ua.isWindowsPhone || not ua.isWindowsNT))
                                                         || (ua.isOsBlackBerry)
-                                                        || (ua.isOsAndroid && not ua.isAndroid4_0up)
-                                                        || (ua.isIos && not ua.isIos6_0up))}"/>
+                                                        || (ua.isOsAndroid)
+                                                        || (ua.isIos))}"/>
 <c:set var="totpAuthRequired" value="false"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
@@ -78,7 +82,9 @@
     }
 %>
 <c:set var="modernSupported" value="<%=modernSupported%>" />
-
+<c:if test="${ua.isModernIE}">
+	<c:set var="modernSupported" value="false" />
+</c:if>
 <c:catch var="loginException">
 	<c:choose>
 		<c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
@@ -87,7 +93,7 @@
 		</c:when>
 		<c:when test="${param.loginOp eq 'relogin' and not empty param.loginErrorCode}">
 			<zm:logout/>
-			<c:set var="errorCode" value="${param.loginErrorCode}"/>
+			<c:set var="errorCode" value="${zm:cook(param.loginErrorCode)}"/>
 			<fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
 			<c:if test = "${fn:contains(errorMessage, errorCode)}">
 				<fmt:message var="errorMessage" key="unknownError"/>
@@ -96,17 +102,20 @@
 		<c:when test="${param.loginOp eq 'logout'}">
 			<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 			<c:set var="logoutRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLogoutURL}" />
+			<c:set var="skipLogoff" value="${domainInfo.attrs.zimbraWebClientSkipLogoff}" />
 			<c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLogoutURLAllowedUA)}"/>
-            <c:set var="isAllowedIP" value="${zm:isAllowedIP(remoteAddr, domainInfo.webClientLogoutURLAllowedIP)}"/>
-            <c:choose>
-                <c:when test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (isAllowedIP eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
-                    <zm:logout/>
-                    <c:redirect url="${logoutRedirectUrl}"/>
-                </c:when>
-                <c:otherwise>
-                    <zm:logout/>
-                </c:otherwise>
-            </c:choose>
+			<c:set var="isAllowedIP" value="${zm:isAllowedIP(remoteAddr, domainInfo.webClientLogoutURLAllowedIP)}"/>
+			<c:choose>
+				<c:when test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (isAllowedIP eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
+					<c:if test="${skipLogoff ne 'true'}">
+						<zm:logout/>
+					</c:if>
+					<c:redirect url="${logoutRedirectUrl}"/>
+				</c:when>
+				<c:otherwise>
+					<zm:logout/>
+				</c:otherwise>
+			</c:choose>
 		</c:when>
 		<c:when test="${(param.loginOp eq 'login') && !(empty fullUserName) && !(empty param.password) && (pageContext.request.method eq 'POST')}">
 			<c:choose>
@@ -209,54 +218,29 @@
                     <c:otherwise>
                         <c:set var="client" value="${param.client}"/>
                         <%
-                            String userToken = (String) pageContext.getAttribute("authtoken");
-                            if (userToken != null && userToken.length() > 0) {
-                                String[] tokenParts = userToken.split("_");
-                                String versionPart = tokenParts[2];
-                                Map<?, ?> decodedTokenMap = TokenUtil.getAttrs(versionPart);
-                                String version = (String) decodedTokenMap.get("version");
-                                pageContext.setAttribute("isZ9Mailbox", version.startsWith("9"));
+                            try {
+                                String userToken = (String) pageContext.getAttribute("authtoken");
+                                if (userToken != null && userToken.length() > 0) {
+                                    String[] tokenParts = userToken.split("_");
+                                    String versionPart = tokenParts[2];
+                                    Map<?, ?> decodedTokenMap = TokenUtil.getAttrs(versionPart);
+                                    String version = (String) decodedTokenMap.get("version");
+                                    String majorVersion = version.split("\\.")[0];
+                                    pageContext.setAttribute("isUpgradedMailbox", Integer.parseInt(majorVersion) >= 9);
+                                }
+                            } catch (NumberFormatException e) {
+                                pageContext.setAttribute("isUpgradedMailbox", false);
                             }
                         %>
                         
-                        <c:set var="isZ9Mailbox" value="${isZ9Mailbox}" />
+                        <c:set var="isUpgradedMailbox" value="${isUpgradedMailbox}" />
                         <c:set var="prefClientType" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}" />
                         
                         <c:if test="${empty client or client eq 'preferred'}">
                             <c:set var="client"
-                                value="${isZ9Mailbox ? prefClientType eq 'advanced' ? 'advanced' : 'modern' : prefClientType}" />
+                                value="${isUpgradedMailbox ? mobileSupported && modernSupported ? 'modern' : prefClientType eq 'advanced' ? 'advanced' : 'modern' : prefClientType}" />
                         </c:if>
                         <c:choose>
-                            <c:when test="${client eq 'socialfox'}">
-                                    <c:set var="sbURL" value="/public/launchSidebar.jsp"/>
-                                    <c:redirect url="${sbURL}">
-                                        <c:forEach var="p" items="${paramValues}">
-                                            <c:forEach var='value' items='${p.value}'>
-                                                <c:set var="testKey" value=",${p.key},"/>
-                                                <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
-                                                    <c:param name="${p.key}" value='${value}'/>
-                                                </c:if>
-                                            </c:forEach>
-                                        </c:forEach>
-                                </c:redirect>
-                            </c:when>
-                            <c:when test="${client eq 'standard'}">
-                                <c:redirect url="/h/search">
-                                    <c:param name="mesg" value='welcome' />
-                                    <c:param name="init" value='true' />
-                                    <c:if test="${not empty param.app}">
-                                        <c:param name="app" value='${param.app}' />
-                                    </c:if>
-                                    <c:forEach var="p" items="${paramValues}">
-                                        <c:forEach var='value' items='${p.value}'>
-                                            <c:set var="testKey" value=",${p.key}," />
-                                            <c:if test="${not fn:contains(ignoredQueryParams, testKey)}">
-                                                <c:param name="${p.key}" value='${value}' />
-                                            </c:if>
-                                        </c:forEach>
-                                    </c:forEach>
-                                </c:redirect>
-                            </c:when>
                             <c:when test="${client eq 'advanced'}">
                                 <c:choose>
                                     <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
@@ -279,7 +263,7 @@
                                     </c:otherwise>
                                 </c:choose>
                             </c:when>
-                            <c:when test="${client eq 'modern' and modernSupported and isZ9Mailbox}">
+                            <c:when test="${client eq 'modern' and modernSupported and isUpgradedMailbox}">
                                     <jsp:forward page="/public/modern.jsp"/>
                             </c:when>
                             <c:otherwise>
@@ -319,6 +303,9 @@
         </c:url>
         <%--Forward the user to the initial two factor authentication set up page--%>
         <jsp:forward page="${twoFactorSetupURL}" />
+    </c:if>
+    <c:if test="${errorCode eq 'account.WEB_CLIENT_ACCESS_NOT_ALLOWED'}">
+        <zm:logout/>
     </c:if>
 </c:if>
 <%
@@ -426,7 +413,7 @@ if (application.getInitParameter("offlineMode") != null) {
 		<%-- set client select default based on user agent. --%>
             <c:set var="client" value="preferred"/>
     </c:if>
-    <c:set var="smallScreen" value="${client eq 'mobile' or client eq 'socialfox'}"/>
+    <c:set var="smallScreen" value="${client eq 'mobile'}"/>
     <c:if test="${mobileSupported and modernSupported}">
         <c:set var="client" value="modern"/>
         <c:set var="smallScreen" value="${mobileSupported}"/>
@@ -464,9 +451,7 @@ if (application.getInitParameter("offlineMode") != null) {
                 <div class="modernContentBox">
                     <div class="logo">
                         <a href="https://www.zimbra.com/" id="bannerLink" target="_new" title='<fmt:message key="zimbraTitle"/>'><span class="ScreenReaderOnly"><fmt:message key="zimbraTitle"/></span>
-                            <span class="Img${smallScreen?'App':'Login'}Banner">
-                                <img src="../img/new-logo.png" width="130" height="32" border="0" alt="Zimbra" title="Zimbra">
-                            </span>
+                            <span class="ImgLoginBanner"></span>
                         </a>
                     </div>				
 				<c:choose>
@@ -514,11 +499,11 @@ if (application.getInitParameter("offlineMode") != null) {
                     <c:otherwise>
                         <div class="signIn"><fmt:message key="login"/></div>
                         <div class="form">
+                        <div id="errorMessageDiv" class="errorMessage">
                             <c:if test="${errorCode != null}">
-                                <div class="errorMessage">
-                                    <c:out value="${errorMessage}"/>
-                                </div>
+                                <c:out value="${errorMessage}"/>
                             </c:if>
+                        </div>
                         <c:choose>
                             <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
                                 <div class="LaunchButton">
@@ -552,15 +537,148 @@ if (application.getInitParameter("offlineMode") != null) {
                                         <span toggle="#password" onClick="showPassword();" id="showSpan" style="display: block;"><fmt:message key="show"/></span>
                                         <span toggle="#password" onClick="showPassword();" id="hideSpan" style="display: none;"><fmt:message key="hide"/></span>
                                     </div>
+                                    <c:set var="zimbraPasswordMinLength" value="0" />
+                                    <c:set var="zimbraPasswordMinUpperCaseChars" value="0"/>
+                                    <c:set var="zimbraPasswordMinLowerCaseChars" value="0"/>
+                                    <c:set var="zimbraPasswordMinPunctuationChars" value="0"/>
+                                    <c:set var="zimbraPasswordMinNumericChars" value="0"/>
+                                    <c:set var="zimbraPasswordMinDigitsOrPuncs" value="0"/>
+                                    <c:set var="zimbraPasswordAllowedChars" />
+                                    <c:set var="zimbraPasswordAllowedPunctuationChars" />
                                     <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
-                                        <div><label for="loginNewPassword"  class="zLoginFieldLabel"><fmt:message key="newPassword"/></label></div>
-                                        <input id="loginNewPassword" tabindex="3" autocomplete="off" class="zLoginFieldInput" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
-                                        <div><label for="confirmNew" class="zLoginFieldLabel"><fmt:message key="confirm"/></label></div>
-                                        <input id="confirmNew" tabindex="4" autocomplete="off" class="zLoginFieldInput" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                        <%
+                                            String userName = (String) request.getParameter("username");
+
+                                            int zimbraPasswordMinLength = 0;
+                                            int zimbraPasswordMinUpperCaseChars = 0;
+                                            int zimbraPasswordMinLowerCaseChars = 0;
+                                            int zimbraPasswordMinPunctuationChars = 0;
+                                            int zimbraPasswordMinNumericChars = 0;
+                                            int zimbraPasswordMinDigitsOrPuncs = 0;
+                                            boolean zimbraPasswordAllowUsername = false;
+                                            String zimbraPasswordAllowedChars = null;
+                                            String zimbraPasswordAllowedPunctuationChars = null;
+
+                                            if (userName != null) {
+                                                AccountSelector as = new AccountSelector(AccountBy.name, userName);
+                                                Account acct = Provisioning.getInstance().get(as);
+
+                                                zimbraPasswordMinLength = acct.getPasswordMinLength();
+                                                zimbraPasswordMinUpperCaseChars = acct.getPasswordMinUpperCaseChars();
+                                                zimbraPasswordMinLowerCaseChars = acct.getPasswordMinLowerCaseChars();
+                                                zimbraPasswordMinPunctuationChars = acct.getPasswordMinPunctuationChars();
+                                                zimbraPasswordMinNumericChars = acct.getPasswordMinNumericChars();
+                                                zimbraPasswordMinDigitsOrPuncs = acct.getPasswordMinDigitsOrPuncs();
+                                                zimbraPasswordAllowUsername =  acct.getAllowUsernameWithinPassword();
+                                                zimbraPasswordAllowedChars = acct.getPasswordAllowedChars();
+                                                zimbraPasswordAllowedPunctuationChars = acct.getPasswordAllowedPunctuationChars();
+                                            }
+                                            application.setAttribute("zimbraPasswordMinLength", zimbraPasswordMinLength);
+                                            application.setAttribute("zimbraPasswordMinUpperCaseChars", zimbraPasswordMinUpperCaseChars);
+                                            application.setAttribute("zimbraPasswordMinLowerCaseChars", zimbraPasswordMinLowerCaseChars);
+                                            application.setAttribute("zimbraPasswordMinPunctuationChars", zimbraPasswordMinPunctuationChars);
+                                            application.setAttribute("zimbraPasswordMinNumericChars", zimbraPasswordMinNumericChars);
+                                            application.setAttribute("zimbraPasswordMinDigitsOrPuncs", zimbraPasswordMinDigitsOrPuncs);
+                                            application.setAttribute("zimbraPasswordAllowUsername", zimbraPasswordAllowUsername);
+                                            application.setAttribute("zimbraPasswordAllowedChars", zimbraPasswordAllowedChars);
+                                            application.setAttribute("zimbraPasswordAllowedPunctuationChars", zimbraPasswordAllowedPunctuationChars);
+                                        %>
+                                        <c:set var="zimbraPasswordMinLength" value="<%=zimbraPasswordMinLength%>" />
+                                        <c:set var="zimbraPasswordMinUpperCaseChars" value="<%=zimbraPasswordMinUpperCaseChars%>"/>
+                                        <c:set var="zimbraPasswordMinLowerCaseChars" value="<%=zimbraPasswordMinLowerCaseChars%>"/>
+                                        <c:set var="zimbraPasswordMinPunctuationChars" value="<%=zimbraPasswordMinPunctuationChars%>"/>
+                                        <c:set var="zimbraPasswordMinNumericChars" value="<%=zimbraPasswordMinNumericChars%>"/>
+                                        <c:set var="zimbraPasswordMinDigitsOrPuncs" value="<%=zimbraPasswordMinDigitsOrPuncs%>"/>
+                                        <c:set var="zimbraPasswordAllowUsername" value="<%=zimbraPasswordAllowUsername%>"/>
+                                        <c:set var="zimbraPasswordAllowedChars" value="<%=zimbraPasswordAllowedChars%>"/>
+                                        <c:set var="zimbraPasswordAllowedPunctuationChars" value="<%=zimbraPasswordAllowedChars%>"/>
+                                        <label for="newPassword" class="zLoginFieldLabel"><fmt:message key="passwordRecoveryResetNewLabel"/></label>
+                                        <div class="passwordWrapper">
+                                            <input id="newPassword" tabindex="3" autocomplete="off" class="zLoginFieldInput" name="loginNewPassword" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                            <span toggle="#newPassword" onClick="showNewPassword();" id="newPasswordShowSpan" style="display: block;"><fmt:message key="show"/></span>
+                                            <span toggle="#newPassword" onClick="showNewPassword();" id="newPasswordHideSpan" style="display: none;"><fmt:message key="hide"/></span>
+                                        </div>
+                                        <fmt:message key="zimbraPasswordAllowedChars" var="allowedCharsMsg"></fmt:message>
+                                        <ul class="passwordRuleList">
+                                            <c:if test="${zimbraPasswordMinLength ne 0}">
+                                                <li>
+                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="minLengthCloseImg" style="display: inline;"/>
+                                                    <img src="/img/zimbra/ImgCheckModern.png" id="minLengthCheckImg" style="display: none;"/>
+                                                    <fmt:message key="zimbraPasswordMinLength">
+                                                        <fmt:param value="${zimbraPasswordMinLength}"/>
+                                                    </fmt:message>
+                                                </li>
+                                            </c:if>
+                                            <c:if test="${zimbraPasswordMinUpperCaseChars ne 0}">
+                                                <li>
+                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="minUpperCaseCloseImg" style="display: inline;"/>
+                                                    <img src="/img/zimbra/ImgCheckModern.png" id="minUpperCaseCheckImg" style="display: none;"/>
+                                                    <fmt:message key="zimbraPasswordMinUpperCaseChars">
+                                                        <fmt:param value="${zimbraPasswordMinUpperCaseChars}"/>
+                                                    </fmt:message>
+                                                </li>
+                                            </c:if>
+                                            <c:if test="${zimbraPasswordMinLowerCaseChars ne 0}">
+                                                <li>
+                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="minLowerCaseCloseImg" style="display: inline;"/>
+                                                    <img src="/img/zimbra/ImgCheckModern.png" id="minLowerCaseCheckImg" style="display: none;"/>
+                                                    <fmt:message key="zimbraPasswordMinLowerCaseChars">
+                                                        <fmt:param value="${zimbraPasswordMinLowerCaseChars}"/>
+                                                    </fmt:message>
+                                                </li>
+                                            </c:if>
+                                            <c:if test="${zimbraPasswordMinPunctuationChars ne 0}">
+                                                <li>
+                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="minPunctuationCharsCloseImg" style="display: inline;"/>
+                                                    <img src="/img/zimbra/ImgCheckModern.png" id="minPunctuationCharsCheckImg" style="display: none;"/>
+                                                    <fmt:message key="zimbraPasswordMinPunctuationChars">
+                                                        <fmt:param value="${zimbraPasswordMinPunctuationChars}"/>
+                                                    </fmt:message>
+                                                </li>
+                                            </c:if>
+                                            <c:if test="${zimbraPasswordMinNumericChars ne 0}">
+                                                <li>
+                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="minNumericCharsCloseImg" style="display: inline;"/>
+                                                    <img src="/img/zimbra/ImgCheckModern.png" id="minNumericCharsCheckImg" style="display: none;"/>
+                                                    <fmt:message key="zimbraPasswordMinNumericChars">
+                                                        <fmt:param value="${zimbraPasswordMinNumericChars}"/>
+                                                    </fmt:message>
+                                                </li>
+                                            </c:if>
+                                            <c:if test="${zimbraPasswordMinDigitsOrPuncs ne 0}">
+                                                <li>
+                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="minDigitsOrPuncsCloseImg" style="display: inline;"/>
+                                                    <img src="/img/zimbra/ImgCheckModern.png" id="minDigitsOrPuncsCheckImg" style="display: none;"/>
+                                                    <fmt:message key="zimbraPasswordMinDigitsOrPuncs">
+                                                        <fmt:param value="${zimbraPasswordMinDigitsOrPuncs}"/>
+                                                    </fmt:message>
+                                                </li>
+                                            </c:if>
+                                            <c:if test="${zm:boolean(!zimbraPasswordAllowUsername)}">
+                                                <li>
+                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="allowUsernameCloseImg" style="display: inline;"/>
+                                                    <img src="/img/zimbra/ImgCheckModern.png" id="allowUsernameCheckImg" style="display: none;"/>
+                                                    <fmt:message key="zimbraPasswordAllowUsername"></fmt:message>
+                                                </li>
+                                            </c:if>
+                                        </ul>
+                                        <label for="confirm" class="zLoginFieldLabel"><fmt:message key="passwordRecoveryResetConfirmLabel"/></label>
+                                        <div class="passwordWrapper">
+                                            <input id="confirm" tabindex="4" autocomplete="off" class="zLoginFieldInput" name="loginConfirmNewPassword" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
+                                            <span toggle="#confirm" onClick="showConfirmPassword();" id="confirmShowSpan" style="display: block;"><fmt:message key="show"/></span>
+                                            <span toggle="#confirm" onClick="showConfirmPassword();" id="confirmHideSpan" style="display: none;"><fmt:message key="hide"/></span>
+                                        </div>
+                                        <ul class="passwordRuleList">
+                                            <li>
+                                                <img src="/img/zimbra/ImgCloseGrayModern.png" id="mustMatchCloseImg" style="display: inline;"/>
+                                                <img src="/img/zimbra/ImgCheckModern.png" id="mustMatchCheckImg" style="display: none;"/>
+                                                <fmt:message key="zimbraPasswordMustMatch"/>
+                                            </li>
+                                        </ul>
                                     </c:if>
                                     <div class="signInAndLabel">
                                         <div>
-                                            <input type="submit" tabindex="5" class="loginButton" value="<fmt:message key="login"/>" />
+                                            <button id="loginButton" type="submit" tabindex="5" class="loginButton"><fmt:message key="login"/></button>
                                         </div>
                                         <c:set var="isSignedInDisabled" value="${domainInfo.attrs.zimbraWebClientStaySignedInDisabled}"/>
                                         <c:if test="${isSignedInDisabled eq false}">
@@ -574,40 +692,33 @@ if (application.getInitParameter("offlineMode") != null) {
                             </c:otherwise>
                         </c:choose>
                         <c:if test="${empty param.virtualacctdomain}">
-                            <div <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
+                            <div>
                             <hr/>
                             </div>
-                            <div <c:if test="${client eq 'socialfox'}">style='display:none;'</c:if>>
-                            <div class="versionBlock">
-                                <label for="client"><fmt:message key="versionHeaderLabel"/></label>
-                                <div style="position: relative;">
-                                    <c:choose>
-                                        <c:when test="${client eq 'socialfox'}">
-                                        <input type="hidden" name="client" value="socialfox"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
-                                                <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
-                                                <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
-                                                <c:if test="${modernSupported}">
-                                                    <option value="modern" <c:if test="${client eq 'modern'}">selected</c:if>> <fmt:message key="clientModern"/></option>
-                                                </c:if>
-                                            </select>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <input type="button" class="alignWhatsThis" onclick="showTooltip();" id='ZLoginWhatsThisButton' />
-                                </div>
-                           
-                                <div id="ZLoginWhatsThis">
-                                    <div class="ZLoginInfo">
-                                        <span id="dialogCloseButton" onclick="hideTooltip();">&times;</span>
-                                        <fmt:message key="clientWhatsThisMessageWithoutTablet"/>
+                            <div>
+                            <c:if test="${!(mobileSupported && modernSupported)}">
+                                <div class="versionBlock">
+                                    <label for="client"><fmt:message key="versionHeaderLabel"/></label>
+                                    <div style="position: relative;">
+                                        <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
+                                            <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
+                                            <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
+                                            <c:if test="${modernSupported}">
+                                                <option value="modern" <c:if test="${client eq 'modern'}">selected</c:if>> <fmt:message key="clientModern"/></option>
+                                            </c:if>
+                                        </select>
+                                        <input type="button" class="alignWhatsThis" onclick="showTooltip();" id='ZLoginWhatsThisButton' />
+                                    </div>
+
+                                    <div id="ZLoginWhatsThis">
+                                        <div class="ZLoginInfo">
+                                            <span id="dialogCloseButton" onclick="hideTooltip();">&times;</span>
+                                            <fmt:message key="clientWhatsThisMessageWithoutTablet"/>
+                                        </div>
                                     </div>
                                 </div>
-                           
-                            
-                        </div>
-                    </div>
+                            </c:if>
+                            </div>
                         </c:if>
                         </div>
                     </c:otherwise>
@@ -629,30 +740,29 @@ if (application.getInitParameter("offlineMode") != null) {
 	<jsp:param name="client" value="advanced" />
 	<jsp:param name='servlet-path' value='/js/skin.js' />
 </jsp:include>
-var link = document.getElementById("bannerLink");
+var link = getElement("bannerLink");
 if (link) {
-	link.href = skin.hints.banner.url;
+    link.href = skin.hints.banner.url;
 }
 
 <c:if test="${smallScreen && ua.isIE}">		/*HACK FOR IE*/
-	var resizeLoginPanel = function(){
-		var panelElem = document.getElementById('ZLoginPanel');
-		if(panelElem && !panelElem.style.maxWidth) { if(document.body.clientWidth >= 500) { panelElem.style.width="500px";}else{panelElem.style.width="90%";} }
-	}
-	resizeLoginPanel();
-	if(window.attachEvent){ window.attachEvent("onresize",resizeLoginPanel);}
+    var resizeLoginPanel = function(){
+        var panelElem = getElement('ZLoginPanel');
+        if(panelElem && !panelElem.style.maxWidth) { if(document.body.clientWidth >= 500) { panelElem.style.width="500px";}else{panelElem.style.width="90%";} }
+    }
+    resizeLoginPanel();
+    if(window.attachEvent){ window.attachEvent("onresize",resizeLoginPanel);}
 </c:if>
 
 // show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
 function clientChange(selectValue) {
-	var div = document.getElementById("ZLoginUnsupported");
-	if (div)
-	div.style.display = 'none';
+    var div = getElement("ZLoginUnsupported");
+    if (div)
+    div.style.display = 'none';
 }
 
-
 function forgotPassword() {
-	var accountInput = document.getElementById("username").value;
+	var accountInput = getElement("username").value;
 	var queryParams = encodeURI("account=" + accountInput);
 	var url = "/public/PasswordRecovery.jsp?" + location.search;
 
@@ -664,7 +774,7 @@ function forgotPassword() {
 }
 
 function disableEnable(txt) {
-    var bt = document.getElementById('verifyButton');
+    var bt = getElement('verifyButton');
     if (txt.value != '') {
         bt.disabled = false;
     }
@@ -673,29 +783,37 @@ function disableEnable(txt) {
     }
 } 
 function hideTooltip() {
-    document.getElementById('ZLoginWhatsThis').style.display='none';
+    getElement('ZLoginWhatsThis').style.display='none';
 }
 function showTooltip(){
-    document.getElementById('ZLoginWhatsThis').style.display="block"
+    getElement('ZLoginWhatsThis').style.display="block"
 }
 
+function getElement(id) {
+    return document.getElementById(id);
+}
 
 function showPassword() {
-    var x = document.getElementById("password");
-    var y = document.getElementById("showSpan")
-    var z = document.getElementById("hideSpan")
-    if (x.type === "password") {
-        x.type = "text";   
-        y.style.display = "none";
-        z.style.display = "block";
-    } 
-    else {
-        x.type = "password";
-        y.style.display = "block";
-        z.style.display = "none";
-    }
+    showHidePasswordFields(getElement("password"), getElement("showSpan"), getElement("hideSpan"))
+}
+function showNewPassword() {
+    showHidePasswordFields(getElement("newPassword"), getElement("newPasswordShowSpan"), getElement("newPasswordHideSpan"));
+}
+function showConfirmPassword() {
+    showHidePasswordFields(getElement("confirm"), getElement("confirmShowSpan"), getElement("confirmHideSpan"));
 }
 
+function showHidePasswordFields(passElem, showSpanElem, hideSpanElem) {
+    if (passElem.type === "password") {
+        passElem.type = "text";
+        showSpanElem.style.display = "none";
+        hideSpanElem.style.display = "block";
+    } else {
+        passElem.type = "password";
+        showSpanElem.style.display = "block";
+        hideSpanElem.style.display = "none";
+    }
+}
 
 function onLoad() {
 	var loginForm = document.loginForm;
@@ -708,22 +826,280 @@ function onLoad() {
 		}
 	}
 	clientChange("${zm:cook(client)}");
-    //check if the login page is loaded in the sidebar.
-    if (navigator.mozSocial) {
-        //send a ping so that worker knows about this page.
-        navigator.mozSocial.getWorker().port.postMessage({topic: "worker.reload", data: true});
-        //this page is loaded in firefox sidebar so listen for message from worker.
-        navigator.mozSocial.getWorker().port.onmessage = function onmessage(e) {
-            var topic = e.data.topic;
-            if (topic && topic == "sidebar.authenticated") {
-                window.location.href = "/public/launchSidebar.jsp";
-            }
-        };
-    }
 	if (${totpAuthRequired} && loginForm.totpcode) {
         loginForm.totpcode.focus();
-	}
+        }
+    }
+
+var oldPasswordInput = getElement("password");
+var newPasswordInput = getElement("newPassword");
+var confirmPasswordInput = getElement("confirm");
+var loginButton = getElement("loginButton");
+var errorMessageDiv = getElement("errorMessageDiv");
+var allRulesMatched = false;
+
+if(newPasswordInput) {
+    loginButton.disabled = true;
 }
+
+if("${errorCode}" === ""){
+    errorMessageDiv.style.display = "none";
+}
+
+var enabledRules = [];
+var supportedRules = [
+    {
+        type : "zimbraPasswordMinLength",
+        checkImg : getElement("minLengthCheckImg"),
+        closeImg : getElement("minLengthCloseImg")
+    },
+    {
+        type : "zimbraPasswordMinUpperCaseChars",
+        checkImg : getElement("minUpperCaseCheckImg"),
+        closeImg : getElement("minUpperCaseCloseImg")
+    },
+    {
+        type : "zimbraPasswordMinLowerCaseChars",
+        checkImg : getElement("minLowerCaseCheckImg"),
+        closeImg : getElement("minLowerCaseCloseImg")
+    },
+    {
+        type : "zimbraPasswordMinNumericChars",
+        checkImg : getElement("minNumericCharsCheckImg"),
+        closeImg : getElement("minNumericCharsCloseImg")
+    },
+    {
+        type : "zimbraPasswordMinPunctuationChars",
+        checkImg : getElement("minPunctuationCharsCheckImg"),
+        closeImg : getElement("minPunctuationCharsCloseImg")
+    },
+    {
+        type : "zimbraPasswordMinDigitsOrPuncs",
+        checkImg : getElement("minDigitsOrPuncsCheckImg"),
+        closeImg : getElement("minDigitsOrPuncsCloseImg")
+    },
+    {
+        type : "zimbraPasswordAllowUsername",
+        checkImg : getElement("allowUsernameCheckImg"),
+        closeImg : getElement("allowUsernameCloseImg")
+    }
+];
+
+if (${zimbraPasswordMinLength}){
+    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinLength"}));
+}
+
+if (${zimbraPasswordMinUpperCaseChars}) {
+    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinUpperCaseChars"}));
+}
+
+if (${zimbraPasswordMinLowerCaseChars}) {
+    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinLowerCaseChars"}));
+}
+
+if (${zimbraPasswordMinNumericChars}) {
+    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinNumericChars"}));
+}
+
+if (${zimbraPasswordMinPunctuationChars}) {
+    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinPunctuationChars"}));
+}
+
+if (${zimbraPasswordMinDigitsOrPuncs}) {
+    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinDigitsOrPuncs"}));
+}
+
+if (${!zimbraPasswordAllowUsername}) {
+    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordAllowUsername"}));
+}
+
+function compareConfirmPass() {
+    if (getElement("newPassword").value === getElement("confirm").value) {
+        errorMessageDiv.style.display = "none";
+        return true;
+    } else {
+        event.preventDefault();
+        errorMessageDiv.style.display = "block";
+        errorMessageDiv.innerHTML = "${bothPasswordsMustMatchMsg}";
+        return false;
+    }
+}
+
+function check(checkImg, closeImg) {
+    closeImg.style.display = "none";
+    checkImg.style.display = "inline";
+}
+function unCheck(checkImg, closeImg) {
+    closeImg.style.display = "inline";
+    checkImg.style.display = "none";
+}
+function resetImg(condition, checkImg, closeImg){
+    condition ? check(checkImg, closeImg) : unCheck(checkImg, closeImg);
+}
+function compareMatchedRules(matchedRule) {
+    enabledRules.forEach(function(rule) {
+        if (matchedRule.findIndex(function(mRule) { return mRule.type === rule.type}) >= 0) {
+            check(rule.checkImg, rule.closeImg);
+        } else {
+            unCheck(rule.checkImg, rule.closeImg);
+        }
+    })
+}
+
+function setloginButtonDisabled(condition) {
+    if (condition) {
+        loginButton.disabled = true;
+    } else {
+        if (oldPasswordInput.value !== "") {
+            loginButton.disabled = false;
+        }
+    }
+}
+
+// Function to check special character
+function isAsciiPunc(ch) {
+    return (ch >= 33 && ch <= 47) || // ! " # $ % & ' ( ) * + , - . /
+    (ch >= 58 && ch <= 64) || // : ; < = > ? @
+    (ch >= 91 && ch <= 96) || // [ \ ] ^ _ `
+    (ch >= 123 && ch <= 126); // { | } ~
+}
+
+function parseCharsFromPassword(passwordString) {
+    const uppers = [],
+        lowers = [],
+        numbers = [],
+        punctuations = [],
+        invalidChars = [],
+        invalidPuncs = [];
+
+    const chars = passwordString.split('');
+
+    chars.forEach(function (char) {
+        const charCode = char.charCodeAt(0);
+        let isInvalid = false;
+
+        if ("${zimbraPasswordAllowedChars}") {
+            try {
+                if (!char.match(new RegExp("${zimbraPasswordAllowedChars}", 'g'))) {
+                    invalidChars.push(char);
+                    isInvalid = true;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        if (!isInvalid) {
+            if (charCode >= 65 && charCode <= 90) {
+                uppers.push(char);
+            } else if (charCode >= 97 && charCode <= 122) {
+                lowers.push(char);
+            } else if (charCode >= 48 && charCode <= 57) {
+                numbers.push(char);
+            } else if ("${zimbraPasswordAllowedPunctuationChars}") {
+                try {
+                    char.match(new RegExp("${zimbraPasswordAllowedPunctuationChars}", 'g'))
+                        ? punctuations.push(char)
+                        : invalidPuncs.push(char);
+                } catch (error) {
+                    console.error(error);
+                }
+            } else if (isAsciiPunc(charCode)) {
+                punctuations.push(char);
+            }
+        }
+    });
+
+    return {
+        uppers: uppers,
+        lowers: lowers,
+        numbers: numbers,
+        punctuations: punctuations,
+        invalidChars: invalidChars,
+        invalidPuncs: invalidPuncs
+    };
+};
+
+function handleNewPasswordChange() {
+    var currentValue = newPasswordInput.value;
+    var parsedChars = parseCharsFromPassword(currentValue);
+    var matchedRule = [];
+
+    if (${zimbraPasswordMinLength}){
+        if (currentValue.length >= ${zimbraPasswordMinLength}) {
+            matchedRule.push({type : "zimbraPasswordMinLength"});
+        }
+    }
+
+    if (${zimbraPasswordMinUpperCaseChars}) {
+        if (parsedChars.uppers.length >= ${zimbraPasswordMinUpperCaseChars}) {
+            matchedRule.push({type : "zimbraPasswordMinUpperCaseChars"});
+        }
+    }
+
+    if (${zimbraPasswordMinLowerCaseChars}) {
+        if (parsedChars.lowers.length >= ${zimbraPasswordMinLowerCaseChars}) {
+            matchedRule.push({type : "zimbraPasswordMinLowerCaseChars"});
+        }
+    }
+
+    if (${zimbraPasswordMinNumericChars}) {
+        if (parsedChars.numbers.length >= ${zimbraPasswordMinNumericChars}) {
+            matchedRule.push({type : "zimbraPasswordMinNumericChars"});
+        }
+    }
+
+    if (${zimbraPasswordMinPunctuationChars}) {
+        if (parsedChars.punctuations.length >= ${zimbraPasswordMinPunctuationChars}) {
+            matchedRule.push({type : "zimbraPasswordMinPunctuationChars"});
+        }
+    }
+
+    if (${zimbraPasswordMinDigitsOrPuncs}) {
+        if (parsedChars.punctuations.length + parsedChars.numbers.length >= ${zimbraPasswordMinDigitsOrPuncs}) {
+            matchedRule.push({type : "zimbraPasswordMinDigitsOrPuncs"});
+        }
+    }
+    
+    if (${!zimbraPasswordAllowUsername}) {
+        if (!currentValue.includes("${trimmedUserName.split('@')[0]}")) {
+            matchedRule.push({type : "zimbraPasswordAllowUsername"});
+        }
+    }
+
+    if(matchedRule.length >= enabledRules.length){
+        allRulesMatched = true;
+    } else {
+        allRulesMatched = false;
+    }
+
+    compareMatchedRules(matchedRule);
+
+    if (parsedChars.invalidChars.length > 0) {
+        errorMessageDiv.style.display = "block";
+        errorMessageDiv.innerHTML = parsedChars.invalidChars.join(", ") + " ${allowedCharsMsg}";
+    } else {
+        errorMessageDiv.style.display = "none";
+    }
+
+    if(newPasswordInput.value !== "") {
+        resetImg(confirmPasswordInput.value === newPasswordInput.value, getElement("mustMatchCheckImg"), getElement("mustMatchCloseImg"));
+        setloginButtonDisabled(!allRulesMatched || confirmPasswordInput.value !== newPasswordInput.value);
+    }
+};
+
+function handleConfirmPasswordChange() {
+    resetImg(confirmPasswordInput.value === newPasswordInput.value, getElement("mustMatchCheckImg"), getElement("mustMatchCloseImg"));
+    setloginButtonDisabled(!allRulesMatched || confirmPasswordInput.value !== newPasswordInput.value);
+};
+
+function handleOldPasswordChange() {
+    setloginButtonDisabled(!allRulesMatched || newPasswordInput.value === "" || oldPasswordInput.value === "" || confirmPasswordInput.value !== newPasswordInput.value)
+}
+
+newPasswordInput && oldPasswordInput && oldPasswordInput.addEventListener("input", handleOldPasswordChange, null);
+newPasswordInput && newPasswordInput.addEventListener("input", handleNewPasswordChange, null);
+confirmPasswordInput && confirmPasswordInput.addEventListener("input", handleConfirmPasswordChange, null);
 </script>
 </body>
 </html>

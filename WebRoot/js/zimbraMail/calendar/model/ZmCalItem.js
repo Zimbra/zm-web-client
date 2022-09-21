@@ -2413,7 +2413,7 @@ function(xprop, xparams) {
  * @private
  */
 ZmCalItem.prototype._addDateTimeToRequest =
-function(request, comp) {
+function(request, comp, extractAllDay) {
 	// always(?) set all day
     comp.allDay = this.allDayEvent + "";
 	// timezone
@@ -2432,7 +2432,7 @@ function(request, comp) {
 	// start date
 	if (this.startDate) {
         s = comp.s = {};
-		if (!this.isAllDayEvent()) {
+		if (!this.isAllDayEvent() || extractAllDay) {
 			sd = AjxDateUtil.getServerDateTime(this.startDate, this.startsInUTC);
 
 			// set timezone if not utc date/time
@@ -2462,7 +2462,12 @@ function(request, comp) {
 				e.tz = tz;
             }
             e.d = ed;
-
+		} else if (extractAllDay) {
+			var ed = new Date(this.endDate.getTime() + AjxDateUtil.MSEC_PER_DAY);
+			e.d = AjxDateUtil.getServerDateTime(ed, this.endsInUTC);
+			if (!this.endsInUTC && tz && tz.length) {
+				e.tz = tz;
+			}
 		} else {
 			e.d = AjxDateUtil.getServerDate(this.endDate);
 		}

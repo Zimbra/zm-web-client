@@ -44,8 +44,9 @@
  * 
  * @extends		DwtKeyMap
  */
-ZmKeyMap = function() {
-	
+ZmKeyMap = function(subclassInit) {
+	if (subclassInit) { return };
+
 	ZmKeyMap._setPreconditions();
 	DwtKeyMap.call(this);
 	this._load(this._map, ZmKeys);
@@ -245,7 +246,7 @@ function() {
 	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_CONTACT]			= ZmSetting.CONTACTS_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_FILE]			= ZmSetting.BRIEFCASE_ENABLED;
-    ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_DOC]				= ZmSetting.DOCS_ENABLED;    
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_DOC]				= ZmSetting.DOCS_ENABLED && ZmSetting.BRIEFCASE_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_FOLDER]			= ZmSetting.MAIL_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_MESSAGE]			= ZmSetting.MAIL_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_MESSAGE_WIN]		= ZmSetting.MAIL_ENABLED;
