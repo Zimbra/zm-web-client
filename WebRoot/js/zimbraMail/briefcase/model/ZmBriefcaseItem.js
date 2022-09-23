@@ -366,6 +366,7 @@ function(node) {
 	if (node.l)		{ this.folderId = node.l; }
 	if (node.name)	{ this.name = node.name; }
 	if (node.cr)	{ this.creator = node.cr; }
+	if (node.perm)	{ this.permission = node.perm; }
 
 	this.shares = this.shares || [];
 
@@ -552,6 +553,7 @@ function(data) {
 	if (data.l)    this.folderId = data.l;
 	if (data.name) this.name = data.name;
 	if (data.cr)   this.creator = data.cr;
+	if (data.perm) this.permission = data.perm;
 
 	if (data.acl) {
 		this.acl = data.acl;
