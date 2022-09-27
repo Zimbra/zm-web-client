@@ -92,7 +92,7 @@ function(rootObj, elementType, account) {
 ZmFolderTree.createFromJs =
 function(parent, obj, tree, elementType, path, account) {
 	if (!(obj && obj.id)) { return; }
-	if (obj && (obj.owner || obj.id == ZmFolder.ID_FILE_SHARED_WITH_ME) && !appCtxt.get(ZmSetting.SHARING_ENABLED)) { return; }
+	if (obj && (obj.owner || obj.id == ZmFolder.ID_FILE_SHARED_WITH_ME) && (!appCtxt.isExternalAccount() && !appCtxt.get(ZmSetting.SHARING_ENABLED))) { return; }
 
 	var folder;
 	if (elementType == "search") {
