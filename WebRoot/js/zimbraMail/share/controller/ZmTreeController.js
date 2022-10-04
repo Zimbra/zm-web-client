@@ -546,7 +546,7 @@ function(treeItem) {
  */
 ZmTreeController.prototype._setTreeItemColor =
 function(treeItem, organizer) {
-	treeItem.setImage(organizer.getIconWithColor());
+	treeItem.setImage(organizer.getIconWithColor(), organizer.getIconAltText());
 };
 
 ZmTreeController.prototype._getTreeItemColorClassName =
