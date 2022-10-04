@@ -266,7 +266,7 @@ function(viewId, startDate, skipMaintenance) {
 		var navText = viewId == ZmId.VIEW_CAL_MONTH
 			? currentView.getShortCalTitle()
 			: currentView.getCalTitle();
-		this._navToolBar[ZmId.VIEW_CAL].setText(navText);
+		this._navToolBar[ZmId.VIEW_CAL].setText(navText, 'polite');
 		DBG.println(AjxDebug.DBG1, "ZmCalViewController.show, skipMaintenance = " + skipMaintenance);
 		if (!skipMaintenance) {
 			var work = ZmCalViewController.MAINT_VIEW;
@@ -1553,7 +1553,7 @@ function(date, duration, roll) {
         if (ZmId.VIEW_CAL_FB == this._currentViewType && roll && appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
             currentView._navDateChangeListener(date);
 		}
-		this._navToolBar[ZmId.VIEW_CAL].setText(title);
+		this._navToolBar[ZmId.VIEW_CAL].setText(title, 'polite');
 	}
 };
 

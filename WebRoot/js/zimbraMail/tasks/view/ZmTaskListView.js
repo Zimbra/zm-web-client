@@ -325,7 +325,7 @@ function(list, noResultsOk, doAdd) {
                taskStatusClass += " ZmOverduetask";
             }
 
-			var div = this._createItemHtml(item, {now:now,divClass:taskStatusClass}, true, i);
+			var div = this._createItemHtml(item, { now: now, divClass: taskStatusClass, role: this.itemRole }, true, i);
             if (div) {
 				if (div instanceof Array) {
 					for (var j = 0; j < div.length; j++){
