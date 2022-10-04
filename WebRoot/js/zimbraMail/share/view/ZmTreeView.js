@@ -549,6 +549,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			dndScrollCallback:	this._overview && this._overview._dndScrollCallback,
 			dndScrollId:		this._overview && this._overview._scrollableContainerId,
 			imageInfo:			organizer.getIconWithColor(),
+			imageAltText:		organizer.getIconAltText(),
 			id:					ZmId.getTreeItemId(this.overviewId, organizer.id)
 		};
 		// now add item

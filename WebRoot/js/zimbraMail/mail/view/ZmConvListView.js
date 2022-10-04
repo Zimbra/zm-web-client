@@ -162,13 +162,12 @@ ZmConvListView = function(params) {
 	this._controller = params.controller;
 	this._mode = this.view = ZmId.VIEW_CONVLIST;
 	params.headerList = this._getHeaderList();
+	params.listLabel = ZmMsg.conversationList;
 	ZmMailListView.call(this, params);
 
 	// change listener needs to handle both types of events
 	this._handleEventType[ZmItem.CONV] = true;
 	this._handleEventType[ZmItem.MSG] = true;
-
-	this.setAttribute("aria-label", ZmMsg.conversationList);
 
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
 	this._resetExpansion();
@@ -180,7 +179,7 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 ZmConvListView.prototype.isZmConvListView = true;
 ZmConvListView.prototype.toString = function() { return "ZmConvListView"; };
 
-ZmConvListView.prototype.role = 'tree';
+ZmConvListView.prototype.listRole = 'tree';
 ZmConvListView.prototype.itemRole = 'treeitem';
 
 // Constants

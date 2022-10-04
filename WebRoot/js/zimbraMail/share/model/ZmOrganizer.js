@@ -1038,6 +1038,16 @@ function() {
 	return color ? [icon,color].join(",color=") : icon;
 };
 
+/**
+ * Gets the icon alter text.
+ * 
+ * @return	{String}	the icon alter text
+ */
+
+ZmOrganizer.prototype.getIconAltText = function() {
+	return this.name + " " + ZmMsg.icon;
+};
+
 // Actions
 
 /**
