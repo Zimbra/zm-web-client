@@ -327,7 +327,8 @@ function(id, params) {
 		image:		params.image,
 		leftImage:	params.leftImage,
 		rightImage:	params.rightImage,
-		index:		params.index
+		index:		params.index,
+		ariaControls:	'skin_outer_td_main'
 	};
     buttonParams.style = params.style ? params.style : DwtLabel.IMAGE_LEFT;
     var button = new ZmAppButton(buttonParams);
