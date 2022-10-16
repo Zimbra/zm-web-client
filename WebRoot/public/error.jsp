@@ -46,9 +46,9 @@
     String errorMsg = errorCode+"Msg";
 %>
 
-<c:set var="errCode" value="<%=errorCode%>"/>
-<c:set var="errTitle" value="<%=errorTitle%>"/>
-<c:set var="errMsg" value="<%=errorMsg%>"/>
+<c:set var="errCode" value="${fn:escapeXml(errorCode)}"/>
+<c:set var="errTitle" value="${fn:escapeXml(errorTitle)}"/>
+<c:set var="errMsg" value="${fn:escapeXml(errorMsg)}"/>
 <c:set var="skin" value="<%=skin%>"/>
 <html>
 <head>
