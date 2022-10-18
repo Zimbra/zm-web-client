@@ -436,7 +436,7 @@ function(tr, createCell) {
     } else {
         cell = tr.firstChild;
     }
-    cell.innerHTML = "<table class=allday><tr><td><div class=allday_item_filler></div></td></tr></table>";
+    cell.innerHTML = "<table role='presentation' class=allday><tr><td><div class=allday_item_filler></div></td></tr></table>";
     cell.className = "calendar_month_day_item";
 }
 
@@ -500,9 +500,9 @@ function(html, loc, week, dow) {
 
 	html.append("<td class='calendar_month_cells_td' id='", tdid, "'>");
 	html.append("<div style='width:100%;height:100%;'>");
-	html.append("<table class='calendar_month_day_table'>");
+	html.append("<table role='presentation' class='calendar_month_day_table'>");
 	html.append("<tr><td colspan=2 id='", tid, "'></td></tr></table>");
-	html.append("<table class='calendar_month_day_table'><tbody id='", did, "'>");
+	html.append("<table role='presentation' class='calendar_month_day_table'><tbody id='", did, "'>");
 	html.append("</tbody></table>");
 	html.append("</div>");
 	html.append("</td>");
@@ -532,12 +532,12 @@ function() {
 
 	var html = new AjxBuffer();
 			
-	html.append("<table class=calendar_view_table cellpadding=0 cellspacing=0 id='",this._monthViewTable,"'>");
+	html.append("<table role='presentation' class=calendar_view_table cellpadding=0 cellspacing=0 id='",this._monthViewTable,"'>");
 	html.append("<tr>");
 
 	html.append("<td>");
 	html.append("<div id='", this._headerId, "' style='position:relative;'>");
-	html.append("<table id=calendar_month_header_table class=calendar_month_header_table>");
+	html.append("<table id=calendar_month_header_table role='presentation' class=calendar_month_header_table>");
 	html.append("<colgroup>");
 
     // Add column group to adjust week title heading.
@@ -576,7 +576,7 @@ function() {
     html.append("<td class='calendar_month_body_container'>");
 	html.append("<div id='", this._daysId, "' class=calendar_month_body>");
 	
-	html.append("<table id='", this._bodyId, "' class=calendar_month_table>");
+	html.append("<table id='", this._bodyId, "' role='presentation' class=calendar_month_table>");
 	html.append("<colgroup>");
 
     // Add column group to adjust week number.
@@ -838,13 +838,13 @@ function(date, list, controller, noheader) {
 	var html = [];
 	var idx = 0;
 
-	html[idx++] = "<div><table cellpadding=0 cellspacing=0 border=0>";
+	html[idx++] = "<div><table role='presentation' cellpadding=0 cellspacing=0 border=0>";
 	if (!noheader) {
 		html[idx++] = "<tr><td><div class='calendar_tooltip_month_day_label'>";
 		html[idx++] = DwtCalendar.getDateFullFormatter().format(date);
 		html[idx++] = "</div></td></tr>";
 	}
-	html[idx++] = "<tr><td><table cellpadding=1 cellspacing=0 border=0 width=100%>";
+	html[idx++] = "<tr><td><table role='presentation' cellpadding=1 cellspacing=0 border=0 width=100%>";
 
 	var size = list ? list.size() : 0;
 

@@ -318,7 +318,7 @@ function() {
 
 	var html = [], idx = 0;
 
-	html[idx++] =	"<table cellspacing='0' cellpadding='0' style='border-collapse:collapse;'>";
+	html[idx++] =	"<table role='presentation' cellspacing='0' cellpadding='0' style='border-collapse:collapse;'>";
 	html[idx++] =		"<tr><td><div id='" + this._folderTreeDivId + "'>";
 	html[idx++] =		"</div></td></tr>";
 	html[idx++] =	"</table>";

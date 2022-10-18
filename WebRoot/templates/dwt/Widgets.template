@@ -460,7 +460,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#ZMenuItem' class='ZWidget'>
-	<table role="presentation" class='ZWidgetTable ZMenuItemTable ZMenuItemBorder'>
+	<table role="none" class='ZWidgetTable ZMenuItemTable ZMenuItemBorder'>
 		<tr>
 			<td id='${id}_check' class='ZCheckIcon'><div></div></td>
 			<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></td>

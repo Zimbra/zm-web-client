@@ -55,13 +55,13 @@
 <fmt:message bundle='${TzMsg}' key='${zm:getCanonicalId(timezone)}' var='timezoneStr' scope='request' />
 
 <c:set var="isPart" value="${!empty message.partName}"/>
-<table cellpadding=0 cellspacing=0 width=100% class='Compose'>
+<table role="presentation" cellpadding=0 cellspacing=0 width=100% class='Compose'>
 <tr class='${color}Bg'>
     <td class='ZhBottomSep'>
-        <table width=100% cellspacing=0 cellpadding=0>
+        <table role="presentation" width=100% cellspacing=0 cellpadding=0>
             <tr class='apptHeaderRow'>
                 <td>
-                    <table border="0" cellpadding="2" cellspacing="2">
+                    <table role="presentation" border="0" cellpadding="2" cellspacing="2">
                         <tr>
                             <td width=24><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ImgApptRecur.png' : 'startup/ImgAppointment.png'}"/></td>
                             <td class='apptHeader'>
@@ -75,13 +75,13 @@
 </tr>
 <tr>
 <td>
-<table width=100% cellpadding=0 cellspacing=0 class=Msg>
+<table role="presentation" width=100% cellpadding=0 cellspacing=0 class=Msg>
     <tr>
         <td class='MsgHdr'>
-            <table width=100% cellpadding=0 cellspacing=0 border=0>
+            <table role="presentation" width=100% cellpadding=0 cellspacing=0 border=0>
                <tr>
                     <td>
-                        <table width=100% cellpadding=1 cellspacing=0 border=0>
+                        <table role="presentation" width=100% cellpadding=1 cellspacing=0 border=0>
                             <tr>
                                 <td class='MsgHdrName'>
                                     <fmt:message key="subject"/>
@@ -130,7 +130,7 @@
                                     &nbsp;
                                 </td>
                                 <td class='MgrHdrValue'>
-                                    <table cellpadding="0" cellspacing="0">
+                                    <table role="presentation" cellpadding="0" cellspacing="0">
                                         <tr>
                                             <td width=24><app:img src="calendar/ImgApptException.png"/></td>
                                             <td><b><fmt:message key="apptExceptionNote"/></b></td>
@@ -205,7 +205,7 @@
                         </table>
                     </td>
                     <td valign='top'>
-                        <table width=100% cellpadding=2 cellspacing=0 border=0>
+                        <table role="presentation" width=100% cellpadding=2 cellspacing=0 border=0>
                             <c:if test="${message.isFlagged}">
                                 <tr>
                                     <td nowrap align='right' class='Tags'>

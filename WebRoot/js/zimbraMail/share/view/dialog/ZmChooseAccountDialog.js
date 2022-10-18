@@ -63,7 +63,7 @@ function(selectedAccount, accountType, chooserMessage, title) {
 	var html = [];
 	var idx = 0;
 
-	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1>";
+	html[idx++] = "<table role='presentation' border=0 cellpadding=1 cellspacing=1>";
 	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
 		if (appCtxt.isOffline && acct.isMain) { continue; }

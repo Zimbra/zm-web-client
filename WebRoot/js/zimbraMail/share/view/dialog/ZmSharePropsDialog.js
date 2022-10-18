@@ -718,7 +718,7 @@ ZmSharePropsDialog.prototype._createView = function() {
 	this._shareWithOptsProps.addProperty(ZmMsg.emailLabel, this._grantee);
 
 	var otherHtml = [
-		"<table class='ZCheckboxTable'>",
+		"<table role='presentation' class='ZCheckboxTable'>",
 			"<tr>",
 				"<td>",
 					"<input type='checkbox' id='",inheritId,"' checked>",
@@ -757,7 +757,7 @@ ZmSharePropsDialog.prototype._createView = function() {
 	// add role group
 	var idx = 0;
 	var html = [];
-	html[idx++] = "<table class='ZRadioButtonTable'>";
+	html[idx++] = "<table role='presentation' class='ZRadioButtonTable'>";
 
 	this._rolesGroup = new DwtGrouper(view);
 

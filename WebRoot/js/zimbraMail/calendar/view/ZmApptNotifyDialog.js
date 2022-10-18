@@ -111,7 +111,7 @@ function() {
 	html[i++] = this._removedListId;
 	html[i++] = "'></div>";
 	html[i++] = "</div><p>";
-	html[i++] = "<table align=center border=0 width=1%>";
+	html[i++] = "<table role='presentation' align=center border=0 width=1%>";
 	html[i++] = "<tr><td width=1%><input checked value='1' type='radio' id='";
 	html[i++] = this._defaultRadioId;
 	html[i++] = "' name='";
@@ -139,7 +139,7 @@ function(attendeeList, attendeeLabel) {
 	var j = 0;
 
 	if (attendeeList.length) {
-		html[j++] = "<table border=0><tr>";
+		html[j++] = "<table role='presentation' border=0><tr>";
 		html[j++] = "<td valign=top>&nbsp;&nbsp;<b>";
 		html[j++] = attendeeLabel;
 		html[j++] = "</b></td><td>";

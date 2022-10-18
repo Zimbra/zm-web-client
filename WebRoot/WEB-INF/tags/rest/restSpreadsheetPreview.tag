@@ -123,12 +123,12 @@
               
     </head>
     <body>
-    <table width="100%" height="100%" cellspacing="0" cellpadding="0">
+    <table role="presentation" width="100%" height="100%" cellspacing="0" cellpadding="0">
         <tbody>
             <c:if test="${not isViewOnly}">
             <tr>
                 <td class="TbTop" style="height:40px;">
-                    <table width="100%" height="100%" cellpadding="0" cellspacing="5">
+                    <table role="presentation" width="100%" height="100%" cellpadding="0" cellspacing="5">
                     <tr>
                         <td>
                             <span style="font-size:18px;"><b>${spreadsheet.name}</b></span>
@@ -147,7 +147,7 @@
             </c:if>
             <tr>
                 <td align="top">
-                    <table width="100%" height="100%" cellpadding="5" cellspacing="5">
+                    <table role="presentation" width="100%" height="100%" cellpadding="5" cellspacing="5">
                         <tbody>
                             <tr>
                                 <td class="ZhAppContent" style="border-width:1px;">

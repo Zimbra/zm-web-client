@@ -769,6 +769,7 @@ function(id, setup, value) {
 
 		table = document.createElement("TABLE");
 		table.className = "ZmRadioButtonGroupHoriz";
+		table.setAttribute('role', 'presentation');
 		table.border = 0;
 		table.cellPadding = 0;
 		table.cellSpacing = 0;

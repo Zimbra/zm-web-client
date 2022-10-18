@@ -77,7 +77,7 @@
     <c:set var="isShowDeclined" value="${mailbox.prefs.calendarShowDeclinedMeetings}"/>
 </app:handleError>
 <c:if test="${param.imc eq 'true'}">
-<table cellpadding="0" cellspacing="0" border="0" style="margin-left: 1%;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-left: 1%;">
     <tr>
         <td width="180">
             <app:miniCal print="${true}" date="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}" checkedCalendars="${checkedCalendars}"/>
@@ -92,13 +92,13 @@
 </table>
 <br>        
 </c:if>
-<table width="100%"  cellpadding="0" cellspacing="0" border="0" class="zPrintMsgs">
+<table role="presentation" width="100%"  cellpadding="0" cellspacing="0" border="0" class="zPrintMsgs">
     <c:forEach begin="1" end="${noOfMonths}" varStatus="stat">
         <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
         <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
         <tr>
         <td class='ZhAppContent'>
-            <table width="100%" class='ZhCalMonthHeaderTable' cellpadding=2 cellspacing=0 border=0>
+            <table role="presentation" width="100%" class='ZhCalMonthHeaderTable' cellpadding=2 cellspacing=0 border=0>
                 <tr>
                     <td colspan="7" class='ZhCalMonthHeaderMonth'>
                         ${fn:escapeXml(title)}
@@ -116,7 +116,7 @@
                     </c:forEach>
                 </tr>
             </table>
-            <table width="100%" cellpadding="0" cellspacing="0" border="0" class='ZhCalMonthTable'>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class='ZhCalMonthTable'>
                 <c:set var="lastMonth" value="-1"/>
                 <c:set var="doneLoop" value="false"/>
                 <c:set var="isSame" value="false"/>
@@ -126,7 +126,7 @@
                         <c:forEach var="dow" begin="${mailbox.prefs.calendarFirstDayOfWeek}" end="${mailbox.prefs.calendarFirstDayOfWeek+6}" varStatus="dowStatus">
                             <c:if test="${empty param.wd or param.wd eq false or workDays[dow mod 7] eq true}">
                                 <td width="14%" class='ZhCalMonthDay${currentDay.timeInMillis eq date.timeInMillis ? 'Selected':''}'>
-                                    <table width="100%" cellspacing="2">
+                                    <table role="presentation" width="100%" cellspacing="2">
                                         <c:choose>
                                         <c:when test="${zm:isSameMonth(currentDay, date)}">
                                             <c:set var="isSame" value="true"/>

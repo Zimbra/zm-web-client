@@ -949,7 +949,7 @@ function(appt) {};
 
 ZmCalBaseView.prototype._addApptIcons =
 function(appt, html, idx) {
-	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
+	html[idx++] = "<table role='presentation' border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
 
 	if (appt.otherAttendees) {
 		html[idx++] = "<td>";

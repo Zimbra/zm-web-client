@@ -1255,7 +1255,7 @@ function(item) {
 		var tag = tagList.getByNameOrRemote(tags[i]);
         if (!tag) { continue; }        
 		var nameText = tag.notLocal ? AjxMessageFormat.format(ZmMsg.tagNotLocal, tag.name) : tag.name;
-        html[idx++] = "<table><tr><td>";
+        html[idx++] = "<table role='presentation'><tr><td>";
 		html[idx++] = AjxImg.getImageHtml(tag.getIconWithColor());
 		html[idx++] = "</td><td valign='middle'>";
 		html[idx++] = AjxStringUtil.htmlEncode(nameText);
