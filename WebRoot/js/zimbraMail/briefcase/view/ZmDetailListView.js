@@ -291,7 +291,7 @@ function(item, colIdx) {
     var idx=0, html=[];
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? 22 : 16;
 	
-    html[idx++] = "<table width=100% class='TopRow'><tr>";
+    html[idx++] = "<table role='presentation' width=100% class='TopRow'><tr>";
 
     if(this._revisionView){
         html[idx++] = "<td width=" + width + " id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
@@ -317,7 +317,7 @@ function(item, colIdx) {
 	html[idx++] = "</tr>";
     html[idx++] = "</table>";
 
-    html[idx++] = "<table width=100% class='BottomRow'><tr>";
+    html[idx++] = "<table role='presentation' width=100% class='BottomRow'><tr>";
     html[idx++] = "<td style='padding-left:28px;' width=20 id='" + this._getFieldId(item, ZmItem.F_SHARES)+"'> ";
     idx = this._getImageHtml(html, idx, (ZmDetailListView.showSharedIconOnFile(item) ? "SharedContact" : "Blank_16") , this._getFieldId(item, ZmItem.F_SHARES));
     html[idx++] = "</td>";
@@ -651,7 +651,7 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 		htmlArr[idx++] = "' class='";
 		htmlArr[idx++] = (id == this._currentColId)	? "DwtListView-Column DwtListView-ColumnActive'" :
 													  "DwtListView-Column'";
-		htmlArr[idx++] = " width='auto'><table width='100%'><tr><td id='";
+		htmlArr[idx++] = " width='auto'><table role='presentation' width='100%'><tr><td id='";
 		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field);
 		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
 		htmlArr[idx++] = headerCol._label;

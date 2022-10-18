@@ -1061,7 +1061,7 @@ function(id) {
  * @param	{AjxListener}	dateCalSelectionListener	the listener to call when date is selected in {@link DwtCalendar}
  */
 ZmCalendarApp.createMiniCalButton =
-function(parent, buttonId, dateButtonListener, dateCalSelectionListener, reparent) {
+function(parent, buttonId, dateButtonListener, dateCalSelectionListener, ariaLabel, reparent) {
 	// create button
 	var params = {parent:parent};
 	if (reparent === false) {
@@ -1076,6 +1076,10 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, reparen
 	dateButton.setData(Dwt.KEY_ID, buttonId);
 	if (AjxEnv.isIE) {
 		dateButton.setSize("20");
+	}
+
+	if (ariaLabel) {
+		dateButton.setAriaLabel(ariaLabel);
 	}
 
 	// create menu for button

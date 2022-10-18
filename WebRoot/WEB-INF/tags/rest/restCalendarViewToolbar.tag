@@ -38,10 +38,10 @@
 <rest:calendarUrl var="monthViewUrl" date="${dateDf}" view="month"/>
 <rest:calendarUrl var="scheduleViewUrl" date="${dateDf}" view="schedule"/>
 
-<table width="100%" cellspacing="0" class='Tb'>
+<table role="presentation" width="100%" cellspacing="0" class='Tb'>
     <tr>
         <td align="left" class=TbBt id="caltb">
-            <table cellpadding="0" cellspacing="0">
+            <table role="presentation" cellpadding="0" cellspacing="0">
                 <tr valign="middle">
                     <td height="100%">
                         <a id="CAL_DAY" href="${fn:escapeXml(dayViewUrl)}"><app:img altkey="ALT_CAL_DAY_VIEW" src="calendar/ImgDayView.png"/><span style='padding-left:5px'><fmt:message key="day"/></span></a>
@@ -66,7 +66,7 @@
         <td align="right">
             <rest:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
             <rest:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
-            <table cellspacing="5" cellpadding="0">
+            <table role="presentation" cellspacing="5" cellpadding="0">
                 <tr>
                     <td>
                         <a <c:if test="${keys}">id="PREV_PAGE"</c:if> href="${fn:escapeXml(prevUrl)}"><app:img altkey="ALT_PAGE_PREVIOUS" src="startup/ImgLeftArrow.png" border="0"/></a>

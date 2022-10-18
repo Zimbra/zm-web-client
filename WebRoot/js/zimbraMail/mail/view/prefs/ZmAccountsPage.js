@@ -3388,7 +3388,7 @@ function(buffer, i, item, field, col, params) {
 	}
 	if (field == ZmItem.F_STATUS) {
 		if (item instanceof ZmDataSource && !item.isStatusOk()) {
-			buffer[i++] = "<table border=0 cellpadding=0 cellpadding=0><tr>";
+			buffer[i++] = "<table role='presentation' border=0 cellpadding=0 cellpadding=0><tr>";
 			buffer[i++] = "<td><div class='ImgCritical_12'></div></td><td>";
 			buffer[i++] = ZmMsg.ALT_ERROR;
 			buffer[i++] = "</td></tr></table>";

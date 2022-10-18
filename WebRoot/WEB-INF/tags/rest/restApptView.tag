@@ -44,17 +44,17 @@
 
 <rest:view title="${msg.subject}">
 
-    <table width=100% cellpadding="0" cellspacing="0" border=0>
+    <table role="presentation" width=100% cellpadding="0" cellspacing="0" border=0>
         <tr>
             <td style='padding:20px'>
 
-        <table width=100% cellpadding="0" cellspacing="0">
+        <table role="presentation" width=100% cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
-                    <table width=100% cellspacing=0 class='Tb'>
+                    <table role="presentation" width=100% cellspacing=0 class='Tb'>
                         <tr valign='middle'>
                             <td class='TbBt'>
-                                <table cellspacing=0 cellpadding=0 class='Tb'>
+                                <table role="presentation" cellspacing=0 cellpadding=0 class='Tb'>
                                     <tr>
                                         <td nowrap>
                                             <rest:calendarUrl var="closeurl" action=""/>
@@ -69,11 +69,11 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                    <table cellpadding=0 cellspacing=0 width=100%>
+                    <table role="presentation" cellpadding=0 cellspacing=0 width=100%>
                         <c:if test="${isInstance}">
                             <tr>
                                 <td>
-                                    <table width=100% cellpadding=0 cellspacing=0>
+                                    <table role="presentation" width=100% cellpadding=0 cellspacing=0>
                                         <tr>
                                             <td class='ZhApptRecurrInfo' style='padding-left:5px' width=24><app:img src="dwt/ImgInformation.png"/></td>
                                             <td class='ZhApptRecurrInfo'>

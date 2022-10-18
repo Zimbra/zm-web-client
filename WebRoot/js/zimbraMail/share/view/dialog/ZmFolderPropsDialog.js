@@ -360,6 +360,7 @@ function(displayShares, organizer) {
 
 	if (displayShares.length) {
 		var table = document.createElement("TABLE");
+		table.setAttribute('role', 'presentation');
 		table.className = "ZPropertySheet";
 		table.cellSpacing = "6";
 		for (var i = 0; i < displayShares.length; i++) {

@@ -1092,6 +1092,7 @@ function(viewId) {
 	var printButton = toolbar.getButton(ZmOperation.PRINT_CALENDAR);
 	if (printButton) {
 		printButton.setToolTipContent(ZmMsg.printCalendar);
+		printButton.setAriaLabel(ZmMsg.printCalendar);
 	}
 
 	toolbar.getButton(ZmOperation.DELETE).setToolTipContent(ZmMsg.hardDeleteTooltip);

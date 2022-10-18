@@ -468,6 +468,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		if (this.isComposeMode && btnDiv) {
             button  = new DwtButton({parent: this, parentElement: btnId, className: 'ZAttRole'});
             button.setText("");
+            button.setAriaLabel(ZmMsg.attendeeRole);
             button.setImage("AttendeesRequired");
             button.setMenu(new AjxListener(this, this._getAttendeeRoleMenu, [index]));
             sched.btnObj = button;
