@@ -39,7 +39,7 @@
         <c:if test="${empty pname}"><fmt:message key="unknownContentType" var="pname"><fmt:param value="${part.contentType}"/></fmt:message></c:if>
 
         <c:set var="url" value="/service/home/~/?id=${message.id}&amp;part=${part.partName}&amp;auth=co"/>
-        <table cellspacing="8">
+        <table role="presentation" cellspacing="8">
             <tr>
                 <td>
                     <c:choose>
@@ -88,7 +88,7 @@
 <c:if test="${message.numberOfAttachments gt 1 and not print}" >
     <c:if test="${not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked') and not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsViewInHtmlOnly')}">
         <c:set var="url" value="/service/home/~/?id=${message.id}&part=${message.attachmentIds}&amp;auth=co&amp;disp=a&amp;fmt=zip"/>
-        <table cellspacing="8">
+        <table role="presentation" cellspacing="8">
             <tr>
                 <td>
                     <app:img src="zimbra/ImgZipDoc.png" alt="zip" title="zip"/>

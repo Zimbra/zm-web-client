@@ -26,7 +26,7 @@
 <fmt:message bundle='${TzMsg}' key='${zm:getCanonicalId(timezone)}' var='timezoneStr' scope='request' />
 
 <%-- TODO: blank for now, could add timezone drop down or more date selection --%>
-<table width="100%" cellspacing="0" class='Tb'>
+<table role="presentation" width="100%" cellspacing="0" class='Tb'>
     <tr>
         <td align="left" class="TbBt">
             <c:if test="${not empty requestScope.zimbra_target_item_name}">

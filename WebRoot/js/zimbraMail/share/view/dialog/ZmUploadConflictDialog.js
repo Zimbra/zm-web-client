@@ -168,6 +168,7 @@ ZmUploadConflictDialog.prototype._createUploadHtml = function() {
 	div.style.marginBottom = "0.5em";
 
 	var table = this._table = document.createElement("TABLE");
+	table.setAttribute('role', 'presentation');
 	table.border = 0;
 	table.cellPadding = 0;
 	table.cellSpacing = 3;

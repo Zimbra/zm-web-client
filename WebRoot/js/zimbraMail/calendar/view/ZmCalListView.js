@@ -308,7 +308,7 @@ ZmCalListView.prototype._createSearchBarComponent = function(searchBar, segment,
     var dateButtonListener = new AjxListener(this, this._dateButtonListener);
     var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
     var buttonId = [id,prefix,"MiniCal"].join("");
-    var button = ZmCalendarApp.createMiniCalButton(component, buttonId, dateButtonListener, dateCalSelectionListener, false);
+    var button = ZmCalendarApp.createMiniCalButton(component, buttonId, dateButtonListener, dateCalSelectionListener, isStart ? ZmMsg.startDate : ZmMsg.endDate, false);
 
     // this.getTabGroupMember().addMember([inputEl, button]);
 

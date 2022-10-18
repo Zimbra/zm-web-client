@@ -216,7 +216,7 @@ ZmNewOrganizerDialog.prototype._contentHtml =
 function() {
 	var html = [];
 	var idx = 0;
-	html[idx++] = "<table class='ChooserDialog ZPropertySheet' cellspacing='6' >";
+	html[idx++] = "<table role='presentation' class='ChooserDialog ZPropertySheet' cellspacing='6' >";
 	idx = this._createStandardContentHtml(html, idx);
 	idx = this._createExtraContentHtml(html, idx);
 	html[idx++] = "</table>";

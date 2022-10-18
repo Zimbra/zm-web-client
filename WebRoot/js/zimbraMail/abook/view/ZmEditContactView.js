@@ -2365,6 +2365,7 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 
         var menu = new DwtMenu({parent:this._picker,style:DwtMenu.GENERIC_WIDGET_STYLE});
         this._picker.getHtmlElement().className += " ZmEditContactViewOtherCalendar";
+		this._picker.setAriaLabel(ZmMsg.calendarPicker);
 		this._picker.setMenu(menu);
 		this._picker.replaceElement(pickerEl);
 
@@ -2424,6 +2425,7 @@ ZmEditContactViewOther.prototype._createSelect = function() {
 	select.addChangeListener(new AjxListener(this, this._resetPicker));
 	// HACK: Make it look like a DwtSelect.
 	select.setSelectedValue = select.setValue;
+	select.setAriaLabel(select.getValue());
 	return select;
 };
 
@@ -2431,6 +2433,7 @@ ZmEditContactViewOther.prototype._resetPicker = function() {
 	if (this._picker) {
 		var type = this.getValue().type;
 		this._picker.setVisible(type in this.DATE_ATTRS);
+		this._select.setAriaLabel(type);
 	}
 };
 

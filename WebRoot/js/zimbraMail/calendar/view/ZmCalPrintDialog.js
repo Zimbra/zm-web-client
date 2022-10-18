@@ -498,7 +498,7 @@ function(id) {
 	    dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
     this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#ApptTimeInput", {id: this._htmlElId});
-    this._dateButton = ZmCalendarApp.createMiniCalButton(this.parent, this._htmlElId + "_timeSelectBtn", dateButtonListener, dateCalSelectionListener);
+    this._dateButton = ZmCalendarApp.createMiniCalButton(this.parent, this._htmlElId + "_timeSelectBtn", dateButtonListener, dateCalSelectionListener, id.indexOf("From") > 0 ? ZmMsg.startDate : ZmMsg.endDate);
     this._dateButton.setSize("20");
 
     //create time select input field

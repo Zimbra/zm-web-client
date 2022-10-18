@@ -41,7 +41,7 @@
 
 </app:handleError>
 <c:if test="${param.imc eq 'true'}">
-<table cellpadding="0" cellspacing="0" border="0" style="margin-left: 1%;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-left: 1%;">
     <tr>
         <td width="180">
             <app:miniCal print="${true}" date="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}" checkedCalendars="${checkedCalendars}"/>
@@ -56,7 +56,7 @@
 </table>
 </c:if>
 <br>
-<table width="98%" align="center" cellpadding="0" cellspacing="0" border="0" class="zPrintMsgs" >
+<table role="presentation" width="98%" align="center" cellpadding="0" cellspacing="0" border="0" class="zPrintMsgs" >
     <tr>
         <td colspan="4" class='ZhAppContent'>
             ${multiDay}

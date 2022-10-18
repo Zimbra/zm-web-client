@@ -241,7 +241,9 @@ function(params, className) {
 		className:className,
 		index:params.index,
 		id:params.id,
-		template: params.template
+		template: params.template,
+		role: params.role,
+		ariaLabel: params.ariaLabel
 	});
 	button.textPrecedence = params.textPrecedence;
 	button.imagePrecedence = params.imagePrecedence;

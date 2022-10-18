@@ -103,7 +103,7 @@ function(htmlElement) {
     this._busyOverlay = document.createElement("div");
     this._busyOverlay.className = "ZmDialogTabViewBusy";
     this._busyOverlay.style.position = "absolute";
-    this._busyOverlay.innerHTML = "<table cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>&nbsp;</td></tr></table>";
+    this._busyOverlay.innerHTML = "<table role='presentation' cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>&nbsp;</td></tr></table>";
     htmlElement.appendChild(this._busyOverlay);
     Dwt.setBounds(this._busyOverlay, 0, 0, "100%", "100%")
     Dwt.setZIndex(this._busyOverlay, Dwt.Z_VEIL);

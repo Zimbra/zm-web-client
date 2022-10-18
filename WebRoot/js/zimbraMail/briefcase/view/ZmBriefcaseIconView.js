@@ -88,7 +88,7 @@ function(item, params) {
 		}
 	}
 	
-	htmlArr[idx++] = "<table><tr>";
+	htmlArr[idx++] = "<table role='presentation'><tr>";
     if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
         htmlArr[idx++] = "<td>";
         idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, ZmItem.F_SELECTION));

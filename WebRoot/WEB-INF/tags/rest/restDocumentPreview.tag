@@ -131,7 +131,7 @@
         <c:choose>
         <c:when test="${not isViewOnly}">
         <div class="TbTop" style="height:40px; width: 100%; position: absolute;">
-            <table width="100%" height="100%" cellpadding="0" cellspacing="5">
+            <table role="presentation" width="100%" height="100%" cellpadding="0" cellspacing="5">
                 <tr>
                     <td>
                         <span style="font-size:18px;"><b>${zm:cook(doc.name)}</b></span>
@@ -152,7 +152,7 @@
         <div style="width: 100%; height: 100%">
         </c:otherwise>
         </c:choose>
-            <table width="100%" height="100%" cellpadding="5" cellspacing="5">
+            <table role="presentation" width="100%" height="100%" cellpadding="5" cellspacing="5">
                 <tbody>
                     <tr>
                         <td class="ZhAppContent ZhDocPreviewContent">
