@@ -57,7 +57,7 @@
 </app:handleError>
 
 <div class='ZhCalMiniContainer'>
-<table width="100%" style='height:100%;' border="0" cellspacing='0' cellpadding='0'>
+<table role="presentation" width="100%" style='height:100%;' border="0" cellspacing='0' cellpadding='0'>
     <tr class='ZhCalMiniTitlebar'>
         <td align=center>
             <c:if test="${not print}">

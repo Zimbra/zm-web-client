@@ -394,7 +394,7 @@ function() {
 	html[i++] = this._searchTableId;
 	html[i++] = "'>";
 
-	html[i++] = "<table class='ZPropertySheet' cellspacing='6'><tr>";
+	html[i++] = "<table role='presentation' class='ZPropertySheet' cellspacing='6'><tr>";
 
 	for (var j = 0; j < fields.length; j++) {
 		var isEven = ((j % 2) == 0);
@@ -506,7 +506,7 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
             html[i++] = "<td></td>";
             html[i++] = "<td></td>";
         }
-		html[i++] = "<td><table><tr><td>";
+		html[i++] = "<td><table role='presentation'><tr><td>";
 		html[i++] = "<input type='checkbox' id='";
 		html[i++] = this._multLocsCheckboxId;
 		html[i++] = "' /></td><td class='ZmFieldLabelLeft'><label for='";

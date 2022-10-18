@@ -49,7 +49,7 @@
         <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
         <div style="padding:0px; background-color:${color}" <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright} padding:0px;"</c:if>
              class='ZhCalMonthAllDayAppt${needsAction ? 'New ':' '}'>
-            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
             <tr>
                 <td class="${fbashowAsColor}" width="4px"></td>
             <td>
@@ -61,7 +61,7 @@
     </c:when>
     <c:otherwise>
         <div style="padding:0px; background-color:${color}" class='ZhCalMonthAppt'>
-            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
             <tr>
                 <td class="${fbashowAsColor}" width="4px"></td>
             <td>

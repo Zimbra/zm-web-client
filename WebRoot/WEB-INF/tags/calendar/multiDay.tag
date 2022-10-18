@@ -110,7 +110,7 @@
 </app:handleError>
 <c:choose>
     <c:when test="${param.view eq 'list'}">
-        <table width="100%" cellpadding="2" cellspacing="0">
+        <table role="presentation" width="100%" cellpadding="2" cellspacing="0">
             <tr align="left" class="ZhCalMonthHeaderRow">
                 <c:if test="${not print}"><th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/></th></c:if>
                 <c:if test="${mailbox.features.tagging}">
@@ -207,7 +207,7 @@
         <c:forEach var="day" items="${layout.days}" varStatus="status">
             <c:set var="rowsOneDay" value="${rows[status.index]}"/>
             <c:set var="allDayRowsOneDay" value="${allDayRows[status.index]}"/>
-            <table class='ZhCalDayGrid' width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; height:100%;border:1px solid #A7A194;'>
+            <table role="presentation" class='ZhCalDayGrid' width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; height:100%;border:1px solid #A7A194;'>
                 <tr class='ZhCalMonthHeaderRow'>
                     <td class='ZhCalDayHeader' nowrap align="center" width="1%" style='border-left:none'>
                         <fmt:formatDate value="${date.time}" pattern="${yearTitleFormat}"/>
@@ -334,7 +334,7 @@
         <c:forEach var="week" begin="1" end="${numDays/7 < 1 ? 1 : numDays/7}" varStatus="stat">
             <c:set var="startDay" value="${layout.days[beginLoop]}"/>
             <c:set var="endDay" value="${layout.days[endLoop]}"/>
-            <table class='ZhCalDayGrid' width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; border:1px solid #A7A194;'>
+            <table role="presentation" class='ZhCalDayGrid' width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; border:1px solid #A7A194;'>
             <tr class='ZhCalMonthHeaderRow'>
                 <td class='ZhCalDayHeader' nowrap align="center" width="1%" style='border-left:none'>
                     <fmt:formatDate value="${date.time}" pattern="${yearTitleFormat}"/>

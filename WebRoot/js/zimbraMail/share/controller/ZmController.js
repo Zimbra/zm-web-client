@@ -211,7 +211,7 @@ function(msg, ex, noExecReset, hideReportButton, expanded, noEncoding) {
 		var fields = ["method", "msg", "code", "detail", "trace", "request",
 					"fileName", "lineNumber", "message", "name", "stack" ];
 		var html = [], i = 0;
-		html[i++] = "<table>";
+		html[i++] = "<table role='presentation'>";
 		for (var j = 0; j < fields.length; j++) {
 			var fld = fields[j];
 			var value = AjxStringUtil.htmlEncode(ex[fld]);

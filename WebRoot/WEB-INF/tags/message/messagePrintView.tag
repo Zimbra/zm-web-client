@@ -87,13 +87,13 @@
 	</script>
 </c:if>
 
-<table width="100%" cellpadding="0" cellspacing="0" class="Msg" style="padding:10px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="Msg" style="padding:10px;">
     <tr>
         <td  colspan="2">
-            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#EEEEEE;" >
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#EEEEEE;" >
                 <tr>
                     <td align="left">
-                        <table width="100%" align="left" cellpadding="2" cellspacing="0" border="0">
+                        <table role="presentation" width="100%" align="left" cellpadding="2" cellspacing="0" border="0">
                             <tr>
                                 <td class='MsgHdrName'>
                                     <fmt:message key="from"/>
@@ -182,7 +182,7 @@
                         </table>
                     </td>
                     <td valign='top'>
-                        <table width="100%" cellpadding="2" cellspacing="0" border="0">
+                        <table role="presentation" width="100%" cellpadding="2" cellspacing="0" border="0">
                             <tr>
                                 <td nowrap align='right' class='MsgHdrSent'>
                                     <fmt:message var="dateFmt" key="formatDateSent"/>

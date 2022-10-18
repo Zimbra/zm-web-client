@@ -91,8 +91,10 @@ function(ids, enabled) {
 ZmNavToolBar.prototype.setToolTip = 
 function(buttonId, tooltip) {
 	var button = this.getButton(buttonId);
-	if (button)
+	if (button) {
 		button.setToolTipContent(tooltip);
+		button.setAriaLabel(tooltip);
+	}
 };
 
 /**
