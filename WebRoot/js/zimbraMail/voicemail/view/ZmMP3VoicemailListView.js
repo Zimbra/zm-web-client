@@ -114,7 +114,7 @@ function() {
 ZmMP3VoicemailListView.prototype._getDurationHtml =
 function(voicemail) {
 	var html = [];
-	html.push("<table id='", voicemail.id, ZmMP3VoicemailListView.DURATION_SUFFIX, "'><tr><td>",AjxDateUtil.computeDuration(voicemail.duration, true), "</td><td><div class='ImgPlay'></div></td></tr></table>");
+	html.push("<table role='presentation' id='", voicemail.id, ZmMP3VoicemailListView.DURATION_SUFFIX, "'><tr><td>",AjxDateUtil.computeDuration(voicemail.duration, true), "</td><td><div class='ImgPlay'></div></td></tr></table>");
 	return html.join("");
 };
 

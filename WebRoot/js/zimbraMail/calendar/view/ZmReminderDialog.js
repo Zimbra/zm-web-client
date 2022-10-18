@@ -123,7 +123,7 @@ function(list) {
 
     AjxDebug.println(AjxDebug.REMINDER, "---Reminders [" + (new Date().getTime())+ "]---");
 
-	html[idx++] = "<table style='min-width:375px'>";
+	html[idx++] = "<table role='presentation' style='min-width:375px'>";
 	for (var i = 0; i < size; i++) {
 		var appt = list.get(i);
         if (appt.isShared() && appt.isReadOnly()) { continue; }

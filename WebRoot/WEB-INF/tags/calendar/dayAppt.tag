@@ -35,7 +35,7 @@
 <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
 <app:calendarUrl appt="${appt}" var="apptUrl"/>
 <c:if test="${selected}">
-    <table width="100%" border="0" style="height:100%;" cellspacing="0" cellpadding="0">
+    <table role="presentation" width="100%" border="0" style="height:100%;" cellspacing="0" cellpadding="0">
     <tr>
     <td class='ZhApptSel'>
 </c:if>
@@ -62,7 +62,7 @@
     <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
     <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
 
-    <table onclick='zSelectRow(event,"${apptId}")' <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright} padding:0px; opacity:${fbaOpacity};"</c:if>
+    <table role="presentation" onclick='zSelectRow(event,"${apptId}")' <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright} padding:0px; opacity:${fbaOpacity};"</c:if>
            style="background-color:${color}" class='ZhCalDayAllDayAppt${needsAction ? 'New ' : ' '}'
            width="100%" style='height:100%; padding:0px; opacity:${fbaOpacity};' border="0" cellspacing="0" cellpadding="1">
         <tr>
@@ -74,7 +74,7 @@
             </td>
             <c:if test="${needImages}">
                 <td width="1%" align="right">
-                    <table border="0" cellspacing="0" cellpadding="0">
+                    <table role="presentation" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                             <c:if test="${appt.exception}">
                                 <td valign='top'>
@@ -98,7 +98,7 @@
     </table>
 </c:when>
 <c:when test="${appt.duration gt 1000*60*15}">
-    <table onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt${needsAction ? 'New' : ''}' width="100%" style="height:100%; opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="1">
+    <table role="presentation" onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt${needsAction ? 'New' : ''}' width="100%" style="height:100%; opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="1">
         <tr>
             <td rowspan="3" class="${fbashowAsColor}" width="1px"></td>
             <td colspan="${needImages ? 1 : 2}" nowrap style="background-color:${color}" valign=top>
@@ -113,7 +113,7 @@
             </td>
             <c:if test="${needImages}">
                 <td width="1%" align="right" style="background-color:${color}">
-                    <table border="0" cellspacing="0" cellpadding="0">
+                    <table role="presentation" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                             <c:if test="${appt.exception}">
                                 <td valign='top'>
@@ -162,7 +162,7 @@
     </table>
 </c:when>
 <c:otherwise>
-    <table onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt' width="100%" style="height:100%; opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="2">
+    <table role="presentation" onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt' width="100%" style="height:100%; opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="2">
         <tr>
             <td class="${fbashowAsColor}" width="2px"></td>
             <td style="background-color:${color}" valign=top>
@@ -174,7 +174,7 @@
             </td>
             <c:if test="${needImages}">
                 <td valign='top' width="1%" align="right" style="background-color:${color}">
-                    <table border="0" cellspacing="0" cellpadding="0">
+                    <table role="presentation" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                             <c:if test="${appt.exception}">
                                 <td valign='top'>

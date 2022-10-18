@@ -887,14 +887,14 @@ function() {
 	var html = [];
 	var idx = 0;
 
-	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 >";
+	html[idx++] = "<table role='presentation' cellpadding=0 cellspacing=0 border=0 >";
 	html[idx++] = "<tr valign='center'><td colspan=2 align='left'>";
 	html[idx++] = "<div style='border-bottom: 1px solid black;'>";
-	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+	html[idx++] = "<table role='presentation' cellpadding=0 cellspacing=0 border=0 width=100%>";
 	html[idx++] = "<tr valign='center'><td><b>";
 
 	// IMGHACK - added outer table for new image changes...
-	html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
+	html[idx++] = "<div style='white-space:nowrap'><table role='presentation' border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
 	if (this.hasOtherAttendees(compNum)) {
 		html[idx++] = "<td>";
 		html[idx++] = AjxImg.getImageHtml("ApptMeeting");

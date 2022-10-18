@@ -68,7 +68,7 @@ function(headerTitle) {
     var idx = 0;
     var nodeIdStr = "id='" + id + "_imgNode'";
     htmlArr[idx++] = "<div id='" + id +"'>";
-    htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='DwtListView-Column'><tr><td>";
+    htmlArr[idx++] = "<table role='presentation' cellpadding=0 cellspacing=0 border=0 width=100% class='DwtListView-Column'><tr><td>";
     htmlArr[idx++] =  AjxImg.getImageHtml("NodeExpanded", "float:left;", nodeIdStr);
 	htmlArr[idx++] = "<div class='DwtListHeaderItem-label black' style='padding:0px 0px 2px 2px; font-weight:bold; float:left;' id='" + id + "_groupTitle'>";
     htmlArr[idx++] = headerTitle;

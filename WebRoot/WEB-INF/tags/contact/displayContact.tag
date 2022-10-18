@@ -27,10 +27,10 @@
 <fmt:message var="colorMsg" key="${folder.rgbColorMsg}"/>
 <%-- colorMsg can be set to "colorNone" in case a custom color is set for the folder. "colorNone" is not defined in ZhMsg.properties, hence the check for "???". TODO: clean up logic--%>
 <c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : ((fn:startsWith(colorMsg,'???') ? colorGray : colorMsg)))}"/>
-<table width="100%" cellspacing="0" cellpadding="0">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0">
 <tr bgcolor="${color}">
     <td class='ZhBottomSep'>
-        <table width="100%" cellspacing="0" cellpadding="0" style="padding:3px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:3px;">
         <tr>
         <td rowspan="2" width="20" align="center" valign="bottom" style="padding-right:3px;">
             <c:set var="contactImage" value="${contact.imagePart != null ? contact.imagePart : ''}"/>
@@ -85,7 +85,7 @@
 </tr>
 <tr>
     <td>
-        <table border="0" cellspacing="3" cellpadding="${contact.isGroup ? 1 : 3}" width="100%">
+        <table role="presentation" border="0" cellspacing="3" cellpadding="${contact.isGroup ? 1 : 3}" width="100%">
 <tbody>
 
 <c:if test="${contact.isGroup}">
@@ -137,7 +137,7 @@
     <tr>
         <td width="5">&nbsp;</td>
         <td class="contactOutput">
-            <table>
+            <table role="presentation">
             <app:contactEmail email="${contact.email}"/>
             <app:contactEmail email="${contact.email2}"/>
             <app:contactEmail email="${contact.email3}"/>
@@ -152,7 +152,7 @@
     <tr>
         <td width="5">&nbsp;</td>
         <td class="contactOutput">
-            <table>
+            <table role="presentation">
             <app:contactIM address="${contact.IMAddress1}"/>
             <app:contactIM address="${contact.IMAddress2}"/>
             <app:contactIM address="${contact.IMAddress3}"/>

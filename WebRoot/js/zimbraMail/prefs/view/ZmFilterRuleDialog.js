@@ -351,7 +351,7 @@ function(data, test, isCondition, rowId) {
 			stopField.checked = true;
 			return;
 		}
-		html[i++] = "<td><table class='filterActions'><tr>";
+		html[i++] = "<td><table role='presentation' class='filterActions'><tr>";
 		if (conf) {
 			var options = this._outgoing ? ZmFilterRule.ACTIONS_OUTGOING_LIST : ZmFilterRule.ACTIONS_LIST;
 			html[i++] = this._createRowComponent(false, "name", options, data, test, rowId);
@@ -365,14 +365,14 @@ function(data, test, isCondition, rowId) {
 				var maxBodySize = data.maxBodySize;
 				var subject = data.su;
 
-				html[i++] = "<td><table>";
+				html[i++] = "<td><table role='presentation'>";
 				html[i++] = "<tr><td>" + ZmMsg.actionNotifyReadOnlyMsg + "</td></tr>";
 				html[i++] = "<tr><td>" + ZmMsg.emailLabel + " " + email + " | " + subject + " | " + ZmMsg.maxBodySize + ": " + maxBodySize + "</td><tr>";
 				html[i++] = "<tr><td style='max-width:100px'>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
 			}
 			else if (actionId == ZmFilterRule.A_REPLY && data) {
 				var content = AjxUtil.isArray(data.content) ? data.content[0]._content : "";
-				html[i++] = "<td><table><tr><td>" + ZmMsg.actionReplyReadOnlyMsg + "</td></tr>";
+				html[i++] = "<td><table role='presentation'><tr><td>" + ZmMsg.actionReplyReadOnlyMsg + "</td></tr>";
 				html[i++] = "<tr><td style='max-width:100px'>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
 			}
 			this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
@@ -953,7 +953,7 @@ function(rowId, isCondition) {
 	var tabGroup = this._getCurrentTabScope();
 	var html = [];
 	var j = 0;
-	html[j++] = "<td width='1%'><table class='FilterAddRemoveButtons'><tr>";
+	html[j++] = "<td width='1%'><table role='presentation' class='FilterAddRemoveButtons'><tr>";
 	var buttons = ["Plus", "Minus"];
 	for (var i = 0; i < buttons.length; i++) {
 		var b = buttons[i];
@@ -963,6 +963,7 @@ function(rowId, isCondition) {
 		button.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 		button.setData(ZmFilterRuleDialog.DO_ADD, (b == "Plus"));
 		button.addSelectionListener(this._plusMinusLstnr);
+		button.setAriaLabel(b);
 		var id = Dwt.getNextId("TEST_");
 		this._inputs[rowId][b] = {id: id, dwtObj: button};
 		html[j++] = "<td id='";

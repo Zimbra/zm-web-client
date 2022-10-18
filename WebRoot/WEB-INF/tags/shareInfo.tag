@@ -55,7 +55,7 @@
     </c:otherwise>
 </c:choose>
 
-<table width=100% cellspacing=0 cellpadding=0>
+<table role="presentation" width=100% cellspacing=0 cellpadding=0>
     <tr class="${newFolderStyleColor}${newFolderStyleColor ne 'Gray' ? 'Bg' :''}">
         <td width=20 style='padding-left:5px'>
             <app:img src="${icon}" alt='${fn:escapeXml(label)}'/>
@@ -70,7 +70,7 @@
     </tr>
 </table>
 
-<table border="0" cellpadding="0" cellspacing="10" width=100%>
+<table role="presentation" border="0" cellpadding="0" cellspacing="10" width=100%>
 
     <tr>
         <td nowrap align=right>

@@ -483,7 +483,8 @@ function() {
 	var subs = {
 		id: 			this._htmlElId,
 		alphabet: 		alphabet,
-		numLetters: 	alphabet.length
+		numLetters: 		alphabet.length,
+		ariaLabel:		ZmMsg.alphabetLabel
 	};
 
 	var element = this.getHtmlElement();

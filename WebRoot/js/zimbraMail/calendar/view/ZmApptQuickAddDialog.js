@@ -317,9 +317,9 @@ function() {
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
 	var startMiniCalId = this._htmlElId + "_startMiniCal";
-	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, startMiniCalId, dateButtonListener, dateCalSelectionListener);
+	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, startMiniCalId, dateButtonListener, dateCalSelectionListener, ZmMsg.startDate);
 	var endMiniCalId = this._htmlElId + "_endMiniCal";
-	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, endMiniCalId, dateButtonListener, dateCalSelectionListener);
+	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, endMiniCalId, dateButtonListener, dateCalSelectionListener, ZmMsg.endDate);
 
 	// create selects for Time section
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);

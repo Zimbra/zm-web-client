@@ -2031,7 +2031,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 
 	var attColumns = (this._controller.isReadingPaneOn() && this._controller.isReadingPaneOnRight()) ? 1 : ZmMailMsgView.ATTC_COLUMNS;
 	var dividx = idx;	// we might get back here
-	htmlArr[idx++] = "<table id='" + this._attLinksId + "_table' border=0 cellpadding=0 cellspacing=0>";
+	htmlArr[idx++] = "<table id='" + this._attLinksId + "_table' role='presentation' border=0 cellpadding=0 cellspacing=0>";
 
 	var attLinkIds = [];
 	var rows = 0;
@@ -2047,7 +2047,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 		}
 
 		htmlArr[idx++] = "<td>";
-		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='margin-right:1em; margin-bottom:1px'><tr>";
+		htmlArr[idx++] = "<table role='presentation' border=0 cellpadding=0 cellspacing=0 style='margin-right:1em; margin-bottom:1px'><tr>";
 		htmlArr[idx++] = "<td style='width:18px'>";
 		htmlArr[idx++] = AjxImg.getImageHtml({
 			imageName: att.linkIcon,

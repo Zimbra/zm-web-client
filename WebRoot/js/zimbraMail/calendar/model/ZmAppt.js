@@ -393,7 +393,7 @@ function(isHtml) {
 	var formatter = isHtml ? this._summaryHtmlLineFormatter : this._summaryTextLineFormatter;
 
 	if (isHtml) {
-		buf[i++] = "<p>\n<table border='0'>\n";
+		buf[i++] = "<p>\n<table role='presentation' border='0'>\n";
 	}
 
 	var params = [ZmMsg.subjectLabel, this.name, ""];
@@ -406,7 +406,7 @@ function(isHtml) {
 	}
 	buf[i++] = "\n";
 	if (isHtml) {
-		buf[i++] = "<p>\n<table border='0'>\n";
+		buf[i++] = "<p>\n<table role='presentation' border='0'>\n";
 	}
 
 	i = this.getApptTimeSummary(buf, i, isHtml, true);
@@ -452,7 +452,7 @@ function(isHtml) {
 	var formatter = isHtml ? this._summaryHtmlLineFormatter : this._summaryTextLineFormatter;
 
 	if (isHtml) {
-		buf[i++] = "<p>\n<table border='0'>\n";
+		buf[i++] = "<p>\n<table role='presentation' border='0'>\n";
 	}
 	var modified = isEdit && (orig.getName() != this.getName());
 	var params = [ ZmMsg.subjectLabel, AjxStringUtil.htmlEncode(this.name), modified ? ZmMsg.apptModifiedStamp : "" ];
@@ -488,7 +488,7 @@ function(isHtml) {
 	}
 	buf[i++] = "\n";
 	if (isHtml) {
-		buf[i++] = "<p>\n<table border='0'>\n";
+		buf[i++] = "<p>\n<table role='presentation' border='0'>\n";
 	}
 
 	var locationLabel = this.getLocation();
@@ -526,7 +526,7 @@ function(isHtml) {
 
 	if (this._attendees[ZmCalBaseItem.PERSON].length) {
 		if (isHtml) {
-			buf[i++] = "</table>\n<p>\n<table border='0'>";
+			buf[i++] = "</table>\n<p>\n<table role='presentation' border='0'>";
 		}
 		buf[i++] = "\n";
 		var reqAttString = ZmApptViewHelper.getAttendeesByRole(this._attendees[ZmCalBaseItem.PERSON], ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED, 10);

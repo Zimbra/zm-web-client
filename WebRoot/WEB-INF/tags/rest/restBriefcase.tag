@@ -36,7 +36,7 @@
 <head><link rel='stylesheet' type='text/css' href='/zimbra/css/briefcase.css'></head>
 <body>
 <div id="ZimbraBriefcasePage">
-	<table class="layoutTable">
+	<table role="presentation" class="layoutTable">
 		<tbody>
 		<tr>
 			<td colspan="2" class="headerContainer"></td>
@@ -44,15 +44,15 @@
 		<tr>
 			<td valign="top" rowspan="2" class="sidebarContainer"></td>
 			<td valign="top" class="titlebarContainer">
-				<table class="layoutTable">
+				<table role="presentation" class="layoutTable">
 					<tbody>
 					<!--tr>
 						<td class="breadcrumbHeader">
-							<table class="layoutTable">
+							<table role="presentation" class="layoutTable">
 								<tbody>
 								<tr>
 									<td class="breadcrumbs smallGrayLinks">
-										<table class="breadcrumb_table">
+										<table role="presentation" class="breadcrumb_table">
 											<tbody><tr></tr></tbody>
 										</table>
 									</td>
@@ -64,7 +64,7 @@
 					</tr-->
 					<tr>
 						<td class="titleHeader">
-						<table class="layoutTable">
+						<table role="presentation" class="layoutTable">
 							<tbody>
 							<tr>
 								<td valign="top" class="pageIcon"><!--wiklet class='ICON' /--></td>
@@ -87,7 +87,7 @@
 		<tr>
 			<td valign="top" class="contentContainer">
 				<div class="toc">
-					<table class="tocTable">
+					<table role="presentation" class="tocTable">
 						<tbody>
 							<!--tr>
 								<td width="16" class="ImgNotebook"></td>
@@ -95,7 +95,7 @@
 							</tr-->
 							<tr>
 								<td colspan="3">
-									<table class="tocListTable">
+									<table role="presentation" class="tocListTable">
 										<tbody>
 											<tr class="headerUnderLine">
 												<td width="16" class="header">&nbsp;</td>

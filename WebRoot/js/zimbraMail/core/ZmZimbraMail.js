@@ -953,6 +953,7 @@ function() {
 	}
 	var button = appCtxt.refreshButton = new DwtToolBarButton({parent:DwtShell.getShell(window), id: ZmId.OP_CHECK_MAIL}); //use ToolbarButton just for the style, for now it looks ok.
 	button.setImage("RefreshAll");
+	button.setAriaLabel(ZmMsg.checkMailPrefUpdate);
 	button.setToolTipContent(ZmMsg.checkMailPrefUpdate, true);
 
 	button.reparentHtmlElement(ZmId.SKIN_REFRESH);
@@ -2666,6 +2667,7 @@ ZmZimbraMail.prototype.setUserInfo = function() {
 		var el = this._userNameField.getHtmlElement();
         el.innerHTML =  AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(username, 24));
 		el.setAttribute('aria-label', username);
+		el.setAttribute('aria-disabled', true); // Prevent SR to announch as clickable.
 		if (AjxEnv.isLinux) {	// bug fix #3355
 			el.style.lineHeight = "13px";
 		}

@@ -377,6 +377,7 @@ ZmMainSearchToolBar.prototype._initialize = function() {
         id:         ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_SEARCH)
     });
     button.setImage("Search2");
+    button.setAriaLabel(ZmMsg.searchTooltip);
     button.setToolTipContent(ZmMsg.searchTooltip, true);
 
     // add save search button if saved-searches enabled
