@@ -174,9 +174,9 @@ If not, see <https://www.gnu.org/licenses/>.
         </jsp:include>
         <link href='${contextPath}/css/common,dwt,msgview,login,zm,spellcheck,images,skin.css?v=${vers}${isDebug?"&debug=1":""}&skin=${zm:cook(skin)}' rel='stylesheet' type="text/css">
 </head>
-<c:set var="fileName" value="${empty param.name ? 'Untitled' : zm:cook(param.name)}"/>
-<c:set var="folderId" value="${empty param.l ? '' : zm:cook(param.l)}"/>
-<c:set var="fileId" value="${empty param.id ? '' : zm:cook(param.id)}"/>
+<c:set var="fileName" value="${empty param.name ? 'Untitled' : zm:jsEncode(param.name)}"/>
+<c:set var="folderId" value="${empty param.l ? '' : zm:jsEncode(param.l)}"/>
+<c:set var="fileId" value="${empty param.id ? '' : zm:jsEncode(param.id)}"/>
 <body class="editorBody">
 <div id="main_shell"></div>
 <noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
