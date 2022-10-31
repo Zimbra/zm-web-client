@@ -53,7 +53,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<title>${fn:escapeXml(errCode)} - <fmt:message key="${errTitle}"/></title>
+	<title>${fn:escapeXml(errCode)} - <fmt:message key="${fn:escapeXml(errTitle)}"/></title>
 	<meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
 	<meta name="description" content="<fmt:message bundle="${zmmsg}" key="zimbraLoginMetaDesc"/>">
 	<link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml,skin.css'>
