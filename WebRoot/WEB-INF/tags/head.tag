@@ -87,10 +87,6 @@
         }
 
     </script>
-	<script type="text/javascript" src="../yui/2.9.0-alfresco-20140211/yahoo-dom-event/yahoo-dom-event.js"></script>
-    <c:if test="${param.selected eq 'signatures'}">
-        <app:yuiInclude/>
-    </c:if>
     
 	<c:set var="mailidlesessiontimeout" value="${mailbox.attrs.zimbraMailIdleSessionTimeout[0]}"/>
     <c:set var="timeinmillisec" value=""/>
