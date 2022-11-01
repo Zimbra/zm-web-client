@@ -120,6 +120,7 @@ AjxPackage.require("ajax.dwt.widgets.DwtMessageDialog");
 AjxPackage.require("ajax.dwt.widgets.DwtOptionDialog");
 AjxPackage.require("ajax.dwt.widgets.DwtChooser");
 AjxPackage.require("ajax.dwt.widgets.DwtTimeSelect");
+AjxPackage.require("ajax.dwt.widgets.DwtSelect");
 
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");

@@ -89,6 +89,7 @@ function() {
 		
 		var inputEl = this._searchField.getInputElement();
 		inputEl.className = "search_results_input";
+		inputEl.setAttribute('aria-label', ZmMsg.search);
 	}
 	
 	// add search button
