@@ -314,6 +314,7 @@ function() {
 	//this._inputField.addListener(DwtEvent.ONKEYDOWN, new AjxListener(this, this._handleKeyDown));
 	// unfortunately there's no onkeydown generally set for input fields so above line does not work
 	this._inputField.setHandler(DwtEvent.ONKEYDOWN, AjxCallback.simpleClosure(this._handleKeyDown, this));
+	this._inputField._inputField.setAttribute('aria-label', ZmMsg.search);
 };
 
 ZmChooseFolderDialog.prototype._showNewDialog =

@@ -1520,7 +1520,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</tr></table>
 
 	<div id='${id}_condition' tabindex=0></div>
-	<fieldset class='FilterRuleSection'>
+	<fieldset class='FilterRuleSection' role='form' aria-label='<$=ZmMsg.filterConditions$>'>
 		<div style='overflow-x:hidden;overflow-y:auto;height:145px;'>
 			<table role="presentation" id='${id}_conditions' width='100%' tabindex=0 class='ZPropertySheet' cellspacing='6'>
 				<tbody></tbody>
@@ -1529,7 +1529,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</fieldset>
 
 	<div><$=ZmMsg.filterActions$></div>
-	<fieldset class='FilterActionSection'>
+	<fieldset class='FilterActionSection' role='form' aria-label='<$=ZmMsg.quickCommandActions$>'>
 		<div style='overflow-x:hidden;overflow-y:auto;height:82px'>
 			<table role="presentation" id='${id}_actions' width='100%' tabindex=0 class='ZPropertySheet' cellspacing='6'>
 				<tbody></tbody>
