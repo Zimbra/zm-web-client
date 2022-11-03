@@ -106,7 +106,7 @@ function(ev) {
             if(shareRadioGoogle && shareRadioGoogle.checked) {
                 var hostname = window.location.origin;
                 this.popdown();
-                window.location.href = hostname + "/service/extension/oauth2/authorize/google?type=caldav&state=/%3Fapp%3Dcalendar";
+                window.location.href = hostname + "/service/extension/oauth2/authorize/google?type=caldav&state=/%3Fclient%3Dadvanced%26app%3Dcalendar";
             } else {
                 if(shareRadioYahoo && shareRadioYahoo.checked) {
                     this.showView(ZmExternalCalendarDialog.SECOND_VIEW, ZmExternalCalendarDialog.TYPE_YAHOO);
