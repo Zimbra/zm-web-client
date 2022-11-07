@@ -1273,7 +1273,7 @@ and the container element is replaced with that control.
 							<table role="presentation">
 								<tr>
 									<td><input id='${id}_EXTERNAL_CHANGE_PORT' tabindex=0 type=checkbox></td>
-									<td><input id='${id}_EXTERNAL_PORT' tabindex=0 size=4></td>
+									<td><input id='${id}_EXTERNAL_PORT' aria-label='<$= ZmMsg.portNumber $>' tabindex=0 size=4></td>
 									<td class='ZOptionsInfo'><span id='${id}_EXTERNAL_PORT_DEFAULT'></span></td>
 								</tr>
 							</table>
@@ -1320,7 +1320,7 @@ and the container element is replaced with that control.
 							<table role="presentation">
 								<tr>
 									<td style='padding-right:.5em;'>
-										<input id='${id}_EXTERNAL_FROM_NAME' tabindex=0 size=30>
+										<input id='${id}_EXTERNAL_FROM_NAME' tabindex=0 size=30 aria-label='<$=ZmMsg.fromDetail$>'>
 									</td>
 								</tr>
 							</table>
@@ -1336,10 +1336,10 @@ and the container element is replaced with that control.
 							<table role="presentation">
 								<tr>
 									<td style='padding-right:.5em;'>
-										<input id='${id}_EXTERNAL_REPLY_TO_NAME' tabindex=0 size=30>
+										<input id='${id}_EXTERNAL_REPLY_TO_NAME' tabindex=0 size=30 aria-label='<$=ZmMsg.replyToName$>'>
 									</td>
 									<td class='ZmSelector'>
-										<select id='${id}_EXTERNAL_REPLY_TO_EMAIL' tabindex=0></select>
+										<select id='${id}_EXTERNAL_REPLY_TO_EMAIL' tabindex=0 aria-label='<$=ZmMsg.replyToEmail$>'></select>
 									</td>
 								</tr>
 							</table>
@@ -1348,9 +1348,9 @@ and the container element is replaced with that control.
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
 						<td class='ZOptionsField' valign='middle'>
-						    <a id ='${id}_External_Signatures_Link' href='#Prefs.Signatures'><$=ZmMsg.manageSignaturesForExternalAccount$></a>
-						    <span id ='${id}_External_Signatures_Text'><$=ZmMsg.manageSignaturesForExternalAccount$></span>
-                        </td>
+							<a id ='${id}_External_Signatures_Link' href='#Prefs.Signatures'><$=ZmMsg.manageSignaturesForExternalAccount$></a>
+							<span id ='${id}_External_Signatures_Text'><$=ZmMsg.manageSignaturesForExternalAccount$></span>
+						</td>
 					</tr>
 				</table>
 			</td>

@@ -744,6 +744,7 @@ function() {
 	var selectCell = document.getElementById(selectId);
 	if (selectCell) {
 		this._searchInSelect = new DwtSelect({parent:this});
+		this._searchInSelect.setAriaLabel(ZmMsg.searchIn);
 		this._resetSearchInSelect();
 		this._searchInSelect.reparentHtmlElement(selectId);
 		this._searchInSelect.addChangeListener(new AjxListener(this, this._searchTypeListener));
