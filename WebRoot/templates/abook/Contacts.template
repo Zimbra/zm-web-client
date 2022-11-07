@@ -773,7 +773,7 @@
 							<$ } else { $>
 							<tr id='${id}_searchRow'>
 								<td align='right'><$= ZmMsg.findLabel $></td>
-								<td><input type='text' id='${id}_searchField'></td>
+								<td><input type='text' id='${id}_searchField' aria-label='<$= ZmMsg.findLabel $>'></td>
 								<td id='${id}_searchButton'></td>
 							</tr>
 							<$ } $>

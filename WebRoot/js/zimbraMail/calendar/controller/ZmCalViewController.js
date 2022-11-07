@@ -1554,7 +1554,7 @@ function(date, duration, roll) {
         if (ZmId.VIEW_CAL_FB == this._currentViewType && roll && appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
             currentView._navDateChangeListener(date);
 		}
-		this._navToolBar[ZmId.VIEW_CAL].setText(title, 'polite');
+		this._navToolBar[ZmId.VIEW_CAL].setText(title);
 	}
 };
 
