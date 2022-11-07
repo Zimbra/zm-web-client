@@ -790,7 +790,12 @@ function(templateId) {
 
     radioNormal = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_NORMAL")});
     radioNormal.setSelected(!isCustom);
-    var radioNormalId = radioNormal.getInputElement().id;
+    var radioNormalInput = radioNormal.getInputElement();
+    var radioNormalId = radioNormalInput.id;
+
+    radioNormalInput.setAttribute('aria-label', ZmMsg.normal);
+    radioNormalInput.removeAttribute('aria-labelledby');
+
     radioIds[radioNormalId] = radioNormal;
     this._radioNormal = radioNormal;
     this._radioNormalId = radioNormalId;
@@ -809,7 +814,12 @@ function(templateId) {
 
     radioCustom = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_CUSTOM")});
     radioCustom.setSelected(isCustom);
-    var radioCustomId = radioCustom.getInputElement().id;
+    var radioCustomInput = radioCustom.getInputElement();
+    var radioCustomId = radioCustomInput.id;
+
+    radioCustomInput.setAttribute('aria-label', ZmMsg.custom);
+    radioCustomInput.removeAttribute('aria-labelledby');
+
     radioIds[radioCustomId] = radioCustom;
     this._radioCustom = radioCustom;
     this._radioCustomId = radioCustomId;
