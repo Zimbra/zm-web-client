@@ -88,11 +88,13 @@ function() {
 		},
 		REPLY_TO_NAME: {
 			displayContainer:	ZmPref.TYPE_INPUT,
-			hint:				ZmMsg.exampleEmailName
+			hint:				ZmMsg.exampleEmailName,
+			ariaLabel:			ZmMsg.replyToName
 		},
 		REPLY_TO_EMAIL: {
 			displayContainer:	ZmPref.TYPE_COMBOBOX,
-			hint:				ZmMsg.emailAddr
+			hint:				ZmMsg.emailAddr,
+			ariaLabel:			ZmMsg.replyToEmail
 		},
 		// External
 		ACCOUNT_TYPE: {
@@ -119,7 +121,8 @@ function() {
 		},
 		PORT: {
 			displayContainer:	ZmPref.TYPE_INPUT,
-			validator:			DwtInputField.validateNumber
+			validator:			DwtInputField.validateNumber,
+			ariaLabel:			ZmMsg.portLabel
 		},
 		PORT_DEFAULT: {
 			displayContainer:	ZmPref.TYPE_STATIC,
@@ -146,11 +149,13 @@ function() {
 		// Persona
 		FROM_NAME: {
 			displayContainer:	ZmPref.TYPE_INPUT,
-			hint:				ZmMsg.exampleEmailName
+			hint:				ZmMsg.exampleEmailName,
+			ariaLabel:			ZmMsg.fromName
 		},
 		FROM_EMAIL: {
 			displayContainer:	ZmPref.TYPE_SELECT,
-			hint:				ZmMsg.emailAddr
+			hint:				ZmMsg.emailAddr,
+			ariaLabel:			ZmMsg.fromEmail
 		},
 		FROM_EMAIL_TYPE: {
 			displayContainer:	ZmPref.TYPE_SELECT,
@@ -1989,13 +1994,25 @@ function(id, section, value) {
 			control.setSelected(value);
 			break;
 		}
-		case ZmPref.TYPE_INPUT:
+		case ZmPref.TYPE_INPUT: {
+			if (setup.ariaLabel) {
+				control._inputField.setAttribute('aria-label', setup.ariaLabel);
+			}
+			control.setValue(value);
+			break;
+		}
 		case ZmPref.TYPE_COMBOBOX: {
+			if (setup.ariaLabel) {
+				control.setAriaLabel(setup.ariaLabel);
+			}
 			control.setValue(value);
 			break;
 		}
 		case ZmPref.TYPE_SELECT:
 		case ZmPref.TYPE_RADIO_GROUP: {
+			if (setup.ariaLabel) {
+				control.setAttribute('aria-label', setup.ariaLabel);
+			}
 			control.setSelectedValue(value, true);
 			break;
 		}
