@@ -736,7 +736,8 @@ function() {
 		displayName:		ZmMsg.vacationExternalType,
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		[ZmMsg.outOfOffice,ZmMsg.busy],
-		options:			 ["OUTOFOFFICE","BUSY"]
+		options:			["OUTOFOFFICE","BUSY"],
+		ariaLabel:			ZmMsg.vacationCalLabel
 	});
 
     ZmPref.registerPref("VACATION_EXTERNAL_MSG", {
