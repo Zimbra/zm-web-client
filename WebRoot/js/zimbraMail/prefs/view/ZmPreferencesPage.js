@@ -327,6 +327,9 @@ function() {
 			}
 			else if (type == ZmPref.TYPE_SELECT) {
 				control = this._setupSelect(id, setup, value);
+				if (setup && setup.ariaLabel) {
+					control.setAriaLabel(setup.ariaLabel);
+				}
 			}
 			else if (type == ZmPref.TYPE_COMBOBOX) {
 				control = this._setupComboBox(id, setup, value);
