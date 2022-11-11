@@ -553,7 +553,7 @@ INPUT[type="text"].search_input-expanded:focus {
 .Row .Row-selected .ZmConvListFragment,
 .SubjectDoubleRow .ZmConvListFragment {
 	color:black;
-	opacity:0.4;
+	opacity:0.7;
 	font-weight:normal;
 }
 
@@ -564,7 +564,7 @@ INPUT[type="text"].search_input-expanded:focus {
 
 .ZmConvListNumMsgs {
 	@FontSize-normal@
-	background-color:@darken(AppC,30)@; 
+	background-color:@darken(AppC,50)@;
 	color:white; 
 	padding:0px 4px;
 	@roundCorners(6px)@
@@ -3504,7 +3504,7 @@ HTML>BODY .appt-selected .appt_allday_body
 /* Match the width of ZmPreferencesPage */
 .prefHeader {
 	@FontSize-bigger@
-	background-color:@darken(AppC,30)@;
+	background-color:#666666;
 	color:white;
 	padding:4px 8px;
 	width:99%;
@@ -3618,7 +3618,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZOptionsInfo {
-	@Text-disabled@		/* TODO:Text-hint ? */
+	color: #555555;
 }
 
 .ZOptionsInfo .ZOptionsLabel {
@@ -5339,7 +5339,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmContactSplitView .rowType {
-	color:gray;
+	color:#555;
 	width: auto;
 }
 
