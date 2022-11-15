@@ -58,7 +58,8 @@ ZmTaskListView = function(parent, controller, dropTgt) {
 		type:       ZmItem.TASK,
 	    controller: controller,
 	    headerList: headerList,
-	    dropTgt:    dropTgt
+	    dropTgt:    dropTgt,
+		listLabel:  ZmMsg.task
     };
 
 	ZmListView.call(this, params);

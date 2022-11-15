@@ -161,6 +161,7 @@ function(parent, viewId, htmlElId, fieldNames) {
 
 				button.addSelectionListener(this.addressButtonListener.bind(this));
 				button.addrType = type;
+				button.setAttribute('aria-roledescription', ZmMsg.buttonOpenAddressDialog);
 
 				// autocomplete-related handlers
 				// Enable this even if contacts are not enabled, to provide GAL autoComplete
