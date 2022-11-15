@@ -175,14 +175,21 @@ function(html, idx, item, field, colIdx) {
 	if (field == ZmItem.F_TYPE) {
 		html[idx++] = AjxImg.getImageHtml(item.icon);
 	} else if (field == ZmItem.F_NAME) {
-		html[idx++] = '<span style="white-space:nowrap">';
-		html[idx++] = AjxStringUtil.htmlEncode(item.name || ZmMsg.noName);
+		var name = AjxStringUtil.htmlEncode(item.name || ZmMsg.noName);
+		html[idx++] = '<span style="white-space:nowrap" aria-label="'+ ZmMsg.nameLabel + name +';">';
+		html[idx++] = name;
 		html[idx++] = "</span>";
 	} else if (field == ZmItem.F_EMAIL) {
-		html[idx++] = AjxStringUtil.htmlEncode(item.address);
+		var email = AjxStringUtil.htmlEncode(item.address);
+		html[idx++] = '<span aria-label="'+ ZmMsg.emailLabel + email +';">';
+		html[idx++] = email;
+		html[idx++] = "</span>";
 	} else if (field == ZmItem.F_DEPARTMENT) {
 		if (item.__contact) {
-			html[idx++] = AjxStringUtil.htmlEncode(ZmContact.getAttr(item.__contact, ZmContact.F_department));
+			var department = AjxStringUtil.htmlEncode(ZmContact.getAttr(item.__contact, ZmContact.F_department));
+			html[idx++] = '<span aria-label="'+ ZmMsg.departmentLabel + department +';">';
+			html[idx++] = department;
+			html[idx++] = "</span>";
 		}
 	}
 	return idx;

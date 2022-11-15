@@ -463,6 +463,7 @@ function(parent) {
  */
 ZmFilterChooserActiveListView = function(parent) {
 	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE});
+	this._listDiv.setAttribute('aria-label', ZmMsg.activeFilters);
 	this.setScrollStyle(Dwt.CLIP);
 };
 
@@ -547,6 +548,7 @@ function(item, field, params) {
  */
 ZmFilterChooserNotActiveListView = function(parent) {
 	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET});
+	this._listDiv.setAttribute('aria-label', ZmMsg.availableFilters);
 	this.setScrollStyle(Dwt.CLIP);
 };
 

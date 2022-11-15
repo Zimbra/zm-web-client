@@ -3242,6 +3242,8 @@ function(templateId, data) {
 	var attButtonId = ZmId.getButtonId(this._view, ZmId.CMP_ATT_BTN);
 	this._attButton = new DwtButton({parent:this, id:attButtonId});
 	this._attButton.setText(ZmMsg.attach);
+	this._attButton.setAttribute('aria-expanded', false);
+	this._attButton.setAttribute('aria-haspopup', true);
 
 	this._attButton.setMenu(new AjxCallback(this, this._attachButtonMenuCallback));
 	this._attButton.reparentHtmlElement(data.attBtnId);
@@ -3549,7 +3551,14 @@ function(menuItem) {
 
 ZmComposeView.prototype._attachButtonMenuCallback =
 function() {
-	var menu = new DwtMenu({parent:this._attButton});
+	var attachButton = this._attButton;
+	var menu = new DwtMenu({parent:attachButton});
+
+	var setAriaExpand = function (val) {
+		attachButton.setAttribute('aria-expanded', val);
+	};
+	menu.addPopupListener(setAriaExpand.bind(this, true));
+	menu.addPopdownListener(setAriaExpand.bind(this,false));
 
 	var listener =
 		this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_COMPUTER);

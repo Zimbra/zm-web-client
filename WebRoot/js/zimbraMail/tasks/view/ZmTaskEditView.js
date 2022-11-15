@@ -411,12 +411,14 @@ function(width) {
 	this._location = new DwtInputField(params);
 	Dwt.setSize(this._location.getInputElement(), width, "2rem");
 	this._location.reparentHtmlElement(this._htmlElId + "_location");
+	this._location.getInputElement().setAttribute('aria-label', ZmMsg.locationLabel);
 
 	// add priority DwtButton
 	this._prioritySelect = new DwtButton({parent:this});
     this._prioritySelect.setSize(60, Dwt.DEFAULT);
 	this._prioritySelect.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
 	this._prioritySelect.reparentHtmlElement(this._htmlElId + "_priority");
+	this._prioritySelect.setAttribute('aria-label', ZmMsg.priorityLabel);
 
 	var listener = new AjxListener(this, this._selectListener);
 	// add status DwtSelect
@@ -427,6 +429,7 @@ function(width) {
 	}
 	this._statusSelect.addChangeListener(listener);
 	this._statusSelect.reparentHtmlElement(this._htmlElId + "_status");
+	this._statusSelect.setAriaLabel(ZmMsg.statusLabel);
 
     var params = {
         parent: this,
