@@ -1033,6 +1033,7 @@ ZmContactSimpleView = function(params) {
 
 	this._view = params.view = params.controller.getCurrentViewId();
 	params.className = "ZmContactSimpleView";
+	params.listLabel = ZmMsg.contact;
 	ZmContactsBaseView.call(this, params);
 
 	this._normalClass = DwtListView.ROW_CLASS + " SimpleContact";

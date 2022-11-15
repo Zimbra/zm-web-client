@@ -162,7 +162,7 @@ ZmConvListView = function(params) {
 	this._controller = params.controller;
 	this._mode = this.view = ZmId.VIEW_CONVLIST;
 	params.headerList = this._getHeaderList();
-	params.listLabel = ZmMsg.conversationList;
+	params.listLabel = ZmMsg.conversation;
 	ZmMailListView.call(this, params);
 
 	// change listener needs to handle both types of events

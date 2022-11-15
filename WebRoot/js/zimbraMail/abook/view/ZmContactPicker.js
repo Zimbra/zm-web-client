@@ -1134,6 +1134,7 @@ function(item, list) {
  */
 ZmContactChooserSourceListView = function(parent) {
 	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE});
+	this._listDiv.setAttribute('aria-label', ZmMsg.sourceEmail);
 	this.setScrollStyle(Dwt.CLIP);
 };
 
@@ -1283,6 +1284,7 @@ ZmContactChooserTargetListView = function(parent, showType) {
 	this._showType = showType; // call before base class since base calls getHeaderList
 
 	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET});
+	this._listDiv.setAttribute('aria-label', ZmMsg.targetEmail);
 
 	this.setScrollStyle(Dwt.CLIP);
 };
@@ -1329,8 +1331,11 @@ ZmContactChooserTargetListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_TYPE) {
 		item.setType(item._buttonId);
-		html[idx++] = ZmMsg[item.getTypeAsString()];
+		var type = ZmMsg[item.getTypeAsString()];
+		html[idx++] = '<span aria-label="'+ ZmMsg.addressType +': '+ type +';">';
+		html[idx++] = type;
 		html[idx++] = ":";
+		html[idx++] = "</span>";
 	}
 	else if (field == ZmItem.F_EMAIL && AjxEnv.isIE) {
 		var maxWidth = AjxStringUtil.getWidth(item.address) + 10;
