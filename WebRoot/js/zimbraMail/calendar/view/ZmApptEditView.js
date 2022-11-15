@@ -1456,6 +1456,16 @@ function(pickerId, listener, addrType, isForwardPicker) {
             this._pickerButton[addrType] = button;            
         }
         button.setText(pickerEl.innerHTML);
+        if (pickerEl.innerHTML === ZmMsg.attendeesLabel || pickerEl.optionalLabel) {
+            button.setAttribute('aria-roledescription', ZmMsg.buttonOpenAddressDialog);
+        }
+        else if (pickerEl.innerHTML === ZmMsg.locationLabel) {
+            button.setAttribute('aria-roledescription', ZmMsg.buttonOpenFindLocationDialog);
+        }
+        else if (pickerEl.innerHTML === ZmMsg.equipmentLabel) {
+            button.setAttribute('aria-roledescription', ZmMsg.buttonFindEquipmentDialog);
+        }
+        
         button.replaceElement(pickerEl);
 
         button.addSelectionListener(listener);

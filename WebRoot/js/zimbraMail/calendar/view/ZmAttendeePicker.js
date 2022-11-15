@@ -1007,12 +1007,12 @@ function(items, view, skipNotify, id) {
 
 ZmApptChooser.prototype._createSourceListView =
 function() {
-	return new ZmApptChooserListView(this, DwtChooserListView.SOURCE, this.parent.type);
+	return new ZmApptChooserListView(this, DwtChooserListView.SOURCE, this.parent.type, ZmMsg.sourceEmail);
 };
 
 ZmApptChooser.prototype._createTargetListView =
 function() {
-	return new ZmApptChooserListView(this, DwtChooserListView.TARGET, this.parent.type);
+	return new ZmApptChooserListView(this, DwtChooserListView.TARGET, this.parent.type, ZmMsg.targetEmail);
 };
 
 ZmApptChooser.prototype._notify =
@@ -1078,10 +1078,11 @@ function(list, skipNotify) {
  * 
  * @private
  */
-ZmApptChooserListView = function(parent, type, chooserType) {
+ZmApptChooserListView = function(parent, type, chooserType, ariaLabel) {
 
 	this._chooserType = chooserType;
 	DwtChooserListView.call(this, {parent:parent, type:type});
+	this._listDiv.setAttribute('aria-label', ariaLabel);
 
 	this._notes = {};
 };
