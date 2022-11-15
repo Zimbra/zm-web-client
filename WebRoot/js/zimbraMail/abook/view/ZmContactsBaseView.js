@@ -401,7 +401,7 @@ function(cell, selected) {
 	cell.className = selected
 		? "DwtButton-active AlphabetBarCell"
 		: "DwtButton AlphabetBarCell";
-	cell.setAttribute('aria-selected', selected);
+	cell.setAttribute('aria-pressed', selected);
 	if (selected) {
 		this.getHtmlElement().setAttribute('aria-activedescendant', cell.id);
 		this.setFocusElement(cell);
@@ -494,6 +494,7 @@ function() {
 	AjxUtil.foreach(Dwt.byClassName('AlphabetBarCell', element), (function(cell) {
         this._makeFocusable(cell, true);
         this._setEventHdlrs([ DwtEvent.ONCLICK ], false, cell);
+		cell.setAttribute('aria-pressed', false);
     }).bind(this));
 };
 

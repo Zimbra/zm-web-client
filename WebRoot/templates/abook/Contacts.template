@@ -840,7 +840,7 @@
 				<$ for (var i = 0; i < data.numLetters; i++) { $>
 					<td _idx="<$= i $>"	role='button'
 						class='DwtButton AlphabetBarCell'
-						aria-label="<$= data.ariaLabel, data.alphabet[i] $>"
+						aria-label="<$= data.alphabet[i] $>"
 <$ if (data.alphabet[i].length > 1) { $> colspan='<$= data.alphabet[i].length/2 + 1 $>' <$ } $> >
 						<$= data.alphabet[i] $>
 					</td>

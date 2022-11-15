@@ -46,7 +46,7 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 	var params = {parent:parent, className:"ZmBriefcaseDetailListView",
 				  view: controller.getCurrentViewId(),
 				  controller:controller, headerList:headerList, dropTgt:dropTgt,
-				  listLabel: ZmMsg.documentList};
+				  listLabel: ZmMsg.document};
 	ZmBriefcaseBaseView.call(this, params);
 
     this.enableRevisionView(true);

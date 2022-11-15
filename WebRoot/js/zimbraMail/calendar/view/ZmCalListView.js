@@ -31,7 +31,8 @@ ZmCalListView = function(parent, posStyle, controller, dropTgt) {
 		dropTgt: dropTgt,
 		view: ZmId.VIEW_CAL_LIST,
 		headerList: this._getHeaderList(parent),
-		pageless: true
+		pageless: true,
+		listLabel: ZmMsg.calendar
 	};
 	ZmApptListView.call(this, params);
 
