@@ -108,8 +108,11 @@ ZmOverview = function(params, controller) {
 		var params = {container:container, threshold:15, amount:5, interval:10, id:this._scrollableContainerId};
 		this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [params]);
 	}
-
-	this.setAttribute('aria-label', ZmMsg.overviewLabel);
+	if (this.overviewId === 'main_Options') {
+		this.setAttribute('aria-label', ZmMsg.preferences);
+	} else {
+		this.setAttribute('aria-label', ZmMsg.overviewLabel);
+	}
 
     // Let overview be a single tab stop, then manage focus among items using arrow keys
     this.tabGroupMember = this;
