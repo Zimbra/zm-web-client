@@ -2113,12 +2113,19 @@ function() {
 ZmMailApp.prototype._setFavIcon =
 function(unread) {
     var url;
-    if (unread == 0) {
-        url = [appContextPath, "/img/logo/favicon.ico"].join("");
-    } else if (unread > 9) {
-        url = [appContextPath,"/img/logo/favicon_plus.ico"].join("");
+    var dir;
+    if (skin.hints.favicon && skin.hints.favicon.dir) {
+        dir = skin.hints.favicon.dir;
     } else {
-        url = [appContextPath, "/img/logo/favicon_", unread, ".ico"].join("");
+        dir = appContextPath + "/img/logo";
+    }
+
+    if (unread == 0) {
+        url = [dir, "/favicon.ico"].join("");
+    } else if (unread > 9) {
+        url = [dir,"/favicon_plus.ico"].join("");
+    } else {
+        url = [dir, "/favicon_", unread, ".ico"].join("");
     }
     Dwt.setFavIcon(url);
 };
