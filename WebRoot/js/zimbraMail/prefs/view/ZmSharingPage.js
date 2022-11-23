@@ -409,6 +409,14 @@ function() {
 	this._shareForm = new DwtForm(params);
 	var shareFormDiv = document.getElementById(this._pageId + "_shareForm");
 	shareFormDiv.appendChild(this._shareForm.getHtmlElement());
+	this._shareForm.getHtmlElement().style.padding = '1px'
+
+	this._compositeTabGroup.removeMember(this._shareForm);
+	this._compositeTabGroup.addMember([this._shareForm.getControl(ZmSharingView.ID_GROUP),
+		this._shareForm.getControl(ZmSharingView.ID_USER),
+		this._shareForm.getControl(ZmSharingView.ID_OWNER),
+		this._shareForm.getControl(ZmSharingView.ID_FIND_BUTTON)
+	]);
 
 	// form for creating a new share
 	var options = [];
@@ -474,6 +482,10 @@ function() {
 		this._acAddrSelectList.handle(inputCtrl.getInputElement(), inputCtrl._htmlElId);
 		inputCtrl.setAutocompleteListView(this._acAddrSelectList);
 	}
+
+	this._compositeTabGroup.removeMember(this._grantForm);
+	this._compositeTabGroup.addMember([this._grantForm.getControl(ZmSharingView.ID_FOLDER_TYPE), 
+		this._grantForm.getControl(ZmSharingView.ID_SHARE_BUTTON)]);
 
 	appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._folderTreeChangeListener));
 };

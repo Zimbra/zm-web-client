@@ -132,6 +132,27 @@ function(account) {
 		// it and resets it to an offscreen value.
 		el.style.left = "0px";
 	}
+
+    this._tabGroup.removeAllMembers();
+
+    this.addMemberInTabGroup(document.getElementById(this._htmlElId + '_' + ZmTimeSuggestionPrefDialog.MY_WORKING_HOURS_FIELD));
+    this.addMemberInTabGroup(document.getElementById(this._htmlElId + '_' + ZmTimeSuggestionPrefDialog.OTHERS_WORKING_HOURS_FIELD));
+    this.addMemberInTabGroup(this._recurrenceSelect);
+    this.addMemberInTabGroup(document.getElementById(this._htmlElId + '_name'));
+    this.addMemberInTabGroup(document.getElementById(this._htmlElId + '_capacity'));
+    this.addMemberInTabGroup(document.getElementById(this._htmlElId + '_desc'));
+    this.addMemberInTabGroup(document.getElementById(this._htmlElId + '_site'));
+    this.addMemberInTabGroup(document.getElementById(this._htmlElId + '_building'));
+    this.addMemberInTabGroup(document.getElementById(this._htmlElId + '_floor'));
+    this.addMemberInTabGroup(this.getButton(DwtDialog.OK_BUTTON));
+	this.addMemberInTabGroup(this.getButton(DwtDialog.CANCEL_BUTTON));
+};
+
+ZmTimeSuggestionPrefDialog.prototype.addMemberInTabGroup =
+function (member) {
+	if (member) {
+		this._tabGroup.addMember(member);
+	}
 };
 
 ZmTimeSuggestionPrefDialog.prototype.popdown =

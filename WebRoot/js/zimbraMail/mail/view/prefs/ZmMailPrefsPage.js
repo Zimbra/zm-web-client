@@ -151,7 +151,9 @@ function() {
 
 
     this._startDateField = Dwt.byId(this._htmlElId + "_VACATION_FROM1");
+	this._startDateField.setAttribute('parentid', this._htmlElId);
 	this._endDateField = Dwt.byId(this._htmlElId + "_VACATION_UNTIL1");
+	this._endDateField.setAttribute('parentid', this._htmlElId);
 
 	if (this._startDateField && this._endDateField) {
 		this._startDateVal = Dwt.byId(this._htmlElId + "_VACATION_FROM");

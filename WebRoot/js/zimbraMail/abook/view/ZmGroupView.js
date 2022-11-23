@@ -966,14 +966,24 @@ function() {
 		fields.push(document.getElementById(this._groupNameId));
 	}
 	if (!this._noManualEntry) {
-		fields.push(this._groupMembers);
+		fields.push(this._groupMembersListView);
 	}
+	fields.push(this._addButton);
+	fields.push(this._addAllButton);
+	fields.push(this._locationButton);
+
 	for (var fieldId in this._searchField) {
 		fields.push(this._searchField[fieldId]);
 	}
 	fields.push(this._searchButton);
 	fields.push(this._searchInSelect);
 
+	fields.push(this._listview);
+	fields.push(this._prevButton);
+	fields.push(this._nextButton);
+
+	fields.push(this._addNewButton);
+	fields.push(this._addNewField);
 	return fields;
 };
 
@@ -1644,6 +1654,51 @@ ZmGroupMembersListView.prototype.constructor = ZmGroupMembersListView;
 ZmGroupMembersListView.prototype._getHeaderList =
 function() {
 	return [(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.membersLabel, view:this._view}))];
+};
+
+ZmGroupMembersListView.prototype.getKeyMapName =
+function() {
+	return DwtKeyMap.MAP_MENU;
+};
+
+ZmGroupMembersListView.prototype.handleKeyAction = function(actionCode, ev) {
+
+	if (!this.size()) {
+		return false;
+	}
+
+	var isRowElement = this._focusElement.getAttribute('role') === 'option';
+	var isDeleteElement = this._focusElement.classList.value.includes('ImgDelete');
+
+	if (isDeleteElement) {
+		switch (actionCode) {
+			case DwtKeyMap.CANCEL:
+			case DwtKeyMap.PARENTMENU:
+				var rowElement = this._focusElement.parentElement;
+				while (rowElement.getAttribute('role') !== 'option') {
+					rowElement = rowElement.parentElement;
+				}
+				this._setKbFocusElement(rowElement);
+				break;
+			case DwtKeyMap.SELECT:
+				return DwtListView.prototype.handleKeyAction.call(this, actionCode, ev);
+			default:
+				return false;
+		}
+	}
+
+	if (isRowElement) {
+		switch (actionCode) {
+			case DwtKeyMap.SUBMENU:
+				var deleteElement = this._focusElement.getElementsByClassName('ImgDelete')[0];
+				this._setKbFocusElement(deleteElement);
+				break;
+			default:
+				return DwtListView.prototype.handleKeyAction.call(this, actionCode, ev);
+		}
+	}
+
+	return true;
 };
 
 ZmGroupMembersListView.prototype._getCellContents =
