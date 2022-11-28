@@ -547,7 +547,9 @@ function(allZimlets, props, sync) {
 
 		// update overview tree
 		if (overview) {
-			overview.setTreeView(ZmOrganizer.ZIMLET);
+			if (overview.appName != ZmApp.PREFERENCES) {
+				overview.setTreeView(ZmOrganizer.ZIMLET);
+			}
 
 			// HACK: for multi-account, hide the zimlet section if no panel zimlets
 			if (appCtxt.multiAccounts && zimletMgr.getPanelZimlets().length == 0) {
