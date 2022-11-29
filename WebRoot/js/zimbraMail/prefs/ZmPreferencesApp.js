@@ -77,6 +77,10 @@ ZmPreferencesApp._registerAllPrefs =
 function() {
 	AjxDispatcher.require("PreferencesCore");
 	appCtxt.getAppController().runAppFunction("_registerPrefs");
+	if (appCtxt.get(ZmSetting.ADMIN_DELEGATED) && !appCtxt.get(ZmSetting.ADMIN_MAIL_ENABLED) && appCtxt.get(ZmSetting.ADMIN_PREFERENCES_ENABLED)) {
+		var mailApp = appCtxt.getSettings().getMailAppForDelegatedAdmin();
+		mailApp._registerPrefs();
+	}
 };
 ZmZimbraMail.addAppListener(ZmApp.PREFERENCES, ZmAppEvent.PRE_LAUNCH, new AjxListener(ZmPreferencesApp._registerAllPrefs));
 
