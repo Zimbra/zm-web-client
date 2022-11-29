@@ -807,7 +807,7 @@ function(width) {
 
 ZmCalItemEditView._keyPressOnRemiderConfigure =
 function(ev) {
-	var keyCode = DwtKeyEvent.getCharCode(ev);
+    var keyCode = DwtKeyEvent.getCharCode(ev);
     if (keyCode === DwtKeyEvent.KEY_RETURN) {
         ev.target.onclick();
     }

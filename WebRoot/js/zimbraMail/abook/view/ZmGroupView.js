@@ -1675,7 +1675,7 @@ ZmGroupMembersListView.prototype.handleKeyAction = function(actionCode, ev) {
 			case DwtKeyMap.CANCEL:
 			case DwtKeyMap.PARENTMENU:
 				var rowElement = this._focusElement.parentElement;
-				while (rowElement.getAttribute('role') !== 'option') {
+				while (rowElement && rowElement.getAttribute('role') !== 'option') {
 					rowElement = rowElement.parentElement;
 				}
 				this._setKbFocusElement(rowElement);

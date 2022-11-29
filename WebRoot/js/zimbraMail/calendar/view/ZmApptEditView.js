@@ -2223,7 +2223,7 @@ function() {
 	if (this._showOptional) {
 		this._makeFocusable(this._showOptional);
 		Dwt.setHandler(this._showOptional, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
-        Dwt.setHandler(this._showOptional, DwtEvent.ONKEYUP, ZmApptEditView._handleKeyPress);
+		Dwt.setHandler(this._showOptional, DwtEvent.ONKEYUP, ZmApptEditView._handleKeyPress);
 	}
 	if (this._showResources) {
 		this._makeFocusable(this._showResources);
