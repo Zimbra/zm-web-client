@@ -328,7 +328,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 	// they can be created and set below in createFromJs().
 	if (this.get(ZmSetting.ADMIN_DELEGATED)) {
 		if (!this.get(ZmSetting.ADMIN_MAIL_ENABLED) && this.get(ZmSetting.ADMIN_PREFERENCES_ENABLED)) {
-			(new ZmMailApp()).enableMailPrefs();
+			this.getMailAppForDelegatedAdmin().enableMailPrefs();
 		}
 	}
 
@@ -1323,4 +1323,12 @@ function(setting) {
     }
 	//Always reload appcache whenever offline setting is enabled/disabled. Appcache will be updated/emptied depending upon the setting.
 	appCtxt.reloadAppCache(true);
+};
+
+ZmSettings.prototype.getMailAppForDelegatedAdmin =
+function() {
+    if (!this.mailApp) {
+        this.mailApp = new ZmMailApp();
+    }
+    return this.mailApp;
 };

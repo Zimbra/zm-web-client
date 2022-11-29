@@ -2452,7 +2452,6 @@ function() {
 	AjxDispatcher.require("PreferencesCore");
 	this._registerSettings();
 	this._registerOperations();
-	this._registerPrefs();
 };
 
 // Folders to ignore when displaying a conv's messages
