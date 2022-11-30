@@ -1019,7 +1019,7 @@ function(composeMode, initOnly) {
 	// reset the body field Id and object ref
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 	this._bodyField = Dwt.byId(this._bodyFieldId);
-	if (this._bodyField.disabled) {
+	if (this._bodyField && this._bodyField.disabled) {
 		this._bodyField.disabled = false;
 	}
 
@@ -1452,6 +1452,10 @@ function(bEnable) {
     DBG.println('draft', 'ZmComposeView.enableInputs for ' + this._view + ': ' + bEnable);
     this._recipients.enableInputs(bEnable);
     try {
+       if (!this._bodyField) {
+           this._bodyFieldId = this._htmlEditor.getBodyFieldId();
+           this._bodyField = document.getElementById(this._bodyFieldId);
+       }
        this._subjectField.disabled = this._bodyField.disabled = !bEnable;
     } catch (err){}
 };
