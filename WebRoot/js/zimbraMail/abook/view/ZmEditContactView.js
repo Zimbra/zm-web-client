@@ -1102,6 +1102,9 @@ ZmEditContactViewImage = function(params) {
 
 	this.setToolTipContent(ZmMsg.addImg);
 };
+
+ZmEditContactViewImage.ALLOWED_IMG_EXTENSION = ["png","jpg","jpeg","gif"];
+
 ZmEditContactViewImage.prototype = new DwtControl;
 ZmEditContactViewImage.prototype.constructor = ZmEditContactViewImage;
 ZmEditContactViewImage.prototype.isFocusable = true;
@@ -1187,7 +1190,7 @@ ZmEditContactViewImage.prototype._imageLoaded = function() {
  */
 ZmEditContactViewImage.prototype._chooseImage = function() {
 	var dialog = appCtxt.getUploadDialog();
-	dialog.setAllowedExtensions(["png","jpg","jpeg","gif"]);
+	dialog.setAllowedExtensions(ZmEditContactViewImage.ALLOWED_IMG_EXTENSION);
 	var folder = null;
 	var callback = new AjxCallback(this, this._handleImageSaved);
 	var title = ZmMsg.uploadImage;

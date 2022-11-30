@@ -271,7 +271,7 @@ ZmUploadDialog.prototype._upload = function(){
             for (var j = 0; j < files.length; j++){
                 file = files[j];
                 fileObj.push(file);
-				newError = zmUploadManager.getErrors(file, maxSize);
+				newError = zmUploadManager.getErrors(file, maxSize, null, this._extensions);
 				if (newError) {
 					errors.push(newError);
 				} else {
@@ -281,7 +281,7 @@ ZmUploadDialog.prototype._upload = function(){
         } else {
 			var fileName = element.value.replace(/^.*[\\\/:]/, "");
             file = { name: fileName };
-			newError = zmUploadManager.getErrors(file, maxSize);
+			newError = zmUploadManager.getErrors(file, maxSize, null, this._extensions);
 			if (newError) {
 				errors.push(newError);
 			} else {

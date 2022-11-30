@@ -315,7 +315,7 @@ function(errors, maxSize, lineBreak) {
 
     var errorMsg = [ZmMsg.uploadFailed];
     if (errorSummary.invalidExtension) {
-        var extensions = this._formatUploadErrorList(this._extensions);
+        var extensions = this._formatUploadErrorList(appCtxt.getUploadDialog()._extensions);
         errorMsg.push("* " + AjxMessageFormat.format(ZmMsg.errorNotAllowedFile, [ extensions ]));
     }
 	var msgFormat, errorFilenames;
