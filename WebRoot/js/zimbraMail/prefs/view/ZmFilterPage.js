@@ -51,6 +51,9 @@ function() {
 		this._activityStreamsButton.setText(ZmMsg.activityStreamSettings);
 		this._activityStreamsButton.addSelectionListener(new AjxListener(this, this._activityStreamDialog));
 	}
+
+	appCtxt.notifyZimlets("onZmFilterPage_createControls", [this]);
+
 	this._tabView = new DwtTabView({parent:this, posStyle:Dwt.STATIC_STYLE});
 	this._tabView.reparentHtmlElement(this._htmlElId+"_tabview");
 	var incomingController = this._controller.getIncomingFilterRulesController();

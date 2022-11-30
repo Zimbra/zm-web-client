@@ -464,8 +464,9 @@ function(ptst) {
 		 disableButtonIds[ ZmOperation.PROPOSE_NEW_TIME] = true;
 	}
 	var inviteToolbar = this.getInviteToolbar();
-
 	var buttonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE, ZmOperation.PROPOSE_NEW_TIME];
+	appCtxt.notifyZimlets("onZmInviteMsgView_enableToolbarButtons", [buttonIds]);
+
 	for (var i = 0; i < buttonIds.length; i++) {
 		var buttonId = buttonIds[i];
 		inviteToolbar.getButton(buttonId).setEnabled(appCtxt.isExternalAccount() ? false : !disableButtonIds[buttonId]);
@@ -740,6 +741,8 @@ function() {
 		ZmOperation.REPLY_DECLINE,
 		ZmOperation.PROPOSE_NEW_TIME
 	];
+
+	appCtxt.notifyZimlets("onZmInviteMsgView_createInviteToolbar", [replyButtonIds, notifyOperationButtonIds, ignoreOperationButtonIds, inviteOps]);
 
 	var params = {
 		parent: this.parent,

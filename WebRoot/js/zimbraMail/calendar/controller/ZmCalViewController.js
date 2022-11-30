@@ -3492,6 +3492,9 @@ function(recurrenceMode) {
 	    		forwardOp,
 	    		deleteOp,
 	    		ZmOperation.SEP];
+
+	appCtxt.notifyZimlets("onZmCalViewController_getActionMenuOps", [retVal]);
+
 	if (recurrenceMode != ZmOperation.VIEW_APPT_INSTANCE) {
 		retVal.push(ZmOperation.MOVE);
 	}

@@ -606,6 +606,13 @@ function(attId, docIds, draftType, callback, contactId) {
 
 	var respCallback = this._handleResponseSendMsg.bind(this, draftType, msg, callback);
 	var errorCallback = this._handleErrorSendMsg.bind(this, draftType, msg);
+
+	var result = { value: null };
+	appCtxt.notifyZimlets("onZmComposeController_sendMsg", [this, result]);
+	if (result.value) {
+		acctName = result.value;
+	}
+
 	msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime, isAutoSave);
 	this._resetDelayTime();
 };

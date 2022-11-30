@@ -399,6 +399,11 @@ function(ev, callback, noPop) {
 		return;
 	}
 
+	var result = { handled: false };
+	appCtxt.notifyZimlets("onZmPrefController_saveListener", [this, result]);
+	if (result.handled) {
+		return;
+	}
 	this.save(callback, noPop);
 };
 
@@ -521,8 +526,9 @@ function() {
 ZmPrefController.prototype._resetPageListener =
 function() {
 	var viewPage = this.getCurrentPage();
-
 	viewPage.reset(false);
+
+	appCtxt.notifyZimlets("onZmPrefController_resetPageListener", [this, viewPage]);
 	appCtxt.setStatusMsg(ZmMsg.defaultsPageRestore);
 };
 

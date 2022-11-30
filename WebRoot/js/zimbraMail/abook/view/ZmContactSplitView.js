@@ -641,10 +641,17 @@ function(data) {
 				var date = ZmEditContactViewOther.parseDate(value);
 				if (date) {
 					var includeYear = date.getFullYear() != 0;
-					var formatter = includeYear ?
-					    AjxDateFormat.getDateInstance(AjxDateFormat.LONG) : new AjxDateFormat(ZmMsg.formatDateLongNoYear);
+					var result = { value: null };
+					appCtxt.notifyZimlets("onZmContactSplitView_showContactListItem", [includeYear, result]);
+					var formatter;
+					if (result.value) {
+						formatter = result.value;
+					} else {
+						formatter = includeYear ?
+							AjxDateFormat.getDateInstance(AjxDateFormat.LONG) : new AjxDateFormat(ZmMsg.formatDateLongNoYear);
+					}
 					value = formatter.format(date);
-		        	}
+				}
 			}
 			if (data.findObjects) {
 				value = data.findObjects(value, data.objectType);
@@ -1205,7 +1212,13 @@ function(contact, params, asHtml, count) {
 
 	// checkbox selection
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(contact, ZmItem.F_SELECTION));
+		var result = { value: null };
+		appCtxt.notifyZimlets("onZmContactSplitView_createItemHtml", [this, htmlArr, idx, contact, result]);
+		if (result.value) {
+			idx = result.value;
+		} else {
+			idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(contact, ZmItem.F_SELECTION));
+		}
 	}
 
 	// icon

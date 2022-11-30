@@ -378,9 +378,13 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		this.set(ZmSetting.MAIL_PREFERENCES_ENABLED, enableMailPrefs, setDefault, skipNotify, skipImplicit);
 		// Disable other areas where mail could be exposed to a prefs-only admin
 		if (this.get(ZmSetting.MAIL_PREFERENCES_ENABLED) && !this.get(ZmSetting.MAIL_ENABLED)) {
-			this.set(ZmSetting.MAIL_FORWARDING_ENABLED, false, setDefault, skipNotify, skipImplicit);
-			this.set(ZmSetting.FILTERS_MAIL_FORWARDING_ENABLED, false, setDefault, skipNotify, skipImplicit);
-			this.set(ZmSetting.NOTIF_FEATURE_ENABLED, false, setDefault, skipNotify, skipImplicit);
+			var result = { handled: false };
+			appCtxt.notifyZimlets("onZmSettings_setUserSettings", [this, setDefault, skipNotify, skipImplicit, result]);
+			if (!result.handled) {
+				this.set(ZmSetting.MAIL_FORWARDING_ENABLED, false, setDefault, skipNotify, skipImplicit);
+				this.set(ZmSetting.FILTERS_MAIL_FORWARDING_ENABLED, false, setDefault, skipNotify, skipImplicit);
+				this.set(ZmSetting.NOTIF_FEATURE_ENABLED, false, setDefault, skipNotify, skipImplicit);
+			}
 		}
 	}
 
@@ -1088,6 +1092,8 @@ function() {
 	this.registerSetting("CHAT_PLAY_SOUND",					{name:"zimbraPrefChatPlaySound", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
 	this.registerSetting("CHAT_FEATURE_ENABLED",				{name:"zimbraFeatureChatEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
 	this.registerSetting("CHAT_ENABLED",				{name:"zimbraPrefChatEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
+
+	appCtxt.notifyZimlets("onZmSettings_initialize", [this]);
 
 	ZmApp.runAppFunction("registerSettings", this);
 };

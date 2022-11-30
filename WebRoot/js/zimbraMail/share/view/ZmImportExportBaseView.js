@@ -176,7 +176,9 @@ ZmImportExportBaseView.prototype._folderButton_onclick = function() {
                 continue;  //Skip voice folders for import/export (Bug: 72269)
             }
             var settingId = ZmApp.SETTING[ZmOrganizer.APP2ORGANIZER_R[org]];
-            if (settingId == null || appCtxt.get(settingId)) {
+            var result = { value: false };
+            appCtxt.notifyZimlets("onZmImportExportBaseView_folderButton_onclick", [settingId, result]);
+            if (settingId == null || appCtxt.get(settingId) || result.value) {
                 this._TREES[ZmImportExportController.TYPE_TGZ].push(org);
             }
         }

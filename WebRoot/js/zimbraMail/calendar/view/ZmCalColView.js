@@ -451,6 +451,12 @@ function(hour) {
 
 ZmCalColView.prototype._updateTitle =
 function() {
+	var result = { handled: false };
+	appCtxt.notifyZimlets("onZmCalColView_updateTitle", [this, result]);
+	if (result.handled) {
+		return;
+	}
+
 	var dayFormatter = DwtCalendar.getDayFormatter();
 
 	if (this.numDays == 1) {
@@ -828,6 +834,13 @@ function(html) {
 	var date = new Date();
 	date.setHours(0, 0, 0, 0);
     var timeTDWidth = ZmCalColView._HOURS_DIV_WIDTH - (this._fbBarEnabled ? ZmCalColView._FBBAR_DIV_WIDTH : 0 );
+
+    var result = { handled: false };
+    appCtxt.notifyZimlets("onZmCalColView_createHoursHtml", [this, html, timeTDWidth, formatter, date, result]);
+    if (result.handled) {
+        return;
+    }
+
     html.append("<table role='presentation' class=calendar_grid_day_table>");
 	for (var h=0; h < 25; h++) {
 		html.append("<tr><td class=calendar_grid_body_time_td style='height:",

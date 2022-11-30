@@ -2671,7 +2671,14 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		var folder = appCtxt.getById(this.folderId);
 		if ((!folder || folder.isRemote()) && (!this._origMsg || !this._origMsg.sendAsMe)) {
 			accountName = (folder && folder.getOwner()) || accountName;
-			onBehalfOf  = (accountName != mainAcct);
+
+			var result1 = { handled: false, value: null };
+			appCtxt.notifyZimlets("onZmMailMsg_addFrom1", [this, accountName, result1]);
+			if (result1.handled) {
+				onBehalfOf = result1.value;
+			} else {
+				onBehalfOf  = (accountName != mainAcct);
+			}
 		}
 
 		if (this._origMsg && this._origMsg.isDraft && !this._origMsg.sendAsMe) {
@@ -2688,32 +2695,36 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			onBehalfOf = (folder.getOwner() != mainAcct);
 		}
 
-		var addr, displayName;
-		if (this.fromSelectValue) {
-			addr = this.fromSelectValue.addr.address;
-			displayName = this.fromSelectValue.addr.name;
-		} else if (this._origMsg && this._origMsg.isInvite() && appCtxt.multiAccounts) {
-			identity = this._origMsg.getAccount().getIdentity();
-			addr = identity ? identity.sendFromAddress : this._origMsg.getAccount().name;
-			displayName = identity && identity.sendFromDisplay;
-		} else {
-			if (onBehalfOf) {
-				addr = accountName;
-			} else {
-				addr = identity ? identity.sendFromAddress : (this.delegatedSenderAddr || accountName);
-                onBehalfOf = this.isOnBehalfOf;
+		var result2 = { handled: false };
+		appCtxt.notifyZimlets("onZmMailMsg_addFrom2", [this, accountName, identity, onBehalfOf, addrNodes, result2]);
+		if (!result2.handled) {
+			var addr, displayName;
+			if (this.fromSelectValue) {
+				addr = this.fromSelectValue.addr.address;
+				displayName = this.fromSelectValue.addr.name;
+			} else if (this._origMsg && this._origMsg.isInvite() && appCtxt.multiAccounts) {
+				identity = this._origMsg.getAccount().getIdentity();
+				addr = identity ? identity.sendFromAddress : this._origMsg.getAccount().name;
 				displayName = identity && identity.sendFromDisplay;
+			} else {
+				if (onBehalfOf) {
+					addr = accountName;
+				} else {
+					addr = identity ? identity.sendFromAddress : (this.delegatedSenderAddr || accountName);
+					onBehalfOf = this.isOnBehalfOf;
+					displayName = identity && identity.sendFromDisplay;
+				}
 			}
-		}
 
-		var node = {t:"f", a:addr};
-		if (displayName) {
-			node.p = displayName;
-		}
-		addrNodes.push(node);
-		if (onBehalfOf || !(ac.multiAccounts || isDraft)) {
-			// the main account is *always* the sender
-			addrNodes.push({t:"s", a:mainAcct});
+			var node = {t:"f", a:addr};
+			if (displayName) {
+				node.p = displayName;
+			}
+			addrNodes.push(node);
+			if (onBehalfOf || !(ac.multiAccounts || isDraft)) {
+				// the main account is *always* the sender
+				addrNodes.push({t:"s", a:mainAcct});
+			}
 		}
 	} else{
 

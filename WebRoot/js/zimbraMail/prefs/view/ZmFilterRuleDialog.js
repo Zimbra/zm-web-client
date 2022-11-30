@@ -47,6 +47,8 @@ ZmFilterRuleDialog = function() {
 	this._setConditionSelect();
 	this._createTabGroup();
 
+	appCtxt.notifyZimlets("onZmFilterRuleDialog", [this]);
+
 	// create these listeners just once
 	this._rowChangeLstnr			= new AjxListener(this, this._rowChangeListener);
 	this._opsChangeLstnr			= new AjxListener(this, this._opsChangeListener);
@@ -110,6 +112,8 @@ function(rule, editMode, referenceRule, accountName, outgoing) {
 	var name = rule ? rule.name : null;
 	nameField.value = name || "";
 	nameField.setAttribute('aria-label', ZmMsg.filterName);
+
+	appCtxt.notifyZimlets("onZmFilterRuleDialog_popup", [this, name, nameField]);
 
 	var activeField = Dwt.byId(this._activeCheckboxId);
 	activeField.checked = (!rule || rule.active);
@@ -695,6 +699,11 @@ function(conf, field, options, rowData, testType, rowId) {
 		tabGroup.addMember(button.getTabGroupMember());
 	}
 
+	var result = { value: null };
+	appCtxt.notifyZimlets("onZmFilterRuleDialog_createRowComponent", [this, field, rowData, id, result]);
+	if (result.value) {
+		return result.value;
+	}
 	return "<td role='none' id='" + id + "'></td>";
 };
 
@@ -1333,6 +1342,11 @@ function(ev) {
 	if (!name) {
 		msg = ZmMsg.filterErrorNoName;
 	}
+	var result1 = { value: null };
+	appCtxt.notifyZimlets("onZmFilterRuleDialog_okButtonListener1", [name, result1]);
+	if (result1.value) {
+		msg = result1.value;
+	}
 
 	var rule1 = this._rules.getRuleByName(name);
 	if ( rule1 && (rule1 != rule))  {
@@ -1412,6 +1426,7 @@ function(ev) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseOkButtonListener);
 	if (this._editMode) {
+		appCtxt.notifyZimlets("onZmFilterRuleDialog_okButtonListener2", [this, cachedRule, rule, active]);
 		this._rules._saveRules(this._rules.getIndexOfRule(rule), true, respCallback);
 	} else {
 		this._rules.addRule(rule, this._referenceRule, respCallback);
@@ -1458,7 +1473,12 @@ function(rowId) {
 	}
 	else if (testType == ZmFilterRule.TEST_ADDRESS && subject) {
 		subjectMod = ZmFilterRule.C_ADDRESS_VALUE[subject];
-		value += ";" + valueMod;   //addressTest has value=email part=all|domain|localpart
+
+		var result = { handled: false };
+		appCtxt.notifyZimlets("onZmFilterRuleDialog_getConditionFromRow1", [value, valueMod, result]);
+		if (!result.handled) {
+			value += ";" + valueMod;   //addressTest has value=email part=all|domain|localpart
+		}
 	}
 	else if (testType == ZmFilterRule.TEST_SIZE && valueMod && valueMod != "B") {
 		value += valueMod;
@@ -1469,7 +1489,11 @@ function(rowId) {
 		value = ZmMimeTable.MSG_READ_RECEIPT;
 	}
 	else if (testType == ZmFilterRule.TEST_ADDRESS) {
-		value += ";" + valueMod;   //addressTest has value=email part=all|domain|localpart
+		var result = { handled: false };
+		appCtxt.notifyZimlets("onZmFilterRuleDialog_getConditionFromRow2", [value, valueMod, result]);
+		if (!result.handled) {
+			value += ";" + valueMod;   //addressTest has value=email part=all|domain|localpart
+		}
 	}
 	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && value == ZmFilterRule.IMPORTANCE) {
 		value = valueMod;  //importanceTest

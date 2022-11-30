@@ -248,7 +248,12 @@ function(event) {
 	this._props.setPropertyVisible(this._permId, showPerm);
     $('#folderOfflineLblId').val(organizer.webOfflineSyncDays || 0)
 
-	Dwt.setVisible(this._excludeFbEl, !organizer.link && (organizer.type == ZmOrganizer.CALENDAR));
+	var result = { handled: false };
+	appCtxt.notifyZimlets("onZmFolderPropertyView_handleFolderChange", [this, result]);
+	if (!result.handled) {
+		Dwt.setVisible(this._excludeFbEl, !organizer.link && (organizer.type == ZmOrganizer.CALENDAR));
+	}
+
 	// TODO: False until server handling of the flag is added
 	//Dwt.setVisible(this._globalMarkReadEl, organizer.type == ZmOrganizer.FOLDER);
     Dwt.setVisible(this._globalMarkReadEl, false);

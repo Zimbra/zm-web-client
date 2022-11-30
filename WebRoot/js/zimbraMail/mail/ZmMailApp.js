@@ -764,6 +764,8 @@ function() {
 			options:			[true, false]
 		});
 	}
+
+	appCtxt.notifyZimlets('onZmMailApp_registerPrefs', []);
 };
 
 ZmMailApp.prototype.formatKeySeq = function(keySeq) {
@@ -945,6 +947,8 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHOW_ORIG, {textKey:"showOrig", image:"Message"});
 	ZmOperation.registerOp(ZmId.OP_SPAM, {textKey:"junkLabel", tooltipKey:"junkTooltip", image:"JunkMail", shortcut:ZmKeyMap.SPAM, textPrecedence:70}, ZmSetting.SPAM_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_USE_PREFIX, {textKey:"usePrefix"});
+
+	appCtxt.notifyZimlets('onZmMailApp_registerOperations', []);
 };
 
 /**

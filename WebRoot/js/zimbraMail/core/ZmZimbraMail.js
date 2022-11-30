@@ -589,6 +589,7 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
 ZmZimbraMail.prototype._postInitializeSettings =
 function() {
 	this._setCustomInvalidEmailPats();
+	appCtxt.notifyZimlets("onZmZimbraMail_postInitializeSettings", []);
 };
 
 /**
@@ -1156,6 +1157,12 @@ function(params) {
  */
 ZmZimbraMail.prototype._getDefaultStartAppName =
 function(account) {
+	var result = { value: null };
+	appCtxt.notifyZimlets("onZmZimbraMail_getDefaultStartAppName", [result]);
+	if (result.value) {
+		return result.value;
+	}
+
 	account = account || (appCtxt.multiAccounts && appCtxt.accountList.mainAccount) || null;
 	
 	for (var app in ZmApp.DEFAULT_SORT) {
@@ -2328,55 +2335,59 @@ function(parent, parentElement, adminUrl) {
 	var helpListener = new AjxListener(this, this._helpListener);
 	button.addSelectionListener(helpListener);
 
-    var mi;
-	if (adminUrl) {
-	    mi = menu.createMenuItem("adminLink", {text: ZmMsg.adminLinkLabel});
-	    mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.adminLinkCallback, adminUrl));
+	var result = { value: null };
+	appCtxt.notifyZimlets("onZmZimbraMail_getDropMenuOptions", [this, button, menu, supportedHelps, helpListener, result]);
+	var mi = result.value;
+	if (!mi) {
+		if (adminUrl) {
+		    mi = menu.createMenuItem("adminLink", {text: ZmMsg.adminLinkLabel});
+		    mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.adminLinkCallback, adminUrl));
+		}
+
+		mi = menu.createMenuItem("modernClientLink", {text: ZmMsg.modernClient});
+		mi.addSelectionListener(ZmZimbraMail.modernClientLinkCallback);	
+
+		menu.createSeparator();
+
+		if (supportedHelps.indexOf("productHelp") !== -1) {
+			mi = menu.createMenuItem("documentation", {text: ZmMsg.productHelp});
+			mi.addSelectionListener(helpListener);
+		}
+
+		if (supportedHelps.indexOf("onlineHelp") !== -1) {
+			mi = menu.createMenuItem("onlinehelp", {text: ZmMsg.onlineHelp});
+			mi.addSelectionListener(new AjxListener(this, this._onlineHelpListener));
+		}
+
+
+		if (supportedHelps.indexOf("newFeatures") !== -1) {
+			mi = menu.createMenuItem("newFeatures", {text: ZmMsg.newFeatures});
+			mi.addSelectionListener(new AjxListener(this, this._newFeaturesListener));
+		}
+
+		mi = menu.createMenuItem("showCurrentShortcuts", {text: ZmMsg.shortcuts});
+		mi.addSelectionListener(this._showCurrentShortcuts.bind(this));
+
+		menu.createSeparator();
+
+		mi = menu.createMenuItem(ZmZimbraMail.HELP_MENU_ABOUT, {text: ZmMsg.about});
+		mi.addSelectionListener(new AjxListener(this, this._aboutListener));
+
+	    menu.createSeparator();
+
+		if (!appCtxt.isExternalAccount() && appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED)) {
+	        mi = menu.createMenuItem("offlineSettings", {text: ZmMsg.offlineSettings});
+	        mi.addSelectionListener(new AjxListener(this, this._offlineSettingsListener));
+	    }
+
+		if (appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED)) {
+	        mi = menu.createMenuItem("changePassword", {text: ZmMsg.changePassword});
+	        mi.addSelectionListener(new AjxListener(this, this._changePasswordListener));
+		}
+
+	    mi = menu.createMenuItem(ZmZimbraMail.HELP_MENU_LOGOFF, {text: ZmMsg.logOff});
+		mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.logOff));
 	}
-
-	mi = menu.createMenuItem("modernClientLink", {text: ZmMsg.modernClient});
-	mi.addSelectionListener(ZmZimbraMail.modernClientLinkCallback);	
-
-	menu.createSeparator();
-
-	if (supportedHelps.indexOf("productHelp") !== -1) {
-		mi = menu.createMenuItem("documentation", {text: ZmMsg.productHelp});
-		mi.addSelectionListener(helpListener);
-	}
-
-	if (supportedHelps.indexOf("onlineHelp") !== -1) {
-		mi = menu.createMenuItem("onlinehelp", {text: ZmMsg.onlineHelp});
-		mi.addSelectionListener(new AjxListener(this, this._onlineHelpListener));
-	}
-
-
-	if (supportedHelps.indexOf("newFeatures") !== -1) {
-		mi = menu.createMenuItem("newFeatures", {text: ZmMsg.newFeatures});
-		mi.addSelectionListener(new AjxListener(this, this._newFeaturesListener));
-	}
-
-	mi = menu.createMenuItem("showCurrentShortcuts", {text: ZmMsg.shortcuts});
-	mi.addSelectionListener(this._showCurrentShortcuts.bind(this));
-
-	menu.createSeparator();
-
-	mi = menu.createMenuItem(ZmZimbraMail.HELP_MENU_ABOUT, {text: ZmMsg.about});
-	mi.addSelectionListener(new AjxListener(this, this._aboutListener));
-
-    menu.createSeparator();
-
-	if (!appCtxt.isExternalAccount() && appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED)) {
-        mi = menu.createMenuItem("offlineSettings", {text: ZmMsg.offlineSettings});
-        mi.addSelectionListener(new AjxListener(this, this._offlineSettingsListener));
-    }
-
-	if (appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED)) {
-        mi = menu.createMenuItem("changePassword", {text: ZmMsg.changePassword});
-        mi.addSelectionListener(new AjxListener(this, this._changePasswordListener));
-	}
-
-    mi = menu.createMenuItem(ZmZimbraMail.HELP_MENU_LOGOFF, {text: ZmMsg.logOff});
-	mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.logOff));
 
 	button.setMenu(menu);
 	this.setupHelpMenu(button);

@@ -728,6 +728,8 @@ function() {
  */
 ZmAppCtxt.prototype.getChooseFolderDialog =
 function(appName) {
+	appCtxt.notifyZimlets("onZmAppCtxt_getChooseFolderDialog1", [this]);
+
 	var app = appName ? this.getApp(appName) : this.getCurrentApp();
 	// this.getCurrentAppName() returns "Search" for search apps. Let's re-use dialogs from regular apps.
 	appName = app.isZmSearchApp ? this.searchAppName : app.getName();
@@ -736,6 +738,9 @@ function(appName) {
 		AjxDispatcher.require("Extras");
 		this._chooseFolderDialogs[appName] = new ZmChooseFolderDialog(this._shell);
 	}
+
+	appCtxt.notifyZimlets("onZmAppCtxt_getChooseFolderDialog2", [this]);
+
 	this._chooseFolderDialog = this._chooseFolderDialogs[appName];
 	return this._chooseFolderDialog;
 };
@@ -1837,7 +1842,11 @@ function(event, args, options) {
 	if (options && options.noChildWindow && this.isChildWindow) { return; }
 	try {
 		return window.skin && AjxUtil.isFunction(window.skin.handleNotification) && window.skin.handleNotification(event, args);
-	} catch (e) {}
+	} catch (e) {
+		if (window.console && window.console.error) {
+			console.error(e);
+		}
+	}
 };
 
 
@@ -1971,8 +1980,15 @@ function(ev) {
     		url = AjxUtil.formatUrl({protocol: proto, port: port, path: path, qsReset: true, qsArgs: qsArgs});
     	}
 
-    	var args  = "height=675,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
-    	window.open(url,'ChangePasswordWindow', args);
+        var args;
+        var result = { value: null };
+        appCtxt.notifyZimlets("onZmAppCtxt_getChangePasswordWindow", [result]);
+        if (result.value) {
+            args = result.value;
+        } else {
+            args = "height=675,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
+        }
+        window.open(url,'ChangePasswordWindow', args);
 };
 
 /**

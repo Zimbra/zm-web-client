@@ -76,6 +76,8 @@ function() {
 		buttons.push(ZmOperation.PRINT);
 	}
 
+	appCtxt.notifyZimlets("onZmApptController_createToolBar", [buttons, secondaryButtons]);
+
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentViewId, controller:this, secondaryButtons:secondaryButtons});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, this._saveListener.bind(this));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, this._cancelListener.bind(this));

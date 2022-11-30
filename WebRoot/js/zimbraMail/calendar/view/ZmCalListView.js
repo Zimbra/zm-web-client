@@ -146,6 +146,12 @@ function() {
 
 ZmCalListView.prototype._updateTitle =
 function() {
+	var result = { handled: false };
+	appCtxt.notifyZimlets("onZmCalListView_updateTitle", [this, result]);
+	if (result.handled) {
+		return;
+	}
+
 	var dayFormatter = DwtCalendar.getDayFormatter();
 	var start = new Date(this._timeRangeStart);
 	var end = new Date(this._timeRangeEnd);
@@ -163,6 +169,7 @@ function(startDate, endDate) {
 		AjxDateUtil._getMonthName(endDate, true),
 		endDate.getDate()
 	];
+	appCtxt.notifyZimlets("onZmCalListView_updateDateRange", [startDate, endDate, params]);
 	this._dateRangeField.innerHTML = AjxMessageFormat.format(ZmMsg.viewCalListDateRange, params);
 };
 

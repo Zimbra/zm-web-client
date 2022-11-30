@@ -340,7 +340,11 @@ function(ev) {
 	if (!listView) { return; }
 
 	var sel = listView.getSelection();
-	appCtxt.getFilterRuleDialog().popup(sel[0], true, null, null, this._outgoing);
+	var result = { handled: false };
+	appCtxt.notifyZimlets("onZmFilterRulesController_editListener", [this, sel, result]);
+	if (!result.handled) {
+		appCtxt.getFilterRuleDialog().popup(sel[0], true, null, null, this._outgoing);
+	}
 };
 
 /**

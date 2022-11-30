@@ -92,6 +92,12 @@ ZmOperation.registerOp = function(op, params, precondition, callback) {
 	if (callback)	    { ZmOperation.CALLBACK[op]	    = callback; }
 };
 
+ZmOperation.unregisterOp = function(op) {
+	delete ZmOperation[op];
+	delete ZmOperation.SETUP[op];
+	delete ZmOperation.PRECONDITION[op];
+	delete ZmOperation.CALLBACK[op];
+};
 
 ZmOperation.KEY_ID		= "opId";
 ZmOperation.MENUITEM_ID	= "menuItemId";
@@ -245,6 +251,8 @@ function() {
 	ZmOperation.NEW_ORG_OPS.push(ZmOperation.NEW_FOLDER, ZmOperation.NEW_TAG);
 	ZmOperation.NEW_ORG_KEY[ZmOperation.NEW_FOLDER]	= "folder";
 	ZmOperation.NEW_ORG_KEY[ZmOperation.NEW_TAG]	= "tag";
+
+	appCtxt.notifyZimlets("onZmOperation_initialize", []);
 };
 
 /**

@@ -284,6 +284,7 @@ function(event) {
         this._tabInUse[retentionIndex] = true;
         retentionTabButton.setVisible(true);
         tabBar.setVisible(true);
+        appCtxt.notifyZimlets("onZmFolderPropsDialog_handleFolderChange", [this, retentionTabButton, tabBar, retentionIndex]);
     }
 
     for (var i = 0; i < this._tabViews.length; i++) {

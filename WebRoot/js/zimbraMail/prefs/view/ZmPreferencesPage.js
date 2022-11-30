@@ -1086,6 +1086,13 @@ function(ev) {
 	var item = ev.dwtObj;
 	var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
 	this._showLocale(item._localeId, button);
+
+	var result = { handled: false };
+	appCtxt.notifyZimlets("onZmPreferencesPage_localeSelectionListener", [this, item, result]);
+	if (result.handled) {
+		return;
+	}
+
     this._showComposeDirection(item._localeId);
 };
 

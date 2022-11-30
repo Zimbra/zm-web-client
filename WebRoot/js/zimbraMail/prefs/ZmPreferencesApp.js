@@ -525,6 +525,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		}
 	}
 
+	appCtxt.notifyZimlets("onZmPreferencesApp_registerPrefs_before_registerPrefSection", [sections]);
 
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
@@ -982,6 +983,8 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		displayOptions:		[ZmMsg.displayAsHTML, ZmMsg.displayAsText],
 		options:			[true, false]
 	});
+
+	appCtxt.notifyZimlets("onZmPreferencesApp_registerPrefs", []);
 };
 
 // other

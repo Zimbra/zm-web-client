@@ -771,6 +771,7 @@ function(width) {
         // Fix for bug: 83100. Fix adapted from ZmReminderDialog::_createButtons
 		Dwt.setSize(reminderInputEl, "120px", "2rem");
 		reminderInputEl.onblur = AjxCallback.simpleClosure(this._handleReminderOnBlur, this, reminderInputEl);
+		appCtxt.notifyZimlets("onZmCalItemEditView_createWidgets", [reminderInputEl]);
 
 		var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);
 		var reminderSelectionListener = new AjxListener(this, this._reminderSelectionListener);

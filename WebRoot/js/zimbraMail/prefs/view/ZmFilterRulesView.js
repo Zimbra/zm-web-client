@@ -374,6 +374,7 @@ function(sForce, tForce) {
 			this._moveDownButton.setEnabled(true);
 			this._moveUpButton.setEnabled(true);
 		}
+		appCtxt.notifyZimlets("onZmFilterRulesChooser_enableButtons", [this, listView, sel]);
 	}
 };
 

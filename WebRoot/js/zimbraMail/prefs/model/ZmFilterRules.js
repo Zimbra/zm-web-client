@@ -45,6 +45,8 @@ ZmFilterRules = function(accountName, outgoing) {
 	this._initialized = false;
 	this._accountName = accountName;
 	this._outgoing = outgoing;
+
+	appCtxt.notifyZimlets("onZmFilterRules", [this]);
 };
 
 ZmFilterRules.prototype = new ZmModel;
@@ -66,6 +68,13 @@ ZmFilterRules.prototype.addRule =
 function(rule, referenceRule, callback) {
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: add rule '" + rule.name + "'");
 	var index = referenceRule ? this._vector.indexOf(referenceRule) : 0;
+
+	var result = { value: null };
+	appCtxt.notifyZimlets("onZmFilterRules_addRule", [this, rule, index, result]);
+	if (result.value && result.value.index) {
+		index = result.value.index;
+	}
+
 	this._insertRule(rule, index);
 	this._saveRules(index, true, callback);
 };
@@ -131,11 +140,19 @@ function(rule, skipSave) {
 	if (!rule) { return; }
 	var index = this.getIndexOfRule(rule);
 	if (index >= (this._vector.size() - 1)) { return; }
-	
-	while (index < this._vector.size() -1) {
-		var nextRule = this._vector.removeAt(index+1);
-		this._insertRule(nextRule, index);
-		index++;
+
+	var doInsert = true;
+	var result = { handled: false, value: null };
+	appCtxt.notifyZimlets("onZmFilterRules_moveToBottom", [this, rule, result]);
+	if (result.handled) {
+		doInsert = result.value;
+	}
+	if (doInsert) {
+		while (index < this._vector.size() -1) {
+			var nextRule = this._vector.removeAt(index+1);
+			this._insertRule(nextRule, index);
+			index++;
+		}
 	}
 	if (!skipSave) {
 		this._saveRules(index, true);

@@ -480,6 +480,13 @@ function(addSigs) {
 	}
 	var ic = appCtxt.getIdentityCollection();
 	var identities = ic && ic.getIdentities(true);
+
+	var result = { handled: false };
+	appCtxt.notifyZimlets("onZmSignaturesPage_resetUsageSelects", [this, identities, table, signatures, result]);
+	if (result.handled) {
+		return;
+	}
+
 	if (identities && identities.length) {
 		for (var i = 0, len = identities.length; i < len; i++) {
 			this._addUsageSelects(identities[i], table, signatures);

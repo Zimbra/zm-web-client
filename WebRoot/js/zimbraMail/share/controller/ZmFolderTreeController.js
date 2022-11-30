@@ -171,6 +171,7 @@ function(parent, type, id) {
 	var op = parent.getOp(ZmOperation.EMPTY_FOLDER);
 	if (op) {
 		op.setText(emptyText);
+		appCtxt.notifyZimlets("onZmFolderTreeController_resetOperations", [op, nId]);
 	}
 
     var isTrash = (nId == ZmOrganizer.ID_TRASH);
