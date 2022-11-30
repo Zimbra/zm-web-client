@@ -55,10 +55,12 @@ function() {
 ZmDesktopAlert.prototype.getDisplayText =
 function() {
     if (this.useWebkit || this.useNotification) {
-       return ZmMsg.showPopup;
+        return ZmMsg.showPopup;
     } else if (this.usePrism) {
-		return AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup;
-	}
+        return AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup;
+    } else {
+        return ZmMsg.showPopupDisabled;
+    }
 };
 
 ZmDesktopAlert.prototype.start =

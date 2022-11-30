@@ -812,6 +812,13 @@ function(id, setup, value) {
 			}
 		}
 
+		if (id === ZmSetting.MAIL_NOTIFY_ALL) {
+			var desktopAlert = ZmDesktopAlert.getInstance();
+			if (!desktopAlert.useWebkit && !desktopAlert.useNotification) {
+				radioBtn.setEnabled(false);
+			}
+		}
+
 		if (isHoriz) {
 			cell = row.insertCell(-1);
 			cell.className = "ZmRadioButtonGroupCell";
@@ -834,6 +841,13 @@ function(id, setup, value) {
 	var cboxLabel = ZmPreferencesPage.__formatLabel(text, value);
 	checkbox.setText(cboxLabel);
 	checkbox.setSelected(value);
+
+	if (id === ZmSetting.MAIL_NOTIFY_TOASTER || id === ZmSetting.CAL_REMINDER_NOTIFY_TOASTER) {
+	var desktopAlert = ZmDesktopAlert.getInstance();
+	if (!desktopAlert.useWebkit && !desktopAlert.useNotification) {
+			checkbox.setEnabled(false);
+		}
+	}
 
 	// TODO: Factor this out
 	if (id == ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED) {
