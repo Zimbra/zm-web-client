@@ -2228,7 +2228,7 @@ function() {
 	if (this._showResources) {
 		this._makeFocusable(this._showResources);
 		Dwt.setHandler(this._showResources, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
-        Dwt.setHandler(this._showResources, DwtEvent.ONKEYUP, ZmApptEditView._handleKeyPress);
+		Dwt.setHandler(this._showResources, DwtEvent.ONKEYUP, ZmApptEditView._handleKeyPress);
 	}
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmCalItemEditView._onMouseOver);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);

@@ -491,7 +491,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 				button.dwtInputField = dwtInputField;
 			}
 			dwtInputField.reparentHtmlElement(sched.dwtNameId);
-            this._tabGroup.addMember(dwtInputField);
+			this._tabGroup.addMember(dwtInputField);
 		}
 
 		sched.ptstObj = document.getElementById(sched.dwtNameId+"_ptst");

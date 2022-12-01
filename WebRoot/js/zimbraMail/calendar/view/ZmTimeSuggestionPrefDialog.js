@@ -145,7 +145,7 @@ function(account) {
     this.addMemberInTabGroup(document.getElementById(this._htmlElId + '_building'));
     this.addMemberInTabGroup(document.getElementById(this._htmlElId + '_floor'));
     this.addMemberInTabGroup(this.getButton(DwtDialog.OK_BUTTON));
-	this.addMemberInTabGroup(this.getButton(DwtDialog.CANCEL_BUTTON));
+    this.addMemberInTabGroup(this.getButton(DwtDialog.CANCEL_BUTTON));
 };
 
 ZmTimeSuggestionPrefDialog.prototype.addMemberInTabGroup =
