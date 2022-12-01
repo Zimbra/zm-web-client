@@ -974,7 +974,13 @@ function(view, callback, result) {
 
 ZmListController.prototype._initializeNavToolBar =
 function(view) {
-	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
+	var prevButton, nextButton;
+
+	if (view === 'TKL-main') {
+		prevButton = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+	}
+
+	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view, prevButton: prevButton, nextButton: nextButton});
 	this._setNavToolBar(tb, view);
 };
 
