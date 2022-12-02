@@ -2756,6 +2756,7 @@ function(evt) {
 	if (!m) return;
 
 	var dataSource = this._currentAccount;
+	dataSource.email = email;
 	if (dataSource.userName == "") {
 		this._setControlValue("USERNAME", section, m[1]);
 	}
