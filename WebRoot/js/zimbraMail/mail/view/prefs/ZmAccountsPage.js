@@ -1577,6 +1577,12 @@ function() {
 			this._errorMsg = ZmMsg.invalidPersonaName;
 			return false;
 		}
+		var section = this._currentSection;
+		var email = this._getControlValue("EMAIL", section);
+
+		if (isExternal && !this.__mandatoryEmail(email)) {
+			return false;
+		}
 		// bug 950
 		if (isExternal && !this.__validateEmail(this.__getAccountValue(account, "EMAIL"))) {
 			return false;
@@ -1614,6 +1620,15 @@ function(account, id) {
 	if (!prop) return;
 	var identity = account.getIdentity();
 	return identity && (typeof prop == "string" ? identity[prop] : identity[prop]());
+};
+
+ZmAccountsPage.prototype.__mandatoryEmail =
+function(str) {
+	if (!str || str.trim().length == 0) {
+		this._errorMsg = AjxMessageFormat.format(ZmMsg.fieldNameIsARequiredField, [ZmMsg.emailAddr]);
+		return false;
+	}
+	return true;
 };
 
 ZmAccountsPage.prototype.__validateEmail =
@@ -2975,6 +2990,14 @@ function(continueCallback) {
 			appCtxt.setStatusMsg(params);
 			continueCallback.run(false);
 			return;
+		}
+		if ((account.type == ZmAccount.TYPE_POP || account.type == ZmAccount.TYPE_IMAP) && account.email == "") {
+			if (account.userName.includes('@')) {
+				account.email = account.userName;
+			} else {
+				account.email = account.userName && account.mailServer ? [account.userName,account.mailServer].join("@") : account.userName;
+			}
+			this._accountListView.setCellContents(account, ZmItem.F_EMAIL, AjxStringUtil.htmlEncode(account.email));
 		}
 	}
 
