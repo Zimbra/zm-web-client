@@ -5033,6 +5033,19 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	margin:26px 24px;
 }
 
+.ZmSharedFileRemoved {
+	text-decoration: line-through;
+}
+
+.ZmSharedFilePreview {
+	color: blue;
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	font-size: @UserFontSize-large@
+}
+
 /*Attachments View*/
 .ZmFilterTree {
 	border-width:0px;

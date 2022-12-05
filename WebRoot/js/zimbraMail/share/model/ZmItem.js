@@ -434,7 +434,11 @@ function() {
 		: null;
 
 	if (url && this.folderId == ZmFolder.ID_FILE_SHARED_WITH_ME) {
-		url = [url, "?", "id=", this.id].join("");
+		if (this.sfid) {
+			url = [url, "?", "id=", this.sfid].join("");
+		} else {
+			url = [url, "?", "id=", this.id].join("");
+		}
 	}
 
 	DBG.println(AjxDebug.DBG3, "NO REST URL FROM SERVER. GENERATED URL: " + url);

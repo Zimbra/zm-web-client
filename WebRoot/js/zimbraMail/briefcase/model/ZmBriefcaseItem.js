@@ -357,16 +357,34 @@ function() {
 	return appCtxt.getById(this.folderId);
 };
 
-ZmBriefcaseBaseItem.prototype._loadFromDom =
-function(node) {
-
-	this.id = node.id;
-
-	if (node.rest)	{ this.restUrl = node.rest; }
-	if (node.l)		{ this.folderId = node.l; }
-	if (node.name)	{ this.name = node.name; }
-	if (node.cr)	{ this.creator = node.cr; }
-	if (node.perm)	{ this.permission = node.perm; }
+ZmBriefcaseBaseItem.prototype._loadFromDom = function (node) {
+	/**
+	 * In search api response we get 'id' and 'sfid' for files in 'files shared with me' folder. Here id is a combination id which is required to form the rest url
+	 * and get the preview data and sfid is the actual 'id' of the item/file.
+	 * To delete the file need to call "ItemActionRequest' with 'sfid' coming from 'searchResponse' since this is the actual file id.
+	 *  Interchanged the 'id' and 'sfid' properties for items in 'files shared with me' folder, so that rest of the operations is perfomed as earlier.
+	 */
+	if (node.sfid && node.l == ZmFolder.ID_FILE_SHARED_WITH_ME) {
+		this.id = node.sfid;
+		this.sfid = node.id;
+	} else {
+		this.id = node.id;
+	}
+	if (node.rest) {
+		this.restUrl = node.rest;
+	}
+	if (node.l) {
+		this.folderId = node.l;
+	}
+	if (node.name) {
+		this.name = node.name;
+	}
+	if (node.cr) {
+		this.creator = node.cr;
+	}
+	if (node.perm) {
+		this.permission = node.perm;
+	}
 
 	this.shares = this.shares || [];
 
@@ -381,32 +399,48 @@ function(node) {
 		}
 	}
 
-	if (node.cd)	{ this.createDate = new Date(Number(node.cd)); }
-	if (node.md)	{ //node.md is seconds since epoch
-        var mdMilliSecs = Number(node.md)*1000;
-        this.modifyDate = new Date(mdMilliSecs);
-    }
-	if (node.d)     { this.contentChangeDate = new Date(Number(node.d)); }
+	if (node.cd) {
+		this.createDate = new Date(Number(node.cd));
+	}
+	if (node.md) {
+		//node.md is seconds since epoch
+		var mdMilliSecs = Number(node.md) * 1000;
+		this.modifyDate = new Date(mdMilliSecs);
+	}
+	if (node.d) {
+		this.contentChangeDate = new Date(Number(node.d));
+	}
 
-	if (node.leb)	{ this.modifier = node.leb; }
-	if (node.s || node.s == 0) //size can be 0
-                    { this.size = Number(node.s); }
-	if (node.ver)	{ this.version = Number(node.ver) || 0; }
-	if (node.ct)	{ this.contentType = node.ct.split(";")[0]; }
-	if (node.tn)	{ this._parseTagNames(node.tn);	}
-    this.locked = false;
-    if (node.loid)    {
-        this.locked = true;
-        this.lockId = node.loid;
-        this.lockUser = node.loe;
-        this.lockTime = new Date(Number(node.lt));
-    }
+	if (node.leb) {
+		this.modifier = node.leb;
+	}
+	if (node.s || node.s == 0) {
+		//size can be 0
+		this.size = Number(node.s);
+	}
+	if (node.ver) {
+		this.version = Number(node.ver) || 0;
+	}
+	if (node.ct) {
+		this.contentType = node.ct.split(";")[0];
+	}
+	if (node.tn) {
+		this._parseTagNames(node.tn);
+	}
+	this.locked = false;
+	if (node.loid) {
+		this.locked = true;
+		this.lockId = node.loid;
+		this.lockUser = node.loe;
+		this.lockTime = new Date(Number(node.lt));
+	}
 
-    if (node.desc){  this.notes = AjxStringUtil.htmlEncode(node.desc); }
-    this.subject = this.getNotes();
+	if (node.desc) {
+		this.notes = AjxStringUtil.htmlEncode(node.desc);
+	}
+	this.subject = this.getNotes();
 
-    this._parseFlags(node.f);
-
+	this._parseFlags(node.f);
 };
 
 /**
@@ -453,7 +487,13 @@ function() {
  */
 ZmBriefcaseItem.createFromDom =
 function(node, args) {
-	var item = new ZmBriefcaseItem(node.id, args.list);
+	var id;
+	if (node.sfid && node.l == ZmFolder.ID_FILE_SHARED_WITH_ME) {
+		id = node.sfid;
+	} else {
+		id = node.id
+	}
+	var item = new ZmBriefcaseItem(id, args.list);
 	item._loadFromDom(node);
 	return item;
 };
