@@ -328,12 +328,24 @@ function() {
 	div.innerHTML = AjxTemplate.expand("calendar.Appointment#TimeSuggestion-NoSuggestions", subs);
 	this._addRow(div);
 
+    var oldSearchAllLink = this._searchAllLink;
     //add event handlers for no results action link
     this._searchAllId = this.getHTMLElId() + "_showall";
     this._searchAllLink = document.getElementById(this._searchAllId);
     if(this._searchAllLink) {
         this._searchAllLink._viewId = AjxCore.assignId(this);
-        Dwt.setHandler(this._searchAllLink, DwtEvent.ONCLICK, AjxCallback.simpleClosure(ZmTimeSuggestionView._onClick, this, this._searchAllLink));
+        this.parent._tabGroup.replaceMember(oldSearchAllLink, this._searchAllLink);
+        var callBack = AjxCallback.simpleClosure(ZmTimeSuggestionView._onClick, this, this._searchAllLink);
+        Dwt.setHandler(this._searchAllLink, DwtEvent.ONCLICK, callBack);
+        Dwt.setHandler(this._searchAllLink, DwtEvent.ONKEYUP, ZmApptAssistantView._handleKeyPress.bind(this, callBack));
+    }
+};
+
+ZmTimeSuggestionView._handleKeyPress =
+function (listener, ev) {
+    var keyCode = DwtKeyEvent.getCharCode(ev);
+    if (keyCode === DwtKeyEvent.KEY_RETURN) {
+        listener.call(this);
     }
 };
 
