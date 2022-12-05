@@ -179,14 +179,14 @@ function (ev) {
 			this._controller._tabGroup.replaceMember(this._headerFocusElement, nextElement);
 			this._controller._tabGroup.setFocusMember(nextElement);
 			this._headerFocusElement = nextElement;
-		}		
+		}
 	}
 
 	if (keyCode === DwtKeyEvent.KEY_SPACE) {
 		var currentHeaderItem = this._headerList[this._headerFocusElementIndex];
 		clickEl = document.getElementById(currentHeaderItem._id);
-        this._columnClicked(clickEl,ev);
-    }
+		this._columnClicked(clickEl,ev);
+	}
 
 	if (keyCode === DwtKeyEvent.KEY_ENTER && ev.metaKey) {
 		var actionMenu = this._colHeaderActionMenu = this._getActionMenuForColHeader();

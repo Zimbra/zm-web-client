@@ -1899,10 +1899,10 @@ function() {
 	}
 
 	if (appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
-        var miniCalendar = appCtxt.getCalManager().getMiniCalendar();
-        rootTg.addMember(miniCalendar._compositeTabGroup);
-        miniCalendar.tabgroup = rootTg;
-    }
+		var miniCalendar = appCtxt.getCalManager().getMiniCalendar();
+		rootTg.addMember(miniCalendar._compositeTabGroup);
+		miniCalendar.tabgroup = rootTg;
+	}
 	
 	appCtxt.getKeyboardMgr().setTabGroup(rootTg);
 };
