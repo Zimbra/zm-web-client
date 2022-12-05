@@ -64,6 +64,7 @@ function() {
 
 ZmPreviewPaneView.SASH_THRESHOLD = 5;
 ZmPreviewPaneView._TAG_IMG = "TI";
+ZmPreviewPaneView.REMOVE_FILE_BUTTON_ID = "ZmPreviewPaneViewButton";
 
 // public methods
 
@@ -355,37 +356,43 @@ function() {
 	this._previewView.set(this._delayedSelectionItem);
 };
 
-ZmPreviewPaneView.prototype._listSelectionListener = function(ev, item) {
+ZmPreviewPaneView.prototype._listSelectionListener = function (ev, item) {
+	var item = item || ev.item;
+	if (!item) {
+		return;
+	}
 
-    var item = item || ev.item;
-    if (!item) {
-    	return;
-    }
+	var cs = appCtxt.isOffline && appCtxt.getCurrentSearch();
+	if (cs) {
+		appCtxt.accountList.setActiveAccount(item.getAccount());
+	}
+	var noChange = ev && ev._details && ev._details.oldFolderId == item.folderId;
+	// Ignore (no preview change) if move to same folder, deletion, or multi-select (shift key)
+	if ((ev.event === ZmEvent.E_MOVE && noChange) || ev.event === ZmEvent.E_DELETE || ev.shiftKey) {
+		return;
+	}
 
-    var cs = appCtxt.isOffline && appCtxt.getCurrentSearch();
-    if (cs) {
-        appCtxt.accountList.setActiveAccount(item.getAccount());
-    }
-    var noChange = ev && ev._details && ev._details.oldFolderId == item.folderId;
-    // Ignore (no preview change) if move to same folder, deletion, or multi-select (shift key)
-    if ((ev.event === ZmEvent.E_MOVE && noChange) || ev.event === ZmEvent.E_DELETE || ev.shiftKey) {
-        return;
-    }
-
-    if(ev.field == ZmItem.F_EXPAND && this._detailListView._isExpandable(item)){
-        this._detailListView.expandItem(item);   
-    } else if(this._controller.isReadingPaneOn() && item){
-    	if (ev.kbNavEvent) {
-    		if (this._listSelectionShortcutDelayActionId) {
-    			AjxTimedAction.cancelAction(this._listSelectionShortcutDelayActionId); 
-    		}
-    		this._delayedSelectionItem = item;
-    		this._listSelectionShortcutDelayActionId = AjxTimedAction.scheduleAction(this._listSelectionShortcutDelayAction,
-    				ZmPreviewPaneView.LIST_SELECTION_SHORTCUT_DELAY)
-    	} else {
-    		this._previewView.set(item);
-    	}
-    }
+	if (ev.field == ZmItem.F_EXPAND && this._detailListView._isExpandable(item)) {
+		this._detailListView.expandItem(item);
+	} else if (item) {
+		if (this._controller.isReadingPaneOn()) {
+			if (ev.kbNavEvent) {
+				if (this._listSelectionShortcutDelayActionId) {
+					AjxTimedAction.cancelAction(this._listSelectionShortcutDelayActionId);
+				}
+				this._delayedSelectionItem = item;
+				this._listSelectionShortcutDelayActionId = AjxTimedAction.scheduleAction(
+					this._listSelectionShortcutDelayAction,
+					ZmPreviewPaneView.LIST_SELECTION_SHORTCUT_DELAY
+				);
+			} else {
+				this._previewView.set(item);
+			}
+		} else if (item.folderId == ZmFolder.ID_FILE_SHARED_WITH_ME) {
+			var restUrl = item.getRestUrl();
+			AjxRpc.invoke("", restUrl, null, this._handleNoPreviewUrlResponse.bind(this, item), true);
+		}
+	}
 };
 
 ZmPreviewPaneView.prototype._toggle =
@@ -610,7 +617,75 @@ function(item, errorCode, error){
         }
         
     }    
-};        
+};     
+
+ZmPreviewView.prototype._handleDeleteSharedFile =
+function(item) {
+	this._controller._doDelete(item, true);
+};
+
+ZmPreviewPaneView.prototype._handleDeleteNoSuchFile =
+function(item) {
+	var ds = appCtxt.getYesNoMsgDialog();
+	ds.reset();
+	ds.registerCallback(DwtDialog.YES_BUTTON, this._controller._doDelete2, this._controller, [item, true]);
+	ds.registerCallback(DwtDialog.NO_BUTTON, appCtxt.getAppController()._clearDialog, this, ds);
+	var msg = AjxMessageFormat.format(ZmMsg.confirmDeleteMissingFile, AjxStringUtil.htmlEncode(item.name));
+	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	ds.popup();
+};
+
+ZmPreviewPaneView.prototype._handleNoPreviewUrlResponse = function (item, response) {
+	if (response.status == 404) {
+		var listId = this._controller._listView[this._controller.getCurrentViewId()]._getFieldId(item, ZmItem.F_NAME);
+		var name = document.getElementById(listId);
+		name.setAttribute("class", "ZmSharedFileRemoved");
+		if (!this._controller.isReadingPaneOn()) {
+			this._handleDeleteNoSuchFile(item);
+		}
+	}
+};
+
+ZmPreviewView.prototype._handlePreviewUrlResponse =
+function(item, restUrl, response) {
+	var html =  AjxTemplate.expand("briefcase.Briefcase#sharedFileView", {id: ZmPreviewPaneView.REMOVE_FILE_BUTTON_ID});
+	if (response.status == 404) {
+		var listId = this._controller._listView[this._controller.getCurrentViewId()]._getFieldId(
+			item,
+			ZmItem.F_NAME
+		);
+
+		var name = document.getElementById(listId);
+		name.setAttribute("class", "ZmSharedFileRemoved");
+		this._iframePreview.setIframeContent(html);
+
+		var iframeDoc = this._iframePreview && this._iframePreview.getDocument();
+		var cssLink = document.createElement("link");
+		cssLink.setAttribute("rel", "stylesheet");
+		cssLink.setAttribute("type", "text/css");
+		cssLink.setAttribute("href", "/css/zm.css");
+		iframeDoc.head.appendChild(cssLink);
+		var button = iframeDoc && iframeDoc.getElementById(ZmPreviewPaneView.REMOVE_FILE_BUTTON_ID);
+		iframeDoc.body.style.backgroundColor = "white";
+
+		if (button) {
+			button.addEventListener("click", this._handleDeleteSharedFile.bind(this, item, true));
+		}
+		return;
+	}
+	
+	restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
+	if (ZmMimeTable.isWebDoc(item.contentType)) {
+		restUrl = restUrl + ( restUrl.match(/\?/) ? '&' : '?' ) + "viewonly=1";
+	} else {
+		this._setupLoading();
+		restUrl = this._setupErrorCallback(restUrl);
+		restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "view=html";
+	}
+
+	this._iframePreview.setSrc(restUrl);
+	Dwt.setLoadedTime("ZmBriefcaseItem"); //iframe src set but item may not be downloaded by browser
+};
 
 ZmPreviewView.prototype._setupErrorCallback =
 function(url){
@@ -623,47 +698,46 @@ function(url){
     return url;
 };
 
-ZmPreviewView.prototype.set = function(item) {
+ZmPreviewView.prototype.set = function (item) {
+	if (!item) {
+		this.enablePreview(false);
+		return;
+	}
 
-    if (!item){
-        this.enablePreview(false);
-        return;
-    }
+	if (item === this._previewItem) {
+		return;
+	}
 
-    if (item === this._previewItem) {
-        return;
-    }
+	this._oldItem = this._previewItem;
+	this._previewItem = item;
+	this.enablePreview(true);
 
-    this._oldItem = this._previewItem;
-    this._previewItem = item;
-    this.enablePreview(true);
+	this._previewContent = false;
 
-    this._previewContent = false;
+	if (item.isFolder) {
+		this._setFolder(item);
+		return;
+	}
 
-    if (item.isFolder) {
-        this._setFolder(item);
-        return;
-    }
+	this._setHeader(item);
 
+	var restUrl = item.getRestUrl();
+	if (item.folderId == ZmFolder.ID_FILE_SHARED_WITH_ME) {
+		AjxRpc.invoke("", restUrl, null, this._handlePreviewUrlResponse.bind(this, item, restUrl), true);
+	} else {
+		restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
+		if (ZmMimeTable.isWebDoc(item.contentType)) {
+			restUrl = restUrl + (restUrl.match(/\?/) ? "&" : "?") + "viewonly=1";
+		} else {
+			this._setupLoading();
 
-    this._setHeader(item);
+			restUrl = this._setupErrorCallback(restUrl);
+			restUrl += (restUrl.match(/\?/) ? "&" : "?") + "view=html";
+		}
 
-    var restUrl = item.getRestUrl();
-    restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
-
-    if (ZmMimeTable.isWebDoc(item.contentType)) {
-        restUrl = restUrl + ( restUrl.match(/\?/) ? '&' : '?' ) + "viewonly=1";
-    }
-    else {
-
-        this._setupLoading();
-
-        restUrl = this._setupErrorCallback(restUrl);
-        restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "view=html";
-    }
-
-    this._iframePreview.setSrc(restUrl);
-	Dwt.setLoadedTime("ZmBriefcaseItem"); //iframe src set but item may not be downloaded by browser
+		this._iframePreview.setSrc(restUrl);
+		Dwt.setLoadedTime("ZmBriefcaseItem"); //iframe src set but item may not be downloaded by browser
+	}
 };
 
 ZmPreviewView.prototype._setupLoading =
