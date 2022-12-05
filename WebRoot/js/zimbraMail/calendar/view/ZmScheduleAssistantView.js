@@ -39,6 +39,7 @@ ZmScheduleAssistantView = function(parent, controller, apptEditView, closeCallba
     this._fbStat = new AjxVector();
     this._fbStatMap = {};
     this._schedule = {};
+    this._tabGroup = new DwtTabGroup(this.toString());
 
 	ZmApptAssistantView.call(this, parent, controller, apptEditView, closeCallback);
 };
