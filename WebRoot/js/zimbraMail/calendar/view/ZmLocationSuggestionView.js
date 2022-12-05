@@ -78,6 +78,7 @@ function(params) {
     this._emailToDivIdMap = {};
     this._items = params.locationInfo.locations;
     ZmListView.prototype.set.call(this, params.locationInfo.locations);
+    this.parent._tabGroup.addMember(this);
 };
 
 ZmLocationSuggestionView.prototype.handleLocationOverflow =
@@ -113,8 +114,29 @@ function() {
 ZmLocationSuggestionView.prototype.setWarning =
 function(warning) {
     this._warning = warning;
-}
+};
 
+// To prevent set of current focus location (when user navigate location using keyboard) as appointment's location.
+ZmLocationSuggestionView.prototype._emulateSingleClick =
+function() {
+};
+
+ZmLocationSuggestionView.prototype.handleKeyAction =
+function (actionCode, ev) {
+
+    if (!this.size()) {
+        return false;
+    }
+    switch (actionCode) {
+        case DwtKeyMap.SELECT:
+            this._itemSelected(ev.target, ev);
+            break;
+        default:
+            return ZmListView.prototype.handleKeyAction.call(this, actionCode, ev);
+    }
+
+    return true;
+};
 
 ZmLocationSuggestionView.prototype._renderList =
 function(list, noResultsOk, doAdd) {

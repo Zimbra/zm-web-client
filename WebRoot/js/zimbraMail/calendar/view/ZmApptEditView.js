@@ -709,6 +709,7 @@ function() {
 
 ZmApptEditView.prototype._addTabGroupMembers =
 function(tabGroup) {
+    tabGroup.addMember(this.identitySelect);
     tabGroup.addMember(this._subjectField);
     if(this.GROUP_CALENDAR_ENABLED) {
         tabGroup.addMember([this._pickerButton[ZmCalBaseItem.PERSON],
@@ -721,10 +722,10 @@ function(tabGroup) {
                         this._pickerButton[ZmCalBaseItem.LOCATION],
                         this._attInputField[ZmCalBaseItem.LOCATION]]);
     if(this.GROUP_CALENDAR_ENABLED && appCtxt.get(ZmSetting.GAL_ENABLED)) {
-        tabGroup.addMember([this._pickerButton[ZmCalBaseItem.EQUIPMENT],
-                            this._attInputField[ZmCalBaseItem.EQUIPMENT],
-                            this._showResources,
-                            this._suggestLocation]);
+        tabGroup.addMember([this._showResources,
+                            this._suggestLocation,
+                            this._pickerButton[ZmCalBaseItem.EQUIPMENT],
+                            this._attInputField[ZmCalBaseItem.EQUIPMENT]]);
     }
     tabGroup.addMember([this._startDateField,
                         this._startDateButton,
@@ -744,11 +745,10 @@ function(tabGroup) {
                         this._privateCheckbox,
 
                         this._schButton,
-                        this._scheduleView,
+                        this._scheduleView._tabGroup,
                         this.getHtmlEditor(),
-
-                        this._suggestTime,
-                        this._suggestLocation]);
+                        this._scheduleAssistant._tabGroup
+                    ]);
 };
 
 ZmApptEditView.prototype._finishReset =
@@ -1269,6 +1269,7 @@ function(width) {
     this._makeFocusable(this._schButton);
     this._makeFocusable(this._schImage);
     Dwt.setHandler(this._schButton, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+    Dwt.setHandler(this._schButton, DwtEvent.ONKEYUP, ZmApptEditView._handleKeyPress);
     Dwt.setHandler(this._schImage, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 
 	this._resourcesContainer = document.getElementById(this._htmlElId + "_resourcesContainer");
@@ -2207,6 +2208,14 @@ function(addrType) {
     this.handleAttendeeChange();
 };
 
+ZmApptEditView._handleKeyPress =
+function (ev) {
+    var keyCode = DwtKeyEvent.getCharCode(ev);
+    if (keyCode === DwtKeyEvent.KEY_RETURN) {
+        ZmCalItemEditView._onClick(ev);
+    }
+}
+
 ZmApptEditView.prototype._addEventHandlers =
 function() {
 	var edvId = AjxCore.assignId(this);
@@ -2217,10 +2226,12 @@ function() {
 	if (this._showOptional) {
 		this._makeFocusable(this._showOptional);
 		Dwt.setHandler(this._showOptional, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+		Dwt.setHandler(this._showOptional, DwtEvent.ONKEYUP, ZmApptEditView._handleKeyPress);
 	}
 	if (this._showResources) {
 		this._makeFocusable(this._showResources);
 		Dwt.setHandler(this._showResources, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+		Dwt.setHandler(this._showResources, DwtEvent.ONKEYUP, ZmApptEditView._handleKeyPress);
 	}
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmCalItemEditView._onMouseOver);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);
@@ -2231,9 +2242,11 @@ function() {
     if (this.GROUP_CALENDAR_ENABLED) {
         this._makeFocusable(this._suggestTime);
         Dwt.setHandler(this._suggestTime, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+        Dwt.setHandler(this._suggestTime, DwtEvent.ONKEYUP, ZmApptEditView._handleKeyPress);
     }
     this._makeFocusable(this._suggestLocation);
     Dwt.setHandler(this._suggestLocation, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+    Dwt.setHandler(this._suggestLocation, DwtEvent.ONKEYUP, ZmApptEditView._handleKeyPress);
     this._makeFocusable(this._locationStatusAction);
     Dwt.setHandler(this._locationStatusAction, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 
