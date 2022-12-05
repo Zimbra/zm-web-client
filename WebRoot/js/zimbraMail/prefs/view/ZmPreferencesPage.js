@@ -206,6 +206,9 @@ function() {
 		var element = elements[i];
 		var control = DwtControl.fromElement(element);
 
+		if (control instanceof ZmFilterRulesView) {
+			continue;
+		} 
 		// add the child to our tab group
 		if (control && control.parent == this) {
 			this._tabGroup.addMember(control.getTabGroupMember());
