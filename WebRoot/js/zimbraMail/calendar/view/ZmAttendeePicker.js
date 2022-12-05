@@ -279,7 +279,31 @@ function(appt, mode, isDirty, apptComposeMode) {
 
     // init listeners
     this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
-    this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));    
+    this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
+
+	this._tabGroup.removeAllMembers();
+	for (var i in this._searchFieldIds) {
+		var id = this._searchFieldIds[i];
+		var element = document.getElementById(id);
+		if (element) {
+			this.addMemberInTabGroup(element);
+		}
+	}
+
+	this.addMemberInTabGroup(this._searchButton);
+	this.addMemberInTabGroup(document.getElementById(this._multLocsCheckboxId));
+	this.addMemberInTabGroup(this._prevButton);
+	this.addMemberInTabGroup(this._nextButton);
+	this.addMemberInTabGroup(this._chooser._compositeTabGroup.__members);
+	this.addMemberInTabGroup(this.getButton(DwtDialog.OK_BUTTON));
+	this.addMemberInTabGroup(this.getButton(DwtDialog.CANCEL_BUTTON));
+};
+
+ZmAttendeePicker.prototype.addMemberInTabGroup =
+function (member) {
+	if (member) {
+		this._tabGroup.addMember(member);
+	}
 };
 
 ZmAttendeePicker.prototype.resize =
@@ -474,7 +498,7 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 		html[i++] = "<td class='ZmFieldLabelRight'>";
 		html[i++] = ZmMsg[ZmAttendeePicker.SF_LABEL[id]];
 		html[i++] = ":</td><td>";
-		html[i++] = "<input type='text' autocomplete='off' size=30 nowrap id='";
+		html[i++] = "<input type='text' tabindex='0' autocomplete='off' size=30 nowrap id='";
 		html[i++] = this._searchFieldIds[id];
 		html[i++] = "' />";
 		html[i++] = "</td>";
@@ -507,7 +531,7 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
             html[i++] = "<td></td>";
         }
 		html[i++] = "<td><table role='presentation'><tr><td>";
-		html[i++] = "<input type='checkbox' id='";
+		html[i++] = "<input type='checkbox' tabindex='0' id='";
 		html[i++] = this._multLocsCheckboxId;
 		html[i++] = "' /></td><td class='ZmFieldLabelLeft'><label for='";
 		html[i++] = this._multLocsCheckboxId;

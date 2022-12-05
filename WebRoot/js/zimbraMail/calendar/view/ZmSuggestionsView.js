@@ -51,6 +51,7 @@ ZmSuggestionsView = function(parent, controller, apptEditView, id, showHeaders, 
     this.setMultiSelect(false);
 
     this._showHeaders = showHeaders;
+    this._tabMember = null;
 };
 
 ZmSuggestionsView.prototype = new ZmListView;
@@ -66,6 +67,9 @@ function(params) {
     this._items = params.items;
     this._itemIndex = params.itemIndex;
     ZmListView.prototype.set.call(this, params.list);
+
+    this.parent._tabGroup.replaceMember(this._tabMember, this);
+    this._tabMember = this;
 };
 
 ZmSuggestionsView.prototype._setNoResultsHtml =
