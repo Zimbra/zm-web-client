@@ -110,6 +110,7 @@ function() {
     this._closeId = this._htmlElId + "_suggest_close";
     this._closeBtn = document.getElementById(this._closeId);
     Dwt.setHandler(this._closeBtn, DwtEvent.ONCLICK, this._closeListener.bind(this));
+    Dwt.setHandler(this._closeBtn, DwtEvent.ONKEYDOWN, ZmApptAssistantView._handleKeyPress.bind(this, this._closeListener));
 
     this._suggestionContainerElId = this._htmlElId + "_suggest_container";
     this._suggestionsContainer = document.getElementById(this._suggestionContainerElId);
@@ -127,9 +128,20 @@ function() {
     this._optionsBtnId = this._htmlElId + "_suggest_options_image";
     this._optionsBtn = document.getElementById(this._optionsBtnId);
     Dwt.setHandler(this._optionsBtn, DwtEvent.ONCLICK, this._prefListener.bind(this));
+    Dwt.setHandler(this._optionsBtn, DwtEvent.ONKEYDOWN, ZmApptAssistantView._handleKeyPress.bind(this, this._prefListener));
 
     this._configureSuggestionWidgets();
+
+    this._tabGroup.addMember([this._optionsBtn, this._closeBtn]);
 };
+
+ZmApptAssistantView._handleKeyPress =
+function (listener, ev) {
+    var keyCode = DwtKeyEvent.getCharCode(ev);
+    if (keyCode === DwtKeyEvent.KEY_RETURN) {
+        listener.call(this);
+    }
+}
 
 ZmApptAssistantView.prototype._configureSuggestionWidgets =
 function() {

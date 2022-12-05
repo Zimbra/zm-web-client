@@ -78,6 +78,7 @@ ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo, appt
     this._isPageless = false;
 
     this._fbConflict = {};
+    this._tabGroup = new DwtTabGroup(this.toString());
 
     //this._fbCache = controller.getApp().getFreeBusyCache();
     this._fbCache = parent.getFreeBusyCache();
@@ -472,6 +473,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
             button.setImage("AttendeesRequired");
             button.setMenu(new AjxListener(this, this._getAttendeeRoleMenu, [index]));
             sched.btnObj = button;
+            this._tabGroup.addMember(button);
 		}
 		// add DwtInputField
 		var nameDiv = document.getElementById(sched.dwtNameId);
@@ -489,6 +491,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 				button.dwtInputField = dwtInputField;
 			}
 			dwtInputField.reparentHtmlElement(sched.dwtNameId);
+			this._tabGroup.addMember(dwtInputField);
 		}
 
 		sched.ptstObj = document.getElementById(sched.dwtNameId+"_ptst");
