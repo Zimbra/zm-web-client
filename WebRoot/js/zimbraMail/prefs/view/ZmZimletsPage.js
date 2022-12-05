@@ -516,6 +516,28 @@ function(list) {
     }
 };
 
+ZmPrefZimletListView.prototype.handleKeyAction = function(actionCode, ev) {
+
+	if (!this.size()) {
+		return false;
+	}
+
+	switch (actionCode) {
+		case DwtKeyMap.SELECT_NEXT:
+			if (ev.charCode === 32) {
+				ev.button = DwtMouseEvent.LEFT;
+				ev.target = ev.target.querySelector('input');
+				this._itemClicked(ev.target, ev);
+				var checked = ev.target.checked;
+				ev.target.checked = !checked;
+				break;
+			}
+		default:
+			return DwtListView.prototype.handleKeyAction.call(this, actionCode, ev);
+	}
+	return true;
+};
+
 ZmPrefZimletListView.prototype._handleZimletsLoaded = function(evt) {
     this._zimletsLoaded = true;
     var array = this.parent.getZimletsArray();

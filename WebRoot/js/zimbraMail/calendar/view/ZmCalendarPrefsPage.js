@@ -698,9 +698,12 @@ ZmWorkHours.prototype._openCustomizeDlg =
 function() {
     if(!this._customDlg) {
         this._customDlg = new ZmCustomWorkHoursDlg(appCtxt.getShell(), "CustomWorkHoursDlg", this._workHours);
+        this._customDlg._tabGroup.removeAllMembers();
         this._customDlg.initialize(this._workHours);
         this._customDlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._closeCustomDialog, [true]));
         this._customDlg.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._closeCancelCustomDialog, [false]));
+        this._customDlg._tabGroup.addMember(this._customDlg.getButton(DwtDialog.OK_BUTTON));
+        this._customDlg._tabGroup.addMember(this._customDlg.getButton(DwtDialog.CANCEL_BUTTON));
     }
     this._customDlg.popup();
 };
@@ -892,6 +895,10 @@ ZmCustomWorkHoursDlg.prototype.initialize = function(workHours) {
 	    checkbox.setSelected(workHours[i].isWorkingDay);
         checkbox.addSelectionListener(new AjxListener(this, this._setTimeInputEnabled, [i, checkbox]));
         this._workDaysCheckBox.push(checkbox);
+
+        this._tabGroup.addMember(checkbox);
+        this._tabGroup.addMember([startTimeSelect.getTabGroupMember(),
+            endTimeSelect.getTabGroupMember()]);
     }
 };
 

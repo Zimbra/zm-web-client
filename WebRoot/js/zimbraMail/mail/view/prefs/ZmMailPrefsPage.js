@@ -156,6 +156,9 @@ function() {
 	if (this._startDateField && this._endDateField) {
 		this._startDateVal = Dwt.byId(this._htmlElId + "_VACATION_FROM");
 		this._endDateVal = Dwt.byId(this._htmlElId + "_VACATION_UNTIL");
+		this._startDateField.setAttribute('parentid', this._htmlElId);
+		this._endDateField.setAttribute('parentid', this._htmlElId);
+
         if(this._startDateVal.value.length < 15){
             this._startDateVal.value = appCtxt.get(ZmSetting.VACATION_FROM);
         }
