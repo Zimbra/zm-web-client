@@ -1099,6 +1099,7 @@ ZmEditContactViewImage = function(params) {
 	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(Dwt.addClass, [el,DwtControl.HOVER]));
 	this.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(Dwt.delClass, [el,DwtControl.HOVER]));
 	this.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._chooseImage));
+	el.onkeydown = ZmEditContactViewImage._onKeyDown.bind(this);
 
 	this.setToolTipContent(ZmMsg.addImg);
 };
@@ -1180,6 +1181,12 @@ ZmEditContactViewImage.prototype._imageLoaded = function() {
 	var w = this._imgEl.width;
 	var h = this._imgEl.height;
     this._imgEl.setAttribute(w>h ? 'width' : 'height', 48);
+};
+
+ZmEditContactViewImage._onKeyDown = function(ev) {
+	if (ev.keyCode === DwtKeyEvent.KEY_ENTER) {
+		this._chooseImage();
+	}
 };
 
 /**

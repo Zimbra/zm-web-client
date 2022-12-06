@@ -44,7 +44,7 @@ ZmExportView = function(params) {
 				],
 				onclick: this._type_onclick
 			},
-			{ id: "TYPE_HINT", type: "DwtText" },
+			{ id: "TYPE_HINT", type: "DwtText", notab: true },
 			{ id: "SUBTYPE", type: "DwtSelect",
 				visible: "get('TYPE') == ZmImportExportController.TYPE_CSV"
 			},

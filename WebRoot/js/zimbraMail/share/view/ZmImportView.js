@@ -50,7 +50,7 @@ ZmImportView = function(params) {
 				enabled: "get('FILE')",
 				onclick: this._folderButton_onclick
 			},
-			{ id: "FORM" },
+			{ id: "FORM", notab: true },
 			{ id: "FILE",
 				setter: new Function() // no-op -- can't set a file value
 			},
