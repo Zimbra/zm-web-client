@@ -146,8 +146,90 @@ function(list, sortField) {
     ZmListView.prototype.set.apply(this, arguments);
 
     this.markDefaultSelection(list);
+
+	if (this._listColDiv && !this.setHeaderListener) {
+		Dwt.setHandler(this._listColDiv, DwtEvent.ONKEYDOWN, ZmMailListView._headerKeyDown.bind(this));
+		this.setHeaderListener = true;
+		this.addHeaderItemInTagGroup();
+	}
 };
 
+ZmMailListView.prototype.addHeaderItemInTagGroup =
+function () {
+	var headerFirstItem = document.getElementById(this._headerItemsId[0]);
+	if (headerFirstItem) {
+		if (this._headerFocusElement) {
+			this._controller._tabGroup.replaceMember(this._headerFocusElement, headerFirstItem);
+		} else {
+			this._controller._tabGroup.addMember(headerFirstItem,1);
+		}
+		this._headerFocusElement = headerFirstItem;
+		this._headerFocusElementIndex = 0;
+	}
+};
+
+ZmMailListView._headerKeyDown =
+function (ev) {
+	var keyCode = DwtKeyEvent.getCharCode(ev);
+	if(keyCode === DwtKeyEvent.KEY_ARROW_RIGHT || keyCode === DwtKeyEvent.KEY_ARROW_LEFT) {
+		var nextElementIndex = keyCode === DwtKeyEvent.KEY_ARROW_RIGHT ? this._headerFocusElementIndex + 1 : this._headerFocusElementIndex - 1;
+		var nextElement = ZmMailListView._nextFocusableHeaderElement.call(this, keyCode, nextElementIndex);
+
+		if (nextElement) {
+			this._controller._tabGroup.replaceMember(this._headerFocusElement, nextElement);
+			this._controller._tabGroup.setFocusMember(nextElement);
+			this._headerFocusElement = nextElement;
+		}
+	}
+
+	if (keyCode === DwtKeyEvent.KEY_SPACE) {
+		var currentHeaderItem = this._headerList[this._headerFocusElementIndex];
+		clickEl = document.getElementById(currentHeaderItem._id);
+		this._columnClicked(clickEl,ev);
+	}
+
+	if (keyCode === DwtKeyEvent.KEY_ENTER && ev.metaKey) {
+		var actionMenu = this._colHeaderActionMenu = this._getActionMenuForColHeader();
+		if (actionMenu && actionMenu instanceof DwtMenu) {
+			var rect = ev.target.getBoundingClientRect();
+			actionMenu.popup(0, rect.x, rect.y);
+		}
+	}
+};
+
+ZmMailListView._nextFocusableHeaderElement =
+function (keyCode, nextIndex) {
+	var nextElement = null;
+	var startIndex = nextIndex;
+
+	if (keyCode === DwtKeyEvent.KEY_ARROW_LEFT) {
+		this._headerItemsId.reverse();
+		startIndex = this._headerItemsId.length - 1 - nextIndex;
+	}
+
+	for (var i = startIndex; i < this._headerItemsId.length; i++) {
+		var element = document.getElementById(this._headerItemsId[i]);
+		if (element) {
+			this._headerFocusElementIndex = keyCode === DwtKeyEvent.KEY_ARROW_RIGHT ? i : (this._headerItemsId.length - 1 - i);
+			nextElement = element;
+			break;
+		}
+	}
+
+	if (keyCode === DwtKeyEvent.KEY_ARROW_LEFT) {
+		this._headerItemsId.reverse();
+	}
+	return nextElement;
+};
+
+ZmMailListView.prototype._colHeaderActionListener =
+function (ev) {
+	ZmListView.prototype._colHeaderActionListener.call(this, ev);
+	var headerElement = document.getElementById(this._headerItemsId[this._headerFocusElementIndex]);
+	this._controller._tabGroup.replaceMember(this._headerFocusElement, headerElement);
+	this._controller._tabGroup.setFocusMember(headerElement);
+	this._headerFocusElement = headerElement;
+};
 
 ZmMailListView.prototype.markDefaultSelection =
 function(list) {
@@ -360,6 +442,7 @@ function() {
 		this.set(list.clone());
 		this._restoreState();
 		this._resetFromColumnLabel();
+		this.addHeaderItemInTagGroup();
 	}
 };
 
@@ -729,7 +812,7 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 													  "DwtListView-Column'";
 		htmlArr[idx++] = " width='auto'><table role='presentation' width='100%'><tr><td id='";
 		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field);
-		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
+		htmlArr[idx++] = "' class='DwtListHeaderItem-label' tabindex='0'>";
 		htmlArr[idx++] = headerCol._label;
 		htmlArr[idx++] = "</td>";
 

@@ -132,7 +132,13 @@ function() {
 
     this._configureSuggestionWidgets();
 
-    this._tabGroup.addMember([this._optionsBtn, this._closeBtn]);
+    if (this._tabGroup) {
+        this._tabGroup.addMember([
+            this._optionsBtn,
+            this._closeBtn,
+            this._miniCalendar._compositeTabGroup
+        ]);
+    }
 };
 
 ZmApptAssistantView._handleKeyPress =

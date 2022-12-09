@@ -46,6 +46,10 @@ ZmNavToolBar = function(params) {
 	params.toolbarType = ZmId.TB_NAV;
 	params.posStyle = params.posStyle || DwtControl.STATIC_STYLE;
 	ZmButtonToolBar.call(this, params);
+	
+	this._prevButton = params.prevButton;
+	this._nextButton = params.nextButton;
+
 	if (hasText) {
 		this._textButton = this.getButton(ZmOperation.TEXT);
 	}
@@ -57,6 +61,29 @@ ZmNavToolBar.prototype.constructor = ZmNavToolBar;
 ZmNavToolBar.prototype.toString = 
 function() {
 	return "ZmNavToolBar";
+};
+
+ZmNavToolBar.prototype.handleKeyAction =
+function (actionCode, ev) {
+	
+	var currentFocuseItem = this._getCurrentFocusItem();
+	switch(actionCode) {
+		case DwtKeyMap.PREV:
+			if (this._prevButton && currentFocuseItem === this.leftMostButton()) {
+				this.blur();
+				this.parent.focus(this._prevButton);
+				return true;
+			}
+			break;
+		case DwtKeyMap.NEXT:
+			if (this._nextButton && currentFocuseItem === this.rightMostButton()) {
+				this.blur();
+				this.parent.focus(this._nextButton);
+				return true;
+			}
+			break;
+	}
+	return DwtToolBar.prototype.handleKeyAction.call(this, actionCode, ev);
 };
 
 /**
@@ -80,6 +107,33 @@ function(ids, enabled) {
 				button.setToolTipContent(null);
 		}
 	}
+};
+
+ZmNavToolBar.prototype.leftMostButton =
+function() {
+	return this.nextSibling(true);
+};
+
+ZmNavToolBar.prototype.rightMostButton =
+function() {
+	return this.nextSibling(false);
+};
+
+ZmNavToolBar.prototype.nextSibling =
+function(next) {
+
+	var childCount = this.getItemCount();
+	var sibling = next ? this.getChild(0) : this.getChild(childCount - 1);
+
+	for (var i = 0; i < childCount; i++) {
+		var childIndex = next ? i : childCount - 1 - i;
+		var child = this.getChild(childIndex);
+		if (child._enabled) {
+			sibling = child;
+			break;
+		}
+	}
+	return sibling;
 };
 
 /**
