@@ -121,6 +121,15 @@ function() {
 	this._toolbar.registerEnterCallback(this._searchListener.bind(this));
 
 	this.isPinned = false;
+	this._setComposeTabGroup();
+};
+
+ZmSearchResultsController.prototype._setComposeTabGroup =
+function() {
+	this._tabGroup = this._createTabGroup();
+	var rootTg = appCtxt.getRootTabGroup();
+	this._tabGroup.newParent(rootTg);
+	this._tabGroup.addMember(this._toolbar._compositeTabGroup);
 };
 
 /**
@@ -210,6 +219,8 @@ function(search, resultsCtlr) {
         resultsCtlr.updateTimeIndicator();
     }
 	setTimeout(this._toolbar.focus.bind(this._toolbar), 100);
+	this._tabGroup.addMember(this._filterPanel._compositeTabGroup);
+	this._tabGroup.addMember(this._resultsController._tabGroup);
 };
 
 ZmSearchResultsController.prototype._postHideCallback =
@@ -230,6 +241,7 @@ function() {
 	if (appCtxt.isWebClientOfflineSupported) {
 		this.getApp().resetWebClientOfflineOperations(this);
 	}
+	ZmController.prototype._postShowCallback.call(this);
 };
 
 // returns params for the search tab button
