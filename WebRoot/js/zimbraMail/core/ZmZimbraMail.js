@@ -1844,6 +1844,38 @@ ZmZimbraMail.prototype._setupTabGroups =
 function() {
 	DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
 	var rootTg = appCtxt.getRootTabGroup();
+
+	var logoAnchor = document.querySelector('#skin_container_logo a');
+	if (logoAnchor) {
+		rootTg.addMember(logoAnchor);
+	}
+	
+	var topRow = document.querySelector('#skin_spacing_top_row');
+	if (topRow) {
+		var customSearchTabBlock = topRow.querySelector('#tabbed_search_syn ul');
+		if (customSearchTabBlock) {
+			var tabs = customSearchTabBlock.querySelectorAll('li a');
+
+			for (var i = 0; i < tabs.length; i++) {
+				var tab = tabs[i];
+				tab.setAttribute('tabindex', 0);
+				rootTg.addMember(tab);
+			}
+		}
+
+		var customSearchInput = topRow.querySelector('input#search_input');
+		if (customSearchInput) {
+			customSearchInput.setAttribute('tabindex', 0);
+			rootTg.addMember(customSearchInput);
+		}
+
+		var customSearchButton = topRow.querySelector('#search_input_button');
+		if (customSearchButton) {
+			customSearchButton.setAttribute('tabindex', 0);
+			rootTg.addMember(customSearchButton);
+		}
+	}
+
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		rootTg.addMember(appCtxt.getSearchController().getSearchToolbar().getTabGroupMember());
 	}
@@ -1864,6 +1896,12 @@ function() {
 	if (overview) {
 		rootTg.addMember(overview.getTabGroupMember());
 		ZmController._currentOverview = overview;
+	}
+
+	if (appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
+		var miniCalendar = appCtxt.getCalManager().getMiniCalendar();
+		rootTg.addMember(miniCalendar._compositeTabGroup);
+		miniCalendar.tabgroup = rootTg;
 	}
 	
 	appCtxt.getKeyboardMgr().setTabGroup(rootTg);

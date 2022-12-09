@@ -1080,12 +1080,17 @@ function(viewId) {
 	// possible, we position the navigation toolbar after it.
 	var pos = AjxUtil.indexOf(this._getToolBarOps(), ZmOperation.FILLER) + 1;
 
+	var prevButton = toolbar.getButton(ZmOperation.TODAY);
+	var nextButton = toolbar.getButton(ZmOperation.DAY_VIEW)
+
 	var tb = new ZmNavToolBar({
 		parent: toolbar,
 		index: pos,
 		className: "ZmNavToolbar ZmCalendarNavToolbar",
 		context: ZmId.VIEW_CAL,
-		posStyle: Dwt.ABSOLUTE_STYLE
+		posStyle: Dwt.ABSOLUTE_STYLE,
+		prevButton: prevButton,
+		nextButton: nextButton
 	});
 	this._setNavToolBar(tb, ZmId.VIEW_CAL);
 
