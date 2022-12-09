@@ -2413,8 +2413,9 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
         var checkbox = new DwtCheckbox({parent:container});
         checkbox.setText(ZmMsg.includeYear);
 		checkbox.addSelectionListener(new AjxListener(this, this._handleDateSelection,[calendar]));
-        this._calendarIncludeYear = checkbox;
-	}                                                        
+		this._calendarIncludeYear = checkbox;
+		calendar.tabgroup.addMember(checkbox);
+	}
 };
 
 // HACK: This function executes in the scope of the calendar picker
