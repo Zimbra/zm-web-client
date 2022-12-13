@@ -1186,6 +1186,7 @@ ZmEditContactViewImage.prototype._imageLoaded = function() {
 ZmEditContactViewImage._onKeyDown = function(ev) {
 	if (ev.keyCode === DwtKeyEvent.KEY_ENTER) {
 		this._chooseImage();
+		return false;
 	}
 };
 
