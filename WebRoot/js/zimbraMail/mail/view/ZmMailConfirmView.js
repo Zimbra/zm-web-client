@@ -51,6 +51,7 @@ ZmMailConfirmView = function(parent, controller) {
 	this._addContactsButton.addSelectionListener(new AjxListener(this, this._addContactsListener));
 
 	this._summaryFormat = new AjxMessageFormat(ZmMsg.confirmSummary);
+	this._tabToolbarMember = null;
 };
 
 ZmMailConfirmView.prototype = new DwtComposite;
@@ -132,6 +133,13 @@ function(msg, newAddresses, existingContacts, displayAddresses) {
 	this._showNewAddresses(newAddresses);
 	this._showExistingContacts(existingContacts);
 	this._showDisplayAddresses(displayAddresses);
+
+	if (this._controller._toolbar) {
+		var closeButton = this._controller._toolbar.getButton(ZmOperation.CLOSE);
+		if (closeButton) {
+			this._tabGroup.addMember(closeButton);
+		}
+	}
 };
 
 ZmMailConfirmView.prototype._showLoading =

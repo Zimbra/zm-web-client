@@ -431,6 +431,7 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
         var inputEl = document.getElementById(inputId);
         var sizeEl = cell;
         Dwt.setHandler(inputEl, "onchange", AjxCallback.simpleClosure(this._handleFileSize, this, inputEl, sizeEl));
+        Dwt.setHandler(inputEl, DwtEvent.ONKEYDOWN, ZmUploadDialog._handleEnterSpacePress.bind(inputEl, null));
     }
 
     if(oneInputOnly){
@@ -490,7 +491,12 @@ ZmUploadDialog._handleEnterSpacePress =
 function(listner, event) {
     var keyCode = DwtKeyEvent.getCharCode(event);
     if (keyCode === DwtKeyEvent.KEY_RETURN || keyCode === DwtKeyEvent.KEY_SPACE) {
-        listner(event);
+        if (listner) {
+            listner(event);
+        } else {
+            this.click();
+        }
+
     }
 }
 
