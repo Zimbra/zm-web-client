@@ -622,6 +622,12 @@ function(ev) {
 	}
 };
 
+ZmDetailListView.prototype.createHeaderHtml =
+function (defaultColumnSort) {
+	DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort, this._isMultiColumn);
+	this.addHeaderItemInTagGroup();
+};
+
 ZmDetailListView.prototype._createHeader =
 function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 
