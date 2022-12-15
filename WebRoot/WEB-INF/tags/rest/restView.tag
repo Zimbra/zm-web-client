@@ -18,6 +18,7 @@
 <%@ attribute name="title" rtexprvalue="true" required="true" %>
 <%@ attribute name="onload" rtexprvalue="true" required="false" %>
 <%@ attribute name="rssfeed" rtexprvalue="true" required="false" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="rest" uri="com.zimbra.restclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
