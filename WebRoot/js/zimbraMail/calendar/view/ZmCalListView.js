@@ -91,6 +91,7 @@ function(needsRefresh) {
 ZmCalListView.prototype.createHeaderHtml =
 function(defaultColumnSort) {
 	DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort, true);
+	this.addHeaderItemInTagGroup();
 };
 
 ZmCalListView.prototype.getDate =
