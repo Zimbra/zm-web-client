@@ -608,6 +608,18 @@ function(account) {
 	}
 	this._tabGroup.addMember(this._searchButton);
 	this._tabGroup.addMember(this._searchInSelect);
+
+	var sourceListHeaderItems = this._chooser.sourceListView._headerList;
+	this._sourceList = {};
+
+	for (var i = 0; i < sourceListHeaderItems.length; i++) {
+		var header = sourceListHeaderItems[i];
+		if (header._field === ZmItem.F_NAME) {
+			this._sourceList.name = document.getElementById(header._id);
+			this._tabGroup.addMember(this._sourceList.name);
+		}
+	}
+ 
 	this._tabGroup.addMember(this._chooser.getTabGroupMember());
 	this._tabGroup.addMember(this._prevButton);
 	this._tabGroup.addMember(this._nextButton);
@@ -978,7 +990,30 @@ function () {
         }
     }
     tlv.createHeaderHtml();
+
+	var sourceListHeaderItems = this._chooser.sourceListView._headerList;
+	for (var i = 0; i < sourceListHeaderItems.length; i++) {
+		var header = sourceListHeaderItems[i];
+		if (header._field === ZmItem.F_NAME) {
+			var nameHeader = document.getElementById(header._id);
+			nameHeader.onkeydown = ZmContactPicker.keydownHandler.bind(this);
+			this._tabGroup.replaceMember(this._sourceList.name, nameHeader);
+			this._sourceList.name = nameHeader;	
+		}
+	}
 };
+
+ZmContactPicker.keydownHandler =
+function(event) {
+	if (event.keyCode === DwtKeyEvent.KEY_ENTER) {
+		var iconElement = event.target.querySelector('.ImgColumnDownArrow') || event.target.querySelector('.ImgColumnUpArrow');
+		if (iconElement) {
+			var obj = DwtControl.getTargetControl(event)
+			obj.__ignoreNextClick = false;
+			iconElement.click();
+		}
+	}
+}
 
 /**
  * Done choosing addresses, add them to the compose form.
