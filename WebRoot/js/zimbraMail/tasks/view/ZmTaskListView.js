@@ -396,7 +396,7 @@ function(list, noResultsOk, doAdd) {
 
 		if (hdr._field == ZmItem.F_SUBJECT || hdr._field == ZmItem.F_SORTED_BY) {
 			this.dId = Dwt.getNextId();
-			htmlArr[idx++] = "<td><div class='newTaskBanner' onclick='ZmTaskListView._handleOnClick(this)' id='";
+			htmlArr[idx++] = "<td><div class='newTaskBanner' tabindex='0' onclick='ZmTaskListView._handleOnClick(this)' id='";
 			htmlArr[idx++] = this.dId;	// bug: 17653 - for QA
 			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = ZmMsg.createNewTaskHint;
@@ -410,7 +410,12 @@ function(list, noResultsOk, doAdd) {
 	htmlArr[idx++] = "</tr></table>";
 	div.innerHTML = htmlArr.join("");
 	this._addRow(div, 0);
-    //this._renderTaskListItemHdr();
+	var newTaskInputs = document.getElementsByClassName('newTaskBanner');
+	if (newTaskInputs.length) {
+		var newTaskInput = newTaskInputs[0];
+		this._compositeTabGroup.addMember(newTaskInput);
+		Dwt.setHandler(newTaskInput, DwtEvent.ONKEYDOWN, ZmTaskListView._handleOnClick.bind(newTaskInput));
+	}
 };
 
 ZmTaskListView.prototype._resetListView =
@@ -715,6 +720,7 @@ function(defaultColumnSort) {
 			}
 		}
 	}
+	this.addHeaderItemInTagGroup();
 };
 
 ZmTaskListView.prototype._createHeader =
