@@ -284,7 +284,7 @@ function(abook) {
 	html.append("<div id='", this._timeSelectionDivId, "' name='_timeSelectionDivId' class='calendar_time_selection' style='position:absolute; display:none;z-index:10;'></div>");
 	html.append("<div id='", this._newApptDivId, "' name='_newApptDivId' class='appt-selected' style='position:absolute; display:none;'></div>");
 
-    html.append("<div id='", this._workingHrsFirstDivId, "' style='position:absolute;background-color:#FFFFFF;'><div class='ImgCalendarDayGrid' id='", this._workingHrsFirstChildDivId, "' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
+    html.append("<div id='", this._workingHrsFirstDivId, "' tabindex='0' style='position:absolute;background-color:#FFFFFF;'><div class='ImgCalendarDayGrid' id='", this._workingHrsFirstChildDivId, "' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
     html.append("<div id='", this._workingHrsSecondDivId, "' style='position:absolute;background-color:#FFFFFF;'><div class='ImgCalendarDayGrid' id='", this._workingHrsSecondChildDivId, "' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
 
     html.append("<div id='", this._borderLeftDivId, "' name='_borderLeftDivId' class='ZmDayTabSeparator' style='background-color:#FFFFFF;position:absolute;'></div>");
@@ -656,7 +656,13 @@ function() {
         this._createDivForColumn(col.borderRightDivId, dayParentEl, "ZmDayTabSeparator", calColor, calColor);
         this._createDivForColumn(col.borderTopDivId, allDaySepEl, "ZmDayTabSeparator", calColor, calColor);
 
-	}
+        var workingHrsFirstChildDiv = document.getElementById(col.workingHrsFirstChildDivId);
+        if (workingHrsFirstChildDiv){
+            workingHrsFirstChildDiv.setAttribute('tabindex',0);
+            this._compositeTabGroup.addMember(workingHrsFirstChildDiv);
+            Dwt.setHandler(workingHrsFirstChildDiv, DwtEvent.ONKEYUP, ZmCalColView._onKeyUp.bind(this));
+        }
+    }
 };
 
 ZmCalDayTabView.prototype._createDivForColumn =
