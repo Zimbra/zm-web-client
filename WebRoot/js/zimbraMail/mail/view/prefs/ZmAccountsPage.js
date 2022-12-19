@@ -3382,11 +3382,12 @@ function(account, field, html) {
 	if (!el) { return; }
 
 	if (field == ZmItem.F_NAME) {
-		el = document.getElementById(this._getCellId(account, field)+"_name");
-    }
-    if (field == ZmItem.F_EMAIL) {
-        html = "<div style='margin-left: 10px;'>"+ html +"</div>";    
-    }
+		el = document.getElementById(this._getCellId(account, field) + "_name");
+	} else if (field == ZmItem.F_EMAIL) {
+		html = '<div style="margin-left: 10px;" aria-label="' + ZmMsg.emailAddr + ':' + html + ';">' + html + '</div>';
+	} else if (field == ZmItem.F_TYPE) {
+		html = '<div style="margin-left: 10px;" aria-label="' + ZmMsg.type + ':' + html + ';">' + html + '</div>';
+	}
 	el.innerHTML = html;
 };
 
@@ -3395,12 +3396,14 @@ function(account, field, html) {
 ZmAccountsListView.prototype._getCellContents =
 function(buffer, i, item, field, col, params) {
 	if (field == ZmItem.F_NAME) {
+		var name = AjxStringUtil.htmlEncode(item.getName());
 		var cellId = this._getCellId(item, field);
-		buffer[i++] = "<div id='";
+		buffer[i++] = '<div id="';
 		buffer[i++] = cellId;
-		buffer[i++] = "_name'>";
-		buffer[i++] = AjxStringUtil.htmlEncode(item.getName());
-		buffer[i++] = "</div>";
+		buffer[i++] = '_name" aria-label="';
+		buffer[i++] = ZmMsg.accountName +':'+ name +';">';
+		buffer[i++] = name;
+		buffer[i++] = '</div>';
 		return i;
 	}
 	if (field == ZmItem.F_STATUS) {
@@ -3411,19 +3414,28 @@ function(buffer, i, item, field, col, params) {
 			buffer[i++] = "</td></tr></table>";
 		}
 		else {
+			buffer[i++] = '<div aria-label="';
+			buffer[i++] = ZmMsg.status +':'+ AjxMsg.ok +';">';
 			buffer[i++] = AjxMsg.ok;
+			buffer[i++] ='</div>'
 		}
 		return i;
 	}
 	if (field == ZmItem.F_EMAIL) {
-        var email = item.getEmail();
-        var identity = item.getIdentity();
-        if (!item.isMain && identity.sendFromAddressType == ZmSetting.SEND_ON_BEHALF_OF) email = appCtxt.getActiveAccount().name + " " + ZmMsg.sendOnBehalfOf + " " + email;
-		buffer[i++] = "<div style='margin-left: 10px;'>"+ AjxStringUtil.htmlEncode(email) +"</div>";
+		var email = item.getEmail();
+		var identity = item.getIdentity();
+		if (!item.isMain && identity.sendFromAddressType == ZmSetting.SEND_ON_BEHALF_OF) {
+			email = appCtxt.getActiveAccount().name + " " + ZmMsg.sendOnBehalfOf + " " + email;
+		}
+		var emailid = AjxStringUtil.htmlEncode(email);
+		buffer[i++] = '<div style="margin-left: 10px;" aria-label="' + ZmMsg.emailAddr + ':' + emailid + ';">';
+		buffer[i++] = emailid;
+		buffer[i++] = '</div>';
 		return i;
 	}
 	if (field == ZmItem.F_TYPE) {
-		buffer[i++] = this._getAccountType(item);
+		var accountType = this._getAccountType(item);
+		buffer[i++] = '<div style="margin-left: 10px;" aria-label="'+ ZmMsg.type +':'+ accountType + ';">'+ accountType +'</div>';
 		return i;
 	}
 	return DwtListView.prototype._getCellContents.apply(this, arguments);
@@ -3489,7 +3501,7 @@ function(account, field, html) {
 		el = document.getElementById(this._getCellId(account, field)+"_name");
     }
     if (field == ZmItem.F_EMAIL) {
-        html = "<div style='margin-left: 10px;'>"+ html +"</div>";
+		html = '<div style="margin-left: 10px;" aria-label="'+ ZmMsg.emailAddr +':'+ html +';">'+ html +'</div>'; 
     }
 	el.innerHTML = html;
 };

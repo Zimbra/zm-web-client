@@ -318,6 +318,7 @@ function(controller, dropTgt) {
 	this._listviewCell = document.getElementById(listviewCellId);
 	this._listPart = new ZmContactSimpleView({parent:this, controller:controller, dropTgt:dropTgt});
 	this._listPart.reparentHtmlElement(listviewCellId);
+	this.setAttribute('aria-label', ZmMsg.contact);
 
 	var sashCellId = this._htmlElId + "_sash";
 	this._sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 5, Dwt.ABSOLUTE_STYLE);
