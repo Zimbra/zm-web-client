@@ -1847,6 +1847,10 @@ function() {
 
 	var logoAnchor = document.querySelector('#skin_container_logo a');
 	var applicationrow = document.querySelector('#skin_tr_app');
+	var headerTitle = document.querySelector('#headerTitle');
+	if (headerTitle) {
+		headerTitle.innerHTML = ZmMsg.zimbraTitle;
+	}
 	if (logoAnchor) {
 		rootTg.addMember(logoAnchor);
 	}
