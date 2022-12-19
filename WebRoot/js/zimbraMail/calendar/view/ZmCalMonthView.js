@@ -551,7 +551,7 @@ function() {
 	}
 	html.append("</colgroup>");
 	html.append("<tr>");
-	html.append("<td colspan=7 class=calendar_month_header_month id='", this._titleId, "'></td>");
+	html.append("<td colspan=7 class=calendar_month_header_month role='heading' aria-level='3' id='", this._titleId, "'></td>");
 	html.append("</tr>");
 	html.append("<tr>");
 
