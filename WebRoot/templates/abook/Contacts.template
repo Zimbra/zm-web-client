@@ -435,7 +435,7 @@
 			fullnameHtml = '';
 		}
 	$>
-	<div id='${id}_contactName' class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= fullnameHtml $></div>
+	<div id='${id}_contactName' role='heading' aria-level='3' class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= fullnameHtml $></div>
 	<$ if (nickname && !isEdit) { $>
 		<div class='contactHeader'>&ldquo;<$= AjxStringUtil.htmlEncode(nickname) $>&rdquo;</div>
 	<$ } $>
