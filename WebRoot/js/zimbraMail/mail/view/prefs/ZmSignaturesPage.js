@@ -392,6 +392,7 @@ function(container) {
 	var list = new ZmSignatureListView(this);
 	this._replaceControlElement(listEl, list);
 	list.setMultiSelect(false);
+	list.setAttribute('aria-label', ZmMsg.signature);
 	list.addSelectionListener(this._selectionListener.bind(this));
 	list.setUI(null, true); // renders headers and empty list
 	this._sigList = list;
@@ -1140,7 +1141,17 @@ function() {
 
 ZmSignatureListView.prototype._getCellContents =
 function(html, idx, signature, field, colIdx, params) {
-	html[idx++] = signature.name ? AjxStringUtil.htmlEncode(signature.name, true) : ZmMsg.signatureNameHint;
+	if (signature.name) {
+		var name = AjxStringUtil.htmlEncode(signature.name, true);
+
+		html[idx++] = '<span aria-label="';
+		html[idx++] = ZmMsg.signatureName + ':' + name + ';">';
+		html[idx++] = name;
+		html[idx++] = '</span>';
+	}
+	else {
+		html[idx++] = ZmMsg.signatureNameHint;
+	}
 	return idx;
 };
 
