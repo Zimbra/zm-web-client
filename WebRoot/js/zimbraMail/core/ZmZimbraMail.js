@@ -1846,8 +1846,14 @@ function() {
 	var rootTg = appCtxt.getRootTabGroup();
 
 	var logoAnchor = document.querySelector('#skin_container_logo a');
+	var applicationrow = document.querySelector('#skin_tr_app');
 	if (logoAnchor) {
 		rootTg.addMember(logoAnchor);
+	}
+	// Add role for top row navigation of verticals	
+	if (applicationrow) {
+		applicationrow.setAttribute('role', 'navigation');
+		applicationrow.setAttribute('aria-label', ZmMsg.applications);
 	}
 	
 	var topRow = document.querySelector('#skin_spacing_top_row');
