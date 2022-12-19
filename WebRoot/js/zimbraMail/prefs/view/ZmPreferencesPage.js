@@ -149,7 +149,7 @@ function() {
 		if (Dwt.hasClass(el, 'prefHeader')) {
 			var header = el;
 			header.setAttribute('role', 'heading');
-			header.setAttribute('aria-level', 1);
+			header.setAttribute('aria-level', 3);
 			header.id = Dwt.getNextId('prefHeader')
 		} else if (Dwt.hasClass(el, 'ZOptionsSectionTable')) {
 			var sectiontable = el;
@@ -184,9 +184,6 @@ function() {
 			DBG.println(AjxDebug.DBG1, "option field has no label " + Dwt.getId(field));
 			return;
 		}
-
-		label.setAttribute('role', 'heading');
-		label.setAttribute('aria-level', 2);
 
 		field.setAttribute('aria-labelledby',
 		                   Dwt.getId(label, 'ZOptionsLabel'));
@@ -251,9 +248,6 @@ function() {
 		if (!label.id) {
 			label.id = Dwt.getNextId();
 		}
-
-		label.setAttribute('role', 'heading');
-		label.setAttribute('aria-level', 2);
 	}
 };
 
