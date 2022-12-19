@@ -292,6 +292,11 @@ ZmContactAlphabetBar = function(parent) {
 	this._createHtml();
 
 	this._all = this._current = document.getElementById(this._alphabetBarId).rows[0].cells[0];
+	var firstRow = document.getElementById(this._alphabetBarId).rows[0];
+	if (firstRow) {
+		firstRow.setAttribute('role', 'navigation');
+		firstRow.setAttribute('aria-label', ZmMsg.filterContacts);
+	}
 	this._currentLetter = null;
 	this.setSelected(this._all, true);
 	this._enabled = true;
