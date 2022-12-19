@@ -9,7 +9,7 @@
 
 <template id='tasks.Tasks#ReadOnlyView'>
 	<div class='MsgHeaderTable'>
-	<div class='SubjectCol LabelColValue' style="margin-left:5px;" id='zv__TKV__<$=Dwt.getNextId()$>__su'><$= data.subject $></div>
+	<div class='SubjectCol LabelColValue' role='heading' aria-level='3' style="margin-left:5px;" id='zv__TKV__<$=Dwt.getNextId()$>__su'><$= data.subject $></div>
 	<table role="presentation" id='${id}_hdrTable' class="ZPropertySheet" cellspacing="6" style="margin-left:5px;">
 
 		<$ if (data.location) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.location, val:data.location, id:'__lo'}) $><$ } $>

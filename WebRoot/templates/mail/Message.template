@@ -20,7 +20,7 @@
 										<div priority='<$=data.priority$>' id='<$=data.priorityDivId$>' style='margin-left:4px;' class='<$=data.priorityImg$>'></div>
 									</td>
 								<$ } $>
-								<td class='LabelColValue SubjectCol' valign=top width=100%>
+								<td class='LabelColValue SubjectCol' role='heading' aria-level='2' valign=top width=100%>
 									<$= data.subject $>
 								</td>
 								<td class='LabelColValue DateCol' align=right title='${dateTooltip}'>${dateString}</td>
@@ -157,7 +157,7 @@
 							<$ if (data.closeBtnCellId) { $>
 								<td id='${closeBtnCellId}'></td>
 							<$ } $>
-								<td class='LabelColValue SubjectCol ${subjChangeClass}' valign=top width=100%>
+								<td class='LabelColValue SubjectCol ${subjChangeClass}' role='heading' aria-level='2' valign=top width=100%>
 									<$= data.subject $>
 								</td>
 								<td class='LabelColValue DateCol' align=right title='${dateTooltip}'>${dateString}</td>
@@ -630,7 +630,7 @@
 
 <template id='mail.Message#Conv2Header'>
 	<span class="expandIcon" id='${convExpandId}'></span>
-	<span class="subject" role="heading" aria-level="1" id='${convSubjectId}'></span>
+	<span class="subject" role="heading" aria-level="2" id='${convSubjectId}'></span>
 	<span class="info" id='${convInfoId}'></span>
 </template>
 

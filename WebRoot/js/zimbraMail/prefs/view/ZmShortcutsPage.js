@@ -411,7 +411,7 @@ ZmShortcutsPanel.prototype._createHtml = function() {
 	var html = [];
 	var i = 0;
 	html[i++] = "<div class='ShortcutsPanelHeader' id='" + headerId + "'>";
-	html[i++] = "<div class='title' role='header' aria-level='2'>" + ZmMsg.keyboardShortcuts + "</div>";
+	html[i++] = "<div class='title' role='header' aria-level='3'>" + ZmMsg.keyboardShortcuts + "</div>";
 	// set up HTML to create two columns using floats
 	html[i++] = "<div class='container' id='" + containerId + "'>";
 	html[i++] = "<div class='description'>" + ZmMsg.shortcutsCurrent + "</div>";
