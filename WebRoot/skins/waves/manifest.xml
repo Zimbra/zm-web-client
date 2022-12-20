@@ -23,12 +23,9 @@
 -->
 	<common>
 		<substitutions>
-			<file>../_base/base3/skin.properties</file>		
+			<file>../_base/base3/skin.properties</file>
 			<file>skin.properties</file>
 		</substitutions>
-		<css>
-			<file>../_base/base3/skin.css</file>
-		</css>
 	</common>
 	<advanced>
 		<script>
@@ -38,11 +35,20 @@
 			<file>../_base/base3/skin.html</file>
 			<file>../_base/base3/splash.html</file>
 		</html>
+		<css>
+			<file>../_base/base3/skin.css</file>
+		</css>
 	</advanced>
 	<standard>
 		<css>
+			<file>../_base/base3/skin.css</file>
 			<file>../../css/zhtml.css</file>
 			<file>../_base/base3/zhtml.css</file>
 		</css>
-	</standard>	
+	</standard>
+	<print>
+		<css>
+			<file>../_base/base3/print.css</file>
+		</css>
+	</print>
 </skin>
