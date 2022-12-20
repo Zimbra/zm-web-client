@@ -73,20 +73,19 @@ tinymce.PluginManager.add('zemoticons', function(editor, url) {
 
     function _keyDown(ev) {
 
-        const icons = (Array.from(this.querySelectorAll('a')));
-        const totalIcons = icons.length;
-        const currentIconIndex = icons.indexOf(ev.target);
-        let nextIconIndex = null;
+        var icons = Array.from(this.querySelectorAll('a'));
+        var totalIcons = icons.length;
+        var currentIconIndex = icons.indexOf(ev.target);
+        var nextIconIndex = null;
 
         if (ev.keyCode === 37 || ev.keyCode === 39) {
             nextIconIndex = ev.keyCode === 37 ? totalIcons + currentIconIndex - 1 : currentIconIndex + 1; 
-        }
-        else if (ev.keyCode === 38 || ev.keyCode === 40) {
+        } else if (ev.keyCode === 38 || ev.keyCode === 40) {
             nextIconIndex = ev.keyCode === 38 ? totalIcons + currentIconIndex - 4 : currentIconIndex + 4;
         }
 
         if (nextIconIndex) {
-            const nextIcon = icons[nextIconIndex%totalIcons];
+            var nextIcon = icons[nextIconIndex % totalIcons];
             ev.target.blur();
             nextIcon.focus();
         }
@@ -111,8 +110,8 @@ tinymce.PluginManager.add('zemoticons', function(editor, url) {
         icon: 'emoticons',
         tooltip: 'Emoticons',
         onclick: function (e) {
-            var visiblePanel = Array.from(document.querySelectorAll('table[class="mce-grid"]')).filter((el) => el.parentElement.style.display === '');
-            if (visiblePanel.length){
+            var visiblePanel = Array.from(document.querySelectorAll('table[class="mce-grid"]')).filter(function (el) { return el.parentElement.style.display === '' });
+            if (visiblePanel.length) {
                 visiblePanel[0].removeEventListener('keydown', _keyDown);
                 visiblePanel[0].addEventListener('keydown', _keyDown);
                 var emoticonToolbar = visiblePanel[0].querySelector('img[alt="cool"]').parentElement;
