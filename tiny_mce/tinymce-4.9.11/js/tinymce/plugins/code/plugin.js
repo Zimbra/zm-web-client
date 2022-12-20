@@ -42,6 +42,7 @@ var code = (function () {
           type: 'textbox',
           name: 'code',
           multiline: true,
+          ariaLabel: 'Source code',
           minWidth: minWidth,
           minHeight: minHeight,
           spellcheck: false,

@@ -55,7 +55,7 @@ tinymce.PluginManager.add('zemoticons', function(editor, url) {
 
                 emoticonsHtml.push('<td><a href="#" data-mce-url="');
                 emoticonsHtml.push(emoticonUrl);
-                emoticonsHtml.push('" tabindex="-1"><img src="');
+                emoticonsHtml.push('" tabindex="0"><img src="');
                 emoticonsHtml.push(emoticonUrl);
                 emoticonsHtml.push('" style="width: 18px; height: 18px" alt="');
                 emoticonsHtml.push(icon);
@@ -69,6 +69,27 @@ tinymce.PluginManager.add('zemoticons', function(editor, url) {
         emoticonsHtml.push('</table>');
 
         return emoticonsHtml.join('');
+    }
+
+    function _keyDown(ev) {
+
+        const icons = (Array.from(this.querySelectorAll('a')));
+        const totalIcons = icons.length;
+        const currentIconIndex = icons.indexOf(ev.target);
+        let nextIconIndex = null;
+
+        if (ev.keyCode === 37 || ev.keyCode === 39) {
+            nextIconIndex = ev.keyCode === 37 ? totalIcons + currentIconIndex - 1 : currentIconIndex + 1; 
+        }
+        else if (ev.keyCode === 38 || ev.keyCode === 40) {
+            nextIconIndex = ev.keyCode === 38 ? totalIcons + currentIconIndex - 4 : currentIconIndex + 4;
+        }
+
+        if (nextIconIndex) {
+            const nextIcon = icons[nextIconIndex%totalIcons];
+            ev.target.blur();
+            nextIcon.focus();
+        }
     }
 
     editor.addButton('zemoticons', {
@@ -88,6 +109,15 @@ tinymce.PluginManager.add('zemoticons', function(editor, url) {
             }
         },
         icon: 'emoticons',
-        tooltip: 'Emoticons'
+        tooltip: 'Emoticons',
+        onclick: function (e) {
+            var visiblePanel = Array.from(document.querySelectorAll('table[class="mce-grid"]')).filter((el) => el.parentElement.style.display === '');
+            if (visiblePanel.length){
+                visiblePanel[0].removeEventListener('keydown', _keyDown);
+                visiblePanel[0].addEventListener('keydown', _keyDown);
+                var emoticonToolbar = visiblePanel[0].querySelector('img[alt="cool"]').parentElement;
+                emoticonToolbar.focus();
+            }
+          }
     });
 });
