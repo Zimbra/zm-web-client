@@ -1890,12 +1890,11 @@ function() {
 		rootTg.addMember(appCtxt.getSearchController().getSearchToolbar().getTabGroupMember());
 	}
 
-	rootTg.addMember(this._userNameField);
-	rootTg.addMember(this._usedQuotaField);
-
 	if (this._helpButton) {
 		rootTg.addMember(this._helpButton);
 	}
+
+	rootTg.addMember(this._usedQuotaField);
 
 	rootTg.addMember(appCtxt.getAppChooser().getTabGroupMember());
 	rootTg.addMember(appCtxt.refreshButton);
@@ -2364,12 +2363,13 @@ ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL = appContextPath + "/img/large/ImgPerson
 ZmZimbraMail.prototype.getDropMenuOptions =
 function(parent, parentElement, adminUrl) {
 
-	var button = new DwtLinkButton({parent: parent, className: DwtButton.LINK_BUTTON_CLASS, parentElement: parentElement, elementTag: "DIV"});
+	var username = appCtxt.get(ZmSetting.DISPLAY_NAME) || appCtxt.getLoggedInUsername();
+	var button = new DwtLinkButton({parent: parent, className: DwtButton.LINK_BUTTON_CLASS, parentElement: parentElement, elementTag: "DIV", role: 'button'});
 	button.whatToShow = { };
 	button.setSize(Dwt.DEFAULT);
 	button.setAlign(DwtLabel.ALIGN_LEFT);
 	button.setText(ZmMsg.help);
-	button.setAttribute('aria-label', ZmMsg.userActions);
+	button.setAttribute('aria-label', username + ': ' + ZmMsg.userActions);
 	var menu = new ZmPopupMenu(button);
 
 	var supportedHelps = appCtxt.get(ZmSetting.SUPPORTED_HELPS);
@@ -2575,13 +2575,16 @@ function(parent) {
 	button.addSelectionListener(helpListener);
 
 	var mi = menu.createMenuItem("documentation", {text: ZmMsg.productHelp});
+	mi.getHtmlElement().setAttribute('aria-label', ZmMsg.productHelp + ": " + ZmMsg.link);
 	mi.addSelectionListener(helpListener);
 
 	var mi = menu.createMenuItem("onlinehelp", {text: ZmMsg.onlineHelp});
+	mi.getHtmlElement().setAttribute('aria-label', ZmMsg.onlineHelp + ": " + ZmMsg.link);
 	mi.addSelectionListener(new AjxListener(this, this._onlineHelpListener));
 
 
 	mi = menu.createMenuItem("newFeatures", {text: ZmMsg.newFeatures});
+	mi.getHtmlElement().setAttribute('aria-label', ZmMsg.newFeatures + ": " + ZmMsg.link);
 	mi.addSelectionListener(new AjxListener(this, this._newFeaturesListener));
 
 	mi = menu.createMenuItem("showCurrentShortcuts", {text: ZmMsg.shortcuts});
