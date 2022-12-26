@@ -17,6 +17,26 @@
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
 <app:skinAndRedirect />
+<c:if test="${zm:isDomainLoginPageEnabled()}">
+    <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
+    <c:choose>
+        <c:when test="${not empty domainInfo}">
+            <c:set var="zimbraDomainLoginPagePath" value="${domainInfo.attrs.zimbraDomainLoginPagePath}" />
+            <c:choose>
+              <c:when test="${not empty zimbraDomainLoginPagePath}" >
+                <jsp:forward page="${zimbraDomainLoginPagePath}" />
+              </c:when>
+              <c:otherwise>
+                <jsp:forward page="${domainInfo.attrs.zimbraDomainLoginPageFallbackPath}" />
+              </c:otherwise>
+            </c:choose>
+        </c:when>
+        <c:otherwise>
+            <jsp:forward page="${zm:getDomainLoginPageErrorPath()}" />
+        </c:otherwise>
+    </c:choose>
+</c:if>
+
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
