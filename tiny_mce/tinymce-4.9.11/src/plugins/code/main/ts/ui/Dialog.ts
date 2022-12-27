@@ -18,6 +18,7 @@ const open = function (editor) {
       type: 'textbox',
       name: 'code',
       multiline: true,
+      ariaLabel: 'Source code',
       minWidth,
       minHeight,
       spellcheck: false,
