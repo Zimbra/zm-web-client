@@ -2835,7 +2835,7 @@ var inlite = (function (domGlobals) {
         if (hasTabstopData(elm)) {
           return true;
         }
-        if (/^(button|menuitem|checkbox|tab|menuitemcheckbox|option|gridcell|slider)$/.test(getRole(elm))) {
+        if (/^(button|menuitem|combobox|checkbox|tab|menuitemcheckbox|option|gridcell|slider)$/.test(getRole(elm))) {
           return true;
         }
         return false;
