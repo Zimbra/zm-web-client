@@ -738,7 +738,7 @@ function() {
 
     if (!this._tabMember) {
         var today = new Date();
-        var day = this._dateToDayIndex[this._dayKey(today)];
+        var day = this._dateToDayIndex[this._dayKey(today)] || this._dateToDayIndex[Object.keys(this._dateToDayIndex)[0]];
         if (day) {
             var todayEl = document.getElementById(day.tdId);
             if (todayEl) {

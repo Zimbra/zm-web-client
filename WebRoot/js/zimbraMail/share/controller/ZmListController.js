@@ -980,6 +980,10 @@ function(view) {
 		prevButton = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
 	}
 
+	if (view.includes('MSG')) {
+		prevButton = this._toolbar[view].getButton(ZmOperation.DETACH);
+	}
+
 	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view, prevButton: prevButton, nextButton: nextButton});
 	this._setNavToolBar(tb, view);
 };
