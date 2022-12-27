@@ -775,10 +775,16 @@ function(isEnabled) {
 ZmTaskEditView.prototype._setRemindersConfigureEnabled = function(enabled) {
 	this._reminderConfigure.setEnabled(enabled);
 	var callBack = AjxCallback.simpleClosure(skin.gotoPrefs, skin, "NOTIFICATIONS");
-	this._reminderConfigure.getHtmlElement().onclick = enabled ? callBack : null;
+	Dwt.setHandler(this._reminderConfigure.getHtmlElement(), DwtEvent.ONCLICK, ZmTaskEditView._clickHandler.bind(this, callBack, enabled));
 	Dwt.setHandler(this._reminderConfigure.getHtmlElement(), DwtEvent.ONKEYUP, ZmTaskEditView._keyUpHandler.bind(this, callBack));
 };
 
+ZmTaskEditView._clickHandler =
+function(callback, enabled) {
+	if (enabled) {
+		callback();
+	}
+}
 ZmTaskEditView._keyUpHandler =
 function(callBack, ev) {
 	if (ev.keyCode === DwtKeyEvent.KEY_ENTER) {
