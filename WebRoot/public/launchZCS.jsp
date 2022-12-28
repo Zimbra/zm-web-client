@@ -1,6 +1,8 @@
 <%@ page buffer="8kb" session="true" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.*,javax.naming.*,com.zimbra.client.ZAuthResult" %>
+<%@ page import="java.util.regex.Pattern" %>
 <%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
+<%@ page import="com.zimbra.common.util.ZimbraLog" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -41,11 +43,27 @@
     ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
     String skin = authResult.getSkin();
     if (skin == null) {
-        skin = authResult.getPrefs().get("zimbraPrefSkin").get(0);
+        try {
+            skin = authResult.getPrefs().get("zimbraPrefSkin").get(0);
+        } catch (Exception e) {
+            // do nothing
+        }
     }
+
+    if (skin == null || !Pattern.matches("^[A-Za-z0-9]+$", skin)) {
+        skin = "";
+        ZimbraLog.webclient.warn("a valid skin name could not be fetched. Default skin is used.");
+    }
+    pageContext.setAttribute("skin", skin, PageContext.REQUEST_SCOPE);
 %>
 <app:skinAndRedirect defaultSkin="${skin}" />
 <%
+    try {
+        skin = (String) pageContext.getAttribute("skin", PageContext.REQUEST_SCOPE);
+    } catch (Exception e) {
+        // do nothing
+    }
+
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 
