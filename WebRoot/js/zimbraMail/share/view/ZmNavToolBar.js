@@ -128,7 +128,12 @@ function(next) {
 	for (var i = 0; i < childCount; i++) {
 		var childIndex = next ? i : childCount - 1 - i;
 		var child = this.getChild(childIndex);
-		if (child._enabled) {
+		if (child.isDwtText) {
+			if (child._enabled && child.getText()) {
+				sibling = child;
+				break;
+			}
+		} else if (child._enabled) {
 			sibling = child;
 			break;
 		}

@@ -746,7 +746,7 @@ function(tabGroup) {
 
                         this._schButton,
                         this._scheduleView._tabGroup,
-                        this.getHtmlEditor(),
+                        this.getHtmlEditor().getTabGroupMember(),
                         this._scheduleAssistant._tabGroup
                     ]);
 };
