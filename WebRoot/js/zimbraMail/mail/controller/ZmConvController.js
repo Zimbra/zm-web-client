@@ -186,6 +186,12 @@ function(value) {
 	}
 };
 
+ZmConvController.prototype._initializeTabGroup =
+function(view) {
+	if (this._tabGroups[view]) { return; }
+	ZmBaseController.prototype._initializeTabGroup.apply(this, arguments);
+};
+
 ZmConvController.prototype._initializeView =
 function(view) {
 	if (!this._view[view]) {

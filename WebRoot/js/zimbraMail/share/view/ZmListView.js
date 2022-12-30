@@ -1105,19 +1105,22 @@ function (ev) {
 			this._compositeTabGroup.setFocusMember(nextElement);
 			this._headerFocusElement = nextElement;
 		}
+		ev.stopPropagation();
 	}
 
 	if (keyCode === DwtKeyEvent.KEY_SPACE) {
 		var currentHeaderItem = this._headerList[this._headerFocusElementIndex];
 		clickEl = document.getElementById(currentHeaderItem._id);
 		this._columnClicked(clickEl,ev);
+		ev.stopPropagation();
 	}
 
-	if (keyCode === DwtKeyEvent.KEY_ENTER && ev.metaKey) {
-		var actionMenu = this._colHeaderActionMenu = this._getActionMenuForColHeader();
+	if (keyCode === DwtKeyEvent.KEY_ENTER && ev.ctrlKey) {
+		var actionMenu = this._getActionMenuForColHeader(true);
 		if (actionMenu && actionMenu instanceof DwtMenu) {
 			var rect = ev.target.getBoundingClientRect();
 			actionMenu.popup(0, rect.x, rect.y);
+			ev.stopPropagation();
 		}
 	}
 };
