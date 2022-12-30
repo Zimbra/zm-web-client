@@ -272,8 +272,7 @@ ZmMsgController.prototype._initializeTabGroup =
 function(view) {
 	if (this._tabGroups[view]) { return; }
 
-	ZmMailListController.prototype._initializeTabGroup.apply(this, arguments);
-
+	ZmBaseController.prototype._initializeTabGroup.apply(this, arguments);
 	this._tabGroups[view].removeMember(this._view[view]);
 };
 
