@@ -40,29 +40,29 @@
 		contextPath = "";
 	}
 
-    ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
-    String skin = authResult.getSkin();
-    if (skin == null) {
-        try {
-            skin = authResult.getPrefs().get("zimbraPrefSkin").get(0);
-        } catch (Exception e) {
-            // do nothing
-        }
-    }
+	ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
+	String skin = authResult.getSkin();
+	if (skin == null) {
+		try {
+			skin = authResult.getPrefs().get("zimbraPrefSkin").get(0);
+		} catch (Exception e) {
+			// do nothing
+		}
+	}
 
-    if (skin == null || !Pattern.matches("^[A-Za-z0-9]+$", skin)) {
-        skin = "";
-        ZimbraLog.webclient.warn("a valid skin name could not be fetched. Default skin is used.");
-    }
-    pageContext.setAttribute("skin", skin, PageContext.REQUEST_SCOPE);
+	if (skin == null || !Pattern.matches("^[A-Za-z0-9]+$", skin)) {
+		skin = "";
+		ZimbraLog.webclient.warn("a valid skin name could not be fetched. Default skin is used.");
+	}
+	pageContext.setAttribute("skin", skin, PageContext.REQUEST_SCOPE);
 %>
 <app:skinAndRedirect defaultSkin="${skin}" />
 <%
-    try {
-        skin = (String) pageContext.getAttribute("skin", PageContext.REQUEST_SCOPE);
-    } catch (Exception e) {
-        // do nothing
-    }
+	try {
+		skin = (String) pageContext.getAttribute("skin", PageContext.REQUEST_SCOPE);
+	} catch (Exception e) {
+		// do nothing
+	}
 
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
