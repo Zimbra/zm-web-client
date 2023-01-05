@@ -111,3 +111,4 @@ AjxPackage.require("ajax.dwt.widgets.DwtTabView");
 AjxPackage.require("ajax.dwt.widgets.DwtTimeSelect");
 
 AjxPackage.require("zimbraMail.share.view.ZmTagsHelper");
+AjxPackage.require("zimbraMail.share.view.dialog.ZmRevokeShareDialog");
