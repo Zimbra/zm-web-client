@@ -198,6 +198,33 @@ function(ex) {
     }
 };
 
+ZmTaskListView.prototype._getLabelFieldList =
+function () {
+	return [
+		ZmItem.F_SELECTION,
+		ZmItem.F_NAME,
+		ZmItem.F_PRIORITY
+	];
+};
+
+ZmTaskListView.prototype._getLabelForField =
+function(item, field) {
+	switch (field) {
+		case ZmItem.F_NAME:
+			return item.name;
+		case ZmItem.F_PRIORITY:
+			if (item.isHighPriority) {
+				return ZmMsg.priorityHigh;
+			} else if (item.isLowPriority) {
+				return ZmMsg.priorityLow;
+			} else {
+				return ZmMsg.priorityNormal;
+			}
+		default:
+			return ZmListView.prototype._getLabelForField.apply(this, arguments);
+	}
+};
+
 ZmTaskListView.prototype.handleKeyAction =
 function(actionCode, ev) {
 	if (this._editing) {
@@ -276,6 +303,7 @@ function(list, noResultsOk, doAdd) {
 		var now = new Date();
 		var size = list.size();
 		var htmlArr = [];
+		var taskItem = [];
         var currentSec = null;
 
         var htmlUpcomingArr = [];
@@ -335,7 +363,8 @@ function(list, noResultsOk, doAdd) {
 				} else if (div.tagName || doAdd) {
 					this._addRow(div);
 				} else {
-                    //bug:47781
+					taskItem.push(item);
+					//bug:47781
 					if(this._controller.getAllowableTaskStatus() == ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_TODO] && item.status == ZmCalendarApp.STATUS_WAIT) {
 							if(currentSec == ZmTaskListView.SEC_PASTDUE) {
 								htmlPastDueArr.push(div);
@@ -375,6 +404,9 @@ function(list, noResultsOk, doAdd) {
 
 		if (htmlArr.length) {
 			this._parentEl.innerHTML = htmlArr.join("");
+			for (var k = 0; k < taskItem.length; k++) {
+				this._updateLabelForItem(taskItem[k]);
+			}
 		}
 	} else if (!noResultsOk) {
 		this._setNoResultsHtml();
