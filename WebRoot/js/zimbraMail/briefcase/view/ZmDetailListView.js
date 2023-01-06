@@ -344,6 +344,38 @@ function(item) {
 	}
 };
 
+ZmDetailListView.prototype._getLabelFieldList =
+function () {
+	return [
+		ZmItem.F_SELECTION,
+		ZmItem.F_NAME,
+		ZmItem.F_TYPE,
+		ZmItem.F_SIZE,
+		ZmItem.F_DATE,
+		ZmItem.F_SHARES
+	];
+};
+
+ZmDetailListView.prototype._getLabelForField =
+function(item, field) {
+	switch (field) {
+		case ZmItem.F_NAME:
+			return item.name;
+		case ZmItem.F_TYPE:
+			var itemInfo = ZmMimeTable.getInfo(item.contentType);
+			return (itemInfo && itemInfo.desc) || "";
+		case ZmItem.F_DATE:
+			var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
+			return dateFormatter.format(item.contentChangeDate);
+		case ZmItem.F_SIZE:
+			return AjxUtil.formatSize(item.size);
+		case ZmItem.F_SHARES:
+			return item.modifier;
+		default:
+			return ZmListView.prototype._getLabelForField.apply(this, arguments);
+	}
+};
+
 ZmDetailListView.prototype.expand =
 function(item, revisions){
 
