@@ -841,6 +841,7 @@ function(obj, bContained) {
 	if (selField) {
 		this._setImage(item, ZmItem.F_SELECTION, bContained ? ZmListView.UNCHECKED_IMAGE : ZmListView.CHECKED_IMAGE);
 		this._setItemData(this._getElFromItem(item), ZmListView.ITEM_CHECKED_ATT_NAME, !bContained);
+		this._updateLabelForItem(item);
 	}
 };
 
@@ -1294,6 +1295,15 @@ function() {
  */
 ZmListView.prototype._getLabelForField =
 function(item, field) {
+
+	if (field === ZmItem.F_SELECTION) {
+		var itemHtmlEl = this._getElFromItem(item);
+		if (itemHtmlEl && itemHtmlEl.getAttribute('aria-selected') === 'true') {
+			return ZmMsg.selected;
+		}
+		return "";
+	} 
+
 	var tooltip = this._getToolTip({ item: item, field: field });
 	// TODO: fix for tooltips that are callbacks (such as for appts)
 	return AjxStringUtil.stripTags(tooltip);
