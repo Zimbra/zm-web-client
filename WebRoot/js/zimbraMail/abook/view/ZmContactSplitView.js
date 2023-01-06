@@ -1130,6 +1130,24 @@ function(ev) {
 	}
 };
 
+ZmContactSimpleView.prototype._getLabelFieldList =
+function () {
+	return [
+		ZmItem.F_SELECTION,
+		ZmItem.F_NAME
+	];
+};
+
+ZmContactSimpleView.prototype._getLabelForField =
+function(item, field) {
+	switch (field) {
+		case ZmItem.F_NAME:
+			return item.sf;
+		default:
+			return ZmListView.prototype._getLabelForField.apply(this, arguments);
+	}
+};
+
 /**
  * @private
  */
