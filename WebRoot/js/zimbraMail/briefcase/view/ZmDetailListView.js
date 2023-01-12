@@ -380,11 +380,20 @@ function(item, field) {
 		case ZmItem.F_NAME:
 			return item.name;
 		case ZmItem.F_TYPE:
-			var itemInfo = ZmMimeTable.getInfo(item.contentType);
-			return (itemInfo && itemInfo.desc) || "";
+			if (item.isFolder) {
+				return ZmMsg.folder;
+			}
+			if (item.contentType) {
+				var itemInfo = ZmMimeTable.getInfo(item.contentType);
+				return (itemInfo && itemInfo.desc) || "";
+			}
+			return "";
 		case ZmItem.F_DATE:
-			var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
-			return dateFormatter.format(item.contentChangeDate);
+			if (item.contentChangeDate) {
+				var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
+				return dateFormatter.format(item.contentChangeDate);
+			}
+			return "";
 		case ZmItem.F_SIZE:
 			return AjxUtil.formatSize(item.size);
 		case ZmItem.F_SHARES:
