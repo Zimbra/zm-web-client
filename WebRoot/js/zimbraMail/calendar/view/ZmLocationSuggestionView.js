@@ -79,8 +79,10 @@ function(params) {
     this._emailToDivIdMap = {};
     this._items = params.locationInfo.locations;
     ZmListView.prototype.set.call(this, params.locationInfo.locations);
-    this.parent._tabGroup.replaceMember(this._tabMember, this);
-    this._tabMember = this;
+    if (this.parent._tabGroup) {
+        this.parent._tabGroup.replaceMember(this._tabMember, this);
+        this._tabMember = this;
+    }
 };
 
 ZmLocationSuggestionView.prototype.handleLocationOverflow =
