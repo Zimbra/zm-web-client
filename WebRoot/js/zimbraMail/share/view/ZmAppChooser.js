@@ -339,6 +339,11 @@ function(id, params) {
 	button.addSelectionListener(this._buttonListener);
 	this._buttons[id] = button;
     this._checkTabOverflowAdd(button.getHtmlElement());
+    var parentEl = button.getHtmlElement().parentElement;
+    if (parentEl) {
+        parentEl.setAttribute('role', 'heading');
+        parentEl.setAttribute('aria-level', '2');
+    }
 	return button;
 };
 
