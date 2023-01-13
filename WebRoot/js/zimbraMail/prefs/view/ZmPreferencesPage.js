@@ -148,8 +148,6 @@ function() {
 	AjxUtil.foreach(elements, function(el) {
 		if (Dwt.hasClass(el, 'prefHeader')) {
 			var header = el;
-			header.setAttribute('role', 'heading');
-			header.setAttribute('aria-level', 3);
 			header.id = Dwt.getNextId('prefHeader')
 		} else if (Dwt.hasClass(el, 'ZOptionsSectionTable')) {
 			var sectiontable = el;
@@ -248,6 +246,17 @@ function() {
 		if (!label.id) {
 			label.id = Dwt.getNextId();
 		}
+	}
+
+	var currentEl = this.getHtmlElement();
+	var headerSections = currentEl.querySelector('.prefHeader')
+			? currentEl.querySelectorAll('.prefHeader')
+			: currentEl.querySelectorAll('.ZOptionsHeaderRow');
+
+	for(var i = 0; i < headerSections.length; i++) {
+		var header = headerSections[i];
+		header.setAttribute('role', 'heading');
+		header.setAttribute('aria-level', '3');
 	}
 };
 
