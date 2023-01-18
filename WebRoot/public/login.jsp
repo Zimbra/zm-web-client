@@ -31,6 +31,7 @@
                                                         || (ua.isOsBlackBerry)
                                                         || (ua.isOsAndroid)
                                                         || (ua.isIos))}"/>
+<c:set var="tabletSupported" value="${ua.isTouchiPad || ua.isTablet}"/>
 <c:set var="totpAuthRequired" value="false"/>
 <c:set var="trimmedUserName" value="${fn:trim(fn:escapeXml(param.username))}"/>
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
@@ -696,7 +697,7 @@ if (application.getInitParameter("offlineMode") != null) {
                             <hr/>
                             </div>
                             <div>
-                            <c:if test="${!(mobileSupported && modernSupported)}">
+                            <c:if test="${!((mobileSupported || tabletSupported) && modernSupported)}">
                                 <div class="versionBlock">
                                     <label for="client"><fmt:message key="versionHeaderLabel"/></label>
                                     <div style="position: relative;">
