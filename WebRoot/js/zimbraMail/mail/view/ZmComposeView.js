@@ -3590,6 +3590,9 @@ function() {
 
 	for (var i = 0, count = identities.length; i < count; i++) {
 		var identity = identities[i];
+		if (appCtxt.get("BLOCK_SEND_FROM_IMAP_POP") && identity.isFromDataSource) {
+			continue;
+		}
 		options.push(new DwtSelectOptionData(identity.id, this._getIdentityText(identity)));
 	}
 	return options;

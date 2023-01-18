@@ -489,6 +489,9 @@ function(addSigs) {
 
 	if (identities && identities.length) {
 		for (var i = 0, len = identities.length; i < len; i++) {
+			if (appCtxt.get("BLOCK_SEND_FROM_IMAP_POP") && identities[i].isFromDataSource) {
+				continue;
+			}
 			this._addUsageSelects(identities[i], table, signatures);
 		}
 	}
