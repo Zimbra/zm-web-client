@@ -1306,52 +1306,54 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'><input id='${id}_EXTERNAL_DELETE_AFTER_DOWNLOAD' tabindex=0 type=checkbox></td>
 					</tr>
-					<tr><td colspan=2><hr /></td></tr>
-					<tr>
-						<td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
-						<td class='ZOptionsField'><$=ZmMsg.fromDetail$></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField ZOptionsSubField'>
-							<table role="presentation">
-								<tr>
-									<td style='padding-right:.5em;'>
-										<input id='${id}_EXTERNAL_FROM_NAME' tabindex=0 size=30>
-									</td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.setReplyTo$></td>
-						<td class='ZOptionsField'><input id='${id}_EXTERNAL_REPLY_TO' tabindex=0 type=checkbox></td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField ZOptionsSubField'>
-							<table role="presentation">
-								<tr>
-									<td style='padding-right:.5em;'>
-										<input id='${id}_EXTERNAL_REPLY_TO_NAME' tabindex=0 size=30>
-									</td>
-									<td class='ZmSelector'>
-										<select id='${id}_EXTERNAL_REPLY_TO_EMAIL' tabindex=0></select>
-									</td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-						<td class='ZOptionsField' valign='middle'>
-						    <a id ='${id}_External_Signatures_Link' href='#Prefs.Signatures'><$=ZmMsg.manageSignaturesForExternalAccount$></a>
-						    <span id ='${id}_External_Signatures_Text'><$=ZmMsg.manageSignaturesForExternalAccount$></span>
-                        </td>
-					</tr>
+					<$ if (!appCtxt.get("BLOCK_SEND_FROM_IMAP_POP")) { $>
+						<tr><td colspan=2><hr /></td></tr>
+						<tr>
+							<td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
+							<td class='ZOptionsField'><$=ZmMsg.fromDetail$></td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField ZOptionsSubField'>
+								<table role="presentation">
+									<tr>
+										<td style='padding-right:.5em;'>
+											<input id='${id}_EXTERNAL_FROM_NAME' tabindex=0 size=30>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.setReplyTo$></td>
+							<td class='ZOptionsField'><input id='${id}_EXTERNAL_REPLY_TO' tabindex=0 type=checkbox></td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField ZOptionsSubField'>
+								<table role="presentation">
+									<tr>
+										<td style='padding-right:.5em;'>
+											<input id='${id}_EXTERNAL_REPLY_TO_NAME' tabindex=0 size=30>
+										</td>
+										<td class='ZmSelector'>
+											<select id='${id}_EXTERNAL_REPLY_TO_EMAIL' tabindex=0></select>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
+							<td class='ZOptionsField' valign='middle'>
+								<a id ='${id}_External_Signatures_Link' href='#Prefs.Signatures'><$=ZmMsg.manageSignaturesForExternalAccount$></a>
+								<span id ='${id}_External_Signatures_Text'><$=ZmMsg.manageSignaturesForExternalAccount$></span>
+							</td>
+						</tr>
+					<$ } $>
 				</table>
 			</td>
 		</tr>
