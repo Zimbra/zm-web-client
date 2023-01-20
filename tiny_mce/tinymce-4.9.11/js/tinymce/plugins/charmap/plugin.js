@@ -1160,6 +1160,16 @@ var charmap = (function () {
     };
     var open = function (editor) {
       var win;
+      var handleMouseOver = function (e) {
+        var td = getParentTd(e.target);
+        if (td && td.firstChild) {
+          win.find('#preview').text(td.firstChild.firstChild.data);
+          win.find('#previewTitle').text(td.title);
+        } else {
+          win.find('#preview').text(' ');
+          win.find('#previewTitle').text(' ');
+        }
+      };
       var charMapPanel = {
         type: 'container',
         html: GridHtml.getHtml(CharMap.getCharMap(editor)),
@@ -1179,16 +1189,24 @@ var charmap = (function () {
             }
           }
         },
-        onmouseover: function (e) {
-          var td = getParentTd(e.target);
-          if (td && td.firstChild) {
-            win.find('#preview').text(td.firstChild.firstChild.data);
-            win.find('#previewTitle').text(td.title);
-          } else {
-            win.find('#preview').text(' ');
-            win.find('#previewTitle').text(' ');
+        onkeyDown: function (e) {
+          var chars = Array.from(this.$el.context.querySelectorAll('div'));
+          var totalChars = chars.length;
+          var currentCharIndex = chars.indexOf(e.target);
+          var nextCharIndex = null;
+          if (e.keyCode === 37 || e.keyCode === 39 || e.keyCode === 9) {
+            nextCharIndex = currentCharIndex;
+          } else if (e.keyCode === 38 || e.keyCode === 40) {
+            nextCharIndex = e.keyCode === 38 ? totalChars + currentCharIndex - 24 : currentCharIndex + 24;
           }
-        }
+          if (nextCharIndex) {
+            var nextChar = chars[nextCharIndex % totalChars];
+            e.target.blur();
+            nextChar.focus();
+            handleMouseOver(e);
+          }
+        },
+        onmouseover: handleMouseOver
       };
       win = editor.windowManager.open({
         title: 'Special character',
