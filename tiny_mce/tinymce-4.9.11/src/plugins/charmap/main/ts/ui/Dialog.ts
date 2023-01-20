@@ -5,6 +5,7 @@
  * For commercial licenses see https://www.tiny.cloud/
  */
 
+import { HTMLElement } from '@ephox/dom-globals';
 import Actions from '../core/Actions';
 import CharMap from '../core/CharMap';
 import GridHtml from './GridHtml';
@@ -21,6 +22,18 @@ const getParentTd = function (elm) {
 
 const open = function (editor) {
   let win;
+
+  const handleMouseOver = function (e) {
+    const td = getParentTd(e.target);
+
+    if (td && td.firstChild) {
+      win.find('#preview').text(td.firstChild.firstChild.data);
+      win.find('#previewTitle').text(td.title);
+    } else {
+      win.find('#preview').text(' ');
+      win.find('#previewTitle').text(' ');
+    }
+  };
 
   const charMapPanel = {
     type: 'container',
@@ -44,17 +57,31 @@ const open = function (editor) {
         }
       }
     },
-    onmouseover (e) {
-      const td = getParentTd(e.target);
 
-      if (td && td.firstChild) {
-        win.find('#preview').text(td.firstChild.firstChild.data);
-        win.find('#previewTitle').text(td.title);
-      } else {
-        win.find('#preview').text(' ');
-        win.find('#previewTitle').text(' ');
+    onkeyDown(e) {
+      const chars = Array.from(this.$el.context.querySelectorAll('div'));
+      const totalChars = chars.length;
+      const currentCharIndex = chars.indexOf(e.target);
+      let nextCharIndex = null;
+
+      if (e.keyCode === 37 || e.keyCode === 39 || e.keyCode === 9) {
+        nextCharIndex = currentCharIndex;
+      } else if (e.keyCode === 38 || e.keyCode === 40) {
+        nextCharIndex =
+          e.keyCode === 38
+            ? totalChars + currentCharIndex - 24
+            : currentCharIndex + 24;
       }
-    }
+
+      if (nextCharIndex) {
+        const nextChar = chars[nextCharIndex % totalChars];
+        e.target.blur();
+        (nextChar as HTMLElement).focus();
+        handleMouseOver(e);
+      }
+    },
+
+    onmouseover: handleMouseOver,
   };
 
   win = editor.windowManager.open({
