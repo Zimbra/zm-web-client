@@ -75,11 +75,17 @@ div.@{prefix}-edit-area {
   line-height: 20px;
   text-align: center;
   vertical-align: middle;
-  padding: 2px;
 }
 
 .@{prefix}-charmap td div {
   text-align: center;
+  padding: 2px;
+  border: 1px solid transparent; 
+}
+
+.@{prefix}-charmap td div:focus-visible,
+.@{prefix}-charmap td:hover div { 
+  border-color: #2275d1; 
 }
 
 .@{prefix}-charmap td:hover {
