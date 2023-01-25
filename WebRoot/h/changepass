@@ -102,6 +102,12 @@
                 </div>
                 <form method='post' name="changePassForm" id="zLoginForm" action="" autocomplete="off" accept-charset="utf-8" onsubmit="return compareConfirmPass();">
                     <c:if test="${successfullLogin ne 'true'}">
+                        <fmt:message key="passwordExplanation" var="passwordExplanation"/>
+                        <c:if test="${passwordExplanation ne '???passwordExplanation???'}">
+                            <div id='passwordExplanation'>
+                                <fmt:message key="passwordExplanation"/>
+                            </div>
+                        </c:if>
                         <div class="form">
                             <div class="loginSection">
                                 <input type="hidden" name="loginOp" value="login"/>
