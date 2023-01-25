@@ -1971,7 +1971,6 @@ function(ev) {
     		var publicUrl = appCtxt.get(ZmSetting.PUBLIC_URL);
     		if (publicUrl) {
     			var parts = AjxStringUtil.parseURL(publicUrl);
-    			path = parts.path + "/h/changepass";
     			var switchMode = (parts.protocol == "http" && proto == ZmSetting.PROTO_HTTPS);
     			proto = switchMode ? proto : parts.protocol;
     			port = switchMode ? port : parts.port;
