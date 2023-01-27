@@ -45,4 +45,13 @@
 			<file>../_base/base3/zhtml.css</file>
 		</css>
 	</standard>	
+    <print>
+        <css>
+            <file>../_base/base3/print.css</file>
+        </css>
+        <cssIgnore>
+            <file>../_base/base3/skin.css</file>
+            <file>skin.css</file>
+        </cssIgnore>
+    </print>
 </skin>
