@@ -238,6 +238,7 @@
                     <c:otherwise>
                         <c:set var="client" value="${param.client}"/>
                         <%
+                            // check if maibox is upgraded
                             try {
                                 String userToken = (String) pageContext.getAttribute("authtoken");
                                 if (userToken != null && userToken.length() > 0) {
