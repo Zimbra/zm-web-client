@@ -30,7 +30,7 @@
 			<file>../_base/base3/skin.css</file>
 		</css>
 	</common>
-	<advanced>	
+	<advanced>
 		<script>
 			<file>../_base/base3/ZmSkin.js</file>
 		</script>
@@ -38,20 +38,20 @@
 			<file>../_base/base3/skin.html</file>
 			<file>../_base/base3/splash.html</file>
 		</html>
-	</advanced>	
+	</advanced>
 	<standard>
 		<css>
 			<file>../../css/zhtml.css</file>
 			<file>../_base/base3/zhtml.css</file>
 		</css>
 	</standard>
-    <print>
-        <css>
-            <file>../_base/base3/print.css</file>
-        </css>
-        <cssIgnore>
-            <file>../_base/base3/skin.css</file>
-            <file>skin.css</file>
-        </cssIgnore>
-    </print>
+	<print>
+		<css>
+			<file>../_base/base3/print.css</file>
+		</css>
+		<cssIgnore>
+			<file>../_base/base3/skin.css</file>
+			<file>skin.css</file>
+		</cssIgnore>
+	</print>
 </skin>
