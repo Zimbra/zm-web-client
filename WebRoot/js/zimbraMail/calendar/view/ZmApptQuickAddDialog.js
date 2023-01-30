@@ -338,11 +338,10 @@ function() {
 		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
 		this._repeatSelect.addOption(option.label, option.selected, option.value);
 	}
-
 	//reminder DwtSelect
     var	displayOptions = [
 		ZmMsg.apptRemindNever,
-        ZmMsg.apptRemindAtEventTime,
+		AjxMsg.atEventTime,
 		ZmMsg.apptRemindNMinutesBefore,
 		ZmMsg.apptRemindNMinutesBefore,
 		ZmMsg.apptRemindNMinutesBefore,

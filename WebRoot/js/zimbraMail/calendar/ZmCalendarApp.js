@@ -127,7 +127,7 @@ ZmCalendarApp.DEFAULT_CAL_SCALING           = "30"; //30minutes
 
 ZmCalendarApp.reminderTimeWarningDisplayMsgs = [
 	ZmMsg.apptRemindNever,
-    ZmMsg.apptRemindAtEventTime,
+	AjxMsg.atEventTime,
 	ZmMsg.apptRemindNMinutesBefore,
 	ZmMsg.apptRemindNMinutesBefore,
 	ZmMsg.apptRemindNMinutesBefore,
@@ -1164,7 +1164,7 @@ function(reminderMinutes) {
 	var weeksConvertable = ((reminderMinutes%(60*24*7)) == 0);
 
     if (reminderMinutes === -1)	{ return ZmMsg.apptRemindNever; }
-    if (reminderMinutes === 0)	{ return ZmMsg.apptRemindAtEventTime; }
+    if (reminderMinutes === 0)	{ return AjxMsg.atEventTime; }
 	if (weeksConvertable)		{ return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNWeeksBefore, reminderMinutes/(60*24*7)); }
 	if (daysConvertable)		{ return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNDaysBefore, reminderMinutes/(60*24)); }
 	if (hoursConvertable)		{ return ZmCalendarApp.__formatLabel(ZmMsg.apptRemindNHoursBefore, reminderMinutes/60); }
@@ -1252,7 +1252,7 @@ function(reminderString) {
 	var formattedString = reminderString;
 	var reminderValue = formattedString.replace(/\D/g, "");
 	reminderValue = AjxStringUtil.trim(reminderValue);
-    if (reminderString === ZmMsg.apptRemindAtEventTime) {
+    if (reminderString === AjxMsg.atEventTime) {
         return {
             reminderValue: 0,
             reminderUnits: ZmCalItem.REMINDER_UNIT_MINUTES

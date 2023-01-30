@@ -331,7 +331,7 @@ function(snoozeSelectButton, snoozeSelectInput, menuSelectionListener, apptList)
 
 				}
                 else if (snoozeDisplayValue == 0){
-                    label = ZmMsg.apptRemindAtEventTime;
+                    label = AjxMsg.atEventTime;
                 }
 				else {
                     if (snoozeDisplayValue >= ZmReminderDialog.SCALE_MINUTES[iFormatter+1]) {
