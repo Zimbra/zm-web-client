@@ -153,6 +153,7 @@
 								// Delete cookie
 								Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
 								csrfCookie.setMaxAge(0);
+								csrfCookie.setPath("/");
 								response.addCookie(csrfCookie);
 
 								pageContext.setAttribute("login_csrf", "");
@@ -188,6 +189,7 @@
 					// Delete cookie
 					Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
 					csrfCookie.setMaxAge(0);
+					csrfCookie.setPath("/");
 					response.addCookie(csrfCookie);
 
 					pageContext.setAttribute("login_csrf", "");
