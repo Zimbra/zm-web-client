@@ -31,6 +31,7 @@
 ZmPasswordRecoveryDialog =
 function(params) {
 	this.accountInput = params.accountInput || '';
+	this.contextPath = params.contextPath || '';
 
 	var emailSubmitButton = new DwtDialog_ButtonDescriptor(ZmPasswordRecoveryDialog.EMAIL_SUBMIT_BUTTON,
 								ZmMsg.passwordRecoveryButtonSubmit,
@@ -126,7 +127,7 @@ function() {
 	this._twoFactorCodeDivId = id + '_two_factor_code';
 
 	this._divIdArray = [this._getRecoveryAccountDivId, this._requestCodeDivId, this._validateCodeDivId, this._codeSuccessDivId, this._resetPasswordDivId, this._passwordResetSuccessDivId, this._twoFactorCodeDivId];
-	return AjxTemplate.expand('share.Dialogs#ZmPasswordRecovery', {id : id, accountInput : this.accountInput});
+	return AjxTemplate.expand('share.Dialogs#ZmPasswordRecovery', {id : id, accountInput : this.accountInput, contextPath : this.contextPath});
 };
 
 /**
@@ -386,7 +387,7 @@ function(result) {
 			Dwt.hide(this._trustedDeviceDiv);
 		}
 	} else {
-		location.replace(location.origin);
+		location.replace(location.origin + this.contextPath);
 	}
 
 }
@@ -1087,7 +1088,7 @@ function() {
 
 ZmPasswordRecoveryDialog.prototype._handleCancelResetPasswordRequest = 
 function () {
-	location.replace(location.origin);
+	location.replace(location.origin + this.contextPath);
 }
 
 /**
@@ -1121,6 +1122,6 @@ function(result) {
 		this._handleResetPasswordError(this._validateTwoFactorErrorDiv, this._validateTwoFactorErrorMessageDiv, result.getException());
 	} else {
 		this.setButtonEnabled(ZmPasswordRecoveryDialog.TWO_FACTOR_VERIFY_BUTTON, false);
-		location.replace(location.origin);
+		location.replace(location.origin + this.contextPath);
 	}
 }

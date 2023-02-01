@@ -41,6 +41,9 @@
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
+<c:if test="${pageContext.request.contextPath ne '/'}">
+    <c:set var="basePath" value="${pageContext.request.contextPath}"/>
+</c:if>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
 <c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,login_csrf,"/>
@@ -784,7 +787,7 @@ function clientChange(selectValue) {
 function forgotPassword() {
 	var accountInput = getElement("username").value;
 	var queryParams = encodeURI("account=" + accountInput);
-	var url = "/public/PasswordRecovery.jsp?" + location.search;
+	var url = "${basePath}" + "/public/PasswordRecovery.jsp?" + location.search;
 
 	if (accountInput !== '') {
 		url += (location.search !== '' ? '&' : '') + encodeURI("account=" + accountInput);
