@@ -126,7 +126,7 @@
 			<c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLogoutURLAllowedUA)}"/>
 			<c:set var="isAllowedIP" value="${zm:isAllowedIP(remoteAddr, domainInfo.webClientLogoutURLAllowedIP)}"/>
 			<c:choose>
-				<c:when test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (isAllowedIP eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain)}">
+				<c:when test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (isAllowedIP eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain) and (logoutRedirectUrl ne pageContext.request.contextPath)}">
 					<c:if test="${skipLogoff ne 'true'}">
 						<zm:logout/>
 					</c:if>
@@ -356,7 +356,7 @@ if (application.getInitParameter("offlineMode") != null) {
     <c:set var="isAllowedIP" value="${zm:isAllowedIP(remoteAddr, domainInfo.webClientLoginURLAllowedIP)}"/>
 </c:if>
 
-<c:if test="${not empty domainLoginRedirectUrl and empty param.sso and empty param.ignoreLoginURL and (isAllowedUA eq true) and (isAllowedIP eq true)}" >
+<c:if test="${not empty domainLoginRedirectUrl and empty param.sso and empty param.ignoreLoginURL and (isAllowedUA eq true) and (isAllowedIP eq true) and (domainLoginRedirectUrl ne pageContext.request.contextPath)}" >
 	<c:redirect url="${domainLoginRedirectUrl}">
 		<c:forEach var="p" items="${paramValues}">
 			<c:forEach var='value' items='${p.value}'>
