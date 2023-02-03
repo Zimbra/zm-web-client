@@ -29,7 +29,11 @@
 
 <%
 	String skin = request.getParameter("skin");
-	if (skin == null || !Pattern.matches("^[0-9A-Za-z]+$", skin)) {
+	if (skin == null) {
+		Object o = pageContext.getAttribute("skin", PageContext.REQUEST_SCOPE);
+		skin = String.valueOf(o);
+	}
+	if (skin == null || "null".equals(skin) || !Pattern.matches("^[0-9A-Za-z]+$", skin)) {
 		skin = application.getInitParameter("zimbraDefaultSkin");
 	}
 %>
