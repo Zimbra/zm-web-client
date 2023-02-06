@@ -7,6 +7,10 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
+<c:if test="${pageContext.request.contextPath ne '/'}">
+    <c:set var="basePath" value="${pageContext.request.contextPath}"/>
+</c:if>
+
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:set var="refreshSkin" value="${true}" scope="request"/>
@@ -125,8 +129,8 @@
                                             <fmt:message key="zimbraPasswordMinLength" var="passwordMinLengthMsg">
                                                 <fmt:param value="${zimbraPasswordMinLength}"/>
                                             </fmt:message>
-                                            <img src="/img/zimbra/ImgCloseGrayModern.png" id="minLengthCloseImg" style="display: inline;"/>
-                                            <img src="/img/zimbra/ImgCheckModern.png" id="minLengthCheckImg" style="display: none;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="minLengthCloseImg" style="display: inline;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="minLengthCheckImg" style="display: none;"/>
                                             ${passwordMinLengthMsg}
                                         </li>
                                     </c:if>
@@ -135,8 +139,8 @@
                                             <fmt:message key="zimbraPasswordMinUpperCaseChars" var="minUpperCaseCharsMsg">
                                                 <fmt:param value="${zimbraPasswordMinUpperCaseChars}"/>
                                             </fmt:message>
-                                            <img src="/img/zimbra/ImgCloseGrayModern.png" id="minUpperCaseCloseImg" style="display: inline;"/>
-                                            <img src="/img/zimbra/ImgCheckModern.png" id="minUpperCaseCheckImg" style="display: none;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="minUpperCaseCloseImg" style="display: inline;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="minUpperCaseCheckImg" style="display: none;"/>
                                             ${minUpperCaseCharsMsg}
                                         </li>
                                     </c:if>
@@ -145,8 +149,8 @@
                                             <fmt:message key="zimbraPasswordMinLowerCaseChars" var="minLowerCaseCharsMsg">
                                                 <fmt:param value="${zimbraPasswordMinLowerCaseChars}"/>
                                             </fmt:message>
-                                            <img src="/img/zimbra/ImgCloseGrayModern.png" id="minLowerCaseCloseImg" style="display: inline;"/>
-                                            <img src="/img/zimbra/ImgCheckModern.png" id="minLowerCaseCheckImg" style="display: none;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="minLowerCaseCloseImg" style="display: inline;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="minLowerCaseCheckImg" style="display: none;"/>
                                             ${minLowerCaseCharsMsg}
                                         </li>
                                     </c:if>
@@ -155,8 +159,8 @@
                                             <fmt:message key="zimbraPasswordMinPunctuationChars" var="minPunctuationCharsMsg">
                                                 <fmt:param value="${zimbraPasswordMinPunctuationChars}"/>
                                             </fmt:message>
-                                            <img src="/img/zimbra/ImgCloseGrayModern.png" id="minPunctuationCharsCloseImg" style="display: inline;"/>
-                                            <img src="/img/zimbra/ImgCheckModern.png" id="minPunctuationCharsCheckImg" style="display: none;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="minPunctuationCharsCloseImg" style="display: inline;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="minPunctuationCharsCheckImg" style="display: none;"/>
                                             ${minPunctuationCharsMsg}
                                         </li>
                                     </c:if>
@@ -165,8 +169,8 @@
                                             <fmt:message key="zimbraPasswordMinNumericChars" var="minNumericCharsMsg">
                                                 <fmt:param value="${zimbraPasswordMinNumericChars}"/>
                                             </fmt:message>
-                                            <img src="/img/zimbra/ImgCloseGrayModern.png" id="minNumericCharsCloseImg" style="display: inline;"/>
-                                            <img src="/img/zimbra/ImgCheckModern.png" id="minNumericCharsCheckImg" style="display: none;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="minNumericCharsCloseImg" style="display: inline;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="minNumericCharsCheckImg" style="display: none;"/>
                                             ${minNumericCharsMsg}
                                         </li>
                                     </c:if>
@@ -175,16 +179,16 @@
                                             <fmt:message key="zimbraPasswordMinDigitsOrPuncs" var="minDigitsOrPuncsMsg">
                                                 <fmt:param value="${zimbraPasswordMinDigitsOrPuncs}"/>
                                             </fmt:message>
-                                            <img src="/img/zimbra/ImgCloseGrayModern.png" id="minDigitsOrPuncsCloseImg" style="display: inline;"/>
-                                            <img src="/img/zimbra/ImgCheckModern.png" id="minDigitsOrPuncsCheckImg" style="display: none;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="minDigitsOrPuncsCloseImg" style="display: inline;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="minDigitsOrPuncsCheckImg" style="display: none;"/>
                                             ${minDigitsOrPuncsMsg}
                                         </li>
                                     </c:if>
                                     <c:if test="${!zm:boolean(zimbraPasswordAllowUsername)}">
                                         <li>
                                             <fmt:message key="zimbraPasswordAllowUsername" var="allowUsernameMsg"></fmt:message>
-                                            <img src="/img/zimbra/ImgCloseGrayModern.png" id="allowUsernameCloseImg" style="display: inline;"/>
-                                            <img src="/img/zimbra/ImgCheckModern.png" id="allowUsernameCheckImg" style="display: none;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="allowUsernameCloseImg" style="display: inline;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="allowUsernameCheckImg" style="display: none;"/>
                                             ${allowUsernameMsg}
                                         </li>
                                     </c:if>
@@ -193,16 +197,16 @@
                                             <fmt:message key="zimbraPasswordEnforceHistory" var="enforceHistoryMsg">
                                                 <fmt:param value="${zimbraPasswordEnforceHistory}"/>
                                             </fmt:message>
-                                            <img src="/img/zimbra/ImgCloseGrayModern.png" id="enforceHistoryCloseImg" style="display: inline;"/>
-                                            <img src="/img/zimbra/ImgCheckModern.png" id="enforceHistoryCheckImg" style="display: none;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="enforceHistoryCloseImg" style="display: inline;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="enforceHistoryCheckImg" style="display: none;"/>
                                             ${enforceHistoryMsg}
                                         </li>
                                     </c:if>
                                     <c:if test="${zm:boolean(zimbraPasswordBlockCommonEnabled)}">
                                         <li>
                                             <fmt:message key="zimbraPasswordBlockCommonEnabled" var="blockCommonMsg"></fmt:message>
-                                            <img src="/img/zimbra/ImgCloseGrayModern.png" id="blockCommonCloseImg" style="display: inline;"/>
-                                            <img src="/img/zimbra/ImgCheckModern.png" id="blockCommonCheckImg" style="display: none;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="blockCommonCloseImg" style="display: inline;"/>
+                                            <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="blockCommonCheckImg" style="display: none;"/>
                                             ${blockCommonMsg}
                                         </li>
                                     </c:if>
@@ -217,8 +221,8 @@
                                 <ul class="passwordRuleList">
                                     <li>
                                         <fmt:message var="zimbraPasswordMustMatchMsg" key="zimbraPasswordMustMatch"/>
-                                        <img src="/img/zimbra/ImgCloseGrayModern.png" id="mustMatchCloseImg" style="display: inline;"/>
-                                        <img src="/img/zimbra/ImgCheckModern.png" id="mustMatchCheckImg" style="display: none;"/>
+                                        <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="mustMatchCloseImg" style="display: inline;"/>
+                                        <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="mustMatchCheckImg" style="display: none;"/>
                                         ${zimbraPasswordMustMatchMsg}
                                     </li>
                                 </ul>

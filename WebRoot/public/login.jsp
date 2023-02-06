@@ -625,8 +625,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                         <ul class="passwordRuleList">
                                             <c:if test="${zimbraPasswordMinLength ne 0}">
                                                 <li>
-                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="minLengthCloseImg" style="display: inline;"/>
-                                                    <img src="/img/zimbra/ImgCheckModern.png" id="minLengthCheckImg" style="display: none;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="minLengthCloseImg" style="display: inline;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="minLengthCheckImg" style="display: none;"/>
                                                     <fmt:message key="zimbraPasswordMinLength">
                                                         <fmt:param value="${zimbraPasswordMinLength}"/>
                                                     </fmt:message>
@@ -634,8 +634,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                             </c:if>
                                             <c:if test="${zimbraPasswordMinUpperCaseChars ne 0}">
                                                 <li>
-                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="minUpperCaseCloseImg" style="display: inline;"/>
-                                                    <img src="/img/zimbra/ImgCheckModern.png" id="minUpperCaseCheckImg" style="display: none;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="minUpperCaseCloseImg" style="display: inline;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="minUpperCaseCheckImg" style="display: none;"/>
                                                     <fmt:message key="zimbraPasswordMinUpperCaseChars">
                                                         <fmt:param value="${zimbraPasswordMinUpperCaseChars}"/>
                                                     </fmt:message>
@@ -643,8 +643,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                             </c:if>
                                             <c:if test="${zimbraPasswordMinLowerCaseChars ne 0}">
                                                 <li>
-                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="minLowerCaseCloseImg" style="display: inline;"/>
-                                                    <img src="/img/zimbra/ImgCheckModern.png" id="minLowerCaseCheckImg" style="display: none;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="minLowerCaseCloseImg" style="display: inline;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="minLowerCaseCheckImg" style="display: none;"/>
                                                     <fmt:message key="zimbraPasswordMinLowerCaseChars">
                                                         <fmt:param value="${zimbraPasswordMinLowerCaseChars}"/>
                                                     </fmt:message>
@@ -652,8 +652,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                             </c:if>
                                             <c:if test="${zimbraPasswordMinPunctuationChars ne 0}">
                                                 <li>
-                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="minPunctuationCharsCloseImg" style="display: inline;"/>
-                                                    <img src="/img/zimbra/ImgCheckModern.png" id="minPunctuationCharsCheckImg" style="display: none;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="minPunctuationCharsCloseImg" style="display: inline;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="minPunctuationCharsCheckImg" style="display: none;"/>
                                                     <fmt:message key="zimbraPasswordMinPunctuationChars">
                                                         <fmt:param value="${zimbraPasswordMinPunctuationChars}"/>
                                                     </fmt:message>
@@ -661,8 +661,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                             </c:if>
                                             <c:if test="${zimbraPasswordMinNumericChars ne 0}">
                                                 <li>
-                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="minNumericCharsCloseImg" style="display: inline;"/>
-                                                    <img src="/img/zimbra/ImgCheckModern.png" id="minNumericCharsCheckImg" style="display: none;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="minNumericCharsCloseImg" style="display: inline;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="minNumericCharsCheckImg" style="display: none;"/>
                                                     <fmt:message key="zimbraPasswordMinNumericChars">
                                                         <fmt:param value="${zimbraPasswordMinNumericChars}"/>
                                                     </fmt:message>
@@ -670,8 +670,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                             </c:if>
                                             <c:if test="${zimbraPasswordMinDigitsOrPuncs ne 0}">
                                                 <li>
-                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="minDigitsOrPuncsCloseImg" style="display: inline;"/>
-                                                    <img src="/img/zimbra/ImgCheckModern.png" id="minDigitsOrPuncsCheckImg" style="display: none;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="minDigitsOrPuncsCloseImg" style="display: inline;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="minDigitsOrPuncsCheckImg" style="display: none;"/>
                                                     <fmt:message key="zimbraPasswordMinDigitsOrPuncs">
                                                         <fmt:param value="${zimbraPasswordMinDigitsOrPuncs}"/>
                                                     </fmt:message>
@@ -679,8 +679,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                             </c:if>
                                             <c:if test="${zm:boolean(!zimbraPasswordAllowUsername)}">
                                                 <li>
-                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="allowUsernameCloseImg" style="display: inline;"/>
-                                                    <img src="/img/zimbra/ImgCheckModern.png" id="allowUsernameCheckImg" style="display: none;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="allowUsernameCloseImg" style="display: inline;"/>
+                                                    <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="allowUsernameCheckImg" style="display: none;"/>
                                                     <fmt:message key="zimbraPasswordAllowUsername"></fmt:message>
                                                 </li>
                                             </c:if>
@@ -693,8 +693,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                         </div>
                                         <ul class="passwordRuleList">
                                             <li>
-                                                <img src="/img/zimbra/ImgCloseGrayModern.png" id="mustMatchCloseImg" style="display: inline;"/>
-                                                <img src="/img/zimbra/ImgCheckModern.png" id="mustMatchCheckImg" style="display: none;"/>
+                                                <img src="${basePath}/img/zimbra/ImgCloseGrayModern.png" id="mustMatchCloseImg" style="display: inline;"/>
+                                                <img src="${basePath}/img/zimbra/ImgCheckModern.png" id="mustMatchCheckImg" style="display: none;"/>
                                                 <fmt:message key="zimbraPasswordMustMatch"/>
                                             </li>
                                         </ul>
