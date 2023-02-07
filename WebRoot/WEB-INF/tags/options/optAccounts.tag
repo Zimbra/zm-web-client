@@ -190,7 +190,6 @@
                                 <fmt:message key="optionsAccountNoSignature"/>
                             </option>
                             <zm:forEachSignature var="sig">
-                                <!-- ${signatureId} = ${sig.id}  -->
                                 <option
                                         <c:if test="${signatureId eq sig.id}">selected</c:if> value="${sig.id}">
                                         ${fn:escapeXml(sig.name)}
