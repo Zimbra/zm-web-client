@@ -675,6 +675,25 @@ function(id, setup, value) {
 ZmSignaturesPage.prototype._selectionListener =
 function(ev) {
 
+	if (ev.target && ev.target.hasAttribute('role')) {
+		var parent = ev.target.parentElement;
+		var children = parent.children;
+		for (var i = 0; i < children.length; i++) {
+			var child = children[i];
+			var span = child.querySelector('span');
+			var ariaLabel = span.getAttribute('aria-label');
+			if (child.classList.value.includes('Row-selected')) {
+				child.setAttribute('aria-selected', true);
+				if (!ariaLabel.includes(ZmMsg.selected)) {
+					span.setAttribute('aria-label', ariaLabel + ' ' + ZmMsg.selected)
+				}
+			} else {
+				child.setAttribute('aria-selected', false);
+				span.setAttribute('aria-label', ariaLabel.replace(ZmMsg.selected, ''));
+			}
+		}
+	}
+
 	this._updateSignature();
 
 	var signature = this._sigList.getSelection()[0];
@@ -1138,7 +1157,7 @@ function(html, idx, signature, field, colIdx, params) {
 		var name = AjxStringUtil.htmlEncode(signature.name, true);
 
 		html[idx++] = '<span aria-label="';
-		html[idx++] = ZmMsg.signatureName + ':' + name + ';">';
+		html[idx++] = ZmMsg.signatureName + ':' + name + '; ' + ZmMsg.selected + '">';
 		html[idx++] = name;
 		html[idx++] = '</span>';
 	}
@@ -1146,6 +1165,14 @@ function(html, idx, signature, field, colIdx, params) {
 		html[idx++] = ZmMsg.signatureNameHint;
 	}
 	return idx;
+};
+
+ZmSignatureListView.prototype._createItemHtml =
+function(item, params, asHtml, count) {
+	var div = DwtListView.prototype._createItemHtml.call(this, item, params, asHtml, count);
+	div.setAttribute('role', 'option');
+	div.setAttribute('aria-selected', 'true');
+	return div;
 };
 
 ZmSignatureListView.prototype._getItemId =

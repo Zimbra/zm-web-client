@@ -362,6 +362,13 @@ function(view, className) {
 		this._setSearchMenu(actionsMenu, true);
 	}	
 
+	var children = tb.getHtmlElement().children;
+
+	if(children && children[0]) {
+		children[0].setAttribute('role', 'region');
+		children[0].setAttribute('aria-label', ZmMsg.toolbar);
+	}
+
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
 

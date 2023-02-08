@@ -51,6 +51,7 @@ ZmConvView2 = function(params) {
 	this._setAllowSelection();
 	this._setEventHdlrs([DwtEvent.ONMOUSEOUT, DwtEvent.ONMOUSEOVER, DwtEvent.ONMOUSEENTER, DwtEvent.ONMOUSELEAVE]); // needed by object manager
 	this._objectManager = true;
+	this.getHtmlElement().setAttribute('aria-label', ZmMsg.emailPreview);
 };
 
 ZmConvView2.prototype = new ZmMailItemView;

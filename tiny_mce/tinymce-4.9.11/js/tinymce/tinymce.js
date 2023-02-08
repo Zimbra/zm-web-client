@@ -14178,7 +14178,9 @@
           return;
         }
         if (!/^(mceAddUndoLevel|mceEndUndoLevel|mceBeginUndoLevel|mceRepaint)$/.test(command) && (!args || !args.skip_focus)) {
-          editor.focus();
+          setTimeout(function () {
+            editor.focus();
+          }, 50);
         } else {
           SelectionBookmark.restore(editor);
         }

@@ -328,6 +328,12 @@ function () {
 		}
 	}
 	this._lefttoolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
+
+	var children = this._lefttoolbar.getHtmlElement().children;
+	if(children && children[0]) {
+		children[0].setAttribute('role', 'region');
+		children[0].setAttribute('aria-label', ZmMsg.leftToolbar);
+	}
 };
 
 /**
@@ -347,6 +353,12 @@ function () {
 		if (this._listeners[button]) {
 			this._toolbar.addSelectionListener(button, this._listeners[button]);
 		}
+	}
+
+	var children = this._toolbar.getHtmlElement().children;
+	if(children && children[0]) {
+		children[0].setAttribute('role', 'region');
+		children[0].setAttribute('aria-label', ZmMsg.rightToolbar);
 	}
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
