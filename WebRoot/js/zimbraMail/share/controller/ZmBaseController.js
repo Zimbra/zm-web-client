@@ -363,10 +363,10 @@ function(view, className) {
 	}	
 
 	var children = tb.getHtmlElement().children;
-
-	if(children && children[0]) {
-		children[0].setAttribute('role', 'region');
-		children[0].setAttribute('aria-label', ZmMsg.toolbar);
+	var child = children ? children[0] : null;
+	if(child) {
+		child.setAttribute('role', 'region');
+		child.setAttribute('aria-label', ZmMsg.toolbar);
 	}
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});

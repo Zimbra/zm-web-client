@@ -70,7 +70,7 @@ function() {
 		},
 		NAME: {
 			displayContainer:	ZmPref.TYPE_INPUT,
-			ariaLabel:			ZmMsg.accountNameLabel
+			ariaLabel:		ZmMsg.accountNameLabel
 		},
 		HEADER: {
 			displayContainer:	ZmPref.TYPE_STATIC,
