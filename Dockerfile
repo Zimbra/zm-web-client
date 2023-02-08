@@ -17,5 +17,7 @@ RUN cd /opt/zimbra/jetty_base/etc/ && mv zimbra.web.xml.in.tmp zimbra.web.xml.in
 
 RUN cd /opt/zimbra/jetty_base/webapps/zimbra/public && cat login.jsp | sed -e '/\/\/ check if modern package exists/,/%>/c\%>' | sed -e '/\/\/ check if maibox is upgraded/,/%>/c\%>' | sed -e 's/value="<%=modernSupported%>"/value="true"/' | sed -e 's/value="${isUpgradedMailbox}"/value="true"/' > login.jsp.tmp
 RUN cd /opt/zimbra/jetty_base/webapps/zimbra/public && mv login.jsp.tmp login.jsp
+RUN cd /opt/zimbra/jetty_base/webapps/zimbra/public && cat launchZCS.jsp | sed -e '/\/\/ check if modern package exists/,/%>/c\%>' | sed -e 's/value="<%=modernSupported%>"/value="true"/' > launchZCS.jsp.tmp
+RUN cd /opt/zimbra/jetty_base/webapps/zimbra/public && mv launchZCS.jsp.tmp launchZCS.jsp
 RUN cd /opt/zimbra/jetty_base/webapps/zimbra/public && cat modern.jsp | sed -e 's,window.location.origin + "/modern/",window.location.origin;,' > modern.jsp.tmp
 RUN cd /opt/zimbra/jetty_base/webapps/zimbra/public && mv modern.jsp.tmp modern.jsp
