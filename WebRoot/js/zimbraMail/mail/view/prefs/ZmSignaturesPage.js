@@ -676,20 +676,13 @@ ZmSignaturesPage.prototype._selectionListener =
 function(ev) {
 
 	if (ev.target && ev.target.hasAttribute('role')) {
-		var parent = ev.target.parentElement;
-		var children = parent.children;
+		var children = ev.target.parentElement.children;
 		for (var i = 0; i < children.length; i++) {
 			var child = children[i];
-			var span = child.querySelector('span');
-			var ariaLabel = span.getAttribute('aria-label');
 			if (child.classList.value.includes('Row-selected')) {
 				child.setAttribute('aria-selected', true);
-				if (!ariaLabel.includes(ZmMsg.selected)) {
-					span.setAttribute('aria-label', ariaLabel + ' ' + ZmMsg.selected)
-				}
 			} else {
 				child.setAttribute('aria-selected', false);
-				span.setAttribute('aria-label', ariaLabel.replace(ZmMsg.selected, ''));
 			}
 		}
 	}
