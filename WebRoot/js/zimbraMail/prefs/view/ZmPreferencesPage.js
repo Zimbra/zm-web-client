@@ -812,6 +812,8 @@ function(id, setup, value) {
 			}
 		}
 
+		appCtxt.notifyZimlets("onZmPreferencesPage_setupRadioGroup", [this, id, radioBtn]);
+
 		if (isHoriz) {
 			cell = row.insertCell(-1);
 			cell.className = "ZmRadioButtonGroupCell";
@@ -834,6 +836,8 @@ function(id, setup, value) {
 	var cboxLabel = ZmPreferencesPage.__formatLabel(text, value);
 	checkbox.setText(cboxLabel);
 	checkbox.setSelected(value);
+
+	appCtxt.notifyZimlets("onZmPreferencesPage_setupCheckbox", [this, id, checkbox]);
 
 	// TODO: Factor this out
 	if (id == ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED) {
