@@ -3374,6 +3374,7 @@ function(accountProxy) {
 //
 
 ZmAccountsListView = function(parent, className, posStyle, noMaximize) {
+	this.tableView = true;
 	className = className || "DwtListView";
 	className += " ZOptionsItemsListView";
 	DwtListView.call(this, {parent:parent, className:className, posStyle:posStyle,
@@ -3415,6 +3416,7 @@ function(account, field, html) {
 		html = '<div style="margin-left: 10px;" aria-label="' + ZmMsg.type + ':' + html + ';">' + html + '</div>';
 	}
 	el.innerHTML = html;
+	this._createScreenReaderTable();
 };
 
 // Protected methods
