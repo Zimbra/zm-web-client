@@ -910,7 +910,7 @@ and the container element is replaced with that control.
 				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 				<caption id='${id}_CAPTION' class='ScreenReaderOnly'><$=ZmMsg.accounts$></caption>
 					<tr>
-						<td role="table" aria-labelledby="${id}_CAPTION">
+						<td>
 							<div id='${id}_ACCOUNTS' tabindex=0></div>
 						</td>
 					</tr>
@@ -2013,7 +2013,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<div class="rightAlign prefHeaderComment"><$=ZmMsg.sharingChangesSavedImmediately$></div>
 	<div class='prefHeader'><$=ZmMsg.pendingSharesTitle$></div>
 	<table role="presentation" class='ZOptionsSectionTable' width=100%>
-	<caption id='${id}_PendingOnMe' class='ScreenReaderOnly'><$=ZmMsg.pendingSharesTitle$></caption>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
@@ -2023,7 +2022,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<div role="table" aria-labelledby='${id}_PendingOnMe'>
+				<div>
 					<div id='${id}_pendingShares'></div>
 				</div>
 			</td>
@@ -2031,10 +2030,9 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</table>
 	<div class='prefHeader'><$=ZmMsg.mountedSharesTitle$></div>
 	<table role="presentation" class='ZOptionsSectionTable' width=100%>
-	<caption id='${id}_SharedWithMe' class='ScreenReaderOnly'><$=ZmMsg.mountedSharesTitle$></caption>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<div role="table" aria-labelledby='${id}_SharedWithMe'>
+				<div>
 					<div id='${id}_mountedShares'></div>
 				</div>
 			</td>
@@ -2042,10 +2040,9 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</table>
 	<div class='prefHeader'><$=ZmMsg.sharingByMe$></div>
 	<table role="presentation" class='ZOptionsSectionTable' width=100%>
-	<caption id='${id}_sharingByMe' class='ScreenReaderOnly'><$=ZmMsg.sharingByMe$></caption>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<div role="table" aria-labelledby='${id}_sharingByMe'>
+				<div>
 					<div id='${id}_sharesBy'></div>
 				</div>
 			</td>
