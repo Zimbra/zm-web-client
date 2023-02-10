@@ -735,6 +735,7 @@ ZmSharingListView = function(params) {
 
 	this.type = params.type;
 	this.status = params.status;
+	this.tableView = true;
 	params.headerList = this._getHeaderList();
 	DwtListView.call(this, params);
 
