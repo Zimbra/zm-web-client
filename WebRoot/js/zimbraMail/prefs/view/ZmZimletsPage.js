@@ -476,6 +476,7 @@ function() {
  * @private
  */
 ZmPrefZimletListView = function(parent, controller) {
+	this.tableView = true;
 	DwtListView.call(this, {
 		parent: parent,
 		className: "ZmPrefZimletListView",
@@ -550,6 +551,7 @@ ZmPrefZimletListView.prototype._handleZimletsLoaded = function(evt) {
         this.setCellContents(item, ZmPrefZimletListView.COL_NAME, AjxStringUtil.htmlEncode(item.label));
         this.setCellContents(item, ZmPrefZimletListView.COL_DESC, AjxStringUtil.htmlEncode(item.desc));
     }
+	this._createScreenReaderTable();
 };
 
 ZmPrefZimletListView.prototype._getRowId =
@@ -680,6 +682,8 @@ function(clickedEl, ev, button) {
 		ZmPrefZimletListView._activeStateChange(ev);
 	}
 
+	var that = this;
+	setTimeout(function () { that._createScreenReaderTable(); }, 50);
 	return !isInput;
 };
 
