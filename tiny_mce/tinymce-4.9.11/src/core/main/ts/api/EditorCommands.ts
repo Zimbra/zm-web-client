@@ -61,7 +61,8 @@ export default function (editor: Editor) {
     }
 
     if (!/^(mceAddUndoLevel|mceEndUndoLevel|mceBeginUndoLevel|mceRepaint)$/.test(command) && (!args || !args.skip_focus)) {
-      editor.focus();
+      // Delay on focus such that NVDA tool announce current element state (pressed/not pressed).
+      setTimeout(function () { editor.focus(); }, 50);
     } else {
       SelectionBookmark.restore(editor);
     }
