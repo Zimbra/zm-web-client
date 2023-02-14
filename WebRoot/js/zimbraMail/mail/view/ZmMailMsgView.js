@@ -78,6 +78,7 @@ ZmMailMsgView = function(params) {
 
 	if (this._mode === ZmId.VIEW_TRAD) {
 		this.setAttribute('role', 'region');
+		this.setAttribute('aria-label', ZmMsg.emailPreview);
 	}
 };
 

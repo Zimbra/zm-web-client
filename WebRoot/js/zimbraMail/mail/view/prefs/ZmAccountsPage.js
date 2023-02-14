@@ -69,7 +69,8 @@ function() {
 			displayContainer:   ZmPref.TYPE_SELECT
 		},
 		NAME: {
-			displayContainer:	ZmPref.TYPE_INPUT
+			displayContainer:	ZmPref.TYPE_INPUT,
+			ariaLabel:		ZmMsg.accountNameLabel
 		},
 		HEADER: {
 			displayContainer:	ZmPref.TYPE_STATIC,
@@ -77,7 +78,8 @@ function() {
 		},
 		EMAIL: {
 			displayContainer:	ZmPref.TYPE_INPUT,
-			hint:				ZmMsg.exampleEmailAddr
+			hint:				ZmMsg.exampleEmailAddr,
+			ariaLabel:			ZmMsg.emailAddrLabel
 		},
 		VISIBLE: {
 			displayContainer:	ZmPref.TYPE_CHECKBOX

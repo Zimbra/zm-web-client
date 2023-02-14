@@ -941,6 +941,13 @@ function(params) {
 	if (!this._doingPostRenderStartup) {
 		this._postRenderStartup();
 	}
+
+	var htmlElement = tb.getHtmlElement();
+
+	if(htmlElement) {
+		htmlElement.setAttribute('role', 'region');
+		htmlElement.setAttribute('aria-label', ZmMsg.newMenu);
+	}
 };
 
 /**
@@ -1919,7 +1926,13 @@ function() {
 		rootTg.addMember(miniCalendar._compositeTabGroup);
 		miniCalendar.tabgroup = rootTg;
 	}
-	
+
+	var skinTables = document.querySelectorAll('.skin_table');
+	for (var i = 0; i < skinTables.length; i++) {
+		var skinTable = skinTables[i];
+		skinTable.setAttribute('role', 'presentation');
+	}
+
 	appCtxt.getKeyboardMgr().setTabGroup(rootTg);
 };
 
