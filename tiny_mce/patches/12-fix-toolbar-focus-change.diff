@@ -1,0 +1,14 @@
+Only in tinymce-4.9.11: package-lock.json
+diff -aur -x node_modules /var/folders/xt/69w9r4s15573zdgq7588h_t80000gq/T//tinymce-4.9.11/src/core/main/ts/api/EditorCommands.ts tinymce-4.9.11/src/core/main/ts/api/EditorCommands.ts
+--- /var/folders/xt/69w9r4s15573zdgq7588h_t80000gq/T//tinymce-4.9.11/src/core/main/ts/api/EditorCommands.ts	2020-07-13 09:44:19.000000000 +0530
++++ tinymce-4.9.11/src/core/main/ts/api/EditorCommands.ts	2023-02-08 16:01:16.000000000 +0530
+@@ -61,7 +61,7 @@
+     }
+ 
+     if (!/^(mceAddUndoLevel|mceEndUndoLevel|mceBeginUndoLevel|mceRepaint)$/.test(command) && (!args || !args.skip_focus)) {
+-      editor.focus();
++      // Delay on focus such that NVDA tool announce current element state (pressed/not pressed).
++      setTimeout(function () { editor.focus(); }, 50);
+     } else {
+       SelectionBookmark.restore(editor);
+     }
