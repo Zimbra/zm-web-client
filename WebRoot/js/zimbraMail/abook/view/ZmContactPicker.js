@@ -509,7 +509,7 @@ function(account) {
 		this._resetSelectDiv();
 		this._searchInSelect.addChangeListener(new AjxListener(this, this._searchTypeListener));
 	} else {
-		this.setSize("600");
+		this.setSize("900px");
 	}
 
 	// Somehow the width gets changed to a very very high number after tree will be added, so lets save it here then re-apply
