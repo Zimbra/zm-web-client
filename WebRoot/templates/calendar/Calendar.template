@@ -381,27 +381,27 @@
 			<div id='${openLinkId}' class='ZmApptOpenLink'></div>
 			<div id='${reminderDescContainerId}'>
 			<$ if (data.durationText != "") { $>
-			    ${durationText}<br>
+			    ${durationText}<br />
             <$ } $>
 
 			<$ if (data.organizer) { $>
-				<$= ZmMsg.organizerLabel $> ${organizer}<br>
+				<$= ZmMsg.organizerLabel $> ${organizer}<br />
 			<$ } $>
 
 			<$ if (data.calName) { $>
 				<$ if(data.type == ZmItem.APPT) { $>
-				    <$= ZmMsg.calendarLabel $> ${calName}<br>
+				    <$= ZmMsg.calendarLabel $> ${calName}<br />
 				<$ } else if (data.type == ZmItem.TASK) { $>
-                    <$= ZmMsg.tasks $>: ${calName}<br>
+                    <$= ZmMsg.tasks $>: ${calName}<br />
 				<$ } $>     
 			<$ } $>
 
 			<$ if (data.accountName) { $>
-				<$= ZmMsg.accountLabel $> ${accountName}<br>
+				<$= ZmMsg.accountLabel $> ${accountName}<br />
 			<$ } $>
 
 			<$ if (data.location) { $>
-				<$= ZmMsg.locationLabel $> ${location}<br>
+				<$= ZmMsg.locationLabel $> ${location}<br />
 			<$ } $>
 			</div>
 		</td>
