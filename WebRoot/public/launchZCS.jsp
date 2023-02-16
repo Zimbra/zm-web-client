@@ -322,8 +322,8 @@
             splSwitch.style.visibility = 'hidden';
         }
     }
-	function switchToStandardClient() {
-		document.location = window.appContextPath + "/?client=standard";
+	function switchClient() {
+		document.location = window.appContextPath + "/?screenSize=small";
 	}
     killSplashScreenSwitch();
 	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
@@ -331,7 +331,7 @@
 		enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
 		unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari4up);
 		if (enforceMinDisplay && unsupported) {
-			switchToStandardClient();
+			switchClient();
 		}
 		delete enforceMinDisplay;
 		delete unsupported;

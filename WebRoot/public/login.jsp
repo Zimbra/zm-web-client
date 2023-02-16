@@ -43,7 +43,7 @@
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,login_csrf,"/>
+<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,login_csrf,screenSize,"/>
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -256,7 +256,20 @@
                         
                         <c:set var="isUpgradedMailbox" value="${isUpgradedMailbox}" />
                         <c:set var="prefClientType" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}" />
-                        
+
+                        <c:if test="${param.screenSize eq 'small' && empty client}">
+                            <c:choose>
+                                <c:when test="${isUpgradedMailbox && modernSupported}">
+                                    <c:set var="client" value="modern"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:set var="client" value="notfound"/>
+                                    <c:set var="errorCode" value="service.UNSUPPORTED_DISPLAY_RESOLUTION"/>
+                                    <fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:if>
+
                         <c:if test="${empty client or client eq 'preferred'}">
                             <c:set var="client"
                                 value="${isUpgradedMailbox ? mobileSupported && modernSupported ? 'modern' : prefClientType eq 'advanced' ? 'advanced' : 'modern' : prefClientType}" />
@@ -286,6 +299,9 @@
                             </c:when>
                             <c:when test="${client eq 'modern' and modernSupported and isUpgradedMailbox}">
                                     <jsp:forward page="/public/modern.jsp"/>
+                            </c:when>
+                            <c:when test="${client eq 'notfound'}">
+                                <zm:logout/>
                             </c:when>
                             <c:otherwise>
                                 <jsp:forward page="/public/launchZCS.jsp"/>
