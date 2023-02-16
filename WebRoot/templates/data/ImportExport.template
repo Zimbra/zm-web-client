@@ -60,7 +60,7 @@
 		<tr id="${id}_ADVANCED_row">
 			<td class="ZOptionsLabelTop">&nbsp;</td>
 			<td class="ZOptionsField">
-				<hr>
+				<hr />
 				<span id="${id}_ADVANCED" tabindex="700"></span>
 			</td>
 		</tr>
@@ -108,7 +108,7 @@
 		<tr id="${id}_ADVANCED_row">
 			<td class="ZOptionsLabelTop">&nbsp;</td>
 			<td class="ZOptionsField">
-				<hr>
+				<hr />
 				<span id="${id}_ADVANCED" tabindex="500"></span>
 			</td>
 		</tr>

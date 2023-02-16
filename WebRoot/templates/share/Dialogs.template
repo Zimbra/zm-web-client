@@ -371,7 +371,7 @@
 			<td width=50 style="text-align:right;"><$= ZmMsg.folderLabel $></td>
 			<td id='${id}_folder'></td>
 		</tr>
-		<tr><td><br></td></tr>
+		<tr><td><br /></td></tr>
 		<tr>
 			<td colspan=2><$= ZmMsg.mountInstructions2 $></td>
 		</tr>

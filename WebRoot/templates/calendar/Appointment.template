@@ -1151,7 +1151,7 @@
 	<div id='${id}' class="ZmLocationSuggestion">
 		<$= AjxStringUtil.htmlEncode(data.locationName) $>
 		<$ if (data.locationDescription) { $>
-			<br><$= AjxStringUtil.htmlEncode(data.locationDescription) $>
+			<br /><$= AjxStringUtil.htmlEncode(data.locationDescription) $>
 		<$ } $>
 	</div>
 </template>
@@ -1277,7 +1277,7 @@
     <$
         for (var i=0; i < data.attendees.length; i++) {
     $>
-        <br><span class="suggestion_tooltip_attendee"><$= AjxStringUtil.htmlEncode(data.attendees[i]) $></span>
+        <br /><span class="suggestion_tooltip_attendee"><$= AjxStringUtil.htmlEncode(data.attendees[i]) $></span>
     <$
         }
     $>
@@ -1287,13 +1287,13 @@
     <div class='ZmLocationSuggestionTooltip'>
         <div class='ZmLocationTooltipTitle'><$= AjxStringUtil.htmlEncode(data.name) $></div>
         <$ if (data.description != "") {  $>
-           <$= AjxStringUtil.htmlEncode(data.description) $><br>
+           <$= AjxStringUtil.htmlEncode(data.description) $><br />
         <$ } $>
         <$ if (data.contactMail != "") {  $>
-           <$= ZmMsg.contact + ": " + AjxStringUtil.htmlEncode(data.contactMail) $><br>
+           <$= ZmMsg.contact + ": " + AjxStringUtil.htmlEncode(data.contactMail) $><br />
         <$ } $>
         <$ if (data.capacity != "") {  $>
-           <$= ZmMsg.capacity + ": " + AjxStringUtil.htmlEncode(data.capacity) $><br>
+           <$= ZmMsg.capacity + ": " + AjxStringUtil.htmlEncode(data.capacity) $><br />
         <$ } $>
     </div>
 </template>
