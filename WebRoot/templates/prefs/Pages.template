@@ -138,7 +138,7 @@ and the container element is replaced with that control.
 							</tr>
 						<$ } $>
 					
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 					<$ } $>
 					
 					<tr>
@@ -167,7 +167,7 @@ and the container element is replaced with that control.
 
 					<!-- The following 3 items are specific to Zimbra Desktop -->
 					<$ if (appCtxt.isOffline) { $>
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.offlineUpdateNotifyLabel$></td>
 							<td class='ZOptionsField'><select id='${id}_OFFLINE_UPDATE_NOTIFY' tabindex=0></select></td>
@@ -205,7 +205,7 @@ and the container element is replaced with that control.
 						<$ if (!appCtxt.isOffline && data.isEnabled(ZmSetting.POLLING_INTERVAL_ENABLED)) { $>
 							<tr>
 								<td class='ZOptionsLabel'><$=ZmMsg.pollingIntervalLabel$></td>
-								<td class='ZOptionsField'><div id='${id}_POLLING_INTERVAL' tabindex=0 size='3' /></td>
+								<td class='ZOptionsField'><div id='${id}_POLLING_INTERVAL' tabindex=0 size='3'></div></td>
 							</tr>
 						<$ } $>
 
@@ -214,7 +214,7 @@ and the container element is replaced with that control.
 							<td class='ZOptionsField'><div id='${id}_VIEW_AS_HTML' tabindex=0></div></td>
 						</tr>
 
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.messagePreviewLabel$></td>
@@ -252,7 +252,7 @@ and the container element is replaced with that control.
 						</tr>
 
 						<$ if (!appCtxt.isOffline) { $>
-							<tr><td colspan=2><hr></td></tr>
+							<tr><td colspan=2><hr /></td></tr>
 
 							<tr>
 								<td class='ZOptionsLabel'><$=ZmMsg.initialMailSearchLabel$></td>
@@ -308,11 +308,11 @@ and the container element is replaced with that control.
 							</tr>
 							<tr>
 								<td class='ZOptionsLabel'>&nbsp;</td>
-								<td class='ZOptionsField ZOptionsSubField'><div id='${id}_MAIL_FORWARDING_ADDRESS' tabindex=0 /></td>
+								<td class='ZOptionsField ZOptionsSubField'><div id='${id}_MAIL_FORWARDING_ADDRESS' tabindex=0></div></td>
 							</tr>
 							<tr>
 								<td class='ZOptionsLabel'>&nbsp;</td>
-								<td class='ZOptionsField ZOptionsSubField'><div id='${id}_MAIL_LOCAL_DELIVERY_DISABLED' tabindex=0></td>
+								<td class='ZOptionsField ZOptionsSubField'><div id='${id}_MAIL_LOCAL_DELIVERY_DISABLED' tabindex=0></div></td>
 							</tr>
 						<$ } $>
 
@@ -324,14 +324,14 @@ and the container element is replaced with that control.
 							<tr>
 								<td class='ZOptionsLabel'>&nbsp;</td>
 								<td class='ZOptionsField ZOptionsSubField'>
-									<div id='${id}_NOTIF_ADDRESS' tabindex=0 />
+									<div id='${id}_NOTIF_ADDRESS' tabindex=0></div>
 								</td>
 							</tr>
 						<$ } $>
 					<$ } $>
 
 					<$ if (messageArrivalLabelDisplayed) { $>
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 					<$ } $>
 
 					<$
@@ -361,21 +361,21 @@ and the container element is replaced with that control.
 						<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_APP)) { $>
 							<tr>
 								<td class='ZOptionsLabel'><$=showMessageNotificationLabel() $></td>
-								<td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_APP' tabindex=0 type=checkbox /></td>
+								<td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_APP' tabindex=0 type=checkbox></div></td>
 							</tr>
 						<$ } $>
 
 						<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_BROWSER)) { $>
 							<tr>
 								<td class='ZOptionsLabel'><$=showMessageNotificationLabel() $></td>
-								<td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_BROWSER' tabindex=0 type=checkbox /></td>
+								<td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_BROWSER' tabindex=0 type=checkbox></div></td>
 							</tr>
 						<$ } $>
 
 						<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_SOUNDS)) { $>
 							<tr>
 								<td class='ZOptionsLabel'><$=showMessageNotificationLabel() $></td>
-								<td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_SOUNDS' tabindex=0 type=checkbox /></td>
+								<td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_SOUNDS' tabindex=0 type=checkbox></div></td>
 							</tr>
 						<$ } $>
 
@@ -383,12 +383,12 @@ and the container element is replaced with that control.
 
 					<tr>
                         <td class='ZOptionsLabelTop'><$= ZmMsg.messageNotificationFoldersLabel $></td>
-                        <td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_ALL' tabindex=0 /></td>
+                        <td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_ALL' tabindex=0></div></td>
                     </tr>
 
 					<$ if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
 						<$ if (data.isEnabled(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) { $>
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.readReceipt$></td>
 							<td class='ZOptionsField'><$=ZmMsg.readReceiptPref$></td>
@@ -397,7 +397,7 @@ and the container element is replaced with that control.
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField ZOptionsSubField'><div id='${id}_MAIL_SEND_READ_RECEIPTS' tabindex=0></div></td>
 						</tr>
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 						<$ } $>
 
 						<tr>
@@ -408,10 +408,10 @@ and the container element is replaced with that control.
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField ZOptionsSubField'><div id='${id}_DEDUPE_MSG_TO_SELF' tabindex=0></div></td>
 						</tr>
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.duplicateMessageLabel$></td>
-							<td class='ZOptionsField'><div id='${id}_DEDUPE_MSG_ENABLED' tabindex=0 type=checkbox /></td>
+							<td class='ZOptionsField'><div id='${id}_DEDUPE_MSG_ENABLED' tabindex=0 type=checkbox></div></td>
 						</tr>
 						
 					<$ } $>
@@ -459,7 +459,7 @@ and the container element is replaced with that control.
 				<tr>
 					<td class='ZOptionsLabel' valign=top><$=ZmMsg.settingsLabel$></td>
 					<td class='ZOptionsField'>
-						<div id='${id}_AUTO_SAVE_DRAFT_INTERVAL' tabindex=0 />
+						<div id='${id}_AUTO_SAVE_DRAFT_INTERVAL' tabindex=0></div>
 					</td>
 				</tr>
 
@@ -467,7 +467,7 @@ and the container element is replaced with that control.
 					<tr>
 						<td>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<div type=checkbox id="${id}_COMPOSE_SAME_FORMAT" />
+							<div type=checkbox id="${id}_COMPOSE_SAME_FORMAT"></div>
 						</td>
 					</tr>
 				<$ } $>
@@ -477,7 +477,7 @@ and the container element is replaced with that control.
 					<tr>
 						<td>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<div id='${id}_NEW_WINDOW_COMPOSE' tabindex=0 />
+							<div id='${id}_NEW_WINDOW_COMPOSE' tabindex=0></div>
 						</td>
 					</tr>
 				<$ } $>
@@ -486,7 +486,7 @@ and the container element is replaced with that control.
 					<tr>
 						<td>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<div id='${id}_SAVE_TO_SENT' tabindex=0 />
+							<div id='${id}_SAVE_TO_SENT' tabindex=0></div>
 						</td>
 					</tr>
 				<$ } $>
@@ -494,7 +494,7 @@ and the container element is replaced with that control.
 				<tr>
 					<td>&nbsp;</td>
 					<td class='ZOptionsField'>
-						<div id='${id}_AUTO_READ_RECEIPT_ENABLED' tabindex=0 />
+						<div id='${id}_AUTO_READ_RECEIPT_ENABLED' tabindex=0></div>
 					</td>
 				</tr>
 
@@ -502,7 +502,7 @@ and the container element is replaced with that control.
 				<tr>
 					<td>&nbsp;</td>
 					<td class='ZOptionsField'>
-						<div id='${id}_MAIL_MANDATORY_SPELLCHECK' tabindex=0 />
+						<div id='${id}_MAIL_MANDATORY_SPELLCHECK' tabindex=0></div>
 					</td>
 				</tr>
 				<$ } $>
@@ -510,20 +510,20 @@ and the container element is replaced with that control.
 				<tr>
 						<td>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<div id='${id}_USE_SEND_MSG_SHORTCUT' tabindex=0 />
+							<div id='${id}_USE_SEND_MSG_SHORTCUT' tabindex=0></div>
 						</td>
 				</tr>
 
 				<tr>
 					<td>&nbsp;</td>
 					<td class='ZOptionsField'>
-						<div id='${id}_TAB_IN_EDITOR' tabindex=0 />
+						<div id='${id}_TAB_IN_EDITOR' tabindex=0></div>
 					</td>
 				</tr>
 
 				<$ if (data.isEnabled(ZmSetting.MAIL_ENABLED) || data.isEnabled(ZmSetting.ADMIN_DELEGATED)) { $>
 					<$ if (isHtmlCompose || isNewWindow ) { $>
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 					<$ } $>
 
 					<tr>
@@ -532,13 +532,13 @@ and the container element is replaced with that control.
 							<table role="presentation">
 								<tr>
 									<td>
-										<div id='${id}_REPLY_INCLUDE_WHAT' tabindex=0 />
+										<div id='${id}_REPLY_INCLUDE_WHAT' tabindex=0></div>
 									</td>
 									<td>
-										<div id='${id}_REPLY_USE_PREFIX' tabindex=0 />
+										<div id='${id}_REPLY_USE_PREFIX' tabindex=0></div>
 									</td>
 									<td>
-										<div id='${id}_REPLY_INCLUDE_HEADERS' tabindex=0 />
+										<div id='${id}_REPLY_INCLUDE_HEADERS' tabindex=0></div>
 									</td>
 								</tr>
 							</table>
@@ -551,13 +551,13 @@ and the container element is replaced with that control.
 							<table role="presentation">
 								<tr>
 									<td>
-										<div id='${id}_FORWARD_INCLUDE_WHAT' tabindex=0 />
+										<div id='${id}_FORWARD_INCLUDE_WHAT' tabindex=0></div>
 									</td>
 									<td>
-										<div id='${id}_FORWARD_USE_PREFIX' tabindex=0 />
+										<div id='${id}_FORWARD_USE_PREFIX' tabindex=0></div>
 									</td>
 									<td>
-										<div id='${id}_FORWARD_INCLUDE_HEADERS' tabindex=0 />
+										<div id='${id}_FORWARD_INCLUDE_HEADERS' tabindex=0></div>
 									</td>
 								</tr>
 							</table>
@@ -571,7 +571,7 @@ and the container element is replaced with that control.
 					<tr>
 						<td>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<div id='${id}_REPLY_PREFIX' tabindex=0 />
+							<div id='${id}_REPLY_PREFIX' tabindex=0></div>
 						</td>
 					</tr>
 					<tr>
@@ -581,7 +581,7 @@ and the container element is replaced with that control.
 				<$ } $>
 
 				<$ if (!appCtxt.isOffline) { $>
-					<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr /></td></tr>
 					<tr>
 						<td id='${id}_compose_more' colspan=2><b><$=ZmMsg.composeMoreOptions$></b></td>
 					</tr>
@@ -639,7 +639,7 @@ and the container element is replaced with that control.
 								<td class='ZOptionsLabel'><$=ZmMsg.externalAccessPop$></td>
 								<td></td>
 							</tr>
-							<tr><td colspan=2><hr></td></tr>
+							<tr><td colspan=2><hr /></td></tr>
 							<tr>
 								<td class='ZOptionsLabelTop'><$=ZmMsg.downloadPop$></td>
 								<td class='ZOptionsField'>
@@ -712,7 +712,7 @@ and the container element is replaced with that control.
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<div><$=ZmMsg.trustedAddrHeaderMsg$></div>
-				<div id='${id}_TRUSTED_ADDR_LIST' tabindex=0 />
+				<div id='${id}_TRUSTED_ADDR_LIST' tabindex=0></div>
 			</td>
 		</td>
 	</table>
@@ -759,7 +759,7 @@ and the container element is replaced with that control.
 						<td><$=ZmMsg.repliesForwards$></td>
 					</tr>
 				</table>
-				<hr>
+				<hr />
 				<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.placeSignature$></td>
@@ -850,7 +850,7 @@ and the container element is replaced with that control.
 					<$ } $>
 
 					<$ if (settingLabelled) { $>
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 					<$ } $>
 
 					<$ var autocompleteLabelled = false; $>
@@ -980,7 +980,7 @@ and the container element is replaced with that control.
 							<td class='ZOptionsField'><span id='${id}_PRIMARY_VISIBLE' tabindex=0></span></td>
 						</tr>
 					<$ } $>
-					<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr /></td></tr>
 					<tr><td style='text-align:left' colspan=2><b><$=ZmMsg.accountFromPrompt$></b></td></tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
@@ -1020,7 +1020,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
 						<td class='ZOptionsField' valign='middle'><$=ZmMsg.manageSignatures$></td>
 					</tr>
-					<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr /></td></tr>
 					<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE)) { $>
 						<tr valign=top>
 							<td class='ZOptionsLabel'><$=ZmMsg.twoStepAccountSecurity$></td>
@@ -1102,7 +1102,7 @@ and the container element is replaced with that control.
 								</table>
 							 </td>
 						</tr>
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 					<$ } $>
 
 					<$ if (appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === 'enabled' || appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === 'suspended') { $>
@@ -1173,7 +1173,7 @@ and the container element is replaced with that control.
 								<button id='${id}_RESEND_RECOVERY_EMAIL' style='float: left; margin-left: 5px' tabindex=0></button>
 							</td>
 						</tr>
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 					<$ } $>
 
 					<tr>
@@ -1209,7 +1209,7 @@ and the container element is replaced with that control.
 						<tr>
 							<td class='ZOptionsLabel' style="vertical-align:top"><$=ZmMsg.delegateSendSettings$></td>
 							<td class='ZOptionsField'>
-								<div id='${id}_SAVE_TO_SENT_DELEGATED_TARGET' tabindex=0/>
+								<div id='${id}_SAVE_TO_SENT_DELEGATED_TARGET' tabindex=0></div>
 							</td>
 						</tr>
 					<$ } $>
@@ -1239,7 +1239,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabel'><$=ZmMsg.accountNameLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_EXTERNAL_NAME' tabindex=0 size=30></div></td>
 					</tr>
-					<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr /></td></tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.accountTypeLabel$></td>
 						<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) && data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED)) { $>
@@ -1293,20 +1293,20 @@ and the container element is replaced with that control.
 							</table>
 						</td>
 					</tr>
-					<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr /></td></tr>
 					<tr>
 						<td class='ZOptionsLabelTop'><$=ZmMsg.accountDownloadToLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_EXTERNAL_DOWNLOAD_TO' tabindex=0></div></td>
 					</tr>
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
-						<td class='ZOptionsField'><hr></td>
+						<td class='ZOptionsField'><hr /></td>
 					</tr>
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'><input id='${id}_EXTERNAL_DELETE_AFTER_DOWNLOAD' tabindex=0 type=checkbox></td>
 					</tr>
-					<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr /></td></tr>
 					<tr>
 						<td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td>
 					</tr>
@@ -1372,7 +1372,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabel'><$=ZmMsg.accountPersonaLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_PERSONA_NAME' tabindex=0></div></td>
 					</tr>
-					<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr /></td></tr>
 					<tr>
 						<td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td>
 					</tr>
@@ -1418,7 +1418,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
 						<td class='ZOptionsField' valign='middle'><$=ZmMsg.manageSignatures$></td>
 					</tr>
-					<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr /></td></tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.accountPersonaUseLabel$></td>
 						<td class='ZOptionsField'><input id='${id}_PERSONA_WHEN_SENT_TO' tabindex=0 type=checkbox></td>
@@ -1580,17 +1580,17 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><input id='${id}_CAL_SHOW_DECLINED_MEETINGS' tabindex=0 type=checkbox></td>
 						</tr>
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.deleteInviteOnReplyLabel$></td>
 							<td class='ZOptionsField'><input id='${id}_DELETE_INVITE_ON_REPLY' tabindex=0 type=checkbox></td>
 						</tr>
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 						<tr>
 							<td class='ZOptionsLabel' id=id='${id}_CAL_INV_FORWARDING_ADDRESS_label'><$=ZmMsg.forwardInvitesToLabel$></td>
 							<td class='ZOptionsField'><$=ZmMsg.forwardInvitesTo$> <input id='${id}_CAL_INV_FORWARDING_ADDRESS' aria-labelledby='${id}_CAL_INV_FORWARDING_ADDRESS' tabindex=0></td>
 						</tr>
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.apptReminderLabel$></td>
 							<td class='ZOptionsField'><select id='${id}_CAL_REMINDER_WARNING_TIME' tabindex=0></select></td>
@@ -1615,7 +1615,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 								</tr></table>
 							</td>
 						</tr>
-						<tr><td colspan=2><hr></td></tr>
+						<tr><td colspan=2><hr /></td></tr>
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.defaultApptDuration$></td>
 							<td class='ZOptionsField'><table role="presentation"><tr><td><select id='${id}_CAL_DEFAULT_APPT_DURATION' tabindex=0></select></td><td style="padding-left:4px;"><$=ZmMsg.minutes$></td></tr></table></td>
@@ -2122,11 +2122,11 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 							<div><$=ZmMsg.mobileConfigurationOptions$></div>
 						</td>
 					</tr>
-					<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr /></td></tr>
 					<tr>
 						<td><div id='${id}_mobileConfig'></div></td>
 					</tr>
-					<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr /></td></tr>
 					<tr>
 						<td>
 							<div><$=ZmMsg.mobileConfigurationUrls$></div>
@@ -2143,7 +2143,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 <template id='prefs.Pages#MobileConfig'>
 	<div><$=ZmMsg.mobileConfigurationDownload$></div>	
-	<br>
+	<br />
 	<table role="presentation" class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td><div><$=ZmMsg.mobileConfigurationDownloadList$></div></td>
@@ -2460,7 +2460,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                             <td class='ZOptionsField'>
                                 <table role="presentation">
                                     <tr>
-                                    <td><div id='${id}_VACATION_EXTERNAL_SUPPRESS' tabindex=0 size='3' /></td>
+                                    <td><div id='${id}_VACATION_EXTERNAL_SUPPRESS' tabindex=0 size='3'></div></td>
                                     </tr>
                                 </table>
                                 <textarea id='${id}_VACATION_EXTERNAL_MSG' tabindex=0 rows=6 cols=70 onfocus="this.rows=10;"></textarea>
@@ -2501,7 +2501,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                                     <td colspan="3">
                                         <table role="presentation"><tr>
                                             <td class='ZmOOOCalendar'><div id='${id}_VACATION_CALENDAR_ENABLED' tabindex=0></div></td>
-                                            <td class='ZmOOOCalendar'><div id='${id}_VACATION_CALENDAR_TYPE' tabindex=0 size='3' /></td>
+                                            <td class='ZmOOOCalendar'><div id='${id}_VACATION_CALENDAR_TYPE' tabindex=0 size='3'></div></td>
                                         </tr></table>
                                     </td>
                                 </tr>
