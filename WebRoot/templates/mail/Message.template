@@ -184,7 +184,7 @@
 							<tr>
 								<td class='LabelColName ${timeChangeClass}'><$= data.counterInvMsg ? ZmMsg.proposedTimeLabel : ZmMsg.timeLabel $></td>
 								<td class='LabelColValue ${timeChangeClass}'>
-									<$= data.invDate $><br>
+									<$= data.invDate $><br />
 									<$= data.timezone $>
 								</td>
 							</tr>
@@ -576,7 +576,7 @@
 							<div id='${id}_newAddressBox' class="Box NewAddressBox"></div>
 						</div>
 						<div style="margin:3px" id='${id}_addButton'></div>
-						<br>
+						<br />
 						<div id='${id}_existingContacts' class="ExistingContacts">
 							<div><$= ZmMsg.confirmExistingContacts $></div>
 							<div id='${id}_existingContactBox' class="Box ExistingContactBox"></div>
@@ -593,8 +593,8 @@
 	<div id="${id}_CHECKBOX" tabindex='10'></div>
 	<table role="presentation" style="margin-bottom:3px">
 		<tr>
-			<td><div id="${id}_FIRST" tabindex='20'/></td>
-			<td><div id="${id}_LAST" tabindex='30'/></td>
+			<td><div id="${id}_FIRST" tabindex='20'></div></td>
+			<td><div id="${id}_LAST" tabindex='30'></div></td>
 		</tr>
 	</table>
 </template>

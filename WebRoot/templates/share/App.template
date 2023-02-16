@@ -2,11 +2,11 @@
 	<table role="presentation" style='width:100%; height=100%'>
 		<tr>
 			<td align='center' valign='middle'>
-				<br><br><br>
+				<br /><br /><br />
 				<$= ZmMsg.loading $>
-				<br><br>
+				<br /><br />
 				<div class='Imgwait_64'></div>
-				<br><br><br>
+				<br /><br /><br />
 			</td>
 		</tr>
 		<tr>
@@ -78,7 +78,7 @@
 				</td>
 			</tr>
 		</table>
-		<hr>
+		<hr />
 		<div style='padding:10px'>
 			<$= data.content $>
 		</div>
