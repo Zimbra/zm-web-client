@@ -50,6 +50,11 @@
 	</c:catch>
 </c:if>
 
+<%-- prevent attacks --%>
+<c:if test="${skin ne zm:replaceAll(skin, '[^0-9A-Za-z]', '')}">
+	<c:set var="skin" value="${defaultSkin}" />
+</c:if>
+
 <%-- use default skin --%>
 <c:if test="${empty skin}">
 	<c:set var="skin" value="${defaultSkin}" />
