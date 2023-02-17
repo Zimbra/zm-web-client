@@ -27,13 +27,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 
-<%
-	String skin = request.getParameter("skin");
-	if (skin == null || !Pattern.matches("^[0-9A-Za-z]+$", skin)) {
-		skin = application.getInitParameter("zimbraDefaultSkin");
-	}
-%>
-
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZmMsg" var="zmmsg" scope="request"/>
 
@@ -49,7 +42,6 @@
 <c:set var="errCode" value="<%=errorCode%>"/>
 <c:set var="errTitle" value="<%=errorTitle%>"/>
 <c:set var="errMsg" value="<%=errorMsg%>"/>
-<c:set var="skin" value="<%=skin%>"/>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
