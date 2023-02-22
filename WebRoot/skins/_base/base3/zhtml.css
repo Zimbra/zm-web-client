@@ -72,4 +72,4 @@ INPUT[type="search"]		{	border:none !important;	} /* Overriding UA style sheet t
 .AppTabSelected				{	@AppTabBorder@ @AppTabBorder-selected@	}
 
 .ZOptionsSectionMain>TBODY>TR>TD,
-.ZPropertySheet>TBODY>TR>TD {	padding:3px;	}
+.ZPropertySheet>TBODY>TR>TD, .ZPropertySheet>THEAD>TR>TD {	padding:3px; }
