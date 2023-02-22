@@ -3351,6 +3351,7 @@ function(accountProxy) {
 
 ZmAccountsListView = function(parent, className, posStyle, noMaximize) {
 	this.tableView = true;
+	this.tableCaption = ZmMsg.accounts;
 	className = className || "DwtListView";
 	className += " ZOptionsItemsListView";
 	DwtListView.call(this, {parent:parent, className:className, posStyle:posStyle,

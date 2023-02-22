@@ -477,6 +477,7 @@ function() {
  */
 ZmPrefZimletListView = function(parent, controller) {
 	this.tableView = true;
+	this.tableCaption = ZmMsg.zimlets;
 	DwtListView.call(this, {
 		parent: parent,
 		className: "ZmPrefZimletListView",
