@@ -1115,15 +1115,20 @@ and the container element is replaced with that control.
 						<tr>
 							<td></td>
 							<td>
-								<table role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
-									<tr>
-										<td class='DwtListView-Column'><div style='padding-left:6px; padding-right:6px; color: #727272'><$=ZmMsg.account$></div></td>
-										<td class='DwtListView-Column'><div style='padding-left:6px; padding-right:6px; color: #727272; width: 200px;'><$=ZmMsg.status$></div></td>
-									</tr>
-									<tr>
-										<td class='DwtListView-Rows'><div id='${id}_RECOVERY_ACCOUNT_DETAIL' style='padding-left:6px; padding-right:6px'></div></td>
-										<td class='DwtListView-Rows'><div id='${id}_RECOVERY_ACCOUNT_STATUS' style='padding-left:6px; padding-right:6px'></div></td>
-									</tr>
+								<table width=100% class='ZPropertySheet' cellspacing='6'>
+									<caption class="ScreenReaderOnly"><$=ZmMsg.recoveryEmailPrefTitle$></caption>
+									<thead>
+										<tr>
+											<td class='DwtListView-Column'><div style='padding-left:6px; padding-right:6px; color: #727272'><$=ZmMsg.account$></div></td>
+											<td class='DwtListView-Column'><div style='padding-left:6px; padding-right:6px; color: #727272; width: 200px;'><$=ZmMsg.status$></div></td>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td class='DwtListView-Rows'><div id='${id}_RECOVERY_ACCOUNT_DETAIL' style='padding-left:6px; padding-right:6px'></div></td>
+											<td class='DwtListView-Rows'><div id='${id}_RECOVERY_ACCOUNT_STATUS' style='padding-left:6px; padding-right:6px'></div></td>
+										</tr>
+									</tbody>
 								</table>
 							</td>
 						</tr>
