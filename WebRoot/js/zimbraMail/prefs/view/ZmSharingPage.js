@@ -457,13 +457,13 @@ function() {
 
 	// list views of shares and grants
 	this._pendingShareListView = new ZmSharingListView({parent:this, type:ZmShare.SHARE,
-		status:ZmSharingView.PENDING, sharingView:this, view:ZmId.VIEW_SHARE_PENDING});
+		status:ZmSharingView.PENDING, sharingView:this, view:ZmId.VIEW_SHARE_PENDING, tableCaption: ZmMsg.pendingSharesTitle});
 	this._addListView(this._pendingShareListView, this._pageId + "_pendingShares");
 	this._mountedShareListView = new ZmSharingListView({parent:this, type:ZmShare.SHARE,
-		status:ZmSharingView.MOUNTED, sharingView:this, view:ZmId.VIEW_SHARE_MOUNTED});
+		status:ZmSharingView.MOUNTED, sharingView:this, view:ZmId.VIEW_SHARE_MOUNTED, tableCaption: ZmMsg.mountedSharesTitle});
 	this._addListView(this._mountedShareListView, this._pageId + "_mountedShares");
 	this._grantListView = new ZmSharingListView({parent:this, type:ZmShare.GRANT,
-		sharingView:this, view:ZmId.VIEW_SHARE_GRANTS});
+		sharingView:this, view:ZmId.VIEW_SHARE_GRANTS, tableCaption: ZmMsg.sharingByMe});
 	this._addListView(this._grantListView, this._pageId + "_sharesBy");
 
 	// autocomplete
@@ -736,6 +736,7 @@ ZmSharingListView = function(params) {
 	this.type = params.type;
 	this.status = params.status;
 	this.tableView = true;
+	this.tableCaption = params.tableCaption;
 	params.headerList = this._getHeaderList();
 	DwtListView.call(this, params);
 
