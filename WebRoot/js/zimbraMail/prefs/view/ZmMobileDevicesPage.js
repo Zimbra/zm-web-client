@@ -69,7 +69,8 @@ function() {
 		this._toolbar = new ZmButtonToolBar(params);
 		params = {
 			parent:this,
-			parentElement:(this._htmlElId+"_deviceList")
+			parentElement:(this._htmlElId+"_deviceList"),
+			tableCaption: ZmMsg.mobileDevices
 		};
 		this.listView = new ZmMobileDeviceListView(params);
 		this.listView.setMultiSelect(false);
@@ -79,7 +80,8 @@ function() {
         var params1 = {
             parent: this,
             parentElement: (this._htmlElId + "_oauthconsumerapps"),
-            type: ZmMobileDevice.TYPE_OAUTH
+            type: ZmMobileDevice.TYPE_OAUTH,
+            tableCaption: ZmMsg.oAuthAuthorizedApps
         };
         this.oAuthAppsListView = new ZmMobileDeviceListView(params1);
         this._deviceController.initializeOAuthAppListView(this.oAuthAppsListView);
@@ -130,6 +132,8 @@ ZmMobileDevicesPage.prototype._addListView = function(listView, listViewDivId) {
  * @private
  */
 ZmMobileDeviceListView = function(params) {
+    this.tableView = true;
+    this.tableCaption = params.tableCaption;
     this.type = params.type;
 	params.headerList = this._getHeaderList();
 	DwtListView.call(this, params);

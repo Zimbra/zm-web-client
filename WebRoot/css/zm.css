@@ -4950,10 +4950,13 @@ If you feel compelled to have a background color, please do so on a per skin lev
 /* To be used on tables that include individual rows for labels and values */
 
 .ZPropertySheet				{	@PropertySheet@				}
-.ZPropertySheet>TBODY>TR>TD {	@PropertySheetSpacing@		}
+.ZPropertySheet>TBODY>TR>TD, .ZPropertySheet>THEAD>TR>TD {
+	@PropertySheetSpacing@
+}
 
 /* make nested property sheets align properly */
-.ZPropertySheet>TBODY>TR>TD>.ZPropertySheet>TBODY>TR>TD:first-child {
+.ZPropertySheet>TBODY>TR>TD>.ZPropertySheet>TBODY>TR>TD:first-child,
+.ZPropertySheet>THEAD>TR>TD>.ZPropertySheet>THEAD>TR>TD:first-child {
 	@PropertySheetNoLeftSpacing@
 }
 
