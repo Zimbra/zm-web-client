@@ -3494,6 +3494,8 @@ function(account) {
 // Delegate Permissions
 
 ZmAccountDelegatesListView = function(parent, className, posStyle, noMaximize) {
+	this.tableView = true;
+	this.tableCaption = ZmMsg.delegatesLabel + ' ' + ZmMsg.delegateRightsPrompt;
 	className = className || "DwtListView";
 	className += " ZOptionsItemsListView";
 	DwtListView.call(this, {parent:parent, className:className, posStyle:posStyle,
@@ -3579,6 +3581,8 @@ function(){
 }
 
 ZmAccountAppPasscodeListView = function(parent, className, posStyle, noMaximize) {
+	this.tableView = true;
+	this.tableCaption = ZmMsg.twoStepAuthApplications + ' ' + ZmMsg.twoStepAuthApplicationsDesc;
 	className = className || "DwtListView";
 	className += " ZOptionsItemsListView";
 	DwtListView.call(this, {parent:parent, className:className, posStyle:posStyle, headerList:this._getHeaderList(), noMaximize:noMaximize});
