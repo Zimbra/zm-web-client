@@ -393,22 +393,26 @@ function(index, notify, callback, result) {
 ZmFilterRules.prototype._handleErrorSaveRules =
 function(ex) {
 	if (ex.code == ZmCsfeException.SVC_PARSE_ERROR ||
-		ex.code == ZmCsfeException.SVC_INVALID_REQUEST ||
+		ex.code == ZmCsfeException.SIEVE_SCRIPT_MAX_SIZE_EXCEPTION ||
 		ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER ||
 		ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG)
 	{
 		var msgDialog = appCtxt.getMsgDialog();
 
 		var msg = '';
-		if (ex.code === ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
-			msg = ZmMsg.errorNoSuchFolder;
-		} else if (ex.code === ZmCsfeException.MAIL_NO_SUCH_TAG) {
-			msg = ZmMsg.errorNoSuchTag;
-		} else if (ex.code === ZmCsfeException.SVC_INVALID_REQUEST && ex.msg.match(ZmMsg.filterServiceErrorMatchString)) {
-			msg = ZmMsg.filterErrorSieveScriptMaxSize;
-		} else {
-			msg = [ZmMsg.filterError, " ", AjxStringUtil.htmlEncode(ex.msg)].join("");
-		}
+		switch(ex.code) {
+			case ZmCsfeException.MAIL_NO_SUCH_FOLDER:
+				msg = ZmMsg.errorNoSuchFolder;
+				break;
+			case ZmCsfeException.MAIL_NO_SUCH_TAG:
+				msg = ZmMsg.errorNoSuchTag;
+				break;
+			case ZmCsfeException.SIEVE_SCRIPT_MAX_SIZE_EXCEPTION:
+				msg = ZmMsg.filterErrorSieveScriptMaxSize;
+				break;
+			default:
+				msg = [ZmMsg.filterError, " ", AjxStringUtil.htmlEncode(ex.msg)].join("");
+			}
 
 		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 		msgDialog.popup();
