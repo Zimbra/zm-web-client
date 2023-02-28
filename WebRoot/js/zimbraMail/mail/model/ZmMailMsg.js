@@ -1485,12 +1485,19 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 		}
 		this._createMessageNode(request, isDraft, aName, requestReadReceipt, sendTime);
 		appCtxt.notifyZimlets("addExtraMsgParts", [request, isDraft]);
+
+		var senderEmail = aName;
+		// When primary account is selected in From field.
+		if (!isDraft && this.identity && this.identity.sendFromAddress) {
+			senderEmail = this.identity.sendFromAddress;
+		}
+
 		var params = {
 			jsonObj: jsonObj,
 			isInvite: false,
 			isDraft: isDraft,
 			isAutoSave: isAutoSave,
-			accountName: aName,
+			accountName: senderEmail,
 			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
 			errorCallback: errorCallback,
 			batchCmd: batchCmd,
@@ -1570,7 +1577,9 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 
 			if (!isDraft) { // not saveDraftRequest 
 				var did = this.nId || this.id; // set draft id
-				if (doQualifyIds) {
+				// When On behalf of account is set as Primary account and it has been selected as From field
+				// then set did as <account identity>:<draft id> such that server delete the message's draft on message sent.
+				if (doQualifyIds || (this.identity && this.identity.sendFromAddressType === ZmSetting.SEND_ON_BEHALF_OF)) {
 					did = ZmOrganizer.getSystemId(did, mainAccount, true);
 				}
 				msgNode.did = did;
