@@ -1,6 +1,6 @@
 <template id='mail.Message#MessageHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
-		<table class='MsgHeaderTable' id='${id}_headerElement' width=100%>
+		<table role="presentation" class='MsgHeaderTable' id='${id}_headerElement' width=100%>
 			<tr>
 				<td class='MsgHeaderContactContainer'>
 					<img class='MsgHeaderContactImage' src="${imageURL}" alt="${imageAltText}" onerror="this.style.visibility='hidden'"/>
@@ -27,7 +27,7 @@
 								<td>&nbsp;</td>
 							</tr>
 						</table>
-						<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='6' style='margin:0 7px;'>
+						<table id='${hdrTableId}' role="presentation" class='ZPropertySheet' cellspacing='6' style='margin:0 7px;'>
 							<tr id='${expandRowId}'>
 								<td>
 									<table role="presentation" align=right>
@@ -142,7 +142,7 @@
 		
 <template id='mail.Message#InviteHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
-		<table class='InvHeaderTable' id='${id}_headerElement'>
+		<table role="presentation" class='InvHeaderTable' id='${id}_headerElement'>
 			<tr>
 				<$ if (!data.noTopHeader) { $>
 				<td class='InvHeaderContactContainer'>
@@ -184,7 +184,7 @@
 							<tr>
 								<td class='LabelColName ${timeChangeClass}'><$= data.counterInvMsg ? ZmMsg.proposedTimeLabel : ZmMsg.timeLabel $></td>
 								<td class='LabelColValue ${timeChangeClass}'>
-									<$= data.invDate $><br>
+									<$= data.invDate $><br />
 									<$= data.timezone $>
 								</td>
 							</tr>
@@ -422,7 +422,7 @@
 	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
 	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
 	<!-- header -->
-	<table id='${headerId}' width=100% class='ZPropertySheet' cellspacing='6'>
+	<table id='${headerId}' role="presentation" width=100% class='ZPropertySheet' cellspacing='6'>
 		<$ if (appCtxt.multiAccounts) { $>
 			<tr>
 				<td width='1%' align=right valign=top style='<$=labelStyle$>'>
@@ -576,7 +576,7 @@
 							<div id='${id}_newAddressBox' class="Box NewAddressBox"></div>
 						</div>
 						<div style="margin:3px" id='${id}_addButton'></div>
-						<br>
+						<br />
 						<div id='${id}_existingContacts' class="ExistingContacts">
 							<div><$= ZmMsg.confirmExistingContacts $></div>
 							<div id='${id}_existingContactBox' class="Box ExistingContactBox"></div>
@@ -593,8 +593,8 @@
 	<div id="${id}_CHECKBOX" tabindex='10'></div>
 	<table role="presentation" style="margin-bottom:3px">
 		<tr>
-			<td><div id="${id}_FIRST" tabindex='20'/></td>
-			<td><div id="${id}_LAST" tabindex='30'/></td>
+			<td><div id="${id}_FIRST" tabindex='20'></div></td>
+			<td><div id="${id}_LAST" tabindex='30'></div></td>
 		</tr>
 	</table>
 </template>

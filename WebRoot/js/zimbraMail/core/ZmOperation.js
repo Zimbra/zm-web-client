@@ -112,7 +112,7 @@ ZmOperation.initialize =
 function() {
 	ZmOperation.registerOp(ZmId.OP_ACTIONS_MENU, {textKey:"actions", tooltipKey:"", textPrecedence:40});
 	
-	ZmOperation.registerOp(ZmId.OP_ATTACHMENT, {textKey:"addAttachment", tooltipKey:"attachmentTooltip", image:"Attachment", shortcut:ZmKeyMap.ATTACHMENT, showImageInToolbar: true});
+	ZmOperation.registerOp(ZmId.OP_ATTACHMENT, {textKey:"addAttachment", tooltipKey:"attachmentTooltip", image:"Attachment", shortcut:ZmKeyMap.ATTACHMENT, showImageInToolbar: true, ariaLabel: "addAttachment"});
 	ZmOperation.registerOp(ZmId.OP_CALL, {image:"Telephone"});
 	ZmOperation.registerOp(ZmId.OP_CANCEL, {textKey:"cancel", tooltipKey:"cancelTooltip", image:"Cancel", shortcut:ZmKeyMap.CANCEL});
 	ZmOperation.registerOp(ZmId.OP_CHECK_ALL, {textKey:"checkAll", image:"Check"});
@@ -150,7 +150,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_MARK_ALL_READ, {textKey:"markAllRead", image:"ReadMessage"});
 //	ZmOperation.registerOp(ZmId.OP_MOUNT_FOLDER, {textKey:"mountFolder", image:"Folder"});
 	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder", textPrecedence:40, showImageInToolbar: true}); //todo - remove
-	ZmOperation.registerOp(ZmId.OP_MOVE_MENU, {textKey: "move", tooltipKey:"moveTooltip", image:"MoveToFolder", showImageInToolbar: true }, null,
+	ZmOperation.registerOp(ZmId.OP_MOVE_MENU, {textKey: "move", tooltipKey:"moveTooltip", image:"MoveToFolder", showImageInToolbar: true, ariaLabel: "move" }, null,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addMoveMenu, parent, true);
 		}));
@@ -165,9 +165,9 @@ function() {
     ZmOperation.registerOp(ZmId.OP_NOTIFY, {textKey: "notify", image:"Feedback"});
 	ZmOperation.registerOp(ZmId.OP_OPEN_IN_TAB, {textKey:"openInTab", image:"OpenInNewTab"});
 	ZmOperation.registerOp(ZmId.OP_OPTS, {textKey:"options", tooltipKey:"options", image:"ContextMenu"});
-	ZmOperation.registerOp(ZmId.OP_PAGE_BACK, {image:"LeftArrow", shortcut:ZmKeyMap.PREV_PAGE});
-	ZmOperation.registerOp(ZmId.OP_PAGE_FORWARD, {image:"RightArrow", shortcut:ZmKeyMap.NEXT_PAGE});
-	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, textPrecedence:30, showImageInToolbar: true}, ZmSetting.PRINT_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_PAGE_BACK, {image:"LeftArrow", shortcut:ZmKeyMap.PREV_PAGE, ariaLabel: "goBack"});
+	ZmOperation.registerOp(ZmId.OP_PAGE_FORWARD, {image:"RightArrow", shortcut:ZmKeyMap.NEXT_PAGE, ariaLabel: "goForward"});
+	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, textPrecedence:30, showImageInToolbar: true, ariaLabel: "print" }, ZmSetting.PRINT_ENABLED);
     ZmOperation.registerOp(ZmId.OP_PRIORITY_FILTER, {image:"Priority", textKey:"activityStream"}, ZmSetting.PRIORITY_INBOX_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FIND_SHARES, {image:"Group", textKey:"findShares"}, ZmSetting.SHARING_ENABLED);
 
@@ -198,7 +198,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHOW_ALL_ITEM_TYPES, {textKey:"showAllItemTypes", image:"Globe"});
     ZmOperation.registerOp(ZmId.OP_SORT_ASC, {textKey:"sortAscending"});
     ZmOperation.registerOp(ZmId.OP_SORT_DESC, {textKey:"sortDescending"});
-	ZmOperation.registerOp(ZmId.OP_SPELL_CHECK, {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip", shortcut:ZmKeyMap.SPELLCHECK, showImageInToolbar: true}, ZmSetting.SPELL_CHECK_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SPELL_CHECK, {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip", shortcut:ZmKeyMap.SPELLCHECK, showImageInToolbar: true, ariaLabel: "spellCheck"}, ZmSetting.SPELL_CHECK_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SYNC, {textKey:"reload", image:"Refresh", shortcut:ZmKeyMap.REFRESH});
     ZmOperation.registerOp(ZmId.OP_SYNC_ALL, {textKey:"checkAllFeed", image:"Refresh"});
 	ZmOperation.registerOp(ZmId.OP_SYNC_OFFLINE_FOLDER, {textKey:"syncOfflineFolderOff", image:"Refresh"}, ZmSetting.OFFLINE_ENABLED); /* offline only */
@@ -207,7 +207,7 @@ function() {
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addColorMenu, parent);
 		}));
-	ZmOperation.registerOp(ZmId.OP_TAG_MENU, {textKey: "tag", tooltipKey:"tagTooltip", image:"Tag", showImageInToolbar: true }, ZmSetting.TAGGING_ENABLED,
+	ZmOperation.registerOp(ZmId.OP_TAG_MENU, {textKey: "tag", tooltipKey:"tagTooltip", image:"Tag", showImageInToolbar: true, ariaLabel: "tag" }, ZmSetting.TAGGING_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addTagMenu, parent, true);
 		}));
@@ -316,9 +316,12 @@ function(baseId, overrides) {
 	var enabled = (overrides && (overrides.enabled !== false));
 	var style = ZmOperation.getProp(baseId, "style");
 	var shortcut = ZmOperation.getProp(baseId, "shortcut");
+	var role = ZmOperation.getProp(baseId, "role");
+	var ariaLabelkey = ZmOperation.getProp(baseId, "ariaLabel");
+	var ariaLabel = ariaLabelkey && ZmMsg[ariaLabelkey]
 
     var opDesc = {id:id, text:text, image:image, showImageInToolbar:showImageInToolbar, showTextInToolbar:showTextInToolbar, disImage:disImage, enabled:enabled,
-				  tooltip:tooltip, style:style, shortcut:shortcut};
+				  tooltip:tooltip, style:style, shortcut:shortcut, role: role, ariaLabel: ariaLabel};
 	if (overrides) {
 		for (var i in overrides) {
 			opDesc[i] = overrides[i];

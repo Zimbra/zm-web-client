@@ -398,7 +398,7 @@ function(hdrKey, item) {
     if(!this._sectionHeaderHtml[hdrKey]) {
         var htmlArr = [];
         var idx = 0;
-        htmlArr[idx++] = "<table width=100% class='ZmTimeSuggestionView-Column ";
+        htmlArr[idx++] = "<table role='presentation' width=100% class='ZmTimeSuggestionView-Column ";
         htmlArr[idx++] =  this._getHeaderColor(item);        
         htmlArr[idx++] = "'><tr>";
         htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label'>";

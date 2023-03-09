@@ -87,7 +87,6 @@
 
     <property name="modernizr.version" value="2.8.3"/>
     <property name="jquery.version" value="3.5.1"/>
-    <property name="yui.version" value="2.9.0-alfresco-20140211"/>
 
     <!-- TINY_MCE INTEGRATION -->
     <property name="tinymce.version" value="4.9.11"/>
@@ -137,7 +136,7 @@
     <target name='client' depends='common'>
         <property name='deploy.app' value='zimbra'/>
         <property name='skins.dir' value='${web.dir}/skins'/>
-        <property name='web.includes' value='${common.web.includes},h/**,portals/**,sounds/**,test/**,yui/2.9.0-alfresco-20140211/**,qunit/**'/>
+        <property name='web.includes' value='${common.web.includes},h/**,portals/**,sounds/**,test/**,qunit/**'/>
         <property name='web.excludes' value='${common.web.excludes}'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
@@ -197,7 +196,6 @@
 
         <antcall target="jquery" />
         <antcall target="modernizr" />
-        <antcall target="yui" />
     </target>
 
     <target name="assemble-war" depends="webxml-package-replace, resolve" description="Assembles the war file.  Assumes that all dependencies have been built.  Octopus/ZimbraWebClient/build.xml calls the war target, modifies files in ZimbraWebClient/build, and then calls this target.">
@@ -1021,7 +1019,7 @@ ext = BeanUtils.cook(ext);
 	             classpathref="class.path"
 	    />
 
-        <!-- copying yui jar file in build/tmp directory. -->
+        <!-- copying yuicompressor jar file in build/tmp directory. -->
         <ivy:install organisation="com.yahoo.platform.yui" module="yuicompressor" revision="2.4.8" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
 
         <!-- minimize js, prepend copyright, compress -->
@@ -1428,7 +1426,7 @@ ext = BeanUtils.cook(ext);
         <property name="compress.includes" value="**/plugin.js,localeconv.js" />
         <fileset id="js-includes" dir="${tinymce.custom.dir}" includes="${compress.includes}" />
 
-        <!-- copying yui jar file in build/tmp directory. -->
+        <!-- copying yuicompressor jar file in build/tmp directory. -->
         <ivy:install organisation="com.yahoo.platform.yui" module="yuicompressor" revision="2.4.8" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="jar"/>
 
         <for param="var">
@@ -1636,23 +1634,6 @@ ext = BeanUtils.cook(ext);
                 }
                 self.addMappedName(source);
             </scriptmapper>
-        </copy>
-    </target>
-
-    <!-- YUI Library -->
-    <target name="yui" depends="resolve">
-        <ivy:install organisation="com.yahoo.platform.yui" module="yui" revision="${yui.version}" settingsRef="dev.settings" from="chain-resolver" to="build-tmp" overwrite="true" transitive="true" type="zip" />
-
-        <unzip src="${build.tmp.dir}/yui-${yui.version}.zip" dest="${build.tmp.dir}" overwrite="true" />
-
-        <!-- Copy to js/ajax/3rdparty as webclient is using it from there -->
-        <copy todir="${3rdparty.dir}/yui">
-            <fileset dir="${build.tmp.dir}/yui" />
-        </copy>
-
-        <!-- Copy to root folder as well, as it is used by html client -->
-        <copy todir="${build.web.dir}/yui/${yui.version}">
-            <fileset dir="${build.tmp.dir}/yui" />
         </copy>
     </target>
 

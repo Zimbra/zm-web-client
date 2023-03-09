@@ -903,7 +903,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_DELETE_CONV, {textKey:"delConv", image:"DeleteConversation"}, ZmSetting.CONVERSATIONS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_DELETE_MSG, {textKey:"delMsg", image:"DeleteMessage"});
 	ZmOperation.registerOp(ZmId.OP_DELETE_MENU, {textKey:"del", image:"Delete", tooltipKey:"deleteTooltip"});
-	ZmOperation.registerOp(ZmId.OP_DETACH_COMPOSE, {tooltipKey:"detachComposeTooltip", image:"OpenInNewWindow"});
+	ZmOperation.registerOp(ZmId.OP_DETACH_COMPOSE, {tooltipKey:"detachComposeTooltip", image:"OpenInNewWindow", ariaLabel: "detachComposeTooltip"});
 	ZmOperation.registerOp(ZmId.OP_DRAFT, null, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_EDIT_FILTER_RULE, {textKey:"filterEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORWARD, {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward", shortcut:ZmKeyMap.FORWARD, textPrecedence:46});
@@ -2113,12 +2113,19 @@ function() {
 ZmMailApp.prototype._setFavIcon =
 function(unread) {
     var url;
-    if (unread == 0) {
-        url = [appContextPath, "/img/logo/favicon.ico"].join("");
-    } else if (unread > 9) {
-        url = [appContextPath,"/img/logo/favicon_plus.ico"].join("");
+    var dir;
+    if (skin.hints.favicon && skin.hints.favicon.dir) {
+        dir = skin.hints.favicon.dir;
     } else {
-        url = [appContextPath, "/img/logo/favicon_", unread, ".ico"].join("");
+        dir = appContextPath + "/img/logo";
+    }
+
+    if (unread == 0) {
+        url = [dir, "/favicon.ico"].join("");
+    } else if (unread > 9) {
+        url = [dir,"/favicon_plus.ico"].join("");
+    } else {
+        url = [dir, "/favicon_", unread, ".ico"].join("");
     }
     Dwt.setFavIcon(url);
 };

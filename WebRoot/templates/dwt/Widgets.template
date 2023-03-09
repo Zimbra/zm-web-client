@@ -406,7 +406,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 				<$ } $>
 				<td nowrap class='imageCell' id='${id}_imageCell'></td>
 				<td nowrap class='${textClassName}' id='${id}_textCell' width="100%"></td>
-				<td class='${textClassName} FakeAnchor' id='${id}_optCell'><div id='${id}_optButton'/></td>
+				<td class='${textClassName} FakeAnchor' id='${id}_optCell'><div id='${id}_optButton'></div></td>
 			</tr>
 		</table>
 	</div>
@@ -460,7 +460,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#ZMenuItem' class='ZWidget'>
-	<table role="presentation" class='ZWidgetTable ZMenuItemTable ZMenuItemBorder'>
+	<table role="none" class='ZWidgetTable ZMenuItemTable ZMenuItemBorder'>
 		<tr>
 			<td id='${id}_check' class='ZCheckIcon'><div></div></td>
 			<td id='${id}_left_icon' class='ZLeftIcon ZWidgetIcon'></td>

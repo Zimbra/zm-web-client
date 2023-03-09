@@ -180,8 +180,8 @@ function() {
 		var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 		var dateFieldListener = AjxCallback.simpleClosure(this._dateFieldListener, this);
 
-		this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._sId, dateButtonListener, dateCalSelectionListener);
-		this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._eId, dateButtonListener, dateCalSelectionListener);
+		this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._sId, dateButtonListener, dateCalSelectionListener, ZmMsg.startDate);
+		this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._eId, dateButtonListener, dateCalSelectionListener, ZmMsg.endDate);
 
 		Dwt.setHandler(this._startDateField, DwtEvent.ONBLUR, dateFieldListener);
 		Dwt.setHandler(this._endDateField, DwtEvent.ONBLUR, dateFieldListener);

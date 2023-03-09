@@ -443,6 +443,7 @@ function(width) {
     var pCompleteButtonListener = new AjxListener(this, this._pCompleteButtonListener);
     var pCompleteSelectListener = new AjxListener(this, this._pCompleteSelectListener);
     this._pCompleteButton = ZmTasksApp.createpCompleteButton(this, this._htmlElId + "_pCompleteSelect", pCompleteButtonListener, pCompleteSelectListener);
+    this._pCompleteButton.setAriaLabel(ZmMsg.progressSelect);
 
 	this._hasReminderSupport = Dwt.byId(this._htmlElId + "_reminderCheckbox") != null;
 
@@ -458,7 +459,7 @@ function(width) {
         this._reminderCheckbox.addSelectionListener(new AjxListener(this, this._setEmailReminderControls));
 
         this._remindDateField = document.getElementById(this._htmlElId + "_remindDateField");
-        this._remindDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_remindMiniCalBtn", remindDateBtnListener, remindDateCalSelectionListener);
+        this._remindDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_remindMiniCalBtn", remindDateBtnListener, remindDateCalSelectionListener, ZmMsg.startDate);
         this._remindDateButton.reparentHtmlElement(this._htmlElId + "_remindMiniCalBtn");
 
         // time DwtTimeSelect

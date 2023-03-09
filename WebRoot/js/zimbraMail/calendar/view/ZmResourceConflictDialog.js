@@ -104,7 +104,7 @@ function(html, inst, data, attendeeMap, needSep) {
     
 	html.append("<tr width=100% id='conflict_row_", inst.ridZ, "'>");
 	html.append("<td colspan=2 valign='top'>");
-	html.append("<table  id='", inst.ridZ, "_conflictInstTxt' cellpadding=1 width='95%' cellspacing=0 border=0><tr>");
+	html.append("<table  id='", inst.ridZ, "_conflictInstTxt' role='presentation' cellpadding=1 width='95%' cellspacing=0 border=0><tr>");
     html.append("<td width=25px>", AjxImg.getImageHtml("Appointment"), "</td>");
 	html.append("<td><b>", this.getDurationText(inst), "</b></td>");
     html.append("</tr><tr>");
@@ -118,7 +118,7 @@ function(html, inst, data, attendeeMap, needSep) {
     //html.append("<td align=right valign='top' id='", data.cancelButtonId, "'>");
     //html.append("</td>");
 	html.append("<td align=right valign='top' id='", data.buttonId, "'>");
-	html.append("<table cellpadding=1 cellspacing=0 border=0>");
+	html.append("<table role='presentation' cellpadding=1 cellspacing=0 border=0>");
 	
     var usr = inst.usr;
     if(usr) {
@@ -222,7 +222,7 @@ function(list, appt, callback, cancelCallback) {
     var dlgC = document.getElementById(this._listId);
     Dwt.setSize(dlgC, Dwt.DEFAULT, size > 5 ? ZmResourceConflictDialog.MAX_HEIGHT : ZmResourceConflictDialog.HEIGHT);
 
-	html.append("<table cellpadding=2 cellspacing=0 border=0 width=100%>");
+	html.append("<table role='presentation' cellpadding=2 cellspacing=0 border=0 width=100%>");
 	for (var i=0; i < size; i++) {
 		var inst = list[i];
 		var data = this._instData[i] = {inst: inst};

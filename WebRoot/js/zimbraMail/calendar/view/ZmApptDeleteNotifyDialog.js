@@ -123,7 +123,7 @@ function() {
     html[i++] = "'>";
 	html[i++] = this._confirmMsg;
 	html[i++] = "</div><div style='margin:1em;width:300px;'>";
-	html[i++] = "<table class='ZRadioButtonTable'>";
+	html[i++] = "<table role='presentation' class='ZRadioButtonTable'>";
 	html[i++] = "<tr><td width=1%><input checked value='1' type='radio' id='";
 	html[i++] = this._defaultRadioId;
 	html[i++] = "' name='";

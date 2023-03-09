@@ -275,7 +275,7 @@
 </template>
 
 <template id='abook.Contacts#SplitView_content'>
-	<table id='${id}_details' class='contactContentTable'>
+	<table id='${id}_details' role="presentation" class='contactContentTable'>
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
 	<$= ZmContactSplitView.showContactEmails(data) $>
 	<$= ZmContactSplitView.showContactPhones(data) $>
@@ -576,7 +576,7 @@
 </template>
 
 <template id='abook.Contacts#SplitViewGroup'>
-	<table class='contactContentTable'>
+	<table role="presentation" class='contactContentTable'>
 		<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
 	</table>
 	<$ if (data.dlInfo) { $>
@@ -609,14 +609,14 @@
 <!-------------------------------- ZmGroupView -------------------------------->
 <!----------------------------------------------------------------------------->
 <template id='abook.Contacts#GroupView'>
-	<table class='ZPropertySheet'>
+	<table role="presentation" class='ZPropertySheet'>
 		<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
 	</table>
 	<$= AjxTemplate.expand("abook.Contacts#GroupViewMembers", data) $>
 </template>
 
 <template id='abook.Contacts#DlView'>
-	<table class='ZPropertySheet'>
+	<table role="presentation" class='ZPropertySheet'>
 		<$= AjxTemplate.expand('abook.Contacts#SplitView_header', data) $>
 	</table>
 	<div id='${id}_tabViewContainer'></div>
@@ -840,6 +840,7 @@
 				<$ for (var i = 0; i < data.numLetters; i++) { $>
 					<td _idx="<$= i $>"	role='button'
 						class='DwtButton AlphabetBarCell'
+						aria-label="<$= data.ariaLabel, data.alphabet[i] $>"
 <$ if (data.alphabet[i].length > 1) { $> colspan='<$= data.alphabet[i].length/2 + 1 $>' <$ } $> >
 						<$= data.alphabet[i] $>
 					</td>
@@ -978,7 +979,7 @@
 <!----------------------------------------------------------------------------->
 <template id='abook.Contacts#ZmContactPicker'>
 	<div class='ZmContactPicker'>
-		<table>
+		<table role="presentation">
 			<tr>
 				<td rowspan="2" id='${id}_habTree' valign="top"></td>
 				<td>

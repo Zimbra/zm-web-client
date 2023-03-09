@@ -1862,7 +1862,7 @@ function() {
 		div.id = this._spellCheckModeDivId = Dwt.getNextId();
 		var html = new Array();
 		var i = 0;
-		html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td style='width:25'>";
+		html[i++] = "<table role='presentation' border=0 cellpadding=0 cellspacing=0><tr><td style='width:25'>";
 		html[i++] = AjxImg.getImageHtml("SpellCheck");
 		html[i++] = "</td><td style='white-space:nowrap'><span class='SpellCheckLink'>";
 		html[i++] = ZmMsg.resumeEditing;

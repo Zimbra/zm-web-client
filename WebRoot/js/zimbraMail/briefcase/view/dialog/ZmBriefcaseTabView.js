@@ -82,7 +82,7 @@ function() {
     this._folderListId = Dwt.getNextId();
     var html = [];
     var idx = 0;
-    html[idx++] = ['<table class="ZmBriefcaseTabView_Table" id="', this._tableID, '" cellspacing="0" cellpadding="0" border="0">'].join("");
+    html[idx++] = ['<table role="presentation" class="ZmBriefcaseTabView_Table" id="', this._tableID, '" cellspacing="0" cellpadding="0" border="0">'].join("");
     html[idx++] = '<tr>';
     html[idx++] = ['<td width="30%" valign="top"  id="', this._folderTreeCellId, '">'].join("");
     html[idx++] = '</td>';

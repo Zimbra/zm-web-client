@@ -58,13 +58,13 @@
 
 <c:set var="isPart" value="${!empty message.partName}"/>
 
-<table width="100%" cellpadding="0" cellspacing="0" class="Msg" >
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="Msg" >
     <tr>
         <td class='MsgHdr' colspan="2">
-            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                     <td align="left">
-                        <table width="100%" align="left" cellpadding="2" cellspacing="0" border="0">
+                        <table role="presentation" width="100%" align="left" cellpadding="2" cellspacing="0" border="0">
                             <tr>
                                 <td class='MsgHdrName'>
                                     <fmt:message key="from"/>
@@ -153,7 +153,7 @@
                         </table>
                     </td>
                     <td valign='top'>
-                        <table width="100%" cellpadding="2" cellspacing="0" border="0">
+                        <table role="presentation" width="100%" cellpadding="2" cellspacing="0" border="0">
                             <tr>
                                 <td nowrap align='right' class='MsgHdrSent'>
                                     <fmt:message var="dateFmt" key="formatDateSent"/>
@@ -206,10 +206,10 @@
     <c:if test="${not hideops}">
     <tr>
         <td class='MsgOps' colspan=2>
-            <table width="100%">
+            <table role="presentation" width="100%">
                 <tr valign="middle">
                     <td nowrap align="left" style='padding-left: 5px'>
-                        <table cellspacing="0" cellpadding="0" class='Tb'>
+                        <table role="presentation" cellspacing="0" cellpadding="0" class='Tb'>
                             <tr>
                                 <c:if test="${zm:boolean(showInviteReply)}">
                                     <td style='padding: 0 2px 0 2px'>
@@ -278,7 +278,7 @@
                         </table>
                     </td>
                     <td nowrap align=right style='padding-right: 5px;'>
-                        <table cellspacing="0" cellpadding="0" class='Tb'>
+                        <table role="presentation" cellspacing="0" cellpadding="0" class='Tb'>
                             <tr>
                                 <c:if test="${showconvlink and not fn:startsWith(message.conversationId, '-')}">
                                     <td style='padding: 0 2px 0 2px'>
@@ -342,7 +342,7 @@
         </tr>
     </c:if>
     <tr>
-        <td id="iframeBody${counter}" class=MsgBody valign='top' colspan="${needExtraCol ? 1 : 2}">
+        <td id="iframeBody${fn:escapeXml(counter)}" class=MsgBody valign='top' colspan="${needExtraCol ? 1 : 2}">
             <app:body message="${message}" body="${body}" theBody="${body.isTextHtml ? zm:stripHtmlComments(theBody) : theBody}" mailbox="${mailbox}" counter="${counter}"/>
             <c:set var="bodies" value="${zm:getAdditionalBodies(body,message)}"/>
             <c:if test="${not empty bodies}">

@@ -75,6 +75,16 @@ ZmEditContactView = function(parent, controller) {
 
 	this.setScrollStyle(Dwt.SCROLL);
 	this.clean = false;
+
+	this._items.FILE_AS.control.setAriaLabel(ZmMsg.fileAsLabel);
+
+	// Override setText method for location field such that screen reader announces as 
+	// 'Location: <choosen folder name>' on traversing location field
+	this._items.FOLDER.control.setText = function (text) {
+		DwtLabel.prototype.setText.call(this, text);
+		this._setMinWidth();
+		this.setAriaLabel(ZmMsg.locationLabel + " " + text);
+	}
 };
 
 ZmEditContactView.prototype = new DwtForm;
@@ -134,23 +144,25 @@ ZmEditContactView.prototype.getFormItems = function() {
 			}, validator: ZmEditContactView.emailValidator },
 			{ id: "PHONE", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
-					inputWidth: 351, tooltip: ZmMsg.phone, hint: ZmMsg.phoneNumberHint, options: this.getPhoneOptions()
+					inputWidth: 351, tooltip: ZmMsg.phone, hint: ZmMsg.phoneNumberHint, options: this.getPhoneOptions(),
+					ariaDropDownLabel: ZmMsg.phoneType
 				}
 			} },
 			{ id: "IM", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewIM", equals: ZmEditContactViewIM.equals, params: {
-					inputWidth: 351, tooltip: ZmMsg.imShort, hint: ZmMsg.imScreenNameHint, options: this.getIMOptions()
+					inputWidth: 351, tooltip: ZmMsg.imShort, hint: ZmMsg.imScreenNameHint, options: this.getIMOptions(), ariaInputLabel: ZmMsg.instanceMessage,
+					ariaDropDownLabel: ZmMsg.instanceMessageType
 				}
 			} },
 			{ id: "ADDRESS", type: "ZmEditContactViewInputSelectRows",
 				rowtemplate: "abook.Contacts#ZmEditContactViewAddressRow",
 				rowitem: { type: "ZmEditContactViewAddress", equals: ZmEditContactViewAddress.equals,
-					params: { options: this.getAddressOptions() }
+					params: { options: this.getAddressOptions(), ariaDropDownLabel: ZmMsg.addressType }
 				}
 			},
 			{ id: "URL", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewInputSelect", equals:ZmEditContactViewInputSelect.equals, params: {
-					inputWidth: 351, hint: ZmMsg.url, options: this.getURLOptions()
+					inputWidth: 351, hint: ZmMsg.url, options: this.getURLOptions(), ariaDropDownLabel: ZmMsg.urlType
 				}
 			} },
 			{ id: "OTHER", type: "ZmEditContactViewInputSelectRows", rowitem: {
@@ -158,7 +170,8 @@ ZmEditContactView.prototype.getFormItems = function() {
 					inputWidth: 300,
 					selectInputWidth: 112,
 					hint: ZmMsg.date,
-					options: this.getOtherOptions()
+					options: this.getOtherOptions(),
+					ariaInputLabel: ZmMsg.otherLabel
 				}
 			}, validator: ZmEditContactViewOther.validator },
 			// other controls
@@ -1552,15 +1565,21 @@ ZmEditContactViewInputSelect = function(params) {
 	if (arguments.length == 0) return;
 	this._formItemId = params.formItemDef.id;
 	this._options = params.options || [];
+	this._ariaDropDownLabel = params.ariaDropDownLabel;
 	this._cols = params.cols;
 	this._rows = params.rows;
 	this._hint = params.hint;
 	DwtComposite.apply(this, arguments);
 	this._tabGroup = new DwtTabGroup(this._htmlElId);
 	this._createHtml(params.template);
-    if (this._input && (params.inputWidth || params.inputHeight)) {
-        Dwt.setSize(this._input.getInputElement(), params.inputWidth, params.inputHeight);
-    }
+	if (this._input) {
+		if (params.inputWidth || params.inputHeight) {
+			Dwt.setSize(this._input.getInputElement(), params.inputWidth, params.inputHeight);
+		}
+		if (params.ariaInputLabel) {
+			this._input.getInputElement().setAttribute('aria-label', params.ariaInputLabel);
+		}
+	}
 };
 ZmEditContactViewInputSelect.prototype = new DwtComposite;
 ZmEditContactViewInputSelect.prototype.constructor = ZmEditContactViewInputSelect;
@@ -1736,6 +1755,10 @@ ZmEditContactViewInputSelect.prototype._createSelect = function(options) {
 		if (maxedOut) {
 			select.enableOption(option.value, false);
 		}
+	}
+
+	if (this._ariaDropDownLabel) {
+		select.setAriaLabel(this._ariaDropDownLabel);
 	}
 	return select;
 };
@@ -2365,6 +2388,7 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
 
         var menu = new DwtMenu({parent:this._picker,style:DwtMenu.GENERIC_WIDGET_STYLE});
         this._picker.getHtmlElement().className += " ZmEditContactViewOtherCalendar";
+		this._picker.setAriaLabel(ZmMsg.calendarPicker);
 		this._picker.setMenu(menu);
 		this._picker.replaceElement(pickerEl);
 
@@ -2424,6 +2448,7 @@ ZmEditContactViewOther.prototype._createSelect = function() {
 	select.addChangeListener(new AjxListener(this, this._resetPicker));
 	// HACK: Make it look like a DwtSelect.
 	select.setSelectedValue = select.setValue;
+	select.setAriaLabel(select.getValue());
 	return select;
 };
 
@@ -2431,6 +2456,7 @@ ZmEditContactViewOther.prototype._resetPicker = function() {
 	if (this._picker) {
 		var type = this.getValue().type;
 		this._picker.setVisible(type in this.DATE_ATTRS);
+		this._select.setAriaLabel(type);
 	}
 };
 

@@ -456,7 +456,7 @@ function(uid) {
 	var html = new Array();
 	var i = 0;
 	
-	html[i++] = "<table width=450>";
+	html[i++] = "<table role='presentation' width=450>";
 	html[i++] = "<tr><td><fieldset";
 	if (AjxEnv.isMozilla)
 		html[i++] = " style='border:1px dotted #555'";
@@ -499,7 +499,7 @@ function(uid) {
 	var i = 0;
 
 	// start table
-	html[i++] = "<table class='ZRadioButtonTable'>";
+	html[i++] = "<table role='presentation' class='ZRadioButtonTable'>";
 	// no end date
 	html[i++] = "<tr><td width=1%><input checked value='N' type='radio' name='";
 	html[i++] = this._repeatEndName;
@@ -518,7 +518,7 @@ function(uid) {
 	html[i++] = "' id='";
 	html[i++] = this._endAfterRadioId;
 	html[i++] = "'></td><td colspan=2>";
-	html[i++] = "<table><tr>";
+	html[i++] = "<table role='presentation'><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurEndNumber);
 	var segments = formatter.getSegments();
 	for (var s = 0; s < segments.length; s++) {
@@ -547,7 +547,7 @@ function(uid) {
 	html[i++] = "' id='";
 	html[i++] = this._endByRadioId;
 	html[i++] = "'></td><td>";
-	html[i++] = "<table><tr>";
+	html[i++] = "<table role='presentation'><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurEndByDate);
 	var segments = formatter.getSegments();
 	for (var s = 0; s < segments.length; s++) {
@@ -623,7 +623,7 @@ function(uid) {
 	var i = 0;
 
 	// start table
-	html[i++] = "<table class='ZRadioButtonTable'>";
+	html[i++] = "<table role='presentation' class='ZRadioButtonTable'>";
 	// every day
 	html[i++] = "<tr><td><input checked value='1' type='radio' name='";
 	html[i++] = this._dailyRadioName;
@@ -656,7 +656,7 @@ function(uid) {
 	html[i++] = "' id='";
 	html[i++] = this._dailyFieldRadioId;
 	html[i++] = "'></td><td>";
-	html[i++] = "<table><tr>";
+	html[i++] = "<table role='presentation'><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurDailyEveryNumDays);
 	var segments = formatter.getSegments();
 	for (var s = 0; s < segments.length; s++) {
@@ -697,14 +697,14 @@ function(uid) {
 	var i = 0;
 
 	// start table
-	html[i++] = "<table class='ZRadioButtonTable'>";
+	html[i++] = "<table role='presentation' class='ZRadioButtonTable'>";
 	// every <weekday>
 	html[i++] = "<tr><td><input checked value='1' type='radio' name='";
 	html[i++] = this._weeklyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._weeklyDefaultId;
 	html[i++] = "'></td><td>";
-	html[i++] = "<table><tr>";
+	html[i++] = "<table role='presentation'><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryWeekday);
 	var segments = formatter.getSegments();
 	for (var s = 0; s < segments.length; s++) {
@@ -735,7 +735,7 @@ function(uid) {
 	html[i++] = this._weeklyFieldRadioId;
 	html[i++] = "'></td>";
 	html[i++] = "<td>";
-	html[i++] = "<table><tr>";
+	html[i++] = "<table role='presentation'><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryNumWeeksDate);
 	var segments = formatter.getSegments();
 	for (var s = 0; s < segments.length; s++) {
@@ -749,7 +749,7 @@ function(uid) {
 		}
 		else if (index == 1) {
 			html[i++] = "<td>";
-			html[i++] = "<table style='margin-top:.25em;'><tr>";
+			html[i++] = "<table role='presentation' style='margin-top:.25em;'><tr>";
 			for (var j = 0; j < AjxDateUtil.WEEKDAY_MEDIUM.length; j++) {
 				var checkBoxId = Dwt.getNextId(this._weeklyCheckboxName + "_");
 				html[i++] = "<td><input type='checkbox' name='";
@@ -768,7 +768,7 @@ function(uid) {
 		}
 		else if (index == 2) {
 			html[i++] = "</td></tr></table>";
-			html[i++] = "<table><tr>";
+			html[i++] = "<table role='presentation'><tr>";
 			continue;
 		}
 		else {
@@ -804,7 +804,7 @@ function(uid) {
 	var i = 0;
 
 	// start table
-	html[i++] = "<table class='ZRadioButtonTable'>";
+	html[i++] = "<table role='presentation' class='ZRadioButtonTable'>";
 	// every <num> months on the <day>
 	html[i++] = "<tr><td><input checked value='1' type='radio' name='";
 	html[i++] = this._monthlyRadioName;
@@ -812,7 +812,7 @@ function(uid) {
 	html[i++] = this._monthlyDefaultId;
 	html[i++] = "'></td>";
 	html[i++] = "<td>";
-	html[i++] = "<table class='ZPropertySheet' cellspacing='6'><tr>";
+	html[i++] = "<table role='presentation' class='ZPropertySheet' cellspacing='6'><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsDate);
 	var segments = formatter.getSegments();
 	for (var s = 0; s < segments.length; s++) {
@@ -848,7 +848,7 @@ function(uid) {
 	html[i++] = this._monthlyFieldRadioId;
 	html[i++] = "'></td>";
 	html[i++] = "<td>";
-	html[i++] = "<table class='ZPropertySheet' cellspacing='6'><tr>";
+	html[i++] = "<table role='presentation' class='ZPropertySheet' cellspacing='6'><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsNumDay);
 	var segments = formatter.getSegments();
 	for (var s = 0; s < segments.length; s++) {
@@ -903,14 +903,14 @@ function(uid) {
 	var i = 0;
 
 	// start table
-	html[i++] = "<table class='ZRadioButtonTable'>";
+	html[i++] = "<table role='presentation' class='ZRadioButtonTable'>";
 	// every year on <month> <day>
 	html[i++] = "<tr><td><input checked value='1' type='radio' name='";
 	html[i++] = this._yearlyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._yearlyDefaultId;
 	html[i++] = "'></td><td>";
-	html[i++] = "<table class='ZPropertySheet' cellspacing='6'><tr>";
+	html[i++] = "<table role='presentation' class='ZPropertySheet' cellspacing='6'><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryDate);
 	var segments = formatter.getSegments();
 	for (var s = 0; s < segments.length; s++) {
@@ -945,7 +945,7 @@ function(uid) {
 	html[i++] = "' id='";
 	html[i++] = this._yearlyFieldRadioId;
 	html[i++] = "'></td><td>";
-	html[i++] = "<table class='ZPropertySheet' cellspacing='6'><tr>";
+	html[i++] = "<table role='presentation' class='ZPropertySheet' cellspacing='6'><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthNumDay);
 	var segments = formatter.getSegments();
 	for (var s = 0; s < segments.length; s++) {
@@ -992,7 +992,7 @@ function(uid) {
 	// create mini calendar button for end by field
 	var dateButtonListener = new AjxListener(this, this._endByButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
-	ZmCalendarApp.createMiniCalButton(this, this._endByButtonId, dateButtonListener, dateCalSelectionListener);
+	ZmCalendarApp.createMiniCalButton(this, this._endByButtonId, dateButtonListener, dateCalSelectionListener, ZmMsg.endDate);
 
 	// create all DwtInputField's
 	this._createInputs(uid);

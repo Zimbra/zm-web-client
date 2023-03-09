@@ -821,7 +821,8 @@ function(force, viewId, skipHistory) {
 	
 	if (noShow) {
 		if (goToApp) {
-			this._controller.activateApp(ZmApp.MAIL);
+			var app = appCtxt.getZimbraMail()._getDefaultStartAppName();
+			this._controller.activateApp(app);
 		}
 		return !noHide;
 	}

@@ -32,11 +32,11 @@
                                                         || (ua.isOsAndroid)
                                                         || (ua.isIos))}"/>
 <c:set var="totpAuthRequired" value="false"/>
-<c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
+<c:set var="trimmedUserName" value="${fn:trim(fn:escapeXml(param.username))}"/>
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
 <c:if test="${not empty param.username and not empty param.virtualacctdomain}">
 	<%--External login email address are mapped to internal virtual account--%>
-	<c:set var="trimmedUserName" value="${fn:replace(param.username,'@' ,'.')}@${param.virtualacctdomain}"/>
+	<c:set var="trimmedUserName" value="${fn:replace(fn:escapeXml(param.username),'@' ,'.')}@${param.virtualacctdomain}"/>
 </c:if>
 
 <c:if test="${not empty trimmedUserName}">

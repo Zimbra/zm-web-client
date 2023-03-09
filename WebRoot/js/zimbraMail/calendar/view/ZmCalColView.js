@@ -314,7 +314,7 @@ function() {
 		if (appCtxt.multiAccounts) {
 			var acct = cal.getAccount();
 			div.innerHTML = [
-				"<center><table border=0><tr><td>",
+				"<center><table role='presentation' border=0><tr><td>",
 				calName,
 				"</td><td>[",
 				"<td>",
@@ -828,7 +828,7 @@ function(html) {
 	var date = new Date();
 	date.setHours(0, 0, 0, 0);
     var timeTDWidth = ZmCalColView._HOURS_DIV_WIDTH - (this._fbBarEnabled ? ZmCalColView._FBBAR_DIV_WIDTH : 0 );
-    html.append("<table class=calendar_grid_day_table>");
+    html.append("<table role='presentation' class=calendar_grid_day_table>");
 	for (var h=0; h < 25; h++) {
 		html.append("<tr><td class=calendar_grid_body_time_td style='height:",
 		ZmCalColView._HOUR_HEIGHT ,"px; width:", timeTDWidth, "px'><div id='"+this._hourColDivId+"_"+h+"' class=calendar_grid_body_time_text>");
@@ -2031,7 +2031,7 @@ function(i) {
 	if (!data instanceof Object) return null;
 
 	var html = new AjxBuffer();
-	html.append("<table cellpadding=2 cellspacing=0 border=0>");
+	html.append("<table role='presentation' cellpadding=2 cellspacing=0 border=0>");
 	var checkedCals = this._controller.getCheckedCalendarFolderIds();
 	for (var i = 0; i < checkedCals.length; i++) {
 		var fid = checkedCals[i];

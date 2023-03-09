@@ -68,13 +68,13 @@ ZmExportView = function(params) {
 			{ id: "startDateField", type: "DwtInputField", visible: "get('ADVANCED')", onblur: AjxCallback.simpleClosure(this._dateFieldChangeListener, this, true),
 				value: isExportPeriodLimited ? today : null
 			},
-			{ id :"startMiniCalBtn", type: "DwtButton", visible: "get('ADVANCED')",
+			{ id :"startMiniCalBtn", type: "DwtButton", visible: "get('ADVANCED')", ariaLabel: ZmMsg.startDate,
 				menu: {type: "DwtCalendar", id: "startMiniCal", onselect: new AjxListener(this, this._dateCalSelectionListener, [true])}
 			},
 			{ id: "endDateField", type: "DwtInputField", visible: "get('ADVANCED')", onblur: AjxCallback.simpleClosure(this._dateFieldChangeListener, this, false),
 				value: isExportPeriodLimited ? today : null
 			},
-			{ id :"endMiniCalBtn", type: "DwtButton", visible: "get('ADVANCED')",
+			{ id :"endMiniCalBtn", type: "DwtButton", visible: "get('ADVANCED')", ariaLabel: ZmMsg.endDate,
 				menu: {type: "DwtCalendar", id: "endMiniCal", onselect: new AjxListener(this, this._dateCalSelectionListener, [false])}
 			},
 			{ id: "SKIP_META", type: "DwtCheckbox", label: ZmMsg.exportSkipMeta,

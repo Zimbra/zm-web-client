@@ -79,10 +79,10 @@
 </rest:handleError>
 
 <rest:view title="${not empty requestScope.zimbra_target_item_name ? requestScope.zimbra_target_item_name : requestScope.zimbra_target_account_name}: ${pageTitle}" rssfeed="${true}">
-    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
             <td style='padding:20px'>
-                <table width="100%" style="height:100%;" cellpadding="0" cellspacing="0" border="0">
+                <table role="presentation" width="100%" style="height:100%;" cellpadding="0" cellspacing="0" border="0">
                     <c:if test="${param.notoolbar ne '1'}">
                         <tr>
                             <td class='TbTop'>

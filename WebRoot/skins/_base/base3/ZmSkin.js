@@ -34,6 +34,7 @@ ZmSkin.hints = {
 	// skin regions
 	skin:		  	{ containers: "skin_outer" },
 	banner:			{ position:"static", url: "@LogoURL@"},		// == "logo"
+	favicon:		{ dir: "@FaviconDir@"},
 	userInfo:		{ position:"static"},
 	search:		  	{ position:"static" },
 	quota:		  	{ position:"static" },

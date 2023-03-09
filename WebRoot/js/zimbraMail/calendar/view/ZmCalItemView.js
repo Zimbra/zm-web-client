@@ -484,8 +484,7 @@ function(calItem) {
 	var isAllDay = calItem.isAllDayEvent();
 	var isMultiDay = calItem.isMultiDay();
 	if (isAllDay && isMultiDay) {
-		var endDate = new Date(ed.getTime());
-		ed.setDate(endDate.getDate()-1);
+		ed.setDate(calItem.endDate.getDate());
 	}
 
 	var pattern = isAllDay ?

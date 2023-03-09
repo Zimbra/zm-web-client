@@ -278,3 +278,14 @@
         </tbody>
     </table>
 </template>
+
+<template id='briefcase.Briefcase#sharedFileView'>
+    <table>
+        <tr>
+            <td><$= ZmMsg.sharedFileAccess $></td>
+        </tr>
+        <tr>
+            <td><button id="${id}" class="ZmSharedFilePreview"><$= ZmMsg.sharedFileRemove $></button></td>
+        </tr>
+    </table>
+</template>

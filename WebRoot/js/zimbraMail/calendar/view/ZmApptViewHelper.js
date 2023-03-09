@@ -219,10 +219,10 @@ function(date, list, controller, noheader, emptyMsg, isMinical, getSimpleToolTip
 	
 	html.append("<div>");
 
-	html.append("<table cellpadding='0' cellspacing='0' border='0'>");
+	html.append("<table role='presentation' cellpadding='0' cellspacing='0' border='0'>");
 	if (!noheader) html.append("<tr><td><div class='calendar_tooltip_month_day_label'>", title, "</div></td></tr>");
 	html.append("<tr><td>");
-	html.append("<table cellpadding='1' cellspacing='0' border='0'>");
+	html.append("<table role='presentation' cellpadding='1' cellspacing='0' border='0'>");
 	
 	var size = list ? list.size() : 0;
 
@@ -816,7 +816,7 @@ function(calItem, attach, hasCheckbox, getLinkIdCallback) {
 	var i = 0;
 
 	// start building html for this attachment
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
+	html[i++] = "<table role='presentation' border=0 cellpadding=0 cellspacing=0><tr>";
 	if (hasCheckbox) {
 		html[i++] = "<td width=1%><input type='checkbox' checked value='";
 		html[i++] = attach.part;

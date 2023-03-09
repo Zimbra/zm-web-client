@@ -283,7 +283,7 @@ function(okCallback, cancelCallback) {
 		if (!this._saveToSentMessage) {
 			var html = [];
 			var i = 0;
-			html[i++] = "<table cellspacing=0 cellpadding=0 border=0><tr><td valign='top'>";
+			html[i++] = "<table role='presentation' cellspacing=0 cellpadding=0 border=0><tr><td valign='top'>";
 			html[i++] = AjxImg.getImageHtml("Warning_32");
 			html[i++] = "</td><td class='DwtMsgArea'>";
 			html[i++] = ZmMsg.filterOutgoingNoSaveToSentWarning;

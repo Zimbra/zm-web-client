@@ -558,7 +558,7 @@ ZmPrefZimletListView.prototype._getCellId = function(item, field, params) {
 ZmPrefZimletListView.prototype._getHeaderList =
 function() {
 	var hlist = [
-		(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_ACTIVE, text:ZmMsg.active, width:ZmMsg.COLUMN_WIDTH_ACTIVE})),
+		(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_ACTIVE, text:ZmMsg.activeInZimletsListHeader, width:ZmMsg.COLUMN_WIDTH_ACTIVE})),
         (new DwtListHeaderItem({field:ZmPrefZimletListView.COL_NAME, text:ZmMsg.name, width:ZmMsg.COLUMN_WIDTH_FOLDER_DLV})),    
 		(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_DESC, text:ZmMsg.description}))
 	];

@@ -109,9 +109,11 @@ function(rule, editMode, referenceRule, accountName, outgoing) {
 	var nameField = Dwt.byId(this._nameInputId);
 	var name = rule ? rule.name : null;
 	nameField.value = name || "";
+	nameField.setAttribute('aria-label', ZmMsg.filterName);
 
 	var activeField = Dwt.byId(this._activeCheckboxId);
 	activeField.checked = (!rule || rule.active);
+	activeField.setAttribute('aria-label', ZmMsg.active);
 	Dwt.setHandler(activeField, DwtEvent.ONCHANGE, AjxCallback.simpleClosure(this._activeChangeListener, this));
 
 	var stopField = Dwt.byId(this._stopCheckboxId);
@@ -203,6 +205,14 @@ function(parent, segment, i) {
 			// TODO: guard against badly specified message
 			select.addOption(formats[i].toPattern(), i == 0, values[i]);
 		};
+
+		var setAriaLabel = function() {
+			select.setAriaLabel(select._selectedValue === ZmFilterRule.GROUP_ANY ? ZmMsg.anyConditionMet : ZmMsg.allConditionsMet);
+		};
+
+		setAriaLabel();
+		select.addChangeListener(setAriaLabel);
+
 		return select;
 	}
 };
@@ -270,6 +280,7 @@ function() {
 ZmFilterRuleDialog.prototype._renderTable =
 function(rule, isCondition, tableId, rowData, tabGroup) {
 	var table = Dwt.byId(tableId);
+	table.setAttribute('role', 'presentation');
 	var row;
 	for (var i in rowData) {
 		var data = rowData[i];
@@ -351,7 +362,7 @@ function(data, test, isCondition, rowId) {
 			stopField.checked = true;
 			return;
 		}
-		html[i++] = "<td><table class='filterActions'><tr>";
+		html[i++] = "<td role='none'><table role='presentation' class='filterActions'><tr>";
 		if (conf) {
 			var options = this._outgoing ? ZmFilterRule.ACTIONS_OUTGOING_LIST : ZmFilterRule.ACTIONS_LIST;
 			html[i++] = this._createRowComponent(false, "name", options, data, test, rowId);
@@ -365,14 +376,14 @@ function(data, test, isCondition, rowId) {
 				var maxBodySize = data.maxBodySize;
 				var subject = data.su;
 
-				html[i++] = "<td><table>";
+				html[i++] = "<td><table role='presentation'>";
 				html[i++] = "<tr><td>" + ZmMsg.actionNotifyReadOnlyMsg + "</td></tr>";
 				html[i++] = "<tr><td>" + ZmMsg.emailLabel + " " + email + " | " + subject + " | " + ZmMsg.maxBodySize + ": " + maxBodySize + "</td><tr>";
 				html[i++] = "<tr><td style='max-width:100px'>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
 			}
 			else if (actionId == ZmFilterRule.A_REPLY && data) {
 				var content = AjxUtil.isArray(data.content) ? data.content[0]._content : "";
-				html[i++] = "<td><table><tr><td>" + ZmMsg.actionReplyReadOnlyMsg + "</td></tr>";
+				html[i++] = "<td><table role='presentation'><tr><td>" + ZmMsg.actionReplyReadOnlyMsg + "</td></tr>";
 				html[i++] = "<tr><td style='max-width:100px'>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
 			}
 			this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
@@ -560,6 +571,11 @@ function(conf, field, options, rowData, testType, rowId) {
 		if (isMainSelect) {
 			select.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 			select.addChangeListener(this._rowChangeLstnr);
+			if (field === "subject") {
+				select.setAriaLabel(ZmMsg.header);
+			} else if (field === "name") {
+				select.setAriaLabel(ZmMsg.action);
+			}
 		} 
 		else if (field == "ops") {
 			if (testType == ZmFilterRule.TEST_HEADER) {
@@ -569,6 +585,7 @@ function(conf, field, options, rowData, testType, rowId) {
 			else if (testType == ZmFilterRule.TEST_ADDRBOOK || testType == ZmFilterRule.TEST_ME) {
 				select.addChangeListener(this._addrBookChangeLstnr);
 			}
+			select.setAriaLabel(ZmMsg.condition);
 		}
 		else if (field == "value") {
 			if (testType == ZmFilterRule.TEST_ADDRESS || testType == ZmFilterRule.TEST_ME)
@@ -578,6 +595,7 @@ function(conf, field, options, rowData, testType, rowId) {
 			else if (testType == ZmFilterRule.TEST_CONVERSATIONS || testType == ZmFilterRule.TEST_LIST  ||  testType == ZmFilterRule.TEST_BULK || testType == ZmFilterRule.TEST_IMPORTANCE || testType == ZmFilterRule.TEST_FLAGGED) {
 				select.addChangeListener(this._importanceChangeLstnr);
 			}
+			select.setAriaLabel(ZmMsg.value);
 		}
 		else if (field == "valueMod"){
 			if (testType == ZmFilterRule.TEST_FLAGGED && (rowData.flagName == ZmFilterRule.READ || rowData.flagName == ZmFilterRule.PRIORITY)) {
@@ -588,6 +606,10 @@ function(conf, field, options, rowData, testType, rowId) {
 			else if (testType == ZmFilterRule.TEST_CONVERSATIONS || testType == ZmFilterRule.TEST_LIST ||  testType == ZmFilterRule.TEST_BULK || testType == ZmFilterRule.TEST_FLAGGED) {
 				select.setVisibility(false);
 			}
+			select.setAriaLabel(ZmMsg.valueType);
+		}
+		else if (field === "name") {
+			select.setAriaLabel(ZmMsg.action);
 		}
 		
 		for (var i = 0; i < options.length; i++) {
@@ -673,7 +695,7 @@ function(conf, field, options, rowData, testType, rowId) {
 		tabGroup.addMember(button.getTabGroupMember());
 	}
 
-	return "<td id='" + id + "'></td>";
+	return "<td role='none' id='" + id + "'></td>";
 };
 
 ZmFilterRuleDialog.prototype._getDataValue =
@@ -953,7 +975,7 @@ function(rowId, isCondition) {
 	var tabGroup = this._getCurrentTabScope();
 	var html = [];
 	var j = 0;
-	html[j++] = "<td width='1%'><table class='FilterAddRemoveButtons'><tr>";
+	html[j++] = "<td width='1%'><table role='presentation' class='FilterAddRemoveButtons'><tr>";
 	var buttons = ["Plus", "Minus"];
 	for (var i = 0; i < buttons.length; i++) {
 		var b = buttons[i];
@@ -963,6 +985,7 @@ function(rowId, isCondition) {
 		button.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 		button.setData(ZmFilterRuleDialog.DO_ADD, (b == "Plus"));
 		button.addSelectionListener(this._plusMinusLstnr);
+		button.setAriaLabel(b === "Plus" ? ZmMsg.addFilterRule : ZmMsg.removeFilterRule);
 		var id = Dwt.getNextId("TEST_");
 		this._inputs[rowId][b] = {id: id, dwtObj: button};
 		html[j++] = "<td id='";

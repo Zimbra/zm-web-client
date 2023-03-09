@@ -68,7 +68,7 @@ function(list) {
 	var idx = 0;
 	var size = list.size();
 
-	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+	html[idx++] = "<table role='presentation' cellpadding=0 cellspacing=0 border=0 width=100%>";
 	for (var i = 0; i < size; i++) {
 		var appt = list.get(i);
 		var uid = appt.getUniqueId(true);
