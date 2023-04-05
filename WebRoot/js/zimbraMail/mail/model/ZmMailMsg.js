@@ -1489,7 +1489,21 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 		var senderEmail = aName;
 		// When primary account is selected in From field.
 		if (!isDraft && this.identity && this.identity.sendFromAddress) {
-			senderEmail = this.identity.sendFromAddress;
+			var delegatedRights = appCtxt.sendAsEmails.concat(appCtxt.sendOboEmails);
+			var isDelegated = false;
+			for (var i = 0; i < delegatedRights.length; i++) {
+				if (delegatedRights[i].isDL) {
+					continue;
+				}
+				if (delegatedRights[i].addr === this.identity.sendFromAddress) {
+					isDelegated = true;
+					break;
+				}
+			}
+
+			if (isDelegated) {
+				senderEmail = this.identity.sendFromAddress;
+			}
 		}
 
 		var params = {
@@ -1577,9 +1591,26 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 
 			if (!isDraft) { // not saveDraftRequest 
 				var did = this.nId || this.id; // set draft id
-				// When On behalf of account is set as Primary account and it has been selected as From field
+				var isDelegated = false;
+
+				if (!doQualifyIds && this.identity && this.identity.sendFromAddress)
+				{
+					var delegatedRights = appCtxt.sendAsEmails.concat(appCtxt.sendOboEmails);
+
+					for (var i = 0; i < delegatedRights.length; i++) {
+						if (delegatedRights[i].isDL) {
+							continue;
+						}
+						if (delegatedRights[i].addr === this.identity.sendFromAddress) {
+							isDelegated = true;
+							break;
+						}
+					}
+				}
+
+				// When delegated account is selected in From field
 				// then set did as <account identity>:<draft id> such that server delete the message's draft on message sent.
-				if (doQualifyIds || (this.identity && this.identity.sendFromAddressType === ZmSetting.SEND_ON_BEHALF_OF)) {
+				if (doQualifyIds || isDelegated) {
 					did = ZmOrganizer.getSystemId(did, mainAccount, true);
 				}
 				msgNode.did = did;
