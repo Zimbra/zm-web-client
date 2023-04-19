@@ -55,7 +55,7 @@
 </head>
 <body>
 
-<div class="LoginScreen">
+<div id="modifiedLogin" class="LoginScreen">
 		<div class="modernCenter">
 			<div class="modernContentBox">
 			<div class="extuserprovLogo"><a href="<fmt:message key="splashScreenCompanyURL" />" id="bannerLink" target="_new">
