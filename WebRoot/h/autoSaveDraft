@@ -55,7 +55,7 @@ function init()
 </head>
 
 <body onload="init();">
-<input name="draftId" id="draftId" value="${requestScope.draftid}" type="hidden"/>
+<input name="draftId" id="draftId" value="${zm:cook(requestScope.draftid)}" type="hidden"/>
 <div id="appstatuscontainer">
     <app:appStatus/>
 </div>
