@@ -699,14 +699,7 @@ ZmController.prototype._handleException = function(ex, continuation) {
 			ZmController.handleScriptError(ex);
 		}
         else {
-            var msg;
-
-            if (continuation && continuation.restUri && continuation.restUri.indexOf('zimbraim') !== -1) {
-                msg = ZmMsg.chatXMPPError;
-            }
-            else {
-                msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg || ex.message;
-            }
+            var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg || ex.message;
 
 			this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
 		}
