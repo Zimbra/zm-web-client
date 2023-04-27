@@ -711,7 +711,6 @@ ZmId.APP_SEARCH			= "Search";
 ZmId.APP_SOCIAL			= "Social";
 ZmId.APP_TASKS			= "Tasks";
 ZmId.APP_VOICE			= "Voice";
-ZmId.APP_CHAT           = "Chat";
 
 // views - often used as context for ID
 ZmId.VIEW_ACCOUNT				= "ACCT";
@@ -781,7 +780,6 @@ ZmId.ITEM_ATT			= "ATT";
 ZmId.ITEM_BRIEFCASE		= "BRIEFCASE_ITEM";
 ZmId.ITEM_BRIEFCASE_REV	= "BRIEFCASE_REVISION";
 ZmId.ITEM_CALL			= "CALL";
-ZmId.ITEM_CHAT			= "CHAT";
 ZmId.ITEM_CONTACT		= "CONTACT";
 ZmId.ITEM_CONV			= "CONV";
 ZmId.ITEM_DATA_SOURCE	= "DATA_SOURCE";

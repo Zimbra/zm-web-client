@@ -141,7 +141,7 @@ ZmOrganizer.ID_SPAM				= 4;
 ZmOrganizer.ID_ADDRBOOK			= 7;
 ZmOrganizer.ID_CALENDAR			= 10;
 ZmOrganizer.ID_AUTO_ADDED 		= 13;
-ZmOrganizer.ID_CHATS			= 14;
+//ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;
 ZmOrganizer.ID_BRIEFCASE		= 16;
 ZmOrganizer.ID_ALL_MAILBOXES	= 249; 
@@ -1367,7 +1367,6 @@ function(doRecursive, batchCmd, callback, timeout, errorCallback, noBusyOverlay)
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
 					 (this.nId == ZmFolder.ID_SPAM ||
 					  this.nId == ZmFolder.ID_TRASH ||
-					  this.nId == ZmFolder.ID_CHATS ||
 					  this.nId == ZmOrganizer.ID_SYNC_FAILURES));
 
 	// make sure we're not emptying a system object (unless it's SPAM/TRASH/SYNCFAILURES)

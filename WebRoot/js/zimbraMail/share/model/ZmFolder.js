@@ -89,7 +89,6 @@ ZmFolder.ID_TAGS	 							= 8;
 ZmFolder.ID_TASKS								= ZmOrganizer.ID_TASKS;
 ZmFolder.ID_SYNC_FAILURES						= ZmOrganizer.ID_SYNC_FAILURES;
 ZmFolder.ID_OUTBOX	 							= ZmOrganizer.ID_OUTBOX;
-ZmFolder.ID_CHATS	 							= ZmOrganizer.ID_CHATS;
 ZmFolder.ID_ATTACHMENTS                         = ZmOrganizer.ID_ATTACHMENTS;
 ZmFolder.ID_DLS									= ZmOrganizer.ID_DLS;
 
@@ -106,7 +105,6 @@ ZmFolder.MSG_KEY[ZmFolder.ID_TASKS]				= "tasks";
 ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]				= "tags";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CALENDAR]		= "calendar";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_BRIEFCASE]		= "briefcase";
-ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]			= "chats";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_ALL_MAILBOXES]	= "allMailboxes";
 ZmFolder.MSG_KEY[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.MSG_KEY[ZmFolder.ID_SYNC_FAILURES]		= "errorReports";
@@ -121,7 +119,6 @@ ZmFolder.ICON[ZmFolder.ID_SENT]					= "SentFolder";
 ZmFolder.ICON[ZmFolder.ID_SYNC_FAILURES]		= "SendReceive";
 ZmFolder.ICON[ZmFolder.ID_OUTBOX]				= "Outbox";
 ZmFolder.ICON[ZmFolder.ID_DRAFTS]				= "DraftFolder";
-ZmFolder.ICON[ZmFolder.ID_CHATS]				= "ChatFolder";
 ZmFolder.ICON[ZmFolder.ID_LOAD_FOLDERS]			= "Plus";
 ZmFolder.ICON[ZmFolder.ID_ATTACHMENTS]          = "Attachment";
 
@@ -138,7 +135,6 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]		= "contacts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TASKS]			= "tasks";
 ZmFolder.QUERY_NAME[ZmFolder.ID_AUTO_ADDED]		= "Emailed Contacts";
 ZmFolder.QUERY_NAME[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
-ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= "Error Reports";
 
 ZmFolder.QUERY_ID = AjxUtil.valueHash(ZmFolder.QUERY_NAME);
@@ -146,14 +142,13 @@ ZmFolder.QUERY_ID = AjxUtil.valueHash(ZmFolder.QUERY_NAME);
 // order within the overview panel
 ZmFolder.SORT_ORDER = {};
 ZmFolder.SORT_ORDER[ZmFolder.ID_INBOX]			= 1;
-ZmFolder.SORT_ORDER[ZmFolder.ID_CHATS]			= 2;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]			= 3;
-ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]			= 4;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]			= 5;
-ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 6;
-ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]			= 7;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SYNC_FAILURES]	= 8;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 9;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]			= 2;
+ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]			= 3;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]			= 4;
+ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 5;
+ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]			= 6;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SYNC_FAILURES]	= 7;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 8;
 ZmFolder.SORT_ORDER[ZmFolder.ID_ATTACHMENTS]    = 99; // Last
 
 // character codes for "tcon" attribute in conv action request, which controls
@@ -168,7 +163,6 @@ ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]			= "o";
 
 // folders that look like mail folders that we don't want to show
 ZmFolder.HIDE_ID = {};
-ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS]				= true;
 ZmFolder.HIDE_ID[ZmOrganizer.ID_NOTIFICATION_MP]	= true;
 
 // Hide folders migrated from Outlook mailbox
