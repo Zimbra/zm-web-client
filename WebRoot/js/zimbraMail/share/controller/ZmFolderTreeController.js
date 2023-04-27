@@ -132,10 +132,9 @@ function(parent, type, id) {
 		{
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		}
-		// "Empty" for Chats, Junk and Trash
+		// "Empty" for Junk and Trash
 		if (nId == ZmFolder.ID_SPAM  ||
-			nId == ZmFolder.ID_TRASH ||
-			nId == ZmFolder.ID_CHATS)
+			nId == ZmFolder.ID_TRASH)
 		{
 			if (nId == ZmFolder.ID_SPAM) {
 				emptyText = ZmMsg.emptyJunk;

@@ -285,18 +285,6 @@ function() {
 };
 
 /**
- * Returns the state of ZCS application if user is logged out in case of browser quit.
- * The public method is added to take appropriate action in the chat app if user session is ending.
- *
- *
- * @public
- */
-ZmZimbraMail.hasSessionEnded =
-    function() {
-        return ZmZimbraMail._endSessionDone;
-    };
-
-/**
  * Startup the mail controller.
  * 
  * <p>
@@ -575,11 +563,6 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
     if (!appCtxt.get(ZmSetting.SPAM_ENABLED)) {
         ZmFolder.HIDE_ID[ZmFolder.ID_SPAM] = true;
     }
-
-	// Chats hidden by default, check for override
-	if (appCtxt.get(ZmSetting.SHOW_CHATS_FOLDER)) {
-		delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
-	}
 };
 
 /**

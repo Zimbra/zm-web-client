@@ -117,8 +117,6 @@ function() {
 	this.getSetting(ZmSetting.SHORTCUTS).addChangeListener(listener);
 	this.getSetting(ZmSetting.CHILD_ACCTS_VISIBLE).addChangeListener(listener);
 	this.getSetting(ZmSetting.ATTACHMENTS_BLOCKED).addChangeListener(listener);
-	this.getSetting(ZmSetting.CHAT_PLAY_SOUND).addChangeListener(listener);
-	this.getSetting(ZmSetting.CHAT_ENABLED).addChangeListener(listener);
 	this.getSetting(ZmSetting.DISPLAY_TIME_IN_MAIL_LIST).addChangeListener(listener);
 
 
@@ -1084,11 +1082,6 @@ function() {
 	// zimbraFeatureAdminPreferencesEnabled set to FALSE.
 	this.registerSetting("MAIL_PREFERENCES_ENABLED",	    {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 
-	//chat settings
-	this.registerSetting("CHAT_PLAY_SOUND",					{name:"zimbraPrefChatPlaySound", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
-	this.registerSetting("CHAT_FEATURE_ENABLED",				{name:"zimbraFeatureChatEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
-	this.registerSetting("CHAT_ENABLED",				{name:"zimbraPrefChatEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
-
 	ZmApp.runAppFunction("registerSettings", this);
 };
 
@@ -1196,9 +1189,6 @@ function(ev) {
 	}
 	else if (appCtxt.isOffline && id === ZmSetting.OFFLINE_UPDATE_NOTIFY) {
 		appCtxt.getAppController()._offlineUpdateChannelPref(ev.source.getValue());
-	}
-    else if (id === ZmSetting.CHAT_ENABLED || id === ZmSetting.CHAT_PLAY_SOUND || (id === ZmSetting.CHAT_PLAY_SOUND && id === ZmSetting.CHAT_ENABLED)) {
-		this._showConfirmDialog(ZmMsg.chatFeatureChangeRestart, this._refreshBrowserCallback.bind(this));
 	}
 	else if (id === ZmSetting.DISPLAY_TIME_IN_MAIL_LIST) {
 		this._showConfirmDialog(value ? ZmMsg.timeInMailListChangeRestartShow : ZmMsg.timeInMailListChangeRestartHide, this._refreshBrowserCallback.bind(this));
