@@ -944,11 +944,9 @@
                 <property name='jam.template.dir' value='${build.template.dir}'/>
 
                 <!-- package template includes -->
-                <property name="jam.template.Admin.includes"            value="admin/**" />
                 <property name="jam.template.Ajax.includes"             value="dwt/**" />
                 <property name="jam.template.CalendarCore.includes"     value="calendar/**" />
                 <property name="jam.template.ContactsCore.includes"     value="abook/**" />
-                <property name="jam.template.IM.includes"               value="im/**" />
                 <property name="jam.template.ImportExport.includes"     value="data/**" />
                 <property name="jam.template.MailCore.includes"         value="mail/**" />
                 <property name="jam.template.PreferencesCore.includes"  value="prefs/**" />
@@ -956,7 +954,6 @@
                 <property name="jam.template.TasksCore.includes"        value="tasks/**" />
                 <property name="jam.template.Voicemail.includes"        value="voicemail/**" />
                 <property name="jam.template.Zimbra.includes"           value="zimbra/**" />
-                <property name="jam.template.Chat.includes"             value="chat/**" />
 
                 <!-- template fileset -->
                 <if><isset property="jam.template.${arg}.includes" />
