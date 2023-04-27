@@ -149,12 +149,7 @@ function(respEl) {
 			var type = types[i];
 			var data = respEl[ZmList.NODE[type]];
 
-			// A chat isa message. Futz with the types to deal with this.
-			// (Eventually we'll avoid this problem by displying chat history in im app.)
-			if (!data && (type == ZmItem.MSG)) {
-				data = respEl["chat"];
-			}
-			// Likewise, a Resource is a Contact. Futz with the types to deal with this.
+			// A Resource is a Contact. Futz with the types to deal with this.
 			if (!data && (type == ZmItem.RESOURCE)) {
 				data = respEl[ZmList.NODE[ZmItem.CONTACT]];
 			}
