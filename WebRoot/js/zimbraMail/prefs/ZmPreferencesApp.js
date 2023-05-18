@@ -535,13 +535,15 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		ZmPref.registerPrefSection(id, sections[id]);
 	}
 
-	ZmPref.registerPref("CLIENT_TYPE", {
-		displayName:		ZmMsg.clientType,
-		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		orientation:		ZmPref.ORIENT_VERTICAL,
-		displayOptions:     window.modernSupported ? [ZmMsg.clientAdvanced, ZmMsg.clientModern] : [ZmMsg.clientAdvanced],
-		options:            window.modernSupported ? [ZmSetting.CLIENT_ADVANCED, ZmSetting.CLIENT_MODERN] : [ZmSetting.CLIENT_ADVANCED]
-	});
+	if (appCtxt.get(ZmSetting.ENABLE_MODERN_CLIENT)) {
+		ZmPref.registerPref("CLIENT_TYPE", {
+			displayName:		ZmMsg.clientType,
+			displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+			orientation:		ZmPref.ORIENT_VERTICAL,
+			displayOptions:     [ZmMsg.clientAdvanced, ZmMsg.clientModern],
+			options:            [ZmSetting.CLIENT_ADVANCED, ZmSetting.CLIENT_MODERN]
+		});
+	}
 
 	ZmPref.registerPref("COMPOSE_AS_FORMAT", {
 		displayName:		ZmMsg.composeUsing,

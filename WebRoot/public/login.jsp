@@ -17,8 +17,8 @@
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
 <app:skinAndRedirect />
+<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 <c:if test="${zm:isDomainLoginPageEnabled()}">
-    <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
     <c:choose>
         <c:when test="${not empty domainInfo}">
             <c:set var="zimbraDomainLoginPagePath" value="${domainInfo.attrs.zimbraDomainLoginPagePath}" />
@@ -88,20 +88,8 @@
     pageContext.setAttribute("remoteAddr", remoteAddr);
 %>
 
-<%
-    // check if modern package exists
-    Boolean modernSupported = (Boolean) application.getAttribute("modernSupported");
-    if(modernSupported == null) {
-        try {
-            modernSupported = new java.io.File(application.getRealPath("/modern/index.html")).exists();
-        } catch (Exception ignored) {
-            // Just in case there's anException
-            modernSupported = true;
-        }
-        application.setAttribute("modernSupported", modernSupported);
-    }
-%>
-<c:set var="modernSupported" value="<%=modernSupported%>" />
+<c:set var="modernSupported" value="${domainInfo.attrs.zimbraModernWebClientEnabled}" />
+
 <c:if test="${ua.isModernIE}">
 	<c:set var="modernSupported" value="false" />
 </c:if>
@@ -120,7 +108,6 @@
 			</c:if>
 		</c:when>
 		<c:when test="${param.loginOp eq 'logout'}">
-			<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 			<c:set var="logoutRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLogoutURL}" />
 			<c:set var="skipLogoff" value="${domainInfo.attrs.zimbraWebClientSkipLogoff}" />
 			<c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLogoutURLAllowedUA)}"/>
@@ -365,7 +352,6 @@ if (application.getInitParameter("offlineMode") != null) {
 	</c:redirect>
 </c:if>
 
-<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 <c:if test="${((empty pageContext.request.queryString) or (fn:indexOf(pageContext.request.queryString,'customerDomain') == -1)) and (empty param.virtualacctdomain) and (empty virtualacctdomain) }">
 	<c:set var="domainLoginRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLoginURL}" />
 	<c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLoginURLAllowedUA)}"/>
