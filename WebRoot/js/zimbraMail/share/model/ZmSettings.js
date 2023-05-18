@@ -892,6 +892,8 @@ function() {
 	this.registerSetting("PUBLIC_URL",						{type:ZmSetting.T_CONFIG});
 	this.registerSetting("ADMIN_URL",						{type:ZmSetting.T_CONFIG});
 	this.registerSetting("DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE",		{type:ZmSetting.T_CONFIG});
+	this.registerSetting("ENABLE_MODERN_CLIENT",			{name:"zimbraModernWebClientEnabled", type:ZmSetting.T_DOMAIN, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+
 
 	// COS SETTINGS - APPS
 	this.registerSetting("BRIEFCASE_ENABLED",				{name:"zimbraFeatureBriefcasesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});

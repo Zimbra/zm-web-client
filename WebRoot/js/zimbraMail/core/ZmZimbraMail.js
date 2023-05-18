@@ -2405,8 +2405,10 @@ function(parent, parentElement, adminUrl) {
 		    mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.adminLinkCallback, adminUrl));
 		}
 
-		mi = menu.createMenuItem("modernClientLink", {text: ZmMsg.modernClient});
-		mi.addSelectionListener(ZmZimbraMail.modernClientLinkCallback);	
+		if (appCtxt.get(ZmSetting.ENABLE_MODERN_CLIENT)) {
+			mi = menu.createMenuItem("modernClientLink", {text: ZmMsg.modernClient});
+			mi.addSelectionListener(ZmZimbraMail.modernClientLinkCallback);
+		}
 
 		menu.createSeparator();
 
