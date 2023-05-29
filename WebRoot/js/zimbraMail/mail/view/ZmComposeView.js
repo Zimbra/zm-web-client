@@ -198,6 +198,8 @@ function(params) {
 		}
 	}
 
+	appCtxt.notifyZimlets("onZmComposeView_set", [this]);
+
 	this._recipients.setup();
 
 	if (!ZmComposeController.IS_FORWARD[action]) {
