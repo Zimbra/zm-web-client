@@ -535,7 +535,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		ZmPref.registerPrefSection(id, sections[id]);
 	}
 
-	if (appCtxt.get(ZmSetting.ENABLE_MODERN_CLIENT)) {
+	if (appCtxt.get(ZmSetting.DISABLE_MODERN_CLIENT) !== true) {
 		ZmPref.registerPref("CLIENT_TYPE", {
 			displayName:		ZmMsg.clientType,
 			displayContainer:	ZmPref.TYPE_RADIO_GROUP,

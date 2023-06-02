@@ -24,7 +24,7 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField'><div id='${id}_PASSWORD' tabindex=0></div></td>
 					</tr>
 					<$ } $>
-					<$ if (data.isEnabled(ZmSetting.ENABLE_MODERN_CLIENT)) { $>
+					<$ if (!data.isEnabled(ZmSetting.DISABLE_MODERN_CLIENT)) { $>
 					<tr>
 						<td class='ZOptionsLabelTop'><$=ZmMsg.loginLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_CLIENT_TYPE' tabindex=0></div></td>

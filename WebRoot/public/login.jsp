@@ -88,7 +88,7 @@
     pageContext.setAttribute("remoteAddr", remoteAddr);
 %>
 
-<c:set var="modernSupported" value="${domainInfo.attrs.zimbraModernWebClientEnabled}" />
+<c:set var="modernSupported" value="${domainInfo.attrs.zimbraModernWebClientDisabled ne true}" />
 
 <c:if test="${ua.isModernIE}">
 	<c:set var="modernSupported" value="false" />

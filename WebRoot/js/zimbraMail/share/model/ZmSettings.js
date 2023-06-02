@@ -892,7 +892,7 @@ function() {
 	this.registerSetting("PUBLIC_URL",						{type:ZmSetting.T_CONFIG});
 	this.registerSetting("ADMIN_URL",						{type:ZmSetting.T_CONFIG});
 	this.registerSetting("DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE",		{type:ZmSetting.T_CONFIG});
-	this.registerSetting("ENABLE_MODERN_CLIENT",			{name:"zimbraModernWebClientEnabled", type:ZmSetting.T_DOMAIN, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	this.registerSetting("DISABLE_MODERN_CLIENT",			{name:"zimbraModernWebClientDisabled", type:ZmSetting.T_DOMAIN, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
 
 	// COS SETTINGS - APPS
