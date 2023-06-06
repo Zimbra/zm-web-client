@@ -180,6 +180,8 @@ function() {
         this.setSchedulerVisibility(currAcct.isZimbraAccount && !currAcct.isMain);
     }
 
+    appCtxt.notifyZimlets("onZmApptEditView_show", [this]);
+
     this._editViewInitialized = true;
     if(this._expandInlineScheduler) {
         this._pickAttendeesInfo(ZmCalBaseItem.PERSON);
