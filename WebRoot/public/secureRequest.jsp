@@ -135,8 +135,7 @@ else {
 //							"<account xmlns=\"\" by=\"name\">user1@localhost</account>"+
 //							"<format xmlns=\"\" type=\"js\"/>"+
 //							"<authToken xmlns=\"\">"+
-//								"0_1e28187778023ad967b28c08038f00e7931d7eff_69643d33363a66643764306462372d636331302d3463303" +
-//								"62d393833652d6630386135313331383336373b6578703d31333a313232363031353939303436303b747970653d363a7a696d6272613b" +
+//								"<auth_token_value>"+
 //							"</authToken>"+
 //						"</context>"+
 //					"</soap:Header>"+
