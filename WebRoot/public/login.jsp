@@ -592,7 +592,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                             int zimbraPasswordMinPunctuationChars = 0;
                                             int zimbraPasswordMinNumericChars = 0;
                                             int zimbraPasswordMinDigitsOrPuncs = 0;
-                                            boolean zimbraPasswordAllowUsername = false;
+                                            boolean zimbraFeatureAllowUsernameInPassword = true;
                                             String zimbraPasswordAllowedChars = null;
                                             String zimbraPasswordAllowedPunctuationChars = null;
 
@@ -606,7 +606,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                                 zimbraPasswordMinPunctuationChars = acct.getPasswordMinPunctuationChars();
                                                 zimbraPasswordMinNumericChars = acct.getPasswordMinNumericChars();
                                                 zimbraPasswordMinDigitsOrPuncs = acct.getPasswordMinDigitsOrPuncs();
-                                                zimbraPasswordAllowUsername =  acct.getAllowUsernameWithinPassword();
+                                                zimbraFeatureAllowUsernameInPassword =  acct.isFeatureAllowUsernameInPassword();
                                                 zimbraPasswordAllowedChars = acct.getPasswordAllowedChars();
                                                 zimbraPasswordAllowedPunctuationChars = acct.getPasswordAllowedPunctuationChars();
                                             }
@@ -616,7 +616,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                             application.setAttribute("zimbraPasswordMinPunctuationChars", zimbraPasswordMinPunctuationChars);
                                             application.setAttribute("zimbraPasswordMinNumericChars", zimbraPasswordMinNumericChars);
                                             application.setAttribute("zimbraPasswordMinDigitsOrPuncs", zimbraPasswordMinDigitsOrPuncs);
-                                            application.setAttribute("zimbraPasswordAllowUsername", zimbraPasswordAllowUsername);
+                                            application.setAttribute("zimbraFeatureAllowUsernameInPassword", zimbraFeatureAllowUsernameInPassword);
                                             application.setAttribute("zimbraPasswordAllowedChars", zimbraPasswordAllowedChars);
                                             application.setAttribute("zimbraPasswordAllowedPunctuationChars", zimbraPasswordAllowedPunctuationChars);
                                         %>
@@ -626,7 +626,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                         <c:set var="zimbraPasswordMinPunctuationChars" value="<%=zimbraPasswordMinPunctuationChars%>"/>
                                         <c:set var="zimbraPasswordMinNumericChars" value="<%=zimbraPasswordMinNumericChars%>"/>
                                         <c:set var="zimbraPasswordMinDigitsOrPuncs" value="<%=zimbraPasswordMinDigitsOrPuncs%>"/>
-                                        <c:set var="zimbraPasswordAllowUsername" value="<%=zimbraPasswordAllowUsername%>"/>
+                                        <c:set var="zimbraFeatureAllowUsernameInPassword" value="<%=zimbraFeatureAllowUsernameInPassword%>"/>
                                         <c:set var="zimbraPasswordAllowedChars" value="<%=zimbraPasswordAllowedChars%>"/>
                                         <c:set var="zimbraPasswordAllowedPunctuationChars" value="<%=zimbraPasswordAllowedChars%>"/>
                                         <label for="newPassword" class="zLoginFieldLabel"><fmt:message key="passwordRecoveryResetNewLabel"/></label>
@@ -691,7 +691,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                                     </fmt:message>
                                                 </li>
                                             </c:if>
-                                            <c:if test="${zm:boolean(!zimbraPasswordAllowUsername)}">
+                                            <c:if test="${!zm:boolean(zimbraFeatureAllowUsernameInPassword)}">
                                                 <li>
                                                     <img src="/img/zimbra/ImgCloseGrayModern.png" id="allowUsernameCloseImg" style="display: inline;"/>
                                                     <img src="/img/zimbra/ImgCheckModern.png" id="allowUsernameCheckImg" style="display: none;"/>
@@ -946,7 +946,7 @@ if (${zimbraPasswordMinDigitsOrPuncs}) {
     enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinDigitsOrPuncs"}));
 }
 
-if (${!zimbraPasswordAllowUsername}) {
+if (${!zimbraFeatureAllowUsernameInPassword}) {
     enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordAllowUsername"}));
 }
 
@@ -1098,7 +1098,7 @@ function handleNewPasswordChange() {
         }
     }
     
-    if (${!zimbraPasswordAllowUsername}) {
+    if (${!zimbraFeatureAllowUsernameInPassword}) {
         if (!currentValue.includes("${trimmedUserName.split('@')[0]}")) {
             matchedRule.push({type : "zimbraPasswordAllowUsername"});
         }
