@@ -100,8 +100,8 @@ function(id, params, elementId) {
 };
 
 ZmActionMenu.prototype.addOp =
-function(id) {
-	ZmOperation.addOperation(this, id, this._menuItems);
+function(id, index) {
+	ZmOperation.addOperation(this, id, this._menuItems, index);
 };
 
 ZmActionMenu.prototype.removeOp =

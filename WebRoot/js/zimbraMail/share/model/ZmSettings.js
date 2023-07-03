@@ -992,6 +992,8 @@ function() {
 	this.registerSetting("RESET_PASSWORD_RECOVERY_CODE_EXPIRY",				{name:"zimbraResetPasswordRecoveryCodeExpiry", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
 	this.registerSetting("PASSWORD_RECOVERY_CODE_VALIDITY",				{name:"zimbraRecoveryAccountCodeValidity", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
 	this.registerSetting("PASSWORD_RECOVERY_SUSPENSION_TIME",				{name:"zimbraFeatureResetPasswordSuspensionTime", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
+	this.registerSetting("MAIL_RECALL_ENABLED", 			{name:"zimbraFeatureMailRecallEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("MAIL_RECALL_TIME",				{name:"zimbraFeatureMailRecallTime", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:30});
 
 	// user metadata (included with COS since the user can't change them)
 	this.registerSetting("LICENSE_STATUS",					{type:ZmSetting.T_COS, defaultValue:ZmSetting.LICENSE_GOOD});
