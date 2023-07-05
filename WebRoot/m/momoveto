@@ -37,7 +37,7 @@
     <input name="doMessageAction" value="1" type="hidden"/>
     <input name="anAction" id="mvTo" value="" type="hidden"/>
     <input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>
-    <input name="st" type="hidden" value="${param.st}"/>    
+    <input name="st" type="hidden" value="${fn:escapeXml(param.st)}"/>
     
     <div class="Stripes cmp_container composeFields">
   
