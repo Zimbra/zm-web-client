@@ -64,7 +64,7 @@
 	try {
 		productHelpSupported = new java.io.File(application.getRealPath("/help")).exists();
 	} catch (Exception ignored) {
-		// Just in case there's anException, catch it.
+		// Just in case there's an exception, catch it.
 	}
 	application.setAttribute("productHelpSupported", productHelpSupported);
 %>
