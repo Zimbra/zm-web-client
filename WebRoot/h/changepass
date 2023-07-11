@@ -63,7 +63,7 @@
     <c:set var="zimbraPasswordMinNumericChars" value="${mailbox.accountInfo.attrs.zimbraPasswordMinNumericChars[0]}"/>
     <c:set var="zimbraPasswordMinDigitsOrPuncs" value="${mailbox.accountInfo.attrs.zimbraPasswordMinDigitsOrPuncs[0]}"/>
     <c:set var="zimbraPasswordAllowedChars" value="${mailbox.accountInfo.attrs.zimbraPasswordAllowedChars[0]}"/>
-    <c:set var="zimbraFeatureAllowUsernameInPassword" value="${not empty mailbox.accountInfo.attrs.zimbraFeatureAllowUsernameInPassword[0] ? zm:boolean(mailbox.accountInfo.attrs.zimbraFeatureAllowUsernameInPassword[0]) : false}"/>
+    <c:set var="zimbraFeatureAllowUsernameInPassword" value="${not empty mailbox.accountInfo.attrs.zimbraFeatureAllowUsernameInPassword[0] ? zm:boolean(mailbox.accountInfo.attrs.zimbraFeatureAllowUsernameInPassword[0]) : TRUE}"/>
     <c:set var="zimbraPasswordAllowedPunctuationChars" value="${mailbox.accountInfo.attrs.zimbraPasswordAllowedPunctuationChars[0]}"/>
     <c:set var="zimbraPasswordEnforceHistory" value="${mailbox.accountInfo.attrs.zimbraPasswordEnforceHistory[0]}"/>
     <c:set var="zimbraPasswordBlockCommonEnabled" value="${not empty mailbox.accountInfo.attrs.zimbraPasswordBlockCommonEnabled[0] ? mailbox.accountInfo.attrs.zimbraPasswordBlockCommonEnabled[0] : FALSE}"/>
@@ -188,7 +188,7 @@
                                     </c:if>
                                     <c:if test="${!zm:boolean(zimbraFeatureAllowUsernameInPassword)}">
                                         <li>
-                                            <fmt:message key="zimbraFeatureAllowUsernameInPassword" var="allowUsernameMsg"></fmt:message>
+                                            <fmt:message key="zimbraPasswordAllowUsername" var="allowUsernameMsg"></fmt:message>
                                             <img src="/img/zimbra/ImgCloseGrayModern.png" id="allowUsernameCloseImg" style="display: inline;"/>
                                             <img src="/img/zimbra/ImgCheckModern.png" id="allowUsernameCheckImg" style="display: none;"/>
                                             ${allowUsernameMsg}
