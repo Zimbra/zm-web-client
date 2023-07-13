@@ -63,7 +63,7 @@
     <c:set var="zimbraPasswordMinNumericChars" value="${mailbox.accountInfo.attrs.zimbraPasswordMinNumericChars[0]}"/>
     <c:set var="zimbraPasswordMinDigitsOrPuncs" value="${mailbox.accountInfo.attrs.zimbraPasswordMinDigitsOrPuncs[0]}"/>
     <c:set var="zimbraPasswordAllowedChars" value="${mailbox.accountInfo.attrs.zimbraPasswordAllowedChars[0]}"/>
-    <c:set var="zimbraFeatureAllowUsernameInPassword" value="${not empty mailbox.accountInfo.attrs.zimbraFeatureAllowUsernameInPassword[0] ? zm:boolean(mailbox.accountInfo.attrs.zimbraFeatureAllowUsernameInPassword[0]) : TRUE}"/>
+    <c:set var="zimbraFeatureAllowUsernameInPassword" value="${not empty mailbox.accountInfo.attrs.zimbraFeatureAllowUsernameInPassword[0] ? mailbox.accountInfo.attrs.zimbraFeatureAllowUsernameInPassword[0] : TRUE}"/>
     <c:set var="zimbraPasswordAllowedPunctuationChars" value="${mailbox.accountInfo.attrs.zimbraPasswordAllowedPunctuationChars[0]}"/>
     <c:set var="zimbraPasswordEnforceHistory" value="${mailbox.accountInfo.attrs.zimbraPasswordEnforceHistory[0]}"/>
     <c:set var="zimbraPasswordBlockCommonEnabled" value="${not empty mailbox.accountInfo.attrs.zimbraPasswordBlockCommonEnabled[0] ? mailbox.accountInfo.attrs.zimbraPasswordBlockCommonEnabled[0] : FALSE}"/>
@@ -562,7 +562,7 @@
                 }
             }
 
-            if (${!zimbraFeatureAllowUsernameInPassword}) {
+            if ("${zimbraFeatureAllowUsernameInPassword}" === "FALSE") {
                 var username = "${mailbox.name}".split("@")[0];
                 if (!currentValue.includes(username)) {
                     matchedLocalRule.push({type : "zimbraPasswordAllowUsername"});
