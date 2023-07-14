@@ -608,12 +608,7 @@ function(item, errorCode, error){
         }else{
             //Show Download Link
             var downloadLink = restUrl + (restUrl.match(/\?/) ? '&' : '?') + "disp=a";
-            var html = [
-                "<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;font-family: \'Helvetica Neue\',Helvetica,Arial,\'Liberation Sans\',sans-serif;'>",
-                    AjxMessageFormat.format(ZmMsg.previewDownloadLink, downloadLink),
-                "</div>"
-            ].join('');
-            this._iframePreview.setIframeContent(html);
+            this._renderPreviewLink(ZmMsg.previewDownloadLink, downloadLink);
         }
         
     }    
@@ -735,7 +730,7 @@ ZmPreviewView.prototype.set = function (item) {
 			restUrl += (restUrl.match(/\?/) ? "&" : "?") + "view=html";
 		}
 
-		this._iframePreview.setSrc(restUrl);
+		this._handleIframeContent(item, restUrl);
 		Dwt.setLoadedTime("ZmBriefcaseItem"); //iframe src set but item may not be downloaded by browser
 	}
 };
@@ -823,6 +818,26 @@ function(){
     }
 };
 
+
+ZmPreviewView.prototype._handleIframeContent =
+function(item, restUrl){
+	if (item.contentType === 'application/pdf') {
+		this._iframePreview.getIframe().setAttribute('sandbox', '');
+		this._renderPreviewLink(ZmMsg.previewNewTabLink, restUrl);
+	} else {
+		this._iframePreview.getIframe().removeAttribute('sandbox');
+		this._iframePreview.setSrc(restUrl);
+	}
+};
+
+ZmPreviewView.prototype._renderPreviewLink = 
+function(msg, link){
+	this._iframePreview.setIframeContent([
+		"<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;font-family: \'Helvetica Neue\',Helvetica,Arial,\'Liberation Sans\',sans-serif;'>",
+		AjxMessageFormat.format(msg, link),
+		"</div>"
+	].join(''))
+};
 
 ZmPreviewView.prototype._cleanup =
 function(){
