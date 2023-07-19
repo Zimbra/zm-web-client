@@ -58,6 +58,17 @@
 	// Prevent IE from ever going into compatibility/quirks mode.
 	response.setHeader("X-UA-Compatible", "IE=edge");
 %>
+<%
+    // check if help directory exists
+    boolean productHelpSupported = true;
+	try {
+		productHelpSupported = new java.io.File(application.getRealPath("/help")).exists();
+	} catch (Exception ignored) {
+		// Just in case there's an exception, catch it.
+	}
+	application.setAttribute("productHelpSupported", productHelpSupported);
+%>
+<c:set var="productHelpSupported" value="<%=productHelpSupported%>" />
 
 <!DOCTYPE html>
 <zm:getUserAgent var="ua" session="false"/>
@@ -233,6 +244,7 @@
 	window.csrfToken            = "${csrfToken}";
 	window.appLang              = "${lang}";
 	localStorage.setItem("csrfToken" , "${csrfToken}");
+	window.productHelpSupported = ${productHelpSupported};
 </script>
 <noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
 </head>
