@@ -2338,7 +2338,7 @@ function(parent, parentElement, adminUrl) {
 
 	menu.createSeparator();
 
-	if (supportedHelps.indexOf("productHelp") !== -1) {
+	if (window.productHelpSupported && supportedHelps.indexOf("productHelp") !== -1) {
 		mi = menu.createMenuItem("documentation", {text: ZmMsg.productHelp});
 		mi.addSelectionListener(helpListener);
 	}
