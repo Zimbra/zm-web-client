@@ -273,7 +273,7 @@ function(event) {
         if (this._tabViews.length > 2) {
             // More than two tabs, hide the retention tab, leave the toolbar intact
             tabBar.setVisible(true);
-			if(retentionTabButton) {
+            if (retentionTabButton) {
 				retentionTabButton.setVisible(false);
 			}
         } else {
@@ -452,9 +452,9 @@ function(view) {
 
 	//ZmFolderPropertyView handle things such as color and type. (in case you're searching for "color" and can't find in this file. I know I did)
     this.addTab(0, ZmFolderPropsDialog.TABKEY_PROPERTIES, new ZmFolderPropertyView(this, this._tabContainer));
-	if(appCtxt.get(ZmSetting.ENABLE_RETENTION_POLICY)) {
+    if (appCtxt.get(ZmSetting.ENABLE_RETENTION_POLICY)) {
 		this.addTab(1, ZmFolderPropsDialog.TABKEY_RETENTION,  new ZmFolderRetentionView(this, this._tabContainer));
-	}
+    }
 
 	// setup shares group
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
