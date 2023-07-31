@@ -793,7 +793,7 @@ function (result) {
 	var zimbraPasswordMinPunctuationChars = parseInt(attributes.zimbraPasswordMinPunctuationChars);
 	var zimbraPasswordMinNumericChars = parseInt(attributes.zimbraPasswordMinNumericChars);
 	var zimbraPasswordMinDigitsOrPuncs = parseInt(attributes.zimbraPasswordMinDigitsOrPuncs);
-	var zimbraPasswordAllowUsername = attributes.zimbraPasswordAllowUsername ? attributes.zimbraPasswordAllowUsername.toLowerCase() === "true" : false;
+	var zimbraFeatureAllowUsernameInPassword = attributes.zimbraFeatureAllowUsernameInPassword ? attributes.zimbraFeatureAllowUsernameInPassword.toLowerCase() === "true" : false;
 
 	var zimbraPasswordAllowedChars = attributes.zimbraPasswordAllowedChars || false;
 	var zimbraPasswordAllowedPunctuationChars = attributes.zimbraPasswordAllowedPunctuationChars || false;
@@ -917,7 +917,7 @@ function (result) {
 		Dwt.show(this._passwordMinDigitsOrPunctuationRule);
 	}
 
-	if(!zimbraPasswordAllowUsername) {
+	if(!zimbraFeatureAllowUsernameInPassword) {
 		var allowUsernameMsg = AjxMessageFormat.format(ZmMsg.zimbraPasswordAllowUsername);
 		enabledLocalRules.push(findRule("zimbraPasswordAllowUsername"));
 
@@ -982,7 +982,7 @@ function (result) {
 			}
 		}
 
-		if(!zimbraPasswordAllowUsername) {
+		if(!zimbraFeatureAllowUsernameInPassword) {
 			var username = this._accountInput.value.includes("@") ? this._accountInput.value.split("@")[0] : this._accountInput.value;
 			if (!currentValue.includes(username)) {
 				matchedLocalRules.push({type : "zimbraPasswordAllowUsername"});
