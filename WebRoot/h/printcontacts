@@ -34,7 +34,7 @@
         <c:otherwise>
             <%--If both contactIds and folderId is null(won't happen in real scenario), contacts of system contact
             folder will be returned--%>
-            <zm:getAllContacts contactIds="${contactIds}" folderId="${param.sfi}" var="contacts"/>
+            <zm:getAllContacts contactIds="${contactIds}" folderId="${param.sfi}" derefGroupMember="true" var="contacts"/>
         </c:otherwise>
     </c:choose>
 </app:handleError>
