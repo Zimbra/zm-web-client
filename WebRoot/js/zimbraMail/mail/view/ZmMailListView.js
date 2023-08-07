@@ -1215,7 +1215,7 @@ function(ev) {
 	if ((!this.isMultiColumn() || appCtxt.get(ZmSetting.COLOR_MESSAGES))
 			&& (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL)) {
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: TAG");
-		this.redrawItem(item);
+		this.redrawItem(item, true);
         ZmListView.prototype._changeListener.call(this, ev);
         ev.handled = true;
 	}
