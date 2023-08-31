@@ -1638,7 +1638,7 @@ ext = BeanUtils.cook(ext);
     </target>
 
     <property name="DOCKER_REPO_PUSH_NS" value="zimbra" />
-    <property name="DOCKER_BUILD_TAG" value="1.0.0" />
+    <property name="DOCKER_BUILD_TAG" value="9.0.0" />
     <property name="DOCKER_PUSH_TAG" value="${DOCKER_BUILD_TAG}" />
 
     <target name="build-image" depends="prod-build">
