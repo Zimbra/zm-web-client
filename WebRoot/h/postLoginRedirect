@@ -31,7 +31,7 @@
     <body>
     <c:set var="url" value="/public/login.jsp"/>
     <c:if test="${empty param.postLoginUrl and not empty requestScope.postLoginUrl}">
-        <c:set var="url" value="${requestScope.postLoginUrl}"/>
+        <c:set var="url" value="${zm:cook(requestScope.postLoginUrl)}"/>
     </c:if>
     <form method="post" name="loginForm2" id="loginForm2" action="${url}" accept-charset="UTF-8">
         <div class="LoginScreen">
