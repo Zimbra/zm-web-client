@@ -6051,6 +6051,10 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	font-weight:bold;
 }
 
+.ZmAppNameError.ZmTwoFactorSetupError {
+	margin-left: 0;
+}
+
 
 .ZmTwoFactorCustomSetupErrorLoginPage {
 	border: 0;
