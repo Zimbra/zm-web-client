@@ -1627,7 +1627,8 @@ function(params, callback) {
 
     if (appCtxt.isExternalAccount()) {
         var loadCallback = this._handleLoadLaunch.bind(this, params, callback);
-	    AjxDispatcher.require(["MailCore", "Mail", "Startup2"], true, loadCallback, null, true);
+	    AjxDispatcher.require(["MailCore", "Mail"], true, loadCallback, null, true);
+	    AjxDispatcher.require("Startup2", false, loadCallback, null, true);
     }
     else {
         this._handleLoadLaunch(params, callback);
