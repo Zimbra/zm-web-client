@@ -1021,16 +1021,12 @@ and the container element is replaced with that control.
 										<$=ZmMsg.twoStepStandardAuth$>
 									<$ } $>
 								</span>
-								<$ if (!appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_REQUIRED)) { $>
-									<a style="margin:20px;" href="#" id='${id}_TWO_STEP_AUTH_LINK'>
-										<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) { $>
-											<$=ZmMsg.twoStepAuthDisableLink$>
-										<$ } $>
-										<$ else { $>
-											<$=ZmMsg.twoStepAuthSetupLink$>
-										<$ } $>
-									</a>
-								<$ } $>
+							</td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel' style="vertical-align:top"><$=ZmMsg.twoStepAuthPrimatyMethod$></td>
+							<td class='ZOptionsField'>
+								<div id='${id}_TWO_FACTOR_AUTH_PRIMARY_METHOD' tabindex=0></div>
 							</td>
 						</tr>
 						<tr id='${id}_TWO_STEP_AUTH_CODES_CONTAINER' valign=top

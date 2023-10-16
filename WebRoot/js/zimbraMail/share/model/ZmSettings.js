@@ -981,6 +981,7 @@ function() {
 	this.registerSetting("SPELL_DICTIONARY",                                {name:"zimbraPrefSpellDictionary", type:ZmSetting.T_COS, defaultValue:""});
 	this.registerSetting("TWO_FACTOR_AUTH_AVAILABLE",	    {name:"zimbraFeatureTwoFactorAuthAvailable", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("TWO_FACTOR_AUTH_REQUIRED",	    {name:"zimbraFeatureTwoFactorAuthRequired", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("TWO_FACTOR_AUTH_METHOD_ALLOWED",  {name:"zimbraTwoFactorAuthMethodAllowed", type:ZmSetting.T_COS, defaultValue:["app"]});
 	this.registerSetting("TRUSTED_DEVICES_ENABLED",         {name:"zimbraFeatureTrustedDevicesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("APP_PASSWORDS_ENABLED",	        {name:"zimbraFeatureAppSpecificPasswordsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("DISABLE_VERSION_CHANGE_DIALOG",   {name:"zimbraServerVersionChangeNotificationDisabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -1033,6 +1034,8 @@ function() {
 	// general preferences
 	this.registerSetting("ACCOUNTS",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("TWO_FACTOR_AUTH_ENABLED",	        {name:"zimbraTwoFactorAuthEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("TWO_FACTOR_AUTH_METHOD_ENABLED",  {name:"zimbraTwoFactorAuthMethodEnabled", type:ZmSetting.T_COS});
+	this.registerSetting("TWO_FACTOR_AUTH_PRIMARY_METHOD",  {name:"zimbraPrefPrimaryTwoFactorAuthMethod", type:ZmSetting.T_PREF});
 	this.registerSetting("ACCOUNT_TREE_OPEN",				{name:"zimbraPrefAccountTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isImplicit:true});
 	this.registerSetting("CHILD_ACCTS_VISIBLE",				{name:"zimbraPrefChildVisibleAccount", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LIST});
 	this.registerSetting("CLIENT_TYPE",						{name:"zimbraPrefClientType", type:ZmSetting.T_PREF, defaultValue:ZmSetting.CLIENT_ADVANCED});

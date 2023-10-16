@@ -5995,8 +5995,9 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	font-size: 13px;
 }
 
-.ZmTwoFactorCustomInputLoginPage .numberInputTag[type="number"] ,
-.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"] {
+.ZmTwoFactorCustomInputLoginPage .ZmTwoFactorCustomSetupCodeInputTag,
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"],
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="email"] {
 	box-sizing: border-box;
 	height: 36px ;
 	width: 100%;
@@ -6007,8 +6008,9 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	outline: none;
 }
 
-.ZmTwoFactorCustomInputLoginPage .numberInputTag[type="number"]:focus ,
-.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"]:focus {
+.ZmTwoFactorCustomInputLoginPage .ZmTwoFactorCustomSetupCodeInputTag:focus,
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"]:focus,
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="email"]:focus {
 	border-color:@brand-primary@;
 	outline: none;
 }
