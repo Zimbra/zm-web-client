@@ -319,7 +319,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 			templateId:     "prefs.Pages#Accounts",
 			priority:       9,
 			precondition:   ZmSetting.MAIL_PREFERENCES_ENABLED,
-			prefs:          [ ZmSetting.ACCOUNTS, ZmSetting.SAVE_TO_SENT_DELEGATED_TARGET ],
+			prefs:          [ ZmSetting.ACCOUNTS, ZmSetting.SAVE_TO_SENT_DELEGATED_TARGET, ZmSetting.TWO_FACTOR_AUTH_PRIMARY_METHOD ],
 			manageDirty:    true,
 			createView:     function(parent, section, controller) {
 								return new ZmAccountsPage(parent, section, controller);
@@ -988,6 +988,31 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		orientation:		ZmPref.ORIENT_VERTICAL,
 		displayOptions:		[ZmMsg.displayAsHTML, ZmMsg.displayAsText],
 		options:			[true, false]
+	});
+
+
+	var getTfaMethodOptions = function(displayOptions, options, inputId) {
+		var result = [];
+		var methodAllowed = appCtxt.getTwoFactorAuthMethodAllowed();
+		for (var i = 0; i < methodAllowed.length; i++) {
+			if (displayOptions) {
+				result.push(ZmMsg["twoFactorAuthMethodName_" + methodAllowed[i]]);
+			} else if (options) {
+				result.push(methodAllowed[i]);
+			} else if (inputId) {
+				result.push("TFA_PRIMARY_METHOD_" + methodAllowed[i].toUpperCase());
+			}
+		}
+		return result;
+	}
+
+	ZmPref.registerPref("TWO_FACTOR_AUTH_PRIMARY_METHOD", {
+		displayName:		ZmMsg.twoFactorAuthPrimatyMethod,
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:		ZmPref.ORIENT_VERTICAL,
+		displayOptions:		getTfaMethodOptions(true),
+		options:			getTfaMethodOptions(false, true),
+		inputId:            getTfaMethodOptions(false, false, true)
 	});
 
 	appCtxt.notifyZimlets("onZmPreferencesApp_registerPrefs", []);

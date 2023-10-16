@@ -5996,7 +5996,8 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 }
 
 .ZmTwoFactorCustomInputLoginPage .numberInputTag[type="number"] ,
-.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"] {
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"],
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="email"] {
 	box-sizing: border-box;
 	height: 36px ;
 	width: 100%;
@@ -6008,7 +6009,8 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 }
 
 .ZmTwoFactorCustomInputLoginPage .numberInputTag[type="number"]:focus ,
-.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"]:focus {
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"]:focus,
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="email"]:focus {
 	border-color:@brand-primary@;
 	outline: none;
 }

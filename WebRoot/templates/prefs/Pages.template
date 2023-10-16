@@ -1038,14 +1038,18 @@ and the container element is replaced with that control.
 								</span>
 								<$ if (!appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_REQUIRED)) { $>
 									<a style="margin:20px;" href="#" id='${id}_TWO_STEP_AUTH_LINK'>
-										<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) { $>
-											<$=ZmMsg.twoStepAuthDisableLink$>
-										<$ } $>
-										<$ else { $>
-											<$=ZmMsg.twoStepAuthSetupLink$>
-										<$ } $>
+										<$=ZmMsg.twoStepAuthSetupLink$>
+									</a>
+									<a style="margin:20px;" href="#" id='${id}_TWO_STEP_AUTH_DISABLE_LINK'>
+										Disable two-step authentication
 									</a>
 								<$ } $>
+							</td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel' style="vertical-align:top"><$=ZmMsg.twoFactorAuthPrimatyMethod$></td>
+							<td class='ZOptionsField'>
+								<div id='${id}_TWO_FACTOR_AUTH_PRIMARY_METHOD' tabindex=0></div>
 							</td>
 						</tr>
 						<tr id='${id}_TWO_STEP_AUTH_CODES_CONTAINER' valign=top

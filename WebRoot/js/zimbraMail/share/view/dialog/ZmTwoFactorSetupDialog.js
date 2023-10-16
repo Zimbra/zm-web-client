@@ -31,8 +31,8 @@
  */
 ZmTwoFactorSetupDialog = function(params) {
 	this.username = typeof appCtxt !== "undefined" ? appCtxt.getLoggedInUsername() : params.userName;
+	this.accountPage = params.accountPage;
 	this.twoStepAuthSpan = params.twoStepAuthSpan;
-	this.twoStepAuthLink = params.twoStepAuthLink;
 	this.twoStepAuthCodesContainer = params.twoStepAuthCodesContainer;
 	this.twoStepAuthEnabledCallback = params.twoStepAuthEnabledCallback;
 	// this.isFromLoginPage will be true if ZmTwoFactorSetupDialog is created from TwoFactorSetup.jsp, which is forwarded from login.jsp file.
@@ -43,6 +43,7 @@ ZmTwoFactorSetupDialog = function(params) {
 	var finishButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.FINISH_BUTTON, ZmMsg.twoStepAuthSuccessFinish, DwtDialog.ALIGN_RIGHT, this._finishButtonListener.bind(this));
 	var cancelButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.CANCEL_BUTTON, ZmMsg.cancel, DwtDialog.ALIGN_RIGHT, this._cancelButtonListener.bind(this));
 	var shell = typeof appCtxt !== "undefined" ? appCtxt.getShell() : new DwtShell({});
+
 	var newParams = {
 		parent : shell,
 		title : ZmMsg.twoStepAuthSetup,
@@ -81,14 +82,19 @@ function(isFromLoginPage) {
 	this._descriptionDivId = id + "_description";
 	this._passwordDivId = id + "_password";
 	this._passwordErrorDivId = id + "_password_error";
+	this._chooseMethodDivId = id + "_choose_method";
 	this._authenticationDivId = id + "_authentication";
 	this._emailDivId = id + "_email";
+	this._emailAddressDivId = id + "_email_address";
 	this._codeDivId = id + "_code";
 	this._codeDescriptionDivId = id + "_code_description";
 	this._codeErrorDivId = id + "_code_error";
 	this._successDivId = id + "_success";
-	this._divIdArray = [this._descriptionDivId, this._passwordDivId, this._authenticationDivId, this._emailDivId, this._codeDivId, this._successDivId];
-	return isFromLoginPage ? AjxTemplate.expand("share.Dialogs#ZmTwoFactorCustomLoginPage", {id : id, username : this.username}) : AjxTemplate.expand("share.Dialogs#ZmTwoFactorSetup", {id : id, username : this.username});
+
+
+	return isFromLoginPage ?
+		AjxTemplate.expand("share.Dialogs#ZmTwoFactorCustomLoginPage", {id : id, username : this.username}) :
+		AjxTemplate.expand("share.Dialogs#ZmTwoFactorSetup", {id : id, username : this.username});
 };
 
 ZmTwoFactorSetupDialog.prototype._createControls =
@@ -97,7 +103,9 @@ function(isFromLoginPage) {
 	this._passwordInput = Dwt.getElement(id + "_password_input");
 	this._codeInput = Dwt.getElement(id + "_code_input");
 	this._keySpan = Dwt.getElement(id + "_email_key");
+	this._emailAddressInput = Dwt.getElement(id + "_email_address_input");
 	var keyupHandler = this._handleKeyUp.bind(this);
+
 	if(isFromLoginPage) {
 		this.getButton(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON).setClassName('ZmTwoFactorPreviousButton');
 		this.getButton(ZmTwoFactorSetupDialog.BEGIN_SETUP_BUTTON).setClassName('ZmTwoFactorBeginButton');
@@ -109,6 +117,10 @@ function(isFromLoginPage) {
 	Dwt.setHandler(this._passwordInput, DwtEvent.ONINPUT, keyupHandler);
 	Dwt.setHandler(this._codeInput, DwtEvent.ONKEYUP, keyupHandler);
 	Dwt.setHandler(this._codeInput, DwtEvent.ONINPUT, keyupHandler);
+
+	Dwt.setHandler(this._emailAddressInput, DwtEvent.ONKEYUP, keyupHandler);
+	Dwt.setHandler(this._emailAddressInput, DwtEvent.ONINPUT, keyupHandler);
+
 };
 
 /**
@@ -118,7 +130,7 @@ function(isFromLoginPage) {
 */
 ZmTwoFactorSetupDialog.prototype._getInputFields =
 function() {
-	return [this._passwordInput, this._codeInput];
+	return [this._passwordInput, this._codeInput, this._emailAddressInput];
 };
 
 /**
@@ -135,10 +147,93 @@ function() {
  */
 ZmTwoFactorSetupDialog.prototype.reset =
 function() {
+
+	if (typeof appCtxt !== "undefined") {
+		this.methodAllowed = appCtxt.getTwoFactorAuthMethodAllowed();
+		this.methodEnabled = appCtxt.getTwoFactorAuthMethodAllowedAndEnabled();
+		this.isResetPasswordEnabled = (appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === "enabled" && appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) === "verified");
+	} else {
+		this.methodAllowed = params.tfaMethodAllowed ? params.tfaMethodAllowed.split(',') : ["app"];
+		this.methodEnabled = [];
+		this.isResetPasswordEnabled = params.isResetPasswordEnabled;
+	}
+
+	this.methodNotEnabled = [];
+	for (var i = 0; i < this.methodAllowed.length; i++) {
+		if (this.methodEnabled.indexOf(this.methodAllowed[i]) === -1) {
+			this.methodNotEnabled.push(this.methodAllowed[i]);
+		}
+	}
+
+	if (this.methodNotEnabled.length > 1) {
+		this.showChooseMethod = true;
+		this.tfaMethod = "";
+	} else {
+		this.showChooseMethod = false;
+		this.tfaMethod = this.methodNotEnabled[0];
+	}
+
+	this._stages = [ "initial", "tfaMethod", "auth"];
+	this._divIds = { initial: [this._descriptionDivId],
+	                 app:   [this._passwordDivId, this._authenticationDivId, this._emailDivId],
+	                 email: [this._emailAddressDivId, this._passwordDivId],
+	                 auth: [this._codeDivId, this._successDivId]
+	               };
+
+	if (this.showChooseMethod) {
+		this._divIds["initial"].push(this._chooseMethodDivId);
+	} else {
+		this._stages[1] = this.methodNotEnabled[0];
+	}
+
+	// TODO: radio buttons need to be created here rather than template
+	var id = this._htmlElId;
+	if (this.showChooseMethod) {
+		var divElem = Dwt.getElement(id + "_method_list");
+		while (divElem.firstChild){
+			divElem.removeChild(divElem.firstChild);
+		}
+		var radioHandler = this._radioChange.bind(this);
+		for (var i = 0; i < this.methodNotEnabled.length; i++) {
+			var pElem = document.createElement('p');
+			pElem.className = this.isFromLoginPage ? "ZmTwoFactorCustomParaLoginPage" : "";
+			var inputElem = document.createElement('input');
+			inputElem.type = "radio";
+			inputElem.id = id + "_method_" + this.methodNotEnabled[i];
+			inputElem.name = "tfaMethod";
+			inputElem.value = this.methodNotEnabled[i];
+
+			var labelElem = document.createElement('label');
+			labelElem.htmlFor = id + "_method_" + this.methodNotEnabled[i];
+			labelElem.textContent = ZmMsg["twoStepAuthChooseMethod_" + this.methodNotEnabled[i]];
+			if (!this.isFromLoginPage) {
+				labelElem.style.margin = 0;
+			}
+
+			pElem.appendChild(inputElem);
+			pElem.appendChild(labelElem);
+			divElem.appendChild(pElem);
+			Dwt.setHandler(inputElem, DwtEvent.ONCHANGE, radioHandler);
+		}
+	}
+
+	if (this.methodNotEnabled.indexOf("email") !== -1 && this.isResetPasswordEnabled) {
+		var divElemEmailNote = Dwt.getElement(id + "_email_note");
+		while (divElemEmailNote.firstChild) {
+			divElemEmailNote.removeChild(divElemEmailNote.firstChild);
+		}
+		var pElemEmailNote = document.createElement("p");
+		pElemEmailNote.className = this.isFromLoginPage ? "ZmTwoFactorCustomParaLoginPage" : "";
+		pElemEmailNote.textContent = ZmMsg.twoStepAuthEnterEmailNote;
+		divElemEmailNote.appendChild(pElemEmailNote);
+	}
+
 	Dwt.show(this._descriptionDivId);
 	Dwt.hide(this._passwordDivId);
 	Dwt.hide(this._passwordErrorDivId);
+	Dwt.hide(this._chooseMethodDivId);
 	Dwt.hide(this._authenticationDivId);
+	Dwt.hide(this._emailAddressDivId);
 	Dwt.hide(this._emailDivId);
 	Dwt.hide(this._codeDivId);
 	Dwt.hide(this._codeErrorDivId);
@@ -148,62 +243,109 @@ function() {
 	this.setButtonVisible(ZmTwoFactorSetupDialog.NEXT_BUTTON, false);
 	this.setButtonVisible(ZmTwoFactorSetupDialog.FINISH_BUTTON, false);
 	this.setButtonVisible(ZmTwoFactorSetupDialog.CANCEL_BUTTON, true);
-	this._divIdArrayIndex = 0;
+	this._stageIndex = 0;
+	this._divIndexInStage = 0;
+	this._currentDivId;
 	DwtDialog.prototype.reset.call(this);
 };
 
 ZmTwoFactorSetupDialog.prototype._beginSetupButtonListener =
 function() {
-	Dwt.hide(this._descriptionDivId);
-	Dwt.show(this._passwordDivId);
+	this._showNextPage();
 	this.setButtonVisible(ZmTwoFactorSetupDialog.BEGIN_SETUP_BUTTON, false);
 	this.setButtonVisible(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, true);
-	this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this._passwordInput.value !== "");
 	this.setButtonVisible(ZmTwoFactorSetupDialog.NEXT_BUTTON, true);
-	this._passwordInput.focus();
-	this._divIdArrayIndex = 1;
 };
 
 ZmTwoFactorSetupDialog.prototype._previousButtonListener =
 function() {
-	var currentDivId = this._divIdArray[this._divIdArrayIndex];
+	var currentDivId = this._divIds[this._stages[this._stageIndex]][this._divIndexInStage];
 	if (currentDivId === this._passwordDivId) {
 		Dwt.hide(this._passwordErrorDivId);
+	} else if (currentDivId === this._codeDivId) {
+		Dwt.hide(this._codeErrorDivId);
+		Dwt.show(this._codeDescriptionDivId);
+	}
+
+	var stage = this._stages[this._stageIndex];
+	var nextDivId;
+	if (this._divIndexInStage !== 0) {
+		stage = this._stages[this._stageIndex];
+		Dwt.hide(this._divIds[stage][this._divIndexInStage--]);
+		nextDivId = this._divIds[stage][this._divIndexInStage]
+		Dwt.show(nextDivId);
+	} else {
+		Dwt.hide(this._divIds[stage][this._divIndexInStage]);
+		this._stageIndex--;
+		stage = this._stages[this._stageIndex];
+		this._divIndexInStage = this._divIds[stage].length -1;
+		nextDivId = this._divIds[stage][this._divIndexInStage]
+		Dwt.show(nextDivId);
+	}
+
+	if (nextDivId === this._descriptionDivId) {
 		this.setButtonVisible(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, false);
 		this.setButtonVisible(ZmTwoFactorSetupDialog.NEXT_BUTTON, false);
 		this.setButtonVisible(ZmTwoFactorSetupDialog.BEGIN_SETUP_BUTTON, true);
-	}
-	else if (currentDivId === this._codeDivId) {
+	} else if (nextDivId === this._passwordDivId) {
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this._passwordInput.value !== "");
+	} else if (nextDivId === this._chooseMethodDivId) {
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this.tfaMethod !== "");
+	} else if (nextDivId === this._emailAddressDivId) {
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this._emailAddressInput.value !== "");
+		this._emailAddressInput.focus();
+	} else if (nextDivId === this._emailDivId) {
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, true);
-	}
-	else if (currentDivId === this._successDivId) {
-		this.setButtonVisible(ZmTwoFactorSetupDialog.FINISH_BUTTON, false);
-		this.setButtonVisible(ZmTwoFactorSetupDialog.NEXT_BUTTON, true);
-	}
-	Dwt.show(this._divIdArray[this._divIdArrayIndex - 1]);
-	Dwt.hide(this._divIdArray[this._divIdArrayIndex]);
-	if (this._divIdArrayIndex > -1) {
-		this._divIdArrayIndex--;
 	}
 };
 
 ZmTwoFactorSetupDialog.prototype._nextButtonListener =
 function() {
-	var currentDivId = this._divIdArray[this._divIdArrayIndex];
+	var currentDivId = this._divIds[this._stages[this._stageIndex]][this._divIndexInStage];
 	if (currentDivId === this._passwordDivId || currentDivId === this._codeDivId) {
 		this._enableTwoFactorAuth(currentDivId);
 		return;
 	}
-	Dwt.show(this._divIdArray[this._divIdArrayIndex + 1]);
-	Dwt.hide(this._divIdArray[this._divIdArrayIndex]);
-	if (this._divIdArrayIndex < this._divIdArray.length) {
-		this._divIdArrayIndex++;
+
+	this._showNextPage();
+};
+ZmTwoFactorSetupDialog.prototype._showNextPage =
+function() {
+	var stage = this._stages[this._stageIndex];
+	var nextDivId;
+	if (this._divIndexInStage !== this._divIds[stage].length - 1) {
+		Dwt.hide(this._divIds[stage][this._divIndexInStage++]);
+		nextDivId = this._divIds[stage][this._divIndexInStage];
+		Dwt.show(nextDivId);
+	} else {
+		Dwt.hide(this._divIds[stage][this._divIndexInStage]);
+		this._stageIndex++;
+		stage = this._stages[this._stageIndex];
+		this._divIndexInStage = 0;
+		nextDivId = this._divIds[stage][this._divIndexInStage];
+		Dwt.show(nextDivId);
 	}
-	if (currentDivId === this._emailDivId) {
-		Dwt.hide(this._codeErrorDivId);
-		Dwt.show(this._codeDescriptionDivId);
-		this._codeInput.focus();
+
+	if (nextDivId === this._chooseMethodDivId) {
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this.tfaMethod !== "");
+	} else if (nextDivId === this._passwordDivId) {
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this._passwordInput.value !== "");
+		this._passwordInput.focus();
+	} else if (nextDivId === this._authenticationDivId || nextDivId === this._emailDivId) {
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, true);
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, true);
+	} else if (nextDivId === this._emailAddressDivId) {
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this._emailAddressInput.value !== "");
+		this._emailAddressInput.focus();
+	} else if (nextDivId === this._codeDivId) {
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this._codeInput.value !== "");
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, true);
+		this._codeInput.focus();
+	} else if (nextDivId === this._successDivId) {
+		this.setButtonVisible(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, false);
+		this.setButtonVisible(ZmTwoFactorSetupDialog.NEXT_BUTTON, false);
+		this.setButtonVisible(ZmTwoFactorSetupDialog.FINISH_BUTTON, true);
+		this.setButtonVisible(ZmTwoFactorSetupDialog.CANCEL_BUTTON, false);
 	}
 };
 
@@ -218,9 +360,9 @@ function() {
 		if (this.twoStepAuthSpan) {
 			Dwt.setInnerHtml(this.twoStepAuthSpan, ZmMsg.twoStepAuth);
 		}
-		if (this.twoStepAuthLink) {
-			Dwt.setInnerHtml(this.twoStepAuthLink, ZmMsg.twoStepAuthDisableLink);
-		}
+
+		this.accountPage.setTwoStepAuthLink();
+
 		if (this.twoStepAuthCodesContainer) {
 			Dwt.setDisplay(this.twoStepAuthCodesContainer, "");
 		}
@@ -244,8 +386,20 @@ function() {
 ZmTwoFactorSetupDialog.prototype._handleKeyUp =
 function(ev) {
 	var value = ev && ev.target && ev.target.value && ev.target.value.length;
-	this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, !!value);
+	var currentDivId = this._divIds[this._stages[this._stageIndex]][this._divIndexInStage];
+	if (currentDivId === this._passwordDivId || currentDivId === this._codeDivId || currentDivId === this._emailAddressDivId) {
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, !!value);
+	}
 };
+
+ZmTwoFactorSetupDialog.prototype._radioChange =
+function(ev) {
+	var value = ev && ev.target && ev.target.value;
+	this.tfaMethod = ev.target.value;
+	this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, !!value);
+	this._stages[1] = value;
+};
+
 
 /**
  * Sends first EnableTwoFactorAuthRequest with username and password
@@ -261,10 +415,11 @@ function(currentDivId) {
 	if (currentDivId === this._codeDivId) {
 		var codeInput = this._codeInput;
 		codeInput.setAttribute("disabled", true);
-		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", csrfTokenSecured:1, name:{_content : this.username}, authToken:{_content : this._authToken}, twoFactorCode:{_content : codeInput.value}}};
-	}
-	else {
-		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", csrfTokenSecured:1, name:{_content : this.username}, password:{_content : passwordInput.value}}};
+		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", csrfTokenSecured:1, name:{_content : this.username}, authToken:{_content : this._authToken}, twoFactorCode:{_content : codeInput.value}, method:{_content : this.tfaMethod}}};
+	} else if (this.tfaMethod === "app") {
+		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", csrfTokenSecured:1, name:{_content : this.username}, password:{_content : passwordInput.value}, method:{_content : this.tfaMethod}}};
+	} else if (this.tfaMethod === "email") {
+		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", csrfTokenSecured:1, name:{_content : this.username}, password:{_content : passwordInput.value}, method:{_content : this.tfaMethod}, email:{_content: this._emailAddressInput.value}}};
 	}
 	var callback = this._enableTwoFactorAuthCallback.bind(this, currentDivId);
 	command.invoke({jsonObj:jsonObj, noAuthToken: true, asyncMode: true, callback: callback, serverUri:"/service/soap/"});
@@ -287,6 +442,12 @@ function(currentDivId, result) {
 		if (enableTwoFactorAuthResponse.csrfToken && enableTwoFactorAuthResponse.csrfToken[0] && enableTwoFactorAuthResponse.csrfToken[0]._content) {
 			window.csrfToken = enableTwoFactorAuthResponse.csrfToken[0]._content;
 		}
+		/* TODO: scratchCodes will not be returned when 2nd method is enabled.
+		 *       Need to fix if-else conditions.
+		 */
+		/* TODO: when email method is enabled zimbraFeatureResetPasswordStatus is enabled,
+		 *       update recovery email address and show the email address in Password Recovery Account Setting with verified status
+		 */
 		var secret = enableTwoFactorAuthResponse.secret;
 		var scratchCodes = enableTwoFactorAuthResponse.scratchCodes;
 		if (secret && secret[0] && secret[0]._content) {
@@ -295,9 +456,28 @@ function(currentDivId, result) {
 			return;
 		}
 		else if (scratchCodes && scratchCodes[0] && scratchCodes[0].scratchCode) {
+			/* TODO: it may be better to call GetInfoRequest to get the updated values of
+			 *       - zimbraTwoFactorAuthMethodEnabled
+			 *       - zimbraPrefPrimaryTwoFactorAuthMethod
+			 *       - zimbraPrefPasswordRecoveryAddress
+			 *       - zimbraPrefPasswordRecoveryAddressStatus
+			 */
 			if (typeof appCtxt !== "undefined") {
-				//Only the server will set ZmSetting.TWO_FACTOR_AUTH_ENABLED. Don’t try to save the setting from the UI.
+				//Only the server will set ZmSetting.TWO_FACTOR_AUTH_ENABLED. Don't try to save the setting from the UI.
 				appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_ENABLED, true, false, false, true);
+
+				this.methodEnabled.push(this.tfaMethod);
+				appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_METHOD_ENABLED, this.methodEnabled.concat(), false, false, true);
+				for (var i = 0; i < this.methodNotEnabled.length; i++) {
+					if (this.methodNotEnabled[i] === this.tfaMethod) {
+						this.methodNotEnabled.splice(i, 1);
+						break;
+					}
+				}
+				if (!appCtxt.getPrefPrimaryTwoFactorAuthMethod()) {
+					appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_PRIMARY_METHOD, this.tfaMethod, false, false, true);
+				}
+
 				var scratchCode = AjxUtil.map(scratchCodes[0].scratchCode, function(obj) {return obj._content});
 				appCtxt.cacheSet(ZmTwoFactorSetupDialog.ONE_TIME_CODES, scratchCode);
 			}
@@ -310,24 +490,7 @@ function(currentDivId, result) {
 
 ZmTwoFactorSetupDialog.prototype._handleTwoFactorAuthSuccess =
 function(currentDivId) {
-	if (currentDivId === this._passwordDivId) {
-		Dwt.hide(this._passwordDivId);
-		Dwt.show(this._authenticationDivId);
-		Dwt.hide(this._passwordErrorDivId);
-		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, true);
-		this.setButtonEnabled(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, true);
-		if (this._divIdArrayIndex < this._divIdArray.length) {
-			this._divIdArrayIndex++;
-		}
-	}
-	else if (currentDivId === this._codeDivId) {
-		Dwt.show(this._successDivId);
-		Dwt.hide(this._codeDivId);
-		this.setButtonVisible(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, false);
-		this.setButtonVisible(ZmTwoFactorSetupDialog.NEXT_BUTTON, false);
-		this.setButtonVisible(ZmTwoFactorSetupDialog.FINISH_BUTTON, true);
-		this.setButtonVisible(ZmTwoFactorSetupDialog.CANCEL_BUTTON, false);
-	}
+	this._showNextPage();
 };
 
 ZmTwoFactorSetupDialog.prototype._handleTwoFactorAuthError =
@@ -364,16 +527,52 @@ function() {
 ZmTwoFactorSetupDialog.disableTwoFactorAuth =
 function(params, dialog) {
 	var command = new ZmCsfeCommand();
-	var jsonObj = {DisableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount"}};
-	var callback = ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback.bind(window, params, dialog);
+	var methodsDiv = document.getElementById("tfaMethodsToBeDisabled");
+	var method = params.method;
+	if (methodsDiv) {
+		var collection = methodsDiv.getElementsByTagName('INPUT');
+		for (i = 0; i < collection.length; i++) {
+			if (collection[i].checked) {
+				method = collection[i].value;
+				break;
+			}
+		}
+	}
+	var jsonObj = {DisableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", method: method}};
+	var callback = ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback.bind(window, params, dialog, method);
 	command.invoke({jsonObj: jsonObj, noAuthToken: true, asyncMode: true, callback: callback, serverUri:"/service/soap/"});
 };
 
 ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback =
-function(params, dialog) {
+function(params, dialog, method) {
 	dialog.popdown();
 	Dwt.setInnerHtml(params.twoStepAuthSpan, ZmMsg.twoStepStandardAuth);
-	Dwt.setInnerHtml(params.twoStepAuthLink, ZmMsg.twoStepAuthSetupLink);
 	Dwt.setDisplay(params.twoStepAuthCodesContainer, Dwt.DISPLAY_NONE);
-	appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_ENABLED, false, false, false, true);
+
+	var methodEnabled = appCtxt.getTwoFactorAuthMethodAllowedAndEnabled();
+	for (i = 0; i < methodEnabled.length; i++) {
+		if (methodEnabled[i] === method) {
+			methodEnabled.splice(i, 1);
+			break;
+		}
+	}
+	/* TODO: it may be better to call GetInfoRequest to get the updated values of
+	 *       - zimbraTwoFactorAuthMethodEnabled
+	 *       - zimbraPrefPrimaryTwoFactorAuthMethod
+	 */
+	appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_METHOD_ENABLED, methodEnabled, false, false, true);
+
+	if (appCtxt.getPrefPrimaryTwoFactorAuthMethod() === method) {
+		if (methodEnabled.length > 0) {
+			appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_PRIMARY_METHOD, methodEnabled[0], false, false, true);
+		} else {
+			appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_PRIMARY_METHOD, null, false, false, true);
+		}
+	}
+
+	if (methodEnabled.length === 0) {
+		appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_ENABLED, false, false, false, true);
+	}
+
+	params.accountPage.setTwoStepAuthLink();
 };

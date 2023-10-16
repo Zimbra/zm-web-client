@@ -677,6 +677,11 @@
 <template id='share.Dialogs#ZmTwoFactorSetup'>
 	<div class="ZmTwoFactorSetup">
 		<div id='${id}_description'><p><$=ZmMsg.twoStepAuthDescription$></p></div>
+		<div id='${id}_choose_method'>
+			<h4><$=ZmMsg.twoStepAuthChooseMethod$></h4>
+			<p><$=ZmMsg.twoStepAuthChooseMethodDescription$></p>
+			<div id='${id}_method_list' class="ZmTwoFactorSetupContainer" style="text-align:unset;"></div>
+		</div>
 		<div id='${id}_password'>
 			<h4><$=ZmMsg.twoStepAuthPassword$></h4>
 			<p><$=ZmMsg.twoStepAuthPasswordDescription$> "<span>${username}</span>".</p>
@@ -700,6 +705,14 @@
 			<div class="ZmTwoFactorSetupContainer">
 				<span id="${id}_email_key" class="email-key"></span>
 			</div>
+		</div>
+		<div id='${id}_email_address'>
+			<h4><$=ZmMsg.twoStepAuthEnterEmail$></h4>
+			<div class="ZmTwoFactorSetupContainer">
+				<label for="${id}_email_address_input"><$=ZmMsg.emailLabel$></label>
+				<input class="inputTag" type="text" id="${id}_email_address_input" autocomplete="off"/>
+			</div>
+			<div id="${id}_email_note"></div>
 		</div>
 		<div id='${id}_code'>
 			<div id='${id}_code_description'>
@@ -731,6 +744,11 @@
 			<h2 class="ZmTwoFactorCustomTitleLoginPage" ><$=ZmMsg.twoStepAuthSetup$></h2>
 			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthDescription$></p>
 		</div>
+		<div id='${id}_choose_method'>
+			<h2 class="ZmTwoFactorCustomTitleLoginPage" ><$=ZmMsg.twoStepAuthChooseMethod$></h2>
+			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthChooseMethodDescription$></p>
+			<div id='${id}_method_list'></div>
+		</div>
 		<div id='${id}_password'>
 			<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthPassword$></h2>
 			<p id='${id}_password_error' style="display:none;" class="ZmTwoFactorCustomSetupErrorLoginPage"><$=ZmMsg.offlinePasswordUpdateFailure$></p>
@@ -754,6 +772,14 @@
 			<div class="ZmTwoFactorCustomSetupContainerLoginPage">
 				<span id="${id}_email_key" class="email-key"></span>
 			</div>
+		</div>
+		<div id='${id}_email_address'>
+			<h2 class="ZmTwoFactorCustomTitleLoginPage" ><$=ZmMsg.twoStepAuthEnterEmail$></h2>
+			<label class="passwordCustomLabel" for="${id}_email_address_input"><$=ZmMsg.emailAddr$></label>
+			<div class="ZmTwoFactorCustomInputLoginPage">
+				<input class="inputTag" type="email" id="${id}_email_address_input" autocomplete="off"/>
+			</div>
+			<div id="${id}_email_note"></div>
 		</div>
 		<div id='${id}_code'>
 			<div id='${id}_code_description'>
