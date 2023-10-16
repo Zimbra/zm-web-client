@@ -33,3 +33,5 @@ AjxPackage.require("zimbraMail.prefs.model.ZmPersona");
 AjxPackage.require("zimbraMail.prefs.controller.ZmPrefPageTreeController");
 
 AjxPackage.require("ajax.dwt.widgets.DwtCalendar");
+
+AjxPackage.require("zimbraMail.share.model.ZmTwoFactorAuth");
