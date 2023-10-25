@@ -571,7 +571,7 @@ if (application.getInitParameter("offlineMode") != null) {
                             </c:if>
                         <div class="twoFactorForm">
                                 <c:if test="${(tfaMethod ne param.prevTfaMethod and empty param.totpcode) || param.actionResend}">
-                                    <zm:sendTFACode varResult="tfaCodeResult" method="${tfaMethod}"/>
+                                    <zm:sendTFACode varResult="tfaCodeResult" method="${tfaMethod}" authResult="${authResult}"/>
                                 </c:if>
                                 <!-- TODO: update it once API is ready -->
                                 <%-- <c:if test="${false}"> --%>
