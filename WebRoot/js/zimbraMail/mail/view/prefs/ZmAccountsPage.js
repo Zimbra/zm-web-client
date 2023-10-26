@@ -321,7 +321,7 @@ function(params, action) {
 					additionalMsg[j++] = " checked"
 				}
 				additionalMsg[j++] = "><label for='tfaMethod_" + method + "'>";
-				additionalMsg[j++] = ZmMsg["twoFactorAuthMethodName_" + method];
+				additionalMsg[j++] = ZmMsg["twoStepAuthMethod_" + method];
 				additionalMsg[j++] = "</label></div>"
 			}
 			additionalMsg[j++] = "</div>";
@@ -1298,8 +1298,7 @@ function() {
 		var enabled = (methodEnabled.indexOf(methodAllowed[i]) !== -1);
 		var labelElem = document.getElementById(baseId + "_text_right");
 		if (labelElem) {
-			// TODO: translation
-			labelElem.textContent = ZmMsg["twoFactorAuthMethodName_" + methodAllowed[i]] + (enabled ? " (enabled)" : " (disabled)");
+			labelElem.textContent = ZmMsg["twoStepAuthMethod_" + methodAllowed[i]] + " " + (enabled ? ZmMsg.twoStepAuthMethodStatusEnabled : ZmMsg.twoStepAuthMethodStatusDisabled);
 		}
 		var inputElem = document.getElementById(baseId + "_input");
 		if (inputElem) {

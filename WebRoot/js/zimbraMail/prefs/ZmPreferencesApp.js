@@ -996,7 +996,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		var methodAllowed = appCtxt.getTwoFactorAuthMethodAllowed();
 		for (var i = 0; i < methodAllowed.length; i++) {
 			if (displayOptions) {
-				result.push(ZmMsg["twoFactorAuthMethodName_" + methodAllowed[i]]);
+				result.push(ZmMsg["twoStepAuthMethod_" + methodAllowed[i]]);
 			} else if (options) {
 				result.push(methodAllowed[i]);
 			} else if (inputId) {
@@ -1007,7 +1007,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 	}
 
 	ZmPref.registerPref("TWO_FACTOR_AUTH_PRIMARY_METHOD", {
-		displayName:		ZmMsg.twoFactorAuthPrimatyMethod,
+		displayName:		ZmMsg.twoStepAuthPrimatyMethod,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
 		orientation:		ZmPref.ORIENT_VERTICAL,
 		displayOptions:		getTfaMethodOptions(true),
