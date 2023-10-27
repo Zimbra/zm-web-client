@@ -149,11 +149,11 @@ ZmTwoFactorSetupDialog.prototype.reset =
 function() {
 
 	if (typeof appCtxt !== "undefined") {
-		this.methodAllowed = appCtxt.getTwoFactorAuthMethodAllowed();
-		this.methodEnabled = appCtxt.getTwoFactorAuthMethodAllowedAndEnabled();
+		this.methodAllowed = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
+		this.methodEnabled = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
 		this.isResetPasswordEnabled = (appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === "enabled" && appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) === "verified");
 	} else {
-		this.methodAllowed = params.tfaMethodAllowed ? params.tfaMethodAllowed.split(',') : ["app"];
+		this.methodAllowed = params.tfaMethodAllowed ? params.tfaMethodAllowed.split(',') : [ZmTwoFactorAuth.APP];
 		this.methodEnabled = [];
 		this.isResetPasswordEnabled = params.isResetPasswordEnabled;
 	}
@@ -217,7 +217,7 @@ function() {
 		}
 	}
 
-	if (this.methodNotEnabled.indexOf("email") !== -1 && this.isResetPasswordEnabled) {
+	if (this.methodNotEnabled.indexOf(ZmTwoFactorAuth.EMAIL) !== -1 && this.isResetPasswordEnabled) {
 		var divElemEmailNote = Dwt.getElement(id + "_email_note");
 		while (divElemEmailNote.firstChild) {
 			divElemEmailNote.removeChild(divElemEmailNote.firstChild);
@@ -416,9 +416,9 @@ function(currentDivId) {
 		var codeInput = this._codeInput;
 		codeInput.setAttribute("disabled", true);
 		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", csrfTokenSecured:1, name:{_content : this.username}, authToken:{_content : this._authToken}, twoFactorCode:{_content : codeInput.value}, method:{_content : this.tfaMethod}}};
-	} else if (this.tfaMethod === "app") {
+	} else if (this.tfaMethod === ZmTwoFactorAuth.APP) {
 		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", csrfTokenSecured:1, name:{_content : this.username}, password:{_content : passwordInput.value}, method:{_content : this.tfaMethod}}};
-	} else if (this.tfaMethod === "email") {
+	} else if (this.tfaMethod === ZmTwoFactorAuth.EMAIL) {
 		var jsonObj = {EnableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", csrfTokenSecured:1, name:{_content : this.username}, password:{_content : passwordInput.value}, method:{_content : this.tfaMethod}, email:{_content: this._emailAddressInput.value}}};
 	}
 	var callback = this._enableTwoFactorAuthCallback.bind(this, currentDivId);
@@ -474,7 +474,7 @@ function(currentDivId, result) {
 						break;
 					}
 				}
-				if (!appCtxt.getPrefPrimaryTwoFactorAuthMethod()) {
+				if (!ZmTwoFactorAuth.getPrefPrimaryTwoFactorAuthMethod()) {
 					appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_PRIMARY_METHOD, this.tfaMethod, false, false, true);
 				}
 
@@ -549,7 +549,7 @@ function(params, dialog, method) {
 	Dwt.setInnerHtml(params.twoStepAuthSpan, ZmMsg.twoStepStandardAuth);
 	Dwt.setDisplay(params.twoStepAuthCodesContainer, Dwt.DISPLAY_NONE);
 
-	var methodEnabled = appCtxt.getTwoFactorAuthMethodAllowedAndEnabled();
+	var methodEnabled = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
 	for (i = 0; i < methodEnabled.length; i++) {
 		if (methodEnabled[i] === method) {
 			methodEnabled.splice(i, 1);
@@ -562,7 +562,7 @@ function(params, dialog, method) {
 	 */
 	appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_METHOD_ENABLED, methodEnabled, false, false, true);
 
-	if (appCtxt.getPrefPrimaryTwoFactorAuthMethod() === method) {
+	if (ZmTwoFactorAuth.getPrefPrimaryTwoFactorAuthMethod() === method) {
 		if (methodEnabled.length > 0) {
 			appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_PRIMARY_METHOD, methodEnabled[0], false, false, true);
 		} else {

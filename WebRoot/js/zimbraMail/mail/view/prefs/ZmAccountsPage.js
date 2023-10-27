@@ -306,7 +306,7 @@ ZmAccountsPage.prototype._handleTwoStepAuthLink =
 function(params, action) {
 	// TODO: define "disable" as const
 	if (action === "disable") {
-		var enabledMethod = appCtxt.getTwoFactorAuthMethodAllowedAndEnabled();
+		var enabledMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
 		var msg = ZmMsg.twoStepAuthDisableConfirm;
 		if (enabledMethod.length > 1) {
 			var j = 0;
@@ -398,8 +398,8 @@ function(response) {
  */
 ZmAccountsPage.prototype._handleResetRecoveryEmailButton =
 function() {
-	var tfaEnabledMethod = appCtxt.getTwoFactorAuthMethodAllowedAndEnabled();
-	if (tfaEnabledMethod.indexOf("email") !== -1) {
+	var tfaEnabledMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
+	if (tfaEnabledMethod.indexOf(ZmTwoFactorAuth.EMAIL) !== -1) {
 		var msgDialog = appCtxt.getOkCancelMsgDialog();
 		msgDialog.setMessage(ZmMsg.recoveryEmailButtonResetWarining, DwtMessageDialog.WARNING_STYLE, ZmMsg.recoveryEmailButtonResetWariningTitle);
 		msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._handleResetRecoveryEmail.bind(this, msgDialog));
@@ -1274,8 +1274,8 @@ function(opt) {
 
 ZmAccountsPage.prototype.setTwoStepAuthLink =
 function() {
-	var methodAllowed = appCtxt.getTwoFactorAuthMethodAllowed();
-	var methodEnabled = appCtxt.getTwoFactorAuthMethodAllowedAndEnabled();
+	var methodAllowed = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
+	var methodEnabled = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
 	var twoStepAuthLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_LINK");
 	var twoStepAuthDisableLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_DISABLE_LINK");
 	var methodList = document.getElementById(this._htmlElId + "_TWO_STEP_METHOD_LIST");
@@ -1292,7 +1292,7 @@ function() {
 		twoStepAuthDisableLink.style.display = "none";
 	}
 
-	var primaryMethod = appCtxt.getPrefPrimaryTwoFactorAuthMethod();
+	var primaryMethod = ZmTwoFactorAuth.getPrefPrimaryTwoFactorAuthMethod();
 	for (var i = 0; i < methodAllowed.length; i++) {
 		var baseId = "TFA_PRIMARY_METHOD_" + methodAllowed[i].toUpperCase();
 		var enabled = (methodEnabled.indexOf(methodAllowed[i]) !== -1);

@@ -993,8 +993,9 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 
 	var getTfaMethodOptions = function(displayOptions, options, inputId) {
 		var result = [];
-		var methodAllowed = appCtxt.getTwoFactorAuthMethodAllowed();
+		var methodAllowed = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
 		for (var i = 0; i < methodAllowed.length; i++) {
+			// TODO: use switch
 			if (displayOptions) {
 				result.push(ZmMsg["twoStepAuthMethod_" + methodAllowed[i]]);
 			} else if (options) {
