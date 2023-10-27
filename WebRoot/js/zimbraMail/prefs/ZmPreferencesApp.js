@@ -991,17 +991,22 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 	});
 
 
-	var getTfaMethodOptions = function(displayOptions, options, inputId) {
+	var getTfaMethodOptions = function(target) {
 		var result = [];
 		var methodAllowed = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
 		for (var i = 0; i < methodAllowed.length; i++) {
-			// TODO: use switch
-			if (displayOptions) {
-				result.push(ZmMsg["twoStepAuthMethod_" + methodAllowed[i]]);
-			} else if (options) {
-				result.push(methodAllowed[i]);
-			} else if (inputId) {
-				result.push("TFA_PRIMARY_METHOD_" + methodAllowed[i].toUpperCase());
+			switch (target) {
+				case "displayOption":
+					result.push(ZmMsg["twoStepAuthMethod_" + methodAllowed[i]]);
+					break;
+				case "options":
+					result.push(methodAllowed[i]);
+					break;
+				case "inputId":
+					result.push("TFA_PRIMARY_METHOD_" + methodAllowed[i].toUpperCase());
+					break;
+				default:
+					return null;
 			}
 		}
 		return result;
@@ -1011,9 +1016,9 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		displayName:		ZmMsg.twoStepAuthPrimatyMethod,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
 		orientation:		ZmPref.ORIENT_VERTICAL,
-		displayOptions:		getTfaMethodOptions(true),
-		options:			getTfaMethodOptions(false, true),
-		inputId:            getTfaMethodOptions(false, false, true)
+		displayOptions:		getTfaMethodOptions("displayOption"),
+		options:			getTfaMethodOptions("options"),
+		inputId:            getTfaMethodOptions("inputId")
 	});
 
 	appCtxt.notifyZimlets("onZmPreferencesApp_registerPrefs", []);
