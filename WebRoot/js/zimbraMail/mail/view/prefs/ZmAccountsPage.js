@@ -55,6 +55,7 @@ ZmAccountsPage.DOWNLOAD_TO_FOLDER = -1;
 
 ZmAccountsPage.__personaCount = 0;
 ZmAccountsPage.__externalCount = 0;
+ZmAccountsPage.ACTION_DISABLE_TFA = "disable";
 
 // section prefs
 
@@ -304,8 +305,7 @@ ZmAccountsPage.IDENTITY_PROPS = {
 
 ZmAccountsPage.prototype._handleTwoStepAuthLink =
 function(params, action) {
-	// TODO: define "disable" as const
-	if (action === "disable") {
+	if (action === ZmAccountsPage.ACTION_DISABLE_TFA) {
 		var enabledMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
 		var msg = ZmMsg.twoStepAuthDisableConfirm;
 		if (enabledMethod.length > 1) {
@@ -1274,21 +1274,23 @@ function(opt) {
 
 ZmAccountsPage.prototype.setTwoStepAuthLink =
 function() {
+	var tfaRequired = appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_REQUIRED);
 	var methodAllowed = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
 	var methodEnabled = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
 	var twoStepAuthLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_LINK");
 	var twoStepAuthDisableLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_DISABLE_LINK");
 	var methodList = document.getElementById(this._htmlElId + "_TWO_STEP_METHOD_LIST");
 
-	if (methodAllowed.length > methodEnabled.length && twoStepAuthLink) {
+	if (twoStepAuthLink && methodAllowed.length > methodEnabled.length) {
 		twoStepAuthLink.style.display = "";
-	} else {
+	} else if (twoStepAuthLink) {
 		twoStepAuthLink.style.display = "none";
 	}
 
-	if (methodEnabled.length > 0) {
+	//If two-factor authentication is required, user cannot disable all methods; at least a method must be enabled
+	if (twoStepAuthDisableLink && ((tfaRequired && methodEnabled.length > 1) || (!tfaRequired && methodEnabled.length > 0))) {
 		twoStepAuthDisableLink.style.display = "";
-	} else {
+	} else if (twoStepAuthDisableLink) {
 		twoStepAuthDisableLink.style.display = "none";
 	}
 
@@ -1317,19 +1319,17 @@ function() {
 
 	this.setTwoStepAuthLink();
 
-	//If two-factor authentication is required user cannot see the Enable/Disable two-step authentication link.
-	if (!appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_REQUIRED)) {
-		var twoStepAuthLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_LINK");
-		var twoStepAuthDisableLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_DISABLE_LINK");
-		var paramsObj = {
-			accountPage: this,
-			twoStepAuthSpan : Dwt.getElement(this._htmlElId + "_TWO_STEP_AUTH"),
-			twoStepAuthCodesContainer : Dwt.getElement(this._htmlElId + "_TWO_STEP_AUTH_CODES_CONTAINER"),
-			twoStepAuthEnabledCallback : this.setAccountSecurity.bind(this)
-		};
-		Dwt.setHandler(twoStepAuthLink, DwtEvent.ONCLICK, this._handleTwoStepAuthLink.bind(this, paramsObj));
-		Dwt.setHandler(twoStepAuthDisableLink, DwtEvent.ONCLICK, this._handleTwoStepAuthLink.bind(this, paramsObj, "disable"));
-	}
+	var twoStepAuthLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_LINK");
+	var twoStepAuthDisableLink = document.getElementById(this._htmlElId + "_TWO_STEP_AUTH_DISABLE_LINK");
+	var paramsObj = {
+		accountPage: this,
+		twoStepAuthSpan : Dwt.getElement(this._htmlElId + "_TWO_STEP_AUTH"),
+		twoStepAuthCodesContainer : Dwt.getElement(this._htmlElId + "_TWO_STEP_AUTH_CODES_CONTAINER"),
+		twoStepAuthEnabledCallback : this.setAccountSecurity.bind(this)
+	};
+	Dwt.setHandler(twoStepAuthLink, DwtEvent.ONCLICK, this._handleTwoStepAuthLink.bind(this, paramsObj));
+	Dwt.setHandler(twoStepAuthDisableLink, DwtEvent.ONCLICK, this._handleTwoStepAuthLink.bind(this, paramsObj, ZmAccountsPage.ACTION_DISABLE_TFA));
+
 	//If two-factor authentication is not enabled just return.
 	if (!appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) {
 		return;
