@@ -186,7 +186,6 @@ function() {
 		this._stages[1] = this.methodNotEnabled[0];
 	}
 
-	// TODO: radio buttons need to be created here rather than template
 	var id = this._htmlElId;
 	if (this.showChooseMethod) {
 		var divElem = Dwt.getElement(id + "_method_list");
@@ -361,6 +360,7 @@ function() {
 			Dwt.setInnerHtml(this.twoStepAuthSpan, ZmMsg.twoStepAuth);
 		}
 
+		// TODO: consider if the enabled method is a first method or not
 		this.accountPage.setTwoStepAuthLink();
 
 		if (this.twoStepAuthCodesContainer) {
@@ -545,6 +545,7 @@ function(params, dialog) {
 
 ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback =
 function(params, dialog, method) {
+	// TODO: consider if no method is enabled or not
 	dialog.popdown();
 	Dwt.setInnerHtml(params.twoStepAuthSpan, ZmMsg.twoStepStandardAuth);
 	Dwt.setDisplay(params.twoStepAuthCodesContainer, Dwt.DISPLAY_NONE);
