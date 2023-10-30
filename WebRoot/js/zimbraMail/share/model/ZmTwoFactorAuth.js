@@ -75,6 +75,8 @@ function() {
         return [];
     }
 
+    // TODO: return empty array when zimbraTwoFactorAuthEnabled is FALSE
+
     var allowedMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
 
     var enabledMethod = appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_METHOD_ENABLED) || [];

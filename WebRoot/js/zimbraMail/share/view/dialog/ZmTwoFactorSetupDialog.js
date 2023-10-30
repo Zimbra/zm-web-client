@@ -137,8 +137,8 @@ function() {
  * Pops-up the dialog.
  */
 ZmTwoFactorSetupDialog.prototype.popup =
-function() {
-	this.reset();
+function(method) {
+	this.reset(method);
 	DwtDialog.prototype.popup.call(this);
 };
 
@@ -146,7 +146,7 @@ function() {
  * Resets the dialog back to its original state.
  */
 ZmTwoFactorSetupDialog.prototype.reset =
-function() {
+function(method) {
 
 	if (typeof appCtxt !== "undefined") {
 		this.methodAllowed = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
@@ -165,7 +165,10 @@ function() {
 		}
 	}
 
-	if (this.methodNotEnabled.length > 1) {
+	if (method) {
+		this.showChooseMethod = false;
+		this.tfaMethod = method;
+	} else if (this.methodNotEnabled.length > 1) {
 		this.showChooseMethod = true;
 		this.tfaMethod = "";
 	} else {
@@ -183,7 +186,7 @@ function() {
 	if (this.showChooseMethod) {
 		this._divIds["initial"].push(this._chooseMethodDivId);
 	} else {
-		this._stages[1] = this.methodNotEnabled[0];
+		this._stages[1] = this.tfaMethod;
 	}
 
 	var id = this._htmlElId;
@@ -525,19 +528,8 @@ function() {
 };
 
 ZmTwoFactorSetupDialog.disableTwoFactorAuth =
-function(params, dialog) {
+function(params, dialog, method) {
 	var command = new ZmCsfeCommand();
-	var methodsDiv = document.getElementById("tfaMethodsToBeDisabled");
-	var method = params.method;
-	if (methodsDiv) {
-		var collection = methodsDiv.getElementsByTagName('INPUT');
-		for (i = 0; i < collection.length; i++) {
-			if (collection[i].checked) {
-				method = collection[i].value;
-				break;
-			}
-		}
-	}
 	var jsonObj = {DisableTwoFactorAuthRequest : {_jsns:"urn:zimbraAccount", method: method}};
 	var callback = ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback.bind(window, params, dialog, method);
 	command.invoke({jsonObj: jsonObj, noAuthToken: true, asyncMode: true, callback: callback, serverUri:"/service/soap/"});
