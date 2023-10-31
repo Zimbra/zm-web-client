@@ -1266,7 +1266,11 @@ function() {
 		var enabled = (methodEnabled.indexOf(methodAllowed[i]) !== -1);
 		var labelElem = document.getElementById(baseId + "_text_right");
 		if (labelElem) {
-			labelElem.textContent = ZmMsg["twoStepAuthMethod_" + methodAllowed[i]] + " " + (enabled ? ZmMsg.twoStepAuthMethodStatusEnabled : ZmMsg.twoStepAuthMethodStatusDisabled);
+			var methodName = ZmMsg["twoStepAuthMethod_" + methodAllowed[i]];
+			if (methodAllowed[i] === ZmTwoFactorAuth.EMAIL && methodEnabled.indexOf(ZmTwoFactorAuth.EMAIL) !== -1) {
+				methodName = AjxMessageFormat.format(ZmMsg.twoStepAuthMethod_email2, AjxStringUtil.htmlEncode(appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL)));
+			}
+			labelElem.textContent = methodName + " " + (enabled ? ZmMsg.twoStepAuthMethodStatusEnabled : ZmMsg.twoStepAuthMethodStatusDisabled);
 
 			var aElem = document.getElementById(baseId + "_LINK");
 			if (!aElem) {
