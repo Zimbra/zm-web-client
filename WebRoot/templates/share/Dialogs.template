@@ -724,6 +724,10 @@
 			<div class="ZmTwoFactorSetupContainer">
 				<label for="${id}_code_input"><$=ZmMsg.code$> : </label>
 				<input type="text" id="${id}_code_input" autocomplete="off"/>
+				<div id='${id}_resend_code' style="text-align:right">
+					<a id='${id}_resend_code_link' href="#" style="display:none"><$=ZmMsg.twoStepAuthResendCode$></a>
+					<span id='${id}_resend_code_status' href="#" style="display:none"></span>
+				</div>
 			</div>
 		</div>
 		<div id='${id}_success'>
@@ -794,6 +798,10 @@
 			</div>
 			<div class="ZmTwoFactorCustomInputLoginPage">
 				<input class="numberInputTag" type="number" id="${id}_code_input" placeholder="e.g. 123456" autocomplete="off"/>
+			</div>
+			<div id='${id}_resend_code' style="text-align:right">
+				<a class="ZmTwoFactorCustomParaLoginPage" id='${id}_resend_code_link' href="#" style="display:none"><$=ZmMsg.twoStepAuthResendCode$></a>
+				<span class="ZmTwoFactorCustomParaLoginPage" id='${id}_resend_code_status' href="#" style="display:none"></span>
 			</div>
 		</div>
 		<div id='${id}_success'>
