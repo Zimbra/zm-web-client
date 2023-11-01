@@ -83,7 +83,9 @@
 			userName : "<%=userName%>",
 			isFromLoginPage : true,
 			tfaMethodAllowed : "${zm:cook(param.tfaMethodAllowed)}",
-			isResetPasswordEnabled : ${zm:boolean(param.isResetPasswordEnabled)}
+			isResetPasswordEnabled : ${zm:boolean(param.isResetPasswordEnabled)},
+			client : "${zm:cook(param.client)}",
+
 		};
 		new ZmTwoFactorSetupDialog(params).popup();
 		var changeTag = document.getElementsByClassName("DwtDialogTitle")[0];

@@ -35,6 +35,7 @@ ZmTwoFactorSetupDialog = function(params) {
 	this.twoStepAuthSpan = params.twoStepAuthSpan;
 	this.twoStepAuthCodesContainer = params.twoStepAuthCodesContainer;
 	this.twoStepAuthEnabledCallback = params.twoStepAuthEnabledCallback;
+	this.clientType = params.client;
 	// this.isFromLoginPage will be true if ZmTwoFactorSetupDialog is created from TwoFactorSetup.jsp, which is forwarded from login.jsp file.
 	this.isFromLoginPage = params.isFromLoginPage;
 	var previousButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, ZmMsg.previous, DwtDialog.ALIGN_RIGHT, this._previousButtonListener.bind(this));
@@ -387,8 +388,13 @@ ZmTwoFactorSetupDialog.prototype._finishButtonListener =
 function() {
 	//If the user clicks finish button, redirect to the login page
 	if (this.isFromLoginPage) {
-		// TODO: add client param
-		var url = location.protocol + "//" + location.host + location.pathname + location.search;
+		var searchParam = "";
+		if (location.search && this.clientType) {
+			searchParam = location.search + "&client=" + AjxStringUtil.urlEncode(this.clientType);
+		} else if (this.clientType) {
+			searchParam = "?client=" + AjxStringUtil.urlEncode(this.clientType);
+		}
+		var url = location.protocol + "//" + location.host + location.pathname + searchParam;
 		location.replace(url);
 	}
 	else {
