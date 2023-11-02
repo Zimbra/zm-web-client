@@ -385,6 +385,7 @@ ZmAccountsPage.prototype._handleResetRecoveryEmailButton =
 function() {
 	var tfaEnabledMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
 	if (tfaEnabledMethod.indexOf(ZmTwoFactorAuth.EMAIL) !== -1) {
+		// TODO: when zimbraFeatureTwoFactorAuthRequired is TRUE and only email method is enabled, recovery address cannot be reset.
 		var msgDialog = appCtxt.getOkCancelMsgDialog();
 		msgDialog.setMessage(ZmMsg.recoveryEmailButtonResetWarining, DwtMessageDialog.WARNING_STYLE, ZmMsg.recoveryEmailButtonResetWariningTitle);
 		msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._handleResetRecoveryEmail.bind(this, msgDialog));
@@ -402,9 +403,7 @@ function(msgDialog) {
 	if (msgDialog) {
 		msgDialog.popdown();
 	}
-	/* TODO: when 2FA email method is enabled, call DisableTwoFactorAuthRequest first.
-	 * need to consider the case that zimbraFeatureTwoFactorAuthRequired is TRUE and only email method is enabled.
-	 */
+	// TODO: when 2FA email method is enabled, call DisableTwoFactorAuthRequest first.
 	var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
 	var callback = this._recoveryResetRequest.bind(this);
 	var errorCallback = this._recoveryErrorCallback.bind(this);
@@ -552,6 +551,8 @@ function(status) {
 	var userStatusMessage, attempts, attemptsMessage, requestMessage;
 	var resendMessage = AjxMessageFormat.format(ZmMsg.recoveryEmailMessageResend);
 	this.recoveryEmailStatus = status;
+	var tfaMethodAllowed = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
+	var isEmailMethodAllowed = (tfaMethodAllowed.indexOf(ZmTwoFactorAuth.EMAIL) !== -1);
 	switch(status) {
 		case this.RECOVERY_EMAIL_STATUS.verified:
 			userStatusMessage = ZmMsg.recoveryEmailStatusVerified;
@@ -563,6 +564,10 @@ function(status) {
 			this.validateRecoveryEmailButton.setVisible(false);
 			this.addRecoveryEmailInputContainer.style.display = "none";
 			this.codeRecoveryEmailInputContainer.style.display = "none";
+			appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS, this.RECOVERY_EMAIL_STATUS.verified, false, false, true);
+			if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE) && isEmailMethodAllowed) {
+				this.setTwoStepAuthLink();
+			}
 			break;
 		case this.RECOVERY_EMAIL_STATUS.pending:
 			userStatusMessage = ZmMsg.recoveryEmailStatusPending;
@@ -578,6 +583,8 @@ function(status) {
 			this.validateRecoveryEmailButton.setVisible(true);
 			this.addRecoveryEmailInputContainer.style.display = "none";
 			this.codeRecoveryEmailInputContainer.style.display = "table-row";
+			appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL, this.currentPasswordRecoveryValue, false, false, true);
+			appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS, this.RECOVERY_EMAIL_STATUS.pending, false, false, true);
 			break;
 		default:
 			userStatusMessage = ZmMsg.recoveryEmailStatusNone;
@@ -590,6 +597,11 @@ function(status) {
 			this.validateRecoveryEmailButton.setVisible(false);
 			this.addRecoveryEmailInputContainer.style.display = "table-row";
 			this.codeRecoveryEmailInputContainer.style.display = "none";
+			appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL, "", false, false, true);
+			appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS, this.RECOVERY_EMAIL_STATUS.none, false, false, true);
+			if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE) && isEmailMethodAllowed) {
+				this.setTwoStepAuthLink();
+			}
 			break;
 	}
 	this.recoveryCodeInputField.setValue("", true);
