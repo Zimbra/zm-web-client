@@ -624,7 +624,9 @@ function(params, dialog, method) {
 ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback =
 function(params, dialog, method) {
 	// TODO: consider if no method is enabled or not
-	dialog.popdown();
+	if (dialog) {
+		dialog.popdown();
+	}
 	Dwt.setInnerHtml(params.twoStepAuthSpan, ZmMsg.twoStepStandardAuth);
 	Dwt.setDisplay(params.twoStepAuthCodesContainer, Dwt.DISPLAY_NONE);
 
@@ -653,5 +655,7 @@ function(params, dialog, method) {
 		appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_ENABLED, false, false, false, true);
 	}
 
-	params.accountPage.setTwoStepAuthLink();
+	if (params.accountPage) {
+		params.accountPage.setTwoStepAuthLink();
+	}
 };

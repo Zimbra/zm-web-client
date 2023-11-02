@@ -404,11 +404,23 @@ function(msgDialog) {
 		msgDialog.popdown();
 	}
 	// TODO: when 2FA email method is enabled, call DisableTwoFactorAuthRequest first.
-	var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
+	var tfaEnabledMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
+	if (tfaEnabledMethod.indexOf(ZmTwoFactorAuth.EMAIL) !== -1) {
+		var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
+		// set onerror to empty not to execute SetRecoveryAccountRequest when DisableTwoFactorAuthReseponse is failed
+		soapDoc.setMethodAttribute("onerror", "");
+		var doc = soapDoc.getDoc();
+		var disableTFARequest = soapDoc.set("DisableTwoFactorAuthRequest", null, null, "urn:zimbraAccount");
+		disableTFARequest.setAttribute("method", ZmTwoFactorAuth.EMAIL);
+		var setRecoveryAccountRequest = soapDoc.set("SetRecoveryAccountRequest", null, null, "urn:zimbraMail");
+		setRecoveryAccountRequest.setAttribute("op", "reset");
+	} else {
+		var soapDoc = AjxSoapDoc.create("SetRecoveryAccountRequest", "urn:zimbraMail");
+		soapDoc.setMethodAttribute("op", "reset");
+	}
 	var callback = this._recoveryResetRequest.bind(this);
 	var errorCallback = this._recoveryErrorCallback.bind(this);
 	this.recoveryErrorMessage.innerHTML = "";
-	soapDoc.setMethodAttribute("op", "reset");
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback, errorCallback: errorCallback});
 };
 
@@ -422,13 +434,37 @@ function(msgDialog) {
  */
 ZmAccountsPage.prototype._recoveryResetRequest =
 function(response) {
-	if (!response._isException) {
-		this._sentLabel = ZmMsg.recoveryEmailSentLabel;
-		this.recoveryCodeInputField.setValue("", true);
-		this.validateRecoveryEmailButton.setEnabled(false);
-		this.recoveryAccountInputField.setValue("", true);
-		this.addRecoveryEmailButton.setEnabled(false);
-		this._setAccountPasswordControls("Not Set");
+	if (response._data && response._data.BatchResponse) {
+		var disableTwoFactorAuthResponse = response._data.BatchResponse.DisableTwoFactorAuthResponse;
+		var fault = response._data.BatchResponse.Fault;
+		var updateTFAMethodLink
+		if (!fault) {
+			// do not set accontPage in ParamsObj
+			paramsObj = {
+				twoStepAuthSpan : Dwt.getElement(this._htmlElId + "_TWO_STEP_AUTH"),
+				twoStepAuthCodesContainer : Dwt.getElement(this._htmlElId + "_TWO_STEP_AUTH_CODES_CONTAINER"),
+			};
+			ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback(paramsObj, null, ZmTwoFactorAuth.EMAIL);
+			this._setAccountPasswordControls("none");
+		} else if (disableTwoFactorAuthResponse) {
+			// DisableTwoFactorAuthReseponse succeeded but SetRecoveryAccountRequest failed
+			paramsObj = {
+				accountPage: this,
+				twoStepAuthSpan : Dwt.getElement(this._htmlElId + "_TWO_STEP_AUTH"),
+				twoStepAuthCodesContainer : Dwt.getElement(this._htmlElId + "_TWO_STEP_AUTH_CODES_CONTAINER"),
+			};
+			ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback(paramsObj, null, ZmTwoFactorAuth.EMAIL);
+			var dialog = appCtxt.getMsgDialog();
+			dialog.setMessage(ZmMsg.passwordRecoveryTFAEmailDisabledButResetFailed, DwtMessageDialog.CRITICAL_STYLE);
+			dialog.popup();
+		} else {
+			// DisableTwoFactorAuthReseponse failed. SetRecoveryAccountRequest is not executed.
+			var dialog = appCtxt.getMsgDialog();
+			dialog.setMessage(ZmMsg.passwordRecoveryDisableTFAEmailFailed, DwtMessageDialog.CRITICAL_STYLE);
+			dialog.popup();
+		}
+	} else if (!response._isException) {
+		this._setAccountPasswordControls("none");
 	} else {
 		this._recoveryErrorCallback({code: "Unknown", msg: "Unknown Error: " + ZmMsg.unknownError});
 	}
@@ -543,11 +579,12 @@ function(response) {
  * Based on the satus of the recovery email address, change the ui to fit the expected flow.
  *
  * @TODO Possibly remove this.recoveryEmailStatus if variable is no longer being used in multiple methods
- * @param {string} status this.RECOVERY_EMAIL_STATUS (none || pending || verified)
+ * @param {string}  status                     this.RECOVERY_EMAIL_STATUS (none || pending || verified)
+ * @param {boolean} skipTwoStepAuthLinkUpdate  skip updating two-step authentication links if it is true
  */
 
 ZmAccountsPage.prototype._setAccountPasswordControls =
-function(status) {
+function(status, skipTwoStepAuthLinkUpdate) {
 	var userStatusMessage, attempts, attemptsMessage, requestMessage;
 	var resendMessage = AjxMessageFormat.format(ZmMsg.recoveryEmailMessageResend);
 	this.recoveryEmailStatus = status;
@@ -564,8 +601,8 @@ function(status) {
 			this.validateRecoveryEmailButton.setVisible(false);
 			this.addRecoveryEmailInputContainer.style.display = "none";
 			this.codeRecoveryEmailInputContainer.style.display = "none";
-			appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS, this.RECOVERY_EMAIL_STATUS.verified, false, false, true);
-			if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE) && isEmailMethodAllowed) {
+			if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE) && isEmailMethodAllowed && !skipTwoStepAuthLinkUpdate) {
+				appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS, this.RECOVERY_EMAIL_STATUS.verified, false, false, true);
 				this.setTwoStepAuthLink();
 			}
 			break;
@@ -583,23 +620,27 @@ function(status) {
 			this.validateRecoveryEmailButton.setVisible(true);
 			this.addRecoveryEmailInputContainer.style.display = "none";
 			this.codeRecoveryEmailInputContainer.style.display = "table-row";
-			appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL, this.currentPasswordRecoveryValue, false, false, true);
-			appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS, this.RECOVERY_EMAIL_STATUS.pending, false, false, true);
+			if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE) && isEmailMethodAllowed && !skipTwoStepAuthLinkUpdate) {
+				appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL, this.currentPasswordRecoveryValue, false, false, true);
+				appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS, this.RECOVERY_EMAIL_STATUS.pending, false, false, true);
+			}
 			break;
 		default:
 			userStatusMessage = ZmMsg.recoveryEmailStatusNone;
 			this.recoveryMessage.innerHTML = ZmMsg.recoveryEmailMessageAdd;
 			this.recoveryEmail = "";
 			this.recoveryOptionsTitle.innerHTML = "";
+			this.recoveryAccountInputField.setValue("", true);
 			this.addRecoveryEmailButton.setVisible(true);
+			this.addRecoveryEmailButton.setEnabled(false);
 			this.resetRecoveryEmailButton.setVisible(false);
 			this.resendRecoveryEmailButton.setVisible(false);
 			this.validateRecoveryEmailButton.setVisible(false);
 			this.addRecoveryEmailInputContainer.style.display = "table-row";
 			this.codeRecoveryEmailInputContainer.style.display = "none";
-			appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL, "", false, false, true);
-			appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS, this.RECOVERY_EMAIL_STATUS.none, false, false, true);
-			if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE) && isEmailMethodAllowed) {
+			if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE) && isEmailMethodAllowed && !skipTwoStepAuthLinkUpdate) {
+				appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL, "", false, false, true);
+				appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS, this.RECOVERY_EMAIL_STATUS.none, false, false, true);
 				this.setTwoStepAuthLink();
 			}
 			break;
@@ -832,7 +873,7 @@ function() {
 	this.currentPasswordRecoveryValue = this.recoveryEmail;
 
 	// Pass this status through standard control method for additional settings.
-	this._setAccountPasswordControls(this.recoveryEmailStatus);
+	this._setAccountPasswordControls(this.recoveryEmailStatus, true);
 };
 
 /**
