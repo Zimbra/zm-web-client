@@ -160,7 +160,7 @@ function(method) {
 	if (typeof appCtxt !== "undefined") {
 		this.methodAllowed = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
 		this.methodEnabled = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
-		this.isResetPasswordEnabled = (appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) && appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === "enabled" && appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) === "verified");
+		this.isResetPasswordEnabled = (appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === "enabled" && appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) && appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) === "verified");
 	} else {
 		this.methodAllowed = params.tfaMethodAllowed ? params.tfaMethodAllowed.split(',') : [ZmTwoFactorAuth.APP];
 		this.methodEnabled = [];
@@ -236,13 +236,15 @@ function(method) {
 		if (this.isResetPasswordEnabled) {
 			if (this.isFromLoginPage) {
 				divElemDscription.textContent = ZmMsg.twoStepAuthEmailSetupDesc;
+				pElemEmailNote.textContent = ZmMsg.twoStepAuthEmailSetupNoteLogin;
 			} else {
 				divElemDscription.textContent = ZmMsg.twoStepAuthEmailSetupDescUseRecoveryAddress;
+				pElemEmailNote.textContent = ZmMsg.twoStepAuthEmailSetupNote;
 				// this._emailAddressInput.value will be clear before a dialog is shown.
 				// set a value after popup is called.
+				// see ZmTwoFactorSetupDialog.prototype.popup
 				this.__emailAddressInput = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL);
 			}
-			pElemEmailNote.textContent = ZmMsg.twoStepAuthEmailSetupNote;
 			divElemEmailNote.style.display = "";
 		} else {
 			divElemDscription.textContent = ZmMsg.twoStepAuthEmailSetupDesc;
