@@ -44,7 +44,7 @@ ZmTwoFactorAuth.EMAIL = "email";
  */
 ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed =
 function() {
-    if (!window.appCtxt) {
+    if (!window.appCtxt || !appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE)) {
         return [];
     }
 
@@ -71,11 +71,11 @@ function() {
  */
 ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled =
 function() {
+    // TODO: change the conditions to the commented one. For now zimbraTwoFactorAuthEnabled is not checked just for development purpose.
+    // if (!window.appCtxt || !appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) {
     if (!window.appCtxt) {
         return [];
     }
-
-    // TODO: return empty array when zimbraTwoFactorAuthEnabled is FALSE
 
     var allowedMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
 
