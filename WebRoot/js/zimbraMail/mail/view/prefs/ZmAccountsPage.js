@@ -403,7 +403,6 @@ function(msgDialog) {
 	if (msgDialog) {
 		msgDialog.popdown();
 	}
-	// TODO: when 2FA email method is enabled, call DisableTwoFactorAuthRequest first.
 	var tfaEnabledMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
 	if (tfaEnabledMethod.indexOf(ZmTwoFactorAuth.EMAIL) !== -1) {
 		var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
