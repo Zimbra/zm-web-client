@@ -405,9 +405,6 @@ function() {
 			Dwt.setInnerHtml(this.twoStepAuthSpan, ZmMsg.twoStepAuth);
 		}
 
-		// TODO: consider if the enabled method is a first method or not
-		this.accountPage.setTwoStepAuthLink();
-
 		if (this.twoStepAuthCodesContainer) {
 			Dwt.setDisplay(this.twoStepAuthCodesContainer, "");
 		}
@@ -507,38 +504,25 @@ function(currentDivId, result) {
 		/* TODO: scratchCodes will not be returned when 2nd method is enabled.
 		 *       Need to fix if-else conditions.
 		 */
-		/* TODO: when email method is enabled zimbraFeatureResetPasswordStatus is enabled,
-		 *       update recovery email address and show the email address in Password Recovery Account Setting with verified status
-		 */
 		var secret = enableTwoFactorAuthResponse.secret;
 		var scratchCodes = enableTwoFactorAuthResponse.scratchCodes;
 		if (secret && secret[0] && secret[0]._content) {
+			if (typeof appCtxt !== "undefined" && this.tfaMethod === ZmTwoFactorAuth.EMAIL) {
+				var callback = ZmTwoFactorSetupDialog._GetInfoCallback.bind(this, null, false, this.tfaMethod);
+				var command = new ZmCsfeCommand();
+				var jsonObj = {GetInfoRequest : {_jsns:"urn:zimbraAccount"}};
+				var result = command.invoke({jsonObj: jsonObj, noAuthToken: true, asyncMode: true, callback: callback, serverUri:"/service/soap/"});
+			}
 			Dwt.setInnerHtml(this._keySpan, secret[0]._content);
 			this._handleTwoFactorAuthSuccess(currentDivId);
 			return;
 		}
 		else if (scratchCodes && scratchCodes[0] && scratchCodes[0].scratchCode) {
-			/* TODO: it may be better to call GetInfoRequest to get the updated values of
-			 *       - zimbraTwoFactorAuthMethodEnabled
-			 *       - zimbraPrefPrimaryTwoFactorAuthMethod
-			 *       - zimbraPrefPasswordRecoveryAddress
-			 *       - zimbraPrefPasswordRecoveryAddressStatus
-			 */
 			if (typeof appCtxt !== "undefined") {
-				//Only the server will set ZmSetting.TWO_FACTOR_AUTH_ENABLED. Don't try to save the setting from the UI.
-				appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_ENABLED, true, false, false, true);
-
-				this.methodEnabled.push(this.tfaMethod);
-				appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_METHOD_ENABLED, this.methodEnabled.concat(), false, false, true);
-				for (var i = 0; i < this.methodNotEnabled.length; i++) {
-					if (this.methodNotEnabled[i] === this.tfaMethod) {
-						this.methodNotEnabled.splice(i, 1);
-						break;
-					}
-				}
-				if (!ZmTwoFactorAuth.getPrefPrimaryTwoFactorAuthMethod()) {
-					appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_PRIMARY_METHOD, this.tfaMethod, false, false, true);
-				}
+				var callback = ZmTwoFactorSetupDialog._GetInfoCallback.bind(this, null, false, this.tfaMethod);
+				var command = new ZmCsfeCommand();
+				var jsonObj = {GetInfoRequest : {_jsns:"urn:zimbraAccount"}};
+				var result = command.invoke({jsonObj: jsonObj, noAuthToken: true, asyncMode: true, callback: callback, serverUri:"/service/soap/"});
 
 				var scratchCode = AjxUtil.map(scratchCodes[0].scratchCode, function(obj) {return obj._content});
 				appCtxt.cacheSet(ZmTwoFactorSetupDialog.ONE_TIME_CODES, scratchCode);
@@ -623,39 +607,55 @@ function(params, dialog, method) {
 
 ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback =
 function(params, dialog, method) {
-	// TODO: consider if no method is enabled or not
 	if (dialog) {
 		dialog.popdown();
 	}
-	Dwt.setInnerHtml(params.twoStepAuthSpan, ZmMsg.twoStepStandardAuth);
-	Dwt.setDisplay(params.twoStepAuthCodesContainer, Dwt.DISPLAY_NONE);
+	var callback = ZmTwoFactorSetupDialog._GetInfoCallback.bind(this, params, true, method);
+	var command = new ZmCsfeCommand();
+	var jsonObj = {GetInfoRequest : {_jsns:"urn:zimbraAccount"}};
+	var result = command.invoke({jsonObj: jsonObj, noAuthToken: true, asyncMode: true, callback: callback, serverUri:"/service/soap/"});
+};
 
-	var methodEnabled = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
-	for (i = 0; i < methodEnabled.length; i++) {
-		if (methodEnabled[i] === method) {
-			methodEnabled.splice(i, 1);
-			break;
+/**
+ * Get account settings from a server because some attributes are calculated and set on the server.
+ * It is non-prototype function so that it can be called from ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback.
+ *
+ * @param {object}   params       The object parameters which are passed at DisableTwoFactorAuthRequest
+ * @param {boolean}  disableTFA   Whether GetInfoRequest is called after DisableTwoFactorAuthRequest
+ * @param {object}   result       The response object
+ */
+ZmTwoFactorSetupDialog._GetInfoCallback =
+function(params, disableTFA, method, result) {
+	var dialog = appCtxt.getMsgDialog();
+	dialog.setMessage(ZmMsg.twoFactorAuthGetInfoFailed, DwtMessageDialog.WARNING_STYLE);
+	if (!result || result.isException()) {
+		dialog.popup();
+		return;
+	}
+	try {
+		var response = result.getResponse().Body.GetInfoResponse;
+		var tfaEnabled = response.attrs._attrs.zimbraTwoFactorAuthEnabled || "FALSE";
+		var methodEnabled = response.attrs._attrs.zimbraTwoFactorAuthMethodEnabled || "";
+		var primaryMethod = response.prefs._attrs.zimbraPrefPrimaryTwoFactorAuthMethod || "";
+		var recoveryAddress = response.prefs._attrs.zimbraPrefPasswordRecoveryAddress || "";
+		var recoveryAddressStatus = response.prefs._attrs.zimbraPrefPasswordRecoveryAddressStatus || "";
+		appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_ENABLED, tfaEnabled, false, false, true);
+		appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_METHOD_ENABLED, methodEnabled, false, false, true);
+		appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_PRIMARY_METHOD, primaryMethod, false, false, true);
+		appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL, recoveryAddress, false, false, true);
+		appCtxt.set(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS, recoveryAddressStatus, false, false, true);
+		if (disableTFA && params && params.accountPage) {
+			params.accountPage.setTwoStepAuthLink();
+			// if TFA is enabled, the page is updated when finish button is clicked.
 		}
-	}
-	/* TODO: it may be better to call GetInfoRequest to get the updated values of
-	 *       - zimbraTwoFactorAuthMethodEnabled
-	 *       - zimbraPrefPrimaryTwoFactorAuthMethod
-	 */
-	appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_METHOD_ENABLED, methodEnabled, false, false, true);
-
-	if (ZmTwoFactorAuth.getPrefPrimaryTwoFactorAuthMethod() === method) {
-		if (methodEnabled.length > 0) {
-			appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_PRIMARY_METHOD, methodEnabled[0], false, false, true);
-		} else {
-			appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_PRIMARY_METHOD, null, false, false, true);
+		if (disableTFA && tfaEnabled !== "TRUE") {
+			Dwt.setInnerHtml(params.twoStepAuthSpan, ZmMsg.twoStepStandardAuth);
+			Dwt.setDisplay(params.twoStepAuthCodesContainer, Dwt.DISPLAY_NONE);
 		}
-	}
-
-	if (methodEnabled.length === 0) {
-		appCtxt.set(ZmSetting.TWO_FACTOR_AUTH_ENABLED, false, false, false, true);
-	}
-
-	if (params.accountPage) {
-		params.accountPage.setTwoStepAuthLink();
+		if (!disableTFA && method === ZmTwoFactorAuth.EMAIL && this.accountPage) {
+			this.accountPage._setAccountPasswordControls(recoveryAddressStatus);
+		}
+	} catch (e) {
+		dialog.popup();
 	}
 };
