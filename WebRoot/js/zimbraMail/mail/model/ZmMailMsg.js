@@ -2071,12 +2071,33 @@ function(ev) {
 	this.isFlagged = parentWindowMsg.isFlagged;
 };
 
+/**
+ * Checks if SMIME feature is enabled or not
+ * @returns {boolean}
+ */
+ZmMailMsg.prototype.hasSMIMEFeature = function() {
+    // check for S/MIME license attribute
+    var license = appCtxt.getSettings().getInfoResponse.license;
 
+    for (var i = 0; license && i < license.attr.length; i++) {
+        var attr = license.attr[i];
+
+        if (attr.name == "SMIME") {
+            return attr._content == "TRUE";
+		}
+    }
+    return false;
+};
 
 ZmMailMsg.prototype.isRealAttachment =
 function(attachment) {
 	var type = attachment.contentType;
 
+	// the "isIgnored" check(after this) ignores the .p7s files
+	// if SMIME is disabled, attach .p7s file, do not ignore
+	if (!this.hasSMIMEFeature() && type === ZmMimeTable.APP_SIGNATURE) {
+		return true;
+	}
 	// bug fix #6374 - ignore if attachment is body unless content type is message/rfc822
 	if (ZmMimeTable.isIgnored(type)) {
 		return false;
