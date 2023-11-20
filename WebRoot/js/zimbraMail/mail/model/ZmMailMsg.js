@@ -2076,17 +2076,17 @@ function(ev) {
  * @returns {boolean}
  */
 ZmMailMsg.prototype.hasSMIMEFeature = function() {
-    // check for S/MIME license attribute
-    var license = appCtxt.getSettings().getInfoResponse.license;
+	// check for S/MIME license attribute
+	var license = appCtxt.getSettings().getInfoResponse.license;
 
-    for (var i = 0; license && i < license.attr.length; i++) {
-        var attr = license.attr[i];
+	for (var i = 0; license && i < license.attr.length; i++) {
+		var attr = license.attr[i];
 
-        if (attr.name == "SMIME") {
-            return attr._content == "TRUE";
+		if (attr.name == "SMIME") {
+			return attr._content == "TRUE";
 		}
-    }
-    return false;
+	}
+	return false;
 };
 
 ZmMailMsg.prototype.isRealAttachment =
