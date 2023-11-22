@@ -47,6 +47,7 @@
 	if (contextPath.equals("/")) {
 		contextPath = "";
 	}
+	pageContext.setAttribute("contextPath", contextPath);
 
 	boolean isDevMode = getParameter(request, "dev", "0").equals("1");
 	pageContext.setAttribute("isDevMode", isDevMode);
@@ -98,7 +99,8 @@
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		}
 		var params = {
-			accountInput : "<%=accountInput%>"
+			accountInput : "<%=accountInput%>",
+			contextPath : "<%=contextPath%>"
 		};
 		new ZmPasswordRecoveryDialog(params).popup();
 		var changeTag = document.getElementsByClassName("DwtDialogTitle")[0];
