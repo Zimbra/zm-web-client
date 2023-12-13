@@ -30,7 +30,7 @@
     <link rel="stylesheet" type="text/css" href="<c:url value='/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin' />">
     <body>
     <c:set var="url" value="/public/login.jsp"/>
-    <c:if test="${empty param.postLoginUrl and not empty requestScope.postLoginUrl}">
+    <c:if test="${empty param.postLoginUrl and not empty requestScope.postLoginUrl and zm:validatePostLoginUrl(requestScope.postLoginUrl)}">
         <c:set var="url" value="${zm:cook(requestScope.postLoginUrl)}"/>
     </c:if>
     <form method="post" name="loginForm2" id="loginForm2" action="${url}" accept-charset="UTF-8">
