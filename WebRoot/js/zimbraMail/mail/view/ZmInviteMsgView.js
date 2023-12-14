@@ -136,7 +136,7 @@ function(msg) {
 			inviteToolbar.setVisible(enabled);
 
 			// show on-behalf-of info?
-			this._respondOnBehalfLabel.setContent(msg.cif ? AjxMessageFormat.format(ZmMsg.onBehalfOfText, [msg.cif]) : "");
+			this._respondOnBehalfLabel.setContent(msg.cif ? AjxMessageFormat.format(ZmMsg.onBehalfOfText, [AjxStringUtil.htmlEncode(msg.cif)]) : "");
 			this._respondOnBehalfLabel.setVisible(!!msg.cif);
 
 			// logic for showing calendar/folder chooser
@@ -595,7 +595,7 @@ function(subs, sentBy, sentByAddr, obo) {
 	}
 
     if(this._msg.cif) {
-        subs.intendedForMsg = AjxMessageFormat.format(ZmMsg.intendedForInfo, [this._msg.cif]);
+        subs.intendedForMsg = AjxMessageFormat.format(ZmMsg.intendedForInfo, [AjxStringUtil.htmlEncode(this._msg.cif)]);
         subs.intendedForClassName = "InviteIntendedFor";
     }
 
