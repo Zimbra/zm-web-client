@@ -1389,7 +1389,11 @@ function(ev) {
 		if (msg = this._checkCondition(c)) {
 			break;
 		} else {
-			rule.addCondition(c.testType, c.comparator, c.value, c.subjectMod, c.caseSensitive);
+			if (c.testType === ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_DATE]) {
+				rule.addCondition(c.testType, c.comparator, Number(c.value), c.subjectMod, c.caseSensitive);
+			} else {
+				rule.addCondition(c.testType, c.comparator, c.value, c.subjectMod, c.caseSensitive);
+			}
 		}
 	}
 	if (!msg) {
@@ -1550,7 +1554,7 @@ function(inputs, conf, field) {
 		if (!date) {
 			return null;
 		}
-		return String(date.getTime() / 1000);
+		return String(new Date(date.getFullYear(),date.getMonth(), date.getDate()).getTime()/1000);
 	}
 	if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
 		return inputs[field].dwtObj.getData(ZmFilterRuleDialog.DATA);
