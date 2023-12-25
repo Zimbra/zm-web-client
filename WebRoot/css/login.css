@@ -87,12 +87,18 @@ select#client:focus {
 .verifyButtonWrapper{
 	padding: 12px 0;
 	clear: both; 
-	float:none;
+	float: none;
+	display: flex;
+	align-items: center;
+}
+
+.chooseTFAMethod {
+	width: 100%;
 }
 
 .chooseTFAMethod,
-.chooseTFAMethodBack {
-	float: inline-end;
+.resendCode {
+	text-align: right;
 }
 
 .twoFactorMethodOption {
@@ -109,11 +115,6 @@ select#client:focus {
 	padding-left:5px;
 }
 
-#backButton {
-	background-color: @white-color@;
-	color: #000;
-	height: 32px;
-}
 /*
  *	Container for the splash screen
  */
@@ -238,6 +239,20 @@ input.twoFactorButton {
 	background-color: @brand-hover@;
 }
 
+#cancelButton, #backButton {
+	background-color: @gray-lightest@;
+	color: @gray-darker@;
+	height: 32px;
+	margin: 0 4px;
+}
+
+#cancelButton:hover,
+#cancelButton:focus,
+#backButton:hover,
+#backButton:focus {
+	background-color: @gray-hover@;
+}
+
 input.twoFactorButton[disabled]
 ,input.loginButton[disabled]{border: none;}
 
@@ -252,7 +267,7 @@ input.loginButton:focus {
 }
 
 .twoFactorForm{
-	padding: 20px 40px 60px;
+	padding: 20px 0;
 }
 input#remember {
 	outline: none;
@@ -278,7 +293,7 @@ label#remember {
 .twoFactorTitle{
 	font-size: 20px;
 	font-weight: bold;
-	padding: 17px 40px;
+	padding: 17px 0;
 	color: @gray-darker@;
 }
 
