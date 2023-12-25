@@ -43,7 +43,7 @@
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,login_csrf,screenSize,chooseMethod,tfaMethodEnabled,tfaMethod,maskedEmailAddress,prevTfaMethod,actionResend,isResent,"/>
+<c:set var="ignoredQueryParams" value=",loginOp,loginNewPassword,totpcode,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,ztrusteddevice,zlastserver,client,login_csrf,screenSize,chooseMethod,tfaMethodEnabled,tfaMethod,maskedEmailAddress,prevTfaMethod,actionResend,isResent,trustedDevicesEnabled,"/>
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -191,6 +191,7 @@
         <c:choose>
             <c:when test="${authResult.twoFactorAuthRequired eq true}">
                 <c:set var="totpAuthRequired" value="true"/>
+                <c:set var="trustedDevicesEnabled" value="${authResult.trustedDevicesEnabled}"/>
                 <zm:getTwoFactorAuthConfig authResult="${authResult}" varTFAMethodEnabled="tfaMethodEnabled" varMethod="tfaMethod" varMaskedEmailAddress="maskedEmailAddress"/>
             </c:when>
           <c:otherwise>
@@ -351,6 +352,7 @@ if (application.getInitParameter("offlineMode") != null) {
             <c:set var="tfaMethodEnabled" value="${zm:cook(param.tfaMethodEnabled)}"/>
             <c:set var="tfaMethod" value="${zm:cook(param.tfaMethod)}"/>
             <c:set var="maskedEmailAddress" value="${zm:cook(param.maskedEmailAddress)}"/>
+            <c:set var="trustedDevicesEnabled" value="${zm:cook(param.trustedDevicesEnabled)}"/>
             <c:choose>
                 <c:when test="${param.actionResend}">
                     <c:set var="isResent" value="${true}"/>
@@ -528,6 +530,7 @@ if (application.getInitParameter("offlineMode") != null) {
 								<c:if test="${totpAuthRequired || errorCode eq 'account.TWO_FACTOR_AUTH_FAILED' || errorCode eq 'account.CODE_EXPIRED'}">
 									<!-- if user has selected remember me in login page and we are showing totp screen to user, then we need to maintain value of that flag as after successfull two factor authentication we will have to rewrite ZM_AUTH_TOKEN with correct expires headers -->
 									<input type="hidden" id="zrememberme" name="zrememberme" value="${param.zrememberme}"/>
+									<input type="hidden" id="trustedDevicesEnabled" name="trustedDevicesEnabled" value="${trustedDevicesEnabled}"/>
 									<input type="hidden" id="tfaMethodEnabled" name="tfaMethodEnabled" value="${tfaMethodEnabled}"/>
 									<input type="hidden" id="maskedEmailAddress" name="maskedEmailAddress" value="${maskedEmailAddress}"/>
 									<input type="hidden" id="chooseMethod" name="chooseMethod"/>
@@ -616,10 +619,15 @@ if (application.getInitParameter("offlineMode") != null) {
                                     </c:choose>
                                     <input tabindex="0" class="zLoginFieldInput" id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocomplete="off" onkeyup="disableEnable(this)"></td>
                                 </div>
-                                <c:if test="${authResult.trustedDevicesEnabled eq true || (!empty param.prevTfaMethod)}">
+                                <c:if test="${authResult.trustedDevicesEnabled eq true || trustedDevicesEnabled}">
                                     <div class="trustedDeviceDiv">
                                         <input id="trustedDevice" value="1" type="checkbox" name="ztrusteddevice" <c:if test="${param.ztrusteddevice eq 1}">checked</c:if> >
                                         <label id="trustedDeviceLabel"  tabindex="1" for="trustedDevice"><fmt:message key="twoFactorAuthTrustDevice"/></label>
+                                    </div>
+                                </c:if>
+                                <c:if test="${fn:contains(tfaMethodEnabled, ',')}">
+                                    <div class="chooseTFAMethod">
+                                        <a href="#" onclick="showTFAMethods(true);" ><fmt:message key="twoFactorAuthChooseOtherMethod"/></a>
                                     </div>
                                 </c:if>
                                 <div class="verifyButtonWrapper">
@@ -640,9 +648,6 @@ if (application.getInitParameter("offlineMode") != null) {
                                     </script>
                                     <input id="verifyButton" class="loginButton ZLoginButton DwtButton" tabindex="2" type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" onclick='doTFALogin(true)'>
                                     <input id="cancelButton" class="loginButton ZLoginButton DwtButton" tabindex="3" type="submit" value="<fmt:message key='cancel'/>" onclick='doTFALogin(false)'>
-                                    <div class="chooseTFAMethod">
-                                        <a href="#" onclick="showTFAMethods(true);" ><fmt:message key="twoFactorAuthChooseOtherMethod"/></a>
-                                    </div>
                                 </div>
                         </div>
                     </c:when>

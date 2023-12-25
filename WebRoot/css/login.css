@@ -84,12 +84,8 @@ select#client:focus {
 	color: @gray-darker@;
 }
 
-.verifyButtonWrapper{
+.verifyButtonWrapper {
 	padding: 12px 0;
-	clear: both; 
-	float: none;
-	display: flex;
-	align-items: center;
 }
 
 .chooseTFAMethod {
