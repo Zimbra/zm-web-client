@@ -570,10 +570,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <input type="hidden" id="ztrusteddevice" name="ztrusteddevice" value="${zm:cook(param.ztrusteddevice)}"/>
                             </c:if>
                             <div class="verifyButtonWrapper">
-                                <div>
-                                    <input id="verifyButton" class="loginButton ZLoginButton DwtButton" tabindex="2" type="submit" value="<fmt:message key='next'/>" onclick='showTFAMethods(false);'>
-                                    <input id="backButton" class="loginButton ZLoginButton DwtButton" tabindex="3" type="submit" value="<fmt:message key='back'/>" onclick='showTFAMethods(false, "${tfaMethod}");'>
-                                </div>
+                                <button id="nextButton" class="loginButton ZLoginButton DwtButton" tabindex="2" type="submit" onclick='showTFAMethods(false);'><fmt:message key='next'/></button>
+                                <button id="backButton" class="loginButton ZLoginButton DwtButton" tabindex="3" type="submit" onclick='showTFAMethods(false, "${tfaMethod}");'><fmt:message key='back'/></button>
                             </div>
                         </div>
                     </c:when>
@@ -617,7 +615,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                             </div>
                                         </c:when>
                                     </c:choose>
-                                    <input tabindex="0" class="zLoginFieldInput" id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocomplete="off" onkeyup="disableEnable(this)"></td>
+                                    <input tabindex="0" class="zLoginFieldInput" id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocomplete="off" onkeyup="updateTFAVerifyButtonStatus(this)"></td>
                                 </div>
                                 <c:if test="${authResult.trustedDevicesEnabled eq true || trustedDevicesEnabled}">
                                     <div class="trustedDeviceDiv">
@@ -646,8 +644,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                             return false;
                                         }
                                     </script>
-                                    <input id="verifyButton" class="loginButton ZLoginButton DwtButton" tabindex="2" type="submit" value="<fmt:message key='twoFactorAuthVerifyCode'/>" onclick='doTFALogin(true)'>
-                                    <input id="cancelButton" class="loginButton ZLoginButton DwtButton" tabindex="3" type="submit" value="<fmt:message key='cancel'/>" onclick='doTFALogin(false)'>
+                                    <button id="verifyButton" class="loginButton ZLoginButton DwtButton" tabindex="2" type="submit" onclick='doTFALogin(true)'><fmt:message key='twoFactorAuthVerifyCode'/></button>
+                                    <button id="cancelButton" class="loginButton ZLoginButton DwtButton" tabindex="3" type="submit" onclick='doTFALogin(false)'><fmt:message key='cancel'/></button>
                                 </div>
                         </div>
                     </c:when>
@@ -909,352 +907,356 @@ if (link) {
     if(window.attachEvent){ window.attachEvent("onresize",resizeLoginPanel);}
 </c:if>
 
-// show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
-function clientChange(selectValue) {
-    var div = getElement("ZLoginUnsupported");
-    if (div)
-    div.style.display = 'none';
-}
-
-function forgotPassword() {
-	var accountInput = getElement("username").value;
-	var queryParams = encodeURI("account=" + accountInput);
-	var url = "/public/PasswordRecovery.jsp?" + location.search;
-
-	if (accountInput !== '') {
-		url += (location.search !== '' ? '&' : '') + encodeURI("account=" + accountInput);
-	}
-
-	window.location.href = url;
-}
-
-function disableEnable(txt) {
-    var bt = getElement('verifyButton');
-    if (txt.value != '') {
-        bt.disabled = false;
-    }
-    else {
-        bt.disabled = true;
-    }
-} 
-function hideTooltip() {
-    getElement('ZLoginWhatsThis').style.display='none';
-}
-function showTooltip(){
-    getElement('ZLoginWhatsThis').style.display="block"
-}
-
 function getElement(id) {
     return document.getElementById(id);
 }
 
-function showPassword() {
-    showHidePasswordFields(getElement("password"), getElement("showSpan"), getElement("hideSpan"))
-}
-function showNewPassword() {
-    showHidePasswordFields(getElement("newPassword"), getElement("newPasswordShowSpan"), getElement("newPasswordHideSpan"));
-}
-function showConfirmPassword() {
-    showHidePasswordFields(getElement("confirm"), getElement("confirmShowSpan"), getElement("confirmHideSpan"));
-}
-
-function showHidePasswordFields(passElem, showSpanElem, hideSpanElem) {
-    if (passElem.type === "password") {
-        passElem.type = "text";
-        showSpanElem.style.display = "none";
-        hideSpanElem.style.display = "block";
+function updateTFAVerifyButtonStatus(input) {
+    var button = getElement('verifyButton');
+    if (input && input.value) {
+        button.disabled = false;
     } else {
-        passElem.type = "password";
-        showSpanElem.style.display = "block";
-        hideSpanElem.style.display = "none";
+        button.disabled = true;
     }
 }
 
 function onLoad() {
-	var loginForm = document.loginForm;
-	if (loginForm.username) {
-		if (loginForm.username.value != "") {
-			loginForm.password.focus(); //if username set, focus on password
-		}
-		else {
-			loginForm.username.focus();
-		}
-	}
-	clientChange("${zm:cook(client)}");
-	if (${totpAuthRequired} && loginForm.totpcode) {
+    var loginForm = document.loginForm;
+    if (loginForm.username) {
+        if (loginForm.username.value != "") {
+            loginForm.password.focus(); //if username set, focus on password
+        }
+        else {
+            loginForm.username.focus();
+        }
+    }
+    clientChange("${zm:cook(client)}");
+    if (${totpAuthRequired} && loginForm.totpcode) {
         loginForm.totpcode.focus();
+        updateTFAVerifyButtonStatus();
+    }
+}
+
+// show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
+function clientChange(selectValue) {
+    var div = getElement("ZLoginUnsupported");
+    if (div) {
+        div.style.display = 'none';
+    }
+}
+
+<c:if test="${not totpAuthRequired}">
+    function forgotPassword() {
+        var accountInput = getElement("username").value;
+        var queryParams = encodeURI("account=" + accountInput);
+        var url = "/public/PasswordRecovery.jsp?" + location.search;
+
+        if (accountInput !== '') {
+            url += (location.search !== '' ? '&' : '') + encodeURI("account=" + accountInput);
         }
+
+        window.location.href = url;
     }
 
-var oldPasswordInput = getElement("password");
-var newPasswordInput = getElement("newPassword");
-var confirmPasswordInput = getElement("confirm");
-var loginButton = getElement("loginButton");
-var errorMessageDiv = getElement("errorMessageDiv");
-var allRulesMatched = false;
-
-if(newPasswordInput) {
-    loginButton.disabled = true;
-}
-
-if("${errorCode}" === ""){
-    errorMessageDiv.style.display = "none";
-}
-
-var enabledRules = [];
-var supportedRules = [
-    {
-        type : "zimbraPasswordMinLength",
-        checkImg : getElement("minLengthCheckImg"),
-        closeImg : getElement("minLengthCloseImg")
-    },
-    {
-        type : "zimbraPasswordMinUpperCaseChars",
-        checkImg : getElement("minUpperCaseCheckImg"),
-        closeImg : getElement("minUpperCaseCloseImg")
-    },
-    {
-        type : "zimbraPasswordMinLowerCaseChars",
-        checkImg : getElement("minLowerCaseCheckImg"),
-        closeImg : getElement("minLowerCaseCloseImg")
-    },
-    {
-        type : "zimbraPasswordMinNumericChars",
-        checkImg : getElement("minNumericCharsCheckImg"),
-        closeImg : getElement("minNumericCharsCloseImg")
-    },
-    {
-        type : "zimbraPasswordMinPunctuationChars",
-        checkImg : getElement("minPunctuationCharsCheckImg"),
-        closeImg : getElement("minPunctuationCharsCloseImg")
-    },
-    {
-        type : "zimbraPasswordMinDigitsOrPuncs",
-        checkImg : getElement("minDigitsOrPuncsCheckImg"),
-        closeImg : getElement("minDigitsOrPuncsCloseImg")
-    },
-    {
-        type : "zimbraPasswordAllowUsername",
-        checkImg : getElement("allowUsernameCheckImg"),
-        closeImg : getElement("allowUsernameCloseImg")
+    function hideTooltip() {
+        getElement('ZLoginWhatsThis').style.display='none';
     }
-];
-
-if (${zimbraPasswordMinLength}){
-    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinLength"}));
-}
-
-if (${zimbraPasswordMinUpperCaseChars}) {
-    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinUpperCaseChars"}));
-}
-
-if (${zimbraPasswordMinLowerCaseChars}) {
-    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinLowerCaseChars"}));
-}
-
-if (${zimbraPasswordMinNumericChars}) {
-    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinNumericChars"}));
-}
-
-if (${zimbraPasswordMinPunctuationChars}) {
-    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinPunctuationChars"}));
-}
-
-if (${zimbraPasswordMinDigitsOrPuncs}) {
-    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinDigitsOrPuncs"}));
-}
-
-if (${!zimbraFeatureAllowUsernameInPassword}) {
-    enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordAllowUsername"}));
-}
-
-function compareConfirmPass() {
-    if (getElement("newPassword").value === getElement("confirm").value) {
-        errorMessageDiv.style.display = "none";
-        return true;
-    } else {
-        event.preventDefault();
-        errorMessageDiv.style.display = "block";
-        errorMessageDiv.innerHTML = "${bothPasswordsMustMatchMsg}";
-        return false;
+    function showTooltip(){
+        getElement('ZLoginWhatsThis').style.display="block"
     }
-}
 
-function check(checkImg, closeImg) {
-    closeImg.style.display = "none";
-    checkImg.style.display = "inline";
-}
-function unCheck(checkImg, closeImg) {
-    closeImg.style.display = "inline";
-    checkImg.style.display = "none";
-}
-function resetImg(condition, checkImg, closeImg){
-    condition ? check(checkImg, closeImg) : unCheck(checkImg, closeImg);
-}
-function compareMatchedRules(matchedRule) {
-    enabledRules.forEach(function(rule) {
-        if (matchedRule.findIndex(function(mRule) { return mRule.type === rule.type}) >= 0) {
-            check(rule.checkImg, rule.closeImg);
+    function showPassword() {
+        showHidePasswordFields(getElement("password"), getElement("showSpan"), getElement("hideSpan"))
+    }
+    function showNewPassword() {
+        showHidePasswordFields(getElement("newPassword"), getElement("newPasswordShowSpan"), getElement("newPasswordHideSpan"));
+    }
+    function showConfirmPassword() {
+        showHidePasswordFields(getElement("confirm"), getElement("confirmShowSpan"), getElement("confirmHideSpan"));
+    }
+
+    function showHidePasswordFields(passElem, showSpanElem, hideSpanElem) {
+        if (passElem.type === "password") {
+            passElem.type = "text";
+            showSpanElem.style.display = "none";
+            hideSpanElem.style.display = "block";
         } else {
-            unCheck(rule.checkImg, rule.closeImg);
-        }
-    })
-}
-
-function setloginButtonDisabled(condition) {
-    if (condition) {
-        loginButton.disabled = true;
-    } else {
-        if (oldPasswordInput.value !== "") {
-            loginButton.disabled = false;
+            passElem.type = "password";
+            showSpanElem.style.display = "block";
+            hideSpanElem.style.display = "none";
         }
     }
-}
 
-// Function to check special character
-function isAsciiPunc(ch) {
-    return (ch >= 33 && ch <= 47) || // ! " # $ % & ' ( ) * + , - . /
-    (ch >= 58 && ch <= 64) || // : ; < = > ? @
-    (ch >= 91 && ch <= 96) || // [ \ ] ^ _ `
-    (ch >= 123 && ch <= 126); // { | } ~
-}
+    var oldPasswordInput = getElement("password");
+    var newPasswordInput = getElement("newPassword");
+    var confirmPasswordInput = getElement("confirm");
+    var loginButton = getElement("loginButton");
+    var errorMessageDiv = getElement("errorMessageDiv");
+    var allRulesMatched = false;
 
-function parseCharsFromPassword(passwordString) {
-    const uppers = [],
-        lowers = [],
-        numbers = [],
-        punctuations = [],
-        invalidChars = [],
-        invalidPuncs = [];
+    if(newPasswordInput) {
+        loginButton.disabled = true;
+    }
 
-    const chars = passwordString.split('');
+    if("${errorCode}" === ""){
+        errorMessageDiv.style.display = "none";
+    }
 
-    chars.forEach(function (char) {
-        const charCode = char.charCodeAt(0);
-        let isInvalid = false;
-
-        if ("${zimbraPasswordAllowedChars}") {
-            try {
-                if (!char.match(new RegExp("${zimbraPasswordAllowedChars}", 'g'))) {
-                    invalidChars.push(char);
-                    isInvalid = true;
-                }
-            } catch (error) {
-                console.error(error);
-            }
+    var enabledRules = [];
+    var supportedRules = [
+        {
+            type : "zimbraPasswordMinLength",
+            checkImg : getElement("minLengthCheckImg"),
+            closeImg : getElement("minLengthCloseImg")
+        },
+        {
+            type : "zimbraPasswordMinUpperCaseChars",
+            checkImg : getElement("minUpperCaseCheckImg"),
+            closeImg : getElement("minUpperCaseCloseImg")
+        },
+        {
+            type : "zimbraPasswordMinLowerCaseChars",
+            checkImg : getElement("minLowerCaseCheckImg"),
+            closeImg : getElement("minLowerCaseCloseImg")
+        },
+        {
+            type : "zimbraPasswordMinNumericChars",
+            checkImg : getElement("minNumericCharsCheckImg"),
+            closeImg : getElement("minNumericCharsCloseImg")
+        },
+        {
+            type : "zimbraPasswordMinPunctuationChars",
+            checkImg : getElement("minPunctuationCharsCheckImg"),
+            closeImg : getElement("minPunctuationCharsCloseImg")
+        },
+        {
+            type : "zimbraPasswordMinDigitsOrPuncs",
+            checkImg : getElement("minDigitsOrPuncsCheckImg"),
+            closeImg : getElement("minDigitsOrPuncsCloseImg")
+        },
+        {
+            type : "zimbraPasswordAllowUsername",
+            checkImg : getElement("allowUsernameCheckImg"),
+            closeImg : getElement("allowUsernameCloseImg")
         }
-
-        if (!isInvalid) {
-            if (charCode >= 65 && charCode <= 90) {
-                uppers.push(char);
-            } else if (charCode >= 97 && charCode <= 122) {
-                lowers.push(char);
-            } else if (charCode >= 48 && charCode <= 57) {
-                numbers.push(char);
-            } else if ("${zimbraPasswordAllowedPunctuationChars}") {
-                try {
-                    char.match(new RegExp("${zimbraPasswordAllowedPunctuationChars}", 'g'))
-                        ? punctuations.push(char)
-                        : invalidPuncs.push(char);
-                } catch (error) {
-                    console.error(error);
-                }
-            } else if (isAsciiPunc(charCode)) {
-                punctuations.push(char);
-            }
-        }
-    });
-
-    return {
-        uppers: uppers,
-        lowers: lowers,
-        numbers: numbers,
-        punctuations: punctuations,
-        invalidChars: invalidChars,
-        invalidPuncs: invalidPuncs
-    };
-};
-
-function handleNewPasswordChange() {
-    var currentValue = newPasswordInput.value;
-    var parsedChars = parseCharsFromPassword(currentValue);
-    var matchedRule = [];
+    ];
 
     if (${zimbraPasswordMinLength}){
-        if (currentValue.length >= ${zimbraPasswordMinLength}) {
-            matchedRule.push({type : "zimbraPasswordMinLength"});
-        }
+        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinLength"}));
     }
 
     if (${zimbraPasswordMinUpperCaseChars}) {
-        if (parsedChars.uppers.length >= ${zimbraPasswordMinUpperCaseChars}) {
-            matchedRule.push({type : "zimbraPasswordMinUpperCaseChars"});
-        }
+        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinUpperCaseChars"}));
     }
 
     if (${zimbraPasswordMinLowerCaseChars}) {
-        if (parsedChars.lowers.length >= ${zimbraPasswordMinLowerCaseChars}) {
-            matchedRule.push({type : "zimbraPasswordMinLowerCaseChars"});
-        }
+        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinLowerCaseChars"}));
     }
 
     if (${zimbraPasswordMinNumericChars}) {
-        if (parsedChars.numbers.length >= ${zimbraPasswordMinNumericChars}) {
-            matchedRule.push({type : "zimbraPasswordMinNumericChars"});
-        }
+        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinNumericChars"}));
     }
 
     if (${zimbraPasswordMinPunctuationChars}) {
-        if (parsedChars.punctuations.length >= ${zimbraPasswordMinPunctuationChars}) {
-            matchedRule.push({type : "zimbraPasswordMinPunctuationChars"});
-        }
+        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinPunctuationChars"}));
     }
 
     if (${zimbraPasswordMinDigitsOrPuncs}) {
-        if (parsedChars.punctuations.length + parsedChars.numbers.length >= ${zimbraPasswordMinDigitsOrPuncs}) {
-            matchedRule.push({type : "zimbraPasswordMinDigitsOrPuncs"});
-        }
+        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinDigitsOrPuncs"}));
     }
-    
+
     if (${!zimbraFeatureAllowUsernameInPassword}) {
-        if (!currentValue.includes("${trimmedUserName.split('@')[0]}")) {
-            matchedRule.push({type : "zimbraPasswordAllowUsername"});
+        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordAllowUsername"}));
+    }
+
+    function compareConfirmPass() {
+        if (getElement("newPassword").value === getElement("confirm").value) {
+            errorMessageDiv.style.display = "none";
+            return true;
+        } else {
+            event.preventDefault();
+            errorMessageDiv.style.display = "block";
+            errorMessageDiv.innerHTML = "${bothPasswordsMustMatchMsg}";
+            return false;
         }
     }
 
-    if(matchedRule.length >= enabledRules.length){
-        allRulesMatched = true;
-    } else {
-        allRulesMatched = false;
+    function check(checkImg, closeImg) {
+        closeImg.style.display = "none";
+        checkImg.style.display = "inline";
+    }
+    function unCheck(checkImg, closeImg) {
+        closeImg.style.display = "inline";
+        checkImg.style.display = "none";
+    }
+    function resetImg(condition, checkImg, closeImg){
+        condition ? check(checkImg, closeImg) : unCheck(checkImg, closeImg);
+    }
+    function compareMatchedRules(matchedRule) {
+        enabledRules.forEach(function(rule) {
+            if (matchedRule.findIndex(function(mRule) { return mRule.type === rule.type}) >= 0) {
+                check(rule.checkImg, rule.closeImg);
+            } else {
+                unCheck(rule.checkImg, rule.closeImg);
+            }
+        })
     }
 
-    compareMatchedRules(matchedRule);
-
-    if (parsedChars.invalidChars.length > 0) {
-        errorMessageDiv.style.display = "block";
-        errorMessageDiv.innerHTML = parsedChars.invalidChars.join(", ") + " ${allowedCharsMsg}";
-    } else {
-        errorMessageDiv.style.display = "none";
+    function setloginButtonDisabled(condition) {
+        if (condition) {
+            loginButton.disabled = true;
+        } else {
+            if (oldPasswordInput.value !== "") {
+                loginButton.disabled = false;
+            }
+        }
     }
 
-    if(newPasswordInput.value !== "") {
+    // Function to check special character
+    function isAsciiPunc(ch) {
+        return (ch >= 33 && ch <= 47) || // ! " # $ % & ' ( ) * + , - . /
+        (ch >= 58 && ch <= 64) || // : ; < = > ? @
+        (ch >= 91 && ch <= 96) || // [ \ ] ^ _ `
+        (ch >= 123 && ch <= 126); // { | } ~
+    }
+
+    function parseCharsFromPassword(passwordString) {
+        const uppers = [],
+            lowers = [],
+            numbers = [],
+            punctuations = [],
+            invalidChars = [],
+            invalidPuncs = [];
+
+        const chars = passwordString.split('');
+
+        chars.forEach(function (char) {
+            const charCode = char.charCodeAt(0);
+            let isInvalid = false;
+
+            if ("${zimbraPasswordAllowedChars}") {
+                try {
+                    if (!char.match(new RegExp("${zimbraPasswordAllowedChars}", 'g'))) {
+                        invalidChars.push(char);
+                        isInvalid = true;
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            if (!isInvalid) {
+                if (charCode >= 65 && charCode <= 90) {
+                    uppers.push(char);
+                } else if (charCode >= 97 && charCode <= 122) {
+                    lowers.push(char);
+                } else if (charCode >= 48 && charCode <= 57) {
+                    numbers.push(char);
+                } else if ("${zimbraPasswordAllowedPunctuationChars}") {
+                    try {
+                        char.match(new RegExp("${zimbraPasswordAllowedPunctuationChars}", 'g'))
+                            ? punctuations.push(char)
+                            : invalidPuncs.push(char);
+                    } catch (error) {
+                        console.error(error);
+                    }
+                } else if (isAsciiPunc(charCode)) {
+                    punctuations.push(char);
+                }
+            }
+        });
+
+        return {
+            uppers: uppers,
+            lowers: lowers,
+            numbers: numbers,
+            punctuations: punctuations,
+            invalidChars: invalidChars,
+            invalidPuncs: invalidPuncs
+        };
+    };
+
+    function handleNewPasswordChange() {
+        var currentValue = newPasswordInput.value;
+        var parsedChars = parseCharsFromPassword(currentValue);
+        var matchedRule = [];
+
+        if (${zimbraPasswordMinLength}){
+            if (currentValue.length >= ${zimbraPasswordMinLength}) {
+                matchedRule.push({type : "zimbraPasswordMinLength"});
+            }
+        }
+
+        if (${zimbraPasswordMinUpperCaseChars}) {
+            if (parsedChars.uppers.length >= ${zimbraPasswordMinUpperCaseChars}) {
+                matchedRule.push({type : "zimbraPasswordMinUpperCaseChars"});
+            }
+        }
+
+        if (${zimbraPasswordMinLowerCaseChars}) {
+            if (parsedChars.lowers.length >= ${zimbraPasswordMinLowerCaseChars}) {
+                matchedRule.push({type : "zimbraPasswordMinLowerCaseChars"});
+            }
+        }
+
+        if (${zimbraPasswordMinNumericChars}) {
+            if (parsedChars.numbers.length >= ${zimbraPasswordMinNumericChars}) {
+                matchedRule.push({type : "zimbraPasswordMinNumericChars"});
+            }
+        }
+
+        if (${zimbraPasswordMinPunctuationChars}) {
+            if (parsedChars.punctuations.length >= ${zimbraPasswordMinPunctuationChars}) {
+                matchedRule.push({type : "zimbraPasswordMinPunctuationChars"});
+            }
+        }
+
+        if (${zimbraPasswordMinDigitsOrPuncs}) {
+            if (parsedChars.punctuations.length + parsedChars.numbers.length >= ${zimbraPasswordMinDigitsOrPuncs}) {
+                matchedRule.push({type : "zimbraPasswordMinDigitsOrPuncs"});
+            }
+        }
+
+        if (${!zimbraFeatureAllowUsernameInPassword}) {
+            if (!currentValue.includes("${trimmedUserName.split('@')[0]}")) {
+                matchedRule.push({type : "zimbraPasswordAllowUsername"});
+            }
+        }
+
+        if(matchedRule.length >= enabledRules.length){
+            allRulesMatched = true;
+        } else {
+            allRulesMatched = false;
+        }
+
+        compareMatchedRules(matchedRule);
+
+        if (parsedChars.invalidChars.length > 0) {
+            errorMessageDiv.style.display = "block";
+            errorMessageDiv.innerHTML = parsedChars.invalidChars.join(", ") + " ${allowedCharsMsg}";
+        } else {
+            errorMessageDiv.style.display = "none";
+        }
+
+        if(newPasswordInput.value !== "") {
+            resetImg(confirmPasswordInput.value === newPasswordInput.value, getElement("mustMatchCheckImg"), getElement("mustMatchCloseImg"));
+            setloginButtonDisabled(!allRulesMatched || confirmPasswordInput.value !== newPasswordInput.value);
+        }
+    };
+
+    function handleConfirmPasswordChange() {
         resetImg(confirmPasswordInput.value === newPasswordInput.value, getElement("mustMatchCheckImg"), getElement("mustMatchCloseImg"));
         setloginButtonDisabled(!allRulesMatched || confirmPasswordInput.value !== newPasswordInput.value);
+    };
+
+    function handleOldPasswordChange() {
+        setloginButtonDisabled(!allRulesMatched || newPasswordInput.value === "" || oldPasswordInput.value === "" || confirmPasswordInput.value !== newPasswordInput.value)
     }
-};
 
-function handleConfirmPasswordChange() {
-    resetImg(confirmPasswordInput.value === newPasswordInput.value, getElement("mustMatchCheckImg"), getElement("mustMatchCloseImg"));
-    setloginButtonDisabled(!allRulesMatched || confirmPasswordInput.value !== newPasswordInput.value);
-};
-
-function handleOldPasswordChange() {
-    setloginButtonDisabled(!allRulesMatched || newPasswordInput.value === "" || oldPasswordInput.value === "" || confirmPasswordInput.value !== newPasswordInput.value)
-}
-
-newPasswordInput && oldPasswordInput && oldPasswordInput.addEventListener("input", handleOldPasswordChange, null);
-newPasswordInput && newPasswordInput.addEventListener("input", handleNewPasswordChange, null);
-confirmPasswordInput && confirmPasswordInput.addEventListener("input", handleConfirmPasswordChange, null);
+    newPasswordInput && oldPasswordInput && oldPasswordInput.addEventListener("input", handleOldPasswordChange, null);
+    newPasswordInput && newPasswordInput.addEventListener("input", handleNewPasswordChange, null);
+    confirmPasswordInput && confirmPasswordInput.addEventListener("input", handleConfirmPasswordChange, null);
+</c:if>
 </script>
 </body>
 </html>

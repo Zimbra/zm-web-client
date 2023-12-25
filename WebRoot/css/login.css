@@ -224,14 +224,16 @@ input.twoFactorButton {
 	-webkit-appearance: none;
 }
 
-#verifyButton{
+#verifyButton, #nextButton {
 	background-color: @brand-primary@;
 	color: #fff;
 	height: 32px;
 }
 
 #verifyButton:hover,
-#verifyButton:focus {
+#verifyButton:focus,
+#nextButton:hover,
+#nextButton:focus {
 	background-color: @brand-hover@;
 }
 
