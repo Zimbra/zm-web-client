@@ -554,7 +554,8 @@ if (application.getInitParameter("offlineMode") != null) {
 				
                 <c:choose>
                     <c:when test="${param.chooseMethod}">
-                        <div class="twoFactorTitle" style="padding-right:0;"><fmt:message key="twoFactorAuthChooseOtherMethodTitle"/></div>
+                        <div class="twoFactorTitle" style="padding-right:0;"><fmt:message key="twoStepAuth"/></div>
+                        <div class="twoFactorDescription" style="padding-right:0;"><fmt:message key="twoFactorAuthChooseOtherMethodDescription"/></div>
                         <div class="twoFactorForm">
                             <c:forTokens items="${tfaMethodEnabled}" delims="," var="method">
                                 <div class="twoFactorMethodOption">

@@ -87,8 +87,8 @@ function(isFromLoginPage) {
 	this._emailDivId = id + "_email";
 	this._emailAddressDivId = id + "_email_address";
 	this._codeDivId = id + "_code";
-	this._codeDescriptionDivId = id + "_code_description";
-	this._codeErrorDivId = id + "_code_error";
+	this._codeTitleElementId = id + "_code_title";
+	this._codeErrorElementId = id + "_code_error";
 	this._successDivId = id + "_success";
 
 	return isFromLoginPage ?
@@ -143,6 +143,7 @@ function(method) {
 		this._emailAddressInput.value = this.__emailAddressInput;
 		var inputElemEmail = Dwt.getElement(this._htmlElId + "_email_address_input");
 		inputElemEmail.disabled = true;
+		inputElemEmail.style.display = "none";
 		this.__emailAddressInput = null;
 	}
 };
@@ -231,21 +232,22 @@ function(method) {
 
 	if (this.methodNotEnabled.indexOf(ZmTwoFactorAuth.EMAIL) !== -1) {
 		var divElemDscription = Dwt.getElement(id + "_email_description");
-		var divElemEmailNote = Dwt.getElement(id + "_email_note");
-		var pElemEmailNote = Dwt.getElement(id + "_email_note_text");
-		if (this.isResetPasswordEnabled) {
-			if (this.isFromLoginPage) {
-				divElemDscription.textContent = ZmMsg.twoStepAuthEmailSetupDesc;
-				pElemEmailNote.textContent = ZmMsg.twoStepAuthEmailSetupNoteLogin;
-			} else {
-				divElemDscription.textContent = ZmMsg.twoStepAuthEmailSetupDescUseRecoveryAddress;
-				pElemEmailNote.textContent = ZmMsg.twoStepAuthEmailSetupNote;
-				// this._emailAddressInput.value will be clear before a dialog is shown.
-				// set a value after popup is called.
-				// see ZmTwoFactorSetupDialog.prototype.popup
-				this.__emailAddressInput = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL);
-			}
-			divElemEmailNote.style.display = "";
+		var divElemEmailNote = Dwt.getElement(id + "_email_note");    // only in Preferences
+		var pElemEmailNote = Dwt.getElement(id + "_email_note_text"); // only in Preferences
+		if (this.isFromLoginPage) {
+			divElemDscription.textContent = ZmMsg.twoStepAuthEmailSetupDescLoginPage;
+		} else if (this.isResetPasswordEnabled) {
+			divElemDscription.textContent = ZmMsg.twoStepAuthEmailSetupDescUseRecoveryAddress;
+			pElemEmailNote.textContent = ZmMsg.twoStepAuthEmailSetupNote;
+			// this._emailAddressInput.value will be clear before a dialog is shown.
+			// A value need to be set after popup is called.
+			// See ZmTwoFactorSetupDialog.prototype.popup
+			var recoveryEmailAddress = appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL);
+			this.__emailAddressInput = recoveryEmailAddress;
+
+			// input field is hidden. An email address is shwon as text string in the label.
+			var labelElem = Dwt.getElement(id + "_email_address_input_label");
+			labelElem.textContent = recoveryEmailAddress;
 		} else {
 			divElemDscription.textContent = ZmMsg.twoStepAuthEmailSetupDesc;
 			pElemEmailNote.textContent = "";
@@ -261,7 +263,7 @@ function(method) {
 	Dwt.hide(this._emailAddressDivId);
 	Dwt.hide(this._emailDivId);
 	Dwt.hide(this._codeDivId);
-	Dwt.hide(this._codeErrorDivId);
+	Dwt.hide(this._codeErrorElementId);
 	Dwt.hide(this._successDivId);
 	this.setButtonVisible(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, false);
 	this.setButtonVisible(ZmTwoFactorSetupDialog.BEGIN_SETUP_BUTTON, true);
@@ -288,8 +290,7 @@ function() {
 	if (currentDivId === this._passwordDivId) {
 		Dwt.hide(this._passwordErrorDivId);
 	} else if (currentDivId === this._codeDivId) {
-		Dwt.hide(this._codeErrorDivId);
-		Dwt.show(this._codeDescriptionDivId);
+		Dwt.hide(this._codeErrorElementId);
 	}
 
 	var stage = this._stages[this._stageIndex];
@@ -372,13 +373,16 @@ function() {
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this._emailAddressInput.value !== "");
 		this._emailAddressInput.focus();
 	} else if (nextDivId === this._codeDivId) {
+		var codeTitleElem = Dwt.getElement(this._codeTitleElementId);
 		var spanElem = Dwt.getElement(this._htmlElId + "_resend_code_status");
 		spanElem.style.display = "none";
 		var pElem = Dwt.getElement(this._htmlElId + "_code_description_guide");
 		if (this.tfaMethod === ZmTwoFactorAuth.APP) {
+			codeTitleElem.textContent = ZmMsg.twoStepAuthCode;
 			pElem.textContent = ZmMsg.twoStepAuthCodeDescription;
 			this._resendCodeLink.style.display = "none";
 		} else if (this.tfaMethod === ZmTwoFactorAuth.EMAIL) {
+			codeTitleElem.textContent = ZmMsg.twoStepAuthCodeEmail;
 			Dwt.setInnerHtml(pElem, AjxMessageFormat.format(ZmMsg.twoStepAuthCodeDescriptionEmail, AjxStringUtil.htmlEncode(this._emailAddressInput.value)));
 			this._resendCodeLink.style.display = "";
 			this._resendCodeLink.textContent = ZmMsg.twoStepAuthResendCode;
@@ -410,7 +414,7 @@ function() {
 	else {
 		this.popdown();
 		if (this.twoStepAuthSpan) {
-			Dwt.setInnerHtml(this.twoStepAuthSpan, ZmMsg.twoStepAuth);
+			Dwt.setInnerHtml(this.twoStepAuthSpan, ZmMsg.twoStepUseTwoStepAuth);
 		}
 
 		if (this.twoStepAuthCodesContainer) {
@@ -606,8 +610,7 @@ function(currentDivId) {
 	if (currentDivId === this._passwordDivId) {
 		Dwt.hide(this._passwordErrorDivId);
 	} else if (currentDivId === this._codeDivId) {
-		Dwt.hide(this._codeErrorDivId);
-		Dwt.show(this._codeDescriptionDivId);
+		Dwt.hide(this._codeErrorElementId);
 	}
 
 	this._showNextPage();
@@ -618,8 +621,8 @@ function(currentDivId, exception) {
 	if (currentDivId === this._passwordDivId) {
 		if (exception) {
 			var passwordErrorDiv = Dwt.getElement(this._passwordErrorDivId);
-		    if (exception.code === ZmCsfeException.ACCT_AUTH_FAILED) {
-				passwordErrorDiv.textContent = ZmMsg.offlinePasswordUpdateFailure;
+			if (exception.code === ZmCsfeException.ACCT_AUTH_FAILED) {
+				passwordErrorDiv.textContent = ZmMsg.twoStepAuthInvalidPassword;
 			} else {
 				passwordErrorDiv.textContent = ZmMsg.twoStepAuthServiceErrorAtSetup;
 			}
@@ -631,14 +634,7 @@ function(currentDivId, exception) {
 		passwordInput.focus();
 	}
 	else if (currentDivId === this._codeDivId) {
-		var pElem = Dwt.getElement(this._htmlElId + "_code_error_description");
-		if (this.tfaMethod === ZmTwoFactorAuth.APP) {
-			pElem.textContent = ZmMsg.twoStepAuthCodeErrorDescription;
-		} else if (this.tfaMethod === ZmTwoFactorAuth.EMAIL) {
-			pElem.textContent = ZmMsg.twoStepAuthCodeErrorDescriptionEmail;
-		}
-		Dwt.show(this._codeErrorDivId);
-		Dwt.hide(this._codeDescriptionDivId);
+		Dwt.show(this._codeErrorElementId);
 		var codeInput = this._codeInput;
 		codeInput.removeAttribute("disabled");
 		codeInput.value = "";
