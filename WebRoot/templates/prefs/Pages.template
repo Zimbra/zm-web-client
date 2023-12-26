@@ -1015,7 +1015,7 @@ and the container element is replaced with that control.
 							<td class='ZOptionsField' valign='middle'>
 								<span id='${id}_TWO_STEP_AUTH'>
 									<$ if (appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) { $>
-										<$=ZmMsg.twoStepAuth$>
+										<$=ZmMsg.twoStepUseTwoStepAuth$>
 									<$ } $>
 									<$ else { $>
 										<$=ZmMsg.twoStepStandardAuth$>
