@@ -983,6 +983,7 @@ function() {
 	this.registerSetting("TWO_FACTOR_AUTH_REQUIRED",	    {name:"zimbraFeatureTwoFactorAuthRequired", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("TRUSTED_DEVICES_ENABLED",         {name:"zimbraFeatureTrustedDevicesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("APP_PASSWORDS_ENABLED",	        {name:"zimbraFeatureAppSpecificPasswordsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("DISABLE_VERSION_CHANGE_DIALOG",   {name:"zimbraServerVersionChangeNotificationDisabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
 	this.registerSetting("RESET_PASSWORD_STATUS",				{name:"zimbraFeatureResetPasswordStatus", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
 	this.registerSetting("PASSWORD_RECOVERY_EMAIL",				{name:"zimbraPrefPasswordRecoveryAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});

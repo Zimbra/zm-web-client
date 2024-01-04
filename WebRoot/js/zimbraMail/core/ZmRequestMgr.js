@@ -589,7 +589,7 @@ function(refresh) {
 			var curVersion = appCtxt.get(ZmSetting.SERVER_VERSION);
 			if (curVersion != refresh.version) {
 				appCtxt.set(ZmSetting.SERVER_VERSION, refresh.version);
-				if (curVersion) {
+				if (curVersion && !appCtxt.get(ZmSetting.DISABLE_VERSION_CHANGE_DIALOG)) {
 					var dlg = appCtxt.getYesNoMsgDialog();
 					dlg.reset();
 					dlg.registerCallback(DwtDialog.YES_BUTTON, this._reloadYesCallback, this, [dlg, curVersion, refresh.version]);
