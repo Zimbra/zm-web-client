@@ -655,6 +655,7 @@ function(templateId, data) {
 	if (AjxTemplate.require(templateId)) {
 		this.getContentHtmlElement().innerHTML = AjxTemplate.expand(templateId, data);
 	}
+	appCtxt.notifyZimlets("onZmPreferencesPage_createPageHtml", [this, templateId]);
 };
 
 /**
