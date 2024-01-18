@@ -530,7 +530,9 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
     if (params.settings) {
         for (var name in params.settings) {
             var id = settings.getSettingByName(name);
-            if (id) {
+            // skip overriding zimbraFeatureResetPasswordStatus to show Password Recovery Account Settings in Preferences
+            // based on account setting rather than domain setting.
+            if (id && id !== ZmSetting.RESET_PASSWORD_STATUS) {
                 settings.getSetting(id).setValue(params.settings[name]);
             }
         }
