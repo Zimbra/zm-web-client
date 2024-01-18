@@ -304,7 +304,6 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 				ZmSetting.SHOW_SEARCH_STRING,
 				ZmSetting.SHOW_SELECTION_CHECKBOX,
 				ZmSetting.SKIN_NAME,
-				ZmSetting.CLIENT_TYPE,
 				ZmSetting.DEFAULT_TIMEZONE,
                 ZmSetting.DEFAULT_PRINTFONTSIZE,
 				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
@@ -507,16 +506,6 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
-	}
-
-	if (appCtxt.get(ZmSetting.DISABLE_MODERN_CLIENT) !== true) {
-		ZmPref.registerPref("CLIENT_TYPE", {
-			displayName:		ZmMsg.clientType,
-			displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-			orientation:		ZmPref.ORIENT_VERTICAL,
-			displayOptions:     [ZmMsg.clientAdvanced, ZmMsg.clientModern],
-			options:            [ZmSetting.CLIENT_ADVANCED, ZmSetting.CLIENT_MODERN]
-		});
 	}
 
 	ZmPref.registerPref("COMPOSE_AS_FORMAT", {

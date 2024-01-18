@@ -2390,13 +2390,6 @@ function(parent, parentElement, adminUrl) {
 		    mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.adminLinkCallback, adminUrl));
 		}
 
-		if (appCtxt.get(ZmSetting.DISABLE_MODERN_CLIENT) !== true) {
-			mi = menu.createMenuItem("modernClientLink", {text: ZmMsg.modernClient});
-			mi.addSelectionListener(ZmZimbraMail.modernClientLinkCallback);
-		}
-
-		menu.createSeparator();
-
 		if (window.productHelpSupported && supportedHelps.indexOf("productHelp") !== -1) {
 			mi = menu.createMenuItem("documentation", {text: ZmMsg.productHelp});
 			mi.addSelectionListener(helpListener);
@@ -2901,21 +2894,6 @@ function(url) {
 	ZmZimbraMail.unloadHackCallback();
 	var ac = window.parentAppCtxt || window.appCtxt;
 	window.open(url);
-};
-
-/**
- * @private
- */
-ZmZimbraMail.modernClientLinkCallback =
-function() {
-	var urlParams = {
-		path: appContextPath,
-		qsArgs: {
-			client: "modern"
-		}
-	};
-	var url = AjxUtil.formatUrl(urlParams);
-	ZmZimbraMail.sendRedirect(url);	// will trigger onbeforeunload
 };
 
 /**
