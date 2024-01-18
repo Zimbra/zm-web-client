@@ -312,7 +312,7 @@ function(params, method, action) {
 		dialog.popup();
 		return;
 	} else if (method === ZmTwoFactorAuth.EMAIL && action !== ZmAccountsPage.ACTION_DISABLE_TFA) {
-		var isFeatureResetPasswordEnabled = (appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === "enabled");
+		var isFeatureResetPasswordEnabled = (appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === "enabled" || appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === "suspended" );
 		var isRecoveryAddressConfigured = (appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) && appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) === "verified");
 		if (isFeatureResetPasswordEnabled && !isRecoveryAddressConfigured) {
 			var dialog = appCtxt.getMsgDialog();

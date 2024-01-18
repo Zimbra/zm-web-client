@@ -157,7 +157,7 @@ function(method) {
 		this.methodAllowed = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
 		this.methodEnabled = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
 		this.isResetPasswordEnabled = (
-			appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === "enabled" &&
+			(appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === "enabled" || appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === "suspended") &&
 			appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) &&
 			appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) === "verified"
 		);
@@ -724,7 +724,11 @@ function(params, disableTFA, method, result) {
 			Dwt.setDisplay(params.twoStepAuthCodesContainer, Dwt.DISPLAY_NONE);
 		}
 		// update Password recovery account status
-		if (!disableTFA && method === ZmTwoFactorAuth.EMAIL && appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === "enabled" && params.accountPage) {
+		if (!disableTFA &&
+			method === ZmTwoFactorAuth.EMAIL &&
+			(appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === "enabled" || appCtxt.get(ZmSetting.RESET_PASSWORD_STATUS) === "suspended") &&
+			params.accountPage)
+		{
 			params.accountPage._setAccountPasswordControls(recoveryAddressStatus);
 		}
 	} catch (e) {
