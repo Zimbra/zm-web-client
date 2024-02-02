@@ -1389,11 +1389,7 @@ function(ev) {
 		if (msg = this._checkCondition(c)) {
 			break;
 		} else {
-			if (c.testType === ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_DATE]) {
-				rule.addCondition(c.testType, c.comparator, Number(c.value), c.subjectMod, c.caseSensitive);
-			} else {
-				rule.addCondition(c.testType, c.comparator, c.value, c.subjectMod, c.caseSensitive);
-			}
+			rule.addCondition(c.testType, c.comparator, c.value, c.subjectMod, c.caseSensitive);
 		}
 	}
 	if (!msg) {
