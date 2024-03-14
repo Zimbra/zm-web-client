@@ -917,12 +917,26 @@
 				<span id='${id}_validate_two_factor_code_error_message'><$=ZmMsg.passwordRecoveryCodeValidationError$></span>
 			</div>
 			<div class='ZmPasswordRecoverySetupContainer'>
-				<label for='${id}_two_factor_code_input'><$=ZmMsg.twoFactorAuthCodeLabel$></label>
+				<label for='${id}_two_factor_code_input' style="float:left"><$=ZmMsg.twoFactorAuthCodeLabel$></label>
+				<div id='${id}_resend_code' style="text-align:right">
+					<a class="ZmPasswordRecoveryTwoFactorLink" id='${id}_resend_tfa_code_link' href="#" style="display:none"><$=ZmMsg.twoFactorAuthResendEmail$></a>
+					<span class="ZmPasswordRecoveryTwoFactorLink" id='${id}_resend_tfa_code_status' href="#" style="display:none"><$=ZmMsg.twoFactorAuthResendEmailDone$></span>
+				</div>
 				<input type='text' id='${id}_two_factor_code_input' size='35' autocomplete='off' class="ZmPasswordRecoveryTwoFactorCodeInout"/>
 				<div id='${id}_trust_device_section'>
 					<td><input type="checkbox" id="${id}_trust_device_input" name="${id}_trust_device_input" value="true"/></td>
 					<td><label for="${id}_trust_device_input" class="ZmPasswordRecoveryTrustDevice"><$=ZmMsg.twoFactorAuthTrustDevice$></label></td>
 				</div>
+				<div id='${id}_choose_two_factor_method_link_section' style="text-align:right">
+					<a class="ZmPasswordRecoveryTwoFactorLink" id='${id}_choose_two_factor_method_link' href="#" style="display:none"><$=ZmMsg.twoFactorAuthChooseOtherMethod$></a>
+				</div>
+			</div>
+		</div>
+		<div id='${id}_choose_two_factor_method'>
+			<h2 class="ZmPasswordRecoveryTwoFactorTitle"><$=ZmMsg.twoStepAuth$></h2>
+			<div class='ZmPasswordRecoverySetupContainer'>
+				<div class="ZmPasswordRecoveryTwoFactorMethodDescription" style="padding-right:0;"><$=ZmMsg.twoFactorAuthChooseOtherMethodDescription$></div>
+				<div id='${id}_two_factor_method_option_container' class="ZmPasswordRecoveryTwoFactorMethodOptionContainer"></div>
 			</div>
 		</div>
 	</div>

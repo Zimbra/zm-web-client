@@ -6104,13 +6104,15 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 
 div.PasswordRecoveryBackToSignInButton .ZButtonBorder,
 .DwtDialogButtonBar .PasswordRecoveryResendButton .ZButtonBorder,
-#cancelRecoveryButton .ZButtonBorder {
+#cancelRecoveryButton .ZButtonBorder,
+div.PasswordRecoveryTFACancelButton .ZButtonBorder {
 	background-color: @gray-lightest@;
 }
 
 div.PasswordRecoveryBackToSignInButton .ZButtonBorder:hover,
 .DwtDialogButtonBar .PasswordRecoveryResendButton .ZButtonBorder:hover,
-#cancelRecoveryButton .ZButtonBorder:hover {
+#cancelRecoveryButton .ZButtonBorder:hover,
+div.PasswordRecoveryTFACancelButton .ZButtonBorder:hover {
 	background-color: @gray-hover@;
 }
 
@@ -6118,8 +6120,10 @@ div.PasswordRecoveryBackToSignInButton .ZButtonTable:hover .ZWidgetTitle,
 div.PasswordRecoveryBackToSignInButton .ZButtonTable .ZWidgetTitle,
 div.PasswordRecoveryResendButton .ZButtonTable .ZWidgetTitle ,
 div.PasswordRecoveryResendButton .ZButtonTable:hover .ZWidgetTitle,
-#cancelRecoveryButton .ZButtonTable .ZWidgetTitle ,
-#cancelRecoveryButton .ZButtonTable:hover .ZWidgetTitle {
+#cancelRecoveryButton .ZButtonTable .ZWidgetTitle,
+#cancelRecoveryButton .ZButtonTable:hover .ZWidgetTitle,
+div.PasswordRecoveryTFACancelButton .ZButtonBorder .ZWidgetTitle,
+div.PasswordRecoveryTFACancelButton .ZButtonBorder:hover .ZWidgetTitle {
 	color : @gray-darker@;
 }
 
@@ -6175,7 +6179,8 @@ div#resetPasswordRecoveryButton {
 	padding: 0 40px;
 }
 
-.ZmPasswordRecoverySetupContainer label {
+.ZmPasswordRecoverySetupContainer label,
+.ZmPasswordRecoveryTwoFactorLink {
 	display: inline-block;
 	font-size: 13px;
 	padding: 5px 0;
@@ -6287,6 +6292,25 @@ div#resetPasswordRecoveryButton {
 .ZmPasswordRecoverySetupInfo .ZLoginInfoIcon,
 .ZmPasswordRecoverySetupError .ZLoginErrorIcon {
 	margin: auto 10px auto auto;
+}
+
+.ZmPasswordRecoveryTwoFactorMethodOptionContainer {
+	padding-top: 10px;
+}
+
+.ZmPasswordRecoveryTwoFactorMethodDescription {
+	font-size: 13px;
+}
+
+.ZmPasswordRecoveryTFAMethodInput {
+	float: left;
+	vertical-align: top;
+}
+
+label.ZmPasswordRecoveryTFAMethodLabel {
+	display: inline-block;
+	padding: 0 0 5px 0;
+	width: 90%;
 }
 
 /* Password Recovery Setup dialog end*/

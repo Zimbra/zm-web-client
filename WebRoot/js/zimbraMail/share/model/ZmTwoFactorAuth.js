@@ -36,6 +36,12 @@ ZmTwoFactorAuth.DEFAULT_ORDER = ["app", "email"];
 ZmTwoFactorAuth.APP = "app";
 ZmTwoFactorAuth.EMAIL = "email";
 
+ZmTwoFactorAuth.ACTION_RESET = "reset";
+ZmTwoFactorAuth.ACTION_EMAIL = "email";
+ZmTwoFactorAuth.ACTION_UNKNOWN = "unknown";
+ZmTwoFactorAuth.RESET_FAILED = "reset failed";
+ZmTwoFactorAuth.NOT_SENT = "not sent";
+
 /**
  * non-prototype function.
  * Do not use it until ZmAppCtxt instance is created.
@@ -43,14 +49,27 @@ ZmTwoFactorAuth.EMAIL = "email";
  * Return sorted zimbraTwoFactorAuthMethodAllowed
  */
 ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed =
-function() {
-    if (!window.appCtxt || !appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE)) {
-        return [];
-    }
-
-    var allowedMethod = appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_METHOD_ALLOWED);
-    if (typeof allowedMethod === "string") {
-        allowedMethod = [allowedMethod];
+function(authResponse) {
+    var allowedMethod;
+    if (authResponse) {
+        allowedMethod = [];
+        var zimbraTwoFactorAuthMethodAllowed = authResponse.zimbraTwoFactorAuthMethodAllowed;
+        if (zimbraTwoFactorAuthMethodAllowed && zimbraTwoFactorAuthMethodAllowed.method) {
+            for (var i = 0; i < zimbraTwoFactorAuthMethodAllowed.method.length; i++) {
+                allowedMethod.push(zimbraTwoFactorAuthMethodAllowed.method[i]._content);
+            }
+        } else {
+            // for backward compatibility
+            allowedMethod = [ZmTwoFactorAuth.APP];
+        }
+    } else {
+        if (!window.appCtxt || !appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_AVAILABLE)) {
+            return [];
+        }
+        allowedMethod = appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_METHOD_ALLOWED);
+        if (typeof allowedMethod === "string") {
+            allowedMethod = [allowedMethod];
+        }
     }
 
     // do not update allowedMethod directly
@@ -70,22 +89,41 @@ function() {
  * Return two-factor authentication methods which are allowed and enabled
  */
 ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled =
-function() {
-    if (!window.appCtxt || !appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) {
-        return [];
-    }
+function(authResponse) {
+    var allowedMethod;
+    var enabledMethod;
+    if (authResponse) {
+        allowedMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed(authResponse);
+        enabledMethod = [];
+        var zimbraTwoFactorAuthMethodEnabled = authResponse.zimbraTwoFactorAuthMethodEnabled;
+        if (zimbraTwoFactorAuthMethodEnabled && zimbraTwoFactorAuthMethodEnabled.method) {
+            for (var i = 0; i < zimbraTwoFactorAuthMethodEnabled.method.length; i++) {
+                // note: recovery address is set and verified at reset password process
+                // it is unncessary to check if masked zimbraPrefPasswordRecoveryAddress is returned or not.
+                enabledMethod.push(zimbraTwoFactorAuthMethodEnabled.method[i]._content);
+            }
+        }
+        // for backward compatibility
+        if (enabledMethod.length == 0 && authResponse.twoFactorAuthRequired && authResponse.twoFactorAuthRequired._content === "true") {
+            enabledMethod = [ZmTwoFactorAuth.APP];
+        }
+    } else {
+        if (!window.appCtxt || !appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED)) {
+            return [];
+        }
 
-    var allowedMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
+        allowedMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
 
-    var enabledMethod = appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_METHOD_ENABLED) || [];
-    if (typeof enabledMethod === "string") {
-        enabledMethod = [enabledMethod];
-    }
+        enabledMethod = appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_METHOD_ENABLED) || [];
+        if (typeof enabledMethod === "string") {
+            enabledMethod = [enabledMethod];
+        }
 
-    // for backward compatibility
-    var tfaEnabled = appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED);
-    if (tfaEnabled && enabledMethod.length === 0 && allowedMethod.indexOf(ZmTwoFactorAuth.APP) !== -1) {
-        enabledMethod = [ZmTwoFactorAuth.APP];
+        // for backward compatibility
+        var tfaEnabled = appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_ENABLED);
+        if (tfaEnabled && enabledMethod.length === 0 && allowedMethod.indexOf(ZmTwoFactorAuth.APP) !== -1) {
+            enabledMethod = [ZmTwoFactorAuth.APP];
+        }
     }
 
     var allowedAndEnabledMethod = [];
@@ -105,13 +143,21 @@ function() {
  * Return zimbraPrefPrimaryTwoFactorAuthMethod considering allowed and enabled Methods
  */
 ZmTwoFactorAuth.getPrefPrimaryTwoFactorAuthMethod =
-function() {
-    if (!window.appCtxt) {
-        return null
-    }
+function(authResponse) {
+    var enabledMethod;
+    var primaryMethod;
+    if (authResponse) {
+        enabledMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled(authResponse);
+        var zimbraPrefPrimaryTwoFactorAuthMethod = authResponse.zimbraPrefPrimaryTwoFactorAuthMethod;
+        primaryMethod = zimbraPrefPrimaryTwoFactorAuthMethod && zimbraPrefPrimaryTwoFactorAuthMethod._content;
+    } else {
+        if (!window.appCtxt) {
+            return null
+        }
 
-    var enabledMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
-    var primaryMethod = appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_PRIMARY_METHOD);
+        enabledMethod = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowedAndEnabled();
+        primaryMethod = appCtxt.get(ZmSetting.TWO_FACTOR_AUTH_PRIMARY_METHOD);
+    }
 
     if (primaryMethod && enabledMethod.indexOf(primaryMethod) !== -1) {
         return primaryMethod;
