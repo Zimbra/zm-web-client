@@ -142,6 +142,7 @@
 								// Delete cookie
 								Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
 								csrfCookie.setMaxAge(0);
+								csrfCookie.setPath("/");
 								response.addCookie(csrfCookie);
 
 								pageContext.setAttribute("login_csrf", "");
@@ -177,6 +178,7 @@
 					// Delete cookie
 					Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", "");
 					csrfCookie.setMaxAge(0);
+					csrfCookie.setPath("/");
 					response.addCookie(csrfCookie);
 
 					pageContext.setAttribute("login_csrf", "");
@@ -430,12 +432,14 @@ if (application.getInitParameter("offlineMode") != null) {
 <%
 	Cookie testCookie = new Cookie("ZM_TEST", "true");
 	testCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
+	testCookie.setPath("/");
 	response.addCookie(testCookie);
 
 	String csrfToken = UUID.randomUUID().toString();
 	Cookie csrfCookie = new Cookie("ZM_LOGIN_CSRF", csrfToken);
 	csrfCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
 	csrfCookie.setHttpOnly(true);
+	csrfCookie.setPath("/");
 	response.addCookie(csrfCookie);
 
 	pageContext.setAttribute("login_csrf", csrfToken);
