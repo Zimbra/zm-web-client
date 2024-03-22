@@ -37,6 +37,7 @@
 	if (contextPath.equals("/")) {
 		contextPath = "";
 	}
+	pageContext.setAttribute("contextPath", contextPath);
 %>
 <!DOCTYPE html>
 <html class="user_font_size_normal" data-istwofactorsetuppage="true">
