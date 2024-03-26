@@ -1,5 +1,7 @@
 <%@ page session="false" %>
 <%@ page import="java.util.regex.Pattern" %>
+<%@ page import="java.util.Arrays" %>
+<%@ page import="java.util.List" %>
 <%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
@@ -61,13 +63,27 @@ If not, see <https://www.gnu.org/licenses/>.
 		skin = application.getInitParameter("zimbraDefaultSkin");
 	}
 
-	String resources = (String)request.getAttribute("res");
+    String resources = (String)request.getAttribute("res");
 	if (resources == null) {
 		resources = request.getParameter("res");
 	}
-    resources = resources.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;");
+
+    List<String> whitelistResources = Arrays.asList("I18nMsg","TzMsg","AjxMsg","ZMsg","ZmMsg","AjxKeys","ZmKeys","ZdMsg","AjxTemplateMsg");
+    String[] resourceArray = resources.split(",");
     
+    StringBuilder filteredResources = new StringBuilder();
+    for (String rsrc : resourceArray) {
+        if (whitelistResources.contains(rsrc)) {
+            if (filteredResources.length() > 0) {
+                filteredResources.append(",");
+            }
+            filteredResources.append(rsrc);
+        }
+    }
+
+    String finalResources = filteredResources.toString();
+
     String query = "v="+vers+"&debug="+(inSkinDebugMode||inDevMode)+localeQs+"&skin="+skin;
 
-%><script type="text/javascript" src="<%=contextPath%>/res/<%=resources%>.js<%=ext%>?<%=query%>"></script>
+%><script type="text/javascript" src="<%=contextPath%>/res/<%=finalResources%>.js<%=ext%>?<%=query%>"></script>
  
