@@ -327,7 +327,7 @@ function() {
 		}
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this._passwordInput.value !== "");
 	} else if (nextDivId === this._emailAddressDivId) {
-		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this._emailAddressInput.value !== "");
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, AjxEmailAddress.isValid(this._emailAddressInput.value));
 		this._emailAddressInput.focus();
 	} else if (nextDivId === this._emailDivId) {
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, true);
@@ -370,7 +370,7 @@ function() {
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, true);
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, true);
 	} else if (nextDivId === this._emailAddressDivId) {
-		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this._emailAddressInput.value !== "");
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, AjxEmailAddress.isValid(this._emailAddressInput.value));
 		this._emailAddressInput.focus();
 	} else if (nextDivId === this._codeDivId) {
 		var codeTitleElem = Dwt.getElement(this._codeTitleElementId);
@@ -437,10 +437,12 @@ function() {
 
 ZmTwoFactorSetupDialog.prototype._handleKeyUp =
 function(ev) {
-	var value = ev && ev.target && ev.target.value && ev.target.value.length;
+	var value = ev && ev.target && ev.target.value;
 	var currentDivId = this._divIds[this._stages[this._stageIndex]][this._divIndexInStage];
-	if (currentDivId === this._passwordDivId || currentDivId === this._codeDivId || currentDivId === this._emailAddressDivId) {
-		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, !!value);
+	if (currentDivId === this._passwordDivId || currentDivId === this._codeDivId) {
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, !!(value && value.length));
+	} else if (currentDivId === this._emailAddressDivId) {
+		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, AjxEmailAddress.isValid(value));
 	}
 };
 
