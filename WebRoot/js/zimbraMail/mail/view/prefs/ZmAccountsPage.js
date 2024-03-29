@@ -307,6 +307,7 @@ ZmAccountsPage.prototype._handleTwoStepAuthLink =
 function(params, method, action) {
 	if (action === ZmAccountsPage.ACTION_DISABLE_TFA) {
 		var dialog = appCtxt.getYesNoMsgDialog();
+		dialog.reset();
 		dialog.setMessage(ZmMsg.twoStepAuthDisableConfirm, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.twoStepAuthDisable);
 		dialog.registerCallback(DwtDialog.YES_BUTTON, ZmTwoFactorSetupDialog.disableTwoFactorAuth.bind(window, params, dialog, method));
 		dialog.popup();
@@ -316,7 +317,8 @@ function(params, method, action) {
 		var isRecoveryAddressConfigured = (appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL) && appCtxt.get(ZmSetting.PASSWORD_RECOVERY_EMAIL_STATUS) === "verified");
 		if (isFeatureResetPasswordEnabled && !isRecoveryAddressConfigured) {
 			var dialog = appCtxt.getMsgDialog();
-			dialog.setMessage(ZmMsg.twoStepAuthEmailRecoveryAddressRequired);
+			dialog.reset();
+			dialog.setMessage(ZmMsg.twoStepAuthEmailRecoveryAddressRequired, DwtMessageDialog.INFO_STYLE, ZmMsg.twoStepAuthSetup);
 			dialog.popup();
 			return;
 		}
@@ -387,6 +389,7 @@ function() {
 	if (tfaEnabledMethod.indexOf(ZmTwoFactorAuth.EMAIL) !== -1) {
 		// TODO: when zimbraFeatureTwoFactorAuthRequired is TRUE and only email method is enabled, recovery address cannot be reset.
 		var msgDialog = appCtxt.getOkCancelMsgDialog();
+		msgDialog.reset();
 		msgDialog.setMessage(ZmMsg.recoveryEmailButtonResetWarining, DwtMessageDialog.WARNING_STYLE, ZmMsg.recoveryEmailButtonResetWariningTitle);
 		msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._handleResetRecoveryEmail.bind(this, msgDialog));
 		msgDialog.popup();
@@ -453,12 +456,14 @@ function(response) {
 			};
 			ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback(paramsObj, null, ZmTwoFactorAuth.EMAIL);
 			var dialog = appCtxt.getMsgDialog();
-			dialog.setMessage(ZmMsg.passwordRecoveryTFAEmailDisabledButResetFailed, DwtMessageDialog.CRITICAL_STYLE);
+			dialog.reset();
+			dialog.setMessage(ZmMsg.passwordRecoveryTFAEmailDisabledButResetFailed, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.recoveryEmailButtonResetWariningTitle);
 			dialog.popup();
 		} else {
 			// DisableTwoFactorAuthReseponse failed. SetRecoveryAccountRequest was not executed.
 			var dialog = appCtxt.getMsgDialog();
-			dialog.setMessage(ZmMsg.passwordRecoveryDisableTFAEmailFailed, DwtMessageDialog.CRITICAL_STYLE);
+			dialog.reset();
+			dialog.setMessage(ZmMsg.passwordRecoveryDisableTFAEmailFailed, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.recoveryEmailButtonResetWariningTitle);
 			dialog.popup();
 		}
 	} else if (!response._isException) {

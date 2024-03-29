@@ -677,9 +677,17 @@ function(params, dialog, method) {
 };
 
 ZmTwoFactorSetupDialog.disableTwoFactorAuthCallback =
-function(params, dialog, method) {
+function(params, dialog, method, result) {
 	if (dialog) {
 		dialog.popdown();
+		if (!result || result.isException()) {
+			var errorDialog = appCtxt.getMsgDialog();
+			errorDialog.reset();
+			var message = result ? result.getException().getErrorMsg() : ZmCsfeException.getErrorMsg(ZmCsfeException.ACCT_CANNOT_DISABLE_TWO_FACTOR_AUTH);
+			errorDialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.twoStepAuthDisable);
+			errorDialog.popup();
+			return;
+		}
 	}
 	var callback = ZmTwoFactorSetupDialog._GetInfoCallback.bind(this, params, true, method);
 	var command = new ZmCsfeCommand();
@@ -698,9 +706,11 @@ function(params, dialog, method) {
  */
 ZmTwoFactorSetupDialog._GetInfoCallback =
 function(params, disableTFA, method, result) {
-	var dialog = appCtxt.getMsgDialog();
-	dialog.setMessage(ZmMsg.twoFactorAuthGetInfoFailed, DwtMessageDialog.WARNING_STYLE);
+	var dialog;
 	if (!result || result.isException()) {
+		dialog = appCtxt.getMsgDialog();
+		dialog.reset();
+		dialog.setMessage(ZmMsg.twoFactorAuthGetInfoFailed, DwtMessageDialog.WARNING_STYLE);
 		dialog.popup();
 		return;
 	}
@@ -734,6 +744,9 @@ function(params, disableTFA, method, result) {
 			params.accountPage._setAccountPasswordControls(recoveryAddressStatus);
 		}
 	} catch (e) {
+		dialog = appCtxt.getMsgDialog();
+		dialog.reset();
+		dialog.setMessage(ZmMsg.twoFactorAuthGetInfoFailed, DwtMessageDialog.WARNING_STYLE);
 		dialog.popup();
 	}
 };
