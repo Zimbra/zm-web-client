@@ -138,7 +138,8 @@ sub make_package($)
       "--pkg-version=$pkg_info->{_version_ts}",
       "--pkg-release=$pkg_info->{revision}",
       "--pkg-summary=$pkg_info->{summary}",
-      "--pkg-post-install-script=scripts/postinst.sh"
+      "--pkg-post-install-script=scripts/postinst.sh",
+      "--pkg-pre-install-script=scripts/preinst.sh",
    );
 
    if ( $pkg_info->{dir_list} )	
