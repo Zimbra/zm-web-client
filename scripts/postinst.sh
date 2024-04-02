@@ -8,11 +8,11 @@ if [ -d /opt/zimbra/conf/templates/ ]; then
   chmod -R 755 /opt/zimbra/conf/templates
   chown -R zimbra:zimbra /opt/zimbra/conf/templates
 fi
-if lsattr -d /opt/zimbra/jetty_base/webapps/ | grep -q 'i'; then
-    echo "Immutable attribute already set on the /opt/zimbra/jetty_base/webapps/ (zimbra-mbox-webclient-war)"
-    lsattr -d /opt/zimbra/jetty_base/webapps/
+if lsattr -d /opt/zimbra/jetty_base/webapps/ | grep -qE '\b[i]\b'; then
+	echo "Immutable attribute already set on the /opt/zimbra/jetty_base/webapps/ (zimbra-mbox-webclient-war)"
+	lsattr -d /opt/zimbra/jetty_base/webapps/
 else
-        echo "**** apply restrict write access for /opt/zimbra/jetty_base/webapps/ (zimbra-mbox-webclient-war)****"
+        echo "**** apply restrict write access for /opt/zimbra/jetty_base/webapps/ (zimbra-mbox-webclient-war) ****"
 	lsattr -d /opt/zimbra/jetty_base/webapps/
         chattr +i -R /opt/zimbra/jetty_base/webapps/
 fi
