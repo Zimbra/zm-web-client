@@ -75,7 +75,6 @@ AjxPackage.require("zimbraMail.share.view.dialog.ZmAttachDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmNewOrganizerDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmNewSearchDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmNewTagDialog");
-AjxPackage.require("zimbraMail.share.view.dialog.ZmOfflineSettingsDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderDialogTabView");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderPropertyView");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderRetentionView");
@@ -95,6 +94,5 @@ AjxPackage.require("zimbraMail.calendar.view.ZmReminderDialog");
 AjxPackage.require("zimbraMail.calendar.view.ZmQuickReminderDialog");
 
 AjxPackage.require("zimbraMail.mail.view.ZmRetentionWarningDialog");
-AjxPackage.require("zimbraMail.offline.ZmOffline");
 // This ZmRevokeShareDialog is require in zimlet (zimbra-zimlet-classic-document-editor)
 AjxPackage.require("zimbraMail.share.view.dialog.ZmRevokeShareDialog");

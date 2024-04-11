@@ -1403,13 +1403,14 @@ function() {
 	return this._uploadManagerIframeId;
 };
 
+// TO ASK
 ZmAppCtxt.prototype.reloadAppCache =
 function(force, retryOnError) {
 	AjxDebug.println(AjxDebug.OFFLINE, "reloadAppCache :: " + AjxDebug._getTimeStamp());
     if (this.isWebClientOfflineSupported || force) {
 		var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
 		//If application cache status is downloading browser is already downloading the resources mentioned in the manifest file. Resetting the cookie value will result in application cache error event "Manifest changed during update".
-		if (localOfflineBrowserKey && AjxEnv.supported.applicationcache && applicationCache.status !== applicationCache.DOWNLOADING) {
+		if (AjxEnv.supported.applicationcache && applicationCache.status !== applicationCache.DOWNLOADING) {
 			var cookieValue = localOfflineBrowserKey + "_" + new Date().getTime();
 			AjxCookie.setCookie(document, "ZM_OFFLINE_KEY", cookieValue, false, "/");
 		}
@@ -2212,43 +2213,6 @@ function() {
 	catch (ex) {
 		return appCtxt;
 	}
-};
-
-ZmAppCtxt.prototype.isWebClientOffline =
-function() {
-    if (this.isWebClientOfflineSupported) {
-        return ZmOffline.isServerReachable === false;
-    }
-    return false;
-};
-
-ZmAppCtxt.prototype.initWebOffline =
-function() {
-    this.isWebClientOfflineSupported = false;
-	if (!AjxEnv.isOfflineSupported || !appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED)) {
-		AjxDebug.println(AjxDebug.OFFLINE, "isWebClientOfflineSupported :: false");
-        return;
-    }
-    var offlineBrowserKey = appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
-    var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
-    if (offlineBrowserKey && offlineBrowserKey.indexOf(localOfflineBrowserKey) !== -1) {
-        this.isWebClientOfflineSupported = true;
-        this.webClientOfflineHandler = new ZmOffline();
-    }
-	AjxDebug.println(AjxDebug.OFFLINE, "isWebClientOfflineSupported :: "+ this.isWebClientOfflineSupported);
-};
-
-/**
- * Gets the offline settings dialog.
- *
- * @return	{ZmOfflineSettingsDialog}	offline settings dialog
- */
-ZmAppCtxt.prototype.getOfflineSettingsDialog =
-function() {
-    if (!this._offlineSettingsDialog) {
-        this._offlineSettingsDialog = new ZmOfflineSettingsDialog();
-    }
-    return this._offlineSettingsDialog;
 };
 
 /**

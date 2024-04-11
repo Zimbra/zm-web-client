@@ -2330,18 +2330,16 @@ function(ev, div) {
 			}
 			break;
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
-            if (!appCtxt.isWebClientOffline()) {
-                this._timeSelectionAction(ev, div, false);
-                if (ev.button == DwtMouseEvent.LEFT) {
-                    // save grid location here, since timeSelection might move the time selection div
-                    var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div, true);
-                    return this._gridMouseDownAction(ev, div, gridLoc);
-                } else if (ev.button == DwtMouseEvent.RIGHT) {
-                    DwtUiEvent.copy(this._actionEv, ev);
-                    this._actionEv.item = this;
-                    this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);
-                }
-            }
+			this._timeSelectionAction(ev, div, false);
+			if (ev.button == DwtMouseEvent.LEFT) {
+				// save grid location here, since timeSelection might move the time selection div
+				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div, true);
+				return this._gridMouseDownAction(ev, div, gridLoc);
+			} else if (ev.button == DwtMouseEvent.RIGHT) {
+				DwtUiEvent.copy(this._actionEv, ev);
+				this._actionEv.item = this;
+				this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);
+			}
 			break;
 		case ZmCalBaseView.TYPE_ALL_DAY:
 			this._timeSelectionAction(ev, div, false);

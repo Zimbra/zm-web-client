@@ -439,21 +439,19 @@ function(notify) {
  */
 ZmContactsApp.prototype.handleOp =
 function(op) {
-	if (!appCtxt.isWebClientOffline()) {
-		switch (op) {
-			case ZmOperation.NEW_CONTACT:
-			case ZmOperation.NEW_DISTRIBUTION_LIST:
-			case ZmOperation.NEW_GROUP: {
-				var type = (op == ZmOperation.NEW_CONTACT) ? null : ZmItem.GROUP;
-				var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [type, op == ZmOperation.NEW_DISTRIBUTION_LIST]);
-				AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
-				break;
-			}
-			case ZmOperation.NEW_ADDRBOOK: {
-				var loadCallback = new AjxCallback(this, this._handleLoadNewAddrBook);
-				AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
-				break;
-			}
+	switch (op) {
+		case ZmOperation.NEW_CONTACT:
+		case ZmOperation.NEW_DISTRIBUTION_LIST:
+		case ZmOperation.NEW_GROUP: {
+			var type = (op == ZmOperation.NEW_CONTACT) ? null : ZmItem.GROUP;
+			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [type, op == ZmOperation.NEW_DISTRIBUTION_LIST]);
+			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
+			break;
+		}
+		case ZmOperation.NEW_ADDRBOOK: {
+			var loadCallback = new AjxCallback(this, this._handleLoadNewAddrBook);
+			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
+			break;
 		}
 	}
 };
@@ -1128,23 +1126,5 @@ function(contact, doDelete) {
 	}
 	else {
 		delete hash[id];
-	}
-};
-
-/**
- * Online to Offline or Offline to Online; Called from ZmApp.activate and from ZmOffline.enableApps, disableApps
- */
-ZmContactsApp.prototype.resetWebClientOfflineOperations =
-function() {
-	ZmApp.prototype.resetWebClientOfflineOperations.apply(this);
-	var contactListController = this.getContactListController();
-    var currentToolbar = contactListController && contactListController.getCurrentToolbar();
-    if (contactListController && currentToolbar) {
-	    contactListController._resetOperations(currentToolbar);
-    }
-	var overview = this.getOverview();
-	var distributionList = overview && overview.getTreeItemById(ZmFolder.ID_DLS);// Distribution Lists folder Id
-	if (distributionList) {
-		distributionList.setVisible(!appCtxt.isWebClientOffline());
 	}
 };

@@ -101,7 +101,7 @@ function(batchCommand, saveState) {
 		}
 	}
 
-    if (!organizer.isDataSource() && appCtxt.isWebClientOfflineSupported) {
+    if (!organizer.isDataSource()) {
         var webOfflineSyncDays = $('#folderOfflineLblId').val() || 0;
 		if (organizer.webOfflineSyncDays != webOfflineSyncDays) {
 			var error = ZmOrganizer.checkWebOfflineSyncDays(webOfflineSyncDays);
@@ -336,13 +336,6 @@ ZmFolderPropertyView.prototype._createView = function() {
 	this._totalId = this._props.addProperty(AjxMessageFormat.format(ZmMsg.makeLabel, ZmMsg.messages),  this._totalEl);
 	this._unreadId = this._props.addProperty(AjxMessageFormat.format(ZmMsg.makeLabel, ZmMsg.unread),  this._unreadEl);
 	this._sizeId = this._props.addProperty(ZmMsg.sizeLabel,  this._sizeEl);
-
-    if (appCtxt.isWebClientOfflineSupported) {
-        this._offlineEl = document.createElement("DIV");
-		this._offlineEl.style.whiteSpace = "nowrap";
-		this._offlineEl.innerHTML = ZmMsg.offlineFolderSyncInterval;
-        this._offlineId = this._props.addProperty(ZmMsg.offlineLabel,  this._offlineEl);
-    }
 
     var container = this.getHtmlElement();
 	container.appendChild(this._props.getHtmlElement());

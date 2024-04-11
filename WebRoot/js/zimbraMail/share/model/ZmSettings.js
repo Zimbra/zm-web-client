@@ -977,8 +977,7 @@ function() {
 	this.registerSetting("VIEW_ATTACHMENT_AS_HTML",			{name:"zimbraFeatureViewInHtmlEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("EXPAND_DL_ENABLED",				{name:"zimbraFeatureDistributionListExpandMembersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("FORCE_CLEAR_COOKIES",				{name:"zimbraForceClearCookies", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("WEBCLIENT_OFFLINE_ENABLED",		{name:"zimbraFeatureWebClientOfflineAccessEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("SPELL_DICTIONARY",                                {name:"zimbraPrefSpellDictionary", type:ZmSetting.T_COS, defaultValue:""});
+	this.registerSetting("SPELL_DICTIONARY",				{name:"zimbraPrefSpellDictionary", type:ZmSetting.T_COS, defaultValue:""});
 	this.registerSetting("TWO_FACTOR_AUTH_AVAILABLE",	    {name:"zimbraFeatureTwoFactorAuthAvailable", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("TWO_FACTOR_AUTH_REQUIRED",	    {name:"zimbraFeatureTwoFactorAuthRequired", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("TWO_FACTOR_AUTH_METHOD_ALLOWED",  {name:"zimbraTwoFactorAuthMethodAllowed", type:ZmSetting.T_COS, defaultValue:["app"]});
@@ -1046,7 +1045,6 @@ function() {
     this.registerSetting("COMPOSE_INIT_DIRECTION",			{name:"zimbraPrefComposeDirection", type:ZmSetting.T_PREF, defaultValue:ZmSetting.LTR, isGlobal:true});
     this.registerSetting("SHOW_COMPOSE_DIRECTION_BUTTONS",	{name:"zimbraPrefShowComposeDirection", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("DEFAULT_TIMEZONE",				{name:"zimbraPrefTimeZoneId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:AjxTimezone.getServerId(AjxTimezone.DEFAULT), isGlobal:true});
-    this.registerSetting("WEBCLIENT_OFFLINE_BROWSER_KEY",	{name:"zimbraPrefWebClientOfflineBrowserKey", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, isImplicit:true});
     this.registerSetting("DEFAULT_PRINTFONTSIZE",	    	{name:"zimbraPrefDefaultPrintFontSize", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.PRINT_FONT_SIZE, isGlobal:true});
 	this.registerSetting("GROUPBY_HASH",                    {type: ZmSetting.T_PREF, dataType:ZmSetting.D_HASH});
 	this.registerSetting("GROUPBY_LIST",                    {name:"zimbraPrefGroupByList", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_HASH, isImplicit:true, section:ZmSetting.M_IMPLICIT});
@@ -1080,7 +1078,6 @@ function() {
 	this.registerSetting("WARN_ON_EXIT",					{name:"zimbraPrefWarnOnExit", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("DISPLAY_TIME_IN_MAIL_LIST",		{name:"zimbraPrefDisplayTimeInMailList", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
-	this._registerOfflineSettings();
 	this._registerZimletsSettings();
 
 	// need to do this before loadUserSettings(), and zimlet settings are not tied to an app where it would normally be done
@@ -1110,44 +1107,6 @@ function() {
     this.registerSetting("MANDATORY_ZIMLETS",		        {name:"zimbraZimletMandatoryZimlets", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
     this.registerSetting("ZIMLETS_SYNCHRONOUS",		        {name:"zimbraZimletLoadSynchronously", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
-};
-
-/**
- * @private
- */
-ZmSettings.prototype._registerOfflineSettings =
-function() {
-	if (!appCtxt.isOffline) { return; }
-
-	// offline-specific
-	this.registerSetting("OFFLINE_ACCOUNT_FLAVOR",			{name:"offlineAccountFlavor", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING});
-	this.registerSetting("OFFLINE_COMPOSE_ENABLED",			{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
-	this.registerSetting("OFFLINE_DEBUG_TRACE",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("OFFLINE_IS_MAILTO_HANDLER",		{name:"zimbraPrefMailtoHandlerEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
-	this.registerSetting("OFFLINE_REMOTE_SERVER_URI",		{name:"offlineRemoteServerUri", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING});
-	this.registerSetting("OFFLINE_REPORT_EMAIL",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:"zdesktop-report@zimbra.com", isGlobal:true});
-	this.registerSetting("OFFLINE_SHOW_ALL_MAILBOXES",		{name:"offlineShowAllMailboxes", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, section:ZmSetting.M_OFFLINE, isGlobal:true});
-	this.registerSetting("OFFLINE_ALL_MAILBOXES_TREE_OPEN",	{name:"offlineAllMailboxesTreeOpen", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, section:ZmSetting.M_OFFLINE, isGlobal:true, isImplicit:true});
-	this.registerSetting("OFFLINE_NOTIFY_NEWMAIL_ON_INBOX",	{name:"offlineNotifyNewMailOnInbox", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, section:ZmSetting.M_OFFLINE, isGlobal:true});
-	this.registerSetting("OFFLINE_SAVED_SEARCHES_TREE_OPEN",{name:"offlineSavedSearchesTreeOpen", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, section:ZmSetting.M_OFFLINE, isGlobal:true, isImplicit:true});
-	this.registerSetting("OFFLINE_SMTP_ENABLED",			{name:"zimbraDataSourceSmtpEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("OFFLINE_SUPPORTS_MAILTO",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
-	this.registerSetting("OFFLINE_SUPPORTS_DOCK_UPDATE",	{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
-	this.registerSetting("OFFLINE_WEBAPP_URI",				{name:"offlineWebappUri", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING});
-    this.registerSetting("OFFLINE_BACKUP_INTERVAL",	        {name:"zimbraPrefOfflineBackupInterval", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:0, isGlobal:true});
-    this.registerSetting("OFFLINE_BACKUP_PATH",	            {name:"zimbraPrefOfflineBackupPath", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, isGlobal:true});
-    this.registerSetting("OFFLINE_BACKUP_KEEP",	            {name:"zimbraPrefOfflineBackupKeep", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, isGlobal:true});
-    this.registerSetting("OFFLINE_BACKUP_ACCOUNT_ID",       {name:"zimbraPrefOfflineBackupAccountId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, isGlobal:true});
-    this.registerSetting("OFFLINE_BACKUP_RESTORE",          {name:"zimbraPrefOfflineBackupRestore", dataType:ZmSetting.D_INT, isGlobal:true});
-    this.registerSetting("OFFLINE_BACKUP_NOW_BUTTON",       {name:"zimbraPrefOfflineBackupAccount", dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
-    this.registerSetting("OFFLINE_ZIMLET_SYNC_ACCOUNT_ID",  {name:"zimbraPrefOfflineZimletSyncAccountId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, isGlobal:true});
-	this.registerSetting("OFFLINE_WEBAPP_URI",				{name:"offlineWebappUri", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING});
-
-	// reset the help URI to zimbra.com for offline
-	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"https://www.zimbra.com/desktop7/"});
-//	// make default false for DUMPSTER_ENABLED. shouldn't be necessary since GetInfoResponse includes zimbraDumpsterEnabled:"FALSE", but can't find why settings is not read correctly
-	this.registerSetting("DUMPSTER_ENABLED",				{name:"zimbraDumpsterEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-    this.registerSetting("OFFLINE_UPDATE_NOTIFY",			{name:"zimbraPrefOfflineUpdateChannel", type: ZmSetting.T_PREF, dataType: ZmSetting.D_STRING, isGlobal:true});
 };
 
 /**
@@ -1237,13 +1196,8 @@ function(ev) {
 		return;
 	}
 	if (ZmSetting.IS_IMPLICIT[id] && setting) {
-        if (id === ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY) {
-            var callback = this._offlineSettingsSaveCallback.bind(this, setting);
-        }
-		else {
 			//Once implicit preference is saved, reload the application cache to get the latest changes
-			var callback = appCtxt.reloadAppCache.bind(appCtxt, false);
-		}
+		var callback = appCtxt.reloadAppCache.bind(appCtxt, false);
 		this.save([setting], callback, null, appCtxt.getActiveAccount(), true);
 	}
 };
@@ -1306,29 +1260,6 @@ ZmSettings.prototype._hasVoiceFeature = function() {
     }
 
     return false;
-};
-
-/**
- * @private
- */
-ZmSettings.prototype._offlineSettingsSaveCallback =
-function(setting) {
-	var offlineBrowserKey = setting.getValue();
-	var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
-	if (offlineBrowserKey && offlineBrowserKey.indexOf(localOfflineBrowserKey) !== -1) {
-		this._showConfirmDialog(ZmMsg.offlineChangeRestart, this._refreshBrowserCallback.bind(this));
-    }
-    else {
-        ZmOffline.deleteOfflineData();
-        appCtxt.initWebOffline();// To reset the property isWebClientOfflineSupported
-	    //delete outbox folder
-	    var outboxFolder = appCtxt.getById(ZmFolder.ID_OUTBOX);
-	    if (outboxFolder) {
-		    outboxFolder.notifyDelete();
-	    }
-    }
-	//Always reload appcache whenever offline setting is enabled/disabled. Appcache will be updated/emptied depending upon the setting.
-	appCtxt.reloadAppCache(true);
 };
 
 ZmSettings.prototype.getMailAppForDelegatedAdmin =

@@ -124,7 +124,7 @@ function(params) {
 		params.asyncMode = true;	// canned response set up async style
 		return this._handleResponseSendRequest(params, new ZmCsfeResult(response));
 	}
-	if (params.offlineRequest || appCtxt.isWebClientOffline()) {
+	if (params.offlineRequest) {
 		if (params.offlineCallback) {
 			params.offlineCallback.run(params);
 		}
@@ -235,7 +235,7 @@ ZmRequestMgr.prototype._handleResponseSendRequest =
 function(params, result) {
 	DBG.println("req", "ZmRequestMgr.handleResponseSendRequest for req: " + params.reqId);
 	var isCannedResponse = (params.response != null);
-	if (!isCannedResponse && !appCtxt.isWebClientOffline()) {
+	if (!isCannedResponse) {
 		if (!this._pendingRequests[params.reqId]) {
 			DBG.println("req", "ZmRequestMgr.handleResponseSendRequest no pending request for " + params.reqId);
 			return;
@@ -290,7 +290,7 @@ function(params, result) {
 
             if (ex.code === ZmCsfeException.EMPTY_RESPONSE && params.offlineCallback) {
                 params.offlineCallback(params);
-				if (appCtxt.isWebClientOffline() && !params.noBusyOverlay) {
+				if (!params.noBusyOverlay) {
 					this._shell.setBusy(false, params.reqId); // remove busy overlay
 				}
                 ignore = true;

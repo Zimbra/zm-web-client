@@ -503,25 +503,6 @@ function(parent, num) {
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && num == 1 && !isDraft));
 	parent.enable(ZmOperation.TEXT, true);
 	parent.enable(ZmOperation.KEEP_READING, this._keepReading(true));
-
-	if (appCtxt.isWebClientOffline()) {
-		parent.enable(
-			[
-				ZmOperation.ACTIONS_MENU,
-				ZmOperation.VIEW_MENU,
-				ZmOperation.DETACH,
-				ZmOperation.SHOW_ORIG,
-				ZmOperation.SHOW_CONV,
-				ZmOperation.PRINT,
-				ZmOperation.ADD_FILTER_RULE,
-				ZmOperation.CREATE_APPT,
-				ZmOperation.CREATE_TASK,
-				ZmOperation.CONTACT,
-				ZmOperation.REDIRECT
-			],
-			false
-		);
-	}
 };
 
 ZmDoublePaneController.prototype._resetOperation = 

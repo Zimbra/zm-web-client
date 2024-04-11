@@ -430,7 +430,6 @@ function(list, callback) {
     request[this._apptType] = appts;
 
     var respCallback    = this._handleDismissAppt.bind(this, list, callback);
-    var offlineCallback = this._handleOfflineReminderAction.bind(this,  jsonObj, list, true);
     var errorCallback   = this._handleErrorDismissAppt.bind(this, list, callback);
     var params =
         {jsonObj:         jsonObj,
@@ -546,7 +545,6 @@ function(apptArray, snoozeMinutes, beforeAppt) {
     request[this._apptType] = appts;
 
     var respCallback    = this._handleResponseSnoozeAction.bind(this, apptList, snoozeMinutes);
-    var offlineCallback = this._handleOfflineReminderAction.bind(this,  jsonObj, apptList, false);
     var errorCallback   = this._handleErrorResponseSnoozeAction.bind(this);
     var ac = window.parentAppCtxt || window.appCtxt;
     ac.getRequestMgr().sendRequest(
@@ -581,26 +579,6 @@ function(apptList, snoozeMinutes, result) {
 ZmReminderController.prototype._handleErrorResponseSnoozeAction =
 function(result) {
     //appCtxt.getAppController().popupErrorDialog(ZmMsg.reminderSnoozeError, result.msg, null, true);
-};
-
-ZmReminderController.prototype._handleOfflineReminderAction =
-function(jsonObj, apptList, dismiss) {
-    var jsonObjCopy = $.extend(true, {}, jsonObj);  //Always clone the object.  ?? Needed here ??
-    var methodName = dismiss ? "DismissCalendarItemAlarmRequest" : "SnoozeCalendarItemAlarmRequest";
-    jsonObjCopy.methodName = methodName;
-    // Modify the id to thwart ZmOffline._handleResponseSendOfflineRequest, which sends a DELETE
-    // notification for the id (which impacts here if there is a single id).
-    jsonObjCopy.id = "C" + this._createSendRequestKey(apptList);
-
-    var value = {
-        update:          true,
-        methodName:      methodName,
-        id:              jsonObjCopy.id,
-        value:           jsonObjCopy
-    };
-
-    var callback = this._handleOfflineReminderDBCallback.bind(this, jsonObjCopy, apptList, dismiss);
-    ZmOfflineDB.setItemInRequestQueue(value, callback);
 };
 
 ZmReminderController.prototype._createSendRequestKey =

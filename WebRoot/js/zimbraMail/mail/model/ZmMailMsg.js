@@ -796,7 +796,7 @@ ZmMailMsg.prototype.markRead = function() {
 	if (!this.isReadOnly()) {
 		//For offline mode keep isUnread property as true so that additional MsgActionRequest gets fired.
 		//MsgActionRequest also gets stored in outbox queue and it also sends notify header for reducing the folder unread count.
-		this._markReadLocal(!appCtxt.isWebClientOffline());
+		this._markReadLocal(true);
 	}
 };
 
@@ -1245,20 +1245,6 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 				ptst: newPtst
 			}]
 		}];
-		if (appCtxt.isWebClientOffline()) {
-			// Update the offline entry and appt too.  Depending upon whether this is invoked from mail or appointments,
-			// msgId will either be a single id, or the composite msg-appt id
-			var msgId = inv.getMessageId();
-			var invId = msgId;
-			if (msgId.indexOf("-") >= 0) {
-				// Composite id
-				msgId = msgId.split("-")[1];
-			} else {
-				invId = [inv.getAppointmentId(), msgId].join("-");
-			}
-			var inviteUpdateCallback = this.applyPtstOffline.bind(this, msgId, newPtst);
-			appCtxt.updateOfflineAppt(invId, "ptst", newPtst, null, inviteUpdateCallback);
-		}
 	}
 	if (this.getAddress(AjxEmailAddress.TO) == null && !inv.isOrganizer()) {
 		var to = inv.getOrganizerEmail() || inv.getSentBy();

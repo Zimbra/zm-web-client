@@ -460,9 +460,6 @@ function(ptst) {
 			disableButtonIds[ZmOperation.REPLY_TENTATIVE] = true;
 			break;
 	}
-	if (appCtxt.isWebClientOffline()) {
-		 disableButtonIds[ ZmOperation.PROPOSE_NEW_TIME] = true;
-	}
 	var inviteToolbar = this.getInviteToolbar();
 	var buttonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE, ZmOperation.PROPOSE_NEW_TIME];
 	appCtxt.notifyZimlets("onZmInviteMsgView_enableToolbarButtons", [buttonIds]);

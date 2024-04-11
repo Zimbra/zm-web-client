@@ -110,7 +110,7 @@ function() {
 ZmTradController.prototype._resetOperations = 
 function(parent, num) {
 	ZmDoublePaneController.prototype._resetOperations.apply(this, arguments);
-	parent.enable(ZmOperation.SHOW_CONV, (num == 1) && !appCtxt.isWebClientOffline());
+	parent.enable(ZmOperation.SHOW_CONV, (num == 1));
 };
 
 ZmTradController.prototype._paginate = 

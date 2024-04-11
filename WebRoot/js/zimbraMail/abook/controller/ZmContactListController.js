@@ -289,22 +289,21 @@ ZmContactListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmContactListController.handleKeyAction");
     var isExternalAccount = appCtxt.isExternalAccount();
-	var isWebClientOffline = appCtxt.isWebClientOffline();
 	switch (actionCode) {
 
 		case ZmKeyMap.EDIT:
-            if (isExternalAccount || isWebClientOffline) { break; }
+            if (isExternalAccount) { break; }
 			this._editListener();
 			break;
 
 		case ZmKeyMap.PRINT:
-			if (appCtxt.get(ZmSetting.PRINT_ENABLED) && !isWebClientOffline) {
+			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
 				this._printListener();
 			}
 			break;
 
 		case ZmKeyMap.PRINT_ALL:
-			if (appCtxt.get(ZmSetting.PRINT_ENABLED) && !isWebClientOffline) {
+			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
 				this._printAddrBookListener();
 			}
 			break;
@@ -794,25 +793,6 @@ function(parent, num) {
                     );
         parent.setItemVisible(ZmOperation.TAG_MENU, false);
     }
-
-	if (appCtxt.isWebClientOffline()) {
-		parent.enable(
-			[
-				ZmOperation.ACTIONS_MENU,
-				ZmOperation.MOVE,
-				ZmOperation.EDIT,
-				ZmOperation.CONTACT,
-				ZmOperation.MOVE_MENU,
-				ZmOperation.CONTACTGROUP_MENU,
-				ZmOperation.DELETE,
-				ZmOperation.TAG_MENU,
-				ZmOperation.PRINT,
-				ZmOperation.PRINT_CONTACT,
-				ZmOperation.SEND_CONTACTS_IN_EMAIL
-			],
-			false
-		);
-	}
 };
 
 
@@ -888,7 +868,7 @@ function(ev) {
 			this._editListener.call(this, ev);
 			return;
 		}
-		if (!this.isGalSearch() && (!folder || (!folder.isReadOnly() && !folder.isInTrash())) && !appCtxt.isWebClientOffline()) {
+		if (!this.isGalSearch() && (!folder || (!folder.isReadOnly() && !folder.isInTrash()))) {
 			AjxDispatcher.run("GetContactController").show(ev.item);
 		}
 	}

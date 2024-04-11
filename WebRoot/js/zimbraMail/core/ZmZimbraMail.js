@@ -133,9 +133,7 @@ ZmZimbraMail = function(params) {
 
 	this._shell.addGlobalSelectionListener(new AjxListener(this, this._globalSelectionListener));
 
-    // setup webClient offline support
-    appCtxt.initWebOffline();
-    /// go!
+	/// go!
 	this.startup(params);
 };
 
@@ -740,9 +738,7 @@ function(params, result) {
 	if (this._doingPostRenderStartup) {
 		this.addAppListener(params.startApp, ZmAppEvent.POST_RENDER, new AjxListener(this, this._postRenderStartup));
         //For offline mode offline callback will take care
-		if (!appCtxt.isWebClientOffline()) {
-	        this._searchResponse = params.searchResponse;
-        }
+		this._searchResponse = params.searchResponse;
 	} else {
 		AjxDispatcher.require("Startup2");
 	}
@@ -961,9 +957,7 @@ function() {
  */
 ZmZimbraMail.prototype._refreshListener =
 function() {
-	if (!appCtxt.isWebClientOffline()) {
-		this.runAppFunction("runRefresh");
-	}
+	this.runAppFunction("runRefresh");
 };
 
 // popup a warning dialog if there is a problem with the license
@@ -2416,11 +2410,6 @@ function(parent, parentElement, adminUrl) {
 
 	    menu.createSeparator();
 
-		if (!appCtxt.isExternalAccount() && appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED)) {
-	        mi = menu.createMenuItem("offlineSettings", {text: ZmMsg.offlineSettings});
-	        mi.addSelectionListener(new AjxListener(this, this._offlineSettingsListener));
-	    }
-
 		if (appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED)) {
 	        mi = menu.createMenuItem("changePassword", {text: ZmMsg.changePassword});
 	        mi.addSelectionListener(new AjxListener(this, this._changePasswordListener));
@@ -2446,14 +2435,7 @@ ZmZimbraMail.prototype.setupHelpMenu = function(button) {
 	var menu = button.getMenu();
 	if (!menu) return;
 
-	var isOnline = !appCtxt.isWebClientOffline();
-	if (isOnline) {
-		menu.enableAll(true);
-	} else {
-		menu.enableAll(false);
-		var offlineEnabledIds = [ZmZimbraMail.HELP_MENU_ABOUT];
-		menu.enable(offlineEnabledIds, true);
-	}
+	menu.enableAll(true);
 };
 
 ZmZimbraMail.prototype.getNewButton =
@@ -2655,18 +2637,6 @@ function(ev) {
 
 };
 
-ZmZimbraMail.prototype._offlineSettingsListener =
-function(ev) {
-    var dialog;
-    if (AjxEnv.isOfflineSupported) {
-        dialog = appCtxt.getOfflineSettingsDialog();
-    } else {
-        dialog = appCtxt.getMsgDialog();
-        dialog.setMessage(ZmMsg.offlineSupportedBrowser, "", ZmMsg.offlineSettings);
-    }
-    dialog.popup();
-};
-
 ZmZimbraMail.prototype._initOfflineUserInfo =
 function() {
 	var htmlElId = this._userNameField.getHTMLElId();
@@ -2806,9 +2776,7 @@ function(ev, relogin) {
 		window.close();
 		return;
 	}
-	if (appCtxt.isWebClientOfflineSupported && (ev || relogin)) {
-		return ZmOffline.handleLogOff(ev, relogin);
-	}
+
 	if (localStorage.hasOwnProperty('csrfToken') ==  true ){
 		localStorage.removeItem('csrfToken');
 	}
@@ -3077,7 +3045,7 @@ function(ex, continuation) {
 			}
 		}
 	}
-    else if (appCtxt.isWebClientOffline() && ex.code === ZmCsfeException.EMPTY_RESPONSE) {
+    else if (ex.code === ZmCsfeException.EMPTY_RESPONSE) {
         handled = true;
     }
 	if (!handled) {
@@ -3366,7 +3334,7 @@ ZmZimbraMail.prototype.handleKeyAction = function(actionCode, ev) {
 		if (app == this.getActiveApp()) {
             return false;
         }
-		if (appCtxt.isWebClientOffline() && !AjxUtil.arrayContains(ZmOffline.SUPPORTED_APPS, app)) {
+		if (!AjxUtil.arrayContains(ZmOffline.SUPPORTED_APPS, app)) {
 			return false;
 		}
 		this.activateApp(app);
@@ -3379,7 +3347,7 @@ ZmZimbraMail.prototype.handleKeyAction = function(actionCode, ev) {
             var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
             // calMgr.showQuickReminder uses an entire alternate search mechanism from ZmApptCache - setting params,
             // sending a search, etc.  Suppress for offline - lots of work for little gain to adapt this to offline modek
-            if (appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account) && !appCtxt.isWebClientOffline()) {
+            if (appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account)) {
                 var calMgr = appCtxt.getCalManager();
                 calMgr.showQuickReminder();
             }

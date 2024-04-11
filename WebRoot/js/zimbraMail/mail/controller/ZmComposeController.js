@@ -230,7 +230,7 @@ function(params) {
 	}
 
 	params.action = params.action || ZmOperation.NEW_MESSAGE;
-	params.inNewWindow = !appCtxt.isWebClientOffline() && !this.isHidden && (params.inNewWindow || this._app._inNewWindow(params.ev));
+	params.inNewWindow = !this.isHidden && (params.inNewWindow || this._app._inNewWindow(params.ev));
 	this._msgSent = false;
 	if (params.inNewWindow) {
         var msgId = (params.msg && params.msg.nId) || Dwt.getNextId();
@@ -1236,7 +1236,7 @@ function() {
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
 
-	if (appCtxt.get(ZmSetting.DETACH_COMPOSE_ENABLED) && !appCtxt.isChildWindow && !appCtxt.isWebClientOffline()) {
+	if (appCtxt.get(ZmSetting.DETACH_COMPOSE_ENABLED) && !appCtxt.isChildWindow) {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
 	}
 
@@ -1932,13 +1932,11 @@ ZmComposeController.prototype._switchInclude = function(op) {
 
 ZmComposeController.prototype._detachListener =
 function(ev) {
-	if (!appCtxt.isWebClientOffline()) {
-		var atts = this._composeView.getAttFieldValues();
-		if (atts.length) {
-			this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, ZmMsg.importErrorUpload, null, this._detachCallback.bind(this));
-		} else {
-			this.detach();
-		}
+	var atts = this._composeView.getAttFieldValues();
+	if (atts.length) {
+		this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, ZmMsg.importErrorUpload, null, this._detachCallback.bind(this));
+	} else {
+		this.detach();
 	}
 };
 
@@ -2399,7 +2397,7 @@ function(callback){
 ZmComposeController.prototype._processDataURIImages =
 function (imgArray, length, callback) {
 
-    if ( !(typeof window.atob === "function" && typeof window.Blob === "function") || appCtxt.isWebClientOffline()) {
+    if ( !(typeof window.atob === "function" && typeof window.Blob === "function")) {
         return;
     }
 
@@ -2439,33 +2437,29 @@ function (imgArray, length, callback) {
 
 ZmComposeController.prototype._initUploadMyComputerFile =
 function(files) {
-    if (appCtxt.isWebClientOffline()) {
-        return this._handleOfflineUpload(files);
-    } else {
-        var curView = this._composeView;
-        if (curView) {
-            var params = {
-				attachment:            true,
-                files:                 files,
-                notes:                 "",
-                allResponses:          null,
-                start:                 0,
-                curView:               this._composeView,
-                preAllCallback:        this._preUploadAll.bind(this),
-                initOneUploadCallback: curView._startUploadAttachment.bind(curView),
-                errorCallback:         curView._resetUpload.bind(curView, true),
-                completeOneCallback:   curView.updateAttachFileNode.bind(curView),
-                completeAllCallback:   this._completeAllUpload.bind(this)
-            }
-			params.progressCallback =  curView._uploadFileProgress.bind(curView, params);
+    var curView = this._composeView;
+	if (curView) {
+		var params = {
+			attachment:            true,
+			files:                 files,
+			notes:                 "",
+			allResponses:          null,
+			start:                 0,
+			curView:               this._composeView,
+			preAllCallback:        this._preUploadAll.bind(this),
+			initOneUploadCallback: curView._startUploadAttachment.bind(curView),
+			errorCallback:         curView._resetUpload.bind(curView, true),
+			completeOneCallback:   curView.updateAttachFileNode.bind(curView),
+			completeAllCallback:   this._completeAllUpload.bind(this)
+		}
+		params.progressCallback =  curView._uploadFileProgress.bind(curView, params);
 
 
-			// Do a SaveDraft at the start, since we will suppress autosave during the upload
-            var uploadManager = appCtxt.getZmUploadManager();
-            var uploadCallback = uploadManager.upload.bind(uploadManager, params);
-            this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, null, null, uploadCallback);
-        }
-    }
+		// Do a SaveDraft at the start, since we will suppress autosave during the upload
+		var uploadManager = appCtxt.getZmUploadManager();
+		var uploadCallback = uploadManager.upload.bind(uploadManager, params);
+		this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, null, null, uploadCallback);
+	}
 };
 
 ZmComposeController.prototype._preUploadAll =

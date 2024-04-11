@@ -2260,9 +2260,8 @@ function(parent, num) {
 
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 
-	var isWebClientOffline = appCtxt.isWebClientOffline();
-	parent.enable(ZmOperation.PRINT, (num > 0) && !isWebClientOffline );
-	parent.enable(ZmOperation.SHOW_ORIG, !isWebClientOffline);
+	parent.enable(ZmOperation.PRINT, (num > 0) );
+	parent.enable(ZmOperation.SHOW_ORIG, true);
 
 	if (this.isSyncFailuresFolder()) {
 		parent.enableAll(false);
@@ -2295,7 +2294,7 @@ function(parent, num) {
 	parent.setItemVisible(ZmOperation.EDIT_AS_NEW, !(isDrafts || isOutboxFolder));
 
 	parent.setItemVisible(ZmOperation.REDIRECT, !(isDrafts || isOutboxFolder));
-	parent.enable(ZmOperation.REDIRECT, !(isDrafts || isOutboxFolder || isWebClientOffline));
+	parent.enable(ZmOperation.REDIRECT, !(isDrafts || isOutboxFolder));
 
 	parent.setItemVisible(ZmOperation.MARK_READ, !(isDrafts || isOutboxFolder));
 	parent.setItemVisible(ZmOperation.MARK_UNREAD, !(isDrafts || isOutboxFolder));
@@ -2306,7 +2305,7 @@ function(parent, num) {
 
 	parent.enable(ZmOperation.MOVE_MENU, !(isDrafts || isOutboxFolder) && num > 0);
 
-	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !(isDrafts || isOutboxFolder || isWebClientOffline) && num == 1));
+	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !(isDrafts || isOutboxFolder) && num == 1));
 
 	/*if (parent.isZmActionMenu) {
 		parent.setItemVisible(ZmOperation.QUICK_COMMANDS, !isDrafts && parent._hasQuickCommands);
@@ -2431,10 +2430,6 @@ function(menu) {
 	menu.enable(ZmOperation.MARK_UNREAD, status.hasRead);
 	menu.enable(ZmOperation.FLAG, status.hasUnflagged);
 	menu.enable(ZmOperation.UNFLAG, status.hasFlagged);
-
-    if (appCtxt.isWebClientOffline()) {
-        menu.enable([ZmOperation.ADD_FILTER_RULE,ZmOperation.CREATE_APPT, ZmOperation.CREATE_TASK], false);
-    }
 };
 
 // Enable mark read/unread as appropriate.

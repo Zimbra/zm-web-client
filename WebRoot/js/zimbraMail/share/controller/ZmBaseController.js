@@ -192,7 +192,7 @@ function(actionCode, ev) {
 			break;
 
 		case ZmKeyMap.PRINT:
-			if (appCtxt.get(ZmSetting.PRINT_ENABLED) && !appCtxt.isWebClientOffline()) {
+			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
 				this._printListener();
 			}
 			break;
@@ -507,7 +507,7 @@ function(ev, list) {
 	}
 	var newButton = this._folderChooser._getNewButton();
 	if (newButton) {
-		newButton.setVisible(!appCtxt.isWebClientOffline());
+		newButton.setVisible(true);
 	}
 	moveButton.popup();
 	moveButton.getMenu().getHtmlElement().style.width = "auto"; //reset the width so it's dynamic. without this it is set to 0, and in any case even if it was set to some other > 0 value, it needs to be dynamic due to collapse/expand (width changes)
@@ -1114,7 +1114,7 @@ function(parent, items) {
 			tagMenu.parent.popup();
 
 			// bug #17584 - we currently don't support creating new tags in new window
-			if (appCtxt.isChildWindow || appCtxt.isWebClientOffline()) {
+			if (appCtxt.isChildWindow) {
 				var mi = tagMenu.getMenuItem(ZmTagMenu.MENU_ITEM_ADD_ID);
 				if (mi) {
 					mi.setVisible(false);
@@ -1274,7 +1274,7 @@ ZmBaseController.prototype._bubbleActionListener = function(ev, addr) {
 				ZmOperation.CONTACT,
 				ZmOperation.ADD_TO_FILTER_RULE
 			],
-			!appCtxt.isWebClientOffline()
+			true
 		);
 		this._loadContactForMenu(menu, address, ev);
 	}
@@ -1472,10 +1472,6 @@ ZmBaseController.setContactTextOnMenu = function(contact, menu) {
 	}
 
 	ZmOperation.setOperation(menu, ZmOperation.CONTACT, newOp, newText);
-
-	if (appCtxt.isWebClientOffline()) {
-		menu.enable(ZmOperation.CONTACT, false);
-	}
 };
 
 /**

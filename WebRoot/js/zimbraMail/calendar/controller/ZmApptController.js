@@ -160,10 +160,6 @@ function(mode) {
     if(isTrash){
         this._disableEditForTrashedItems();
     }
-
-    if (appCtxt.isWebClientOffline()) {
-        this._disableEditForOffline();
-    }
     if (isReadOnly) {
         this._disableActionsForReadOnlyAppt();
     }
@@ -354,15 +350,6 @@ function(ev) {
 
 ZmApptController.prototype._handleSaveResponse =
 function(result, value) {
-    if (appCtxt.isWebClientOffline()) {
-        // Set the value of the appt stored in-memory in the list.  Normally, this would be updated
-        // by a notification, but not offline.
-        //var appt = this.getCalItem();
-        //appt.ptst = value;
-
-        // Update the version currently in use.  It may get updated again below, but it doesn't matter
-        this.getCurrentView().setOrigPtst(value);
-    }
     if (this.isCloseAction()) {
         this._closeView();
     } else {

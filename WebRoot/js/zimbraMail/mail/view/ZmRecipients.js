@@ -400,8 +400,6 @@ function(bEnable) {
 // Address buttons invoke contact picker
 ZmRecipients.prototype.addressButtonListener =
 function(ev, addrType) {
-	if (appCtxt.isWebClientOffline()) return;
-
 	var obj = ev ? DwtControl.getTargetControl(ev) : null;
 	if (this._enableContainerInputs) {
 		this._enableContainerInputs(false);

@@ -1599,10 +1599,8 @@ function(op, params) {
 	var inNewWindow = false;
 	var showLoadingPage = true;
 	if ((op == ZmOperation.NEW_MESSAGE_WIN) || (op == ZmOperation.NEW_MESSAGE)) {
-		if (!appCtxt.isWebClientOffline()) {
-			inNewWindow = (op == ZmOperation.NEW_MESSAGE_WIN) ? true : this._inNewWindow(params && params.ev);
-			showLoadingPage = false;	// don't show "Loading ..." page since main window view doesn't change
-		}
+		inNewWindow = (op == ZmOperation.NEW_MESSAGE_WIN) ? true : this._inNewWindow(params && params.ev);
+		showLoadingPage = false;	// don't show "Loading ..." page since main window view doesn't change
 		var loadCallback = new AjxCallback(this, this.compose, {action: ZmOperation.NEW_MESSAGE, inNewWindow:inNewWindow});
 		AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, showLoadingPage);
 	}
@@ -1780,8 +1778,6 @@ function(query, callback, response, type) {
 	}
 	else if(appCtxt.isExternalAccount()) {
         query = "inid:" + this.getDefaultFolderId();
-    } else if (appCtxt.isWebClientOffline()) {
-        query = query || "in:inbox";
     } else {
 		query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);
 	}
@@ -2425,34 +2421,6 @@ ZmMailApp.prototype._checkVacationReplyEnabled = function(){
 ZmMailApp.prototype._createVirtualFolders =
 function() {
     ZmOffline.addOutboxFolder();
-};
-
-ZmMailApp.prototype.resetWebClientOfflineOperations =
-function() {
-	ZmApp.prototype.resetWebClientOfflineOperations.apply(this);
-    //Refreshing the mail list both for online and offline mode
-	var isWebClientOnline = !appCtxt.isWebClientOffline();
-	this.refresh();
-	var folders = appCtxt.getFolderTree().getByType(ZmOrganizer.FOLDER);
-	var overview = this.getOverview();
-	if (folders && overview) {
-		for (var i = 0; i < folders.length; i++) {
-			var folder = folders[i];
-			var treeItem = folder && overview.getTreeItemById(folder.id);
-			if (!treeItem) {
-				continue;
-			}
-			if (isWebClientOnline) {
-				treeItem.setVisible(true);
-			}
-			else {
-				//Don't hide ROOT folder and OUTBOX folder
-				if (folder.id != ZmFolder.ID_ROOT && folder.rid != ZmFolder.ID_ROOT && folder.id != ZmFolder.ID_OUTBOX && folder.webOfflineSyncDays === 0) {
-					treeItem.setVisible(false);
-				}
-			}
-		}
-	}
 };
 
 /*

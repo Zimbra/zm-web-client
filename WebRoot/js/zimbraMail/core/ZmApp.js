@@ -1065,12 +1065,8 @@ function(mods) {
  */
 ZmApp.prototype._inNewWindow =
 function(ev) {
-	if (appCtxt.isWebClientOffline()) {
-		return false;
-	}  else {
-		var setting = appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
-		return !ev ? setting : ((!setting && ev && ev.shiftKey) || (setting && ev && !ev.shiftKey));
-	}
+	var setting = appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
+	return !ev ? setting : ((!setting && ev && ev.shiftKey) || (setting && ev && !ev.shiftKey));
 };
 
 /**
@@ -1127,40 +1123,7 @@ function(active, viewId) {
 		appCtxt.getAppController().setNewButtonProps(this.getNewButtonProps());
 		this.setOverviewPanelContent();
 		this.stopAlert();
-		if (appCtxt.isWebClientOfflineSupported) {
-			this.resetWebClientOfflineOperations();
-		}
 		this._setRefreshButtonTooltip();
-	}
-};
-
-/**
- * Handle the common aspects of a transition from online to offline and offline to online, and also do so
- * when an app is activated
- */
-ZmApp.prototype.resetWebClientOfflineOperations =
-function() {
-	var isWebClientOnline = !appCtxt.isWebClientOffline();
-	var overview = this.getOverview();
-	if (overview) {
-		var zimletTreeView = overview.getTreeView(ZmOrganizer.ZIMLET);
-		if (zimletTreeView) {
-			zimletTreeView.setVisible(isWebClientOnline);
-		}
-		// enable/disable right click
-		overview.actionSupported = isWebClientOnline;
-		// enable/disable drag and drop
-		overview.dndSupported = isWebClientOnline;
-	}
-	// new button enable/disable
-	var newButton = appCtxt.getAppController().getNewButton();
-	if (newButton) {
-		if (ZmController._defaultNewId === ZmOperation.NEW_MESSAGE) {
-			newButton._setDropDownCellMouseHandlers(isWebClientOnline);
-		}
-		else {
-			newButton.setEnabled(isWebClientOnline);
-		}
 	}
 };
 

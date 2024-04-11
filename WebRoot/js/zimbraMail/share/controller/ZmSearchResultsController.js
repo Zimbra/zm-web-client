@@ -238,9 +238,6 @@ function() {
 
 ZmSearchResultsController.prototype._postShowCallback =
 function() {
-	if (appCtxt.isWebClientOfflineSupported) {
-		this.getApp().resetWebClientOfflineOperations(this);
-	}
 	ZmController.prototype._postShowCallback.call(this);
 };
 

@@ -3583,7 +3583,7 @@ function() {
 			this.showAttachmentDialog.bind(this,
 			                               ZmComposeView.UPLOAD_BRIEFCASE);
 		var briefcaseItem = this._createAttachMenuItem(menu, ZmMsg.briefcase, listener);
-		briefcaseItem.setEnabled(!appCtxt.isWebClientOffline());
+		briefcaseItem.setEnabled(true);
 
 	}
 	appCtxt.notifyZimlets("initializeAttachPopup", [menu, this], {waitUntilLoaded:true});
@@ -3747,7 +3747,7 @@ function(msg, action, includeInlineImages, includeInlineAtts) {
 				this._replyAttachInfo = this._replyAttachments = [];
 				Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_REPLY_ATT_ROW), false);
 		} else if (action === ZmOperation.REPLY || action === ZmOperation.REPLY_ALL) {
-			if (attInfo && attInfo.length && !appCtxt.isWebClientOffline()) {
+			if (attInfo && attInfo.length) {
 				this._replyAttachInfo = attInfo;
 				this._replyAttachments = this._msg.attachments;
 				this._attachCount = 0;
@@ -3757,7 +3757,7 @@ function(msg, action, includeInlineImages, includeInlineAtts) {
 			return;
 		}
 
-		if (attInfo.length > 0 && !(action === ZmOperation.FORWARD_INLINE && appCtxt.isWebClientOffline())) {
+		if (attInfo.length > 0 && !(action === ZmOperation.FORWARD_INLINE)) {
 			var rowId = this._htmlElId + '_attach';
 			for (var i = 0; i < attInfo.length; i++) {
 				var att = attInfo[i];

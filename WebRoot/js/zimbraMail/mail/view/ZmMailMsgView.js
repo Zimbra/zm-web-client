@@ -2093,7 +2093,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 		
 		// add any discretionary links depending on the attachment and what's enabled
 		var linkCount = 0;
-		var vCardLink = (att.links.vcard && !appCtxt.isWebClientOffline());
+		var vCardLink = (att.links.vcard);
 		if (!appCtxt.isExternalAccount() && (att.size || att.links.html || vCardLink || att.links.download || att.links.briefcase || att.links.importICS)) {
 			// size
 			htmlArr[idx++] = "&nbsp;(";
@@ -2143,7 +2143,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 				attLinkIds.push(params.id);
 			}
 			// add as Briefcase file
-			if (att.links.briefcase && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) && !appCtxt.isWebClientOffline()) {
+			if (att.links.briefcase && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
 				htmlArr[idx++] = linkCount ? " | " : "";
 				var params = {
 					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_BRIEFCASE),
@@ -2167,7 +2167,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 				attLinkIds.push(params.id);
 			}
 			// remove attachment from msg
-			if (att.links.remove && !appCtxt.isWebClientOffline()) {
+			if (att.links.remove) {
 				htmlArr[idx++] = linkCount ? " | " : "";
 				var params = {
 					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_REMOVE),
@@ -2221,7 +2221,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 		hasGeneratedAttachments = hasGeneratedAttachments || att.generated;
 	}
 
-	if (!hasGeneratedAttachments && attInfo.length > 1 && !appCtxt.isWebClientOffline()) {
+	if (!hasGeneratedAttachments && attInfo.length > 1) {
 		allAttParams = this._addAllAttachmentsLinks(attInfo, (imageAttsFound > 1), this._msg.subject);
 		htmlArr[idx++] = allAttParams.html;
 	}

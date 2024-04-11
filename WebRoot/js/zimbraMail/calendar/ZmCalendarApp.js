@@ -691,23 +691,21 @@ function(notify) {
 
 ZmCalendarApp.prototype.handleOp =
 function(op) {
-	if (!appCtxt.isWebClientOffline()) {
-		switch (op) {
-			case ZmOperation.NEW_APPT: {
-				var loadCallback = new AjxCallback(this, this._handleLoadNewAppt);
-				AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
-				break;
-			}
-			case ZmOperation.NEW_CALENDAR: {
-				var loadCallback = new AjxCallback(this, this._handleLoadNewCalendar);
-				AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
-				break;
-			}
-			case ZmOperation.ADD_EXTERNAL_CALENDAR: {
-				var loadCallback = new AjxCallback(this, this._handleLoadExternalCalendar);
-				AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
-				break;
-			}
+	switch (op) {
+		case ZmOperation.NEW_APPT: {
+			var loadCallback = new AjxCallback(this, this._handleLoadNewAppt);
+			AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
+			break;
+		}
+		case ZmOperation.NEW_CALENDAR: {
+			var loadCallback = new AjxCallback(this, this._handleLoadNewCalendar);
+			AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
+			break;
+		}
+		case ZmOperation.ADD_EXTERNAL_CALENDAR: {
+			var loadCallback = new AjxCallback(this, this._handleLoadExternalCalendar);
+			AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
+			break;
 		}
 	}
 };
@@ -813,17 +811,6 @@ function(active, viewId) {
 		var avm = appCtxt.getAppViewMgr();
 		var show = (active || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) && !avm.isHidden(ZmAppViewMgr.C_TREE_FOOTER, viewId);
 		AjxDispatcher.run("ShowMiniCalendar", show);
-	}
-};
-
-// Online to Offline or Offline to Online; Called from ZmApp.activate and from ZmOffline.enableApps, disableApps
-ZmCalendarApp.prototype.resetWebClientOfflineOperations =
-function() {
-	ZmApp.prototype.resetWebClientOfflineOperations.apply(this);
-	var controller = this.getCalController();
-	if (controller) {
-		controller._resetToolbarOperations();
-		controller._clearViewActionMenu();
 	}
 };
 

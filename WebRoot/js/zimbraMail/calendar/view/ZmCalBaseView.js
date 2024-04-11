@@ -1113,7 +1113,7 @@ function(ev, apptEl, appt) {
     }
 	var calendar = appCtxt.getById(appt.folderId);
 	var isRemote = Boolean(calendar.url);
-    if (appt.isReadOnly() || isRemote || appCtxt.isWebClientOffline()) return false;
+    if (appt.isReadOnly() || isRemote) return false;
 
 	var apptOffset = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, apptEl, false);
 
