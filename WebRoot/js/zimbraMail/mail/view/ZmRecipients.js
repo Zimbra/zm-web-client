@@ -92,7 +92,7 @@ function(parent, viewId, htmlElId, fieldNames) {
 	var galEnabled = appCtxt.get(ZmSetting.GAL_ENABLED);
 
     	// init autocomplete list
-    if (contactsEnabled || galEnabled || appCtxt.isOffline) {
+    if (contactsEnabled || galEnabled) {
 		var params = {
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_FULL,

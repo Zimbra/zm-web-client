@@ -300,13 +300,11 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 				ZmSetting.SEARCH_INCLUDES_SHARED,
 				ZmSetting.SEARCH_INCLUDES_SPAM,
 				ZmSetting.SEARCH_INCLUDES_TRASH,
-				ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES,
 				ZmSetting.SHOW_SEARCH_STRING,
 				ZmSetting.SHOW_SELECTION_CHECKBOX,
 				ZmSetting.SKIN_NAME,
 				ZmSetting.DEFAULT_TIMEZONE,
                 ZmSetting.DEFAULT_PRINTFONTSIZE,
-				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
 				ZmSetting.SHORT_ADDRESS,
                 ZmSetting.OFFLINE_UPDATE_NOTIFY //offline
 			]
@@ -314,7 +312,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 
         ACCOUNTS: {
 			icon:           "Accounts",
-			title:          appCtxt.isOffline ? ZmMsg.personas : ZmMsg.accounts,
+			title:          ZmMsg.accounts,
 			templateId:     "prefs.Pages#Accounts",
 			priority:       9,
 			precondition:   ZmSetting.MAIL_PREFERENCES_ENABLED,
@@ -480,27 +478,6 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 							}
 		}
 	};
-
-    if (appCtxt.isOffline) {
-        sections["BACKUP"] = {
-			title:          ZmMsg.offlineBackups,
-			icon:           "backup",
-            manageDirty:    true,
-			templateId:     "prefs.Pages#BackUp",
-			priority:       130,
-            prefs:          [
-				                ZmSetting.OFFLINE_BACKUP_NOW_BUTTON,
-				                ZmSetting.OFFLINE_BACKUP_INTERVAL,
-				                ZmSetting.OFFLINE_BACKUP_PATH,
-				                ZmSetting.OFFLINE_BACKUP_KEEP,
-				                ZmSetting.OFFLINE_BACKUP_ACCOUNT_ID,
-				                ZmSetting.OFFLINE_BACKUP_RESTORE
-				            ],
-			createView:     function(parent, section, controller) {
-								return new ZmBackupPage(parent, section, controller);
-							}
-		}
-    }
 
 	appCtxt.notifyZimlets("onZmPreferencesApp_registerPrefs_before_registerPrefSection", [sections]);
 
@@ -728,54 +705,6 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
-	
-	if (appCtxt.isOffline) {
-		ZmPref.registerPref("OFFLINE_IS_MAILTO_HANDLER", {
-			displayName:		ZmMsg.offlineAllowMailTo,
-			displayContainer:	ZmPref.TYPE_CHECKBOX
-		});
-
-        ZmPref.registerPref("OFFLINE_BACKUP_ACCOUNT_ID", {
-            displayName:		ZmMsg.offlineBackUpAccounts,
-            displayContainer:	ZmPref.TYPE_CUSTOM
-        });
-
-        ZmPref.registerPref("OFFLINE_BACKUP_RESTORE", {
-            displayContainer:	ZmPref.TYPE_CUSTOM
-        });
-
-        ZmPref.registerPref("OFFLINE_BACKUP_NOW_BUTTON", {
-            displayName:		ZmMsg.offlineBackUpButton,
-            displayContainer:	ZmPref.TYPE_CUSTOM
-        });
-
-        ZmPref.registerPref("OFFLINE_BACKUP_INTERVAL", {
-            displayName:		ZmMsg.offlineBackUpInterval,
-            displayContainer:	ZmPref.TYPE_SELECT,
-            displayOptions:		[ZmMsg.pollNever, ZmMsg.everyDay, ZmMsg.everyWeek, ZmMsg.everyMonth],
-            options:			[0, 86400000, 604800000, 2628000000]
-        });
-
-        ZmPref.registerPref("OFFLINE_BACKUP_PATH", {
-            displayName:		ZmMsg.offlineBackUpPath,
-            displayContainer:	ZmPref.TYPE_INPUT
-        });
-
-        ZmPref.registerPref("OFFLINE_BACKUP_KEEP", {
-            displayName:		ZmMsg.offlineBackUpKeep,
-            displayContainer:	ZmPref.TYPE_SELECT,
-            displayOptions:		["1", "2", "3", "4", "5"]
-        });
-
-        ZmPref.registerPref("OFFLINE_UPDATE_NOTIFY", {
-            displayName:		ZmMsg.offlineUpdateNotify,
-		    displayContainer:	ZmPref.TYPE_SELECT,
-            displayOptions:		[ZmMsg.offlineUpdateRelease, ZmMsg.offlineUpdateBeta],
-            options:    		["release", "beta"]
-        });
-
-	}
-
 	// Polling Interval Options - Dynamically constructed according to MIN_POLLING_INTERVAL,POLLING_INTERVAL
     var neverValue = 525600;
     var numOptions = 10;
@@ -918,13 +847,6 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		displayName:		ZmMsg.colorMessages,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
-
-	if (appCtxt.isOffline) {
-		ZmPref.registerPref("OFFLINE_SHOW_ALL_MAILBOXES", {
-			displayName:		ZmMsg.showAllMailboxes,
-			displayContainer:	ZmPref.TYPE_CHECKBOX
-		});
-	}
 
 	ZmPref.registerPref("SHOW_SEARCH_STRING", {
 		displayName:		ZmMsg.showSearchString,

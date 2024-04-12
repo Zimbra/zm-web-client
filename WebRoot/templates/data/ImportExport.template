@@ -100,9 +100,6 @@
 				<table role="presentation">
 					<tr><td><button id="${id}_FOLDER_BUTTON" tabindex="300"></button></td></tr>
 				</table>
-				<$ if (appCtxt.get(ZmSetting.OFFLINE_ENABLED)) { $>
-					<div id="${id}_IGNORE_ARCHIVE" tabindex="400"></div>
-				<$ } $>
 			</td>
 		</tr>
 		<tr id="${id}_ADVANCED_row">

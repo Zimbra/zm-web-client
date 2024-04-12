@@ -53,10 +53,7 @@ ZmMailMsgView = function(params) {
 	this.addListener(DwtEvent.ONSELECTSTART, this._selectStartListener.bind(this));
 	this.addListener(DwtEvent.CONTROL, this._controlEventListener.bind(this));
 
-	// bug fix #25724 - disable right click selection for offline
-	if (!appCtxt.isOffline) {
-		this._setAllowSelection();
-	}
+	this._setAllowSelection();
 
 	this.noTab = true;
     this._attachmentLinkIdToFileNameMap = null;
@@ -2258,13 +2255,6 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 		}
 	}
 
-	var offlineHandler = appCtxt.webClientOfflineHandler;
-	if (offlineHandler) {
-		var getLinkIdCallback = this._getAttachmentLinkId.bind(this);
-		var linkIds = [ZmMailMsgView.ATT_LINK_MAIN, ZmMailMsgView.ATT_LINK_DOWNLOAD];
-		offlineHandler._handleAttachmentsForOfflineMode(attInfo, getLinkIdCallback, linkIds);
-	}
-
     // add handlers for "all attachments" links
 	if (allAttParams) {
 		var downloadAllLink = document.getElementById(allAttParams.downloadAllLinkId);
@@ -2495,8 +2485,6 @@ function(msg, ev) {
 	var proxy = AjxUtil.createProxy(msg);
 
 	proxy.clearAddresses();
-	var toAddress = new AjxEmailAddress(appCtxt.get(ZmSetting.OFFLINE_REPORT_EMAIL));
-	proxy._addrs[AjxEmailAddress.TO] = AjxVector.fromArray([toAddress]);
 
 	var bp = msg.getBodyPart();
 	if (bp) {

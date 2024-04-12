@@ -188,15 +188,14 @@ function(sections, callback, batchCommand) {
 
 	var command = batchCommand || (new ZmBatchCommand());
 	for (var i = 0; i < sections.length; i++) {
-		if (sections[i] == ZmSetting.M_OFFLINE && !appCtxt.isOffline) { continue; }
+		if (sections[i] == ZmSetting.M_OFFLINE) { continue; }
 		this.get(sections[i], command);
 	}
 
 	if (!batchCommand) {
 		if (command.size() > 0) {
 			var respCallback = new AjxCallback(this, this._handleLoad, [callback]);
-			var offlineCallback = this._handleOfflineLoad.bind(this, respCallback);
-			command.run(respCallback, null, offlineCallback);
+			command.run(respCallback, null, null);
 		}
 	} else {
 		if (callback) {
@@ -216,9 +215,6 @@ function(callback, result) {
 	if (br) {
 		var metaDataResp = (this._itemId != null) ? br.GetCustomMetadataResponse : br.GetMailboxMetadataResponse;
 		if (metaDataResp && metaDataResp.length) {
-			if (ZmOffline.isOnlineMode()) {
-				localStorage.setItem("MetadataResponse", JSON.stringify(br));
-			}
 			for (var i = 0; i < metaDataResp.length; i++) {
 				var data = metaDataResp[i].meta[0];
 				this._sections[data.section] = data._attrs;
@@ -228,18 +224,6 @@ function(callback, result) {
 
 	if (callback) {
 		callback.run(this._sections);
-	}
-};
-
-/**
- * @private
- */
-ZmMetaData.prototype._handleOfflineLoad =
-function(callback) {
-	var result = localStorage.getItem("MetadataResponse");
-	if (result) {
-		var csfeResult = new ZmCsfeResult({BatchResponse : JSON.parse(result)});
-		callback.run(csfeResult);
 	}
 };
 

@@ -142,7 +142,6 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	}
 
 	if (val != undefined) {
-		appCtxt.set(ZmSetting.OFFLINE_DEBUG_TRACE, val, null, null, true);
 		this._alert("Debug trace is " + cmdArg1);
 	}
 };

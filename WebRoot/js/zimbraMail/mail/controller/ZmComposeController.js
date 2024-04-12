@@ -222,12 +222,6 @@ function(params) {
 
 	params = params || {};
 	var ac = window.parentAppCtxt || window.appCtxt;
-	
-	// in zdesktop, it's possible there are no accounts that support smtp
-	if (ac.isOffline && !ac.get(ZmSetting.OFFLINE_COMPOSE_ENABLED)) {
-		this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, ZmMsg.composeDisabled, DwtMessageDialog.CRITICAL_STYLE);
-		return;
-	}
 
 	params.action = params.action || ZmOperation.NEW_MESSAGE;
 	params.inNewWindow = !this.isHidden && (params.inNewWindow || this._app._inNewWindow(params.ev));
@@ -1635,13 +1629,13 @@ function(draftType, msg, resp) {
 				if (draftType == ZmComposeController.DRAFT_TYPE_DELAYSEND) {
                     window.parentController.setStatusMsg(ZmMsg.messageScheduledSent);
                 }
-                else if (!appCtxt.isOffline) { // see bug #29372
+                else { // see bug #29372
 					window.parentController.setStatusMsg(ZmMsg.messageSent);
 				}
 			} else {
 				if (draftType == ZmComposeController.DRAFT_TYPE_DELAYSEND) {
 					appCtxt.setStatusMsg(ZmMsg.messageScheduledSent);
-				} else if (!appCtxt.isOffline) { // see bug #29372
+				} else { // see bug #29372
 					appCtxt.setStatusMsg(ZmMsg.messageSent);
 				}
 			}
@@ -1650,7 +1644,7 @@ function(draftType, msg, resp) {
 		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
 
 			// bug 36341
-			if (!appCtxt.isOffline && resp && appCtxt.get(ZmSetting.SAVE_TO_IMAP_SENT) && msg.identity) {
+			if (resp && appCtxt.get(ZmSetting.SAVE_TO_IMAP_SENT) && msg.identity) {
 				var datasources = appCtxt.getDataSourceCollection();
 				var datasource = datasources && datasources.getById(msg.identity.id);
 				if (datasource && datasource.type == ZmAccount.TYPE_IMAP) {
@@ -2592,12 +2586,6 @@ function(dlgType, msg, style, callbacks) {
 		}
 	}
 	dlg.popup();
-};
-
-ZmComposeController.prototype._handleOfflineUpload =
-function(files) {
-    var callback = this._readFilesAsDataURLCallback.bind(this);
-    ZmComposeController.readFilesAsDataURL(files, callback);
 };
 
 /**

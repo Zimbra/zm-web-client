@@ -210,7 +210,6 @@ function() {
 
 		var params = {
 			lastSync: lastSync,
-			hasNotSynced: this.hasNotSynced(),
 			status: this.getStatusMessage(),
 			quota: AjxUtil.formatSize(quota, false, 1)
 		};
@@ -240,28 +239,6 @@ function() {
 	}
 
 	return null;
-};
-
-/**
- * Checks if the account has sync'd.
- * 
- * @return	{Boolean}	if <code>true</code>, this account has never been sync'd
- */
-ZmZimbraAccount.prototype.hasNotSynced =
-function() {
-	return (this.isOfflineInitialSync() && 
-			this.status == ZmZimbraAccount.STATUS_UNKNOWN &&
-			appCtxt.get(ZmSetting.QUOTA_USED, null, this) == 0);
-};
-
-/**
- * Check is this account is currently sync'ing for the first time.
- * 
- * @return	{Boolean}	if <code>true</code>, this account is currently sync'ing for the first time
- */
-ZmZimbraAccount.prototype.isOfflineInitialSync =
-function() {
-	return (appCtxt.isOffline && (!this.lastSync || (this.lastSync && this.lastSync == 0)));
 };
 
 /**
@@ -383,7 +360,7 @@ function() {
  */
 ZmZimbraAccount.prototype.getIcon =
 function() {
-	return (this.isMain && appCtxt.isOffline) ? "LocalFolders" : this.icon;
+	return this.icon;
 };
 
 /**
@@ -647,9 +624,7 @@ function(result) {
 	DBG.println(AjxDebug.DBG1, "Account settings successfully loaded for " + this.name);
 
 	// set account type
-	this.type = appCtxt.isOffline
-		? appCtxt.get(ZmSetting.OFFLINE_ACCOUNT_FLAVOR, null, this)
-		: ZmAccount.TYPE_ZIMBRA;
+	this.type = ZmAccount.TYPE_ZIMBRA;
 
 	this.isZimbraAccount = this.type == ZmAccount.TYPE_ZIMBRA;
 

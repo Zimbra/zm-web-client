@@ -1104,7 +1104,7 @@ function(mode) {
  */
 ZmShare.prototype._createXmlPart =
 function(mode) {
-	var folder = (appCtxt.isOffline) ? appCtxt.getFolderTree().getByPath(this.link.name) : null;
+	var folder = null;
 	var linkId = (folder) ? folder.id : this.link.id;
 	var params = [
 		ZmShare.URI, 

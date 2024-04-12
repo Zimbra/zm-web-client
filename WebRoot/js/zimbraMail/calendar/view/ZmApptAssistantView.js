@@ -239,7 +239,7 @@ function(callback, sortBy) {
 		limit: ZmContactsApp.SEARCHFOR_MAX,
 		conds: conds,
 		attrs: ZmApptAssistantView.ATTRS[this.type],
-		accountName: appCtxt.isOffline ? currAcct.name : null
+		accountName: null
 	};
 	var search = new ZmSearch(params);
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearchCalendarResources, callback)});

@@ -137,23 +137,16 @@
 				<td class='nobreak' align=right><$= ZmMsg.lastSync $>:</td>
 				<td class='nobreak'>${lastSync}</td>
 			</tr>
-		<$ } else if (data.hasNotSynced) { $>
-			<tr>
-				<td class='nobreak' colspan=2><$= ZmMsg.neverSynced $></td>
-			</tr>
-		<$ } $>
 		<$ if (data.status && data.status != "") { $>
 			<tr>
 				<td align=right valign=top><$= ZmMsg.status $>:</td>
 				<td>${status}</td>
 			</tr>
 		<$ } $>
-		<$ if (!data.hasNotSynced) { $>
-			<tr>
-				<td align=right valign=top><$= ZmMsg.offlineQuota $></td>
-				<td>${quota}</td>
-			</tr>
-		<$ } $>
+		<tr>
+			<td align=right valign=top><$= ZmMsg.offlineQuota $></td>
+			<td>${quota}</td>
+		</tr>
 	</table>
 </template>
 

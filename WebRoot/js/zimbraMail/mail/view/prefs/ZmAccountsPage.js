@@ -1486,9 +1486,7 @@ function(account, skipUpdate, ignoreProvider) {
 
 	// toggle delete button
 	if (this._deleteButton) {
-		var isEnabled = (appCtxt.isOffline)
-			? (account && account.type == ZmAccount.TYPE_PERSONA)
-			: (account && account.type != ZmAccount.TYPE_ZIMBRA);
+		var isEnabled = (account && account.type != ZmAccount.TYPE_ZIMBRA);
         if (account.smtpEnabled) {
             isEnabled = false;
         }
@@ -1514,45 +1512,34 @@ function(account, skipUpdate, ignoreProvider) {
     if (div) {
         this._currentAccount = account;
         Dwt.setVisible(div, true);
-        if (appCtxt.isOffline) {
-            // bug 48014 - add "Use this persona" section for offline
-            if (account.type == ZmAccount.TYPE_PERSONA) {
-                this._currentSection = ZmAccountsPage.SECTIONS["PERSONA"];
-                this._setPersona(account, this._currentSection);
-            } else {
-                this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
-                this._setZimbraAccount(account, this._currentSection);
-            }
-        } else {
-            switch (account.type) {
-                case ZmAccount.TYPE_POP:
-                case ZmAccount.TYPE_IMAP: {
-                    this._currentSection = provider && ZmAccountsPage.SECTIONS[provider.id];
-                    this._currentSection = this._currentSection || ZmAccountsPage.SECTIONS["EXTERNAL"];
-                    this._setExternalAccount(account, this._currentSection);
-                    if (ignoreProvider) {
-                        this._setControlValue("PROVIDER", this._currentSection, "");
-                    }
-                    if (!skipUpdate) {
-                        var password = this._getControlObject("PASSWORD", this._currentSection);
-                        if (password) {
-                            password.setShowPassword(false);
-                        }
-                    }
-                    break;
-                }
-                case ZmAccount.TYPE_PERSONA: {
-                    this._currentSection = ZmAccountsPage.SECTIONS["PERSONA"];
-                    this._setPersona(account, this._currentSection);
-                    break;
-                }
-                default: {
-                    this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
-                    this._setZimbraAccount(account, this._currentSection);
-                    break;
-                }
-            }
-        }
+		switch (account.type) {
+			case ZmAccount.TYPE_POP:
+			case ZmAccount.TYPE_IMAP: {
+				this._currentSection = provider && ZmAccountsPage.SECTIONS[provider.id];
+				this._currentSection = this._currentSection || ZmAccountsPage.SECTIONS["EXTERNAL"];
+				this._setExternalAccount(account, this._currentSection);
+				if (ignoreProvider) {
+					this._setControlValue("PROVIDER", this._currentSection, "");
+				}
+				if (!skipUpdate) {
+					var password = this._getControlObject("PASSWORD", this._currentSection);
+					if (password) {
+						password.setShowPassword(false);
+					}
+				}
+				break;
+			}
+			case ZmAccount.TYPE_PERSONA: {
+				this._currentSection = ZmAccountsPage.SECTIONS["PERSONA"];
+				this._setPersona(account, this._currentSection);
+				break;
+			}
+			default: {
+				this._currentSection = ZmAccountsPage.SECTIONS["PRIMARY"];
+				this._setZimbraAccount(account, this._currentSection);
+				break;
+			}
+		}
 		if (!this._tabGroup.contains(this._currentSection.tabGroup)) {
 			this._tabGroup.addMember(this._currentSection.tabGroup);
 		}
@@ -1614,7 +1601,7 @@ function(useDefaults) {
 		}
 	}
 	// add data sources unless we're in offline mode
-	if (!appCtxt.isOffline && active.isMain) {
+	if (active.isMain) {
 		var dataSourceCollection = appCtxt.getDataSourceCollection();
 		var dataSources = dataSourceCollection.getItems(); // TODO: rename getItems or rename getIdentities
 		for (var i = 0; i < dataSources.length; i++) {
@@ -2694,9 +2681,7 @@ function() {
 
 ZmAccountsPage.prototype._getSectionDiv =
 function(account) {
-	return appCtxt.isOffline
-		? ((account.type == ZmAccount.TYPE_PERSONA) ? this._sectionDivs[account.type] : this._sectionDivs[ZmAccount.TYPE_ZIMBRA] )
-		: this._sectionDivs[account.type];
+	return this._sectionDivs[account.type];
 };
 
 ZmAccountsPage.prototype._setupPrimaryDiv =
@@ -3096,13 +3081,8 @@ function(continueCallback) {
     // make sure that the current object proxy is up-to-date
     this._setAccountFields(this._currentAccount, this._currentSection);
 
-    if (appCtxt.isOffline) {
-        // skip account tests  
-        this._preSaveCreateFolders(continueCallback);
-    } else {
-        // perform account tests
-        this._preSaveTest(continueCallback);
-    }
+	// perform account tests
+	this._preSaveTest(continueCallback);
 
 };
 
@@ -3459,8 +3439,8 @@ function() {
 
 ZmAccountsPage.__ACCOUNT_COMPARATOR =
 function(a, b) {
-	if (a.type == ZmAccount.TYPE_ZIMBRA && (a.isMain || appCtxt.isOffline)) return -1;
-	if (b.type == ZmAccount.TYPE_ZIMBRA && (b.isMain || appCtxt.isOffline)) return 1;
+	if (a.type == ZmAccount.TYPE_ZIMBRA && (a.isMain)) return -1;
+	if (b.type == ZmAccount.TYPE_ZIMBRA && (b.isMain)) return 1;
 	return a.getName().localeCompare(b.getName());
 };
 

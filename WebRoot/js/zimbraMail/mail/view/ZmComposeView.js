@@ -3877,15 +3877,13 @@ function(msg) {
 
 	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
-		if (appCtxt.isOffline && acct.isMain) { continue; }
-
 		var identities = ac.getIdentityCollection(acct).getIdentities();
 		if (ac.isFamilyMbox || ac.get(ZmSetting.OFFLINE_SMTP_ENABLED, null, acct)) {
 			for (var j = 0; j < identities.length; j++) {
 				identity = identities[j];
 
 				var text = this._getIdentityText(identity, acct);
-				var icon = appCtxt.isOffline ? acct.getIcon() : null;
+				var icon = null;
 				var option = new DwtSelectOption(identity.id, false, text, null, null, icon);
 				option.addr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);
 				option.accountId = acct.id;

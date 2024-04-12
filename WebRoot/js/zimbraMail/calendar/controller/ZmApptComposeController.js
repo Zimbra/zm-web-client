@@ -1144,9 +1144,6 @@ ZmApptComposeController.prototype._printListener =
 function() {
 	var calItem = this._composeView._apptEditView._calItem;
 	var url = ["/h/printappointments?id=", calItem.invId, "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)]; //bug:53493
-    if (appCtxt.isOffline) {
-        url.push("&zd=true", "&acct=", this._composeView.getApptEditView().getCalendarAccount().name);
-    }
 	window.open(appContextPath + url.join(""), "_blank");
 };
 

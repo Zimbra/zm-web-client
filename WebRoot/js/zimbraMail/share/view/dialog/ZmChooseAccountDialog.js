@@ -66,10 +66,9 @@ function(selectedAccount, accountType, chooserMessage, title) {
 	html[idx++] = "<table role='presentation' border=0 cellpadding=1 cellspacing=1>";
 	for (var i = 0; i < accounts.length; i++) {
 		var acct = accounts[i];
-		if (appCtxt.isOffline && acct.isMain) { continue; }
 		if (accountType && acct.type != accountType) { continue; }
 
-		var icon = appCtxt.isOffline ? acct.getIcon() : null;
+		var icon = null;
 		var inputId = Dwt.getNextId();
 
 		html[idx++] = "<tr><td><input type='checkbox' name='";

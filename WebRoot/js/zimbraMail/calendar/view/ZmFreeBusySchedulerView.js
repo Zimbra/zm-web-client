@@ -1827,23 +1827,6 @@ function(params, result) {
 
     this._freeBusyRequest = null;
     this._workingHoursRequest = null;
-
-    if (result.code == ZmCsfeException.OFFLINE_ONLINE_ONLY_OP) {
-		var emails = params.emails;
-		for (var i = 0; i < emails.length; i++) {
-			var e = emails[i];
-			var sched = this._schedTable[this._emailToIdx[e]];
-			var table = sched ? document.getElementById(sched.dwtTableId) : null;
-			if (table) {
-				table.rows[0].className = "ZmSchedulerNormalRow";
-				this._clearColoredCells(sched);
-				sched.uid = e;
-				var now = new Date();
-				var obj = [{s: now.setHours(0,0,0), e:now.setHours(24,0,0)}];
-				this._colorSchedule(ZmFreeBusySchedulerView.STATUS_UNKNOWN, obj, table, sched);
-			}
-		}
-	}
 	return false;
 };
 

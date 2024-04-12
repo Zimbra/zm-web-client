@@ -321,19 +321,11 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 		var acct = accounts[i];
 
 		var appEnabled = ZmApp.SETTING[ZmItem.APP[calItem.type]];
-		if ((appCtxt.isOffline && acct.isMain) ||
-			!appCtxt.get(appEnabled, null, acct))
-		{
+		if (!appCtxt.get(appEnabled, null, acct)) {
 			continue;
 		}
 
 		folderTree = appCtxt.getFolderTree(acct);
-		data = data.concat(folderTree.getByType(org));
-	}
-
-	// add the local account last for multi-account
-	if (appCtxt.isOffline) {
-		folderTree = appCtxt.getFolderTree(appCtxt.accountList.mainAccount);
 		data = data.concat(folderTree.getByType(org));
 	}
 

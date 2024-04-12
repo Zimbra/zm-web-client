@@ -66,7 +66,7 @@ function() {
 
 	this._prefsController._resetOperations(this._prefsController._toolbar, section && section.id);
     //TODO: We got to optimize / avoid force-rendering logic for multi-account setup
-	if (this.hasRendered && !appCtxt.isOffline) { return; }
+	if (this.hasRendered) { return; }
 
 	// create the html
 	var data = {id:this._htmlElId};

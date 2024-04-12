@@ -206,7 +206,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SPELL_CHECK, {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip", shortcut:ZmKeyMap.SPELLCHECK, showImageInToolbar: true, ariaLabel: "spellCheck"}, ZmSetting.SPELL_CHECK_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SYNC, {textKey:"reload", image:"Refresh", shortcut:ZmKeyMap.REFRESH});
     ZmOperation.registerOp(ZmId.OP_SYNC_ALL, {textKey:"checkAllFeed", image:"Refresh"});
-	ZmOperation.registerOp(ZmId.OP_SYNC_OFFLINE_FOLDER, {textKey:"syncOfflineFolderOff", image:"Refresh"}, ZmSetting.OFFLINE_ENABLED); /* offline only */
 	ZmOperation.registerOp(ZmId.OP_TAG, null, ZmSetting.TAGGING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_TAG_COLOR_MENU, {textKey:"tagColor", image:"TagStack"}, ZmSetting.TAGGING_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {

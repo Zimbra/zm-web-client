@@ -115,10 +115,6 @@ function(actionMenu, type, id) {
                 menuItem.setText(ZmMsg.shareFolder);
                 menuItem.setImage(isBriefcase ? "SharedMailFolder" : "Section");
                 var isShareVisible = (!isLinkOrRemote || briefcase.isAdmin());
-                if (appCtxt.isOffline) {
-                    var acct = briefcase.getAccount();
-                    isShareVisible = !acct.isMain && acct.isZimbraAccount;
-                }
                 menuItem.setEnabled(isShareVisible);
             }
         }

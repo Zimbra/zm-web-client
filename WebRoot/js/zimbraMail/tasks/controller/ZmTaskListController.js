@@ -519,12 +519,8 @@ function() {
 
 ZmTaskListController.prototype.runRefresh =
 function() {
-	if (!appCtxt.isOffline) {
-		return;
-	}
-	//should only happen in ZD
-
-	this._syncAllListener();
+	// To Ask
+	return;
 };
 
 
@@ -1001,11 +997,6 @@ function(ev) {
 	}
 
 	var url = ["/h/printtasks?id=", taskIds.join(",")];
-	if (appCtxt.isOffline) {
-		var folderId = this._folderId || ZmFolder.ID_CONTACTS;
-		var acctName = appCtxt.getById(folderId).getAccount().name;
-		url.push("&acct=", acctName);
-	}
 	window.open([appContextPath, url.join(""), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)].join(""), "_blank");
 };
 
@@ -1046,11 +1037,6 @@ function(ev) {
 			taskIds.push(list[i].invId);
 		}
         url.push("id=", taskIds.join(","));
-	}
-	if (appCtxt.isOffline) {
-		var folderId = this._folderId || ZmFolder.ID_CONTACTS;
-		var acctName = appCtxt.getById(folderId).getAccount().name;
-		url.push("&acct=", acctName);
 	}
 	window.open([appContextPath, url.join(""), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)].join(""), "_blank");
 };

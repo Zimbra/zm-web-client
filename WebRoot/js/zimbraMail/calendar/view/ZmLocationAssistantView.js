@@ -79,9 +79,6 @@ function(containerSize) {
 
 ZmLocationAssistantView.prototype.suggestAction =
 function(freeBusyCallback) {
-
-    if(appCtxt.isOffline && !appCtxt.isZDOnline()) { return; }
-
     var params = {
         items: [],
         itemIndex: {},
@@ -136,13 +133,6 @@ function(params) {
         if (AjxUtil.isEmpty(this._apptView._locationField.getValue())) {
             return;
         }
-    }
-
-    var currAcct = this._apptView.getCalendarAccount();
-	// Bug: 48189 Don't send GetFreeBusyRequest for non-ZCS accounts.
-	if (appCtxt.isOffline && (!currAcct.isZimbraAccount || currAcct.isMain)) {
-        //todo: avoid showing smart scheduler button for non-ZCS accounts - offline client
-        return;
     }
 
     var tf = this._getTimeFrame();

@@ -813,10 +813,6 @@ function(ev) {
         folderId = appCtxt.getById(folderId).getRemoteId();
     }
 
-    if (appCtxt.isOffline) {
-        folderId = ZmOrganizer.getSystemId(folderId);
-    }
-
     //TODO: Optimize ChangeListener logic
 	var items = ev.getDetail("items") || ev.items;
     var filter = this._controller.getAllowableTaskStatus();

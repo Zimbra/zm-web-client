@@ -155,9 +155,6 @@ function(parent, op, isSupported) {
 	if (button) {
 		if (isSupported) {
 			button.setVisible(true);
-			if (appCtxt.isOffline && !appCtxt.getActiveAccount().isZimbraAccount) {
-				button.setEnabled(false);
-			}
 		} else {
 			button.setVisible(false);
 		}

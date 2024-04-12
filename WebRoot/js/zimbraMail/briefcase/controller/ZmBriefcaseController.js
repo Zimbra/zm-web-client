@@ -1032,7 +1032,7 @@ function(items){
 		} else {
             // do not try to
             //ZD doesn't support ConvertD.
-			if (!ZmMimeTable.isRenderable(item.contentType) && !ZmMimeTable.isMultiMedia(item.contentType) && !appCtxt.isOffline) {
+			if (!ZmMimeTable.isRenderable(item.contentType) && !ZmMimeTable.isMultiMedia(item.contentType)) {
                	restUrl += (restUrl.match(/\?/) ? "&" : "?") + "view=html";
 			}
         }
@@ -1064,16 +1064,11 @@ function(items){
         for(var i=0; i< length; i++){
             item = items[i];
 	        if (!item.isFolder) {
-				var itemId;
-				if (appCtxt.isOffline && organizer.isShared()) {
-					itemId = item.id;
-				} else {
-					itemId = item.getNormalizedItemId();
-				}
+				var itemId = item.getNormalizedItemId();
 				params.push((item.isRevision ? item.parent.id : itemId )+"."+item.version);
 	        }
         }
-        restUrl = [ ((organizer.isShared() && !appCtxt.isOffline ) ? organizer.getOwnerRestUrl() : organizer.getRestUrl()), "?fmt=zip&list=", params.join(',')].join('');
+        restUrl = [ (organizer.isShared() ? organizer.getOwnerRestUrl() : organizer.getRestUrl()), "?fmt=zip&list=", params.join(',')].join('');
     }else{
         item = AjxUtil.isArray(items) ? items[0] : items;
         restUrl = item.getRestUrl();
@@ -1164,10 +1159,6 @@ function(event) {
 		else {
 			//item is in this user's briefcase, so build the rest url.
 			url = item.getRestUrl();
-		}
-		if (appCtxt.isOffline) {
-			var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
-			url = remoteUri + url.substring((url.indexOf("/",7)));
 		}
         
 		urls.push(url);

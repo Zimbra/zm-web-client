@@ -204,21 +204,6 @@ function(folderA, folderB, nonMail) {
 	var check = ZmOrganizer.checkSortArgs(folderA, folderB);
 	if (check != null) { return check; }
 
-	// offline client wants POP folders above all else *unless* we are POP'ing into Inbox
-	if (appCtxt.isOffline) {
-		if (folderA.isDataSource(ZmAccount.TYPE_POP)) {
-			if (folderA.id == ZmFolder.ID_INBOX) return -1;
-			if (folderB.isDataSource(ZmAccount.TYPE_POP)) {
-				if (folderA.name.toLowerCase() > folderB.name.toLowerCase()) { return 1; }
-				if (folderA.name.toLowerCase() < folderB.name.toLowerCase()) { return -1; }
-				return 0;
-			}
-			return -1;
-		} else if (folderB.isDataSource(ZmAccount.TYPE_POP)) {
-			return 1;
-		}
-	}
-
 	if (ZmFolder.SORT_ORDER[folderA.nId] && ZmFolder.SORT_ORDER[folderB.nId]) {
 		return (ZmFolder.SORT_ORDER[folderA.nId] - ZmFolder.SORT_ORDER[folderB.nId]);
 	}
@@ -705,25 +690,6 @@ function(what, folderType, ignoreExisting) {
 					break;
 				}
 			}
-			// items in the "Sync Failures" folder cannot be dragged out
-			if (appCtxt.isOffline && !invalid) {
-				// bug: 41531 - don't allow items to be moved into exchange
-				// account when moving across accounts
-				var acct = this.getAccount();
-				if (acct && item.getAccount() != acct &&
-					(acct.type === ZmAccount.TYPE_MSE ||
-					 acct.type === ZmAccount.TYPE_EXCHANGE))
-				{
-					invalid = true;
-				}
-				else {
-					var cs = appCtxt.getCurrentSearch();
-					var folder = cs && appCtxt.getById(cs.folderId);
-					if (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES) {
-						invalid = true;
-					}
-				}
-			}
 
 			// bug #42890 - disable moving to shared folders across accounts
 			// until server bug is fixed
@@ -774,7 +740,7 @@ function() {
  */
 ZmFolder.prototype.isHardDelete =
 function() {
-	return (this.isInTrash() || this.isInSpam() || (appCtxt.isOffline && this.isUnder(ZmOrganizer.ID_SYNC_FAILURES)));
+	return (this.isInTrash() || this.isInSpam());
 };
 
 /**

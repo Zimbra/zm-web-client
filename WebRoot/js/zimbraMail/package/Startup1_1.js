@@ -135,8 +135,4 @@ AjxPackage.require("zimbraMail.share.model.ZmSetting");
 AjxPackage.require("zimbraMail.core.ZmAppCtxt");
 AjxPackage.require("zimbraMail.core.ZmOperation");
 AjxPackage.require("zimbraMail.core.ZmMimeTable");
-AjxPackage.require("zimbraMail.offline.ZmOffline");
-AjxPackage.require("zimbraMail.offline.model.ZmOfflineDB");
-
 AjxPackage.require("zimbraMail.share.view.ZmTagsHelper");
-

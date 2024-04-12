@@ -272,9 +272,6 @@ function(appt, mode, isDirty, apptComposeMode) {
 		this._addDwtObjects();
 		this._rendered = true;
 	}
-    if (appCtxt.isOffline && this.type == ZmCalBaseItem.PERSON) {
-        this.setSelectVisibility();
-    }
 	this._resetSelectDiv();
 
     // init listeners
@@ -482,7 +479,7 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 				this.showSelect = true;
 		}
 
-		if (this.showSelect || appCtxt.isOffline) {
+		if (this.showSelect) {
             this._listSelectId = this._searchFieldIds[id];
 			html[i++] = "<td class='ZmFieldLabelRight' id='";
             html[i++] = this._listSelectId+"_label";
@@ -540,9 +537,6 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 		html[i++] = "</label></td></tr></table></td>";
 	}
 
-    if (appCtxt.isOffline && this.type == ZmCalBaseItem.PERSON) {
-        this.setSelectVisibility(this.showSelect);
-    }
 	return i;
 };
 
@@ -812,7 +806,7 @@ function(defaultSearch, sortBy, lastId, lastSortVal) {
 		attrs: ZmAttendeePicker.ATTRS[this.type],
         lastId: lastId,
         lastSortVal: lastSortVal,        
-		accountName: appCtxt.isOffline ? currAcct.name : null
+		accountName: null
 	};
 	var search = new ZmSearch(params);
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearchCalendarResources, [defaultSearch])});
@@ -839,16 +833,6 @@ function() {
 
 ZmAttendeePicker.prototype._fillFreeBusy =
 function(items, callback) {
-
-	var currAcct = this._editView.getCalendarAccount();
-	// Bug: 48189 Don't send GetFreeBusyRequest for non-ZCS accounts.
-	if (appCtxt.isOffline && (!currAcct.isZimbraAccount || currAcct.isMain)) {
-		if (callback) {
-			callback(items);
-		}
-		return;
-	}
-
 	var tf = this._getTimeFrame();
 	var list = (items instanceof AjxVector) ? items.getArray() : (items instanceof Array) ? items : [items];
 	var emails = [];
@@ -1060,9 +1044,6 @@ function(item, list) {
 
 ZmApptChooser.prototype._reset =
 function(view) {
-	if (appCtxt.isOffline && appCtxt.accountList.size() > 1 && !view) {
-		this.parent._resetSelectDiv();
-	}
 	DwtChooser.prototype._reset.apply(this, arguments);
 };
 

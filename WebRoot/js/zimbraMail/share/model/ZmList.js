@@ -1024,12 +1024,11 @@ function(params) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [params]);
     var isOutboxFolder = this.controller && this.controller.isOutboxFolder();
-    var offlineCallback = this._handleOfflineResponseDoAction.bind(this, params, isOutboxFolder);
 
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(params.request, respCallback, params.errorCallback);
 	} else {
-		var reqParams = {asyncMode:true, callback:respCallback, errorCallback: params.errorCallback, offlineCallback: offlineCallback, accountName:params.accountName, more:more};
+		var reqParams = {asyncMode:true, callback:respCallback, errorCallback: params.errorCallback, accountName:params.accountName, more:more};
 		if (useJson) {
 			reqParams.jsonObj = params.request;
 		} else {
@@ -1038,9 +1037,6 @@ function(params) {
 		if (params.safeMove) {
 			reqParams.useChangeToken = true;
 		}
-        if (isOutboxFolder) {
-            reqParams.offlineRequest = true;
-        }
 		DBG.println("sa", "*** do action: " + list.length + " items");
 		params.reqId = appCtxt.getAppController().sendRequest(reqParams);
 	}
@@ -1097,57 +1093,6 @@ function(params, result) {
 			ZmBaseController.showSummary(params.actionSummary, params.actionLogItem, params.closeChildWin);
 		}
 	}
-};
-
-/**
- * @private
- */
-ZmList.prototype._handleOfflineResponseDoAction =
-function(params, isOutboxFolder, requestParams) {
-
-    var action = params.action,
-        callback = this._handleOfflineResponseDoActionCallback.bind(this, params, isOutboxFolder, requestParams.callback);
-
-    if (isOutboxFolder && action.op === "trash") {
-        var key = {
-            methodName : "SendMsgRequest", //Outbox folder only contains offline sent emails
-			id : action.id.split(",")
-        };
-        ZmOfflineDB.deleteItemInRequestQueue(key, callback);
-    }
-    else {
-        var obj = requestParams.jsonObj;
-        obj.methodName = ZmItem.SOAP_CMD[params.type] + "Request";
-        obj.id = action.id;
-        ZmOfflineDB.setItem(obj, ZmOffline.REQUESTQUEUE, callback);
-    }
-};
-
-/**
- * @private
- */
-ZmList.prototype._handleOfflineResponseDoActionCallback =
-function(params, isOutboxFolder, callback) {
-
-    var data = {},
-        header = this._generateOfflineHeader(params),
-        result,
-        hdr,
-        notify;
-
-    data[ZmItem.SOAP_CMD[params.type] + "Response"] = params.request[ZmItem.SOAP_CMD[params.type] + "Request"];
-    result = new ZmCsfeResult(data, false, header);
-    hdr = result.getHeader();
-    if (callback) {
-        callback.run(result);
-    }
-    if (hdr) {
-        notify = hdr.context.notify[0];
-        if (notify) {
-            appCtxt._requestMgr._notifyHandler(notify);
-            this._updateOfflineData(params, isOutboxFolder, notify);
-        }
-    }
 };
 
 /**
@@ -1264,37 +1209,6 @@ function(params) {
     };
 
     return header;
-};
-
-ZmList.prototype._updateOfflineData =
-function(params, isOutboxFolder, notify) {
-
-    var modified = notify.modified;
-    if (!modified) {
-        return;
-    }
-
-    var m = modified.m;
-    if (!m) {
-        return;
-    }
-
-    var callback = this._updateOfflineDataCallback.bind(this, params, m);
-    ZmOfflineDB.getItem(params.action.id.split(","), ZmApp.MAIL, callback);
-};
-
-ZmList.prototype._updateOfflineDataCallback =
-function(params, msgArray, result) {
-    result = ZmOffline.recreateMsg(result);
-    var newMsgArray = [];
-    result.forEach(function(res) {
-        msgArray.forEach(function(msg) {
-            if (msg.id === res.id) {
-                newMsgArray.push($.extend(res, msg));
-            }
-        });
-    });
-    ZmOfflineDB.setItem(newMsgArray, ZmApp.MAIL);
 };
 
 /**

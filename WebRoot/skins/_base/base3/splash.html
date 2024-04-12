@@ -32,7 +32,7 @@
 		<div class="contentBox">
 			<h1><div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div></h1>
 			<div id="ZLoginAppName">
-				<script>if(!window.isOffline) { document.write(ZmMsg.splashScreenAppName) }</script>
+				<script>document.write(ZmMsg.splashScreenAppName)</script>
 			</div>
 			<div id="#ZSplashBodyContainer" class="content">
 				<div class="message">
@@ -45,11 +45,7 @@
 	<div class="Footer">
         <div class="copyright">
           <script>
-            if (window.isOffline) {
-              document.write(ZmMsg.splashScreenCopyrightZD);
-            } else {
-              document.write(ZmMsg.splashScreenCopyright);
-            }
+            document.write(ZmMsg.splashScreenCopyright);
           </script>
         </div>
     </div>

@@ -188,9 +188,6 @@ function(params) {
 
 	this.isGalSearch = (this.contactSource && (this.contactSource == ZmId.SEARCH_GAL));
 	this.isCalResSearch = (!this.contactSource && this.conds != null);
-    if (appCtxt.isOffline && this.isCalResSearch) {
-        this.isCalResSearch =  appCtxt.isZDOnline();
-    }
 	if (this.isEmpty) {
 		this._handleResponseExecute(params.callback);
 		return null;
@@ -323,9 +320,6 @@ function(params) {
 
 	this.isGalSearch = (this.contactSource && (this.contactSource == ZmId.SEARCH_GAL));
 	this.isCalResSearch = (!this.contactSource && this.conds != null);
-    if (appCtxt.isOffline && this.isCalResSearch) {
-        this.isCalResSearch = appCtxt.isZDOnline();
-    }
 	if (this.isEmpty) {
 		this._handleResponseExecute(params.callback);
 		return null;
@@ -476,13 +470,10 @@ function(params) {
 			asyncMode:true,
 			callback:respCallback,
 			errorCallback:params.errorCallback,
-            offlineCallback:params.offlineCallback,
 			timeout:params.timeout,
-            offlineCache:params.offlineCache,
 			noBusyOverlay:params.noBusyOverlay,
 			response:this.response,
-			accountName:this.accountName,
-            offlineRequest:params.offlineRequest
+			accountName:this.accountName
 		};
 		return appCtxt.getAppController().sendRequest(searchParams);
 	}

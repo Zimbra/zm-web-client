@@ -108,7 +108,7 @@ function(params) {
 		var folderTree = appCtxt.getFolderTree(acct);
 
 		// omit any folders that are read only
-		if (params.skipReadOnly || params.skipRemote || appCtxt.isOffline) {
+		if (params.skipReadOnly || params.skipRemote) {
 			var folders = folderTree.asList({includeRemote : true});
 			for (var i = 0; i < folders.length; i++) {
 				var folder = folders[i];

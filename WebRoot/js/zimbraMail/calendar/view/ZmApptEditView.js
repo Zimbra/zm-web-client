@@ -174,12 +174,6 @@ function() {
         Dwt.setSize(this._attInputField[ZmCalBaseItem.LOCATION]._input, "100%");
     }
 
-    //bug:48189 Hide schedule tab for non-ZCS acct
-    if (appCtxt.isOffline) {
-        var currAcct = appCtxt.getActiveAccount();
-        this.setSchedulerVisibility(currAcct.isZimbraAccount && !currAcct.isMain);
-    }
-
     appCtxt.notifyZimlets("onZmApptEditView_show", [this]);
 
     this._editViewInitialized = true;
@@ -536,11 +530,6 @@ function(bEnableInputs) {
 	ZmCalItemEditView.prototype.enableInputs.call(this, bEnableInputs);
 	if (this.GROUP_CALENDAR_ENABLED) {
 		var bEnableAttendees = bEnableInputs;
-		if (appCtxt.isOffline && bEnableAttendees &&
-			this._calItem && this._calItem.getFolder().getAccount().isMain)
-		{
-			bEnableAttendees = false;
-		}
 		this._attendeesInputField.setEnabled(bEnableAttendees);
 		this._optAttendeesInputField.setEnabled(bEnableAttendees);
 		this._locationInputField.setEnabled(bEnableAttendees); //this was a small bug - the text field of that was not disabled!
@@ -1976,12 +1965,7 @@ function(calItem, mode, isDirty, apptComposeMode) {
 
 ZmApptEditView.prototype.isSuggestionsNeeded =
 function() {
-    if (appCtxt.isOffline) {
-        var ac = window["appCtxt"].getAppController();
-        return !this._isForward && this.GROUP_CALENDAR_ENABLED && ac._isPrismOnline && ac._isUserOnline;
-    } else {
-        return !this._isForward && this.GROUP_CALENDAR_ENABLED;
-    }
+    return !this._isForward && this.GROUP_CALENDAR_ENABLED;
 };
 
 ZmApptEditView.prototype.getCalendarAccount =
@@ -1995,13 +1979,6 @@ function() {
 	var calId = this._folderSelect.getValue();
 	var cal = appCtxt.getById(calId);
 
-	// bug: 48189 - Hide schedule tab for non-ZCS acct
-	if (appCtxt.isOffline) {
-        var currAcct = cal.getAccount();
-        appCtxt.accountList.setActiveAccount(currAcct);
-		this.setSchedulerVisibility(currAcct.isZimbraAccount && !currAcct.isMain);
-	}
-
 	var isEnabled = !appCtxt.isRemoteId(cal.id) || cal.hasPrivateAccess();
 
     this._privateCheckbox.disabled = !isEnabled;
@@ -2011,10 +1988,6 @@ function() {
         this._scheduleView.update(this._dateInfo, organizer, this._attendees);
         this._scheduleView.updateFreeBusy();
     }
-	if (appCtxt.isOffline) {
-        this._calItem.setFolderId(calId);
-		this.enableInputs(true); //enableInputs enables or disables the attendees/location/etc inputs based on the selected folder (calendar) - if it's local it will be disabled, and if remote - enabled.
-	}
 };
 
 ZmApptEditView.prototype.setSchedulerVisibility =
@@ -2047,9 +2020,6 @@ ZmApptEditView.prototype._folderPickerCallback =
 function(dlg, folder) {
 	ZmCalItemEditView.prototype._folderPickerCallback.call(this, dlg, folder);
 	this._resetAutocompleteListView(folder);
-	if (appCtxt.isOffline) {
-		this._resetAttendeesField(!folder.getAccount().isMain);
-	}
 };
 
 ZmApptEditView.prototype._resetAutocompleteListView =
@@ -2824,7 +2794,6 @@ function(type, attendees) {
     attendees = (attendees instanceof AjxVector) ? attendees.getArray() :
                 (attendees instanceof Array) ? attendees : [attendees];
 
-    if (appCtxt.isOffline && !appCtxt.isZDOnline()) { return; }
     //avoid duplicate freebusy request by updating the view in sequence
     if(type == ZmCalBaseItem.PERSON) {
         this._scheduleView.setUpdateCallback(new AjxCallback(this, this.updateScheduleAssistant, [attendees, type]))

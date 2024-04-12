@@ -79,14 +79,6 @@ function(params) {
 		var organizer = organizers[i];
 		var section = view.getSectionForTab(organizer.pageId);
 		var parentId = section.parentId;
-		if (appCtxt.isOffline &&
-			(section.id == "SIGNATURES" ||
-			 section.id == "ACCOUNTS" ||
-			 section.id == "COMPOSING" ||
-			 section.id == "FILTERS"))
-		{
-			parentId = null;
-		}
 		var parent = (parentId && tree.getById(ZmId.getPrefPageId(parentId))) || root;
 		parent.children.add(organizer);
 
@@ -105,11 +97,9 @@ function(params) {
 			treeView.setSelected(page1, true);
 		}
 	}
-	if (!appCtxt.isOffline) {
-		var hi = treeView.getHeaderItem();
-		if (hi) {
-			hi.setExpanded(true, true);
-		}
+	var hi = treeView.getHeaderItem();
+	if (hi) {
+		hi.setExpanded(true, true);
 	}
 	treeView.addSelectionListener(new AjxListener(this, this._handleTreeItemSelection, view));
 
@@ -118,39 +108,6 @@ function(params) {
 
 ZmPrefPageTreeController.prototype._showSection =
 function(account, sectionId) {
-
-	if (appCtxt.isOffline) {
-		if (sectionId == "MOBILE") {
-			return false;
-		}
-
-		if (account.isMain) {
-			if (sectionId == "FILTERS" ||
-				sectionId == "SHARING" ||
-				sectionId == "SIGNATURES" ||
-				sectionId == "ACCOUNTS" ||
-                sectionId == "NOTIFICATIONS" ||
-                sectionId == "TRUSTED_ADDR")
-			{
-				return false;
-			}
-		}
-		else {
-			if (sectionId == "COMPOSING") {
-				return false;
-			}
-			if (!account.isZimbraAccount &&
-				(sectionId == "MAIL" ||
-				 sectionId == "SHARING" ||
-				 sectionId == "CALENDAR" ||
-                 sectionId == "NOTIFICATIONS" ||
-                 sectionId == "TRUSTED_ADDR" ))
-			{
-				return false;
-			}
-		}
-
-	}
 
 	return (account.isMain ||
 			(!account.isMain && (sectionId != "GENERAL" &&

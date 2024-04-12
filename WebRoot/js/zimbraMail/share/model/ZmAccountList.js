@@ -236,14 +236,6 @@ function(accounts, callback) {
 		ZmOrganizer.HIDE_EMPTY[ZmOrganizer.TAG] = true;
 		ZmOrganizer.HIDE_EMPTY[ZmOrganizer.SEARCH] = true;
 
-		// enable compose based on whether at least one account supports smtp
-		for (var i = 0; i < this.visibleAccounts.length; i++) {
-			if (appCtxt.get(ZmSetting.OFFLINE_SMTP_ENABLED, null, this.visibleAccounts[i])) {
-				appCtxt.set(ZmSetting.OFFLINE_COMPOSE_ENABLED, true, null, null, true);
-				break;
-			}
-		}
-
 		if (callback) {
 			callback.run();
 		}
@@ -290,10 +282,6 @@ function() {
 	for (var i = 0; i < this.visibleAccounts.length; i++) {
 		var acct = this.visibleAccounts[i];
 		if (acct.isMain) { continue; }
-
-		if (acct.isOfflineInitialSync()) {
-			return true;
-		}
 	}
 
 	return false;
@@ -395,10 +383,6 @@ function(settings, obj) {
 
 	this.setActiveAccount(account);
 
-	if (appCtxt.isOffline) {
-		account.displayName = ZmMsg.localFolders;
-	}
-
 	// second, create all child accounts if applicable
 	var childAccounts = obj.childAccounts && obj.childAccounts.childAccount;
 	if (childAccounts) {
@@ -408,7 +392,7 @@ function(settings, obj) {
 
 		// set global vars per number of child accounts
 		appCtxt.multiAccounts = this.size() > 1;
-		appCtxt.isFamilyMbox = appCtxt.multiAccounts && !appCtxt.isOffline;
+		appCtxt.isFamilyMbox = appCtxt.multiAccounts;
 
 		this.defaultAccount = appCtxt.isFamilyMbox ? this.mainAccount : this.visibleAccounts[1];
 	}

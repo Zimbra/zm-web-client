@@ -578,7 +578,7 @@ function(menu, text, width) {
 
 ZmAddressSearchFilter.prototype._initAutocomplete =
 function() {
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.isOffline) {
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
 			dataClass:			appCtxt.getAutocompleter(),
 			matchValue:			ZmAutocomplete.AC_VALUE_EMAIL,

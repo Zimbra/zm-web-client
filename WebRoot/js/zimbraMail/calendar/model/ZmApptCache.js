@@ -222,12 +222,6 @@ function(params) {
 	for (var i = 0; i < params.folderIds.length; i++) {
 		var fid = params.folderIds[i];
 
-		// bug #46296/#47041 - skip shared folders if account is offline
-		var calFolder = appCtxt.isOffline && appCtxt.getById(fid);
-		if (calFolder && calFolder.isRemote() && calFolder.getAccount().status == ZmZimbraAccount.STATUS_OFFLINE) {
-			continue;
-		}
-
 		// check vector cache first
 		list = this._getCachedVector(params.start, params.end, params.fanoutAllDay, fid);
 		if (list != null) {
@@ -287,7 +281,6 @@ function(params) {
 			asyncMode: true,
 			callback: (new AjxCallback(this, this._getApptSummariesResponse, [params])),
 			errorCallback: (new AjxCallback(this, this._getApptSummariesError, [params])),
-            offlineCallback: this.offlineSearchAppts.bind(this, null, null, params),
 			noBusyOverlay: params.noBusyOverlay,
 			accountName: accountName
 		});
@@ -412,7 +405,6 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 			asyncMode: true,
 			callback: (new AjxCallback(this, this.handleBatchResponse, [searchParams, miniCalParams, reminderSearchParams])),
 			errorCallback: (new AjxCallback(this, this.handleBatchResponseError, [searchParams, miniCalParams, reminderSearchParams])),
-            offlineCallback: this.offlineSearchAppts.bind(this, searchParams, miniCalParams, reminderSearchParams),
             noBusyOverlay: true,
 			accountName: accountName
 		};
@@ -925,9 +917,6 @@ function(searchParams, miniCalParams, reminderParams) {
     var search = [params.start, params.end];
     var offlineSearchAppts2 = this._offlineSearchAppts2.bind(
         this, searchParams, miniCalParams, reminderParams, params.errorCallback, search);
-    // Find the appointments whose startDate falls within the specified range
-    ZmOfflineDB.doIndexSearch(
-        search, ZmApp.CALENDAR, null, offlineSearchAppts2, params.errorCallback, "startDate");
 }
 
 ZmApptCache.prototype._offlineSearchAppts2 =
@@ -941,9 +930,6 @@ function(searchParams, miniCalParams, reminderParams, errorCallback, search, app
 
     var offlineSearchAppts3 = this._offlineSearchAppts3.bind(
         this, searchParams, miniCalParams, reminderParams, apptSet);
-    // Find the appointments whose endDate falls within the specified range
-    ZmOfflineDB.doIndexSearch(
-        search, ZmApp.CALENDAR, null, offlineSearchAppts3, errorCallback, "endDate");
 }
 
 ZmApptCache.prototype._offlineSearchAppts3 =
@@ -1095,9 +1081,6 @@ function(id, field, value, nullData, callback) {
     var search = [id];
     var errorCallback = this.updateErrorCallback.bind(this, field, value);
     var updateOfflineAppt2 = this._updateOfflineAppt2.bind(this, field, value, nullData, errorCallback, callback);
-    // Find the appointments that match the specified id, update appt[field] = value,
-    // and write it back into the db
-    ZmOfflineDB.doIndexSearch([id], ZmApp.CALENDAR, null, updateOfflineAppt2, errorCallback, "invId");
 }
 
 ZmApptCache.prototype.updateErrorCallback =
@@ -1127,9 +1110,6 @@ function(fieldName, value, nullData, errorCallback, callback, apptContainers) {
                 field[lastFieldName] = value;
             }
         }
-        var errorCallback = this.updateErrorCallback.bind(this, field, value);
-        var updateOfflineAppt3 = this._updateOfflineAppt3.bind(this, field, value, callback);
-        ZmOfflineDB.setItem(apptContainers, ZmApp.CALENDAR, updateOfflineAppt3, errorCallback);
     }
 }
 

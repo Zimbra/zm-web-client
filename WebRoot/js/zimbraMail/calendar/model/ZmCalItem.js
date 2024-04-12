@@ -1005,14 +1005,13 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate, noBusyOverlay, batc
 			? (new AjxCallback(this, this._handleErrorGetDetails, [mode, callback, errorCallback]))
 			: errorCallback;
 
-		var acct = appCtxt.isOffline && this.getFolder().getAccount();
 		var params = {
 			callback: respCallback,
 			errorCallback: respErrorCallback,
 			noBusyOverlay: noBusyOverlay,
 			ridZ: (seriesMode ? null : this.ridZ),
 			batchCmd: batchCmd,
-			accountName: (acct && acct.name)
+			accountName: null
 		};
 		this.message.load(params);
 	} else {
@@ -2248,7 +2247,7 @@ function(request, attachmentId, notifyList, accountName) {
 	this._addNotesToRequest(m);
 
 	// set organizer - but not for local account
-	if (!(appCtxt.isOffline && acct.isMain)) {
+	if (!acct.isMain) {
 		me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
         if (!identity) {
             identityC = appCtxt.getIdentityCollection(acct);

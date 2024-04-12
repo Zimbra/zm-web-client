@@ -71,10 +71,8 @@ function(params) {
 	appCtxt.getAppController().sendRequest({
 		jsonObj: jsonObj,
 		asyncMode: true,
-        offlineCache: true,
 		callback: (new AjxCallback(this, this._getMiniCalResponse, [params])),
 		errorCallback: (new AjxCallback(this, this._handleMiniCalResponseError, [params])),
-        offlineCallback: this._getMiniCalOfflineResponse.bind(this, params),
 		noBusyOverlay: params.noBusyOverlay,
 		accountName: (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null)
 	});

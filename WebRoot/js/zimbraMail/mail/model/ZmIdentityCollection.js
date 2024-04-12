@@ -69,11 +69,10 @@ function() {
  */
 ZmIdentityCollection.prototype.getIdentities =
 function(sort) {
-	var identity, i = 0, result = [], isOffline = appCtxt.isOffline;
+	var identity, i = 0, result = [];
 	for (var id in this._idToIdentity) {
 		identity = this._idToIdentity[id];
 		// bug: 30009
-		if (isOffline && identity.isFromDataSource) continue;
 		result[i++] = identity;
 	}
 	if (sort) {

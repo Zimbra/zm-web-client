@@ -586,12 +586,6 @@ function() {
 
 ZmGroupView.prototype._setFields =
 function() {
-	// bug fix #35059 - always reset search-in select since non-zimbra accounts don't support GAL
-	if (appCtxt.isOffline && appCtxt.accountList.size() > 1 && this._searchInSelect) {
-		this._searchInSelect.clearOptions();
-		this._resetSearchInSelect();
-	}
-
 	this._setGroupName();
 	if (this.isDistributionList()) {
 		this._setDlFields();

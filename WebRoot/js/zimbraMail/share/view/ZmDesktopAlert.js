@@ -31,8 +31,6 @@ ZmDesktopAlert = function() {
         this.useWebkit = true;
 	} else if (window.Notification) {
 		this.useNotification = true;
-    } else if (appCtxt.isOffline && window.platform && (AjxEnv.isWindows || AjxEnv.isMac)) {
-        this.usePrism = true;
     }
 };
 

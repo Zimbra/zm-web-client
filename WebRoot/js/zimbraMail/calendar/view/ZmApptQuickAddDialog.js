@@ -507,11 +507,6 @@ function() {
 	var calId = this._folderSelect.getValue();
 	var cal = calId && appCtxt.getById(calId);
 
-    if (appCtxt.isOffline) {
-        var currAcct = cal.getAccount();
-        appCtxt.accountList.setActiveAccount(currAcct);
-    }
-
 	if (cal) {
         var isRemote = cal.isRemote();        
 		if (value == "PRI" && isRemote && !cal.hasPrivateAccess()) {

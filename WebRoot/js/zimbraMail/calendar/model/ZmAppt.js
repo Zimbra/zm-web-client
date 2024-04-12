@@ -1400,7 +1400,7 @@ function(callback, errorCallback, viewMode) {
 	this._addNotesToRequest(m);
 
 	// set organizer - but not for local account
-	if (!(appCtxt.isOffline && acct.isMain)) {
+	if (!acct.isMain) {
 		me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
 		user = mailFromAddress || me;
 		organizer = this.organizer || user;

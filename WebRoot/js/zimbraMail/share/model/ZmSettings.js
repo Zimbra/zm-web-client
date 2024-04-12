@@ -118,16 +118,6 @@ function() {
 	this.getSetting(ZmSetting.CHILD_ACCTS_VISIBLE).addChangeListener(listener);
 	this.getSetting(ZmSetting.ATTACHMENTS_BLOCKED).addChangeListener(listener);
 	this.getSetting(ZmSetting.DISPLAY_TIME_IN_MAIL_LIST).addChangeListener(listener);
-
-
-	if (appCtxt.isOffline) {
-		this.getSetting(ZmSetting.OFFLINE_IS_MAILTO_HANDLER).addChangeListener(listener);
-        this.getSetting(ZmSetting.OFFLINE_BACKUP_ACCOUNT_ID).addChangeListener(listener);
-        this.getSetting(ZmSetting.OFFLINE_BACKUP_INTERVAL).addChangeListener(listener);
-        this.getSetting(ZmSetting.OFFLINE_BACKUP_PATH).addChangeListener(listener);
-        this.getSetting(ZmSetting.OFFLINE_BACKUP_KEEP).addChangeListener(listener);
-        this.getSetting(ZmSetting.OFFLINE_UPDATE_NOTIFY).addChangeListener(listener);
-	}
 };
 
 /**
@@ -406,16 +396,6 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		// NOTE: only the main account can have children
 		appCtxt.accountList.createAccounts(this, info);
 
-		// for offline, find out whether this client supports prism-specific features
-		if (appCtxt.isOffline) {
-			if (AjxEnv.isPrism && window.platform) {
-				this.set(ZmSetting.OFFLINE_SUPPORTS_MAILTO, true, null, setDefault, skipNotify, skipImplicit);
-				this.set(ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE, true, null, setDefault, skipNotify, skipImplicit);
-			}
-
-			// bug #45804 - sharing always enabled for offline
-			appCtxt.set(ZmSetting.SHARING_ENABLED, true, null, setDefault, skipNotify);
-		}
 	}
 
 	// handle settings whose values may depend on other settings
@@ -721,11 +701,6 @@ function(list, callback, batchCommand, account, isImplicit) {
 		gotOne = true;
 	}
 
-    // bug: 50668 if the setting is implicit and global, use main Account
-    if(appCtxt.isOffline && ZmSetting.IS_IMPLICIT[setting.id] && ZmSetting.IS_GLOBAL[setting.id]) {
-        acct = appCtxt.accountList.mainAccount;
-    }
-
 	if (metaData.length > 0) {
 		var metaDataCallback = new AjxCallback(this, this._handleResponseSaveMetaData, [metaData]);
 		var sections = [ZmSetting.M_IMPLICIT, ZmSetting.M_OFFLINE];
@@ -814,7 +789,7 @@ function() {
 	this.set(ZmSetting.CSFE_EXPORT_URI, value, null, false, true);
 
 	var h = location.hostname;
-	var isDev = ((h.indexOf(".zimbra.com") != -1) || (window.appDevMode && (/\.local$/.test(h) || (!appCtxt.isOffline && h == "localhost"))));
+	var isDev = ((h.indexOf(".zimbra.com") != -1) || (window.appDevMode && (/\.local$/.test(h) || (h == "localhost"))));
 	this.set(ZmSetting.IS_DEV_SERVER, isDev);
 	if (isDev || window.isScriptErrorOn) {
 		this.set(ZmSetting.SHOW_SCRIPT_ERRORS, true, null, false, true);
@@ -1020,7 +995,6 @@ function() {
 	this.registerSetting("PRINT_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("SEARCH_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("SHORTCUT_LIST_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("OFFLINE_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:appCtxt.isOffline});
 	this.registerSetting("SPELL_CHECK_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN});
 	this.registerSetting("SPELL_CHECK_ADD_WORD_ENABLED",	{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:!AjxEnv.isSafari || AjxEnv.isSafari3up || AjxEnv.isChrome});
 
@@ -1138,30 +1112,10 @@ function(ev) {
 		this._showConfirmDialog(ZmMsg.fontChangeRestart, this._refreshBrowserCallback.bind(this));
 	}
 	else if (id === ZmSetting.LOCALE_NAME) {
-		// bug: 29786
-		if (appCtxt.isOffline && AjxEnv.isPrism) {
-			try {
-				netscape.security.PrivilegeManager.enablePrivilege('UniversalXPConnect');
-				var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
-				if (prefs) {
-					var newLocale = appCtxt.get(ZmSetting.LOCALE_NAME).replace("_", "-");
-					prefs.setCharPref("general.useragent.locale", newLocale);
-					prefs.setCharPref("intl.accept_languages", newLocale);
-				}
-			} catch (ex) {
-				// do nothing for now
-			}
-		}
 		this._showConfirmDialog(ZmMsg.localeChangeRestart, this._refreshBrowserCallback.bind(this));
 	}
 	else if (id === ZmSetting.CHILD_ACCTS_VISIBLE) {
 		this._showConfirmDialog(ZmMsg.accountChangeRestart, this._refreshBrowserCallback.bind(this));
-	}
-	else if (appCtxt.isOffline && id === ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
-		appCtxt.getAppController().registerMailtoHandler(true, ev.source.getValue());
-	}
-	else if (appCtxt.isOffline && id === ZmSetting.OFFLINE_UPDATE_NOTIFY) {
-		appCtxt.getAppController()._offlineUpdateChannelPref(ev.source.getValue());
 	}
 	else if (id === ZmSetting.DISPLAY_TIME_IN_MAIL_LIST) {
 		this._showConfirmDialog(value ? ZmMsg.timeInMailListChangeRestartShow : ZmMsg.timeInMailListChangeRestartHide, this._refreshBrowserCallback.bind(this));

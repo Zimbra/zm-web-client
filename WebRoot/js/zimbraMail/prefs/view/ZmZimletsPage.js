@@ -102,11 +102,7 @@ function(deferred){
 
 ZmZimletsPage.prototype._getTemplateData =
 function() {
-	var data = ZmPreferencesPage.prototype._getTemplateData.apply(this, arguments);
-	if (appCtxt.isOffline) {
-		data.action = ZmZimletsPage.ADMIN_UPLOAD_URI;
-	}
-	return data;
+	return ZmPreferencesPage.prototype._getTemplateData.apply(this, arguments);
 };
 
 /**
@@ -124,13 +120,6 @@ function(id, setup, value) {
 
 ZmZimletsPage.prototype._createControls =
 function() {
-	if (appCtxt.isOffline) {
-		// add "upload" button
-		this._uploadButton = new DwtButton({parent:this, parentElement: this._htmlElId+"_button"});
-		this._uploadButton.setText(ZmMsg.uploadNewFile);
-		this._uploadButton.addSelectionListener(new AjxListener(this, this._fileUploadListener));
-	}
-
 	ZmPreferencesPage.prototype._createControls.apply(this, arguments);
 };
 
@@ -588,11 +577,6 @@ function() {
         (new DwtListHeaderItem({field:ZmPrefZimletListView.COL_NAME, text:ZmMsg.name, width:ZmMsg.COLUMN_WIDTH_FOLDER_DLV})),    
 		(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_DESC, text:ZmMsg.description}))
 	];
-
-	if (appCtxt.isOffline) {
-		hlist.push(new DwtListHeaderItem({field:ZmPrefZimletListView.COL_ACTION, text:ZmMsg.action, width:ZmMsg.COLUMN_WIDTH_FOLDER_DLV}));
-	}
-
 	return hlist;
 };
 

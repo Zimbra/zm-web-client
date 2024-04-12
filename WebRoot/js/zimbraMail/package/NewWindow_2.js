@@ -189,4 +189,3 @@ AjxPackage.require("zimbraMail.mail.view.object.ZmImageAttachmentObjectHandler")
 AjxPackage.require("zimbraMail.share.zimlet.handler.ZmEmailObjectHandler");
 
 AjxPackage.require("zimbra.common.ZmErrorDialog");
-AjxPackage.require("zimbraMail.offline.ZmOffline");

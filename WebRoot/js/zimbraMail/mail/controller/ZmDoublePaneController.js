@@ -541,11 +541,6 @@ function(ev) {
 		var item = ev.item;
 		if (!item) { return; }
 
-		var cs = appCtxt.isOffline && appCtxt.getCurrentSearch();
-		if (cs && cs.isMultiAccount()) {
-			appCtxt.accountList.setActiveAccount(item.getAccount());
-		}
-
 		var div = this._mailListView.getTargetItemDiv(ev);
 		this._mailListView._itemSelected(div, ev);
 
@@ -637,31 +632,6 @@ ZmDoublePaneController.prototype._handleResponseSetSelectedItem =
 function(msg) {
 
 	if (msg) {
-		// bug 41196
-		if (appCtxt.isOffline) {
-			// clear the new-mail badge every time user reads a msg regardless
-			// of number of unread messages across all accounts
-			this._app.clearNewMailBadge();
-
-			// offline mode, reset new mail notifier if user reads a msg from that account
-			var acct = msg.getAccount();
-
-			// bug: 46873 - set active account when user clicks on item w/in cross-account search
-			var cs = appCtxt.getCurrentSearch();
-			if (cs && cs.isMultiAccount()) {
-				var active = acct || appCtxt.accountList.defaultAccount
-				appCtxt.accountList.setActiveAccount(active);
-			}
-
-			if (acct && acct.inNewMailMode) {
-				acct.inNewMailMode = false;
-				var allContainers = appCtxt.getOverviewController()._overviewContainer;
-				for (var i in allContainers) {
-					allContainers[i].updateAccountInfo(acct, true, true);
-				}
-			}
-		}
-
 		if (!this.isReadingPaneOn()) {
 			return;
 		}

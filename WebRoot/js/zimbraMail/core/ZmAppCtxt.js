@@ -1182,7 +1182,7 @@ ZmAppCtxt.AVAILABLE_DICTIONARY_LOCALES = ["ar", "ca", "da", "de", "de_AT", "de_C
  */
 ZmAppCtxt.prototype.isSpellCheckerAvailable = function () {
 
-	var isSpellCheckServiceEnabled = appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED) && !appCtxt.get(ZmSetting.OFFLINE_ENABLED) && (!AjxEnv.isSafari || AjxEnv.isSafari3up || AjxEnv.isChrome);
+	var isSpellCheckServiceEnabled = appCtxt.get(ZmSetting.SPELL_CHECK_ENABLED) && (!AjxEnv.isSafari || AjxEnv.isSafari3up || AjxEnv.isChrome);
 	if (!isSpellCheckServiceEnabled) {
 		return false;
 	}

@@ -524,26 +524,7 @@ function(id, value, setup, control) {
 		if (type == ZmPref.TYPE_COLOR) {
 			object.setColor(value);
 		} else if (type == ZmPref.TYPE_CHECKBOX) {
-			if (id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
-				try { // add try/catch - see bug #33870
-					if (window.platform && !window.platform.isRegisteredProtocolHandler("mailto")) {
-						object.setSelected(false);
-
-						// this pref might have been set to true before. so we must set origValue = false
-						// so that when user selects the checkbox, it will be considered "dirty"
-						var setting = appCtxt.getSettings(appCtxt.accountList.mainAccount).getSetting(id);
-						setting.origValue = false;
-					} else {
-						object.setSelected(true);
-					}
-					object.setEnabled(true);
-				} catch(ex) {
-					object.setEnabled(false);
-					object.setSelected(false);
-				}
-			} else {
-				object.setSelected(value);
-			}
+			object.setSelected(value);
 		} else if (type == ZmPref.TYPE_RADIO_GROUP) {
 			object.setSelectedValue(value);
 		} else if (type == ZmPref.TYPE_COMBOBOX) {

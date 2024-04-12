@@ -98,9 +98,6 @@ function(parent, type, id) {
 	var nId = ZmOrganizer.normalizeId(id, this.type);
 	if (nId == ZmOrganizer.ID_ROOT || (!folder.isSystem() && !folder.isSystemEquivalent()) /*&& !folder.isSyncIssuesFolder()*/) {
 		var isShareVisible = (!folder.link || folder.isAdmin());
-        if (appCtxt.isOffline) {
-            isShareVisible = !folder.getAccount().isMain && folder.getAccount().isZimbraAccount;
-        }
 		parent.enableAll(true);
 		var isSubFolderOfReadOnly = folder.parent && folder.parent.isReadOnly();
 		parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.MOVE, ZmOperation.EDIT_PROPS], !isSubFolderOfReadOnly);
@@ -154,10 +151,6 @@ function(parent, type, id) {
             }
             parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.EDIT_PROPS], isShareVisible);
         }
-		// bug fix #30435 - enable empty folder for sync failures folder
-		if (appCtxt.isOffline && nId == ZmOrganizer.ID_SYNC_FAILURES && hasContent) {
-			parent.enable(ZmOperation.EMPTY_FOLDER, true);
-		}
 	}
 
 	parent.enable(ZmOperation.OPEN_IN_TAB, true);
@@ -198,7 +191,7 @@ function(parent, type, id) {
 		}
 		else {
 			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
-			if (!appCtxt.isOffline && isEnabled) {
+			if (isEnabled) {
 				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
 				var dataSources = dsCollection.getItemsFor(ZmOrganizer.normalizeId(folder.id));
 				if (dataSources.length > 0) {
@@ -333,18 +326,6 @@ function() {
  */
 ZmFolderTreeController.prototype._itemClicked = function(folder, openInTab) {
 
-	// bug 41196 - turn off new mail notifier if inactive account folder clicked
-	if (appCtxt.isOffline) {
-		var acct = folder.getAccount();
-		if (acct && acct.inNewMailMode) {
-			acct.inNewMailMode = false;
-			var allContainers = appCtxt.getOverviewController()._overviewContainer;
-			for (var i in allContainers) {
-				allContainers[i].updateAccountInfo(acct, true, true);
-			}
-		}
-	}
-
 	if (folder.type == ZmOrganizer.SEARCH) {
 		// if the clicked item is a search (within the folder tree), hand
 		// it off to the search tree controller
@@ -405,15 +386,6 @@ ZmFolderTreeController.prototype._itemClicked = function(folder, openInTab) {
 				}
 				return;
 			}
-
-			if (appCtxt.isOffline && acct.hasNotSynced() && !acct.__syncAsked) {
-				acct.__syncAsked = true;
-
-				var dialog = appCtxt.getYesNoMsgDialog();
-				dialog.registerCallback(DwtDialog.YES_BUTTON, this._syncAccount, this, [dialog, acct]);
-				dialog.setMessage(ZmMsg.neverSyncedAsk, DwtMessageDialog.INFO_STYLE);
-				dialog.popup();
-			}
 		}
 
 		sc.search(params);
@@ -462,7 +434,7 @@ function(folder) {
  */
 ZmFolderTreeController.prototype._syncFeeds =
 function(folder) {
-	if (!appCtxt.isOffline && folder && !folder.isFeed()) {
+	if (folder && !folder.isFeed()) {
 		var dataSources = (appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED))
 			? folder.getDataSources(null, true) : null;
 
@@ -511,7 +483,7 @@ function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 
 	// bug fix #35405 - accounts with disallowSubFolder flag set (eg Yahoo) do not support moving folder to Trash
-	var trashFolder = appCtxt.isOffline ? this.getDataTree().getById(ZmFolder.ID_TRASH) : null;
+	var trashFolder = null;
 	if (trashFolder && trashFolder.disallowSubFolder && organizer.numTotal > 0) {
 		var d = appCtxt.getMsgDialog();
 		d.setMessage(ZmMsg.errorCannotDeleteFolder);

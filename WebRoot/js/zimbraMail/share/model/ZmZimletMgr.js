@@ -108,7 +108,7 @@ function(zimletArray, userProps, target, callback, sync) {
 	var isHttp = document.location.protocol == ZmSetting.PROTO_HTTP;
 	var isMixedMode = appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_MIXED;
 	var showAllZimlets = href.indexOf("zimlets=all") > 0;
-	if(isMixedMode && !appCtxt.isOffline && !showAllZimlets && isHttp
+	if(isMixedMode && !showAllZimlets && isHttp
 			&& appCtxt.get(ZmSetting.DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE) == "TRUE") {
 		zimletArray = this._getNonSensitiveZimlets(zimletArray);
 	}

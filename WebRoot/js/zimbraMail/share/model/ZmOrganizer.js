@@ -102,12 +102,7 @@ ZmOrganizer = function(params) {
 	this.rgb =
         params.rgb ||
         ZmOrganizer.COLOR_VALUES[this.color] ||
-        ZmOrganizer.COLOR_VALUES[ZmOrganizer.ORG_DEFAULT_COLOR]
-    ;
-
-	if (appCtxt.isOffline && !this.account && this.id == this.nId) {
-		this.account = appCtxt.accountList.mainAccount;
-	}
+        ZmOrganizer.COLOR_VALUES[ZmOrganizer.ORG_DEFAULT_COLOR];
 
 	if (id && params.tree) {
 		appCtxt.cacheSet(id, this);

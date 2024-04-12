@@ -151,7 +151,7 @@ function(callback, errorCallback, accountName) {
 		args.sid = ZmCsfeCommand.getSessionId();
 	}
 
-	var params = {asyncMode:true, noBusyOverlay:true, callback:respCallback, errorCallback:errorCallback, offlineCallback:callback};
+	var params = {asyncMode:true, noBusyOverlay:true, callback:respCallback, errorCallback:errorCallback};
 	params.restUri = AjxUtil.formatUrl({
 		path:["/home/", (accountName || appCtxt.getUsername()),
 	          ZmContactList.URL].join(""),

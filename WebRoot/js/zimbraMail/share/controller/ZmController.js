@@ -672,7 +672,7 @@ ZmController.prototype._handleException = function(ex, continuation) {
 		// only process if we're in one of these views otherwise, do the default
 		if (vid == ZmId.VIEW_CONVLIST || vid == ZmId.VIEW_TRAD) {
 			var mailApp = appCtxt.getApp(ZmApp.MAIL);
-			var callback = appCtxt.isOffline ? new AjxCallback(this, this._handleMailSearch, mailApp) : null;
+			var callback = null;
 			mailApp.mailSearch(null, callback);
 			return;
 		}
@@ -703,13 +703,6 @@ ZmController.prototype._handleException = function(ex, continuation) {
 
 			this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
 		}
-	}
-};
-
-ZmController.prototype._handleMailSearch =
-function(app) {
-	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES)) {
-		app.getOverviewContainer().highlightAllMboxes();
 	}
 };
 

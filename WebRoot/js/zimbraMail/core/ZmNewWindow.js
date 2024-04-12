@@ -104,7 +104,6 @@ function() {
 	// redefine ZmSetting from parent window since it loses this info.
 	window.parentAppCtxt = winOpener.appCtxt;
 	appCtxt.setSettings(parentAppCtxt.getSettings());
-	appCtxt.isOffline = parentAppCtxt.isOffline;
 	appCtxt.multiAccounts = parentAppCtxt.multiAccounts;
     appCtxt.sendAsEmails = parentAppCtxt.sendAsEmails;
     appCtxt.sendOboEmails = parentAppCtxt.sendOboEmails;

@@ -557,10 +557,7 @@ function() {
         shareIcon:		"SharedCalendarFolder",
         id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_APPOINTMENT)
     };
-    // always enable appt search for offline
-    if(!appCtxt.isOffline) {
-        params["setting"] = ZmSetting.CALENDAR_ENABLED;
-    }
+	params["setting"] = ZmSetting.CALENDAR_ENABLED;
 	ZmSearchToolBar.addMenuItem(ZmItem.APPT, params);
 };
 
@@ -1527,19 +1524,11 @@ function() {
 		var acct = accounts[i];
 
 		var appEnabled = ZmApp.SETTING[ZmItem.APP[ZmId.ITEM_APPOINTMENT]];
-		if ((appCtxt.isOffline && acct.isMain) ||
-			!appCtxt.get(appEnabled, null, acct))
-		{
+		if (!appCtxt.get(appEnabled, null, acct)) {
 			continue;
 		}
 
 		folderTree = appCtxt.getFolderTree(acct);
-		data = data.concat(folderTree.getByType(org));
-	}
-
-	// add the local account last for multi-account
-	if (appCtxt.isOffline) {
-		folderTree = appCtxt.getFolderTree(appCtxt.accountList.mainAccount);
 		data = data.concat(folderTree.getByType(org));
 	}
 

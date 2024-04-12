@@ -579,10 +579,6 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	var respCallback = this._handleResponseDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
-    var offlineCallback = this._handleOfflineDoSearch.bind(this, search, respCallback);
-    if (search.folderId == ZmFolder.ID_OUTBOX) {
-        var offlineRequest = true;
-    }
 	if (!errorCallback) {
 		errorCallback = this._handleErrorDoSearch.bind(this, search);
 		if (!params.errorCallback) {
@@ -603,10 +599,10 @@ function(params, noRender, callback, errorCallback) {
 			search.calController = controller;
 			controller.handleUserSearch(params, respCallback);
 		} else {
-            search.execute({offlineCache:params && params.offlineCache, callback:respCallback, errorCallback:errorCallback, offlineCallback:offlineCallback, offlineRequest:offlineRequest});
+            search.execute({callback:respCallback, errorCallback:errorCallback});
         }
 	} else {
-		search.execute({offlineCache:params && params.offlineCache, callback:respCallback, errorCallback:errorCallback, offlineCallback:offlineCallback, offlineRequest:offlineRequest});
+		search.execute({callback:respCallback, errorCallback:errorCallback});
 	}
 };
 
@@ -640,22 +636,6 @@ function(search, noRender, callback, noUpdateOverview, result) {
 	if (callback) {
 		callback.run(result);
 	}
-};
-
-/**
- * Takes the search result and hands it to the appropriate controller for display.
- *
- * @param {ZmSearch}	search			contains search info used to run search against server
- * @param {AjxCallback}	callback		the callback to run after generating offline result
- */
-ZmSearchController.prototype._handleOfflineDoSearch =
-function(search, callback) {
-	//force webclient offline mode into msg view for mail search
-	if (search.types && search.types.replaceObject(ZmItem.CONV, ZmItem.MSG)) {
-		search.isDefaultToMessageView = true;
-	}
-    var respCallback = this._handleOfflineResponseDoSearch.bind(this, search, callback);
-    ZmOfflineDB.search(search, respCallback);
 };
 
 /**
@@ -954,58 +934,4 @@ function(id) {
 	}
 
 	return nid;
-};
-
-/**
- * Takes the search result and hands it to the appropriate controller for display.
- *
- * @param {ZmSearch}	search			contains search info used to run search against server
- * @param {AjxCallback}	callback		online response callback to run after generating search response
- * @param {Object}	    result			the object stored in indexedDB
- *
- * @private
- */
-ZmSearchController.prototype._handleOfflineResponseDoSearch =
-function(search, callback, result) {
-
-    if (search.sortBy === ZmSearch.DATE_DESC) {
-		//Sort by received date descending
-		result.sort(function(a, b) {
-			return b.d - a.d;
-	    });
-    }
-	else if (search.sortBy === ZmSearch.DATE_ASC) {
-	    //Sort by received date ascending
-	    result.sort(function(a, b) {
-		    return a.d - b.d;
-	    });
-    }
-
-    var searchResult = new ZmSearchResult(search);
-    if (search.searchFor === ZmId.SEARCH_MAIL || search.parsedSearchFor === ZmId.SEARCH_MAIL) {
-        search.types =  new AjxVector([ZmItem.MSG]);
-        searchResult.set({m : result});
-    }
-    else if (search.searchFor === ZmItem.CONTACT || search.contactSource === ZmItem.CONTACT) {
-        searchResult.set({cn : result});
-    }
-    var zmCsfeResult = new ZmCsfeResult(searchResult);
-    callback(zmCsfeResult);
-
-    if (search.folderId == ZmFolder.ID_OUTBOX || search.folderId == ZmFolder.ID_DRAFTS) {
-		ZmOffline.updateFolderCountCallback(search.folderId, result.length);
-    }
-};
-
-ZmSearchController.prototype._addOfflineDrafts =
-function(search, result) {
-    var callback = this._addOfflineDraftsCallback.bind(this, search, result);
-    var key = {methodName : "SaveDraftRequest"};
-    ZmOfflineDB.getItemInRequestQueue(key, callback, callback);
-};
-
-ZmSearchController.prototype._addOfflineDraftsCallback =
-function(search, result, newResult) {
-    var respEl = ZmOffline.generateMsgResponse(newResult);
-    this._handleResponseDoIndexedDBSearch(search, [].concat(result).concat(respEl));
 };

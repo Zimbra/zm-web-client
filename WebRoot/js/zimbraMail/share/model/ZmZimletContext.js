@@ -270,7 +270,7 @@ function() {
 	// If it has an _id then we need to make sure the treeItem is up-to-date now
 	// that the i18n files have loaded.
 	if (this._id) {
-		var acct = appCtxt.isOffline ? appCtxt.accountList.mainAccount : null;
+		var acct = null;
 		var tree = appCtxt.getZimletTree(acct);
 		if (tree) {
 			var zimletItem = tree.getById(this._id);

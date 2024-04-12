@@ -184,13 +184,11 @@ function(params) {
 		var newParams = {
 			jsonObj:		jsonObj,
 			asyncMode:		true,
-            offlineCache:   true,
 			callback:		ZmMailMsg._handleResponseFetchMsg.bind(null, params.callback),
 			errorCallback:	params.errorCallback,
 			noBusyOverlay:	params.noBusyOverlay,
 			accountName:	params.accountName
 		};
-        newParams.offlineCallback = ZmMailMsg._handleOfflineResponseFetchMsg.bind(null, m.id, newParams.callback);
 		params.sender.sendRequest(newParams);
 	}
 };
@@ -200,24 +198,6 @@ function(callback, result) {
 	if (callback) {
 		callback.run(result);
 	}
-};
-
-ZmMailMsg._handleOfflineResponseFetchMsg =
-function(msgId, callback) {
-    var getItemCallback = ZmMailMsg._handleOfflineResponseFetchMsgCallback.bind(null, callback);
-    ZmOfflineDB.getItem(msgId, ZmApp.MAIL, getItemCallback);
-};
-
-ZmMailMsg._handleOfflineResponseFetchMsgCallback =
-function(callback, result) {
-    var response = {
-        GetMsgResponse : {
-            m : result
-        }
-    };
-    if (callback) {
-        callback(new ZmCsfeResult(response));
-    }
 };
 
 ZmMailMsg.stripSubjectPrefixes =
@@ -1280,39 +1260,6 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName, toastMessage);
 };
 
-ZmMailMsg.prototype.applyPtstOffline = function(msgId, newPtst) {
-	var applyPtstOfflineCallback = this._applyPtstOffline.bind(this, newPtst);
-	ZmOfflineDB.getItem(msgId, ZmApp.MAIL, applyPtstOfflineCallback);
-};
-ZmMailMsg.prototype._applyPtstOffline = function(newPtst, result) {
-	if (result && result[0] && result[0].inv && result[0].inv[0]) {
-		var inv = result[0].inv[0];
-		if (!inv.replies) {
-			// See _sendInviteReply - patch the invite status
-			inv.replies = [{
-				reply: [{
-					ptst: newPtst
-				}]
-			}];
-		} else {
-			inv.replies[0].reply[0].ptst = newPtst;
-		}
-		// Finally, Alter the offline folder - upon accepting an invite, it moves to the Trash folder
-		result[0].l = ZmFolder.ID_TRASH;
-		ZmOfflineDB.setItem(result, ZmApp.MAIL);
-
-		// With the Ptst of an invite altered offline, move the message to trash locally
-		var originalMsg = this._origMsg;
-		originalMsg.moveLocal(ZmFolder.ID_TRASH);
-		if (originalMsg.list) {
-			originalMsg.list.moveLocal([originalMsg], ZmFolder.ID_TRASH);
-		}
-		var details = {oldFolderId:originalMsg.folderId};
-		originalMsg._notify(ZmEvent.E_MOVE, details);
-
-	}
-}
-
 ZmMailMsg.prototype._sendInviteReplyContinue =
 function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate, accountName, toastMessage) {
 
@@ -1533,20 +1480,14 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 
 	var msgNode = request.m = {};
 	var ac = window.parentAppCtxt || window.appCtxt;
-	var activeAccount = ac.accountList.activeAccount;
 	var mainAccount = ac.accountList.mainAccount;
 
 	//When fwding an email in Parent's(main) account(main == active), but we are sending on-behalf-of child(active != accountName)
-	var doQualifyIds = !ac.isOffline && accountName && mainAccount.name !== accountName;
+	var doQualifyIds = accountName && mainAccount.name !== accountName;
 
 	// if origId is given, means we're saving a draft or sending a msg that was
 	// originally a reply/forward
 	if (this.origId) {
-         // always Qualify ID when forwarding mail using a child account
-        if (appCtxt.isOffline) {
-            var origAccount = this._origMsg && this._origMsg.getAccount();
-            doQualifyIds = ac.multiAccounts  && origAccount.id == mainAccount.id;
-        }
 		var id = this.origId;
 		if(doQualifyIds) {
 			id = ZmOrganizer.getSystemId(this.origId, mainAccount, true);
@@ -1812,8 +1753,7 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
  */
 ZmMailMsg.prototype._sendMessage =
 function(params) {
-	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params]),
-        offlineCallback = this._handleOfflineResponseSendMessage.bind(this, params);
+	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params]);			
     /* bug fix 63798 removing sync request and making it async
 	// bug fix #4325 - its safer to make sync request when dealing w/ new window
 	if (window.parentController) {
@@ -1846,7 +1786,6 @@ function(params) {
 												noBusyOverlay:params.isDraft && params.isAutoSave,
 												callback:respCallback,
 												errorCallback:params.errorCallback,
-                                                offlineCallback:offlineCallback,
 												accountName:params.accountName,
                                                 timeout: ( ( params.isDraft && this.attId ) ? 0 : null )
                                                 });
@@ -1866,117 +1805,6 @@ function(params, result) {
 	if (params.callback) {
 		params.callback.run(result);
 	}
-};
-
-ZmMailMsg.prototype._handleOfflineResponseSendMessage =
-function(params) {
-
-    var jsonObj = $.extend(true, {}, params.jsonObj),//Always clone the object
-        methodName = Object.keys(jsonObj)[0],
-        msgNode = jsonObj[methodName].m,
-        msgNodeAttach = msgNode.attach,
-        origMsg = this._origMsg,
-        currentTime = new Date().getTime(),
-        callback,
-        aid = [];
-	var folderId = this.getFolderId();
-
-    jsonObj.methodName = methodName;
-    msgNode.d = currentTime; //for displaying date and time in the outbox/Drafts folder
-
-    if (msgNodeAttach && msgNodeAttach.aid) {
-        var msgNodeAttachIds = msgNodeAttach.aid.split(",");
-        for (var i = 0; i < msgNodeAttachIds.length; i++) {
-            var msgNodeAttachId = msgNodeAttachIds[i];
-            if (msgNodeAttachId) {
-                aid.push(msgNodeAttachId);
-                msgNodeAttach[msgNodeAttachId] = appCtxt.getById(msgNodeAttachId);
-                appCtxt.cacheRemove(msgNodeAttachId);
-            }
-        }
-    }
-
-    if (origMsg && origMsg.hasAttach) {//Always append origMsg attachments for offline handling
-        var origMsgAttachments = origMsg.attachments;
-        if (msgNodeAttach) {
-            delete msgNodeAttach.mp;//Have to rewrite the code for including original attachments
-        } else {
-            msgNodeAttach = msgNode.attach = {};
-        }
-        for (var j = 0; j < origMsgAttachments.length; j++) {
-            var node = origMsgAttachments[j].node;
-            if (node && node.isOfflineUploaded) {
-                aid.push(node.aid);
-                msgNodeAttach[node.aid] = node;
-            }
-        }
-    }
-
-	if (msgNodeAttach) {
-		if (aid.length > 0) {
-			msgNodeAttach.aid = aid.join();
-		}
-		//If msgNodeAttach is an empty object then delete it
-		if (Object.keys(msgNodeAttach).length === 0) {
-			delete msgNode.attach;
-		}
-	}
-
-    // Checking for inline Attachment
-    if (this.getInlineAttachments().length > 0 || (origMsg && origMsg.getInlineAttachments().length > 0)) {
-        msgNode.isInlineAttachment = true;
-    }
-
-    callback = this._handleOfflineResponseSendMessageCallback.bind(this, params, jsonObj);
-
-	//For outbox item, message id will be always undefined.
-	if (folderId == ZmFolder.ID_OUTBOX) {
-		msgNode.id = origMsg && origMsg.id;
-	}
-    if (msgNode.id) { //Existing drafts created online or offline
-        jsonObj.id = msgNode.id;
-        var value = {
-            update : true,
-            methodName : methodName,
-            id : msgNode.id,
-            value : jsonObj
-        };
-        ZmOfflineDB.setItemInRequestQueue(value, callback);
-    }
-    else {
-        jsonObj.id = msgNode.id = currentTime.toString(); //Id should be string
-        msgNode.f = (msgNode.f || "").replace(ZmItem.FLAG_OFFLINE_CREATED, "").concat(ZmItem.FLAG_OFFLINE_CREATED);
-        ZmOfflineDB.setItemInRequestQueue(jsonObj, callback);
-    }
-};
-
-ZmMailMsg.prototype._handleOfflineResponseSendMessageCallback =
-function(params, jsonObj) {
-
-	var m = ZmOffline.generateMsgResponse(jsonObj);
-    var data = {},
-        header = this._generateOfflineHeader(params, jsonObj, m),
-        notify = header.context.notify[0],
-        result;
-	if (!params.isInvite) {
-		// If existing invite message - do not overwrite it.  The online code does not reload
-		// the invite msg, it just patches it in-memory.  When the cal item ptst is patched in the db, it will
-		// make a call to patch the invite too.
-		ZmOfflineDB.setItem(m, ZmApp.MAIL);
-	}
-
-    data[jsonObj.methodName.replace("Request", "Response")] = notify.modified;
-    result = new ZmCsfeResult(data, false, header);
-    this._handleResponseSendMessage(params, result);
-    appCtxt.getRequestMgr()._notifyHandler(notify);
-
-    if (!params.isDraft && !params.isInvite) {
-        var key = {
-            methodName : "SaveDraftRequest",
-            id : jsonObj[jsonObj.methodName].m.id
-        };
-        ZmOfflineDB.deleteItemInRequestQueue(key);//Delete any drafts for this message id
-    }
 };
 
 ZmMailMsg.prototype._generateOfflineHeader =
@@ -2655,12 +2483,8 @@ function(addrNodes, type, isDraft) {
 	var num = addrs.size();
 	var contactsApp;
 	if (num) {
-		if (appCtxt.isOffline) {
-            contactsApp = appCtxt.getApp(ZmApp.CONTACTS)
-        } else {
-		    contactsApp = appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.getApp(ZmApp.CONTACTS);
-        }
-        if (contactsApp && !contactsApp.isContactListLoaded()) {
+		contactsApp = appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.getApp(ZmApp.CONTACTS);
+		if (contactsApp && !contactsApp.isContactListLoaded()) {
             contactsApp = null;
         }
 		for (var i = 0; i < num; i++) {
@@ -2711,7 +2535,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 	}
 
 	//TODO: OPTIMIZE CODE by aggregating the common code.
-	if (!appCtxt.isOffline && accountName && isPrimary) {
+	if (accountName && isPrimary) {
 		var mainAcct = ac.accountList.mainAccount.getEmail();
 		var onBehalfOf = false;
 

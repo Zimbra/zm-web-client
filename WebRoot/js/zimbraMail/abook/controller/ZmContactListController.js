@@ -578,13 +578,8 @@ function(view) {
 
 ZmContactListController.prototype.runRefresh =
 function() {
-	
-	if (!appCtxt.isOffline) {
-		return;
-	}
-	//should only happen in ZD
-
-	this._syncAllListener();
+	// To Ask
+	return;
 };
 
 
@@ -1001,11 +996,6 @@ function(ev) {
         else if(contacts.length==1)
             url += "&sq=" + contacts[0].getFileAs();
 	}
-	if (appCtxt.isOffline) {
-		var folderId = this._folderId || ZmFolder.ID_CONTACTS;
-		var acctName = appCtxt.getById(folderId).getAccount().name;
-		url += "&acct=" + acctName ;
-	}
 	window.open(appContextPath+url, "_blank");
 };
 
@@ -1043,11 +1033,6 @@ function(ev) {
 			url += "&sq="+query;
         else if (list && list.length == 1)
             url += "&sq="+list[0].getFileAs();
-	}
-	if (appCtxt.isOffline) {
-		var folderId = this._folderId || ZmFolder.ID_CONTACTS;
-		var acctName = appCtxt.getById(folderId).getAccount().name;
-		url += "&acct=" + acctName ;
 	}
 	window.open(appContextPath+url, "_blank");
 };

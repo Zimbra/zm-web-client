@@ -416,10 +416,6 @@ function() {
 
 ZmMsgController.prototype._backListener =
 function(ev) {
-	// bug fix #30835 - prism triggers this listener twice for some reason :/
-	if (appCtxt.isOffline && (this._currentViewId != appCtxt.getCurrentViewId())) {
-		return;
-	}
 	var isChildWindow = appCtxt.isChildWindow;
 	if (!this._app.popView() && !isChildWindow) {
 		this._app.mailSearch();
@@ -444,13 +440,7 @@ function(ev) {
     var showImages;
     // always extract out the msg ids from the conv
     if (item.toString() == "ZmConv") {
-        // get msg ID in case of virtual conv.
-        // item.msgIds.length is inconsistent, so checking if conv id is negative.
-        if (appCtxt.isOffline && item.id.split(":")[1]<0) {
-            id = item.msgIds[0];
-        } else {
-            id = "C:" + item.id;
-        }
+		id = "C:" + item.id;
         var msgList = item.getMsgList();
         for(var j=0; j<msgList.length; j++) {
             if(msgList[j].showImages) {
@@ -473,10 +463,6 @@ function(ev) {
     var url = "/h/printmessage?id=" + id + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT);
     if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages) {
         url += "&xim=1";
-    }
-    if (appCtxt.isOffline) {
-        var acctName = item.getAccount().name;
-        url+="&acct=" + acctName ;
     }
     window.open(appContextPath+url, "_blank");
 };

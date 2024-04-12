@@ -140,10 +140,6 @@ function(parent, type, id) {
 			} else if (addrBook.link) {
 				parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.link || addrBook.isAdmin());
 			}
-			if (appCtxt.isOffline) {
-				var acct = addrBook.getAccount();
-				parent.enable([ZmOperation.SHARE_ADDRBOOK], !acct.isMain && acct.isZimbraAccount);
-			}
 		}
 	}
 

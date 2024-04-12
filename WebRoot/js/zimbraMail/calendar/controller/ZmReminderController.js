@@ -435,7 +435,6 @@ function(list, callback) {
         {jsonObj:         jsonObj,
          asyncMode:       true,
          callback:        respCallback,
-         offlineCallback: offlineCallback,
          errorCallback:   errorCallback
         };
     appCtxt.getAppController().sendRequest(params);
@@ -551,7 +550,6 @@ function(apptArray, snoozeMinutes, beforeAppt) {
         {jsonObj:         jsonObj,
          asyncMode:       true,
          callback:        respCallback,
-         offlineCallback: offlineCallback,
          errorCallback:   errorCallback});
 
 };
@@ -592,33 +590,6 @@ function(apptList) {
         }
     }
     return keyPart.join(":");
-}
-
-ZmReminderController.prototype._handleOfflineReminderDBCallback =
-function(jsonObj, apptList, dismiss) {
-    // Successfully stored the snooze request in the SendRequest queue, update the db items and flush the apptCache
-
-    var request = jsonObj[jsonObj.methodName];
-    var appts   = request[this._apptType];
-
-    var callback;
-    var appt;
-    var apptCache = this._calController.getApptCache();
-    for (var i = 0; i < apptList.size(); i++) {
-        appt = apptList.get(i);
-        if (appt) {
-            // AWKWARD, but with indexedDB there's no way to specify a set of ids to read. So for the moment
-            // (hopefully not too many appts triggered at once) - read one, modify, write it to the Calendar Obj store.
-            // When done with each one, invoke a callback to update the reminder appt in memory.
-            var apptInfo = appts[i];
-            callback = this._updateOfflineAlarmCallback.bind(this, appt, dismiss, apptInfo.until);
-            // Set up null data and replacement data for snooze.  apptInfo.until will be undefined for dismiss,
-            // but we remove the alarm data for dismiss anyway
-            var nullData = [];
-            nullData.push({ nextAlarm: apptInfo.until});
-            apptCache.updateOfflineAppt(appt.invId, "alarmData.0.nextAlarm", apptInfo.until, nullData, callback);
-        }
-    }
 }
 
 // Final step in the Reminder Snooze: update in memory.  I believe alarmData[0].nextAlarm is all that needs to

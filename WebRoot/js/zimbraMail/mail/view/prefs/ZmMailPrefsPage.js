@@ -40,12 +40,6 @@ ZmMailPrefsPage.prototype.toString = function() { return "ZmMailPrefsPage"; };
 ZmMailPrefsPage.prototype.showMe =
 function() {
 	ZmPreferencesPage.prototype.showMe.call(this);
-    if(appCtxt.isOffline){
-        if(this._initializedAcctId != appCtxt.getActiveAccount().id) {
-            this._initialized = false;
-            this._initializedAcctId = appCtxt.getActiveAccount().id;
-        }
-    }
 	if (!this._initialized) {
 		this._initialized = true;
 		if (this._blackListControl && this._whiteListControl) {

@@ -239,10 +239,6 @@ function() {
     } else {
         restUrl = this._object.getRestUrl();
     }    
-	if (appCtxt.isOffline) {
-		var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI, null, acct);
-		restUrl = remoteUri + restUrl.substring((restUrl.indexOf("/",7)));
-	}
 	var url = AjxStringUtil.htmlEncode(restUrl).replace(/&amp;/g,'%26');
 	var text = url;
 	if (text.length > 50) {
@@ -483,15 +479,6 @@ function(shares, result) {
                     tmpShare.link.id = tmpShare.object.id;
                     tmpShare.link.name = tmpShare.object.name;
                 }
-                // If folder is not synced before sharing, link ID might have changed in ZD.
-                // Always get from response.
-                if(appCtxt.isOffline) {
-                    var linkId = this.getLinkIdfromResp(result);
-                    if(linkId) {
-                        tmpShare.link.id =  [tmpShare.grantor.id, linkId].join(":");
-                    }
-                }
-
                 tmpShare.link.perm = share.link.perm;
                 tmpShare.link.view = ZmOrganizer.getViewName(tmpShare.object.type);
                 tmpShare.link.inh = this._inheritEl ? this._inheritEl.checked : true;
@@ -503,10 +490,6 @@ function(shares, result) {
 
                     var url = share.object.getRestUrl();
                     url = url.replace(/&/g,'%26');
-                    if (appCtxt.isOffline) {
-                        var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
-                        url = remoteUri + url.substring((url.indexOf("/",7)));
-                    }
 
                     //bug:34647 added webcal url for subscribing to outlook/ical on a click
                     var webcalURL = "webcals:" + url.substring((url.indexOf("//")));

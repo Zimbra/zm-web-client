@@ -371,14 +371,12 @@ function() {
 // Called whether starting on or offline
 ZmCalViewController.prototype.getOfflineSearchCalendarIds =
 function() {
-    if (!this._offlineSearchCalendarIds) {
-
-        var checkedCalendarHash = null;
-
+	if (!this._offlineSearchCalendarIds) {
+		var checkedCalendarHash = null;
 		// Generate the checked calendar data - this will also store the calendar entries, if we are starting up online
-        this._updateCheckedCalendars(checkedCalendarHash);
+		this._updateCheckedCalendars(checkedCalendarHash);
     }
-    return (this._offlineSearchCalendarIds);
+	return (this._offlineSearchCalendarIds);
 }
 
 ZmCalViewController.prototype._storeCalendarCheckedState =
@@ -690,8 +688,7 @@ ZmCalViewController.prototype._updateCalItemState =
 function() {
 	if (!this._calItemStatus) { return; }
 
-	var accountName = appCtxt.isOffline && appCtxt.accountList.mainAccount.name;
-	var batchCmd = new ZmBatchCommand(null, accountName, true);
+	var batchCmd = new ZmBatchCommand(null, null, true);
 	var itemCount = 0;
     for (var i in this._calItemStatus) {
         var info = this._calItemStatus[i];
@@ -720,50 +717,6 @@ function() {
 
 	this._updateCalItemStateActionId = null;
 };
-
-// Update the check change locally (a folder and its subfolders) and store the batch command into the request queue
-ZmCalViewController.prototype._handleOfflineCalendarCheck =
-function(batchCmd) {
-
-    // Json batchCommand created in _updaetCalItemState above.  Must be Json to be stored in offline request queue
-    var jsonObj = batchCmd.getRequestBody();
-
-    this.apptCache.clearCache();
-    // Apply the changes locally
-    var calendarIds = [];
-    for (var i in this._calItemStatus) {
-        var info = this._calItemStatus[i];
-        if (info.item) {
-            var calendar = info.item;
-            calendarIds.push(calendar.id);
-            // Remote non-mountpoint has aleady been processed for local display - ignore it
-            if (!(calendar.isRemote() && (!calendar.isMountpoint || !calendar.zid))) {
-                calendar.isChecked = info.checked;
-                calendar.checkedCallback(info.checked);
-                this._handleCheckedCalendarRefresh(calendar);
-            }
-        }
-    }
-     this._calItemStatus = {};
-
-    // Store the request for playback
-    var jsonObjCopy = $.extend(true, {}, jsonObj);  //Always clone the object.  ?? Needed here ??
-    // This should be the only BatchCommand queued for calendars for replay (for the FolderAction, checked).
-    jsonObjCopy.methodName = "BatchRequest";
-    // Modify the id to thwart ZmOffline._handleResponseSendOfflineRequest, which sends a DELETE
-    // notification for the id - so a single calendar would get deleted in the UI
-    jsonObjCopy.id = "C" + calendarIds.join(":");
-    var value = {
-        update:          true,
-        methodName:      jsonObjCopy.methodName,
-        id:              jsonObjCopy.id,
-        value:           jsonObjCopy
-    };
-
-    // No callback - we apply the check changes, whether or not the request goes into the queue successfully
-    ZmOfflineDB.setItemInRequestQueue(value);
-};
-
 
 ZmCalViewController.prototype._handleCheckedCalendarRefresh =
 function(calendar){
@@ -871,11 +824,6 @@ function(ev) {
 		return;
 	}
     this.setCurrentListView(null);
-    
-	// bug fix #33830 - force sync for calendar refresh
-	if (appCtxt.isOffline) {
-		appCtxt.accountList.syncAll();
-	}
 
 	var app = appCtxt.getApp(ZmApp.CALENDAR);
 	// reset possibly set user query
@@ -1684,13 +1632,6 @@ function(ev) {
 			ids.push(list[i].invId);
 		}
         url = ["/h/printappointments?id=", ids.join(','), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)];
-        if(appCtxt.isOffline) {
-            if (ids.length == 1) {
-                var appt = this.getSelection()[0];
-                url.push("&acct=", appt.getFolder().getAccount().name);
-            }
-            url.push("&zd=", "true");
-        }
         url = url.join("");
     } else {
 		var date = this._viewMgr
@@ -1768,13 +1709,6 @@ function(ev) {
     if (ids.length == 0) return;
 
     var url = ["/h/printappointments?id=", ids.join(','), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)];
-    if(appCtxt.isOffline) {
-        if (ids.length == 1) {
-            var appt = this.getSelection()[0];
-            url.push("&acct=", appt.getFolder().getAccount().name);
-        }
-        url.push("&zd=", "true");
-    }
     url = url.join("");
 
     window.open(appContextPath+url, "_blank");
@@ -3139,7 +3073,7 @@ function(parent, num) {
 
 	parent.enableAll(true);
 	var currViewName = this._viewMgr.getCurrentViewName();
-    parent.enable(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED));
+    parent.enable(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED && true));
 
 	if (currViewName == ZmId.VIEW_CAL_LIST && num > 1) { return; }
 
@@ -3177,7 +3111,7 @@ function(parent, num) {
 	/*if (currViewName == ZmId.VIEW_CAL_LIST) {
 		parent.enable(ZmOperation.PRINT_CALENDAR, num > 0);
 	} */
-	parent.enable(ZmOperation.PRINT_CALENDAR);
+	parent.enable(ZmOperation.PRINT_CALENDAR, true);
 
 	// disable button for current view
 	var op = ZmCalViewController.VIEW_TO_OP[currViewName];
@@ -3667,7 +3601,7 @@ function(ev) {
 			} else if (this._listeners[menuItem]) {
 				this._viewActionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
                 if ((menuItem == ZmOperation.NEW_APPT) || (menuItem == ZmOperation.NEW_ALLDAY_APPT)) {
-                    this._viewActionMenu.enable(menuItem);
+                    this._viewActionMenu.enable(menuItem, true);
                 }
 			}
 		}
@@ -3948,7 +3882,7 @@ function(notify) {
 
 	//offline client makes batch request for each account configured causing
 	//refresh overlap clearing calendar
-	var timer = (appCtxt.isOffline && this.searchInProgress) ? 1000 : 0;
+	var timer = 0;
 	
 	if (this._clearCache) {
 		var act = new AjxTimedAction(this, this._refreshAction);

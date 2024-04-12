@@ -219,7 +219,7 @@ function(settings) {
 	settings.registerSetting("NOTIF_ENABLED",					{name:"zimbraPrefNewMailNotificationEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("NOTIF_FEATURE_ENABLED",			{name:"zimbraFeatureNewMailNotificationEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("OPEN_MAIL_IN_NEW_WIN",			{name:"zimbraPrefOpenMailInNewWindow", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
-	settings.registerSetting("POP_ENABLED",						{name:"zimbraPop3Enabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:!appCtxt.isOffline});
+	settings.registerSetting("POP_ENABLED",						{name:"zimbraPop3Enabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("POP_DOWNLOAD_SINCE_VALUE",		{type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:""});
     settings.registerSetting("POP_DOWNLOAD_SINCE",				{name:"zimbraPrefPop3DownloadSince", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:""});
     settings.registerSetting("POP_DELETE_OPTION",				{name:"zimbraPrefPop3DeleteOption", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmMailApp.POP_DELETE_OPTION_HARD_DELETE});
@@ -756,15 +756,6 @@ function() {
 		precondition:		!!notifyText,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
-
-	if (appCtxt.isOffline) {
-		ZmPref.registerPref("OFFLINE_NOTIFY_NEWMAIL_ON_INBOX", {
-			displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-			displayOptions:		[ZmMsg.notifyNewMailOnInbox, ZmMsg.notifyNewMailOnAny],
-			options:			[true, false]
-		});
-	}
-
 	appCtxt.notifyZimlets('onZmMailApp_registerPrefs', []);
 };
 
@@ -1290,24 +1281,7 @@ function(creates) {
 
 		// don't process alerts while account is undergoing initial sync
 		var acct = parsed && parsed.account;
-		if (!acct || (acct && acct.isOfflineInitialSync())) { continue; }
-
-		// offline: check whether to show new-mail notification icon
-		// Skip spam/trash folders and the local account
-		if (appCtxt.isOffline && parsed && !acct.isMain) {
-			var doIt = (appCtxt.get(ZmSetting.OFFLINE_NOTIFY_NEWMAIL_ON_INBOX))
-				? (parsed.id == ZmOrganizer.ID_INBOX)
-				: (parsed.id != ZmOrganizer.ID_SPAM && parsed.id != ZmOrganizer.ID_TRASH);
-
-			if (doIt) {
-				this.globalMailCount++;
-				acct.inNewMailMode = true;
-				var allContainers = appCtxt.getOverviewController()._overviewContainer;
-				for (var j in allContainers) {
-					allContainers[j].updateAccountInfo(acct, true, true);
-				}
-			}
-		}
+		if (!acct) { continue; }
 
 		if (appCtxt.get(ZmSetting.MAIL_NOTIFY_ALL) || (parsed && parsed.id == ZmOrganizer.ID_INBOX)) {
 			// for multi-account, highlite the non-active accordion item
@@ -1437,11 +1411,6 @@ function(creates, type, items, currList, sortBy, convs, last) {
 	if (!(list && list.length)) { return result; }
 
 	var throttle;
-	if (appCtxt.isOffline) {
-		throttle = (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES))
-			? appCtxt.accountList.isInitialSyncing()
-			: appCtxt.getActiveAccount().isOfflineInitialSync();
-	}
 	if (throttle) {
 		if (!this._maxEntries) {
 			var mlv = this.getMailListController().getCurrentView().getMailListView();
@@ -1494,14 +1463,6 @@ function(creates, type, items, currList, sortBy, convs, last) {
 		if (currList.type == ZmItem.MSG && type == ZmItem.CONV) {
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: msg list ignoring conv create");
 			continue;
-		}
-
-		// perform stricter checking if we're in offline mode
-		if (appCtxt.isOffline) {
-			if ((ZmList.ITEM_TYPE[nodeName] != currList.type) && (currList.type != ZmItem.CONV)) {
-				AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: type mismatch: " + ZmList.ITEM_TYPE[nodeName] + " / " + currList.type);
-				continue;
-			}
 		}
 
 		// throttle influx of CREATE notifications during offline initial sync
@@ -1629,7 +1590,7 @@ function() {
 	var container = ZmApp.prototype.getOverviewContainer.apply(this, arguments);
 
 	// bug: 42455 - highlight folder now that overview exists
-	if (firstTime && !appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES)) {
+	if (firstTime) {
 		appCtxt.getSearchController().updateOverview();
 	}
 
@@ -1761,15 +1722,9 @@ function(msg, callback) {
  */
 ZmMailApp.prototype.mailSearch =
 function(query, callback, response, type) {
-	var account = appCtxt.isOffline && appCtxt.inStartup && appCtxt.accountList.defaultAccount;
-	if (account) {
-		appCtxt.accountList.setActiveAccount(account);
-	}
-
 	var sc = appCtxt.getSearchController();
 	var queryHint, noUpdateOverview;
-	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
-		appCtxt.accountList.size() > 2)
+	if (appCtxt.accountList.size() > 2)
 	{
 		query = null;
 		queryHint = appCtxt.accountList.generateQuery(ZmOrganizer.ID_INBOX);
@@ -1779,7 +1734,7 @@ function(query, callback, response, type) {
 	else if(appCtxt.isExternalAccount()) {
         query = "inid:" + this.getDefaultFolderId();
     } else {
-		query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);
+		query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, null);
 	}
 
 	var types = new AjxVector();
@@ -1792,10 +1747,9 @@ function(query, callback, response, type) {
 		queryHint:			queryHint,
 		types:				types,
 		limit:				this.getLimit(),
-		getHtml:			appCtxt.get(ZmSetting.VIEW_AS_HTML, null, account),
+		getHtml:			appCtxt.get(ZmSetting.VIEW_AS_HTML, null, null),
 		noUpdateOverview:	noUpdateOverview,
-        offlineCache:       true,
-		accountName:		(account && account.name),
+		accountName:		null,
 		callback:			callback,
 		response:			response,
 		sortBy:             sortBy
@@ -1916,17 +1870,7 @@ function(callback, queryStr) {
 		callback: callback
 	};
 
-	// this can happen in offlie where user clicks on mailto link and we're
-	// already in compose view
-	if (appCtxt.isOffline &&
-		appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) &&
-		appCtxt.getCurrentViewId() == ZmId.VIEW_COMPOSE)
-	{
-		composeController.resetComposeForMailto(params);
-	}
-	else {
-		composeController.doAction(params);
-	}
+	composeController.doAction(params);
 
 	this._notifyRendered();
     return composeController;
@@ -2085,30 +2029,11 @@ function(organizer) {
     if(organizer.id == ZmOrganizer.ID_INBOX) {
         this._setFavIcon(organizer.numUnread);
     }
-	this._setNewMailBadge();
-};
-
-ZmMailApp.prototype._setNewMailBadge =
-function() {
-	if (appCtxt.isOffline && appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE)) {
-		if (AjxEnv.isMac && window.platform) {
-			window.platform.icon().badgeText = (this.globalMailCount > 0)
-				? this.globalMailCount : null;
-		}
-		else if (AjxEnv.isWindows) {
-			window.platform.icon().imageSpec = (this.globalMailCount > 0)
-				? "resource://webapp/icons/default/newmail.png"
-				: "resource://webapp/icons/default/launcher.ico";
-			window.platform.icon().title = (this.globalMailCount > 0)
-				? AjxMessageFormat.format(ZmMsg.unreadCount, this.globalMailCount) : null;
-		}
-	}
 };
 
 ZmMailApp.prototype.clearNewMailBadge =
 function() {
 	this.globalMailCount = 0;
-	this._setNewMailBadge();
 };
 
 ZmMailApp.prototype._setFavIcon =
@@ -2416,11 +2341,6 @@ ZmMailApp.prototype._checkVacationReplyEnabled = function(){
 	ynDialog.registerCallback(DwtDialog.YES_BUTTON, ZmMailApp._handleOOORemindResponse, null, [ynDialog, true]);
 	ynDialog.registerCallback(DwtDialog.NO_BUTTON, ZmMailApp._handleOOORemindResponse, null, [ynDialog, false]);
 	ynDialog.popup();
-};
-
-ZmMailApp.prototype._createVirtualFolders =
-function() {
-    ZmOffline.addOutboxFolder();
 };
 
 /*

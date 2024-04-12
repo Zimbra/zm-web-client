@@ -349,7 +349,6 @@ function(params) {
 			jsonObj: jsonObj,
 			asyncMode: true,
 			callback: (new AjxCallback(this, this._getApptSummariesResponse, [params])),
-            offlineCallback: apptCache.offlineSearchAppts(null, null, params),
 			noBusyOverlay: params.noBusyOverlay,
 			accountName: accountName
 		});

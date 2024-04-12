@@ -135,11 +135,7 @@ function() {
 		ZmOperation.REMOVE_FILTER_RULE
 	];
 
-	// bug: 42903 - disable running filters in offline for now
-	if (!appCtxt.isOffline) {
-		ops.push(ZmOperation.SEP, ZmOperation.RUN_FILTER_RULE);
-	}
-
+	ops.push(ZmOperation.SEP, ZmOperation.RUN_FILTER_RULE);\
 	return ops;
 };
 
@@ -230,10 +226,7 @@ function() {
 		ZmOperation.REMOVE_FILTER_RULE
 	];
 
-	// bug: 42903 - disable running filters in offline for now
-	if (!appCtxt.isOffline) {
-		ops.push(ZmOperation.RUN_FILTER_RULE);
-	}
+	ops.push(ZmOperation.RUN_FILTER_RULE);
 
 	ops.push(ZmOperation.SEP,
 			ZmOperation.MOVE_UP_FILTER_RULE,

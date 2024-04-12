@@ -154,14 +154,7 @@ function(msg) {
 				for (var i = 0; i < accounts.length; i++) {
 					var acct = accounts[i];
 					if (acct == msgAcct || !ac.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
-					if (appCtxt.isOffline && acct.isMain) { continue; }
-
 					calendars = calendars.concat(cc.getCalendars({includeLinks:true, account:acct, onlyWritable:true}));
-				}
-
-				// always add the local account *last*
-				if (appCtxt.isOffline) {
-					calendars.push(appCtxt.getById(ZmOrganizer.ID_CALENDAR));
 				}
 			}
 

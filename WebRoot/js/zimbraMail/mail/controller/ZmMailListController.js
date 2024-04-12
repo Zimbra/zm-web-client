@@ -854,16 +854,6 @@ function(ev) {
 	// offline: when opening a message in Outbox, move it to the appropriate
 	// account's Drafts folder first
 	var search = appCtxt.getCurrentSearch();
-	if (appCtxt.isOffline &&
-		ev.detail == DwtListView.ITEM_DBL_CLICKED &&
-		ev.item && ev.item.isDraft &&
-		search && search.folderId == ZmFolder.ID_OUTBOX)
-	{
-		var account = ev.item.account || ZmOrganizer.parseId(ev.item.id).account;
-		var folder = appCtxt.getById(ZmOrganizer.getSystemId(ZmFolder.ID_DRAFTS, account));
-		this._list.moveItems({items:[ev.item], folder:folder});
-		return false;
-	}
 	var folderId = ev.item.folderId || (search && search.folderId);
 	var folder = folderId && appCtxt.getById(folderId);
 
@@ -1205,10 +1195,6 @@ function(params, msg, finalChoice) {
 			this._handleLoadMsgs(params, selection);
 			return;
 		}
-	}
-	else if (appCtxt.isOffline && action == ZmOperation.DRAFT) {
-		var folder = appCtxt.getById(msg.folderId);
-		params.accountName = folder && folder.getAccount().name;
 	}
 	else if (action == ZmOperation.DECLINE_PROPOSAL) {
 		params.subjOverride = this._getInviteReplySubject(action) + msg.subject;
@@ -2087,13 +2073,7 @@ function(ev) {
 		var item = items[i];
 		// always extract out the msg ids from the conv
 		if (item.toString() == "ZmConv") {
-			// get msg ID in case of virtual conv.
-			// item.msgIds.length is inconsistent, so checking if conv id is negative.
-			if (appCtxt.isOffline && item.id.split(":")[1]<0) {
-				ids.push(item.msgIds[0]);
-			} else {
-				ids.push("C:"+item.id);
-			}
+			ids.push("C:"+item.id);
 			if (item.isZmConv) {
 				var msgList = item.getMsgList();
 				for(var j=0; j<msgList.length; j++) {
@@ -2114,10 +2094,6 @@ function(ev) {
 	if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages) {
 		url = url+"&xim=1";
 	}
-    if (appCtxt.isOffline) {
-        var acctName = items[0].getAccount().name;
-        url+="&acct=" + acctName ;
-    }
     window.open(appContextPath+url, "_blank");
 };
 
@@ -2171,26 +2147,19 @@ function(callback, actionId, result) {
 
 ZmMailListController.prototype._checkMailListener =
 function() {
-	if (appCtxt.isOffline) {
-		var callback = new AjxCallback(this, this._handleSyncAll);
-		appCtxt.accountList.syncAll(callback);
-	}
-
 	var folder = this._getSearchFolder();
 	var isFeed = (folder && folder.isFeed());
 	if (isFeed) {
 		folder.sync();
 	} else {
 		var hasExternalAccounts = false;
-		if (!appCtxt.isOffline) {
-			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
-			if (folder && !isFeed && isEnabled) {
-				var dataSources = folder.getDataSources(null, true);
-				if (dataSources) {
-					hasExternalAccounts = true;
-					var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-					dsCollection.importMail(dataSources);
-				}
+		var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
+		if (folder && !isFeed && isEnabled) {
+			var dataSources = folder.getDataSources(null, true);
+			if (dataSources) {
+				hasExternalAccounts = true;
+				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
+				dsCollection.importMail(dataSources);
 			}
 		}
 
@@ -2260,7 +2229,7 @@ function(parent, num) {
 
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 
-	parent.enable(ZmOperation.PRINT, (num > 0) );
+	parent.enable(ZmOperation.PRINT, (num > 0));
 	parent.enable(ZmOperation.SHOW_ORIG, true);
 
 	if (this.isSyncFailuresFolder()) {

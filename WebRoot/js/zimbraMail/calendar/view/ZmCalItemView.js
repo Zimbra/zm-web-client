@@ -133,12 +133,6 @@ function(calItem, renderButtons) {
 
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
-	var offlineHandler = appCtxt.webClientOfflineHandler;
-	if (offlineHandler) {
-		var linkIds = [ZmCalItem.ATT_LINK_IMAGE, ZmCalItem.ATT_LINK_MAIN, ZmCalItem.ATT_LINK_DOWNLOAD];
-		var getLinkIdCallback = this._getAttachmentLinkId.bind(this);
-		offlineHandler._handleAttachmentsForOfflineMode(calItem.getAttachments(), getLinkIdCallback, linkIds);
-	}
 
     if (renderButtons) {
         // add the close button
@@ -311,12 +305,6 @@ function(calItem) {
 
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
-	var offlineHandler = appCtxt.webClientOfflineHandler;
-	if (offlineHandler) {
-		var linkIds = [ZmCalItem.ATT_LINK_IMAGE, ZmCalItem.ATT_LINK_MAIN, ZmCalItem.ATT_LINK_DOWNLOAD];
-		var getLinkIdCallback = this._getAttachmentLinkId.bind(this);
-		offlineHandler._handleAttachmentsForOfflineMode(calItem.getAttachments(), getLinkIdCallback, linkIds);
-	}
 
 	// Set tab name as Appointment subject
 	var subject = AjxStringUtil.trim(calItem.getName());

@@ -44,7 +44,7 @@ ZmQuickCommandPage.prototype.toString = function() {
 ZmQuickCommandPage.prototype.showMe =
 function() {
     //TODO: We got to optimize / avoid force-rendering logic for multi-account setup
-	if (this.hasRendered && !appCtxt.isOffline) { return; }
+	if (this.hasRendered) { return; }
 
 
 	// create the html

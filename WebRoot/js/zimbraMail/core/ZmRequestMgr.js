@@ -76,11 +76,6 @@ ZmRequestMgr.RETRY_ON_EXCEPTION[ZmCsfeException.EMPTY_RESPONSE] = true;
 
 ZmRequestMgr._nextReqId = 1;
 
-ZmRequestMgr.OFFLINE_HEAP_DUMP          = "heapdump_upload";
-ZmRequestMgr.OFFLINE_MUST_RESYNC        = "resync";
-ZmRequestMgr.OFFLINE_MUST_GAL_RESYNC    = "gal_resync";
-ZmRequestMgr.OFFLINE_FOLDER_MOVE_FAILED = "foldermove_failed";
-
 // ms to delay after a response to make sure focus is in sync
 ZmRequestMgr.FOCUS_CHECK_DELAY = 500;
 
@@ -99,7 +94,6 @@ ZmRequestMgr.FOCUS_CHECK_DELAY = 500;
  * @param {AjxCallback}	callback			the next callback in chain for async request
  * @param {AjxCallback}	errorCallback		the callback to run if there is an exception
  * @param {AjxCallback}	continueCallback	the callback to run after user re-auths
- * @param {AjxCallback}	offlineCallback	    the callback to run if the user is offline
  * @param {int}			timeout				the timeout value (in seconds)
  * @param {Boolean}		noBusyOverlay		if <code>true</code>, don't use the busy overlay
  * @param {String}		accountName			the name of account to execute on behalf of
@@ -110,7 +104,6 @@ ZmRequestMgr.FOCUS_CHECK_DELAY = 500;
  * @param {Boolean}		noSession			if <code>true</code>, no session info is included
  * @param {String}		restUri				the REST URI to send the request to
  * @param {boolean}		emptyResponseOkay	if true, empty or no response from server is not an erro
- * @param {boolean}		offlineRequest	    if true, request will not be send to server
  * @param {boolean}		useChangeToken	    if true, request will try to use change token in header
  */
 ZmRequestMgr.prototype.sendRequest =
@@ -123,12 +116,6 @@ function(params) {
 		}
 		params.asyncMode = true;	// canned response set up async style
 		return this._handleResponseSendRequest(params, new ZmCsfeResult(response));
-	}
-	if (params.offlineRequest) {
-		if (params.offlineCallback) {
-			params.offlineCallback.run(params);
-		}
-		return;
 	}
 	
 	var reqId = params.reqId = ("Req_"+ZmRequestMgr._nextReqId++);
@@ -288,8 +275,7 @@ function(params, result) {
 				return false;
 			}(params.ignoreErrs, ex.code)
 
-            if (ex.code === ZmCsfeException.EMPTY_RESPONSE && params.offlineCallback) {
-                params.offlineCallback(params);
+            if (ex.code === ZmCsfeException.EMPTY_RESPONSE) {
 				if (!params.noBusyOverlay) {
 					this._shell.setBusy(false, params.reqId); // remove busy overlay
 				}
@@ -311,12 +297,6 @@ function(params, result) {
 	    result.set(response.Body);
 	}
 
-    // if we didn't get an exception, then we should make sure that the
-    // poll timer is running (just in case it got an exception and stopped)
-	if (!appCtxt.isOffline && !isCannedResponse) {
-		this._controller._kickPolling(true);
-	}
-
 	var methodName = ZmCsfeCommand.getMethodName(params.jsonObj || params.soapDoc);
 	if (params.asyncMode && params.callback) {
 		DBG.println(AjxDebug.DBG1, "------------------------- Running response callback for " + methodName);
@@ -328,7 +308,7 @@ function(params, result) {
 
 	this._clearPendingRequest(params.reqId);
 
-	if (refreshBlock && (!appCtxt.isOffline || !appCtxt.multiAccounts) && !params.more) {
+	if (refreshBlock && !appCtxt.multiAccounts && !params.more) {
 		this._refreshHandler(refreshBlock);
 	}
 	
@@ -421,9 +401,6 @@ function(hdr) {
 			if (acct) {
                 //server is sending info to get user's consent on something.
                 var dialog = acctList[i].dialog;
-                if(dialog) {
-                    this._handleOfflineInfoDialog(dialog[0], acct)
-                }
 				acct.updateState(acctList[i]);
 			}
 		}
@@ -437,78 +414,6 @@ function(hdr) {
 	}
 
 	return ctxt.refresh;
-};
-/**
- * Handles server's notification to get user's consent on something
- *
- * @param {Object}	dlg is json object
- * @param {Object}	account object
- *
- * @private
- */
-ZmRequestMgr.prototype._handleOfflineInfoDialog =
-function(dlg, acct) {
-
-    if(!dlg.type) {
-        return;
-    }
-    var cont;
-    switch(dlg.type) {
-        case ZmRequestMgr.OFFLINE_HEAP_DUMP: {
-            cont = ZmMsg.offlineHeapDump;
-            break;
-        }
-        case ZmRequestMgr.OFFLINE_MUST_RESYNC: {
-            cont = AjxMessageFormat.format(ZmMsg.offlineMustReSync, acct.name);
-            break;
-        }
-		case ZmRequestMgr.OFFLINE_MUST_GAL_RESYNC: {
-			cont = AjxMessageFormat.format(ZmMsg.offlineMustGalReSync, acct.name);
-			break;
-		}
-        case ZmRequestMgr.OFFLINE_FOLDER_MOVE_FAILED: {
-            appCtxt.setStatusMsg(ZmMsg.offlineMoveFolderError);
-            break;
-        }
-        default:
-    }
-    if (!cont) {
-        return;
-    }
-    var dialog = appCtxt.getOkCancelMsgDialog();
-    dialog.setMessage(cont);
-    dialog.registerCallback(DwtDialog.OK_BUTTON, this._handleOfflineDialogAction, this, [dialog, dlg.type, acct.id, true]);
-    dialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._handleOfflineDialogAction, this, [dialog, dlg.type, acct.id, false]);
-    dialog.popup();
-};
-/**
- * Sends DialogActionRequest with user's consent YES/NO
- * @param {object} dlg is getOkCancelMsgDialog
- * @param {string} type
- * @param {string} acctId Account ID
- * @param {boolean} action
- */
-ZmRequestMgr.prototype._handleOfflineDialogAction =
-function(dlg, type, acctId, action) {
-    var args = {
-			jsonObj: { DialogActionRequest: { _jsns: "urn:zimbraOffline", type: type, id:acctId, action: action ? "yes" : "no" } },
-            callback: new AjxCallback(this, this._handleOfflineDialogActionResp, dlg),
-			errorCallback: new AjxCallback(this, this._handleOfflineDialogActionResp, dlg),
-			asyncMode: true
-		};
-    this.sendRequest(args);
-};
-/**
- * callback to hide dialog
- *
- * @param dlg
- * @param resp
- */
-ZmRequestMgr.prototype._handleOfflineDialogActionResp =
-function(dlg, resp) {
-      if(dlg.isPoppedUp()){
-        dlg.popdown();
-    }
 };
 
 /**
@@ -740,10 +645,6 @@ function(notify, methodName) {
 	}
 	if (notify.modified) {
 		this._handleModifies(notify.modified);
-	}
-
-	if (ZmOffline.isOnlineMode() && (notify.deleted || notify.created || notify.modified)) {
-		appCtxt.webClientOfflineHandler.scheduleSyncRequest(notify, methodName);
 	}
 	this._controller.runAppFunction("postNotify", false, notify);
 };

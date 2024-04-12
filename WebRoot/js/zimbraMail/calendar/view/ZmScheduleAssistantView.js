@@ -139,9 +139,6 @@ function(suggestTime) {
 
 ZmScheduleAssistantView.prototype.suggestAction =
 function(focusOnSuggestion, showAllSuggestions) {
-
-    if(appCtxt.isOffline && !appCtxt.isZDOnline()) { return; }
-
     var params = {
         items: [],        
         itemIndex: {},
@@ -162,9 +159,6 @@ function(focusOnSuggestion, showAllSuggestions) {
 
 ZmScheduleAssistantView.prototype.getLocationFBInfo =
 function(fbCallback, fbCallbackObj, endTime) {
-
-    if(appCtxt.isOffline && !appCtxt.isZDOnline()) { return; }
-
     var params = {
         items: [],
         itemIndex: {},
@@ -333,14 +327,6 @@ function(control) {
 // This should only be called for time suggestions
 ZmScheduleAssistantView.prototype._findFreeBusyInfo =
 function(params) {
-
-    var currAcct = this._apptView.getCalendarAccount();
-	// Bug: 48189 Don't send GetFreeBusyRequest for non-ZCS accounts.
-	if (appCtxt.isOffline && (!currAcct.isZimbraAccount || currAcct.isMain)) {
-        //todo: avoid showing smart scheduler button for non-ZCS accounts - offline client
-        return;
-	}
-
 	var tf = this._timeFrame = this._getTimeFrame();
     if (params.fbEndTime) {
         // Override the time frame.  Used for checking location

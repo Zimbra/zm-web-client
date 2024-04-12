@@ -361,11 +361,6 @@ ZmPreviewPaneView.prototype._listSelectionListener = function (ev, item) {
 	if (!item) {
 		return;
 	}
-
-	var cs = appCtxt.isOffline && appCtxt.getCurrentSearch();
-	if (cs) {
-		appCtxt.accountList.setActiveAccount(item.getAccount());
-	}
 	var noChange = ev && ev._details && ev._details.oldFolderId == item.folderId;
 	// Ignore (no preview change) if move to same folder, deletion, or multi-select (shift key)
 	if ((ev.event === ZmEvent.E_MOVE && noChange) || ev.event === ZmEvent.E_DELETE || ev.shiftKey) {

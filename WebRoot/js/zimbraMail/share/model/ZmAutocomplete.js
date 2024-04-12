@@ -147,7 +147,6 @@ ZmAutocomplete.prototype._doSearch =
 			if (autocompleteType) {
 				searchParams.autocompleteType = autocompleteType;
 			}
-            searchParams.offlineCallback = this._handleOfflineDoAutocomplete.bind(this, str, search, searchParams.callback);
 			return search.execute(searchParams);
 		};
 
@@ -203,66 +202,6 @@ ZmAutocomplete.prototype._handleErrorDoAutocomplete =
 
 			return true;
 		};
-
-/**
- * @private
- */
-ZmAutocomplete.prototype._handleOfflineDoAutocomplete =
-function(str, search, callback) {
-    if (str) {
-        var autoCompleteCallback = this._handleOfflineResponseDoAutocomplete.bind(this, search, callback);
-        ZmOfflineDB.searchContactsForAutoComplete(str, autoCompleteCallback);
-    }
-};
-
-ZmAutocomplete.prototype._handleOfflineResponseDoAutocomplete =
-function(search, callback, result) {
-    var match = [];
-    result.forEach(function(contact) {
-        var attrs = contact._attrs;
-		if (attrs) {
-			var obj = {
-				id : contact.id,
-				l : contact.l
-			};
-			if (attrs.fullName) {
-				var fullName = attrs.fullName;
-			}
-			else {
-				var fullName = [];
-				if (attrs.firstName) {
-					fullName.push(attrs.firstName);
-				}
-				if (attrs.middleName) {
-					fullName.push(attrs.middleName);
-				}
-				if (attrs.lastName) {
-					fullName.push(attrs.lastName);
-				}
-				fullName = fullName.join(" ");
-			}
-			if (attrs.email) {
-				obj.email = '"' + fullName + '" <' + attrs.email + '>';
-			}
-			else if (attrs.type === "group") {
-				obj.display = fullName;
-				obj.type = ZmAutocomplete.AC_TYPE_CONTACT;
-				obj.exp = true;
-				obj.isGroup = true;
-			}
-			match.push(obj);
-		}
-    });
-    if (callback) {
-        var zmSearchResult = new ZmSearchResult(search);
-        var response = {
-            match : match
-        };
-        zmSearchResult.set(response);
-        var zmCsfeResult = new ZmCsfeResult(zmSearchResult);
-        callback(zmCsfeResult);
-    }
-};
 
 /**
  * Sort auto-complete list by ranking scores.

@@ -192,7 +192,6 @@ function(params) {
 	// Handle offline mode
 	if (params.offlineMode) {
 		DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
-		appCtxt.isOffline = true;
 	}
 
 	// Create the shell
@@ -301,11 +300,6 @@ function() {
  */
 ZmZimbraMail.prototype.startup =
 function(params) {
-
-	if (appCtxt.isOffline) {
-		this.sendClientEventNotify(ZmZimbraMail.UI_LOAD_BEGIN);
-	}
-
 	appCtxt.inStartup = true;
 	if (typeof(skin) == "undefined") {
 		DBG.println(AjxDebug.DBG1, "No skin!");
@@ -324,10 +318,6 @@ function(params) {
 			this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO, ZmId.USER_NAME);
 		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField =
 			this._createUserInfo("BannerTextQuota", ZmAppViewMgr.C_QUOTA_INFO, ZmId.USER_QUOTA);
-
-		if (appCtxt.isOffline) {
-			this._initOfflineUserInfo();
-		}
 	}
 
 	if (!this.statusView) {
@@ -387,10 +377,6 @@ function(params) {
 
 	//todo - might want to move this call and the methods to ZmMailApp as it's specific to mail app only.
     this._initDelegatedSenderAddrs();
-    if(appCtxt.isOffline) {
-        var updatePref = appCtxt.get(ZmSetting.OFFLINE_UPDATE_NOTIFY);
-        this._offlineUpdateChannelPref(updatePref)
-    }
 };
 
 
@@ -404,8 +390,7 @@ function() {
     var batchCmd = new ZmBatchCommand(null, appCtxt.accountList.mainAccount.name);
     var callback = this._initDelegatedSenderEmails.bind(this);
     batchCmd.addNewRequestParams(soapDoc, callback, callback);
-	var offlineCallback = this._handleOfflineDelegatedSenderEmails.bind(this, callback);
-    batchCmd.run(null, null, offlineCallback);
+    batchCmd.run(null, null, null);
 };
 
 ZmZimbraMail.prototype._getDelegatedSenderEmails =
@@ -438,22 +423,10 @@ function(sendRights, sendRight) {
 ZmZimbraMail.prototype._initDelegatedSenderEmails =
 function(result){
     var response = result.getResponse();
-	if (ZmOffline.isOnlineMode()) {
-		localStorage.setItem("DiscoverRightsResponse", JSON.stringify(response));
-	}
 	var discoverRightsResponse = response && response.DiscoverRightsResponse;
 	var sendRights = discoverRightsResponse && discoverRightsResponse.targets;
     appCtxt.sendAsEmails = this._getDelegatedSenderEmails(sendRights, 'sendAs');
     appCtxt.sendOboEmails = this._getDelegatedSenderEmails(sendRights, 'sendOnBehalfOf');
-};
-
-ZmZimbraMail.prototype._handleOfflineDelegatedSenderEmails =
-function(callback) {
-	var result = localStorage.getItem("DiscoverRightsResponse");
-	if (result) {
-		var csfeResult = new ZmCsfeResult({BatchResponse : JSON.parse(result)});
-		callback.run(csfeResult);
-	}
 };
 
 ZmZimbraMail.registerViewsToTypeMap = function() {
@@ -534,11 +507,6 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
                 settings.getSetting(id).setValue(params.settings[name]);
             }
         }
-    }
-
-    // reset polling interval for offline
-    if (appCtxt.isOffline) {
-        appCtxt.set(ZmSetting.POLLING_INTERVAL, 60, null, null, true);
     }
 
     // Handle dev mode
@@ -703,17 +671,10 @@ function(params, result) {
 		}
 	}
 
-	if (!appCtxt.isOffline) {
-        if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) && appCtxt.get(ZmSetting.INSTANT_NOTIFY_INTERVAL) == appCtxt.get(ZmSetting.POLLING_INTERVAL))
-            AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.setInstantNotify, [true]), 4000);
-        else
-		    this.setPollInterval(true);
+	if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) && appCtxt.get(ZmSetting.INSTANT_NOTIFY_INTERVAL) == appCtxt.get(ZmSetting.POLLING_INTERVAL)) {
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.setInstantNotify, [true]), 4000);
 	} else {
-		if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && window.platform && 
-			window.platform.isRegisteredProtocolHandler("mailto")) {  
-		    // bug fix #34342 - always register the protocol handler for mac and linux on start up
-		    this.registerMailtoHandler(!AjxEnv.isWindows, true);
-		}    
+		this.setPollInterval(true);
 	}
 
 	window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
@@ -768,15 +729,6 @@ function(params, result) {
 
 			var sc = appCtxt.getSearchController();
 			sc.getSearchToolbar().initAutocomplete();
-
-			// bug fix #31996
-			if (appCtxt.isOffline) {
-				sc.resetSearchToolbar();
-			}
-
-			if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && appCtxt.isOffline) {
-				this.handleOfflineMailTo(location.search);
-			}
 		});
 	this.addPostRenderCallback(callback, 5, 100);
 
@@ -838,7 +790,7 @@ function(params, result) {
 ZmZimbraMail.prototype.handleTaskComponents =
 function() {
 	var reminderAction = new AjxTimedAction(this, this.showTaskReminder);
-	var delay = appCtxt.isOffline ? 0 : ZmTasksApp.REMINDER_START_DELAY;
+	var delay = ZmTasksApp.REMINDER_START_DELAY;
 	AjxTimedAction.scheduleAction(reminderAction, delay);
 };
 
@@ -851,13 +803,13 @@ ZmZimbraMail.prototype.handleCalendarComponents =
 function() {
 	if (appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
         var miniCalAction = new AjxTimedAction(this, this.showMiniCalendar);
-		var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.MINICAL_DELAY;
+		var delay = ZmCalendarApp.MINICAL_DELAY;
         AjxTimedAction.scheduleAction(miniCalAction, delay);
 	}
 
 	AjxDispatcher.require(["ContactsCore", "MailCore", "CalendarCore", "Calendar"]);
 	var reminderAction = new AjxTimedAction(this, this.showReminder);
-	var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.REMINDER_START_DELAY;
+	var delay = ZmCalendarApp.REMINDER_START_DELAY;
 	AjxTimedAction.scheduleAction(reminderAction, delay);
 };
 
@@ -1005,18 +957,6 @@ function() {
 				prcb.callback.run();
 				this._runNextPostRenderCallback();
 			}), prcb.delay);
-	} else {
-		if (appCtxt.isOffline) {
-			this.sendClientEventNotify(ZmZimbraMail.UI_LOAD_END);
-
-			if (AjxEnv.isPrism) {
-				this._firstTimeNetworkChange = true;
-
-				var nc = new ZimbraNetworkChecker();
-				nc.addEventListener("offline", function(e) { window["appCtxt"].getAppController().handleNetworkChange(false); }, false);
-				nc.addEventListener("online", function(e) { window["appCtxt"].getAppController().handleNetworkChange(true); }, false);
-			}
-		}
 	}
 };
 
@@ -1345,8 +1285,7 @@ function(app, type, listener) {
 ZmZimbraMail.prototype.sendNoOp =
 function() {
 	var jsonObj = { NoOpRequest: { _jsns: "urn:zimbraMail" } };
-	var accountName = appCtxt.isOffline && appCtxt.accountList.mainAccount.name;
-	this.sendRequest({jsonObj:jsonObj, asyncMode:true, noBusyOverlay:true, accountName:accountName});
+	this.sendRequest({jsonObj:jsonObj, asyncMode:true, noBusyOverlay:true, accountName:null});
 };
 
 /**
@@ -1733,15 +1672,9 @@ function() {
 			errorCallback:  this._handleErrorDoPoll.bind(this),
 			noBusyOverlay:  true,
 			timeout:        appCtxt.get(ZmSetting.INSTANT_NOTIFY_TIMEOUT),
-			accountName:    appCtxt.isOffline && appCtxt.accountList.mainAccount.name
+			accountName:    null
 		};
 		this._pollRequest = this.sendRequest(params);
-
-		// bug #42664 - handle case where sync-status-changes fall between 2 client requests
-		var accList = appCtxt.accountList;
-		if (appCtxt.isOffline && !accList.isInitialSyncing() && accList.isSyncStatus(ZmZimbraAccount.STATUS_RUNNING)) {
-			this.sendNoOp();
-		}
 	} catch (ex) {
 		this._handleErrorDoPoll(ex); // oops!
 	}
@@ -2312,8 +2245,7 @@ ZmZimbraMail.prototype._setExternalLinks =
 function() {
     // bug: 41313 - admin console link
     var adminUrl;
-    if (!appCtxt.isOffline &&
-        (appCtxt.get(ZmSetting.IS_ADMIN) ||
+    if ((appCtxt.get(ZmSetting.IS_ADMIN) ||
          appCtxt.get(ZmSetting.IS_DELEGATED_ADMIN))) {
 
         adminUrl = appCtxt.get(ZmSetting.ADMIN_URL);
@@ -2324,10 +2256,10 @@ function() {
 	var el = document.getElementById("skin_container_links");
 	if (el) {
 		var data = {
-			showOfflineLink: (!appCtxt.isOffline && appCtxt.get(ZmSetting.SHOW_OFFLINE_LINK)),
+			showOfflineLink: (appCtxt.get(ZmSetting.SHOW_OFFLINE_LINK)),
 			helpIcon: (appCtxt.getSkinHint("helpButton", "hideIcon") ? null : "Help"),
 			logoutIcon: (appCtxt.getSkinHint("logoutButton", "hideIcon") ? null : "Logoff"),
-			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff),
+			logoutText: ZmMsg.logOff,
 			adminUrl: adminUrl
 		};
 		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data);
@@ -2601,7 +2533,7 @@ ZmZimbraMail.prototype._getQueryParams =
 function() {
 
 	var appName = appCtxt.getCurrentAppName().toLowerCase();
-	var prod = appCtxt.isOffline ? "zd" : "zcs";
+	var prod = "zcs";
 	return ["utm_source=", appName, "&utm_medium=", prod, "&utm_content=", this._getVersion(), "&utm_campaign=help"].join("");
 };
 
@@ -2631,7 +2563,7 @@ function(ev) {
 	dialog.reset();
 	var version = this._getVersion();
 	var release = appCtxt.get(ZmSetting.CLIENT_RELEASE);
-	var aboutMsg = appCtxt.isOffline ? ZmMsg.aboutMessageZD : ZmMsg.aboutMessage;
+	var aboutMsg = ZmMsg.aboutMessage;
 	dialog.setMessage(AjxMessageFormat.format(aboutMsg, [version, release, AjxDateUtil.getYearStr()]), DwtMessageDialog.INFO_STYLE, ZmMsg.about);
 	dialog.popup();
 
@@ -2680,11 +2612,6 @@ function(val) {
  *
  */
 ZmZimbraMail.prototype.setUserInfo = function() {
-
-	if (appCtxt.isOffline) {
-		return;
-	}
-
 	// username
 	var login = appCtxt.getLoggedInUsername();
 	var username = (appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
@@ -2783,13 +2710,6 @@ function(ev, relogin) {
 
 	ZmZimbraMail._isLogOff = true;
 
-	// bug fix #36791 - reset the systray icon when returning to Account Setup
-	if (appCtxt.isOffline && AjxEnv.isWindows &&
-		appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE))
-	{
-		window.platform.icon().imageSpec = "resource://webapp/icons/default/launcher.ico";
-		window.platform.icon().title = null;
-	}
     var urlParams = {
                 path:appContextPath,
                 qsArgs: {
@@ -2873,17 +2793,12 @@ function(helpurl) {
 
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var url;
-	if (!ac.isOffline) {
-		try { url = helpurl || skin.hints.helpButton.url; } catch (e) { /* ignore */ }
-		url = url || ac.get(ZmSetting.HELP_URI);
-		var sep = url.match(/\?/) ? "&" : "?";
-		url = [url, sep, "locid=", AjxEnv.DEFAULT_LOCALE].join("");
-	} else {
-		url = ac.get(ZmSetting.HELP_URI).replace(/\/$/,"");
-		// bug fix #35098 - offline help is only available in en_US for now
-		url = [url, "help", "en_US", "Zimbra_Mail_Help.htm"].join("/");
-//		url = [url, "help", AjxEnv.DEFAULT_LOCALE, "Zimbra_Mail_Help.htm"].join("/");
-	}
+	
+	try { url = helpurl || skin.hints.helpButton.url; } catch (e) { /* ignore */ }
+	url = url || ac.get(ZmSetting.HELP_URI);
+	var sep = url.match(/\?/) ? "&" : "?";
+	url = [url, sep, "locid=", AjxEnv.DEFAULT_LOCALE].join("");
+
 	window.open(url);
 };
 
@@ -3072,7 +2987,7 @@ function() {
 			
 			ZmZimbraMail._isLogOff = false;
 			DBG.println(AjxDebug.DBG1, "prompting to user to stay on page or leave " + new Date().toLocaleString());
-			var msg = (appCtxt.isOffline) ? ZmMsg.appExitWarningZD : ZmMsg.appExitWarning;
+			var msg = ZmMsg.appExitWarning;
 			
 			if (ZmZimbraMail.sessionTimerInvoked) {
 				ZmZimbraMail.stayOnPagePrompt = true;
@@ -3172,7 +3087,7 @@ ZmZimbraMail.prototype._createBanner =
 function() {
 	var banner = new DwtComposite({parent:this._shell, posStyle:Dwt.ABSOLUTE_STYLE, id:ZmId.BANNER});
 	var logoUrl = appCtxt.getSkinHint("banner", "url") || appCtxt.get(ZmSetting.LOGO_URI);
-	var data = {url:logoUrl, isOffline:appCtxt.isOffline};
+	var data = {url:logoUrl};
 	banner.getHtmlElement().innerHTML  = AjxTemplate.expand('share.App#Banner', data);
 	banner.getHtmlElement().style.height = '100%';
 	return banner;
@@ -3334,9 +3249,6 @@ ZmZimbraMail.prototype.handleKeyAction = function(actionCode, ev) {
 		if (app == this.getActiveApp()) {
             return false;
         }
-		if (!AjxUtil.arrayContains(ZmOffline.SUPPORTED_APPS, app)) {
-			return false;
-		}
 		this.activateApp(app);
 		return true;
 	}

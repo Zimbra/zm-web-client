@@ -514,20 +514,6 @@ function(viewId, headerList) {
     // adding account header in _normalizeHeader method
     // sometimes doesn't work since we check for array length which is bad.
 
-    // in ZD in case of All-Mailbox search always make sure account header is added to header array
-    if(appCtxt.isOffline && appCtxt.getSearchController().searchAllAccounts && isMultiColumn) {
-        var isAccHdrEnabled = false;
-        for (var k=0; k< headers.length; k++) {
-            if(headers[k] == ZmItem.F_ACCOUNT) {
-                isAccHdrEnabled = true;
-            }
-        }
-        if(!isAccHdrEnabled) {
-            headers.splice(headers.length - 1, 0, ZmId.FLD_ACCOUNT);
-        }
-
-    }
-
 	for (var i = 0, len = headers.length; i < len; i++) {
 		var header = headers[i];
 		var field = header.substr(0, 2);
@@ -540,7 +526,6 @@ function(viewId, headerList) {
 			// unless user is showing global inbox. Ugh.
 			if (appCtxt.multiAccounts &&
 				appCtxt.accountList.size() > 2 &&
-				appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
 				header.indexOf(ZmItem.F_ACCOUNT) != -1)
 			{
 				hdrParams.visible = true;
@@ -1159,19 +1144,6 @@ ZmMailListView.prototype._setupSortMenu = function(parent, includeGroupByMenu) {
 
 ZmMailListView.prototype._getNoResultsMessage =
 function() {
-	if (appCtxt.isOffline && !appCtxt.getSearchController().searchAllAccounts) {
-		// offline folders which are "syncable" but currently not syncing should
-		// display a different message
-		var fid = ZmOrganizer.getSystemId(this._controller._getSearchFolderId());
-		var folder = fid && appCtxt.getById(fid);
-		if (folder) {
-			if (folder.isOfflineSyncable && !folder.isOfflineSyncing) {
-				var link = "ZmMailListView.toggleSync('" + folder.id + "', '" + this._htmlElId + "');";
-				return AjxMessageFormat.format(ZmMsg.notSyncing, link);
-			}
-		}
-	}
-
 	return DwtListView.prototype._getNoResultsMessage.call(this);
 };
 
@@ -1268,10 +1240,6 @@ function(ev) {
 			var sortIndex = ev.getDetail("sortIndex") || 0;
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailListView: adding item " + item.id + " at index " + sortIndex);
 			this.addItem(item, sortIndex);
-
-			if (appCtxt.isOffline && appCtxt.getActiveAccount().isOfflineInitialSync()) {
-				this._controller._app.numEntries++;
-			}
 		}
 		ev.handled = true;
 	}

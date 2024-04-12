@@ -123,15 +123,13 @@ function(params) {
 
 	var header, acct;
 	var accounts = appCtxt.accountList.visibleAccounts;
-	var showAllMailboxes = (appCtxt.isOffline && this._appName == ZmApp.MAIL && (accounts.length > 2));
-	var showBackgroundColor = showAllMailboxes;
+	var showBackgroundColor = false;
 	var mainAcct = appCtxt.accountList.mainAccount;
 	var origOmit = params.omit;
 
 	for (var i = 0; i < accounts.length; i++) {
 		acct = accounts[i];
 		// skip the main account in offline mode since we'll add it at the end
-		if (appCtxt.isOffline && acct.isMain && this._appName != ZmApp.PREFERENCES) { continue; }
 		if (!acct.active) { continue; }
 
 		 params.omit = {};
@@ -171,19 +169,11 @@ function(params) {
 			text: hdrText,
 			imageInfo: "AccountAll"
 		};
-		var showAllMboxes = appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES);
 		var allTi = this._allMailboxesTreeHeader = new DwtTreeItem(params1);
 		allTi.setData(Dwt.KEY_ID, ZmOrganizer.ID_ALL_MAILBOXES);
 		allTi.addClassName("ZmOverviewGlobalInbox");
 		allTi._initialize(0, true);
-		allTi.setVisible(showAllMboxes);
 		allTi.__origText = text;
-		if (showAllMboxes) {
-			this.highlightAllMboxes();
-		}
-
-		var setting = appCtxt.getSettings(mainAcct).getSetting(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES);
-		setting.addChangeListener(this._settingChangeListener);
 
 		var folders = ZmAccountOverviewContainer.VIRTUAL_FOLDERS;
 		for (var i = 0; i < folders.length; i++) {
@@ -231,39 +221,6 @@ function(params) {
 		}
 		if (appCtxt.get(ZmSetting.OFFLINE_ALL_MAILBOXES_TREE_OPEN)) {
 			allTi.setExpanded(true, null, true);
-		}
-	}
-
-	// add the "local" account last
-	if (appCtxt.isOffline) {
-		var params2 = AjxUtil.hashCopy(params);
-		params2.omit = {};
-
-		if (this._appName != ZmApp.PREFERENCES) {
-			this._addAccount(params2, mainAcct, showBackgroundColor, "ZmOverviewLocalHeader", "LocalFolders");
-
-			header = this.getHeaderItem(mainAcct);
-			header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, mainAcct));
-
-			this.updateAccountInfo(mainAcct, false, true);
-		}
-		else {
-			var params3 = {
-				parent: this,
-				text: mainAcct.getDisplayName(),
-				imageInfo: mainAcct.getIcon()
-			};
-			var localPrefTi = new DwtTreeItem(params3);
-			localPrefTi._initialize(null, true);
-
-			var globalPrefOverviewId = appCtxt.getOverviewId(this.containerId, mainAcct);
-			var tv = this._overview[globalPrefOverviewId].getTreeView(ZmOrganizer.PREF_PAGE);
-			var importExportTi = tv.getTreeItemById("PREF_PAGE_IMPORT_EXPORT");
-
-			tv.getHeaderItem().removeChild(importExportTi);
-			localPrefTi._addItem(importExportTi);
-			importExportTi.addClassName("DwtTreeItemChildDiv");
-			localPrefTi.setExpanded(true, null, true);
 		}
 	}
 
@@ -348,10 +305,6 @@ function(account, updateStatus, updateTooltip) {
 			if (hi._extraCell) {
 				hi._extraCell.innerHTML = (html || "");
 			}
-            if (appCtxt.isOffline && account.status == ZmZimbraAccount.STATUS_AUTHFAIL) {
-                var dialog = appCtxt.getPasswordChangeDialog();
-                dialog.popup(account);
-            }
 		}
 
 		if (updateTooltip || updateStatus) {
@@ -412,9 +365,6 @@ function(parent, data) {
 		parent.getOp(ZmOperation.MARK_ALL_READ).setVisible(false);
 		emptyFolderOp.setVisible(false);
 		parent.getOp(this._newOp).setVisible(false);
-		if (appCtxt.isOffline) {
-			parent.getOp(ZmOperation.SYNC).setVisible(false);
-		}
 		parent.getOp(ZmOperation.DELETE).setVisible(true);
 		return;
 	}
@@ -425,9 +375,6 @@ function(parent, data) {
 	parent.getOp(ZmOperation.MARK_ALL_READ).setVisible(!isAcctType);
 	emptyFolderOp.setVisible(false);
 	parent.getOp(this._newOp).setVisible(isAcctType && data != ZmOrganizer.ID_ALL_MAILBOXES);
-	if (appCtxt.isOffline) {
-		parent.getOp(ZmOperation.SYNC).setVisible(isAcctType && (!acct || (acct && !acct.isMain)));
-	}
 	parent.getOp(ZmOperation.DELETE).setVisible(false);
 
 	if (isAcctType) {
@@ -485,15 +432,9 @@ function(params, account, showBackgroundColor, headerClassName, predictableId) {
 		var omit = params.omitPerAcct
 			? params.omitPerAcct[account.id] : params.omit;
 
-		var headerLabel, headerIcon;
-		if (this._appName == ZmApp.PREFERENCES && account.isMain && appCtxt.isOffline) {
-			headerLabel = ZmMsg.allAccounts;
-			headerIcon = "AccountAll";
-		} else {
-			headerLabel = account.getDisplayName();
-			if (!appCtxt.isFamilyMbox) {
-				headerIcon = account.getIcon()
-			}
+		var headerIcon, headerLabel = account.getDisplayName();
+		if (!appCtxt.isFamilyMbox) {
+			headerIcon = account.getIcon()
 		}
 
 		var headerParams = {
@@ -639,15 +580,6 @@ function(ev) {
 
 			var account = appCtxt.accountList.getAccount(data);
 			if (account) {
-				// bug 41196 - turn off new mail notifier if inactive account header clicked
-				if (appCtxt.isOffline && account.inNewMailMode) {
-					account.inNewMailMode = false;
-					var allContainers = appCtxt.getOverviewController()._overviewContainer;
-					for (var i in allContainers) {
-						allContainers[i].updateAccountInfo(account, true, true);
-					}
-				}
-
 				// don't process click if user clicked on error status icon
 				if ((ev.target.parentNode == ev.item._extraCell) && account.isError()) {
 					return;
@@ -655,15 +587,6 @@ function(ev) {
 
 				sc.searchAllAccounts = false;
 				appCtxt.accountList.setActiveAccount(account);
-
-				if (appCtxt.isOffline && account.hasNotSynced() && !account.__syncAsked) {
-					account.__syncAsked = true;
-
-					var dialog = appCtxt.getYesNoMsgDialog();
-					dialog.registerCallback(DwtDialog.YES_BUTTON, this._syncAccount, this, [dialog, account]);
-					dialog.setMessage(ZmMsg.neverSyncedAsk, DwtMessageDialog.INFO_STYLE);
-					dialog.popup();
-				}
 
 				var fid = ZmOrganizer.DEFAULT_FOLDER[ZmApp.ORGANIZER[this._appName]];
 				var folder = appCtxt.getById(ZmOrganizer.getSystemId(fid, account));
@@ -781,21 +704,7 @@ function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) { return; }
 
 	var setting = ev.source;
-
-	if (setting.id == ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) {
-		var isVisible = setting.getValue();
-		this._allMailboxesTreeHeader.setVisible(isVisible);
-		if (!isVisible) {
-			if (appCtxt.getActiveAccount().isMain) {
-				appCtxt.accountList.setActiveAccount(appCtxt.accountList.defaultAccount);
-			}
-			appCtxt.getSearchController().searchAllAccounts = false;
-			appCtxt.getApp(ZmApp.MAIL).mailSearch();
-		} else {
-			this._deselect(this._allMailboxesTreeHeader);
-		}
-	}
-	else if (setting.id == ZmSetting.QUOTA_USED) {
+	if (setting.id == ZmSetting.QUOTA_USED) {
 		this.updateAccountInfo(ev.getDetails().account, false, true);
 	}
 };
@@ -832,9 +741,6 @@ function() {
 		this._newOp = ZmOrganizer.NEW_OP[orgType];
 
 		var ops = [this._newOp];
-		if (appCtxt.isOffline) {
-			ops.push(ZmOperation.SYNC);
-		}
 		ops.push(ZmOperation.MARK_ALL_READ,
 				ZmOperation.EMPTY_FOLDER,
 				ZmOperation.DELETE);
@@ -948,9 +854,6 @@ function(folderId, opId) {
 	}
 
 	bc.run();
-	if (appCtxt.isOffline) {
-		appCtxt.getApp(ZmApp.MAIL).clearNewMailBadge();
-	}
 };
 
 ZmAccountOverviewContainer.prototype._handleStatusClick =
@@ -958,9 +861,6 @@ function(account, ev) {
 
     if(!account.isError()) {
         return;
-    } else if (appCtxt.isOffline && (account.status == ZmZimbraAccount.STATUS_AUTHFAIL)) {
-        var dialog = appCtxt.getPasswordChangeDialog();
-        dialog.popup(account);
     } else {
         account.showErrorMessage();
     }

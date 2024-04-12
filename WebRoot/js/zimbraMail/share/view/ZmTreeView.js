@@ -303,16 +303,6 @@ function(params) {
 	if (org.isDataSource(ZmAccount.TYPE_IMAP)) {
 		children.sort(ZmImapAccount.sortCompare);
 	} else if (ZmTreeView.COMPARE_FUNC[this.type]) {
-		if (appCtxt.isOffline && this.type == ZmOrganizer.SEARCH) {
-			var local = [];
-			for (var j = 0; j < children.length; j++) {
-				var child = children[j];
-				if (child && child.type == ZmOrganizer.SEARCH && !child.isOfflineGlobalSearch) {
-					local.push(child);
-				}
-			}
-			children = local;
-		}
 		// IE loses type info on the children array - the props are there and it can be iterated,
 		// but a function call like sort() blows up. So create an array local to child win.
 		if (appCtxt.isChildWindow && AjxEnv.isIE) {
