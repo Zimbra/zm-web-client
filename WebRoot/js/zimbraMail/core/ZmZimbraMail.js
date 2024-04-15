@@ -2353,8 +2353,7 @@ function() {
 };
 
 
-ZmZimbraMail.ONLINE_HELP_URL = "https://help.zimbra.com/?";
-ZmZimbraMail.NEW_FEATURES_URL = "https://www.zimbra.com/products/whats_new.html?";
+ZmZimbraMail.ONLINE_HELP_URL = "https://www.zimbra.com/product/documentation/";
 
 ZmZimbraMail.DEFAULT_CONTACT_ICON = appContextPath + "/img/large/ImgPerson_48.png?v=" + window.cacheKillerVersion;
 ZmZimbraMail.DEFAULT_CONTACT_ICON_SMALL = appContextPath + "/img/large/ImgPerson_32.png?v=" + window.cacheKillerVersion;
@@ -2398,12 +2397,6 @@ function(parent, parentElement, adminUrl) {
 		if (supportedHelps.indexOf("onlineHelp") !== -1) {
 			mi = menu.createMenuItem("onlinehelp", {text: ZmMsg.onlineHelp});
 			mi.addSelectionListener(new AjxListener(this, this._onlineHelpListener));
-		}
-
-
-		if (supportedHelps.indexOf("newFeatures") !== -1) {
-			mi = menu.createMenuItem("newFeatures", {text: ZmMsg.newFeatures});
-			mi.addSelectionListener(new AjxListener(this, this._newFeaturesListener));
 		}
 
 		mi = menu.createMenuItem("showCurrentShortcuts", {text: ZmMsg.shortcuts});
@@ -2586,11 +2579,6 @@ function(parent) {
 	mi.getHtmlElement().setAttribute('aria-label', ZmMsg.onlineHelp + ": " + ZmMsg.link);
 	mi.addSelectionListener(new AjxListener(this, this._onlineHelpListener));
 
-
-	mi = menu.createMenuItem("newFeatures", {text: ZmMsg.newFeatures});
-	mi.getHtmlElement().setAttribute('aria-label', ZmMsg.newFeatures + ": " + ZmMsg.link);
-	mi.addSelectionListener(new AjxListener(this, this._newFeaturesListener));
-
 	mi = menu.createMenuItem("showCurrentShortcuts", {text: ZmMsg.shortcuts});
 	mi.addSelectionListener(this._showCurrentShortcuts.bind(this));
 
@@ -2614,29 +2602,12 @@ function() {
 	return appCtxt.get(ZmSetting.CLIENT_VERSION);
 };
 
-
-ZmZimbraMail.prototype._getQueryParams =
-function() {
-
-	var appName = appCtxt.getCurrentAppName().toLowerCase();
-	var prod = appCtxt.isOffline ? "zd" : "zcs";
-	return ["utm_source=", appName, "&utm_medium=", prod, "&utm_content=", this._getVersion(), "&utm_campaign=help"].join("");
-};
-
-
 ZmZimbraMail.prototype._onlineHelpListener =
 function(ev) {
 	ZmZimbraMail.unloadHackCallback();
-	var url = [ZmZimbraMail.ONLINE_HELP_URL, this._getQueryParams()].join("");
-	window.open(url);
+	window.open(ZmZimbraMail.ONLINE_HELP_URL);
 };
 
-ZmZimbraMail.prototype._newFeaturesListener =
-function(ev) {
-	ZmZimbraMail.unloadHackCallback();
-	var url = [ZmZimbraMail.NEW_FEATURES_URL, this._getQueryParams()].join("");
-	window.open(url);
-};
 
 ZmZimbraMail.prototype._changePasswordListener =
 function(ev) {
