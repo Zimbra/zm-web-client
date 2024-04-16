@@ -529,7 +529,7 @@ function(currentDivId, resendCode) {
 ZmTwoFactorSetupDialog.prototype._enableTwoFactorAuthFirstAuthCallback =
 function(currentDivId, result) {
 	if (!result || result.isException()) {
-		this._handleTwoFactorAuthError(currentDivId, result.getException());
+		this._handleTwoFactorAuthError(currentDivId, result);
 	}
 	else {
 		var response = result.getResponse();
@@ -571,7 +571,7 @@ function(currentDivId, result) {
 ZmTwoFactorSetupDialog.prototype._enableTwoFactorAuthSecondAuthCallback =
 function(currentDivId, result) {
 	if (!result || result.isException()) {
-		this._handleTwoFactorAuthError(currentDivId, result.getException());
+		this._handleTwoFactorAuthError(currentDivId);
 	}
 	else {
 		var response = result.getResponse();
@@ -619,16 +619,27 @@ function(currentDivId) {
 };
 
 ZmTwoFactorSetupDialog.prototype._handleTwoFactorAuthError =
-function(currentDivId, exception) {
+function(currentDivId, result) {
 	if (currentDivId === this._passwordDivId) {
-		if (exception) {
-			var passwordErrorDiv = Dwt.getElement(this._passwordErrorDivId);
+		var passwordErrorDiv = Dwt.getElement(this._passwordErrorDivId);
+		if (result) {
+			exception = result.getException();
 			if (exception.code === ZmCsfeException.ACCT_AUTH_FAILED) {
 				passwordErrorDiv.textContent = ZmMsg.twoStepAuthInvalidPassword;
+			} else if (exception.code === ZmCsfeException.RECOVERY_EMAIL_SAME_AS_PRIMARY_OR_ALIAS) {
+				passwordErrorDiv.textContent = ZmMsg.twoFactorAuthEmailSameAsPrimaryOrAlias;
+			} else if (exception.code) {
+				passwordErrorDiv.textContent = exception.getErrorMsg();
 			} else {
 				passwordErrorDiv.textContent = ZmMsg.twoStepAuthServiceErrorAtSetup;
 			}
+		} else {
+			passwordErrorDiv.textContent = ZmMsg.twoStepAuthServiceErrorAtSetup;
+		}
+		if (this.isFromLoginPage) {
 			Dwt.show(this._passwordErrorDivId);
+		} else {
+			passwordErrorDiv.style.display = 'flex';
 		}
 		var passwordInput = this._passwordInput;
 		passwordInput.removeAttribute("disabled");

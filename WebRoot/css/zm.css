@@ -6053,6 +6053,12 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	font-weight:bold;
 }
 
+.ZmTwoFactorSetupError.ZmTwoFactorSetupPasswordError {
+	display: flex;
+	justify-content: center;
+	text-align: left;
+}
+
 .ZmAppNameError.ZmTwoFactorSetupError {
 	margin-left: 0;
 }

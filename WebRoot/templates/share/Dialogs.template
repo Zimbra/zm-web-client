@@ -681,7 +681,7 @@
 			<h4><$=ZmMsg.twoStepAuthPassword$></h4>
 			<p id='${id}_password_description'><$=ZmMsg.twoStepAuthPasswordDescription$></p>
 			<div class="ZmTwoFactorSetupContainer">
-				<div id='${id}_password_error' style="display:none;margin-left:163px;" class="ZmTwoFactorSetupError"></div>
+				<div id='${id}_password_error' style="display:none;" class="ZmTwoFactorSetupError ZmTwoFactorSetupPasswordError"></div>
 				<label for="${id}_password_input"><$=ZmMsg.passwordLabel$></label>
 				<input type="password" id="${id}_password_input" autocomplete="off"/>
 			</div>
