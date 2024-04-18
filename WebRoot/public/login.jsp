@@ -89,6 +89,7 @@
 %>
 
 <c:set var="modernSupported" value="${domainInfo.attrs.zimbraModernWebClientDisabled ne true}" />
+<c:set var="isClassicWebClientSupported" value="${domainInfo.attrs.zimbraClassicWebClientDisabled ne true}" />
 
 <c:if test="${ua.isModernIE}">
 	<c:set var="modernSupported" value="false" />
@@ -247,6 +248,7 @@
                         
                         <c:set var="isUpgradedMailbox" value="${isUpgradedMailbox}" />
                         <c:set var="prefClientType" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}" />
+                        <c:set var="advancedSupported" value="${!isUpgradedMailbox || isClassicWebClientSupported || !modernSupported}" />
 
                         <c:if test="${param.screenSize eq 'small' && empty client}">
                             <c:choose>
@@ -261,9 +263,14 @@
                             </c:choose>
                         </c:if>
 
-                        <c:if test="${empty client or client eq 'preferred'}">
+                        <c:if test="${client eq 'modern' or client eq 'advanced'}">
                             <c:set var="client"
-                                value="${isUpgradedMailbox ? mobileSupported && modernSupported ? 'modern' : prefClientType eq 'advanced' ? 'advanced' : 'modern' : prefClientType}" />
+                                value="${isUpgradedMailbox ? (modernSupported && client eq 'modern' ? 'modern' : (advancedSupported ? 'advanced' : 'modern')) : (client eq 'advanced' ? 'advanced': prefClientType)}" />
+                        </c:if>
+
+                        <c:if test="${client ne 'advanced' && client ne 'modern' && client ne 'notfound'}">
+                            <c:set var="client"
+                                value="${isUpgradedMailbox ? modernSupported && advancedSupported ? prefClientType : modernSupported ? 'modern' : 'classic' : prefClientType}" />
                         </c:if>
                         <c:choose>
                             <c:when test="${client eq 'advanced'}">
@@ -288,7 +295,7 @@
                                     </c:otherwise>
                                 </c:choose>
                             </c:when>
-                            <c:when test="${client eq 'modern' and modernSupported and isUpgradedMailbox}">
+                            <c:when test="${client eq 'modern'}">
                                     <jsp:forward page="/public/modern.jsp"/>
                             </c:when>
                             <c:when test="${client eq 'notfound'}">
@@ -856,7 +863,9 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <div style="position: relative;">
                                         <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
                                             <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
-                                            <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
+                                            <c:if test="${isClassicWebClientSupported}">
+                                                <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
+                                            </c:if>
                                             <c:if test="${modernSupported}">
                                                 <option value="modern" <c:if test="${client eq 'modern'}">selected</c:if>> <fmt:message key="clientModern"/></option>
                                             </c:if>
