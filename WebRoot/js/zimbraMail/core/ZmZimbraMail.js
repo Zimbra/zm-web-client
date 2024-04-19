@@ -2416,11 +2416,6 @@ function(parent, parentElement, adminUrl) {
 
 	    menu.createSeparator();
 
-		if (!appCtxt.isExternalAccount() && appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED)) {
-	        mi = menu.createMenuItem("offlineSettings", {text: ZmMsg.offlineSettings});
-	        mi.addSelectionListener(new AjxListener(this, this._offlineSettingsListener));
-	    }
-
 		if (appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED)) {
 	        mi = menu.createMenuItem("changePassword", {text: ZmMsg.changePassword});
 	        mi.addSelectionListener(new AjxListener(this, this._changePasswordListener));
@@ -2653,18 +2648,6 @@ function(ev) {
 	dialog.setMessage(AjxMessageFormat.format(aboutMsg, [version, release, AjxDateUtil.getYearStr()]), DwtMessageDialog.INFO_STYLE, ZmMsg.about);
 	dialog.popup();
 
-};
-
-ZmZimbraMail.prototype._offlineSettingsListener =
-function(ev) {
-    var dialog;
-    if (AjxEnv.isOfflineSupported) {
-        dialog = appCtxt.getOfflineSettingsDialog();
-    } else {
-        dialog = appCtxt.getMsgDialog();
-        dialog.setMessage(ZmMsg.offlineSupportedBrowser, "", ZmMsg.offlineSettings);
-    }
-    dialog.popup();
 };
 
 ZmZimbraMail.prototype._initOfflineUserInfo =
