@@ -2225,17 +2225,7 @@ function() {
 ZmAppCtxt.prototype.initWebOffline =
 function() {
     this.isWebClientOfflineSupported = false;
-	if (!AjxEnv.isOfflineSupported || !appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_ENABLED)) {
-		AjxDebug.println(AjxDebug.OFFLINE, "isWebClientOfflineSupported :: false");
-        return;
-    }
-    var offlineBrowserKey = appCtxt.get(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
-    var localOfflineBrowserKey = localStorage.getItem(ZmSetting.WEBCLIENT_OFFLINE_BROWSER_KEY);
-    if (offlineBrowserKey && offlineBrowserKey.indexOf(localOfflineBrowserKey) !== -1) {
-        this.isWebClientOfflineSupported = true;
-        this.webClientOfflineHandler = new ZmOffline();
-    }
-	AjxDebug.println(AjxDebug.OFFLINE, "isWebClientOfflineSupported :: "+ this.isWebClientOfflineSupported);
+	return;
 };
 
 /**
