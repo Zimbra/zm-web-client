@@ -1550,7 +1550,7 @@ function(inputs, conf, field) {
 		if (!date) {
 			return null;
 		}
-		return String(date.getTime() / 1000);
+		return String(new Date(date.getFullYear(),date.getMonth(), date.getDate()).getTime()/1000);
 	}
 	if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
 		return inputs[field].dwtObj.getData(ZmFilterRuleDialog.DATA);
