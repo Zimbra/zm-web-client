@@ -917,7 +917,7 @@
 				<span id='${id}_validate_two_factor_code_error_message'><$=ZmMsg.passwordRecoveryCodeValidationError$></span>
 			</div>
 			<div class='ZmPasswordRecoverySetupContainer'>
-				<label for='${id}_two_factor_code_input' style="float:left"><$=ZmMsg.twoFactorAuthCodeLabel$></label>
+				<label for='${id}_two_factor_code_input' style="float:left" id='${id}_two_factor_code_input_label' ><$=ZmMsg.twoFactorAuthCodeLabel$></label>
 				<div id='${id}_resend_code' style="text-align:right">
 					<a class="ZmPasswordRecoveryTwoFactorLink" id='${id}_resend_tfa_code_link' href="#" style="display:none"><$=ZmMsg.twoFactorAuthResendEmail$></a>
 					<span class="ZmPasswordRecoveryTwoFactorLink" id='${id}_resend_tfa_code_status' href="#" style="display:none"><$=ZmMsg.twoFactorAuthResendEmailDone$></span>

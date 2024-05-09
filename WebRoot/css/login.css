@@ -88,6 +88,13 @@ select#client:focus {
 	padding: 12px 0;
 }
 
+.twoFactorAuthCodeLabel,
+.twoFactorDescription,
+.twoFactorMethodOption {
+	font-size: 13px;
+	color: @gray-darker@;
+}
+
 .chooseTFAMethod {
 	width: 100%;
 }
@@ -95,6 +102,8 @@ select#client:focus {
 .chooseTFAMethod,
 .resendCode {
 	text-align: right;
+	font-size: 13px;
+	color: @gray-darker@;
 }
 
 .twoFactorMethodOption {

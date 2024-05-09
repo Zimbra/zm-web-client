@@ -601,7 +601,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                 </c:if>
                                 <input type="hidden" id="tfaMethod" name="tfaMethod" value="${tfaMethod}"/>
                                 <div>
-                                    <label  class="zLoginFieldLabel" for="totpcode" style="float: left;"><fmt:message key="twoFactorAuthCodeLabel"/></label>
+                                    <label  class="zLoginFieldLabel twoFactorAuthCodeLabel" for="totpcode" style="float: left;"><fmt:message key="twoFactorAuthCodeLabel_${tfaMethod}"/></label>
                                     <c:choose>
                                         <c:when test="${(tfaMethod eq 'email') and (not isResent)}">
                                             <script>
