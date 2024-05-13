@@ -377,15 +377,20 @@ function() {
 		var spanElem = Dwt.getElement(this._htmlElId + "_resend_code_status");
 		spanElem.style.display = "none";
 		var pElem = Dwt.getElement(this._htmlElId + "_code_description_guide");
+		var divCodeContainer = Dwt.getElement(this._htmlElId + "_code_input_container");
 		if (this.tfaMethod === ZmTwoFactorAuth.APP) {
 			codeTitleElem.textContent = ZmMsg.twoStepAuthCode;
 			pElem.textContent = ZmMsg.twoStepAuthCodeDescription;
 			this._resendCodeLink.style.display = "none";
+			pElem.style.marginBottom = "";
+			divCodeContainer.style.marginTop = "";
 		} else if (this.tfaMethod === ZmTwoFactorAuth.EMAIL) {
 			codeTitleElem.textContent = ZmMsg.twoStepAuthCodeEmail;
 			Dwt.setInnerHtml(pElem, AjxMessageFormat.format(ZmMsg.twoStepAuthCodeDescriptionEmail, AjxStringUtil.htmlEncode(this._emailAddressInput.value)));
 			this._resendCodeLink.style.display = "";
 			this._resendCodeLink.textContent = ZmMsg.twoStepAuthResendCode;
+			pElem.style.marginBottom = "5px";
+			divCodeContainer.style.marginTop = "0";
 		}
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, this._codeInput.value !== "");
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, true);

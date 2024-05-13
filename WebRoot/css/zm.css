@@ -6020,6 +6020,15 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	text-align:center;
 }
 
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupCodeContainer label {
+	display: inline-block;
+	margin: 0 10px;
+}
+
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupCodeContainer INPUT[type="text"] {
+	margin: 3px 0;
+}
+
 .ZmTwoFactorCustomSetupContainerLoginPage {
 	text-align: center;
 }
