@@ -712,12 +712,12 @@
 				<p id="${id}_email_note_text"></p>
 			</div>
 		</div>
-		<div id='${id}_code'>
+		<div id='${id}_code' class="ZmTwoFactorSetupCode">
 			<div id='${id}_code_description'>
 				<h4 id='${id}_code_title'><$=ZmMsg.twoStepAuthCode$></h4>
-				<p id='${id}_code_description_guide'><$=ZmMsg.twoStepAuthCodeDescription$></p>
+				<p id='${id}_code_description_guide' class="ZmTwoFactorSetupCodeDescriptionGuide"><$=ZmMsg.twoStepAuthCodeDescription$></p>
 			</div>
-			<div id='${id}_code_input_container' class="ZmTwoFactorSetupContainer ZmTwoFactorSetupCodeContainer">
+			<div class="ZmTwoFactorSetupContainer ZmTwoFactorSetupCodeContainer">
 				<div id='${id}_code_error' style="display:none;margin-left:115px;" class="ZmTwoFactorSetupError"><$=ZmMsg.twoStepAuthCodeError$></div>
 				<label for="${id}_code_input"><$=ZmMsg.code$> : </label>
 				<input type="text" id="${id}_code_input" autocomplete="off"/>
