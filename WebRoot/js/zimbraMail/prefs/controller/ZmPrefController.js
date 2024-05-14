@@ -404,11 +404,13 @@ function () {
  * 
  * @private
  */
-ZmPrefController.prototype._saveListener = 
+ZmPrefController.prototype._saveListener =
 function(ev, callback, noPop) {
 	// is there anything to do?
 	var dirty = this._prefsView.getChangedPrefs(true, true);
-	if (!dirty) {
+	var changeInMobileSync = this._prefsView.getChangedSyncToMobile(true);
+
+	if (!dirty && !changeInMobileSync) {
 		appCtxt.getAppViewMgr().popView(true);
 		return;
 	}

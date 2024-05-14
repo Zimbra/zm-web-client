@@ -476,7 +476,46 @@ ZmPrefView.prototype._checkSection = function(section, viewPage, dirtyCheck, noV
 			}
 		}
 	}
+
+	if (section.id === "SHARING") {
+		this.getChangedSyncToMobile(false, list);
+	}
 };
+
+ZmPrefView.prototype.getChangedSyncToMobile =
+function (isDirtyCheck, list) {
+	var section = "SHARING";
+	var sharingView = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView().getView(section).view;
+
+	if (!sharingView) {
+		return false;
+	}
+
+	var syncToMobileChanges = sharingView._syncToMobileChanges;
+	var isChange = false;
+	if (syncToMobileChanges && Object.keys(syncToMobileChanges).length) {
+		var shares = sharingView._mountedShareListView.getList().getArray();
+		for (var i = 0; i < shares.length; i++) {
+			var mId = shares[i].mountpoint.id;
+			var activeSyncEnabled = !shares[i].mountpoint.activeSyncDisabled;
+			var role = shares[i].link.role;
+			var view = shares[i].link.view;
+			if (
+				typeof syncToMobileChanges[mId] !== 'undefined' && syncToMobileChanges[mId] !== activeSyncEnabled && 
+				[ZmShare.ROLE_ADMIN, ZmShare.ROLE_MANAGER].indexOf(role) !== -1 &&
+				["appointment", "message", "contact"].indexOf(view) !== -1
+				) {
+					if (isDirtyCheck) {
+						isChange = true;
+						break;
+					} else {
+						list.push({ id: section, name: section + "." + mId, origValue: '', value: syncToMobileChanges[mId], type: "mountedShare" });
+					}
+			}
+		}
+	}
+	return isChange;
+}
 
 ZmPrefView.prototype._prefChanged =
 function(type, origValue, value) {

@@ -123,6 +123,7 @@ ZmSharingView = function(params) {
 	this._pageId = params.pageId;
 	this._shareByKey = {};
 	this._shareByDomId = {};
+	this._syncToMobileChanges = {};
 
 	this._initialize();
 	ZmFolderTree.createAllDeferredFolders();
@@ -149,6 +150,7 @@ ZmSharingView.F_OWNER	= "ow";
 ZmSharingView.F_ROLE	= "ro";
 ZmSharingView.F_TYPE	= "ty";
 ZmSharingView.F_WITH	= "wi";
+ZmSharingView.F_SYNC	= "sy";
 
 ZmSharingView.prototype.toString = function() { return "ZmSharingView"; };
 
@@ -231,6 +233,7 @@ function(result) {
 			var share = ZmShare.getShareFromShareInfo(shares[j]);
 			if (share.mounted) {
 				mounts.push(share);
+				appCtxt.cacheSet(ZmShare.CACHE_KEY + share.mountpoint.id, share);
 			}
 		}
 	}
@@ -388,6 +391,13 @@ function(domId, handler) {
 		var dlg = appCtxt.getFolderPropsDialog();
 		return dlg[handler](null, share);
 	}
+};
+
+ZmSharingView._handleMobileSync =
+function(e) {
+	var sharingView = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView().getView("SHARING").view;
+	sharingView._syncToMobileChanges[e.id] = e.checked;
+	return false;
 };
 
 ZmSharingView.prototype._initialize =
@@ -752,6 +762,20 @@ function() {
 	return "ZmSharingListView";
 };
 
+ZmSharingListView.prototype.getHeaderId =
+function(field) {
+	var headerList = this._headerList;
+	var fieldId = '';
+	for (i = 0; i < headerList.length; i++) {
+		if (headerList[i]._field === field) {
+			fieldId = headerList[i]._id;
+			break;
+		}
+	}
+
+	return fieldId;
+}
+
 ZmSharingListView.prototype._getHeaderList =
 function() {
 
@@ -771,6 +795,9 @@ function() {
 			headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_FOLDER, text:ZmMsg.sharingFolder, width:ZmMsg.COLUMN_WIDTH_FOLDER_SH}));
 		}
 		headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_WITH, text:ZmMsg.sharingWith, width:ZmMsg.COLUMN_WIDTH_WITH_SH}));
+		if (this.status === ZmSharingView.MOUNTED) {
+			headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_SYNC, text:ZmMsg.syncToMobile, width:ZmMsg.COLUMN_WIDTH_SYNC_SH, align:"center" }));
+		}
 	} else {
 		headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_ACTIONS, text:ZmMsg.actions, width:ZmMsg.COLUMN_WIDTH_ACTIONS_SH}));
 	}
@@ -835,9 +862,32 @@ function(html, idx, item, field, colIdx, params) {
 		} else {
 			idx = this._addActionLinks(item, html, idx);
 		}
+	} else if (field === ZmSharingView.F_SYNC) {
+		var disableSyncToMobile = [ZmShare.ROLE_ADMIN, ZmShare.ROLE_MANAGER].indexOf(item.link.role) === -1 ||
+									["appointment", "message", "contact"].indexOf(item.link.view) === -1;
+		var disabledAttribute = disableSyncToMobile ? 'disabled' : '';
+		var checkedAttribute = !disableSyncToMobile && item.mountpoint.activeSyncDisabled === false ? 'checked' : ''; 
+		var labelId = this.getHeaderId(ZmSharingView.F_SYNC);
+		html[idx++] = "<input type='checkbox' "+ checkedAttribute +" id='"+ item.mountpoint.id +"' aria-labelledby='"+ labelId +"' onchange='ZmSharingView._handleMobileSync(this)' "+ disabledAttribute +" />"
 	}
 
 	return (params && params.returnText) ? html.join("") : idx;
+};
+
+ZmSharingListView.prototype._emulateSingleClick =
+function(params) {
+	if (this.status === ZmSharingView.MOUNTED && params.ctrlKey) {
+		// handle selection of mobile sync checkbox using keyboard shortcut Ctrl + `.
+		var currentDiv = this.findItemDiv(params.target);
+		var syncToMobileInput = currentDiv.querySelector('input[type="checkbox"]');
+
+		if (syncToMobileInput && !syncToMobileInput.disabled) {
+			syncToMobileInput.checked = !syncToMobileInput.checked;
+			ZmSharingView._handleMobileSync(syncToMobileInput);
+		}
+	}
+
+	ZmListView.prototype._emulateSingleClick.call(this, params);
 };
 
 ZmSharingListView.prototype._changeListener =

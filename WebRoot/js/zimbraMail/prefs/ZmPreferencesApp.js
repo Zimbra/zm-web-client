@@ -401,7 +401,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 			templateId:     "prefs.Pages#SharingPrefPage",
 			priority:       85,
 			precondition:   ZmSetting.SHARING_ENABLED,
-			manageChanges:  true,
+			manageChanges:  false,
 			createView:     function(parent, section, controller) {
 								AjxDispatcher.require("Share");
 								return new ZmSharingPage(parent, section, controller, "Prefs_Pages_Sharing");

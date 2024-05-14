@@ -864,6 +864,13 @@ function(modifies) {
 				mod._isRemote = (name == "folder" && item.link);	// remote subfolder
 				item.notifyModify(mod);
 			}
+
+			if (item.link) {
+				var shareItem = appCtxt.cacheGet(ZmShare.CACHE_KEY + mod.id);
+				if (shareItem) {
+					shareItem.notifyModify(mod);
+				}
+			}
 		}
 	}
 };

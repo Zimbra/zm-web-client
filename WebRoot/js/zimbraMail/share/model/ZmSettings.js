@@ -683,6 +683,7 @@ function(list, callback, batchCommand, account, isImplicit) {
 	var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
 	var gotOne = false;
 	var metaData = [], done = {}, setting;
+	var syncToMobileChanges = [];
 	for (var i = 0; i < list.length; i++) {
 		setting = list[i];
         if (done[setting.id]) { continue; }
@@ -693,6 +694,9 @@ function(list, callback, batchCommand, account, isImplicit) {
 			continue;
 		} else if (setting.type != ZmSetting.T_PREF) {
 			DBG.println(AjxDebug.DBG1, "*** Attempt to modify non-pref: " + setting.id + " / " + setting.name);
+			if (setting.id === "SHARING") {
+				syncToMobileChanges.push({ mId: setting.name.split('.')[1], value: setting.value });
+			}
 			continue;
 		}
 		if (!setting.name) {
@@ -730,6 +734,25 @@ function(list, callback, batchCommand, account, isImplicit) {
 		var metaDataCallback = new AjxCallback(this, this._handleResponseSaveMetaData, [metaData]);
 		var sections = [ZmSetting.M_IMPLICIT, ZmSetting.M_OFFLINE];
 		acct.metaData.save(sections, metaDataCallback);
+	}
+
+	if (syncToMobileChanges.length) {
+		var folderActionResponseCallBack;
+		if (!gotOne) {
+			folderActionResponseCallBack = new AjxCallback(this, this._handleResponseSave, [list, callback]);
+		}
+		var soapDocFolderAction, actionNode;
+		for (var i = 0; i < syncToMobileChanges.length; i++) {
+			soapDocFolderAction = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
+			actionNode = soapDocFolderAction.set("action");
+			actionNode.setAttribute("id", syncToMobileChanges[i].mId);
+			if (syncToMobileChanges[i].value) {
+				actionNode.setAttribute("op", "!disableactivesync");
+			} else {
+				actionNode.setAttribute("op", "disableactivesync");
+			}
+			batchCommand.addNewRequestParams(soapDocFolderAction, folderActionResponseCallBack);
+		}
 	}
 
 	if (gotOne) {
@@ -770,6 +793,9 @@ function(list, callback, result) {
 		// notify each changed setting's listeners
 		for (var i = 0; i < list.length; i++) {
 			var setting = list[i];
+			if (setting.type === "mountedShare") {
+				continue;
+			}
 			setting.origValue = setting.copyValue();
 			if (!ZmSetting.IS_IMPLICIT[setting.id]) {
 				setting._notify(ZmEvent.E_MODIFY);
@@ -777,6 +803,18 @@ function(list, callback, result) {
 		}
 		// notify any listeners on the settings as a whole
 		this._notify(ZmEvent.E_MODIFY, {settings:list});
+	}
+
+	// Reset _syncToMobileChanges object after setting save
+	for (var i = 0; i < list.length; i++) {
+		var setting = list[i];
+		if (setting.type === "mountedShare") {
+			var sharingView = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView().getView("SHARING").view;
+			if (sharingView) {
+				sharingView._syncToMobileChanges = {};
+			}
+			break;
+		}
 	}
 
 	if (callback) {

@@ -3513,6 +3513,15 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .prefHeaderComment {width:99%;}
 
+.mountedShareDivider {
+	border-bottom: 1px solid rgb(228, 229, 228);
+	padding-bottom: 4px;
+}
+
+.mountedShareComment {
+	margin-top: 6px;
+}
+
 .ZOptionsHeaderL, .ZOptionsHeaderR {
 	display:none;
 }
