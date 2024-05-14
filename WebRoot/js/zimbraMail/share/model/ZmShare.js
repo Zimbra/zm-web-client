@@ -327,6 +327,8 @@ ZmShare._HTML = null;
 ZmShare._HTML_NOTE = null;
 ZmShare._XML = null;
 
+ZmShare.CACHE_KEY = 'share:';
+
 // Utility methods
 
 ZmShare.getDefaultMountpointName = function(owner, name) {
@@ -1150,6 +1152,15 @@ function(formatter) {
 	return formatter.format(params);
 };
 
+ZmShare.prototype.notifyModify =
+function(obj) {
+	if (typeof obj.activesyncdisabled !== undefined) {
+		this.mountpoint.activeSyncDisabled = obj.activesyncdisabled;
+	}
+
+	ZmOrganizer.prototype.notifyModify.apply(this, [obj]);
+}
+
 ZmShare.getRoleFromPerm = function(perm) {
 	if (!perm) { return ZmShare.ROLE_NONE; }
 
@@ -1251,6 +1262,7 @@ function(shareInfo, share) {
 		share.mounted		= true;
 		share.mountpoint	= share.mountpoint || {};
 		share.mountpoint.id	= shareInfo.mid;
+		share.mountpoint.activeSyncDisabled = shareInfo.activeSyncDisabled;
 		var mtpt = appCtxt.getById(share.mountpoint.id);
 		if (mtpt) {
 			share.mountpoint.name = mtpt.getName();
