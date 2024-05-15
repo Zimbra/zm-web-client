@@ -651,7 +651,7 @@ function(items) {
  * be made to the server if the conv has not been loaded.
  */
 ZmConvListController.prototype.getMsg =
-function(params) {
+function(params, callback) {
 	
 	// First see if action is being performed on a msg in the conv view in the reading pane
 	var lv = this._listView[this._currentViewId];
@@ -664,7 +664,7 @@ function(params) {
 	var item = (sel && sel.length) ? sel[0] : null;
 	if (item) {
 		if (item.type == ZmItem.CONV) {
-			return item.getFirstHotMsg(params);
+			return item.getFirstHotMsg(params, callback);
 		} else if (item.type == ZmItem.MSG) {
 			return ZmDoublePaneController.prototype.getMsg.apply(this, arguments);
 		}

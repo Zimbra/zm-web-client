@@ -387,13 +387,13 @@ function() {
  * @return	{ZmMailMsg}		the selected message
  */
 ZmConvController.prototype.getMsg =
-function(params) {
-	return ZmConvListController.prototype.getMsg.call(this, params); //we need to get the first hot message from the conv.
+function(params, callback) {
+	return ZmConvListController.prototype.getMsg.call(this, params, callback); //we need to get the first hot message from the conv.
 };
 
 ZmConvController.prototype._getLoadedMsg =
 function(params, callback) {
-	callback.run(this.getMsg());
+	this.getMsg(params, callback);
 };
 
 // overloaded...
