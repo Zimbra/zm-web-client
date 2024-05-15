@@ -232,6 +232,7 @@ function(params) {
 	params.action = params.action || ZmOperation.NEW_MESSAGE;
 	params.inNewWindow = !appCtxt.isWebClientOffline() && !this.isHidden && (params.inNewWindow || this._app._inNewWindow(params.ev));
 	this._msgSent = false;
+	this._cancelAutoSaveDraft = false;
 	if (params.inNewWindow) {
         var msgId = (params.msg && params.msg.nId) || Dwt.getNextId();
 		var newWinObj = ac.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId.replace(/\s|\-/g, '_'));
@@ -2150,7 +2151,8 @@ ZmComposeController.prototype._popShieldNoCallback = function(mailtoParams) {
 	this._popShield.removePopdownListener(this._dialogPopdownListener);
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
-    this._dontSavePreHide = true;
+	this._dontSavePreHide = true;
+	this._cancelAutoSaveDraft = true;
 
 	if (this._canSaveDraft()) {
 		if (appCtxt.isChildWindow && window.parentController) {
@@ -2488,9 +2490,11 @@ function(allResponses) {
         return;
     }
     var callback = curView._resetUpload.bind(curView);
-    // Init autosave, otherwise saveDraft thinks this is a suppressed autosave, and aborts w/o saving
-    this._initAutoSave();
-    this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, this._syncPrevData(allResponses), null, callback);
+	if (!this._cancelAutoSaveDraft) {
+		// Init autosave, otherwise saveDraft thinks this is a suppressed autosave, and aborts w/o saving
+		this._initAutoSave();
+		this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, this._syncPrevData(allResponses), null, callback);
+	}
 }
 
 ZmComposeController.prototype._syncPrevData =
