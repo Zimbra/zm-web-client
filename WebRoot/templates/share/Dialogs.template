@@ -720,12 +720,14 @@
 					<p id='${id}_code_description_guide' class="ZmTwoFactorSetupCodeDescriptionGuide"><$=ZmMsg.twoStepAuthCodeDescription$></p>
 				</div>
 				<div class="ZmTwoFactorSetupContainer ZmTwoFactorSetupCodeContainer">
-					<div id='${id}_code_error' style="display:none;margin-left:115px;" class="ZmTwoFactorSetupError"><$=ZmMsg.twoStepAuthCodeError$></div>
-					<label for="${id}_code_input"><$=ZmMsg.code$> : </label>
-					<input type="text" id="${id}_code_input" autocomplete="off"/>
-					<div id='${id}_resend_code' style="text-align:right">
-						<a id='${id}_resend_code_link' href="#" style="display:none"><$=ZmMsg.twoStepAuthResendCode$></a>
-						<span id='${id}_resend_code_status' href="#" style="display:none"></span>
+					<div class="ZmTwoFactorSetupCodeSubContainer">
+						<div id='${id}_code_error' style="display:none" class="ZmTwoFactorSetupError"><$=ZmMsg.twoStepAuthCodeError$></div>
+						<label for="${id}_code_input"><$=ZmMsg.code$> : </label>
+						<input type="text" id="${id}_code_input" autocomplete="off"/>
+						<div id='${id}_resend_code' style="text-align:right" class="ZmTwoFactorResendCode">
+							<a id='${id}_resend_code_link' href="#" style="display:none"><$=ZmMsg.twoStepAuthResendCode$></a>
+							<span id='${id}_resend_code_status' href="#" style="display:none"></span>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -6033,7 +6033,11 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 .ZmTwoFactorSetupContainer.ZmTwoFactorSetupCodeContainer {
 	height: 100%;
 	margin: 0 20px;
+	display: flex;
+	align-items: center;
 	align-content: center;
+	justify-content: center;
+	flex-direction: row;
 }
 
 .ZmTwoFactorSetupContainer.ZmTwoFactorSetupCodeContainer label {
@@ -6043,6 +6047,10 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 
 .ZmTwoFactorSetupContainer.ZmTwoFactorSetupCodeContainer INPUT[type="text"] {
 	margin: 3px 0;
+}
+
+.ZmTwoFactorSetupCodeSubContainer {
+	width: 100%;
 }
 
 .ZmTwoFactorCustomSetupContainerLoginPage {
