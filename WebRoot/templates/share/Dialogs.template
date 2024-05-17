@@ -712,18 +712,23 @@
 				<p id="${id}_email_note_text"></p>
 			</div>
 		</div>
-		<div id='${id}_code'>
-			<div id='${id}_code_description'>
-				<h4 id='${id}_code_title'><$=ZmMsg.twoStepAuthCode$></h4>
-				<p id='${id}_code_description_guide'><$=ZmMsg.twoStepAuthCodeDescription$></p>
-			</div>
-			<div class="ZmTwoFactorSetupContainer">
-				<div id='${id}_code_error' style="display:none;margin-left:115px;" class="ZmTwoFactorSetupError"><$=ZmMsg.twoStepAuthCodeError$></div>
-				<label for="${id}_code_input"><$=ZmMsg.code$> : </label>
-				<input type="text" id="${id}_code_input" autocomplete="off"/>
-				<div id='${id}_resend_code' style="text-align:right">
-					<a id='${id}_resend_code_link' href="#" style="display:none"><$=ZmMsg.twoStepAuthResendCode$></a>
-					<span id='${id}_resend_code_status' href="#" style="display:none"></span>
+		<div id='${id}_code' style="height:100%">
+			<h4 id='${id}_code_title_spacer' style="margin-bottom:0"></h4>
+			<div class="ZmTwoFactorSetupCode">
+				<div id='${id}_code_description'>
+					<h4 id='${id}_code_title' style="margin-top:0"><$=ZmMsg.twoStepAuthCode$></h4>
+					<p id='${id}_code_description_guide' class="ZmTwoFactorSetupCodeDescriptionGuide"><$=ZmMsg.twoStepAuthCodeDescription$></p>
+				</div>
+				<div class="ZmTwoFactorSetupContainer ZmTwoFactorSetupCodeContainer">
+					<div class="ZmTwoFactorSetupCodeSubContainer">
+						<div id='${id}_code_error' style="display:none" class="ZmTwoFactorSetupError"><$=ZmMsg.twoStepAuthCodeError$></div>
+						<label for="${id}_code_input"><$=ZmMsg.code$> : </label>
+						<input type="text" id="${id}_code_input" autocomplete="off"/>
+						<div id='${id}_resend_code' style="text-align:right" class="ZmTwoFactorResendCode">
+							<a id='${id}_resend_code_link' href="#" style="display:none"><$=ZmMsg.twoStepAuthResendCode$></a>
+							<span id='${id}_resend_code_status' href="#" style="display:none"></span>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

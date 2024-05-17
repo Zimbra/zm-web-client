@@ -6020,6 +6020,39 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	text-align:center;
 }
 
+.ZmTwoFactorSetupCode {
+	display: flex;
+	height: 100%;
+	flex-direction: column;
+}
+
+.ZmTwoFactorSetupCodeDescriptionGuide {
+	margin-bottom: 0;
+}
+
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupCodeContainer {
+	height: 100%;
+	margin: 0 20px;
+	display: flex;
+	align-items: center;
+	align-content: center;
+	justify-content: center;
+	flex-direction: row;
+}
+
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupCodeContainer label {
+	display: inline-block;
+	margin: 0 10px;
+}
+
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupCodeContainer INPUT[type="text"] {
+	margin: 3px 0;
+}
+
+.ZmTwoFactorSetupCodeSubContainer {
+	width: 100%;
+}
+
 .ZmTwoFactorCustomSetupContainerLoginPage {
 	text-align: center;
 }
