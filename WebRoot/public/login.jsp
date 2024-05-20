@@ -52,12 +52,13 @@
                                                         || (ua.isOsAndroid)
                                                         || (ua.isIos))}"/>
 <c:set var="totpAuthRequired" value="false"/>
-<c:set var="trimmedUserName" value="${fn:trim(fn:escapeXml(param.username))}"/>
+<c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
 <c:if test="${not empty param.username and not empty param.virtualacctdomain}">
 	<%--External login email address are mapped to internal virtual account--%>
-	<c:set var="trimmedUserName" value="${fn:replace(fn:escapeXml(param.username),'@' ,'.')}@${param.virtualacctdomain}"/>
+	<c:set var="trimmedUserName" value="${fn:replace(param.username,'@' ,'.')}@${param.virtualacctdomain}"/>
 </c:if>
+<c:set var="encodedUserName" value="${fn:escapeXml(trimmedUserName)}"/>
 
 <c:if test="${not empty trimmedUserName}">
     <c:choose>
@@ -1122,6 +1123,19 @@ function clientChange(selectValue) {
         }
     }
 
+    // Function to encode XML characters
+    function escapeXml(xmlString) {
+    return xmlString.replace(/[<>&'"]/g, function (char) {
+        switch (char) {
+        case '<': return '&lt;';
+        case '>': return '&gt;';
+        case '&': return '&amp;';
+        case "'": return '&apos;';
+        case '"': return '&quot;';
+        }
+    });
+    }
+
     // Function to check special character
     function isAsciiPunc(ch) {
         return (ch >= 33 && ch <= 47) || // ! " # $ % & ' ( ) * + , - . /
@@ -1188,6 +1202,7 @@ function clientChange(selectValue) {
 
     function handleNewPasswordChange() {
         var currentValue = newPasswordInput.value;
+        var encodedPwd = escapeXml(currentValue);
         var parsedChars = parseCharsFromPassword(currentValue);
         var matchedRule = [];
 
@@ -1228,7 +1243,7 @@ function clientChange(selectValue) {
         }
 
         if (${!zimbraFeatureAllowUsernameInPassword}) {
-            if (!currentValue.includes("${trimmedUserName.split('@')[0]}")) {
+            if (!encodedPwd.includes("${encodedUserName.split('@')[0]}")) {
                 matchedRule.push({type : "zimbraPasswordAllowUsername"});
             }
         }
