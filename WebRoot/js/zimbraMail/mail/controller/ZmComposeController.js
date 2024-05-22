@@ -233,16 +233,38 @@ function(params) {
 	params.inNewWindow = !appCtxt.isWebClientOffline() && !this.isHidden && (params.inNewWindow || this._app._inNewWindow(params.ev));
 	this._msgSent = false;
 	this._cancelAutoSaveDraft = false;
-	if (params.inNewWindow) {
-        var msgId = (params.msg && params.msg.nId) || Dwt.getNextId();
-		var newWinObj = ac.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId.replace(/\s|\-/g, '_'));
+
+	// check if a tab already exists, based on ZmAppViewMgr.pushView
+	var viewId = this._currentViewId;
+	var appViewMgr = appCtxt.getAppViewMgr();
+	var view = appViewMgr && appViewMgr._view && appViewMgr._view[viewId];
+	var button;
+	if (view && view.isTabView) {
+		var tp = view.tabParams;
+		var appChooser = appCtxt.getAppChooser();
+		if (tp && appChooser) {
+			button = appChooser.getButton(tp.id);
+		}
+	}
+
+	if (!button && params.inNewWindow) {
+		var msgId = (params.msg && params.msg.nId) || Dwt.getNextId();
+		var windowName;
+		if (params.action == ZmOperation.NEW_MESSAGE || (params.action == ZmOperation.DRAFT && params.msg && params.msg.isDraft)) {
+			windowName = ZmId.VIEW_COMPOSE + "_" + msgId.replace(/\s|\-/g, '_');
+		} else {
+			var currentDate = new Date();
+			windowName = currentDate.toISOString() + AjxStringUtil.getRandomString(20);
+		}
+		var newWinObj = ac.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, windowName, true);
+		this.inactive = true;
 		if (newWinObj) {
 			// this is how child window knows what to do once loading:
 			newWinObj.command = "compose";
 			newWinObj.params = params;
-	        if (newWinObj.win) {
-	            newWinObj.win.focus();
-	        }
+			if (newWinObj.win) {
+				newWinObj.win.focus();
+			}
 		}
 	} else {
 		this._setView(params);
@@ -274,8 +296,16 @@ function() {
 	// bug fix #7192 - disable detach toolbar button
 	this._toolbar.enable(ZmOperation.DETACH_COMPOSE, false);
 
+	// save a draft before detaching a compose tab so that a right content and window name can be set.
+	var callback = this._detachInternal.bind(this);
+	this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, null, null, callback);
+};
+
+ZmComposeController.prototype._detachInternal =
+function() {
 	var view = this._composeView;
-	var msg = this._msg || view._origMsg || view._msg;
+	// this._draftMsg should be set in auto SaveDraft called in ZmComposeController.detach
+	var msg = this._draftMsg || this._msg || view._origMsg || view._msg;
 	var subj = view._subjectField.value;
 	var msgAttId = view._msgAttId; //include original as attachment
 	var body = this._getBodyContent();
@@ -298,8 +328,8 @@ function() {
     });
 
 	// this is how child window knows what to do once loading:
-    var msgId = (msg && msg.nId) || Dwt.getNextId();
-	var newWinObj = appCtxt.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId.replace(/\s|\-/g, '_'));
+	var msgId = (msg && msg.nId) || Dwt.getNextId();
+	var newWinObj = appCtxt.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId.replace(/\s|\-/g, '_'), true);
     if (newWinObj && newWinObj.win) {
         newWinObj.win.focus();
     }
@@ -1696,6 +1726,15 @@ function(draftType, msg, resp) {
 			appCtxt.setStatusMsg(ZmMsg.draftSaved, ZmStatusView.LEVEL_INFO, null, transitions);
 		}
 		this._draftMsg = msg;
+		try {
+			if (window.opener && window.opener.appCtxt) {
+				window.previousName = window.name;
+				window.name = ZmId.VIEW_COMPOSE + "_" + msg.id.replace(/\s|\-/g, '_');
+			}
+		} catch(e) {
+			// do nothing
+		}
+
 		this._composeView.processMsgDraft(msg);
 		// TODO - disable save draft button indicating a draft was saved
 
@@ -2359,6 +2398,11 @@ function(){
 ZmComposeController.prototype.getMsg =
 function(){
     return this._msg;
+};
+
+ZmComposeController.prototype.getDraftMsg =
+function(){
+    return this._draftMsg;
 };
 
 ZmComposeController.prototype._processImages =
