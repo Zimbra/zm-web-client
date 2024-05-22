@@ -2951,17 +2951,42 @@ function(bStartTimer) {
  * @private
  */
 ZmZimbraMail.prototype.addChildWindow =
-function(childWin, childId) {
+function(childWin, childId, isCompose) {
 	if (this._childWinList == null) {
 		this._childWinList = new AjxVector();
 	}
 
-	// NOTE: we now save childWin w/in Object so other params can be added to it.
-	// Otherwise, Safari breaks (see http://bugs.webkit.org/show_bug.cgi?id=7162)
-	var newWinObj = {win:childWin,childId:childId};
-	this._childWinList.add(newWinObj);
+	var newWinObj;
+	if (isCompose) {
+		newWinObj = this.getChildWindowForCompose(childWin, childId);
+	}
 
+	if (!newWinObj) {
+		// NOTE: we now save childWin w/in Object so other params can be added to it.
+		// Otherwise, Safari breaks (see http://bugs.webkit.org/show_bug.cgi?id=7162)
+		newWinObj = {win:childWin,childId:childId};
+		this._childWinList.add(newWinObj);
+	}
 	return newWinObj;
+};
+
+/**
+ * Gets a child window for Compose
+ * 
+ * @private
+ */
+ZmZimbraMail.prototype.getChildWindowForCompose =
+function(childWin, childId) {
+	var list = this._childWinList;
+	if (list && childWin) {
+		for (var i = 0; i < list.size(); i++) {
+			var winObj = list.get(i);
+			if (childWin === winObj.win) {
+				return winObj;
+			}
+		}
+	}
+	return null;
 };
 
 /**
@@ -3000,6 +3025,24 @@ function(childWin) {
 				// and leave the other parameters in winObj intact
 				winObj.win = null;
 				break;
+			}
+		}
+	}
+};
+
+/**
+ * Removes non-existing windows.
+ * 
+ * @private
+ */
+ZmZimbraMail.prototype.removeNonExistingChildWindow =
+function() {
+	var list = this._childWinList;
+	if (list) {
+		for (var i = list.size() - 1; i > -1; i--) {
+			var winObj = list.get(i);
+			if (!winObj.win || winObj.win.closed) {
+				list.removeAt(i);
 			}
 		}
 	}
