@@ -836,6 +836,16 @@ function(force, viewId, skipHistory) {
 		return false;
 	}
 
+	if (this._isNewWindow) {
+		try {
+			if (window.hasOwnProperty("previousName")) {
+				window.name = window.previousName;
+			}
+		} catch (e) {
+			// do nothing
+		}
+	}
+
 	DBG.println(AjxDebug.DBG2, "app view mgr: current view is now " + this._currentViewId);
 	if (!this._showView(this._currentViewId, this._popCallback, null, force, true)) {
 		DBG.println(AjxDebug.DBG1, "ERROR: pop with no view to show");

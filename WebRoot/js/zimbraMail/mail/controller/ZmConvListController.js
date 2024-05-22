@@ -657,7 +657,11 @@ function(params, callback) {
 	var lv = this._listView[this._currentViewId];
 	var msg = lv && lv._selectedMsg;
 	if (msg && DwtMenu.menuShowing()) {
-		return msg;
+		if (callback) {
+			callback.run(msg);
+		} else {
+			return msg;
+		}
 	}
 	
 	var sel = lv.getSelection();

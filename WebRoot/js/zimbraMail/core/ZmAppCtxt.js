@@ -1571,10 +1571,11 @@ function() {
  * @param	{Boolean}	fullView		<code>true</code> to include the full version
  * @param	{int}		width			the width
  * @param	{int}		height			the height
- * @param   {String}    name            window name
+ * @param	{String}	name			window name
+ * @param	{Boolean}	isCompoe		compose window or not
  */
 ZmAppCtxt.prototype.getNewWindow = 
-function(fullVersion, width, height, name) {
+function(fullVersion, width, height, name, isCompose) {
 	// build url
 	var url = [];
 	var i = 0;
@@ -1610,7 +1611,7 @@ function(fullVersion, width, height, name) {
 	this.handlePopupBlocker(newWin);
 	if(newWin) {
 		// add this new window to global list so parent can keep track of child windows!
-		return this.getAppController().addChildWindow(newWin, this.__childWindowId);
+		return this.getAppController().addChildWindow(newWin, this.__childWindowId, isCompose);
 	}
 };
 

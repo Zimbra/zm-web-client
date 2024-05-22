@@ -2051,16 +2051,42 @@ ZmMailApp.prototype.compose =
 function(params) {
 	Dwt.setLoadingTime("ZmMailApp-compose");
 	params = params || {};
+
+	var zimbraMail = appCtxt.getZimbraMail();
+	if (zimbraMail) {
+		zimbraMail.removeNonExistingChildWindow();
+	}
+
+	var controller;
 	if (!params.sessionId) {
-		// see if we already have a compose session for this message
-		var controllers = this._sessionController[ZmId.VIEW_COMPOSE];
-		var controller;
 		var msgId = params.msg && params.msg.nId;
-		for (var id in controllers) {
-			  if (controllers[id].getMsg() && controllers[id].getMsg().nId == msgId){
-				 controller = controllers[id];
-				 break;
-			  }
+		if (params.action == ZmOperation.DRAFT) {
+			var winName = ZmId.VIEW_COMPOSE + "_" + msgId.replace(/\s|\-/g, '_');
+			if (zimbraMail && zimbraMail._childWinList) {
+				var childWin = zimbraMail._childWinList.getArray();
+				for (var i = 0; i < childWin.length; i++) {
+					if (childWin[i].win && childWin[i].win.name == winName && !childWin[i].win.closed) {
+						// Notes:
+						// It works when popup windows is allowed in user settings on a browser.
+						// setTimeout is used to prevent a mouse cursor being a loading icon
+						setTimeout(function(){ childWin[i].win.focus(); }, 10);
+						return;
+					}
+				}
+			}
+			// see if we already have a compose session for this message
+			var controllers = this._sessionController[ZmId.VIEW_COMPOSE];
+			for (var id in controllers) {
+				if (params.msg && params.msg.isDraft &&
+					(
+						controllers[id].getMsg() && controllers[id].getMsg().nId == msgId ||
+						controllers[id].getDraftMsg() && controllers[id].getDraftMsg().nId == msgId
+					)
+				){
+					 controller = controllers[id];
+					 break;
+				  }
+			}
 		}
 	}
 	
