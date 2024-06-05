@@ -905,6 +905,11 @@ ZmConvView2.prototype._getItemCountType = function() {
 	return ZmId.ITEM_MSG;
 };
 
+ZmConvView2.prototype.deactivate =
+function() {
+	this._controller.inactive = true;
+	this._hasBeenExpanded = {};
+};
 
 ZmConvView2Header = function(params) {
 

@@ -239,7 +239,7 @@ function() {
 	// First, let each item run its clear() method
 	var a = this.getArray();
 	for (var i = 0; i < a.length; i++) {
-		a[i].clear();
+		a[i].clear && a[i].clear();
 	}
 
 	this._evtMgr.removeAll(ZmEvent.L_MODIFY);
@@ -697,6 +697,16 @@ function(params) {
 	}
 
 	if (toDelete.length && !params.confirmDelete) {
+		if (appCtxt.getAppViewMgr().isBlockItemDeletionWarningDialogPoppedUp()) {
+			return;
+		}
+		if (this.isDeletingItemOpen(toDelete)) {
+			if (appCtxt.getOkCancelMsgDialog().isPoppedUp()){
+				appCtxt.getOkCancelMsgDialog().popdown();
+			}
+			appCtxt.getAppViewMgr().popupBlockItemDeletionWarningDialog();
+			return;
+		}
 		params.confirmDelete = true;
 		var callback = ZmList.prototype.deleteItems.bind(this, params);
 		this._popupDeleteWarningDialog(callback, toMove.length, toDelete.length);
@@ -730,6 +740,33 @@ function(params) {
 	}
 };
 
+/**
+ * Check if deleting item(s) is opened
+ *
+ * @param {Array}   toDelete   list of items to delete
+ */
+ZmList.prototype.isDeletingItemOpen =
+function(toDelete) {
+	var deletingItemIds = [];
+	for (var i = 0; i < toDelete.length; i++) {
+		deletingItemIds.push(toDelete[i].id);
+		if (toDelete[i].msgIds) {
+			for (var j = 0; j < toDelete[i].msgIds.length; j++) {
+				deletingItemIds.push(toDelete[i].msgIds[j]);
+			}
+		}
+	}
+
+	var viewIdToIgnore;
+	if (
+		appCtxt.getCurrentView() instanceof ZmMailMsgView ||
+		appCtxt.getCurrentView() instanceof ZmConvView2 ||
+		(typeof ZmEditContactView !== 'undefined' && appCtxt.getCurrentView() instanceof ZmEditContactView)
+	) {
+		viewIdToIgnore = appCtxt.getCurrentView().getController().tabId;
+	}
+	return appCtxt.getAppViewMgr().isDeletingItemOpen(deletingItemIds, null, viewIdToIgnore);
+};
 
 ZmList.prototype._popupDeleteWarningDialog =
 function(callback, onlySome, count) {

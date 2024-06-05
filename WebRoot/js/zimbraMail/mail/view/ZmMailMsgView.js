@@ -2745,6 +2745,11 @@ ZmMailMsgView.prototype.removeAttachmentCallback =
 function(partIds) {
 	ZmZimbraMail.unloadHackCallback();
 
+	if (appCtxt.getAppViewMgr().isDeletingItemOpen([this.getMsg().id], [ZmId.VIEW_COMPOSE, ZmId.VIEW_APPOINTMENT, ZmId.VIEW_TASKEDIT])) {
+		appCtxt.getAppViewMgr().popupBlockItemDeletionWarningDialog();
+		return;
+	}
+
 	if (!(partIds instanceof Array)) { partIds = partIds.split(","); }
 
 	var msg = (partIds.length > 1)
@@ -2752,6 +2757,7 @@ function(partIds) {
 		: ZmMsg.attachmentConfirmRemove;
 
 	var dlg = appCtxt.getYesNoMsgDialog();
+	dlg.reset();
 	dlg.registerCallback(DwtDialog.YES_BUTTON, this._removeAttachmentCallback, this, [partIds]);
 	dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	dlg.popup();
@@ -2769,6 +2775,8 @@ function(result) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var listCtlr = ac.getApp(ZmApp.MAIL).getMailListController(); //todo - getting a list controller from appCtxt always seems suspicious to me (should we get the controller for the current view?)
 	var msg = ZmMailMsg.createFromDom(msgNode, {list: listCtlr.getList()}, true);
+	var oldMsgId = this._msg.id;
+	var oldConvId = this._msg.cid;
 	this._msg = this._item = null;
 	// cache this actioned ID so we can reset selection to it once the CREATE
 	// notifications have been processed.
@@ -2778,6 +2786,31 @@ function(result) {
 		this._controller.setMsg(msg);
 	}
 	this.set(msg);
+	this._removeAttachmentUpdateTabView(msg, oldMsgId, oldConvId);
+};
+
+ZmMailMsgView.prototype._removeAttachmentUpdateTabView =
+function(msg, oldMsgId, oldConvId) {
+	var appViewMgr = appCtxt.getAppViewMgr();
+
+	// Conversation tab does not need to be handled.
+	var viewIdToIgnore;
+	if (!appCtxt.isChildWindow) {
+		viewIdToIgnore = appCtxt.getCurrentView().getController().tabId;
+	}
+	var tabs = appViewMgr.getVisibleTabs([ZmId.VIEW_MSG], viewIdToIgnore);
+	for (var i = 0; i < tabs.length; i++) {
+		var openedItem = tabs[i].controller._msg;
+		if (openedItem && openedItem.id === oldMsgId) {
+			var view = tabs[i].controller.getItemView();
+			if (view) {
+				view.set(msg);
+			}
+			if (tabs[i].controller.setMsg) {
+				tabs[i].controller.setMsg(msg);
+			}
+		}
+	}
 };
 
 ZmMailMsgView.briefcaseCallback =

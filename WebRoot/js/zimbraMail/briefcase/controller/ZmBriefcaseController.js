@@ -466,6 +466,11 @@ ZmBriefcaseController.prototype._doDelete = function(items, hardDelete) {
         return;
     }
 
+	if ((hardDelete || this._folderId == String(ZmOrganizer.ID_TRASH)) && this.isDeletingItemOpen(items)) {
+		appCtxt.getAppViewMgr().popupBlockItemDeletionWarningDialog();
+		return;
+	}
+
 	var message = items.length > 1 ? item.isRevision  ? ZmMsg.confirmPermanentDeleteItemList : ZmMsg.confirmDeleteItemList : null;
 	if (!message) {
 		if (hardDelete || this._folderId == String(ZmOrganizer.ID_TRASH) || (item.isRevision && item.parent.version !== item.version)) {
@@ -483,6 +488,20 @@ ZmBriefcaseController.prototype._doDelete = function(items, hardDelete) {
 		dialog.addPopupListener(ZmBriefcaseController._onDeleteDialogPopup);
 	}
 	dialog.popup(message, this._doDelete2.bind(this, items, hardDelete));
+};
+
+/**
+ * Check if deleting item(s) is opened
+ *
+ * @param {Array}   toDelete   list of items to delete
+ */
+ZmBriefcaseController.prototype.isDeletingItemOpen =
+function(toDelete) {
+	var deletingItemIds = [];
+	for (var i = 0; i < toDelete.length; i++) {
+		deletingItemIds.push(toDelete[i].id);
+	}
+	return appCtxt.getAppViewMgr().isDeletingItemOpen(deletingItemIds);
 };
 
 ZmBriefcaseController.prototype._doDelete2 = function(items, hardDelete) {
