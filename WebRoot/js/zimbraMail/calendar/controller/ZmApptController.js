@@ -262,6 +262,11 @@ function(ev) {
         return;
     }
 
+    if (this._app.getCalController().isDeletingItemOpen(calItem)) {
+        appCtxt.getAppViewMgr().popupBlockItemDeletionWarningDialog();
+        return;
+    }
+
     if (calItem.isRecurring()) {
         var mode = (op == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)
             ? ZmCalItem.MODE_DELETE_INSTANCE

@@ -1601,6 +1601,10 @@ function(organizer) {
 ZmTreeController.prototype._getEmptyShieldWarning =
 function(ev) {
     var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
+	if (appCtxt.getAppViewMgr().isOpenedItemIncludedInFolder(organizer.nId)) {
+		appCtxt.getAppViewMgr().popupBlockItemDeletionWarningDialog();
+		return;
+	}
 	var ds = this._emptyShield = appCtxt.getOkCancelMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.OK_BUTTON, this._emptyShieldYesCallback, this, organizer);

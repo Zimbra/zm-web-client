@@ -80,6 +80,14 @@ function(contact, isDirty, isBack) {
 		return;
 	}
 
+	if (this._contact && (this._contact.id != contact.id || this._contact.type != contact.type)) {
+		this._contactView = null;
+		if (this._list) {
+			this._list.clear();
+			this._list = null;
+		}
+	}
+
 	this._contact = contact;
 	if (isDirty) {
 		this._contactDirty = true;
@@ -88,6 +96,8 @@ function(contact, isDirty, isBack) {
 
 	if (!this.getCurrentToolbar()) {
 		this._initializeToolBar(this._currentViewId);
+	} else {
+		this._updateToolBarCancelButton(this._currentViewId);
 	}
 	this._resetOperations(this.getCurrentToolbar(), 1); // enable all buttons
 
@@ -260,13 +270,7 @@ function(view) {
 
 	var tb = this._toolbar[view];
 
-	// change the cancel button to "close" if editing existing contact
-	var cancelButton = tb.getButton(ZmOperation.CANCEL);
-	if (this._contact.id == undefined || (this._contact.isGal && !this._contact.isDistributionList())) {
-		cancelButton.setText(ZmMsg.cancel);
-	} else {
-		cancelButton.setText(ZmMsg.close);
-	}
+	this._updateToolBarCancelButton(view);
 
 	var saveButton = tb.getButton(ZmOperation.SAVE);
 	if (saveButton) {
@@ -275,6 +279,22 @@ function(view) {
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
+
+/**
+ * @private
+ */
+ZmContactController.prototype._updateToolBarCancelButton =
+function(view) {
+	// change the cancel button to "close" if editing existing contact
+	var tb = this._toolbar[view];
+	var cancelButton = tb.getButton(ZmOperation.CANCEL);
+	if (this._contact.id == undefined || (this._contact.isGal && !this._contact.isDistributionList())) {
+		cancelButton.setText(ZmMsg.cancel);
+	} else {
+		cancelButton.setText(ZmMsg.close);
+	}
+};
+
 
 /**
  * @private

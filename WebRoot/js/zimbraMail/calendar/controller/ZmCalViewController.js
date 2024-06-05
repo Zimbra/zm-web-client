@@ -1992,6 +1992,11 @@ function(items, hardDelete, attrs, op) {
     }
 
 	if ((this._viewMgr.getCurrentViewName() == ZmId.VIEW_CAL_LIST || isTrash) && items.length > 1) {
+		if (this.isDeletingItemOpen(items)) {
+			appCtxt.getAppViewMgr().popupBlockItemDeletionWarningDialog();
+			return;
+		}
+
 		var divvied = this._divvyItems(items);
 
 		// first attempt to deal with read-only appointments
@@ -2015,6 +2020,11 @@ function(items, hardDelete, attrs, op) {
 	else {
 		// since base view has multiple selection turned off, always select first item
 		var appt = items[0];
+		if (this.isDeletingItemOpen(appt)) {
+			appCtxt.getAppViewMgr().popupBlockItemDeletionWarningDialog();
+			return;
+		}
+
 		if (op == ZmOperation.VIEW_APPT_INSTANCE || op == ZmOperation.VIEW_APPT_SERIES) {
 			var mode = (op == ZmOperation.VIEW_APPT_INSTANCE)
 				? ZmCalItem.MODE_DELETE_INSTANCE
@@ -2181,6 +2191,32 @@ function(appt, mode) {
 	}
 };
 
+/**
+ * Check if deleting item(s) is opened
+ *
+ * @param {Array}   toDelete   list of items to delete
+ */
+ZmCalViewController.prototype.isDeletingItemOpen =
+function(toDelete) {
+	if (!(toDelete instanceof Array)) {
+		toDelete = [toDelete];
+	}
+	var deletingItemIds = [];
+	for (var i = 0; i < toDelete.length; i++) {
+		if (toDelete[i].id) {
+			deletingItemIds.push(toDelete[i].id);
+		} else if (toDelete[i]._orig && toDelete[i]._orig.id) {
+			deletingItemIds.push(toDelete[i]._orig.id);
+		}
+	}
+
+	var viewIdToIgnore;
+	if (appCtxt.getCurrentView() instanceof ZmApptView) {
+		viewIdToIgnore = appCtxt.getCurrentView().getController().tabId;
+	}
+	return appCtxt.getAppViewMgr().isDeletingItemOpen(deletingItemIds, null, viewIdToIgnore);
+};
+
 ZmCalViewController.prototype._promptDeleteFutureInstances =
 function(appt, mode) {
 
@@ -2284,6 +2320,11 @@ function(appt, type, mode) {
 ZmCalViewController.prototype._deleteAppointment =
 function(appt) {
 	if (!appt) { return; }
+
+	if (this.isDeletingItemOpen(appt)) {
+		appCtxt.getAppViewMgr().popupBlockItemDeletionWarningDialog();
+		return;
+	}
 
     var calendar = appt.getFolder();
     var isTrash =  calendar && calendar.nId == ZmOrganizer.ID_TRASH;
@@ -2424,6 +2465,7 @@ function(appt, mode) {
 ZmCalViewController.prototype._showApptReadOnlyView =
 function(appt, mode) {
 	var controller = this._app.getApptViewController(this._apptSessionId[appt.invId]);
+	controller.inactive = false;
 	this._apptSessionId[appt.invId] = controller.getSessionId();
 	controller.show(appt, mode);
 };

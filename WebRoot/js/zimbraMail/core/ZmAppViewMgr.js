@@ -1453,3 +1453,353 @@ function(delta) {
 	setTimeout(function(){me.fitAll()},0);
 	return delta;
 };
+
+/**
+ * Gets visible tabs
+ *
+ * @param {Array}    viewType         list of view
+ * @param {String}   viewIdToIgnore   view id to ignore
+ */
+ZmAppViewMgr.prototype.getVisibleTabs =
+function(viewType, viewIdToIgnore) {
+	var tabs = [];
+	var targetView = viewType || [
+		ZmId.VIEW_COMPOSE,
+		ZmId.VIEW_MSG,
+		ZmId.VIEW_CONV,
+		ZmId.VIEW_CONTACT,
+		ZmId.VIEW_APPOINTMENT,
+		ZmId.VIEW_APPOINTMENT_READONLY,
+		ZmId.VIEW_TASKEDIT,
+	];
+
+	var view = this._view;
+	if (appCtxt.isChildWindow && window.parentAppCtxt) {
+		view = parentAppCtxt.getAppViewMgr() && parentAppCtxt.getAppViewMgr()._view;
+	}
+
+	if (view) {
+		for (var obj in view) {
+			for (var i = 0; i < targetView.length; i++) {
+				if (
+					obj.startsWith(targetView[i] + "-") &&
+					view[obj].controller &&
+					!view[obj].controller.inactive &&
+					view[obj].controller.tabId !== viewIdToIgnore
+				) {
+					tabs.push(view[obj]);
+				}
+			}
+		}
+	}
+	return tabs;
+};
+
+/**
+ * Gets child windows managed in ZmZimbraMail
+ */
+ZmAppViewMgr.prototype.getChildWindows =
+function() {
+	var ac = window.parentAppCtxt || window.appCtxt;
+	var zimbraMail = ac.getZimbraMail();
+	zimbraMail.removeNonExistingChildWindow();
+	var childWinList = zimbraMail && zimbraMail._childWinList && zimbraMail._childWinList._array;
+	return childWinList || [];
+};
+
+/**
+ * Check if deleting item(s) is opened in a tab or window
+ *
+ * @param {Array}    ids              list of ids to delete
+ * @param {Array}    viewType         type of view. If it is not specified, all view types are selected.
+ * @param {String}   viewIdToIgnore   view id to be ignored
+ */
+ZmAppViewMgr.prototype.isDeletingItemOpen =
+function(ids, viewType, viewIdToIgnore) {
+	var tabs = this.getVisibleTabs(viewType, viewIdToIgnore);
+	var childWindows = this.getChildWindows();
+	if (!tabs.length && !childWindows.length) {
+		return false;
+	}
+	var openedItem, nId;
+	for (var i = 0; i < ids.length; i++) {
+		var deletingItemId = ids[i];
+		for (var j = 0; j < tabs.length; j++) {
+			switch (tabs[j].type) {
+				case ZmId.VIEW_MSG:
+				case ZmId.VIEW_COMPOSE:
+					// Message or Compose tab
+					openedItem = tabs[j].controller._msg;
+					if (openedItem && openedItem.id === deletingItemId) {
+						return true;
+					}
+					nId = openedItem && openedItem.id;
+					if (typeof nId === "string") {
+						var apptIds = nId.split("-");
+						if (apptIds.includes(deletingItemId)) {
+							return true;
+						}
+					}
+					// Saved draft
+					openedItem = tabs[j].controller._draftMsg;
+					if (openedItem && openedItem.id === deletingItemId) {
+						return true;
+					}
+					break;
+				case ZmId.VIEW_CONV:
+					// Converstation tab
+					openedItem = tabs[j].controller._conv;
+					if (openedItem && openedItem.id === deletingItemId) {
+						return true;
+					}
+					if (openedItem.msgIds) {
+						for (var k = 0; k < openedItem.msgIds.length; k++) {
+							if (openedItem.msgIds[k] === deletingItemId) {
+								return true;
+							}
+						}
+					}
+					break;
+				case ZmId.VIEW_CONTACT:
+					// Contact and contact group
+					openedItem = tabs[j].controller._contact;
+					if (openedItem && openedItem.id === deletingItemId) {
+						return true;
+					}
+					break;
+				case ZmId.VIEW_APPOINTMENT:
+				case ZmId.VIEW_APPOINTMENT_READONLY:
+					// Appointment
+					openedItem = tabs[j].controller._composeView && tabs[j].controller._composeView._apptEditView && tabs[j].controller._composeView._apptEditView._calItem;
+					if (!openedItem) {
+						openedItem = tabs[j].controller._composeView && tabs[j].controller._composeView._calItem;
+					}
+					nId = openedItem && openedItem.id;
+					if (typeof nId === "string") {
+						var apptIds = nId.split("-");
+						if (apptIds.includes(deletingItemId)) {
+							return true;
+						}
+					}
+					if (openedItem && openedItem.message && openedItem.message.id === deletingItemId) {
+						return true;
+					}
+					break;
+				case ZmId.VIEW_TASKEDIT:
+					// Task tab
+					openedItem = tabs[j].controller._composeView && tabs[j].controller._composeView._calItem;
+					if (openedItem && openedItem.id === deletingItemId) {
+						return true;
+					}
+					if (openedItem && openedItem.message && openedItem.message.id === deletingItemId) {
+						return true;
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		for (j = 0; j < childWindows.length; j++) {
+			if (childWindows[j].win === window.self) {
+				continue;
+			}
+			var childWinController = childWindows[j].win && childWindows[j].win.appCtxt &&
+				childWindows[j].win.appCtxt.getCurrentController && childWindows[j].win.appCtxt.getCurrentController();
+			if (childWinController) {
+				// Message or Compose
+				openedItem = childWinController._msg;
+				if (openedItem && openedItem.id === deletingItemId) {
+					return true;
+				}
+				nId = openedItem && openedItem.id;
+				if (typeof nId === "string") {
+					var apptIds = nId.split("-");
+					if (apptIds.includes(deletingItemId)) {
+						return true;
+					}
+				}
+				// Saved draft
+				openedItem = childWinController._draftMsg;
+				if (openedItem && openedItem.id === deletingItemId) {
+					return true;
+				}
+			} else if (childWindows[j].command === "documentEdit") {
+				// Briefcase editing item
+				var deletingIdWithoutRevision = deletingItemId.split("_")[0];
+				openedItem = childWindows[j].params;
+				var openedItemIdWithoutRevision = openedItem && openedItem.id && openedItem.id.split("_")[0];
+				if (openedItemIdWithoutRevision === deletingIdWithoutRevision) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+};
+
+/**
+ * Check if an opened item is included in the specified folder or a sub folder
+ *
+ * @param {String}   targetFolderId   id of a folder to be checked
+ */
+ZmAppViewMgr.prototype.isOpenedItemIncludedInFolder =
+function(targetFolderId) {
+	var tabs = this.getVisibleTabs();
+	var childWindows = this.getChildWindows();
+	if (!tabs.length && !childWindows.length) {
+		return false;
+	}
+	var folderIds = [];
+	var loadedItem, openedItem;
+	for (var i = 0; i < tabs.length; i++) {
+		switch (tabs[i].type) {
+			case ZmId.VIEW_MSG:
+			case ZmId.VIEW_COMPOSE:
+				// Message or Compose tab
+				loadedItem = tabs[i].controller._msg;
+				openedItem = loadedItem && appCtxt.getById(loadedItem.id);
+				if (openedItem && openedItem.folderId && !folderIds.includes(openedItem.folderId)) {
+					folderIds.push(openedItem.folderId)
+				}
+				// Saved draft
+				loadedItem = tabs[i].controller._draftMsg;
+				openedItem = loadedItem && appCtxt.getById(loadedItem.id);
+				if (openedItem && openedItem.folderId && !folderIds.includes(openedItem.folderId)) {
+					folderIds.push(openedItem.folderId)
+				}
+				break;
+			case ZmId.VIEW_CONV:
+				// Converstation tab
+				loadedItem = tabs[i].controller._conv;
+				openedItem = loadedItem && appCtxt.getById(loadedItem.id);
+				for (var fid in openedItem.folders) {
+					if (!folderIds.includes(fid)) {
+						folderIds.push(fid);
+					}
+				}
+				break;
+			case ZmId.VIEW_CONTACT:
+				// Contact and contact group
+				loadedItem = tabs[i].controller._contact;
+				openedItem = loadedItem && appCtxt.getById(loadedItem.id);
+				if (openedItem && openedItem.folderId && !folderIds.includes(openedItem.folderId)) {
+					folderIds.push(openedItem.folderId)
+				}
+				break;
+			case ZmId.VIEW_APPOINTMENT:
+			case ZmId.VIEW_APPOINTMENT_READONLY:
+				// Appointment
+				loadedItem = tabs[i].controller._composeView && tabs[i].controller._composeView._apptEditView && tabs[i].controller._composeView._apptEditView._calItem;
+				openedItem = loadedItem && appCtxt.getById(loadedItem.id);
+				if (!openedItem) {
+					openedItem = tabs[i].controller._composeView && tabs[i].controller._composeView._calItem;
+				}
+				if (openedItem && openedItem.folderId && !folderIds.includes(openedItem.folderId)) {
+					folderIds.push(openedItem.folderId)
+				} else if (!openedItem) {
+					var messageId = loadedItem && loadedItem.message && loadedItem.message.id;
+					if (typeof messageId === "string") {
+						messageId = messageId.split("-");
+						for (var j = 0; j < messageId.length; j++) {
+							var item = appCtxt.getById(messageId[j]);
+							if (item && item.folderId) {
+								folderIds.push(item.folderId);
+							}
+						}
+					}
+				}
+				break;
+			case ZmId.VIEW_TASKEDIT:
+				// Task tab
+				loadedItem = tabs[i].controller._composeView && tabs[i].controller._composeView._calItem;
+				openedItem = loadedItem && appCtxt.getById(loadedItem.id);
+				if (openedItem && openedItem.folderId && !folderIds.includes(openedItem.folderId)) {
+					folderIds.push(openedItem.folderId)
+				} else if (!openedItem) {
+					var messageId = loadedItem && loadedItem.message && loadedItem.message.id;
+					if (typeof messageId === "string") {
+						messageId = messageId.split("-");
+						for (var j = 0; j < messageId.length; j++) {
+							var item = appCtxt.getById(messageId[j]);
+							if (item && item.folderId) {
+								folderIds.push(item.folderId);
+							}
+						}
+					}
+				}
+				break;
+			default:
+				break;
+		}
+	}
+	for (i = 0; i < childWindows.length; i++) {
+		var childWinController = childWindows[i].win && childWindows[i].win.appCtxt &&
+			childWindows[i].win.appCtxt.getCurrentController && childWindows[i].win.appCtxt.getCurrentController();
+		if (childWinController) {
+			// Message or Compose
+			loadedItem = childWinController._msg;
+			openedItem = loadedItem && appCtxt.getById(loadedItem.id);
+			if (openedItem && openedItem.folderId && !folderIds.includes(openedItem.folderId)) {
+				folderIds.push(openedItem.folderId)
+			}
+			// Saved draft
+			loadedItem = childWinController._draftMsg;
+			openedItem = loadedItem && appCtxt.getById(loadedItem.id);
+			if (openedItem && openedItem.folderId && !folderIds.includes(openedItem.folderId)) {
+				folderIds.push(openedItem.folderId)
+			}
+		} else if (childWindows[i].command === "documentEdit") {
+			// Briefcase editing item
+			// item move in parent window is not passed to child window
+			var loadedItem = childWindows[i].params;
+			openedItem = loadedItem && appCtxt.getById(loadedItem.id);
+			if (openedItem && openedItem.folderId && !folderIds.includes(openedItem.folderId)) {
+				folderIds.push(openedItem.folderId)
+			}
+		}
+	}
+
+	var targetFolder = appCtxt.getFolderTree().getById(targetFolderId);
+	for (i = 0; i < folderIds.length; i++) {
+		if (this._isItemInFolderOrSubFolder(targetFolder, appCtxt.getFolderTree().getById(folderIds[i]))) {
+			return true;
+		}
+	}
+	return false;
+};
+
+/**
+ * Check if an item is included in the specified folder or a sub folder recursively
+ *
+ * @param {ZmFolder}   targetFolder   folder to be checked
+ * @param {ZmFolder}   itemFolder     folder where an item exists
+ *
+ * @private
+ */
+ZmAppViewMgr.prototype._isItemInFolderOrSubFolder =
+function(targetFolder, itemFolder) {
+	if (targetFolder.id === itemFolder.id) {
+		return true;
+	} else if (itemFolder.parent) {
+		return this._isItemInFolderOrSubFolder(targetFolder, itemFolder.parent);
+	}
+	return false;
+};
+
+/**
+ * Show a warning message dialog for item hard deletion
+ */
+ZmAppViewMgr.prototype.popupBlockItemDeletionWarningDialog =
+function() {
+	if (!this.blockItemDeletionWariningDialog) {
+		var shell = DwtShell.getShell(window);
+		this.blockItemDeletionWariningDialog = new DwtMessageDialog({parent: shell, id: "ZmList_BlockItemDeletionDialog"});
+		this.blockItemDeletionWariningDialog.setMessage(ZmMsg.deleteItemBlockedWarning, DwtMessageDialog.WARNING_STYLE);
+	}
+	this.blockItemDeletionWariningDialog.popup();
+};
+
+ZmAppViewMgr.prototype.isBlockItemDeletionWarningDialogPoppedUp =
+function() {
+	return this.blockItemDeletionWariningDialog && this.blockItemDeletionWariningDialog.isPoppedUp();
+};

@@ -1055,6 +1055,11 @@ ZmEditContactView.prototype.__initRowsAddress = function(nattrs,id,listAttrs) {
 	this.setValue("ADDRESS", array);
 };
 
+ZmEditContactView.prototype.deactivate =
+function() {
+	this._controller.inactive = true;
+};
+
 // functions
 
 

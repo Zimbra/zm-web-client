@@ -283,8 +283,17 @@ function(params) {
 	if (this.type == ZmItem.CONV) {
 		var searchFolder = this.search ? appCtxt.getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isHardDelete()) {
-
 			if (!params.confirmDelete) {
+				if (appCtxt.getAppViewMgr().isBlockItemDeletionWarningDialogPoppedUp()) {
+					return;
+				}
+				if (this.isDeletingItemOpen(params.items)) {
+					if (appCtxt.getOkCancelMsgDialog().isPoppedUp()){
+						appCtxt.getOkCancelMsgDialog().popdown();
+					}
+					appCtxt.getAppViewMgr().popupBlockItemDeletionWarningDialog();
+					return;
+				}
 				params.confirmDelete = true;
 				var callback = ZmMailList.prototype.deleteItems.bind(this, params);
 				this._popupDeleteWarningDialog(callback, false, params.items.length);

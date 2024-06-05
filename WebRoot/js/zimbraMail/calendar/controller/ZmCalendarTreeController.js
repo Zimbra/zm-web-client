@@ -634,6 +634,10 @@ ZmCalendarTreeController.prototype._deleteListener =
 function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
     if (organizer.isInTrash()) {
+        if (appCtxt.getAppViewMgr().isOpenedItemIncludedInFolder(organizer.nId)) {
+            appCtxt.getAppViewMgr().popupBlockItemDeletionWarningDialog();
+            return;
+        }
         var callback = new AjxCallback(this, this._deleteListener2, [organizer]);
         var message = AjxMessageFormat.format(ZmMsg.confirmDeleteCalendar, AjxStringUtil.htmlEncode(organizer.name));
 
