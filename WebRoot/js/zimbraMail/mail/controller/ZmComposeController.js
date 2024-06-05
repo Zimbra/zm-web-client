@@ -267,6 +267,7 @@ function(params) {
 			}
 		}
 	} else {
+		this.inactive = false;
 		this._setView(params);
 		this._listController = params.listController;
 	}

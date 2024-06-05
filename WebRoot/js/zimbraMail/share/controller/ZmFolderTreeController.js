@@ -521,6 +521,10 @@ function(ev) {
 
 	// TODO: not sure what SPAM is doing in here - can you delete it?
 	if (organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash() || (trashFolder && trashFolder.disallowSubFolder)) {
+		if (appCtxt.getAppViewMgr().isOpenedItemIncludedInFolder(organizer.nId)) {
+			appCtxt.getAppViewMgr().popupBlockItemDeletionWarningDialog();
+			return;
+		}
 		this._pendingActionData = organizer;
 		var ds = this._deleteShield = appCtxt.getOkCancelMsgDialog();
 		ds.reset();

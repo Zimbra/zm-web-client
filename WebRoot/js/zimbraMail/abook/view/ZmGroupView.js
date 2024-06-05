@@ -1551,6 +1551,11 @@ function(result) {
 	}
 };
 
+ZmGroupView.prototype.deactivate =
+function() {
+	this._controller.inactive = true;
+};
+
 /**
  * Creates a group list view for search results
  * @constructor
