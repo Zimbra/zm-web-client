@@ -112,8 +112,8 @@
     String debugLogTarget = getParameter(request, "log", getAttribute(request, "log", null));
     debugLogTarget = BeanUtils.cook(debugLogTarget);
     String extraPackages = getAttribute(request, "packages", null);
-	String startApp = getParameter(request, "app", "");
-	String noSplashScreen = getParameter(request, "nss", null);
+    String startApp = getParameter(request, "app", "");
+    String noSplashScreen = getParameter(request, "nss", null);
     noSplashScreen = BeanUtils.cook(noSplashScreen);
     String virtualAcctDomain = getParameter(request, "virtualacctdomain", null);
     virtualAcctDomain = BeanUtils.cook(virtualAcctDomain);
@@ -356,13 +356,10 @@
 </script>
 <%
 	String allPackages = "JQuery,Startup1_1,Startup1_2";
-    if (extraPackages != null) {
-    	if (extraPackages.equals("dev")) {
-            extraPackages = "Startup2,MailCore,Mail,ContactsCore,CalendarCore,Calendar,CalendarAppt,Contacts,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,Voicemail";
-    	}
+    if (extraPackages != null && extraPackages.equals("dev")) {
+        extraPackages = "Startup2,MailCore,Mail,ContactsCore,CalendarCore,Calendar,CalendarAppt,Contacts,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,Voicemail";
     	allPackages += "," + BeanUtils.cook(extraPackages);;
     }
-
     String pprefix = isDevMode  && !isCoverage ? "public/jsp" : "js";
     String psuffix = isDevMode && !isCoverage ? ".jsp" : "_all.js";
 
