@@ -68,7 +68,6 @@
 	if (isDev) {
 		request.setAttribute("dev", "1");
 		request.setAttribute("fileExtension", "");
-		request.setAttribute("packages", "dev");
 	}
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
 
@@ -78,7 +77,6 @@
 		if (request.getAttribute("debug") == null) {
 			request.setAttribute("debug", "0");
 		}
-		request.setAttribute("packages", "dev");
     }
 
 	String mode = getAttribute(request, "mode", null);
@@ -157,9 +155,6 @@
 </script>
 <%
 	String packages = "JQuery,NewWindow_1,NewWindow_2";
-
-    String extraPackages = request.getParameter("packages");
-    if (extraPackages != null) packages += ","+BeanUtils.cook(extraPackages);
 
     String pprefix = isDevMode && !isCoverage ? "public/jsp" : "js";
     String psuffix = isDevMode && !isCoverage ? ".jsp" : "_all.js";
