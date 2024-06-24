@@ -42,7 +42,7 @@
 	</c:if>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
     <c:if test="${rssfeed}">
-    <link rel="alternate" type="application/rss+xml"  title="RSS Feed" href="${requestScope.zimbra_target_item_name}.rss">
+    <link rel="alternate" type="application/rss+xml"  title="RSS Feed" href="${zm:cook(requestScope.zimbra_target_item_name)}.rss">
     </c:if>
     <jsp:doBody/>
 </head>
