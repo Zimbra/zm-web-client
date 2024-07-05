@@ -1205,7 +1205,13 @@ function(msg, idoc, account) {
 	var images = idoc.getElementsByTagName("img");
 	var num = 0;
 	for (var i = 0; i < images.length; i++) {
-		var dfsrc = images[i].getAttribute("dfsrc") || images[i].getAttribute("data-mce-src") || images[i].src;
+		var dfsrc;
+		// cid is primary as the image is embeded in the message
+		if (images[i].src && images[i].src.substring(0,4) === "cid:") {
+			dfsrc = images[i].src;
+		} else {
+			dfsrc = images[i].getAttribute("dfsrc") || images[i].getAttribute("data-mce-src") || images[i].src;
+		}
 		if (dfsrc) {
 			if (dfsrc.substring(0,4) === "cid:") {
 				num++;
@@ -1674,6 +1680,8 @@ function(signatureId, mode) {
 	mode = mode || this._composeMode;
     var htmlMode = (mode === Dwt.HTML);
     var sig = signature ? signature.getValue(htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN) : "";
+    var regex = /data-mce-src=".*?"/gi
+    sig = sig.replaceAll(regex, "");
     sig = AjxStringUtil.trim(sig + extraSignature) + (htmlMode ? "" : this._crlf);
 
 	return sig;
