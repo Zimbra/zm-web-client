@@ -841,6 +841,7 @@ function(obj, bContained) {
 	if (selField) {
 		this._setImage(item, ZmItem.F_SELECTION, bContained ? ZmListView.UNCHECKED_IMAGE : ZmListView.CHECKED_IMAGE);
 		this._setItemData(this._getElFromItem(item), ZmListView.ITEM_CHECKED_ATT_NAME, !bContained);
+		this._updateLabelForItem(item);
 	}
 };
 
@@ -1065,6 +1066,89 @@ function(ev) {
 	}
 
 	this._relayout();
+
+	if (this._headerFocusElementIndex) {
+		var headerElement = document.getElementById(this._headerItemsId[this._headerFocusElementIndex]);
+		this._compositeTabGroup.replaceMember(this._headerFocusElement, headerElement);
+		this._compositeTabGroup.setFocusMember(headerElement);
+		this._headerFocusElement = headerElement;
+	}
+};
+
+ZmListView.prototype.addHeaderItemInTagGroup =
+function () {
+	Dwt.setHandler(this._listColDiv, DwtEvent.ONKEYDOWN, ZmListView._headerKeyDown.bind(this));
+
+	var headerFirstItem = document.getElementById(this._headerItemsId[0]);
+	if (headerFirstItem) {
+		headerFirstItem.setAttribute('tabindex', 0);
+		if (this._headerFocusElement) {
+			this._compositeTabGroup.replaceMember(this._headerFocusElement, headerFirstItem);
+		} else {
+			this._compositeTabGroup.removeAllMembers();
+			this._compositeTabGroup.addMember(headerFirstItem);
+		}
+		this._headerFocusElement = headerFirstItem;
+		this._headerFocusElementIndex = 0;
+	}
+};
+
+ZmListView._headerKeyDown =
+function (ev) {
+	var keyCode = DwtKeyEvent.getCharCode(ev);
+	if(keyCode === DwtKeyEvent.KEY_ARROW_RIGHT || keyCode === DwtKeyEvent.KEY_ARROW_LEFT) {
+		var nextElementIndex = keyCode === DwtKeyEvent.KEY_ARROW_RIGHT ? this._headerFocusElementIndex + 1 : this._headerFocusElementIndex - 1;
+		var nextElement = ZmListView._nextFocusableHeaderElement.call(this, keyCode, nextElementIndex);
+
+		if (nextElement) {
+			nextElement.setAttribute('tabindex', 0);
+			this._compositeTabGroup.replaceMember(this._headerFocusElement, nextElement);
+			this._compositeTabGroup.setFocusMember(nextElement);
+			this._headerFocusElement = nextElement;
+		}
+		ev.stopPropagation();
+	}
+
+	if (keyCode === DwtKeyEvent.KEY_SPACE) {
+		var currentHeaderItem = this._headerList[this._headerFocusElementIndex];
+		clickEl = document.getElementById(currentHeaderItem._id);
+		this._columnClicked(clickEl,ev);
+		ev.stopPropagation();
+	}
+
+	if (keyCode === DwtKeyEvent.KEY_ENTER && ev.ctrlKey) {
+		var actionMenu = this._getActionMenuForColHeader(true);
+		if (actionMenu && actionMenu instanceof DwtMenu) {
+			var rect = ev.target.getBoundingClientRect();
+			actionMenu.popup(0, rect.x, rect.y);
+			ev.stopPropagation();
+		}
+	}
+};
+
+ZmListView._nextFocusableHeaderElement =
+function (keyCode, nextIndex) {
+	var nextElement = null;
+	var startIndex = nextIndex;
+
+	if (keyCode === DwtKeyEvent.KEY_ARROW_LEFT) {
+		this._headerItemsId.reverse();
+		startIndex = this._headerItemsId.length - 1 - nextIndex;
+	}
+
+	for (var i = startIndex; i < this._headerItemsId.length; i++) {
+		var element = document.getElementById(this._headerItemsId[i]);
+		if (element) {
+			this._headerFocusElementIndex = keyCode === DwtKeyEvent.KEY_ARROW_RIGHT ? i : (this._headerItemsId.length - 1 - i);
+			nextElement = element;
+			break;
+		}
+	}
+
+	if (keyCode === DwtKeyEvent.KEY_ARROW_LEFT) {
+		this._headerItemsId.reverse();
+	}
+	return nextElement;
 };
 
 /**
@@ -1211,6 +1295,15 @@ function() {
  */
 ZmListView.prototype._getLabelForField =
 function(item, field) {
+
+	if (field === ZmItem.F_SELECTION) {
+		var itemHtmlEl = this._getElFromItem(item);
+		if (itemHtmlEl && itemHtmlEl.getAttribute('aria-selected') === 'true') {
+			return ZmMsg.selected;
+		}
+		return "";
+	} 
+
 	var tooltip = this._getToolTip({ item: item, field: field });
 	// TODO: fix for tooltips that are callbacks (such as for appts)
 	return AjxStringUtil.stripTags(tooltip);

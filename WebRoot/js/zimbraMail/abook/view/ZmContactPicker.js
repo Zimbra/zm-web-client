@@ -509,7 +509,7 @@ function(account) {
 		this._resetSelectDiv();
 		this._searchInSelect.addChangeListener(new AjxListener(this, this._searchTypeListener));
 	} else {
-		this.setSize("600");
+		this.setSize("900px");
 	}
 
 	// Somehow the width gets changed to a very very high number after tree will be added, so lets save it here then re-apply
@@ -608,6 +608,18 @@ function(account) {
 	}
 	this._tabGroup.addMember(this._searchButton);
 	this._tabGroup.addMember(this._searchInSelect);
+
+	var sourceListHeaderItems = this._chooser.sourceListView._headerList;
+	this._sourceList = {};
+
+	for (var i = 0; i < sourceListHeaderItems.length; i++) {
+		var header = sourceListHeaderItems[i];
+		if (header._field === ZmItem.F_NAME) {
+			this._sourceList.name = document.getElementById(header._id);
+			this._tabGroup.addMember(this._sourceList.name);
+		}
+	}
+ 
 	this._tabGroup.addMember(this._chooser.getTabGroupMember());
 	this._tabGroup.addMember(this._prevButton);
 	this._tabGroup.addMember(this._nextButton);
@@ -978,7 +990,30 @@ function () {
         }
     }
     tlv.createHeaderHtml();
+
+	var sourceListHeaderItems = this._chooser.sourceListView._headerList;
+	for (var i = 0; i < sourceListHeaderItems.length; i++) {
+		var header = sourceListHeaderItems[i];
+		if (header._field === ZmItem.F_NAME) {
+			var nameHeader = document.getElementById(header._id);
+			nameHeader.onkeydown = ZmContactPicker.keydownHandler.bind(this);
+			this._tabGroup.replaceMember(this._sourceList.name, nameHeader);
+			this._sourceList.name = nameHeader;	
+		}
+	}
 };
+
+ZmContactPicker.keydownHandler =
+function(event) {
+	if (event.keyCode === DwtKeyEvent.KEY_ENTER) {
+		var iconElement = event.target.querySelector('.ImgColumnDownArrow') || event.target.querySelector('.ImgColumnUpArrow');
+		if (iconElement) {
+			var obj = DwtControl.getTargetControl(event)
+			obj.__ignoreNextClick = false;
+			iconElement.click();
+		}
+	}
+}
 
 /**
  * Done choosing addresses, add them to the compose form.
@@ -1134,6 +1169,7 @@ function(item, list) {
  */
 ZmContactChooserSourceListView = function(parent) {
 	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE});
+	this._listDiv.setAttribute('aria-label', ZmMsg.sourceEmail);
 	this.setScrollStyle(Dwt.CLIP);
 };
 
@@ -1283,6 +1319,7 @@ ZmContactChooserTargetListView = function(parent, showType) {
 	this._showType = showType; // call before base class since base calls getHeaderList
 
 	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET});
+	this._listDiv.setAttribute('aria-label', ZmMsg.targetEmail);
 
 	this.setScrollStyle(Dwt.CLIP);
 };
@@ -1329,8 +1366,11 @@ ZmContactChooserTargetListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_TYPE) {
 		item.setType(item._buttonId);
-		html[idx++] = ZmMsg[item.getTypeAsString()];
+		var type = ZmMsg[item.getTypeAsString()];
+		html[idx++] = '<span aria-label="'+ ZmMsg.addressType +': '+ type +';">';
+		html[idx++] = type;
 		html[idx++] = ":";
+		html[idx++] = "</span>";
 	}
 	else if (field == ZmItem.F_EMAIL && AjxEnv.isIE) {
 		var maxWidth = AjxStringUtil.getWidth(item.address) + 10;

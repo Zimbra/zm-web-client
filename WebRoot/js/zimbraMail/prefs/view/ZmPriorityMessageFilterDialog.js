@@ -29,7 +29,10 @@ ZmPriorityMessageFilterDialog = function() {
 	this.setContent(this._contentHtml());
 	this._initialize();
 	var okButton = this.getButton(DwtDialog.OK_BUTTON);
+	var cancelButton = this.getButton(DwtDialog.CANCEL_BUTTON);
 	okButton.setText(ZmMsg.save);
+	this._tabGroup.addMember([okButton, cancelButton]);
+
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this._rules = AjxDispatcher.run("GetFilterRules");
 };
@@ -67,6 +70,7 @@ function() {
 	this._priorityMessageForm.appendElement(div);
 	
 	this._moveMsgIntoStream = this._priorityMessageForm.getControl("MOVE_MSG_STREAM");
+	this._moveMsgIntoStream.getHtmlElement().style.margin = '1px';
 	this._notToMe = this._priorityMessageForm.getControl("NOT_TO_ME");
 	this._selectField = this._priorityMessageForm.getControl("SELECT_FIELD");
 	this._selectField.fixedButtonWidth();
@@ -80,11 +84,30 @@ function() {
 	this._streamHash[ZmFilterRule.TEST_ADDRBOOK] = {control: this._notInMyAddrBk, negative: true, headerValue: "from"};
 	this._streamHash[ZmFilterRule.TEST_ME] = {control: this._notToMe, negative: true, headerValue: "to"};
 	
-    this._advancedControls = new DwtText({parent:this,className:"FakeAnchor"});
-    this._advancedControls.setText(ZmMsg.advancedControls);
-    this._advancedControls.getHtmlElement().onclick = advancedListener;
-    this._advancedControls.replaceElement(document.getElementById("PriorityInboxAdvancedControls"));
+	this._advancedControls = new DwtText({parent:this,className:"FakeAnchor"});
+	this._advancedControls.setText(ZmMsg.advancedControls);
+	this._advancedControls.getHtmlElement().onclick = advancedListener;
+	Dwt.setHandler(this._advancedControls.getHtmlElement(), DwtEvent.ONKEYDOWN, ZmPriorityMessageFilterDialog._handelKeypress.bind(this));
+	this._advancedControls.replaceElement(document.getElementById("PriorityInboxAdvancedControls"));
+
+	this._tabGroup.removeAllMembers();
+	this._tabGroup.addMember([this._moveMsgIntoStream._inputEl,
+		this._dlSubscribedTo._inputEl,
+		this._massMarketing._inputEl,
+		this._notToMe._inputEl,
+		this._selectField,
+		this._notInMyAddrBk._inputEl,
+		this._advancedControls.getHtmlElement()
+	]);
 };
+
+ZmPriorityMessageFilterDialog._handelKeypress =
+function(ev) {
+	var keyCode = DwtKeyEvent.getCharCode(ev);
+	if (keyCode === DwtKeyEvent.KEY_RETURN) {
+		this._onAdvancedControls();
+	}
+}
 
 ZmPriorityMessageFilterDialog.prototype.popup =
 function() {

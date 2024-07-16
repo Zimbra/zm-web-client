@@ -1080,12 +1080,17 @@ function(viewId) {
 	// possible, we position the navigation toolbar after it.
 	var pos = AjxUtil.indexOf(this._getToolBarOps(), ZmOperation.FILLER) + 1;
 
+	var prevButton = toolbar.getButton(ZmOperation.TODAY);
+	var nextButton = toolbar.getButton(ZmOperation.DAY_VIEW)
+
 	var tb = new ZmNavToolBar({
 		parent: toolbar,
 		index: pos,
 		className: "ZmNavToolbar ZmCalendarNavToolbar",
 		context: ZmId.VIEW_CAL,
-		posStyle: Dwt.ABSOLUTE_STYLE
+		posStyle: Dwt.ABSOLUTE_STYLE,
+		prevButton: prevButton,
+		nextButton: nextButton
 	});
 	this._setNavToolBar(tb, ZmId.VIEW_CAL);
 
@@ -1112,9 +1117,10 @@ ZmCalViewController.prototype._initializeTabGroup = function(viewId) {
 	// ZmCalListView
 	if (viewId === ZmId.VIEW_CAL_LIST) {
 		var view = this._view[viewId];
+		var compositeMember = view._compositeTabGroup;
 		var topTabGroup = view._getSearchBarTabGroup();
 
-		this._tabGroups[viewId].addMemberBefore(topTabGroup, view);
+		this._tabGroups[viewId].addMemberBefore(topTabGroup, compositeMember);
 	}
 }
 
@@ -1554,7 +1560,7 @@ function(date, duration, roll) {
         if (ZmId.VIEW_CAL_FB == this._currentViewType && roll && appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
             currentView._navDateChangeListener(date);
 		}
-		this._navToolBar[ZmId.VIEW_CAL].setText(title, 'polite');
+		this._navToolBar[ZmId.VIEW_CAL].setText(title);
 	}
 };
 
@@ -3492,6 +3498,9 @@ function(recurrenceMode) {
 	    		forwardOp,
 	    		deleteOp,
 	    		ZmOperation.SEP];
+
+	appCtxt.notifyZimlets("onZmCalViewController_getActionMenuOps", [retVal]);
+
 	if (recurrenceMode != ZmOperation.VIEW_APPT_INSTANCE) {
 		retVal.push(ZmOperation.MOVE);
 	}
@@ -4109,6 +4118,22 @@ function(work, view, list, skipMiniCalUpdate, query) {
 				}
 			}
 		}
+
+		if (view.view !== ZmId.VIEW_CAL_LIST) {
+			for (var i = 0; i < list.size(); i++) {
+				var element = document.getElementById(view._getItemId(list.get(i)));
+				
+				if (element) {
+					element.setAttribute('tabindex', 0);
+					Dwt.setHandler(element, DwtEvent.ONKEYDOWN, ZmCalViewController._onKeyDown.bind(view));
+					if (!view._apptMember) {
+						view._compositeTabGroup.addMember(element);
+						view._apptMember = element;
+					}
+				}
+			}
+		}
+
 		this._resetToolbarOperations();
 	}
 
@@ -4126,6 +4151,16 @@ function(work, view, list, skipMiniCalUpdate, query) {
 	}
 };
 
+ZmCalViewController._onKeyDown =
+function (ev) {
+    if (ev.keyCode === DwtKeyEvent.KEY_ENTER && ev.metaKey) {
+        ev.button = DwtMouseEvent.RIGHT;
+        var rect = ev.target.getBoundingClientRect();
+        ev.docX = rect.x;
+        ev.docY = rect.y;
+        ZmCalBaseView.prototype._mouseDownListener.call(this, ev);
+    }
+}
 
 ZmCalViewController.prototype.refreshCurrentView =
  function() {

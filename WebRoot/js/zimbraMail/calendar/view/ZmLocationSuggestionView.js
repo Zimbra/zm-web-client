@@ -36,6 +36,7 @@ ZmLocationSuggestionView = function(parent, controller, apptEditView, className)
     ZmSuggestionsView.call(this, parent, controller, apptEditView, ZmId.VIEW_SUGGEST_LOCATION_PANE, false, className);
     this._warning = false;
     this._emailToDivIdMap = {};
+    this._tabMember = null;
 };
 
 ZmLocationSuggestionView.prototype = new ZmSuggestionsView;
@@ -78,6 +79,10 @@ function(params) {
     this._emailToDivIdMap = {};
     this._items = params.locationInfo.locations;
     ZmListView.prototype.set.call(this, params.locationInfo.locations);
+    if (this.parent._tabGroup) {
+        this.parent._tabGroup.replaceMember(this._tabMember, this);
+        this._tabMember = this;
+    }
 };
 
 ZmLocationSuggestionView.prototype.handleLocationOverflow =
@@ -113,8 +118,31 @@ function() {
 ZmLocationSuggestionView.prototype.setWarning =
 function(warning) {
     this._warning = warning;
-}
+};
 
+// To prevent set of current focus location (when user navigate location using keyboard) as appointment's location.
+ZmLocationSuggestionView.prototype._emulateSingleClick =
+function(params) {
+    this._clickDiv = this.findItemDiv(params.target);
+    ZmListView.prototype._itemSelected.call(this, this._clickDiv);
+};
+
+ZmLocationSuggestionView.prototype.handleKeyAction =
+function (actionCode, ev) {
+
+    if (!this.size()) {
+        return false;
+    }
+    switch (actionCode) {
+        case DwtKeyMap.SELECT:
+            this._itemSelected(ev.target, ev);
+            break;
+        default:
+            return ZmListView.prototype.handleKeyAction.call(this, actionCode, ev);
+    }
+
+    return true;
+};
 
 ZmLocationSuggestionView.prototype._renderList =
 function(list, noResultsOk, doAdd) {

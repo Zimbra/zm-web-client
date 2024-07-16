@@ -46,7 +46,7 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 	var params = {parent:parent, className:"ZmBriefcaseDetailListView",
 				  view: controller.getCurrentViewId(),
 				  controller:controller, headerList:headerList, dropTgt:dropTgt,
-				  listLabel: ZmMsg.documentList};
+				  listLabel: ZmMsg.document};
 	ZmBriefcaseBaseView.call(this, params);
 
     this.enableRevisionView(true);
@@ -362,6 +362,47 @@ function(item) {
 	}
 };
 
+ZmDetailListView.prototype._getLabelFieldList =
+function () {
+	return [
+		ZmItem.F_SELECTION,
+		ZmItem.F_NAME,
+		ZmItem.F_TYPE,
+		ZmItem.F_SIZE,
+		ZmItem.F_DATE,
+		ZmItem.F_SHARES
+	];
+};
+
+ZmDetailListView.prototype._getLabelForField =
+function(item, field) {
+	switch (field) {
+		case ZmItem.F_NAME:
+			return item.name;
+		case ZmItem.F_TYPE:
+			if (item.isFolder) {
+				return ZmMsg.folder;
+			}
+			if (item.contentType) {
+				var itemInfo = ZmMimeTable.getInfo(item.contentType);
+				return (itemInfo && itemInfo.desc) || "";
+			}
+			return "";
+		case ZmItem.F_DATE:
+			if (item.contentChangeDate) {
+				var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
+				return dateFormatter.format(item.contentChangeDate);
+			}
+			return "";
+		case ZmItem.F_SIZE:
+			return AjxUtil.formatSize(item.size);
+		case ZmItem.F_SHARES:
+			return item.modifier;
+		default:
+			return ZmListView.prototype._getLabelForField.apply(this, arguments);
+	}
+};
+
 ZmDetailListView.prototype.expand =
 function(item, revisions){
 
@@ -638,6 +679,12 @@ function(ev) {
 	if (ev.action == DwtDragEvent.SET_DATA) {
 		ev.srcData = {data: ev.srcControl.getDnDSelection(), controller: this};
 	}
+};
+
+ZmDetailListView.prototype.createHeaderHtml =
+function (defaultColumnSort) {
+	DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort, this._isMultiColumn);
+	this.addHeaderItemInTagGroup();
 };
 
 ZmDetailListView.prototype._createHeader =

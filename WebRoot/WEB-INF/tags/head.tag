@@ -41,13 +41,15 @@
     <c:choose>
         <c:when test="${not print}">
             <c:set var='css' value='/css/common,login,images,skin.css'/>
+            <c:set var="clientType" value="standard"/>
         </c:when>
         <c:otherwise>
-            <c:set var='css' value='/css/zhtml.css'/>
+            <c:set var='css' value='/css/zhtml,skin.css'/>
+            <c:set var="clientType" value="print"/>
         </c:otherwise>
     </c:choose>
     <c:url var='cssurl' value="${css}">
-        <c:param name="client"	value="standard" />
+        <c:param name="client"	value="${clientType}" />
         <c:param name="skin"	value="${skin}" />
         <c:param name="v"		value="${version}" />
         <c:param name="debug"   value="${param.dev}" />

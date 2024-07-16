@@ -92,6 +92,12 @@ ZmOperation.registerOp = function(op, params, precondition, callback) {
 	if (callback)	    { ZmOperation.CALLBACK[op]	    = callback; }
 };
 
+ZmOperation.unregisterOp = function(op) {
+	delete ZmOperation[op];
+	delete ZmOperation.SETUP[op];
+	delete ZmOperation.PRECONDITION[op];
+	delete ZmOperation.CALLBACK[op];
+};
 
 ZmOperation.KEY_ID		= "opId";
 ZmOperation.MENUITEM_ID	= "menuItemId";
@@ -145,7 +151,6 @@ function() {
     ZmOperation.registerOp(ZmId.OP_GROUPBY_PRIORITY, {textKey:"groupByPriority"});
     ZmOperation.registerOp(ZmId.OP_GROUPBY_SIZE, {textKey:"groupBySize"});
     ZmOperation.registerOp(ZmId.OP_GROUPBY_TAG,  {textKey:"groupByTag"});
-	ZmOperation.registerOp(ZmId.OP_GO_TO_URL, {image:"URL", textKey:"goToUrlAlt"});
 //	ZmOperation.registerOp(ZmId.OP_IMPORT_FOLDER, {textKey:"importFolder", image:"MailImport"});
 	ZmOperation.registerOp(ZmId.OP_MARK_ALL_READ, {textKey:"markAllRead", image:"ReadMessage"});
 //	ZmOperation.registerOp(ZmId.OP_MOUNT_FOLDER, {textKey:"mountFolder", image:"Folder"});
@@ -245,6 +250,8 @@ function() {
 	ZmOperation.NEW_ORG_OPS.push(ZmOperation.NEW_FOLDER, ZmOperation.NEW_TAG);
 	ZmOperation.NEW_ORG_KEY[ZmOperation.NEW_FOLDER]	= "folder";
 	ZmOperation.NEW_ORG_KEY[ZmOperation.NEW_TAG]	= "tag";
+
+	appCtxt.notifyZimlets("onZmOperation_initialize", []);
 };
 
 /**

@@ -120,7 +120,16 @@
                                             <c:set var="endDateCal" value="${zm:getCalendar(endDate.time, timezone)}"/>
                                         </c:otherwise>
                                     </c:choose>
-                                    ${fn:escapeXml(zm:getApptDateBlurb(pageContext, timezone, startDate.time, endDate.time, appt.allDay))}
+                                    <fmt:message key="ZM_formatRestApptDate" var="formatRestApptDate"/>
+                                    <fmt:message key="ZM_formatRestApptTime" var="formatRestApptTime"/>
+                                    <c:choose>
+                                        <c:when test="${formatRestApptDate eq '???ZM_formatRestApptDate???' or formatRestApptTime eq '???ZM_formatRestApptTime???'}">
+                                            ${fn:escapeXml(zm:getApptDateBlurb(pageContext, timezone, startDate.time, endDate.time, appt.allDay))}
+                                        </c:when>
+                                        <c:otherwise>
+                                            ${fn:escapeXml(zm:getApptDateBlurbWithTemplate(pageContext, timezone, startDate.time, endDate.time, appt.allDay, "ZM_formatRestApptDate", "ZM_formatRestApptTime"))}
+                                        </c:otherwise>
+                                    </c:choose>
                                     &nbsp;<span class='ZhCalTimeZone'>${fn:escapeXml(fn:startsWith(timezoneStr,"???") ? (zm:getCanonicalId(timezone)) : timezoneStr)}</span>
                                 </td>
                             </tr>
@@ -173,7 +182,15 @@
                                         :
                                     </td>
                                     <td class='MsgHdrValue'>
-                                        ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,timezone, appt.start.date))}
+                                        <fmt:message key="ZM_formatRestApptRecurDate" var="formatRestApptRecurDate"/>
+                                        <c:choose>
+                                            <c:when test="${formatRestApptRecurDate eq '???ZM_formatRestApptRecurDate???'}">
+                                                ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,timezone, appt.start.date))}
+                                            </c:when>
+                                            <c:otherwise>
+                                                ${fn:escapeXml(zm:getRepeatBlurbWithTemplate(repeat,pageContext,timezone, appt.start.date, "ZM_formatRestApptRecurDate"))}
+                                            </c:otherwise>
+                                        </c:choose>
                                     </td>
                                 </tr>
                             </c:if>

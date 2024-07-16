@@ -198,6 +198,8 @@ function(params) {
 		}
 	}
 
+	appCtxt.notifyZimlets("onZmComposeView_set", [this]);
+
 	this._recipients.setup();
 
 	if (!ZmComposeController.IS_FORWARD[action]) {
@@ -3211,37 +3213,43 @@ function(templateId, data) {
 	this._setEventHandler(data.subjectInputId, "onKeyUp");
 	this._setEventHandler(data.subjectInputId, "onFocus");
 
-	if (appCtxt.multiAccounts) {
-		if (!this._fromSelect) {
-			this._fromSelect = new DwtSelect({parent:this, index: 0, id:this.getHTMLElId() + "_fromSelect", parentElement:data.fromSelectId});
-			//this._addSendAsAndSendOboAddresses(this._fromSelect);
-			this._fromSelect.addChangeListener(new AjxListener(this, this._handleFromListener));
-			this._recipients.attachFromSelect(this._fromSelect);
-		}
-	} else {
-		// initialize identity select
-		var identityOptions = this._getIdentityOptions();
-		this.identitySelect = new DwtSelect({parent:this, index: 0, id:this.getHTMLElId() + "_identitySelect", options:identityOptions});
-		this._addSendAsAndSendOboAddresses(this.identitySelect);
-		this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity, true);
+	var result = { handled: false };
+	appCtxt.notifyZimlets("onZmComposeView_createHtmlFromTemplate", [this, data, result]);
+	if (!result.handled) {
+		if (appCtxt.multiAccounts) {
+			if (!this._fromSelect) {
+				this._fromSelect = new DwtSelect({parent:this, index: 0, id:this.getHTMLElId() + "_fromSelect", parentElement:data.fromSelectId});
+				//this._addSendAsAndSendOboAddresses(this._fromSelect);
+				this._fromSelect.addChangeListener(new AjxListener(this, this._handleFromListener));
+				this._recipients.attachFromSelect(this._fromSelect);
+			}
+		} else {
+			// initialize identity select
+			var identityOptions = this._getIdentityOptions();
+			this.identitySelect = new DwtSelect({parent:this, index: 0, id:this.getHTMLElId() + "_identitySelect", options:identityOptions});
+			this._addSendAsAndSendOboAddresses(this.identitySelect);
+			this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity, true);
 
-		if (!this._identityChangeListenerObj) {
-			this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
-		}
-		var ac = window.parentAppCtxt || window.appCtxt;
-		var accounts = ac.accountList.visibleAccounts;
-		for (var i = 0; i < accounts.length; i++) {
-			var identityCollection = ac.getIdentityCollection(accounts[i]);
-			identityCollection.addChangeListener(this._identityChangeListenerObj);
-		}
+			if (!this._identityChangeListenerObj) {
+				this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
+			}
+			var ac = window.parentAppCtxt || window.appCtxt;
+			var accounts = ac.accountList.visibleAccounts;
+			for (var i = 0; i < accounts.length; i++) {
+				var identityCollection = ac.getIdentityCollection(accounts[i]);
+				identityCollection.addChangeListener(this._identityChangeListenerObj);
+			}
 
-		this.identitySelect.replaceElement(data.identitySelectId);
-		this._setIdentityVisible();
+			this.identitySelect.replaceElement(data.identitySelectId);
+			this._setIdentityVisible();
+		}
 	}
 
 	var attButtonId = ZmId.getButtonId(this._view, ZmId.CMP_ATT_BTN);
 	this._attButton = new DwtButton({parent:this, id:attButtonId});
 	this._attButton.setText(ZmMsg.attach);
+	this._attButton.setAttribute('aria-expanded', false);
+	this._attButton.setAttribute('aria-haspopup', true);
 
 	this._attButton.setMenu(new AjxCallback(this, this._attachButtonMenuCallback));
 	this._attButton.reparentHtmlElement(data.attBtnId);
@@ -3549,7 +3557,14 @@ function(menuItem) {
 
 ZmComposeView.prototype._attachButtonMenuCallback =
 function() {
-	var menu = new DwtMenu({parent:this._attButton});
+	var attachButton = this._attButton;
+	var menu = new DwtMenu({parent:attachButton});
+
+	var setAriaExpand = function (val) {
+		attachButton.setAttribute('aria-expanded', val);
+	};
+	menu.addPopupListener(setAriaExpand.bind(this, true));
+	menu.addPopdownListener(setAriaExpand.bind(this,false));
 
 	var listener =
 		this.showAttachmentDialog.bind(this, ZmComposeView.UPLOAD_COMPUTER);
@@ -3581,8 +3596,18 @@ function() {
 	var options = [];
 	var identityCollection = appCtxt.getIdentityCollection();
 	var identities = identityCollection.getIdentities(true);
+
+	var result = { value: null };
+	appCtxt.notifyZimlets("onZmComposeView_getIdentityOptions", [this, options, identityCollection, identities, result]);
+	if (result.value) {
+		return result.value;
+	}
+
 	for (var i = 0, count = identities.length; i < count; i++) {
 		var identity = identities[i];
+		if (appCtxt.get("BLOCK_SEND_FROM_IMAP_POP") && identity.isFromDataSource) {
+			continue;
+		}
 		options.push(new DwtSelectOptionData(identity.id, this._getIdentityText(identity)));
 	}
 	return options;
@@ -3684,6 +3709,11 @@ function() {
 	}
 
 	if (this.identitySelect) {
+		var result = { value: null };
+		appCtxt.notifyZimlets("onZmComposeView_getIdentity", [this, ac, result]);
+		if (result.value) {
+			return result.value;
+		}
 		var collection = ac.getIdentityCollection();
 		var val = this.identitySelect.getValue();
 		var identity = collection.getById(val);

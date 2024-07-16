@@ -154,8 +154,13 @@ function() {
 	this._endDateField = Dwt.byId(this._htmlElId + "_VACATION_UNTIL1");
 
 	if (this._startDateField && this._endDateField) {
+		this._startDateField.setAttribute('parentid', this._htmlElId);
+		this._endDateField.setAttribute('parentid', this._htmlElId);
 		this._startDateVal = Dwt.byId(this._htmlElId + "_VACATION_FROM");
 		this._endDateVal = Dwt.byId(this._htmlElId + "_VACATION_UNTIL");
+		this._startDateField.setAttribute('parentid', this._htmlElId);
+		this._endDateField.setAttribute('parentid', this._htmlElId);
+
         if(this._startDateVal.value.length < 15){
             this._startDateVal.value = appCtxt.get(ZmSetting.VACATION_FROM);
         }
@@ -247,6 +252,7 @@ function() {
 		});
 		inputControl.replaceElement(inputPlaceholder);
 		inputControl.setDisplay(Dwt.DISPLAY_INLINE);
+		inputControl._inputField.setAttribute('aria-label', ZmMsg.secondsInput);
 
 		// Toggle the setting when editing the time input; it already recieves
 		// focus on click, so this is mainly for keyboard navigation.
@@ -262,6 +268,16 @@ function() {
 		if (value > 0) {
 		    inputControl.setValue(value);
 		}
+	}
+
+	var forwardCopyTo = Dwt.byId(this.getHTMLElId() + '_' + ZmSetting.MAIL_FORWARDING_ADDRESS);
+	if (forwardCopyTo) {
+		forwardCopyTo.setAttribute('aria-label', ZmMsg.messageArrivalLabel + ' ' + ZmMsg.forwardCopyTo);
+	}
+
+	var sendNotificationMessage = Dwt.byId(this.getHTMLElId() + '_' + ZmSetting.NOTIF_ADDRESS);
+	if (sendNotificationMessage) {
+		sendNotificationMessage.setAttribute('aria-label', ZmMsg.messageArrivalLabel + ' ' + ZmMsg.mailNotifEnabled);
 	}
 
 	var composeMore = Dwt.byId(this.getHTMLElId() + '_compose_more');
@@ -475,6 +491,10 @@ function(id, setup, value) {
         var radioGroup = this.getFormObject(id);
         radioGroup.addSelectionListener(new AjxListener(this, this._handleEnableVacationMsg, [radioGroup, false, id]));
     }
+	else if (id === ZmSetting.REPLY_PREFIX) {
+		control.setAttribute('aria-label', ZmMsg.prefixTextWith);
+		control.setAttribute('role', 'group');
+	}
 	return control;
 };
 
@@ -740,6 +760,18 @@ ZmWhiteBlackList = function(parent, id, templateId) {
     }
 	this._setContent(templateId);
 
+	switch(id) {
+		case ZmSetting.MAIL_BLACKLIST:
+			this.setAriaLabel(ZmMsg.blackListLabel, ZmMsg.blockedEmail, ZmMsg.addBlockEmail, ZmMsg.removeBlockEmail);
+			break;
+		case ZmSetting.MAIL_WHITELIST:
+			this.setAriaLabel(ZmMsg.whiteListLabel, ZmMsg.allowedEmail, ZmMsg.addAllowEmail, ZmMsg.removeAllowEmail);
+			break;
+		case ZmSetting.TRUSTED_ADDR_LIST:
+			this.setAriaLabel(ZmMsg.trustedAddressOrDomain, ZmMsg.trustedAddressOrDomain, ZmMsg.addTrustedAddressOrDomain, ZmMsg.removeTrustedAddressOrDomain);
+			break;
+	}
+
 	this._list = [];
 	this._add = {};
 	this._remove = {};
@@ -763,6 +795,14 @@ function() {
 
 	this.updateNumUsed();
 };
+
+ZmWhiteBlackList.prototype.setAriaLabel =
+function (inputLabel, listLabel, addButtonLabel, removeButtonLabel) {
+	this._inputEl.getInputElement().setAttribute('aria-label', inputLabel);
+	this._listView.setAttribute('aria-label', listLabel);
+	this._addButton.setAriaLabel(addButtonLabel);
+	this._removeButton.setAriaLabel(removeButtonLabel);
+}
 
 ZmWhiteBlackList.prototype.getValue =
 function() {
@@ -854,17 +894,17 @@ function(templateId) {
 
 	id = this._htmlElId + "_ADD_BUTTON";
 	el = document.getElementById(id);
-	var addButton = new DwtButton({parent:this, parentElement:id});
-	addButton.setText(ZmMsg.add);
-	addButton.addSelectionListener(new AjxListener(this, this._addListener));
-	this.parent._addControlTabIndex(el, addButton);
+	this._addButton = new DwtButton({parent:this, parentElement:id});
+	this._addButton.setText(ZmMsg.add);
+	this._addButton.addSelectionListener(new AjxListener(this, this._addListener));
+	this.parent._addControlTabIndex(el, this._addButton);
 
 	id = this._htmlElId + "_REMOVE_BUTTON";
 	el = document.getElementById(id);
-	var removeButton = new DwtButton({parent:this, parentElement:id});
-	removeButton.setText(ZmMsg.remove);
-	removeButton.addSelectionListener(new AjxListener(this, this._removeListener));
-	this.parent._addControlTabIndex(el, removeButton);
+	this._removeButton = new DwtButton({parent:this, parentElement:id});
+	this._removeButton.setText(ZmMsg.remove);
+	this._removeButton.addSelectionListener(new AjxListener(this, this._removeListener));
+	this.parent._addControlTabIndex(el, this._removeButton);
 
 	id = this._htmlElId + "_NUM_USED";
 	this._numUsedText = document.getElementById(id);

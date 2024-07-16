@@ -163,7 +163,16 @@ action="compose" paction="view" id="${msg.id}"/>
                 <c:set var="endDateCal" value="${zm:getCalendar(endDate.time, tz)}"/>
             </c:otherwise>
         </c:choose>
-        ${fn:escapeXml(zm:getApptDateBlurb(pageContext, tz, startDate.time, endDate.time, appt.allDay))}
+        <fmt:message key="ZM_formatPrintApptDate" var="formatPrintApptDate"/>
+        <fmt:message key="ZM_formatPrintApptTime" var="formatPrintApptTime"/>
+        <c:choose>
+            <c:when test="${formatPrintApptDate eq '???ZM_formatPrintApptDate???' or formatPrintApptTime eq '???ZM_formatPrintApptTime???'}">
+                ${fn:escapeXml(zm:getApptDateBlurb(pageContext, tz, startDate.time, endDate.time, appt.allDay))}
+            </c:when>
+            <c:otherwise>
+                ${fn:escapeXml(zm:getApptDateBlurbWithTemplate(pageContext, tz, startDate.time, endDate.time, appt.allDay, "ZM_formatPrintApptDate", "ZM_formatPrintApptTime"))}
+            </c:otherwise>
+        </c:choose>
         &nbsp;
         <span class='ZhCalTimeZone'>
         <fmt:message var="displayName" bundle='${TzMsg}' key="${tz.ID}"/>
@@ -220,7 +229,15 @@ action="compose" paction="view" id="${msg.id}"/>
             :
         </td>
         <td class='MsgHdrValue'>
-                ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,tz, appt.start.date))}
+            <fmt:message key="ZM_formatPrintApptRecurDate" var="formatPrintApptRecurDate"/>
+            <c:choose>
+                <c:when test="${formatPrintApptRecurDate eq '???ZM_formatPrintApptRecurDate???'}">
+                    ${fn:escapeXml(zm:getRepeatBlurb(repeat, pageContext, tz, appt.start.date))}
+                </c:when>
+                <c:otherwise>
+                    ${fn:escapeXml(zm:getRepeatBlurbWithTemplate(repeat, pageContext, tz, appt.start.date, "ZM_formatPrintApptRecurDate"))}
+                </c:otherwise>
+            </c:choose>
         </td>
     </tr>
 </c:if>

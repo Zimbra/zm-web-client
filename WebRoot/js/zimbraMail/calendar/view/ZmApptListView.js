@@ -203,8 +203,18 @@ ZmApptListView.prototype._getFieldId = function(item, field) {
 };
 
 ZmApptListView.prototype._getCellId = function(item, field) {
+	var id;
 	if (field == ZmItem.F_SUBJECT || field == ZmItem.F_DATE || field == ZmItem.F_LOCATION || field == ZmItem.F_STATUS || field == ZmItem.F_FOLDER) {
-		return this._getFieldId(item, field);
+		id = this._getFieldId(item, field);
+	}
+	if (id) {
+		return id;
+	}
+
+	var result = { value: null };
+	appCtxt.notifyZimlets("onZmApptListView_getCellId", [this, item, field, result]);
+	if (result.value) {
+		return result.value;
 	}
 };
 

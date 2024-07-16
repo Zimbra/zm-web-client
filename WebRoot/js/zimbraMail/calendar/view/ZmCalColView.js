@@ -451,6 +451,12 @@ function(hour) {
 
 ZmCalColView.prototype._updateTitle =
 function() {
+	var result = { handled: false };
+	appCtxt.notifyZimlets("onZmCalColView_updateTitle", [this, result]);
+	if (result.handled) {
+		return;
+	}
+
 	var dayFormatter = DwtCalendar.getDayFormatter();
 
 	if (this.numDays == 1) {
@@ -828,6 +834,13 @@ function(html) {
 	var date = new Date();
 	date.setHours(0, 0, 0, 0);
     var timeTDWidth = ZmCalColView._HOURS_DIV_WIDTH - (this._fbBarEnabled ? ZmCalColView._FBBAR_DIV_WIDTH : 0 );
+
+    var result = { handled: false };
+    appCtxt.notifyZimlets("onZmCalColView_createHoursHtml", [this, html, timeTDWidth, formatter, date, result]);
+    if (result.handled) {
+        return;
+    }
+
     html.append("<table role='presentation' class=calendar_grid_day_table>");
 	for (var h=0; h < 25; h++) {
 		html.append("<tr><td class=calendar_grid_body_time_td style='height:",
@@ -1008,12 +1021,12 @@ function(abook) {
 	if (!this._scheduleMode) {
 		for (var i =0; i < this.numDays; i++) {
 		  html.append("<div id='", this._columns[i].daySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
-		  html.append("<div id='", this._columns[i].workingHrsFirstDivId, "' style='position:absolute;background-color:#FFFFFF;'><div id='", this._columns[i].workingHrsFirstChildDivId, "' class='ImgCalendarDayGrid' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
+		  html.append("<div id='", this._columns[i].workingHrsFirstDivId, "' style='position:absolute;background-color:#FFFFFF;'><div id='", this._columns[i].workingHrsFirstChildDivId, "' tabindex='0' class='ImgCalendarDayGrid' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
 		  html.append("<div id='", this._columns[i].workingHrsSecondDivId, "' style='position:absolute;background-color:#FFFFFF;'><div id='", this._columns[i].workingHrsSecondChildDivId, "' class='ImgCalendarDayGrid' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
 		}
 	}
     else {
-        html.append("<div id='", this._workingHrsFirstDivId, "' style='position:absolute;background-color:#FFFFFF;'><div class='ImgCalendarDayGrid' id='", this._workingHrsFirstChildDivId, "' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
+        html.append("<div id='", this._workingHrsFirstDivId, "' style='position:absolute;background-color:#FFFFFF;'><div class='ImgCalendarDayGrid' tabindex='0' id='", this._workingHrsFirstChildDivId, "' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
         html.append("<div id='", this._workingHrsSecondDivId, "' style='position:absolute;background-color:#FFFFFF;'><div class='ImgCalendarDayGrid' id='", this._workingHrsSecondChildDivId, "' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
     }
 
@@ -1026,6 +1039,23 @@ function(abook) {
 	html.append("</div>");
 
 	this.getHtmlElement().innerHTML = html.toString();
+
+	if (!this._scheduleMode) {
+		for (var i = 0; i < this.numDays; i++) {
+			var workingHour = document.getElementById(this._columns[i].workingHrsFirstChildDivId);
+			if (workingHour) {
+				this._compositeTabGroup.addMember(workingHour);
+				Dwt.setHandler(workingHour, DwtEvent.ONKEYUP, ZmCalColView._onKeyUp.bind(this));
+			}
+		}
+	}
+	else {
+		var workingHour = document.getElementById(this._workingHrsFirstDivId);
+		if (workingHour) {
+			this._compositeTabGroup.addMember(workingHour);
+			Dwt.setHandler(workingHour, DwtEvent.ONKEYUP, ZmCalColView._onKeyUp.bind(this));
+		}
+	}
 
     var func = AjxCallback.simpleClosure(ZmCalColView.__onScroll, ZmCalColView, this);
 	document.getElementById(this._bodyDivId).onscroll = func;
@@ -1045,6 +1075,21 @@ ZmCalColView.prototype.updateTimeIndicator = function(force) {
 	this._updateTimeIndicator(force);
 	return this.setTimer(1);
 }
+
+ZmCalColView._onKeyUp =
+function(ev) {
+	if (ev.keyCode === DwtKeyEvent.KEY_ENTER) {
+		var rect = ev.target.getBoundingClientRect();
+		ev.docX = ev.elementX = rect.x;
+		ev.docY = ev.elementY = rect.y;
+		var start = this._getDateFromXY(rect.x + 10, rect.y, ZmCalColView._SNAP_MINUTES, false);
+		var currentDate = new Date();
+		start.setHours(currentDate.getHours());
+		start.setMinutes(currentDate.getMinutes());
+		start.setSeconds(currentDate.getSeconds());
+		appCtxt.getCurrentController().newAppointmentHelper(start, 0, null, null);
+	}
+};
 
 
 ZmCalColView.prototype._updateTimeIndicator = function(force) {

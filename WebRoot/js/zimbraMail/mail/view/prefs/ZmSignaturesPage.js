@@ -392,6 +392,7 @@ function(container) {
 	var list = new ZmSignatureListView(this);
 	this._replaceControlElement(listEl, list);
 	list.setMultiSelect(false);
+	list.setAttribute('aria-label', ZmMsg.signature);
 	list.addSelectionListener(this._selectionListener.bind(this));
 	list.setUI(null, true); // renders headers and empty list
 	this._sigList = list;
@@ -480,8 +481,18 @@ function(addSigs) {
 	}
 	var ic = appCtxt.getIdentityCollection();
 	var identities = ic && ic.getIdentities(true);
+
+	var result = { handled: false };
+	appCtxt.notifyZimlets("onZmSignaturesPage_resetUsageSelects", [this, identities, table, signatures, result]);
+	if (result.handled) {
+		return;
+	}
+
 	if (identities && identities.length) {
 		for (var i = 0, len = identities.length; i < len; i++) {
+			if (appCtxt.get("BLOCK_SEND_FROM_IMAP_POP") && identities[i].isFromDataSource) {
+				continue;
+			}
 			this._addUsageSelects(identities[i], table, signatures);
 		}
 	}
@@ -673,6 +684,18 @@ function(id, setup, value) {
 
 ZmSignaturesPage.prototype._selectionListener =
 function(ev) {
+
+	if (ev.target && ev.target.hasAttribute('role')) {
+		var children = ev.target.parentElement.children;
+		for (var i = 0; i < children.length; i++) {
+			var child = children[i];
+			if (child.classList.value.includes('Row-selected')) {
+				child.setAttribute('aria-selected', true);
+			} else {
+				child.setAttribute('aria-selected', false);
+			}
+		}
+	}
 
 	this._updateSignature();
 
@@ -1133,8 +1156,26 @@ function() {
 
 ZmSignatureListView.prototype._getCellContents =
 function(html, idx, signature, field, colIdx, params) {
-	html[idx++] = signature.name ? AjxStringUtil.htmlEncode(signature.name, true) : ZmMsg.signatureNameHint;
+	if (signature.name) {
+		var name = AjxStringUtil.htmlEncode(signature.name, true);
+
+		html[idx++] = '<span aria-label="';
+		html[idx++] = ZmMsg.signatureName + ':' + name + '; ' + ZmMsg.selected + '">';
+		html[idx++] = name;
+		html[idx++] = '</span>';
+	}
+	else {
+		html[idx++] = ZmMsg.signatureNameHint;
+	}
 	return idx;
+};
+
+ZmSignatureListView.prototype._createItemHtml =
+function(item, params, asHtml, count) {
+	var div = DwtListView.prototype._createItemHtml.call(this, item, params, asHtml, count);
+	div.setAttribute('role', 'option');
+	div.setAttribute('aria-selected', 'true');
+	return div;
 };
 
 ZmSignatureListView.prototype._getItemId =

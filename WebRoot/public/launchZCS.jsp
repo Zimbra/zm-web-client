@@ -58,6 +58,17 @@
 	// Prevent IE from ever going into compatibility/quirks mode.
 	response.setHeader("X-UA-Compatible", "IE=edge");
 %>
+<%
+    // check if help directory exists
+    boolean productHelpSupported = true;
+	try {
+		productHelpSupported = new java.io.File(application.getRealPath("/help")).exists();
+	} catch (Exception ignored) {
+		// Just in case there's an exception, catch it.
+	}
+	application.setAttribute("productHelpSupported", productHelpSupported);
+%>
+<c:set var="productHelpSupported" value="<%=productHelpSupported%>" />
 
 <!DOCTYPE html>
 <zm:getUserAgent var="ua" session="false"/>
@@ -183,21 +194,6 @@
  * ***** END LICENSE BLOCK *****
 -->
 
-<%
-    // check if modern package exists
-    Boolean modernSupported = (Boolean) application.getAttribute("modernSupported");
-    if(modernSupported == null) {
-        try {
-            modernSupported = new java.io.File(application.getRealPath("/modern/index.html")).exists();
-        } catch (Exception ignored) {
-            // Just in case there's anException
-            modernSupported = true;
-        }
-        application.setAttribute("modernSupported", modernSupported);
-    }
-%>
-<c:set var="modernSupported" value="<%=modernSupported%>" />
-
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <meta http-equiv="cache-control" content="no-cache"/>
 <meta http-equiv="Pragma" content="no-cache"/>
@@ -248,7 +244,7 @@
 	window.csrfToken            = "${csrfToken}";
 	window.appLang              = "${lang}";
 	localStorage.setItem("csrfToken" , "${csrfToken}");
-	window.modernSupported     = ${modernSupported}
+	window.productHelpSupported = ${productHelpSupported};
 </script>
 <noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
 </head>
@@ -322,8 +318,8 @@
             splSwitch.style.visibility = 'hidden';
         }
     }
-	function switchToStandardClient() {
-		document.location = window.appContextPath + "/?client=standard";
+	function switchClient() {
+		document.location = window.appContextPath + "/?screenSize=small";
 	}
     killSplashScreenSwitch();
 	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
@@ -331,7 +327,7 @@
 		enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
 		unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari4up);
 		if (enforceMinDisplay && unsupported) {
-			switchToStandardClient();
+			switchClient();
 		}
 		delete enforceMinDisplay;
 		delete unsupported;

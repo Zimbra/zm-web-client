@@ -318,6 +318,7 @@ function(controller, dropTgt) {
 	this._listviewCell = document.getElementById(listviewCellId);
 	this._listPart = new ZmContactSimpleView({parent:this, controller:controller, dropTgt:dropTgt});
 	this._listPart.reparentHtmlElement(listviewCellId);
+	this.setAttribute('aria-label', ZmMsg.contact);
 
 	var sashCellId = this._htmlElId + "_sash";
 	this._sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 5, Dwt.ABSOLUTE_STYLE);
@@ -641,10 +642,17 @@ function(data) {
 				var date = ZmEditContactViewOther.parseDate(value);
 				if (date) {
 					var includeYear = date.getFullYear() != 0;
-					var formatter = includeYear ?
-					    AjxDateFormat.getDateInstance(AjxDateFormat.LONG) : new AjxDateFormat(ZmMsg.formatDateLongNoYear);
+					var result = { value: null };
+					appCtxt.notifyZimlets("onZmContactSplitView_showContactListItem", [includeYear, result]);
+					var formatter;
+					if (result.value) {
+						formatter = result.value;
+					} else {
+						formatter = includeYear ?
+							AjxDateFormat.getDateInstance(AjxDateFormat.LONG) : new AjxDateFormat(ZmMsg.formatDateLongNoYear);
+					}
 					value = formatter.format(date);
-		        	}
+				}
 			}
 			if (data.findObjects) {
 				value = data.findObjects(value, data.objectType);
@@ -1033,6 +1041,7 @@ ZmContactSimpleView = function(params) {
 
 	this._view = params.view = params.controller.getCurrentViewId();
 	params.className = "ZmContactSimpleView";
+	params.listLabel = ZmMsg.contact;
 	ZmContactsBaseView.call(this, params);
 
 	this._normalClass = DwtListView.ROW_CLASS + " SimpleContact";
@@ -1128,6 +1137,24 @@ function(ev) {
 	}
 };
 
+ZmContactSimpleView.prototype._getLabelFieldList =
+function () {
+	return [
+		ZmItem.F_SELECTION,
+		ZmItem.F_NAME
+	];
+};
+
+ZmContactSimpleView.prototype._getLabelForField =
+function(item, field) {
+	switch (field) {
+		case ZmItem.F_NAME:
+			return item.sf;
+		default:
+			return ZmListView.prototype._getLabelForField.apply(this, arguments);
+	}
+};
+
 /**
  * @private
  */
@@ -1205,7 +1232,13 @@ function(contact, params, asHtml, count) {
 
 	// checkbox selection
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(contact, ZmItem.F_SELECTION));
+		var result = { value: null };
+		appCtxt.notifyZimlets("onZmContactSplitView_createItemHtml", [this, htmlArr, idx, contact, result]);
+		if (result.value) {
+			idx = result.value;
+		} else {
+			idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(contact, ZmItem.F_SELECTION));
+		}
 	}
 
 	// icon

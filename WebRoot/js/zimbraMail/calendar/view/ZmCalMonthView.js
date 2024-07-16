@@ -498,7 +498,7 @@ function(html, loc, week, dow) {
 	var did = Dwt.getNextId();
 	var tid = Dwt.getNextId();	
 
-	html.append("<td class='calendar_month_cells_td' id='", tdid, "'>");
+	html.append("<td tabindex='0' class='calendar_month_cells_td' id='", tdid, "'>");
 	html.append("<div style='width:100%;height:100%;'>");
 	html.append("<table role='presentation' class='calendar_month_day_table'>");
 	html.append("<tr><td colspan=2 id='", tid, "'></td></tr></table>");
@@ -551,7 +551,7 @@ function() {
 	}
 	html.append("</colgroup>");
 	html.append("<tr>");
-	html.append("<td colspan=7 class=calendar_month_header_month id='", this._titleId, "'></td>");
+	html.append("<td colspan=7 class=calendar_month_header_month role='heading' aria-level='3' id='", this._titleId, "'></td>");
 	html.append("</tr>");
 	html.append("<tr>");
 
@@ -613,7 +613,52 @@ function() {
 	html.append("</td></tr>");
 	html.append("</table>");
 	this.getHtmlElement().innerHTML = html.toString();
-    
+
+    var monthBodyEl = document.getElementById(this._daysId);
+    Dwt.setHandler(monthBodyEl, DwtEvent.ONKEYUP, ZmCalMonthView._onKeyUp.bind(this));
+
+};
+
+ZmCalMonthView._onKeyUp =
+function(ev) {
+    if ((ev.keyCode < DwtKeyEvent.KEY_ARROW_LEFT || ev.keyCode > DwtKeyEvent.KEY_ARROW_DOWN) && ev.keyCode !== DwtKeyEvent.KEY_ENTER) {
+        return;
+    }
+
+    var currentEl = ev.target;
+
+    if (currentEl.classList.value.includes('calendar_month_cells_td')) {
+        var currentElIndex = this._getItemData(currentEl, "loc");
+        var nextday = null;
+
+        switch(ev.keyCode) {
+            case DwtKeyEvent.KEY_ENTER:
+                ev.button = DwtMouseEvent.LEFT
+                this._mouseDownAction(ev, currentEl);
+                break;
+            case DwtKeyEvent.KEY_ARROW_RIGHT:
+                nextday = this._days[currentElIndex + 1];
+                break;
+            case DwtKeyEvent.KEY_ARROW_LEFT:
+                nextday = this._days[currentElIndex - 1];
+                break;
+            case DwtKeyEvent.KEY_ARROW_UP:
+                nextday = this._days[currentElIndex - 7];
+                break;
+            case DwtKeyEvent.KEY_ARROW_DOWN:
+                nextday = this._days[currentElIndex + 7];
+                break;
+            default:
+                return;
+        }
+
+        if (nextday) {
+            var nextDayEl = document.getElementById(nextday.tdId);
+            this._compositeTabGroup.replaceMember(this._tabMember, nextDayEl);
+            appCtxt._rootTabGrp.setFocusMember(nextDayEl)
+            this._tabMember = nextDayEl;
+        }
+    }
 };
 
 ZmCalMonthView.prototype._updateWeekNumber =
@@ -690,6 +735,18 @@ function() {
 	this._title = formatter.format(this._date);
 	var titleEl = document.getElementById(this._titleId);
 	titleEl.innerHTML = this._title;
+
+    if (!this._tabMember) {
+        var today = new Date();
+        var day = this._dateToDayIndex[this._dayKey(today)] || this._dateToDayIndex[Object.keys(this._dateToDayIndex)[0]];
+        if (day) {
+            var todayEl = document.getElementById(day.tdId);
+            if (todayEl) {
+                this._compositeTabGroup.addMember(todayEl);
+                this._tabMember = todayEl;
+            }
+        }
+    }
 };
 
 ZmCalMonthView.prototype._calcDayIndex =
@@ -868,7 +925,7 @@ function(date, list, controller, noheader) {
 			var isNew = ao.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 			var dur = ao.getDurationText(false, false);
 
-			html[idx++] = "<tr><td class='calendar_month_day_item'><div class='";
+			html[idx++] = "<tr><td class='calendar_month_day_item' tabindex='0'><div class='";
 			html[idx++] = ZmCalendarApp.COLORS[controller.getCalendarColor(ao.folderId)];
 			html[idx++] = isNew ? "DarkC" : "C";
 			html[idx++] = "'>";
@@ -1007,6 +1064,11 @@ function(dayInfo) {
     view.setLocation(loc.x+5, loc.y+5);
 
     view._layout(true);
+
+    if (!this.closeButtonInTab) {
+        this._compositeTabGroup.addMember(view._closeButton);
+        this.closeButtonInTab = view._closeButton;
+    }
 };
 
 ZmCalMonthView.prototype.expandDay =

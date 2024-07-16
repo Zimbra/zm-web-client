@@ -121,6 +121,15 @@ function() {
 	this._toolbar.registerEnterCallback(this._searchListener.bind(this));
 
 	this.isPinned = false;
+	this._setComposeTabGroup();
+};
+
+ZmSearchResultsController.prototype._setComposeTabGroup =
+function() {
+	this._tabGroup = this._createTabGroup();
+	var rootTg = appCtxt.getRootTabGroup();
+	this._tabGroup.newParent(rootTg);
+	this._tabGroup.addMember(this._toolbar._compositeTabGroup);
 };
 
 /**
@@ -153,6 +162,7 @@ function(search, resultsCtlr) {
 	elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getViewMgr ? resultsCtlr.getViewMgr() : resultsCtlr.getCurrentView();
 
 	if (appCtxt.getCurrentViewId().indexOf(this._currentViewId) !== -1) {
+		appCtxt.notifyZimlets("onZmSearchResultsController_displayResults1", [this, search, resultsCtlr]);
 		appCtxt.getAppViewMgr().setViewComponents(this._currentViewId, elements, true);
 	}
 	else {
@@ -162,13 +172,21 @@ function(search, resultsCtlr) {
 		callbacks[ZmAppViewMgr.CB_POST_SHOW]    = this._postShowCallback.bind(this);
 		elements[ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR] = this._toolbar;
 
+		var tabParams;
+		var result = { value: null };
+		appCtxt.notifyZimlets("onZmSearchResultsController_displayResults2", [this, search, resultsCtlr, result]);
+		if (result.value) {
+			tabParams = result.value;
+		} else {
+			tabParams = this._getTabParams();
+		}
 		this._app.createView({	viewId:		this._currentViewId,
 								viewType:	this._currentViewType,
 								elements:	elements,
 								callbacks:	callbacks,
 								controller:	this,
 								hide:		[ ZmAppViewMgr.C_TREE_FOOTER ],
-								tabParams:	this._getTabParams()});
+								tabParams:	tabParams});
 		this._app.pushView(this._currentViewId);
 		this._filterPanel.reset();
 
@@ -176,6 +194,8 @@ function(search, resultsCtlr) {
 			this._button = appCtxt.getAppChooser().getButton(this.tabId);
 			Dwt.addClass(this._button.getHtmlElement(), "SearchTabButton");
 			this._button.addSelectionListener(this._pinnedListener.bind(this));
+		} else {
+			appCtxt.notifyZimlets("onZmSearchResultsController_displayResults3", [this, search, resultsCtlr]);
 		}
 	}
 
@@ -199,6 +219,8 @@ function(search, resultsCtlr) {
         resultsCtlr.updateTimeIndicator();
     }
 	setTimeout(this._toolbar.focus.bind(this._toolbar), 100);
+	this._tabGroup.addMember(this._filterPanel._compositeTabGroup);
+	this._tabGroup.addMember(this._resultsController._tabGroup);
 };
 
 ZmSearchResultsController.prototype._postHideCallback =
@@ -219,6 +241,7 @@ function() {
 	if (appCtxt.isWebClientOfflineSupported) {
 		this.getApp().resetWebClientOfflineOperations(this);
 	}
+	ZmController.prototype._postShowCallback.call(this);
 };
 
 // returns params for the search tab button

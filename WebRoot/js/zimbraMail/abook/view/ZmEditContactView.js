@@ -1099,9 +1099,13 @@ ZmEditContactViewImage = function(params) {
 	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(Dwt.addClass, [el,DwtControl.HOVER]));
 	this.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(Dwt.delClass, [el,DwtControl.HOVER]));
 	this.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._chooseImage));
+	Dwt.setHandler(el, DwtEvent.ONKEYDOWN, ZmEditContactViewImage._onKeyDown.bind(this));
 
 	this.setToolTipContent(ZmMsg.addImg);
 };
+
+ZmEditContactViewImage.ALLOWED_IMG_EXTENSION = ["png","jpg","jpeg","gif"];
+
 ZmEditContactViewImage.prototype = new DwtControl;
 ZmEditContactViewImage.prototype.constructor = ZmEditContactViewImage;
 ZmEditContactViewImage.prototype.isFocusable = true;
@@ -1182,12 +1186,19 @@ ZmEditContactViewImage.prototype._imageLoaded = function() {
     this._imgEl.setAttribute(w>h ? 'width' : 'height', 48);
 };
 
+ZmEditContactViewImage._onKeyDown = function(ev) {
+	if (ev.keyCode === DwtKeyEvent.KEY_ENTER) {
+		this._chooseImage();
+		return false;
+	}
+};
+
 /**
  * @private
  */
 ZmEditContactViewImage.prototype._chooseImage = function() {
 	var dialog = appCtxt.getUploadDialog();
-	dialog.setAllowedExtensions(["png","jpg","jpeg","gif"]);
+	dialog.setAllowedExtensions(ZmEditContactViewImage.ALLOWED_IMG_EXTENSION);
 	var folder = null;
 	var callback = new AjxCallback(this, this._handleImageSaved);
 	var title = ZmMsg.uploadImage;
@@ -2413,8 +2424,9 @@ ZmEditContactViewOther.prototype._createHtmlFromTemplate = function(templateId, 
         var checkbox = new DwtCheckbox({parent:container});
         checkbox.setText(ZmMsg.includeYear);
 		checkbox.addSelectionListener(new AjxListener(this, this._handleDateSelection,[calendar]));
-        this._calendarIncludeYear = checkbox;
-	}                                                        
+		this._calendarIncludeYear = checkbox;
+		calendar.tabgroup.addMember(checkbox);
+	}
 };
 
 // HACK: This function executes in the scope of the calendar picker

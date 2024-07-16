@@ -411,12 +411,14 @@ function(width) {
 	this._location = new DwtInputField(params);
 	Dwt.setSize(this._location.getInputElement(), width, "2rem");
 	this._location.reparentHtmlElement(this._htmlElId + "_location");
+	this._location.getInputElement().setAttribute('aria-label', ZmMsg.locationLabel);
 
 	// add priority DwtButton
 	this._prioritySelect = new DwtButton({parent:this});
     this._prioritySelect.setSize(60, Dwt.DEFAULT);
 	this._prioritySelect.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
 	this._prioritySelect.reparentHtmlElement(this._htmlElId + "_priority");
+	this._prioritySelect.setAttribute('aria-label', ZmMsg.priorityLabel);
 
 	var listener = new AjxListener(this, this._selectListener);
 	// add status DwtSelect
@@ -427,6 +429,7 @@ function(width) {
 	}
 	this._statusSelect.addChangeListener(listener);
 	this._statusSelect.reparentHtmlElement(this._htmlElId + "_status");
+	this._statusSelect.setAriaLabel(ZmMsg.statusLabel);
 
     var params = {
         parent: this,
@@ -626,9 +629,25 @@ ZmTaskEditView.prototype._addTabGroupMembers =
 function(tabGroup) {
 	tabGroup.addMember(this._subjectField);
 	tabGroup.addMember(this._location);
+	tabGroup.addMember(this._prioritySelect);
+	tabGroup.addMember(this._folderSelect);
+	tabGroup.addMember(this._statusSelect);
+	tabGroup.addMember(this._pCompleteSelectInput);
+	tabGroup.addMember(this._pCompleteButton);
 
-	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
-	tabGroup.addMember(document.getElementById(bodyFieldId));
+	tabGroup.addMember(this._startDateField);
+	tabGroup.addMember(this._startDateButton);
+	tabGroup.addMember(this._endDateField);
+	tabGroup.addMember(this._endDateButton);
+
+	tabGroup.addMember(this._reminderCheckbox);
+	tabGroup.addMember(this._remindDateField);
+	tabGroup.addMember(this._remindDateButton);
+	tabGroup.addMember(this._remindTimeSelect._timeSelectInput);
+	tabGroup.addMember(this._remindTimeSelect._timeSelectBtn);
+	tabGroup.addMember(this._reminderConfigure);
+
+	tabGroup.addMember(this._notesHtmlEditor.getTabGroupMember())
 };
 
 // Consistent spot to locate various dialogs
@@ -755,7 +774,22 @@ function(isEnabled) {
 
 ZmTaskEditView.prototype._setRemindersConfigureEnabled = function(enabled) {
 	this._reminderConfigure.setEnabled(enabled);
-    this._reminderConfigure.getHtmlElement().onclick = enabled ? AjxCallback.simpleClosure(skin.gotoPrefs, skin, "NOTIFICATIONS") : null;
+	var callBack = AjxCallback.simpleClosure(skin.gotoPrefs, skin, "NOTIFICATIONS");
+	Dwt.setHandler(this._reminderConfigure.getHtmlElement(), DwtEvent.ONCLICK, ZmTaskEditView._clickHandler.bind(this, callBack, enabled));
+	Dwt.setHandler(this._reminderConfigure.getHtmlElement(), DwtEvent.ONKEYUP, ZmTaskEditView._keyUpHandler.bind(this, callBack));
+};
+
+ZmTaskEditView._clickHandler =
+function(callback, enabled) {
+	if (enabled) {
+		callback();
+	}
+}
+ZmTaskEditView._keyUpHandler =
+function(callBack, ev) {
+	if (ev.keyCode === DwtKeyEvent.KEY_ENTER) {
+		callBack();
+	}
 };
 
 //

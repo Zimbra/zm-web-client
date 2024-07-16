@@ -698,9 +698,12 @@ ZmWorkHours.prototype._openCustomizeDlg =
 function() {
     if(!this._customDlg) {
         this._customDlg = new ZmCustomWorkHoursDlg(appCtxt.getShell(), "CustomWorkHoursDlg", this._workHours);
+        this._customDlg._tabGroup.removeAllMembers();
         this._customDlg.initialize(this._workHours);
         this._customDlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._closeCustomDialog, [true]));
         this._customDlg.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._closeCancelCustomDialog, [false]));
+        this._customDlg._tabGroup.addMember(this._customDlg.getButton(DwtDialog.OK_BUTTON));
+        this._customDlg._tabGroup.addMember(this._customDlg.getButton(DwtDialog.CANCEL_BUTTON));
     }
     this._customDlg.popup();
 };
@@ -790,7 +793,12 @@ function(templateId) {
 
     radioNormal = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_NORMAL")});
     radioNormal.setSelected(!isCustom);
-    var radioNormalId = radioNormal.getInputElement().id;
+    var radioNormalInput = radioNormal.getInputElement();
+    var radioNormalId = radioNormalInput.id;
+
+    radioNormalInput.setAttribute('aria-label', ZmMsg.normal);
+    radioNormalInput.removeAttribute('aria-labelledby');
+
     radioIds[radioNormalId] = radioNormal;
     this._radioNormal = radioNormal;
     this._radioNormalId = radioNormalId;
@@ -809,7 +817,12 @@ function(templateId) {
 
     radioCustom = new DwtRadioButton({parent:this, name:radioName, parentElement:(this._htmlElId + "_CAL_WORKING_HOURS_CUSTOM")});
     radioCustom.setSelected(isCustom);
-    var radioCustomId = radioCustom.getInputElement().id;
+    var radioCustomInput = radioCustom.getInputElement();
+    var radioCustomId = radioCustomInput.id;
+
+    radioCustomInput.setAttribute('aria-label', ZmMsg.custom);
+    radioCustomInput.removeAttribute('aria-labelledby');
+
     radioIds[radioCustomId] = radioCustom;
     this._radioCustom = radioCustom;
     this._radioCustomId = radioCustomId;
@@ -882,6 +895,10 @@ ZmCustomWorkHoursDlg.prototype.initialize = function(workHours) {
 	    checkbox.setSelected(workHours[i].isWorkingDay);
         checkbox.addSelectionListener(new AjxListener(this, this._setTimeInputEnabled, [i, checkbox]));
         this._workDaysCheckBox.push(checkbox);
+
+        this._tabGroup.addMember(checkbox);
+        this._tabGroup.addMember([startTimeSelect.getTabGroupMember(),
+            endTimeSelect.getTabGroupMember()]);
     }
 };
 

@@ -59,6 +59,12 @@ function() {
     } else if (this.usePrism) {
 		return AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup;
 	}
+
+	var result = { value: null };
+	appCtxt.notifyZimlets("onZmDesktopAlert_getDisplayText", [this, result]);
+	if (result.value) {
+		return result.value;
+	}
 };
 
 ZmDesktopAlert.prototype.start =

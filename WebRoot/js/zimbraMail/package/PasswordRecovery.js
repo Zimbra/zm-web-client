@@ -85,4 +85,5 @@ AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeException");
 AjxPackage.require("zimbra.csfe.ZmCsfeResult");
 
+AjxPackage.require("zimbraMail.share.model.ZmTwoFactorAuth");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmPasswordRecoveryDialog");

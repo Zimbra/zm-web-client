@@ -455,7 +455,11 @@ ZmPrefView.prototype._checkSection = function(section, viewPage, dirtyCheck, noV
                     } else {
                         pref.setValue(value);
                         if (pref.name) {
-                            list.push(pref);
+                            var result = { handled: false };
+                            appCtxt.notifyZimlets("onZmPrefView_checkSection", [this, pref, list, result]);
+                            if (!result.handled) {
+                                list.push(pref);
+                            }
                         }
                     }
                 } else if (!dirtyCheck) {

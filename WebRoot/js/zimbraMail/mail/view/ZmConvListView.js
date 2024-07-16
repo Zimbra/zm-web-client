@@ -162,7 +162,7 @@ ZmConvListView = function(params) {
 	this._controller = params.controller;
 	this._mode = this.view = ZmId.VIEW_CONVLIST;
 	params.headerList = this._getHeaderList();
-	params.listLabel = ZmMsg.conversationList;
+	params.listLabel = ZmMsg.conversation;
 	ZmMailListView.call(this, params);
 
 	// change listener needs to handle both types of events
@@ -461,13 +461,22 @@ function(item, colIdx) {
 			break;
 		}
 	}
-	htmlArr[idx++] = "<div class='TopRow " + selectionCssClass + "' ";
-	htmlArr[idx++] = "id='";
-	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
-	htmlArr[idx++] = "'>";
-	if (selectionCssClass) {
-		idx = ZmMailListView.prototype._getCellContents.apply(this, [htmlArr, idx, item, ZmItem.F_SELECTION, colIdx]);
+
+	var result = { value: null };
+	appCtxt.notifyZimlets("onZmConvListView_getAbridgedContent", [this, item, colIdx, htmlArr, idx, selectionCssClass, result]);
+	if (result.value) {
+		htmlArr = result.value.htmlArr;
+		idx = result.value.idx;
+	} else {
+		htmlArr[idx++] = "<div class='TopRow " + selectionCssClass + "' ";
+		htmlArr[idx++] = "id='";
+		htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
+		htmlArr[idx++] = "'>";
+		if (selectionCssClass) {
+			idx = ZmMailListView.prototype._getCellContents.apply(this, [htmlArr, idx, item, ZmItem.F_SELECTION, colIdx]);
+		}
 	}
+
 	if (isMsg) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx);
 	}

@@ -117,6 +117,11 @@ ZmPref.PAGE_SIZES = ["10", "25", "50", "100", "250", "500", "1000"];
 
 ZmPref.validateEmail =
 function(emailStr) {
+	var result = { handled: false, value: null };
+	appCtxt.notifyZimlets("onZmPref_validateEmail", [emailStr, result]);
+	if (result.handled) {
+		return result.value;
+	}
 	if (emailStr) {
 		// NOTE: Handle localhost for development purposes
 		return emailStr.match(/\@localhost$/i) || AjxEmailAddress.parse(emailStr) != null;

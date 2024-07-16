@@ -51,6 +51,7 @@ ZmConvView2 = function(params) {
 	this._setAllowSelection();
 	this._setEventHdlrs([DwtEvent.ONMOUSEOUT, DwtEvent.ONMOUSEOVER, DwtEvent.ONMOUSEENTER, DwtEvent.ONMOUSELEAVE]); // needed by object manager
 	this._objectManager = true;
+	this.getHtmlElement().setAttribute('aria-label', ZmMsg.emailPreview);
 };
 
 ZmConvView2.prototype = new ZmMailItemView;
@@ -134,7 +135,7 @@ function() {
 	this._header.replaceElement(headerDivId);
 
 	 // label our control after the subject element
-	this.setAttribute('aria-labelledby', this._header._convSubjectId);
+	this.setAttribute('aria-label', ZmMsg.emailPreview);
 
 	if (this._controller && this._controller._checkKeepReading) {
 		Dwt.setHandler(this._messagesDiv, DwtEvent.ONSCROLL, ZmDoublePaneController.handleScroll);
@@ -978,7 +979,7 @@ function() {
 	this._infoDiv			= document.getElementById(this._convInfoId);
 
 	var convviewel = this._convView.getHtmlElement();
-	convviewel.setAttribute('aria-labelledby', this._convSubjectId);
+	convviewel.setAttribute('aria-label', ZmMsg.emailPreview);
 };
 
 ZmConvView2Header.prototype._setExpandIcon =

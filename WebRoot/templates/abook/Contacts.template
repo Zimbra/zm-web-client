@@ -435,7 +435,7 @@
 			fullnameHtml = '';
 		}
 	$>
-	<div id='${id}_contactName' class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= fullnameHtml $></div>
+	<div id='${id}_contactName' role='heading' aria-level='3' class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= fullnameHtml $></div>
 	<$ if (nickname && !isEdit) { $>
 		<div class='contactHeader'>&ldquo;<$= AjxStringUtil.htmlEncode(nickname) $>&rdquo;</div>
 	<$ } $>
@@ -773,7 +773,7 @@
 							<$ } else { $>
 							<tr id='${id}_searchRow'>
 								<td align='right'><$= ZmMsg.findLabel $></td>
-								<td><input type='text' id='${id}_searchField'></td>
+								<td><input type='text' id='${id}_searchField' aria-label='<$= ZmMsg.findLabel $>'></td>
 								<td id='${id}_searchButton'></td>
 							</tr>
 							<$ } $>
@@ -840,7 +840,7 @@
 				<$ for (var i = 0; i < data.numLetters; i++) { $>
 					<td _idx="<$= i $>"	role='button'
 						class='DwtButton AlphabetBarCell'
-						aria-label="<$= data.ariaLabel, data.alphabet[i] $>"
+						aria-label="<$= data.alphabet[i] $>"
 <$ if (data.alphabet[i].length > 1) { $> colspan='<$= data.alphabet[i].length/2 + 1 $>' <$ } $> >
 						<$= data.alphabet[i] $>
 					</td>
@@ -985,7 +985,7 @@
 				<td>
 					<table role="presentation" width='100%'>
 						<tr>
-							<td width='600'>
+							<td width='600px'>
 								<table role="presentation" class='ZPropertySheet' cellspacing='6' id='${id}_searchTable'>
 									<$ if (data.detailed) { $>
 									<tr id='${id}_searchNameRow'>
@@ -1017,16 +1017,18 @@
 									<$ } $>
 								</table>
 							</td>
-							<td align='right' valign='bottom'>
-								<$ if (data.showSelect) { $>
-									<table role="presentation" class='ZPropertySheet' cellspacing='6'>
-										<tr>
-											<td class='Label nobreak' id='${id}_listSelectLbl'><$= ZmMsg.showNames $></td>
-											<td id='${id}_listSelect'></td>
-										</tr>
-									</table>
-								<$ } $>
-							</td>
+							<$ if (data.showSelect) { $>
+								<td align='right' valign='bottom'>
+										<table role="presentation" class='ZPropertySheet' cellspacing='6'>
+											<tr>
+												<td class='Label nobreak' id='${id}_listSelectLbl'><$= ZmMsg.showNames $></td>
+												<td id='${id}_listSelect'></td>
+											</tr>
+										</table>
+								</td>
+							<$ } else { $>
+								<td align='right' valign='bottom' width='300px'>
+							<$ } $>
 						</tr>
 					</table>
 				</td>

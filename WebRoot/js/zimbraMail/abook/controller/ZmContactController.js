@@ -153,6 +153,13 @@ function() {
             style: DwtLabel.IMAGE_RIGHT};
 };
 
+ZmContactController.prototype._initializeTabGroup =
+function(view) {
+	// Calling parent's parent method to skip the adding compositeTabGroup members into tabGroup 
+	// which is happening on parent's class method. As this compositeTabGroup memebers broke the tab navigation by skipping a few interactive elements.
+	ZmBaseController.prototype._initializeTabGroup.call(this, view);
+};
+
 ZmContactController.prototype.updateTabTitle =
 function() {
 	var	tabTitle = this._contactView._getFullName(true);

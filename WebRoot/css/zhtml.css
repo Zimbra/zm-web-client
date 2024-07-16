@@ -492,6 +492,10 @@ A:visited { @Text-link@ }
 	padding: 10px;
 }
 
+.zPrintMsgs .MsgBody-html * {
+	page: auto;
+}
+
 .zPrintMsgs .MsgBody-html, .zPrintMsgs {
     word-wrap: break-word;
     word-break: break-word;/* Works for webkit browsers - Chrome, safari */

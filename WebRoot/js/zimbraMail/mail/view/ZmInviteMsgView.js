@@ -136,7 +136,7 @@ function(msg) {
 			inviteToolbar.setVisible(enabled);
 
 			// show on-behalf-of info?
-			this._respondOnBehalfLabel.setContent(msg.cif ? AjxMessageFormat.format(ZmMsg.onBehalfOfText, [msg.cif]) : "");
+			this._respondOnBehalfLabel.setContent(msg.cif ? AjxMessageFormat.format(ZmMsg.onBehalfOfText, [AjxStringUtil.htmlEncode(msg.cif)]) : "");
 			this._respondOnBehalfLabel.setVisible(!!msg.cif);
 
 			// logic for showing calendar/folder chooser
@@ -464,8 +464,9 @@ function(ptst) {
 		 disableButtonIds[ ZmOperation.PROPOSE_NEW_TIME] = true;
 	}
 	var inviteToolbar = this.getInviteToolbar();
-
 	var buttonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE, ZmOperation.PROPOSE_NEW_TIME];
+	appCtxt.notifyZimlets("onZmInviteMsgView_enableToolbarButtons", [buttonIds]);
+
 	for (var i = 0; i < buttonIds.length; i++) {
 		var buttonId = buttonIds[i];
 		inviteToolbar.getButton(buttonId).setEnabled(appCtxt.isExternalAccount() ? false : !disableButtonIds[buttonId]);
@@ -594,7 +595,7 @@ function(subs, sentBy, sentByAddr, obo) {
 	}
 
     if(this._msg.cif) {
-        subs.intendedForMsg = AjxMessageFormat.format(ZmMsg.intendedForInfo, [this._msg.cif]);
+        subs.intendedForMsg = AjxMessageFormat.format(ZmMsg.intendedForInfo, [AjxStringUtil.htmlEncode(this._msg.cif)]);
         subs.intendedForClassName = "InviteIntendedFor";
     }
 
@@ -740,6 +741,8 @@ function() {
 		ZmOperation.REPLY_DECLINE,
 		ZmOperation.PROPOSE_NEW_TIME
 	];
+
+	appCtxt.notifyZimlets("onZmInviteMsgView_createInviteToolbar", [replyButtonIds, notifyOperationButtonIds, ignoreOperationButtonIds, inviteOps]);
 
 	var params = {
 		parent: this.parent,

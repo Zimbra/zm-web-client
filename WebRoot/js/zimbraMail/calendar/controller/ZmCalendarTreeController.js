@@ -229,6 +229,9 @@ function(actionMenu, type, id) {
 ZmCalendarTreeController.prototype._getFreeBusySubMenu =
 function(actionMenu, restUrl){
         var subMenuItems = [ZmOperation.SEND_FB_HTML,ZmOperation.SEND_FB_ICS,ZmOperation.SEND_FB_ICS_EVENT];
+
+        appCtxt.notifyZimlets("onZmCalendarTreeController_getFreeBusySubMenu", [subMenuItems]);
+
         var params = {parent:actionMenu, menuItems:subMenuItems};
 	    var subMenu = new ZmActionMenu(params);
         for(var s=0;s<subMenuItems.length;s++){
@@ -304,6 +307,8 @@ function() {
     }
 
 	ops.push(ZmOperation.FIND_SHARES);
+
+	appCtxt.notifyZimlets("onZmCalendarTreeController_getHeaderActionMenuOps", [ops]);
 
 	return ops;
 };

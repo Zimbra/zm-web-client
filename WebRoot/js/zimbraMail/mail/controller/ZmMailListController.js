@@ -2319,6 +2319,8 @@ function(parent, num) {
 	parent.setItemVisible(ZmOperation.CREATE_TASK, !(isDrafts || isOutboxFolder));
     parent.setItemVisible(ZmOperation.ACTIONS_MENU, !isOutboxFolder);
 
+	appCtxt.notifyZimlets("onZmMailListController_resetOperations", [this, parent, isDrafts]);
+
 	// bug fix #37154 - disable non-applicable buttons if rfc/822 message
 	var isRfc822 = appCtxt.isChildWindow && window.newWindowParams && window.newWindowParams.isRfc822;
 	if (isRfc822 || (isReadOnly && num > 0)) {

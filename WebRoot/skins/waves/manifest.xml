@@ -23,7 +23,7 @@
 -->
 	<common>
 		<substitutions>
-			<file>../_base/base3/skin.properties</file>		
+			<file>../_base/base3/skin.properties</file>
 			<file>skin.properties</file>
 		</substitutions>
 		<css>
@@ -44,5 +44,14 @@
 			<file>../../css/zhtml.css</file>
 			<file>../_base/base3/zhtml.css</file>
 		</css>
-	</standard>	
+	</standard>
+	<print>
+		<css>
+			<file>../_base/base3/print.css</file>
+		</css>
+		<cssIgnore>
+			<file>../_base/base3/skin.css</file>
+			<file>skin.css</file>
+		</cssIgnore>
+	</print>
 </skin>

@@ -155,8 +155,9 @@ function(appName, exception) {
 	if (exception) {
 		if (exception.msg === "system failure: app-specific password already exists for the name " + appName) {
 			errorMsg = ZmMsg.twoStepAuthAppNameError1;
-		}
-		else {
+		} else if (exception.msg === "system failure: app-specific password limit reached") {
+			errorMsg = ZmMsg.twoStepAuthAppNameError3;
+		} else {
 			errorMsg = exception.getErrorMsg();
 		}
 	}

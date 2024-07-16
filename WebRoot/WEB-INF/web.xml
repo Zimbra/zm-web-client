@@ -542,6 +542,17 @@
     <env-entry-value>%%list VAR:zimbraServiceEnabled ,%%</env-entry-value>
   </env-entry>
 
+  <!-- LOCALHOSTBEGIN %%comment LOCAL:webclient_localhost_override,-->%%
+  <env-entry>
+    <description>
+      Override of the localHost key used by ZJspSession.
+    </description>
+    <env-entry-name>localHost</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>@@webclient_localhost_override@@</env-entry-value>
+  </env-entry>
+  %%comment LOCAL:webclient_localhost_override,<!--%% LOCALHOSTEND -->
+
   <env-entry>
     <description>
       The http and httpsPort need to be in sync with the webserver

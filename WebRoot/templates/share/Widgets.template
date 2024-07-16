@@ -30,7 +30,7 @@
 	<table role="presentation" class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border'style='table-layout:auto;'>
 		<tr role='none'>
 			<td role='none' id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
-			<td role='none' id='${id}_title'		class='ZWidgetTitle'></td>
+			<td id='${id}_title' class='ZWidgetTitle'></td>
 			<td role='none' id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
 			<td role='none' id='${id}_dropdown' 	class='ZDropDown'></td>
 		</tr>

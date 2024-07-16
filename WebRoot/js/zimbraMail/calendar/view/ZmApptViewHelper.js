@@ -818,11 +818,18 @@ function(calItem, attach, hasCheckbox, getLinkIdCallback) {
 	// start building html for this attachment
 	html[i++] = "<table role='presentation' border=0 cellpadding=0 cellspacing=0><tr>";
 	if (hasCheckbox) {
-		html[i++] = "<td width=1%><input type='checkbox' checked value='";
-		html[i++] = attach.part;
-		html[i++] = "' name='";
-		html[i++] = ZmCalItem.ATTACHMENT_CHECKBOX_NAME;
-		html[i++] = "'></td>";
+		var result = { value: null };
+		appCtxt.notifyZimlets("onZmApptViewHelper_getAttachListHtml", [html, i, attach, result]);
+		if (result.value) {
+			html = result.value.html;
+			i = result.value.i;
+		} else {
+			html[i++] = "<td width=1%><input type='checkbox' checked value='";
+			html[i++] = attach.part;
+			html[i++] = "' name='";
+			html[i++] = ZmCalItem.ATTACHMENT_CHECKBOX_NAME;
+			html[i++] = "'></td>";
+		}
 	}
 
 	var hrefRoot = ["href='", msgFetchUrl, "&id=", calItem.invId, "&amp;part=", attach.part].join("");

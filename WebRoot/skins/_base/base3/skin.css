@@ -320,7 +320,7 @@ table#modernForm td.zLoginFieldSubmit {
 
 
 .extuserprovLogo {
-	padding: 30px 40px 0;
+	padding: 30px 40px 0px 10px;
 }
 
 #ZLoginAppName 		{	@LoginAppName@ 	}
@@ -742,6 +742,9 @@ SELECT						{	@FieldBorder@	}
 
 .appt_new_time .ImgBlank_16,
 .appt_time .ImgBlank_16				{ display:none; 	}
+.ZmConvView2FullWidth {
+	width: 100%;
+}
 
 /*
  * TinyMCE customizations

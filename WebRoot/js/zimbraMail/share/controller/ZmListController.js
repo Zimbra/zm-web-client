@@ -352,9 +352,9 @@ function(view) {
 
 	ZmBaseController.prototype._initializeTabGroup.apply(this, arguments);
 
-	var navToolBar = this._navToolBar[view];
-	if (navToolBar) {
-		this._tabGroups[view].addMember(navToolBar.getTabGroupMember());
+	if (this._view[view]._compositeTabGroup) {
+		var tabSize = this._tabGroups[view].size();
+		this._tabGroups[view].addMember(this._view[view]._compositeTabGroup, tabSize - 1);
 	}
 };
 
@@ -974,7 +974,17 @@ function(view, callback, result) {
 
 ZmListController.prototype._initializeNavToolBar =
 function(view) {
-	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
+	var prevButton, nextButton;
+
+	if (view.includes('TKL')) {
+		prevButton = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+	}
+
+	if (view.includes('MSG')) {
+		prevButton = this._toolbar[view].getButton(ZmOperation.DETACH);
+	}
+
+	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view, prevButton: prevButton, nextButton: nextButton});
 	this._setNavToolBar(tb, view);
 };
 

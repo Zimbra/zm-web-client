@@ -581,7 +581,14 @@ function(ev) {
 	if (organizer.id == ZmFolder.ID_LOAD_FOLDERS) {
 		return;
 	}
-	var value = organizer ? organizer.getName(null, null, true) : ev.item.getText();
+	var value;
+	var result = { value: null };
+	appCtxt.notifyZimlets("onZmChooseFolderDialog_treeViewSelectionListener", [organizer, ev, result]);
+	if (result.value) {
+		value = result.value;
+	} else {
+		value = organizer ? organizer.getName(null, null, true) : ev.item.getText()
+	}
 	this._inputField.setValue(value);
 	if (ev.detail == DwtTree.ITEM_DBL_CLICKED || ev.enter) {
 		this._okButtonListener();

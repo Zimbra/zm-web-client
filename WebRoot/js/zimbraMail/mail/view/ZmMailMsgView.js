@@ -78,6 +78,7 @@ ZmMailMsgView = function(params) {
 
 	if (this._mode === ZmId.VIEW_TRAD) {
 		this.setAttribute('role', 'region');
+		this.setAttribute('aria-label', ZmMsg.emailPreview);
 	}
 };
 
@@ -1554,7 +1555,7 @@ function(msg, container, doNotClearBubbles) {
 	var html = AjxTemplate.expand(template, subs);
 
 	var el = container || this.getHtmlElement();
-	el.setAttribute('aria-label', subject);
+	el.setAttribute('aria-label', ZmMsg.emailPreview);
 	el.appendChild(Dwt.parseHtmlFragment(html));
 	this._headerElement = Dwt.byId(this._htmlElId + "_headerElement");
 	this._makeFocusable(this._headerElement);

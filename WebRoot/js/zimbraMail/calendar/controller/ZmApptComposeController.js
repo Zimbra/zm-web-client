@@ -558,23 +558,27 @@ function() {
 	if (optionsButton){
         optionsButton.setVisible(true); //might be invisible if not ZmSetting.HTML_COMPOSE_ENABLED (see ZmCalItemComposeController._createToolBar)
 
-        var m = optionsButton.getMenu();
-        if (m) {
-            var sepMi = new DwtMenuItem({parent:m, style:DwtMenuItem.SEPARATOR_STYLE});
-        }
-        else {
-            m = new DwtMenu({parent:optionsButton});
-            optionsButton.setMenu(m);
-        }
+        var result = { handled: false };
+        appCtxt.notifyZimlets("onZmApptComposeController_createToolBar", [this, optionsButton, result]);
+        if (!result.handled) {
+            var m = optionsButton.getMenu();
+            if (m) {
+                var sepMi = new DwtMenuItem({parent:m, style:DwtMenuItem.SEPARATOR_STYLE});
+            }
+            else {
+                m = new DwtMenu({parent:optionsButton});
+                optionsButton.setMenu(m);
+            }
 
-        var mi = this._requestResponses = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
-        mi.setText(ZmMsg.requestResponses);
-        mi.setChecked(true, true);
+            var mi = this._requestResponses = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
+            mi.setText(ZmMsg.requestResponses);
+            mi.setChecked(true, true);
 
-        sepMi = new DwtMenuItem({parent:m, style:DwtMenuItem.SEPARATOR_STYLE});
-        mi = new DwtMenuItem({parent:m, style:DwtMenuItem.NO_STYLE});
-        mi.setText(ZmMsg.suggestionPreferences);
-        mi.addSelectionListener(this._prefListener.bind(this));
+            sepMi = new DwtMenuItem({parent:m, style:DwtMenuItem.SEPARATOR_STYLE});
+            mi = new DwtMenuItem({parent:m, style:DwtMenuItem.NO_STYLE});
+            mi.setText(ZmMsg.suggestionPreferences);
+            mi.addSelectionListener(this._prefListener.bind(this));
+        }
     }
 
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));

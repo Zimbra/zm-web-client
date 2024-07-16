@@ -476,6 +476,8 @@ function() {
  * @private
  */
 ZmPrefZimletListView = function(parent, controller) {
+	this.tableView = true;
+	this.tableCaption = ZmMsg.zimlets;
 	DwtListView.call(this, {
 		parent: parent,
 		className: "ZmPrefZimletListView",
@@ -485,6 +487,7 @@ ZmPrefZimletListView = function(parent, controller) {
 	});
 
 	this._controller = controller;
+	this.setAttribute('aria-label',ZmMsg.zimlets);
 	this.setMultiSelect(false); // single selection only
 	this._internalId = AjxCore.assignId(this);
 };
@@ -516,6 +519,28 @@ function(list) {
     }
 };
 
+ZmPrefZimletListView.prototype.handleKeyAction = function(actionCode, ev) {
+
+	if (!this.size()) {
+		return false;
+	}
+
+	switch (actionCode) {
+		case DwtKeyMap.SELECT_NEXT:
+			if (ev.charCode === 32) {
+				ev.button = DwtMouseEvent.LEFT;
+				ev.target = ev.target.querySelector('input');
+				this._itemClicked(ev.target, ev);
+				var checked = ev.target.checked;
+				ev.target.checked = !checked;
+				break;
+			}
+		default:
+			return DwtListView.prototype.handleKeyAction.call(this, actionCode, ev);
+	}
+	return true;
+};
+
 ZmPrefZimletListView.prototype._handleZimletsLoaded = function(evt) {
     this._zimletsLoaded = true;
     var array = this.parent.getZimletsArray();
@@ -527,6 +552,7 @@ ZmPrefZimletListView.prototype._handleZimletsLoaded = function(evt) {
         this.setCellContents(item, ZmPrefZimletListView.COL_NAME, AjxStringUtil.htmlEncode(item.label));
         this.setCellContents(item, ZmPrefZimletListView.COL_DESC, AjxStringUtil.htmlEncode(item.desc));
     }
+	this._createScreenReaderTable();
 };
 
 ZmPrefZimletListView.prototype._getRowId =
@@ -572,6 +598,9 @@ function() {
 
 ZmPrefZimletListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
+	//using ZmMsg.zimlets as its a key defined by client as well in the skin template which overrides the default
+	var activeZimlet = ZmMsg.active + ':' + ZmMsg.zimlets + ';';
+	var inactiveZimlet = ZmMsg.inActive + ':' + ZmMsg.zimlets + ';';
 	if (field == ZmPrefZimletListView.COL_ACTIVE) {
 		html[idx++] = "<input name='checked_zimlets' type='checkbox' ";
 		html[idx++] = item.active ? "checked " : "";
@@ -581,24 +610,28 @@ function(html, idx, item, field, colIdx, params) {
 		html[idx++] = item.name;
 		html[idx++] = "' _flvId='";
 		html[idx++] = this._internalId;
+		html[idx++] = "' aria-label='";
+		html[idx++] = item.active ? activeZimlet : inactiveZimlet;
 		html[idx++] = "' onchange='ZmPrefZimletListView._activeStateChange'>";
 	}
 	else if (field == ZmPrefZimletListView.COL_DESC) {
-        var desc = this._zimletsLoaded ? item.desc : ZmMsg.loading;
-        html[idx++] = "<div id='";
-        html[idx++] = this._getCellId(item, ZmPrefZimletListView.COL_DESC);
-        html[idx++] = "'>";
+		var desc = this._zimletsLoaded ? item.desc : ZmMsg.loading;
+		html[idx++] = '<div id="';
+		html[idx++] = this._getCellId(item, ZmPrefZimletListView.COL_DESC);
+		html[idx++] = '" aria-label="';
+		html[idx++] = ZmMsg.description + ':' + AjxStringUtil.stripTags(desc, true) + ';">';
 		html[idx++] = AjxStringUtil.stripTags(desc, true);
-        html[idx++] = "</div>";
+		html[idx++] = '</div>';
 	}
 	else if (field == ZmPrefZimletListView.COL_NAME) {
-        html[idx++] = "<div id='";
-        html[idx++] = this._getCellId(item, ZmPrefZimletListView.COL_NAME);
-        html[idx++] = "' title='";
-        html[idx++] = item.name;
-        html[idx++] = "'>";
+		html[idx++] = '<div id="';
+		html[idx++] = this._getCellId(item, ZmPrefZimletListView.COL_NAME);
+		html[idx++] = '" title="';
+		html[idx++] = item.name;
+		html[idx++] = '" aria-label="';
+		html[idx++] = ZmMsg.name + ':' + AjxStringUtil.stripTags(item.getNameWithoutPrefix(!this._zimletsLoaded), true) + ';">';
 		html[idx++] = AjxStringUtil.stripTags(item.getNameWithoutPrefix(!this._zimletsLoaded), true);
-        html[idx++] = "</div>";
+		html[idx++] = '</div>';
 	}
 	else if (field == ZmPrefZimletListView.COL_ACTION) {
 		html[idx++] = "<a href='javascript:;' onclick='ZmPrefZimletListView.undeployZimlet(";
@@ -650,6 +683,8 @@ function(clickedEl, ev, button) {
 		ZmPrefZimletListView._activeStateChange(ev);
 	}
 
+	var that = this;
+	setTimeout(function () { that._createScreenReaderTable(); }, 50);
 	return !isInput;
 };
 

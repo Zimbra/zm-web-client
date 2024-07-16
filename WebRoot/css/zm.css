@@ -553,7 +553,7 @@ INPUT[type="text"].search_input-expanded:focus {
 .Row .Row-selected .ZmConvListFragment,
 .SubjectDoubleRow .ZmConvListFragment {
 	color:black;
-	opacity:0.4;
+	opacity:0.7;
 	font-weight:normal;
 }
 
@@ -564,7 +564,7 @@ INPUT[type="text"].search_input-expanded:focus {
 
 .ZmConvListNumMsgs {
 	@FontSize-normal@
-	background-color:@darken(AppC,30)@; 
+	background-color:@darken(AppC,50)@;
 	color:white; 
 	padding:0px 4px;
 	@roundCorners(6px)@
@@ -3504,7 +3504,7 @@ HTML>BODY .appt-selected .appt_allday_body
 /* Match the width of ZmPreferencesPage */
 .prefHeader {
 	@FontSize-bigger@
-	background-color:@darken(AppC,30)@;
+	background-color:#666666;
 	color:white;
 	padding:4px 8px;
 	width:99%;
@@ -3512,6 +3512,12 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .prefHeaderComment {width:99%;}
+
+.mountedShareComment {
+	margin-top: 6px;
+	padding-top: 6px;
+	border-top: 1px solid rgb(228, 229, 228);
+}
 
 .ZOptionsHeaderL, .ZOptionsHeaderR {
 	display:none;
@@ -3618,7 +3624,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZOptionsInfo {
-	@Text-disabled@		/* TODO:Text-hint ? */
+	color: #555555;
 }
 
 .ZOptionsInfo .ZOptionsLabel {
@@ -4950,10 +4956,13 @@ If you feel compelled to have a background color, please do so on a per skin lev
 /* To be used on tables that include individual rows for labels and values */
 
 .ZPropertySheet				{	@PropertySheet@				}
-.ZPropertySheet>TBODY>TR>TD {	@PropertySheetSpacing@		}
+.ZPropertySheet>TBODY>TR>TD, .ZPropertySheet>THEAD>TR>TD {
+	@PropertySheetSpacing@
+}
 
 /* make nested property sheets align properly */
-.ZPropertySheet>TBODY>TR>TD>.ZPropertySheet>TBODY>TR>TD:first-child {
+.ZPropertySheet>TBODY>TR>TD>.ZPropertySheet>TBODY>TR>TD:first-child,
+.ZPropertySheet>THEAD>TR>TD>.ZPropertySheet>THEAD>TR>TD:first-child {
 	@PropertySheetNoLeftSpacing@
 }
 
@@ -5339,7 +5348,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmContactSplitView .rowType {
-	color:gray;
+	color:#333;
 	width: auto;
 }
 
@@ -5992,8 +6001,9 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	font-size: 13px;
 }
 
-.ZmTwoFactorCustomInputLoginPage .numberInputTag[type="number"] ,
-.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"] {
+.ZmTwoFactorCustomInputLoginPage .ZmTwoFactorCustomSetupCodeInputTag,
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"],
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="email"] {
 	box-sizing: border-box;
 	height: 36px ;
 	width: 100%;
@@ -6004,8 +6014,9 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	outline: none;
 }
 
-.ZmTwoFactorCustomInputLoginPage .numberInputTag[type="number"]:focus ,
-.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"]:focus {
+.ZmTwoFactorCustomInputLoginPage .ZmTwoFactorCustomSetupCodeInputTag:focus,
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="password"]:focus,
+.ZmTwoFactorCustomInputLoginPage .inputTag[type="email"]:focus {
 	border-color:@brand-primary@;
 	outline: none;
 }
@@ -6013,6 +6024,39 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 .ZmTwoFactorSetupContainer {
 	margin:20px;
 	text-align:center;
+}
+
+.ZmTwoFactorSetupCode {
+	display: flex;
+	height: 100%;
+	flex-direction: column;
+}
+
+.ZmTwoFactorSetupCodeDescriptionGuide {
+	margin-bottom: 0;
+}
+
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupCodeContainer {
+	height: 100%;
+	margin: 0 20px;
+	display: flex;
+	align-items: center;
+	align-content: center;
+	justify-content: center;
+	flex-direction: row;
+}
+
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupCodeContainer label {
+	display: inline-block;
+	margin: 0 10px;
+}
+
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupCodeContainer INPUT[type="text"] {
+	margin: 3px 0;
+}
+
+.ZmTwoFactorSetupCodeSubContainer {
+	width: 100%;
 }
 
 .ZmTwoFactorCustomSetupContainerLoginPage {
@@ -6046,6 +6090,16 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 .ZmTwoFactorSetupError {
 	color:#990000;
 	font-weight:bold;
+}
+
+.ZmTwoFactorSetupError.ZmTwoFactorSetupPasswordError {
+	display: flex;
+	justify-content: center;
+	text-align: left;
+}
+
+.ZmAppNameError.ZmTwoFactorSetupError {
+	margin-left: 0;
 }
 
 
@@ -6095,13 +6149,15 @@ html[data-ispasswordrecoverypage] .WindowInnerContainer .horizSep {
 
 div.PasswordRecoveryBackToSignInButton .ZButtonBorder,
 .DwtDialogButtonBar .PasswordRecoveryResendButton .ZButtonBorder,
-#cancelRecoveryButton .ZButtonBorder {
+#cancelRecoveryButton .ZButtonBorder,
+div.PasswordRecoveryTFACancelButton .ZButtonBorder {
 	background-color: @gray-lightest@;
 }
 
 div.PasswordRecoveryBackToSignInButton .ZButtonBorder:hover,
 .DwtDialogButtonBar .PasswordRecoveryResendButton .ZButtonBorder:hover,
-#cancelRecoveryButton .ZButtonBorder:hover {
+#cancelRecoveryButton .ZButtonBorder:hover,
+div.PasswordRecoveryTFACancelButton .ZButtonBorder:hover {
 	background-color: @gray-hover@;
 }
 
@@ -6109,8 +6165,10 @@ div.PasswordRecoveryBackToSignInButton .ZButtonTable:hover .ZWidgetTitle,
 div.PasswordRecoveryBackToSignInButton .ZButtonTable .ZWidgetTitle,
 div.PasswordRecoveryResendButton .ZButtonTable .ZWidgetTitle ,
 div.PasswordRecoveryResendButton .ZButtonTable:hover .ZWidgetTitle,
-#cancelRecoveryButton .ZButtonTable .ZWidgetTitle ,
-#cancelRecoveryButton .ZButtonTable:hover .ZWidgetTitle {
+#cancelRecoveryButton .ZButtonTable .ZWidgetTitle,
+#cancelRecoveryButton .ZButtonTable:hover .ZWidgetTitle,
+div.PasswordRecoveryTFACancelButton .ZButtonBorder .ZWidgetTitle,
+div.PasswordRecoveryTFACancelButton .ZButtonBorder:hover .ZWidgetTitle {
 	color : @gray-darker@;
 }
 
@@ -6166,7 +6224,8 @@ div#resetPasswordRecoveryButton {
 	padding: 0 40px;
 }
 
-.ZmPasswordRecoverySetupContainer label {
+.ZmPasswordRecoverySetupContainer label,
+.ZmPasswordRecoveryTwoFactorLink {
 	display: inline-block;
 	font-size: 13px;
 	padding: 5px 0;
@@ -6280,6 +6339,25 @@ div#resetPasswordRecoveryButton {
 	margin: auto 10px auto auto;
 }
 
+.ZmPasswordRecoveryTwoFactorMethodOptionContainer {
+	padding-top: 10px;
+}
+
+.ZmPasswordRecoveryTwoFactorMethodDescription {
+	font-size: 13px;
+}
+
+.ZmPasswordRecoveryTFAMethodInput {
+	float: left;
+	vertical-align: top;
+}
+
+label.ZmPasswordRecoveryTFAMethodLabel {
+	display: inline-block;
+	padding: 0 0 5px 0;
+	width: 90%;
+}
+
 /* Password Recovery Setup dialog end*/
 
 
@@ -6317,161 +6395,6 @@ a.ZmLinkDisabled {
 	font-weight: bold;
 }
 /* One-times Codes dialog end */
-
-/*Chat start */
-#conversejs, #conversejs *, #conversejs *:before, #conversejs *:after {
-    outline: 0;
-}
-
-.chat-head-chatbox {
-    background-color: @darken(AltC,50)@; 
-  }
-  
-.chat-head-chatroom {
-    background-color: @darken(AltC,50)@; 
-}
-
-.toggle-controlbox {
-	background-color: @darken(AltC,50)@; 
-	border: 1px solid @PanelBorderColor@ !important;
-}
-
-.controlbox-head {
-	background-color: @darken(AltC,50)@;
-}
-
-.minimized-chats-flyout, .box-flyout {
-	border: 1px solid @PanelBorderColor@ !important;
-}
-
-.chat-textarea-divider {
-	border: 1px solid @PanelBorderColor@ !important;
-}
-	
-.add-contact-flyout .flyout-heading, 
-.search-contact-flyout .flyout-heading,
-.remove-contact-flyout .flyout-heading {
-	border-bottom: 1px solid @PanelBorderColor@ !important;
-}
-
-#conversejs form.sendXMPPMessage .chat-textarea {
-    outline: 0;
-}
-
-#conversejs .chatbox .box-flyout .remove-contact-flyout {
-    color: #333333;
-}
-
-#conversejs .chatbox .box-flyout .remove-contact-flyout .flyout-heading {
-    padding: 6px;
-}
-
-#conversejs .chatbox .box-flyout .remove-contact-flyout div.button {
-    text-align: center;
-}
-
-#conversejs .chatbox .box-flyout .remove-contact-flyout div.button BUTTON {
-    width: 7rem;
-    margin-top: 25px;
-}
-
-#conversejs .chatbox .box-flyout .remove-contact-flyout div.button HR {
-    margin: 40px 0 5px 0;
-    border: none;
-    height: 1px;
-    background-color: #B2B2B2;
-}
-
-#conversejs .chatbox .box-flyout .remove-contact-flyout .remove-contact-container {
-    padding: 0.625rem;
-}
-
-#conversejs DIV.connectionSpinnerPanel {
-    position: absolute;
-    top: 40%;
-    left: 32%;
-}
-
-.add-contact-form > div {
-	position: relative;
-}
-
-#conversejs .DwtDialogButtonBar {
-	padding: 5px;
-}
-
-#conversejs .DwtToolTip {
-	padding: 6px;
-    position: absolute;
-    right: 7px;
-    left: 5px;
-    top: 100%;
-    z-index: 1;
-}
-
-#conversejs .DwtToolTipBody {
-	position: relative;
-	margin-top: 0;
-}
- 
-#conversejs .DwtMsgArea {
-	padding: 0 5px 5px;
-	vertical-align: middle;
-}
-
-#conversejs .horizSep{
-	@PrettyBottomSeparator@
-	@AddVerticalSpace@
-	width:100%;
-}
-
-#conversejs .ZButton {
-	cursor: default;
-}
-
-#conversejs .ZButtonBorder {
-	cursor: pointer;
-}
-#conversejs .ZButtonBorder button[disabled] {
-	cursor: default;
-	cursor: not-allowed;
-}
-
-
-#conversejs .remove-contact-btn{
-	margin-right: 15px;
-}
-
-#conversejs .tooltip-btn {
-	display: inline-block;
-}
-
-#conversejs .removeContactWarningMsg {
-	margin-top: 15px;
-}
-
-#conversejs .zmchat-controlbox-toggle {
-    background:url("/img/chat/chat_icon.png?v=@jsVersion@") no-repeat scroll 0 2px transparent;
-    background-size: 15px;
-    padding: 0 0 0 25px;
-}
-#conversejs #converse-roster .roster-contacts, #conversejs .search-converse-contact .roster-contacts {
-	height: 100%; 
-}
-#conversejs #controlbox #converse-roster dd {
-	position: relative;
-	overflow: visible;
-}
- #conversejs .search-contact-flyout .search-converse-contact {
-    bottom: 0;
-    position: absolute;
-    overflow: auto;
-    top: 92px;
- }
-#conversejs .search-contact-flyout .search-converse-contact dd.zmsearch-xmpp {
-	height: 100%;
-}
-/*Chat end */
 
 /*MObile Configuration start*/
 textarea[readonly].ZmMobileConfigTextarea{

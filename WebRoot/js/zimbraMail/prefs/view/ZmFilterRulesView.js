@@ -60,6 +60,7 @@ function() {
 
 ZmFilterRulesView.prototype.showMe =
 function() {
+	this.setZIndex(Dwt.Z_VIEW);
 	Dwt.setTitle(this._title);
 	var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
 
@@ -94,6 +95,13 @@ function() {
 	this._chooser.targetListView.setSize(Dwt.CLEAR, Dwt.DEFAULT);
 	this._controller.initialize(this._toolbar, this._chooser.activeListView, this._chooser.notActiveListView);
 	this.hasRendered = true;
+	this._tabGroup.addMember([this._chooser.targetListView, 
+		this._chooser._transferButton,
+		this._chooser._removeButton,
+		this._chooser._moveUpButton,
+		this._chooser._moveDownButton,
+		this._chooser.sourceListView
+	]);
 };
 
 /**
@@ -374,6 +382,7 @@ function(sForce, tForce) {
 			this._moveDownButton.setEnabled(true);
 			this._moveUpButton.setEnabled(true);
 		}
+		appCtxt.notifyZimlets("onZmFilterRulesChooser_enableButtons", [this, listView, sel]);
 	}
 };
 
@@ -462,6 +471,7 @@ function(parent) {
  */
 ZmFilterChooserActiveListView = function(parent) {
 	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE});
+	this._listDiv.setAttribute('aria-label', ZmMsg.activeFilters);
 	this.setScrollStyle(Dwt.CLIP);
 };
 
@@ -546,6 +556,7 @@ function(item, field, params) {
  */
 ZmFilterChooserNotActiveListView = function(parent) {
 	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET});
+	this._listDiv.setAttribute('aria-label', ZmMsg.availableFilters);
 	this.setScrollStyle(Dwt.CLIP);
 };
 

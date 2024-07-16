@@ -271,7 +271,7 @@ ZmUploadDialog.prototype._upload = function(){
             for (var j = 0; j < files.length; j++){
                 file = files[j];
                 fileObj.push(file);
-				newError = zmUploadManager.getErrors(file, maxSize);
+				newError = zmUploadManager.getErrors(file, maxSize, null, this._extensions);
 				if (newError) {
 					errors.push(newError);
 				} else {
@@ -281,7 +281,7 @@ ZmUploadDialog.prototype._upload = function(){
         } else {
 			var fileName = element.value.replace(/^.*[\\\/:]/, "");
             file = { name: fileName };
-			newError = zmUploadManager.getErrors(file, maxSize);
+			newError = zmUploadManager.getErrors(file, maxSize, null, this._extensions);
 			if (newError) {
 				errors.push(newError);
 			} else {
@@ -418,9 +418,10 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
 	var cell = row.insertCell(-1);
 	// bug:53841 allow only one file upload when oneInputOnly is set
 	cell.innerHTML = [
-		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 ",(this._supportsHTML5 ? (oneInputOnly ? "" : "multiple") : ""),">"
+		"<input id='",inputId,"' type='file' tabindex='0' aria-label='"+ ZmMsg.uploadChoose +"' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 ",(this._supportsHTML5 ? (oneInputOnly ? "" : "multiple") : ""),">"
 	].join("");
 
+    this._tabGroup.addMember(document.getElementById(inputId), this._tabGroup.__members._array.length - 3);
 	var cell = row.insertCell(-1);
     cell.id = sizeId;
 	cell.innerHTML = "&nbsp;";
@@ -430,6 +431,7 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
         var inputEl = document.getElementById(inputId);
         var sizeEl = cell;
         Dwt.setHandler(inputEl, "onchange", AjxCallback.simpleClosure(this._handleFileSize, this, inputEl, sizeEl));
+        Dwt.setHandler(inputEl, DwtEvent.ONKEYDOWN, ZmUploadDialog._handleEnterSpacePress.bind(inputEl, null));
     }
 
     if(oneInputOnly){
@@ -438,28 +440,34 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
         var cell = row.insertCell(-1);
         cell.innerHTML = [
             "<span ",
-            "id='",removeId,"' ",
+            "id='",removeId,"' tabindex='0' ",
             "onmouseover='this.style.cursor=\"pointer\"' ",
             "onmouseout='this.style.cursor=\"default\"' ",
             "style='color:blue;text-decoration:underline;'",
             ">", ZmMsg.remove, "</span>"
         ].join("");
+
+        this._tabGroup.addMember(document.getElementById(removeId), this._tabGroup.__members._array.length - 3);
         var removeSpan = document.getElementById(removeId);
         Dwt.setHandler(removeSpan, DwtEvent.ONCLICK, ZmUploadDialog._removeHandler);
+        Dwt.setHandler(removeSpan, DwtEvent.ONKEYUP, ZmUploadDialog._handleEnterSpacePress.bind(this, ZmUploadDialog._removeHandler));
 
         var cell = row.insertCell(-1);
         cell.innerHTML = "&nbsp;";
         var cell = row.insertCell(-1);
         cell.innerHTML = [
             "<span ",
-            "id='",addId,"' ",
+            "id='",addId,"' tabindex='0'",
             "onmouseover='this.style.cursor=\"pointer\"' ",
             "onmouseout='this.style.cursor=\"default\"' ",
             "style='color:blue;text-decoration:underline;'",
             ">", ZmMsg.add, "</span>"
         ].join("");
+
+        this._tabGroup.addMember(document.getElementById(addId), this._tabGroup.__members._array.length - 3);
         var addSpan = document.getElementById(addId);
         Dwt.setHandler(addSpan, DwtEvent.ONCLICK, ZmUploadDialog._addHandler);
+        Dwt.setHandler(addSpan, DwtEvent.ONKEYUP, ZmUploadDialog._handleEnterSpacePress.bind(this, ZmUploadDialog._addHandler));
     }
 
 
@@ -478,6 +486,19 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
         txtCell.colSpan = 3;
     }
 };
+
+ZmUploadDialog._handleEnterSpacePress =
+function(listner, event) {
+    var keyCode = DwtKeyEvent.getCharCode(event);
+    if (keyCode === DwtKeyEvent.KEY_RETURN || keyCode === DwtKeyEvent.KEY_SPACE) {
+        if (listner) {
+            listner(event);
+        } else {
+            this.click();
+        }
+
+    }
+}
 
 ZmUploadDialog.prototype._handleFileSize =
 function(inputEl, sizeEl){
@@ -557,6 +578,9 @@ ZmUploadDialog.prototype._createUploadHtml = function() {
     this._tableEl = document.getElementById((id + "_table"));
     this._msgInfo = document.getElementById((id+"_msg"));
     this._notes = document.getElementById((id+"_notes"));
+
+    this._notes.setAttribute('aria-label', ZmMsg.notesLabel);
+    this._tabGroup.addMember(this._notes, this._tabGroup.__members._array.length - 2);
 
     //Conflict Selector
 	this._selector = new DwtSelect({parent:this});

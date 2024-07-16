@@ -63,7 +63,7 @@
 		</c:url>" rel="stylesheet" type="text/css" />
 	<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no,maximum-scale=1,user-scalable=0">
 	<jsp:include page="Resources.jsp">
-		<jsp:param name="res" value="I18nMsg,AjxMsg,ZmMsg" />
+		<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg" />
 		<jsp:param name="skin" value="${skin}" />
 	</jsp:include>
 	<jsp:include page="Boot.jsp"/>
@@ -81,7 +81,10 @@
 		}
 		var params = {
 			userName : "<%=userName%>",
-			isFromLoginPage : true
+			isFromLoginPage : true,
+			tfaMethodAllowed : "${zm:cook(param.tfaMethodAllowed)}",
+			isResetPasswordEnabled : ${zm:boolean(param.isResetPasswordEnabled)},
+			client : "${zm:cook(param.client)}"
 		};
 		new ZmTwoFactorSetupDialog(params).popup();
 		var changeTag = document.getElementsByClassName("DwtDialogTitle")[0];

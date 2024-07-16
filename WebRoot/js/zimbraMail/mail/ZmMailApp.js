@@ -245,7 +245,6 @@ function(settings) {
 	settings.registerSetting("SHOW_BCC",			            {type:ZmSetting.T_PREF, defaultValue:false});
     settings.registerSetting("SHOW_FRAGMENTS",					{name:"zimbraPrefShowFragments", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("SHOW_MAIL_CONFIRM",				{name:"zimbraFeatureConfirmationPageEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("SHOW_CHATS_FOLDER",				{name:"zimbraPrefShowChatsFolderInMail", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SIGNATURE",						{name:"zimbraPrefMailSignature", type:ZmSetting.T_PREF});
 	settings.registerSetting("SIGNATURE_ENABLED",				{name:"zimbraPrefMailSignatureEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SIGNATURE_STYLE",					{name:"zimbraPrefMailSignatureStyle", type:ZmSetting.T_PREF, defaultValue:ZmSetting.SIG_OUTLOOK});
@@ -736,7 +735,8 @@ function() {
 		displayName:		ZmMsg.vacationExternalType,
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		[ZmMsg.outOfOffice,ZmMsg.busy],
-		options:			 ["OUTOFOFFICE","BUSY"]
+		options:			["OUTOFOFFICE","BUSY"],
+		ariaLabel:			ZmMsg.vacationCalLabel
 	});
 
     ZmPref.registerPref("VACATION_EXTERNAL_MSG", {
@@ -764,6 +764,8 @@ function() {
 			options:			[true, false]
 		});
 	}
+
+	appCtxt.notifyZimlets('onZmMailApp_registerPrefs', []);
 };
 
 ZmMailApp.prototype.formatKeySeq = function(keySeq) {
@@ -945,6 +947,8 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHOW_ORIG, {textKey:"showOrig", image:"Message"});
 	ZmOperation.registerOp(ZmId.OP_SPAM, {textKey:"junkLabel", tooltipKey:"junkTooltip", image:"JunkMail", shortcut:ZmKeyMap.SPAM, textPrecedence:70}, ZmSetting.SPAM_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_USE_PREFIX, {textKey:"usePrefix"});
+
+	appCtxt.notifyZimlets('onZmMailApp_registerOperations', []);
 };
 
 /**
@@ -1652,7 +1656,8 @@ function(params, callback) {
 
     if (appCtxt.isExternalAccount()) {
         var loadCallback = this._handleLoadLaunch.bind(this, params, callback);
-	    AjxDispatcher.require(["MailCore", "Mail", "Startup2"], true, loadCallback, null, true);
+	    AjxDispatcher.require(["MailCore", "Mail"], true, loadCallback, null, true);
+	    AjxDispatcher.require("Startup2", false, loadCallback, null, true);
     }
     else {
         this._handleLoadLaunch(params, callback);
@@ -2459,7 +2464,6 @@ function() {
 	AjxDispatcher.require("PreferencesCore");
 	this._registerSettings();
 	this._registerOperations();
-	this._registerPrefs();
 };
 
 // Folders to ignore when displaying a conv's messages

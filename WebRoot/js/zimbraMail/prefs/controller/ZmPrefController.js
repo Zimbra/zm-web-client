@@ -328,6 +328,13 @@ function () {
 		}
 	}
 	this._lefttoolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
+
+	var children = this._lefttoolbar.getHtmlElement().children;
+	var child = children ? children[0] : null;
+	if(child) {
+		child.setAttribute('role', 'region');
+		child.setAttribute('aria-label', ZmMsg.leftToolbar);
+	}
 };
 
 /**
@@ -347,6 +354,13 @@ function () {
 		if (this._listeners[button]) {
 			this._toolbar.addSelectionListener(button, this._listeners[button]);
 		}
+	}
+
+	var children = this._toolbar.getHtmlElement().children;
+	var child = children ? children[0] : null;
+	if(child) {
+		child.setAttribute('role', 'region');
+		child.setAttribute('aria-label', ZmMsg.rightToolbar);
 	}
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
@@ -399,6 +413,11 @@ function(ev, callback, noPop) {
 		return;
 	}
 
+	var result = { handled: false };
+	appCtxt.notifyZimlets("onZmPrefController_saveListener", [this, result]);
+	if (result.handled) {
+		return;
+	}
 	this.save(callback, noPop);
 };
 
@@ -521,8 +540,9 @@ function() {
 ZmPrefController.prototype._resetPageListener =
 function() {
 	var viewPage = this.getCurrentPage();
-
 	viewPage.reset(false);
+
+	appCtxt.notifyZimlets("onZmPrefController_resetPageListener", [this, viewPage]);
 	appCtxt.setStatusMsg(ZmMsg.defaultsPageRestore);
 };
 

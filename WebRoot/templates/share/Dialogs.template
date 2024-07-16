@@ -679,9 +679,9 @@
 		<div id='${id}_description'><p><$=ZmMsg.twoStepAuthDescription$></p></div>
 		<div id='${id}_password'>
 			<h4><$=ZmMsg.twoStepAuthPassword$></h4>
-			<p><$=ZmMsg.twoStepAuthPasswordDescription$> "<span>${username}</span>".</p>
+			<p id='${id}_password_description'><$=ZmMsg.twoStepAuthPasswordDescription$></p>
 			<div class="ZmTwoFactorSetupContainer">
-				<div id='${id}_password_error' style="display:none;margin-left:163px;" class="ZmTwoFactorSetupError"><$=ZmMsg.offlinePasswordUpdateFailure$></div>
+				<div id='${id}_password_error' style="display:none;" class="ZmTwoFactorSetupError ZmTwoFactorSetupPasswordError"></div>
 				<label for="${id}_password_input"><$=ZmMsg.passwordLabel$></label>
 				<input type="password" id="${id}_password_input" autocomplete="off"/>
 			</div>
@@ -701,18 +701,35 @@
 				<span id="${id}_email_key" class="email-key"></span>
 			</div>
 		</div>
-		<div id='${id}_code'>
-			<div id='${id}_code_description'>
-				<h4><$=ZmMsg.twoStepAuthCode$></h4>
-				<p><$=ZmMsg.twoStepAuthCodeDescription$></p>
+		<div id='${id}_email_address'>
+			<h4></h4>
+			<div id="${id}_email_description"></div>
+			<div id="${id}_email_input" class="ZmTwoFactorSetupContainer">
+				<label for="${id}_email_address_input" id="${id}_email_address_input_label"><$=ZmMsg.emailLabel$></label>
+				<input class="inputTag" type="text" id="${id}_email_address_input" autocomplete="off"/>
 			</div>
-			<div id='${id}_code_error' style="display:none;">
-				<h4 class="ZmTwoFactorSetupError"><$=ZmMsg.twoStepAuthCodeError$></h4>
-				<p><$=ZmMsg.twoStepAuthCodeErrorDescription$></p>
+			<div id="${id}_email_note">
+				<p id="${id}_email_note_text"></p>
 			</div>
-			<div class="ZmTwoFactorSetupContainer">
-				<label for="${id}_code_input"><$=ZmMsg.code$> : </label>
-				<input type="text" id="${id}_code_input" autocomplete="off"/>
+		</div>
+		<div id='${id}_code' style="height:100%">
+			<h4 id='${id}_code_title_spacer' style="margin-bottom:0"></h4>
+			<div class="ZmTwoFactorSetupCode">
+				<div id='${id}_code_description'>
+					<h4 id='${id}_code_title' style="margin-top:0"><$=ZmMsg.twoStepAuthCode$></h4>
+					<p id='${id}_code_description_guide' class="ZmTwoFactorSetupCodeDescriptionGuide"><$=ZmMsg.twoStepAuthCodeDescription$></p>
+				</div>
+				<div class="ZmTwoFactorSetupContainer ZmTwoFactorSetupCodeContainer">
+					<div class="ZmTwoFactorSetupCodeSubContainer">
+						<div id='${id}_code_error' style="display:none" class="ZmTwoFactorSetupError"><$=ZmMsg.twoStepAuthCodeError$></div>
+						<label for="${id}_code_input"><$=ZmMsg.code$> : </label>
+						<input type="text" id="${id}_code_input" autocomplete="off"/>
+						<div id='${id}_resend_code' style="text-align:right" class="ZmTwoFactorResendCode">
+							<a id='${id}_resend_code_link' href="#" style="display:none"><$=ZmMsg.twoStepAuthResendCode$></a>
+							<span id='${id}_resend_code_status' href="#" style="display:none"></span>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div id='${id}_success'>
@@ -731,10 +748,15 @@
 			<h2 class="ZmTwoFactorCustomTitleLoginPage" ><$=ZmMsg.twoStepAuthSetup$></h2>
 			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthDescription$></p>
 		</div>
+		<div id='${id}_choose_method'>
+			<h2 class="ZmTwoFactorCustomTitleLoginPage" ><$=ZmMsg.twoStepAuthSetup$></h2>
+			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthChooseMethodDescription$></p>
+			<div id='${id}_method_list'></div>
+		</div>
 		<div id='${id}_password'>
-			<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthPassword$></h2>
-			<p id='${id}_password_error' style="display:none;" class="ZmTwoFactorCustomSetupErrorLoginPage"><$=ZmMsg.offlinePasswordUpdateFailure$></p>
-			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthPasswordDescription$> "${username}".</p>
+			<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthSetup$></h2>
+			<p id='${id}_password_error' style="display:none;" class="ZmTwoFactorCustomSetupErrorLoginPage"></p>
+			<p id='${id}_password_description' class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthPasswordDescription$></p>
 			<label class="passwordCustomLabel" for="${id}_password_input"><$=ZmMsg.password$></label>
 			<div class="ZmTwoFactorCustomInputLoginPage">
 				<input class="inputTag" type="password" id="${id}_password_input" autocomplete="off"/>
@@ -755,23 +777,31 @@
 				<span id="${id}_email_key" class="email-key"></span>
 			</div>
 		</div>
+		<div id='${id}_email_address'>
+			<h2 class="ZmTwoFactorCustomTitleLoginPage" ><$=ZmMsg.twoStepAuthSetup$></h2>
+			<div id='${id}_email_description' class="ZmTwoFactorCustomInputLoginPage"></div>
+			<label class="passwordCustomLabel" for="${id}_email_address_input"><$=ZmMsg.emailAddr$></label>
+			<div class="ZmTwoFactorCustomInputLoginPage">
+				<input class="inputTag" type="email" id="${id}_email_address_input" autocomplete="off"/>
+			</div>
+		</div>
 		<div id='${id}_code'>
 			<div id='${id}_code_description'>
-				<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthCode$></h2>
-				<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthCodeDescription$></p>
-			</div>
-			<div id='${id}_code_error' style="display:none;">
-				<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthCode$></h2>
-				<div class="ZmTwoFactorCustomSetupErrorLoginPage"><$=ZmMsg.twoStepAuthCodeError$></div>
-				<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthCodeErrorDescription$></p>
+				<h2 id='${id}_code_title' class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthCode$></h2>
+				<div id='${id}_code_error' class="ZmTwoFactorCustomSetupErrorLoginPage" style="display:none;"><$=ZmMsg.twoStepAuthCodeError$></div>
+				<p class="ZmTwoFactorCustomParaLoginPage" id='${id}_code_description_guide'><$=ZmMsg.twoStepAuthCodeDescription$></p>
 			</div>
 			<div class="ZmTwoFactorCustomInputLoginPage">
-				<input class="numberInputTag" type="number" id="${id}_code_input" placeholder="e.g. 123456" autocomplete="off"/>
+				<input class="ZmTwoFactorCustomSetupCodeInputTag" id="${id}_code_input" autocomplete="off"/>
+			</div>
+			<div id='${id}_resend_code' style="text-align:right">
+				<a class="ZmTwoFactorCustomParaLoginPage" id='${id}_resend_code_link' href="#" style="display:none"><$=ZmMsg.twoStepAuthResendCode$></a>
+				<span class="ZmTwoFactorCustomParaLoginPage" id='${id}_resend_code_status' href="#" style="display:none"></span>
 			</div>
 		</div>
 		<div id='${id}_success'>
 			<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthSuccess$></h2>
-			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthSuccessDescription$></p>
+			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthSuccessDescriptionLoginPage$></p>
 		</div>
 	</div>
 </template>
@@ -892,12 +922,26 @@
 				<span id='${id}_validate_two_factor_code_error_message'><$=ZmMsg.passwordRecoveryCodeValidationError$></span>
 			</div>
 			<div class='ZmPasswordRecoverySetupContainer'>
-				<label for='${id}_two_factor_code_input'><$=ZmMsg.twoFactorAuthCodeLabel$></label>
+				<label for='${id}_two_factor_code_input' style="float:left" id='${id}_two_factor_code_input_label' ><$=ZmMsg.twoFactorAuthCodeLabel$></label>
+				<div id='${id}_resend_code' style="text-align:right">
+					<a class="ZmPasswordRecoveryTwoFactorLink" id='${id}_resend_tfa_code_link' href="#" style="display:none"><$=ZmMsg.twoFactorAuthResendEmail$></a>
+					<span class="ZmPasswordRecoveryTwoFactorLink" id='${id}_resend_tfa_code_status' href="#" style="display:none"><$=ZmMsg.twoFactorAuthResendEmailDone$></span>
+				</div>
 				<input type='text' id='${id}_two_factor_code_input' size='35' autocomplete='off' class="ZmPasswordRecoveryTwoFactorCodeInout"/>
 				<div id='${id}_trust_device_section'>
 					<td><input type="checkbox" id="${id}_trust_device_input" name="${id}_trust_device_input" value="true"/></td>
 					<td><label for="${id}_trust_device_input" class="ZmPasswordRecoveryTrustDevice"><$=ZmMsg.twoFactorAuthTrustDevice$></label></td>
 				</div>
+				<div id='${id}_choose_two_factor_method_link_section' style="text-align:right">
+					<a class="ZmPasswordRecoveryTwoFactorLink" id='${id}_choose_two_factor_method_link' href="#" style="display:none"><$=ZmMsg.twoFactorAuthChooseOtherMethod$></a>
+				</div>
+			</div>
+		</div>
+		<div id='${id}_choose_two_factor_method'>
+			<h2 class="ZmPasswordRecoveryTwoFactorTitle"><$=ZmMsg.twoStepAuth$></h2>
+			<div class='ZmPasswordRecoverySetupContainer'>
+				<div class="ZmPasswordRecoveryTwoFactorMethodDescription" style="padding-right:0;"><$=ZmMsg.twoFactorAuthChooseOtherMethodDescription$></div>
+				<div id='${id}_two_factor_method_option_container' class="ZmPasswordRecoveryTwoFactorMethodOptionContainer"></div>
 			</div>
 		</div>
 	</div>

@@ -236,6 +236,6 @@ function() {
  * @return	{DwtMenuItem}	the separator menu item
  */
 ZmPopupMenu.prototype.createSeparator =
-function() {
-	new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});
+function(params) {
+	new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE, index:params && params.index});
 };

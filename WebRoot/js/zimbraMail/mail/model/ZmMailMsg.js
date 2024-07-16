@@ -1485,12 +1485,33 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 		}
 		this._createMessageNode(request, isDraft, aName, requestReadReceipt, sendTime);
 		appCtxt.notifyZimlets("addExtraMsgParts", [request, isDraft]);
+
+		var senderEmail = aName;
+		// When primary account is selected in From field.
+		if (!isDraft && this.identity && this.identity.sendFromAddress) {
+			var delegatedRights = appCtxt.sendAsEmails.concat(appCtxt.sendOboEmails);
+			var isDelegated = false;
+			for (var i = 0; i < delegatedRights.length; i++) {
+				if (delegatedRights[i].isDL) {
+					continue;
+				}
+				if (delegatedRights[i].addr === this.identity.sendFromAddress) {
+					isDelegated = true;
+					break;
+				}
+			}
+
+			if (isDelegated) {
+				senderEmail = this.identity.sendFromAddress;
+			}
+		}
+
 		var params = {
 			jsonObj: jsonObj,
 			isInvite: false,
 			isDraft: isDraft,
 			isAutoSave: isAutoSave,
-			accountName: aName,
+			accountName: senderEmail,
 			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
 			errorCallback: errorCallback,
 			batchCmd: batchCmd,
@@ -1570,7 +1591,26 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 
 			if (!isDraft) { // not saveDraftRequest 
 				var did = this.nId || this.id; // set draft id
-				if (doQualifyIds) {
+				var isDelegated = false;
+
+				if (!doQualifyIds && this.identity && this.identity.sendFromAddress)
+				{
+					var delegatedRights = appCtxt.sendAsEmails.concat(appCtxt.sendOboEmails);
+
+					for (var i = 0; i < delegatedRights.length; i++) {
+						if (delegatedRights[i].isDL) {
+							continue;
+						}
+						if (delegatedRights[i].addr === this.identity.sendFromAddress) {
+							isDelegated = true;
+							break;
+						}
+					}
+				}
+
+				// When delegated account is selected in From field
+				// then set did as <account identity>:<draft id> such that server delete the message's draft on message sent.
+				if (doQualifyIds || isDelegated) {
 					did = ZmOrganizer.getSystemId(did, mainAccount, true);
 				}
 				msgNode.did = did;
@@ -2031,12 +2071,33 @@ function(ev) {
 	this.isFlagged = parentWindowMsg.isFlagged;
 };
 
+/**
+ * Checks if SMIME feature is enabled or not
+ * @returns {boolean}
+ */
+ZmMailMsg.prototype.hasSMIMEFeature = function() {
+	// check for S/MIME license attribute
+	var license = appCtxt.getSettings().getInfoResponse.license;
 
+	for (var i = 0; license && i < license.attr.length; i++) {
+		var attr = license.attr[i];
+
+		if (attr.name == "SMIME") {
+			return attr._content == "TRUE";
+		}
+	}
+	return false;
+};
 
 ZmMailMsg.prototype.isRealAttachment =
 function(attachment) {
 	var type = attachment.contentType;
 
+	// the "isIgnored" check(after this) ignores the .p7s files
+	// if SMIME is disabled, attach .p7s file, do not ignore
+	if (!this.hasSMIMEFeature() && type === ZmMimeTable.APP_SIGNATURE) {
+		return true;
+	}
 	// bug fix #6374 - ignore if attachment is body unless content type is message/rfc822
 	if (ZmMimeTable.isIgnored(type)) {
 		return false;
@@ -2671,7 +2732,14 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		var folder = appCtxt.getById(this.folderId);
 		if ((!folder || folder.isRemote()) && (!this._origMsg || !this._origMsg.sendAsMe)) {
 			accountName = (folder && folder.getOwner()) || accountName;
-			onBehalfOf  = (accountName != mainAcct);
+
+			var result1 = { handled: false, value: null };
+			appCtxt.notifyZimlets("onZmMailMsg_addFrom1", [this, accountName, result1]);
+			if (result1.handled) {
+				onBehalfOf = result1.value;
+			} else {
+				onBehalfOf  = (accountName != mainAcct);
+			}
 		}
 
 		if (this._origMsg && this._origMsg.isDraft && !this._origMsg.sendAsMe) {
@@ -2688,32 +2756,36 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			onBehalfOf = (folder.getOwner() != mainAcct);
 		}
 
-		var addr, displayName;
-		if (this.fromSelectValue) {
-			addr = this.fromSelectValue.addr.address;
-			displayName = this.fromSelectValue.addr.name;
-		} else if (this._origMsg && this._origMsg.isInvite() && appCtxt.multiAccounts) {
-			identity = this._origMsg.getAccount().getIdentity();
-			addr = identity ? identity.sendFromAddress : this._origMsg.getAccount().name;
-			displayName = identity && identity.sendFromDisplay;
-		} else {
-			if (onBehalfOf) {
-				addr = accountName;
-			} else {
-				addr = identity ? identity.sendFromAddress : (this.delegatedSenderAddr || accountName);
-                onBehalfOf = this.isOnBehalfOf;
+		var result2 = { handled: false };
+		appCtxt.notifyZimlets("onZmMailMsg_addFrom2", [this, accountName, identity, onBehalfOf, addrNodes, result2]);
+		if (!result2.handled) {
+			var addr, displayName;
+			if (this.fromSelectValue) {
+				addr = this.fromSelectValue.addr.address;
+				displayName = this.fromSelectValue.addr.name;
+			} else if (this._origMsg && this._origMsg.isInvite() && appCtxt.multiAccounts) {
+				identity = this._origMsg.getAccount().getIdentity();
+				addr = identity ? identity.sendFromAddress : this._origMsg.getAccount().name;
 				displayName = identity && identity.sendFromDisplay;
+			} else {
+				if (onBehalfOf) {
+					addr = accountName;
+				} else {
+					addr = identity ? identity.sendFromAddress : (this.delegatedSenderAddr || accountName);
+					onBehalfOf = this.isOnBehalfOf;
+					displayName = identity && identity.sendFromDisplay;
+				}
 			}
-		}
 
-		var node = {t:"f", a:addr};
-		if (displayName) {
-			node.p = displayName;
-		}
-		addrNodes.push(node);
-		if (onBehalfOf || !(ac.multiAccounts || isDraft)) {
-			// the main account is *always* the sender
-			addrNodes.push({t:"s", a:mainAcct});
+			var node = {t:"f", a:addr};
+			if (displayName) {
+				node.p = displayName;
+			}
+			addrNodes.push(node);
+			if (onBehalfOf || !(ac.multiAccounts || isDraft)) {
+				// the main account is *always* the sender
+				addrNodes.push({t:"s", a:mainAcct});
+			}
 		}
 	} else{
 

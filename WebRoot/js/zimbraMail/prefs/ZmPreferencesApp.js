@@ -77,6 +77,10 @@ ZmPreferencesApp._registerAllPrefs =
 function() {
 	AjxDispatcher.require("PreferencesCore");
 	appCtxt.getAppController().runAppFunction("_registerPrefs");
+	if (appCtxt.get(ZmSetting.ADMIN_DELEGATED) && !appCtxt.get(ZmSetting.ADMIN_MAIL_ENABLED) && appCtxt.get(ZmSetting.ADMIN_PREFERENCES_ENABLED)) {
+		var mailApp = appCtxt.getSettings().getMailAppForDelegatedAdmin();
+		mailApp._registerPrefs();
+	}
 };
 ZmZimbraMail.addAppListener(ZmApp.PREFERENCES, ZmAppEvent.PRE_LAUNCH, new AjxListener(ZmPreferencesApp._registerAllPrefs));
 
@@ -300,7 +304,6 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 				ZmSetting.SHOW_SEARCH_STRING,
 				ZmSetting.SHOW_SELECTION_CHECKBOX,
 				ZmSetting.SKIN_NAME,
-				ZmSetting.CLIENT_TYPE,
 				ZmSetting.DEFAULT_TIMEZONE,
                 ZmSetting.DEFAULT_PRINTFONTSIZE,
 				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
@@ -315,7 +318,7 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 			templateId:     "prefs.Pages#Accounts",
 			priority:       9,
 			precondition:   ZmSetting.MAIL_PREFERENCES_ENABLED,
-			prefs:          [ ZmSetting.ACCOUNTS, ZmSetting.SAVE_TO_SENT_DELEGATED_TARGET ],
+			prefs:          [ ZmSetting.ACCOUNTS, ZmSetting.SAVE_TO_SENT_DELEGATED_TARGET, ZmSetting.TWO_FACTOR_AUTH_PRIMARY_METHOD ],
 			manageDirty:    true,
 			createView:     function(parent, section, controller) {
 								return new ZmAccountsPage(parent, section, controller);
@@ -499,44 +502,11 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		}
     }
 
-	if (appCtxt.get(ZmSetting.CHAT_FEATURE_ENABLED)) {
-		ZmPref.registerPref("CHAT_ENABLED", {
-			displayName:		ZmMsg.chatFeatureStatus,
-			displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-			orientation:		ZmPref.ORIENT_VERTICAL,
-			displayOptions:		[ZmMsg.chatFeatureEnabled, ZmMsg.chatFeatureDisabled],
-			options:			[true, false]
-		});
-
-		ZmPref.registerPref("CHAT_PLAY_SOUND", {
-			displayName:		ZmMsg.chatPlaySound,
-			displayContainer:	ZmPref.TYPE_CHECKBOX
-		});
-
-		sections["CHAT"] = {
-			title: ZmMsg.chat,
-			icon: "Conversation",
-			templateId: "prefs.Pages#Chat",
-			priority: 65,
-			prefs: [
-				ZmSetting.CHAT_ENABLED,
-				ZmSetting.CHAT_PLAY_SOUND
-			]
-		}
-	}
-
+	appCtxt.notifyZimlets("onZmPreferencesApp_registerPrefs_before_registerPrefSection", [sections]);
 
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
 	}
-
-	ZmPref.registerPref("CLIENT_TYPE", {
-		displayName:		ZmMsg.clientType,
-		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		orientation:		ZmPref.ORIENT_VERTICAL,
-		displayOptions:     window.modernSupported ? [ZmMsg.clientAdvanced, ZmMsg.clientModern] : [ZmMsg.clientAdvanced],
-		options:            window.modernSupported ? [ZmSetting.CLIENT_ADVANCED, ZmSetting.CLIENT_MODERN] : [ZmSetting.CLIENT_ADVANCED]
-	});
 
 	ZmPref.registerPref("COMPOSE_AS_FORMAT", {
 		displayName:		ZmMsg.composeUsing,
@@ -982,6 +952,39 @@ ZmPreferencesApp.prototype._registerPrefs = function() {
 		displayOptions:		[ZmMsg.displayAsHTML, ZmMsg.displayAsText],
 		options:			[true, false]
 	});
+
+
+	var getTfaMethodOptions = function(target) {
+		var result = [];
+		var methodAllowed = ZmTwoFactorAuth.getTwoFactorAuthMethodAllowed();
+		for (var i = 0; i < methodAllowed.length; i++) {
+			switch (target) {
+				case "displayOption":
+					result.push(ZmMsg["twoStepAuthMethod_" + methodAllowed[i]]);
+					break;
+				case "options":
+					result.push(methodAllowed[i]);
+					break;
+				case "inputId":
+					result.push("TFA_PRIMARY_METHOD_" + methodAllowed[i].toUpperCase());
+					break;
+				default:
+					return null;
+			}
+		}
+		return result;
+	}
+
+	ZmPref.registerPref("TWO_FACTOR_AUTH_PRIMARY_METHOD", {
+		displayName:        ZmMsg.twoStepAuthPrimatyMethod,
+		displayContainer:   ZmPref.TYPE_RADIO_GROUP,
+		orientation:        ZmPref.ORIENT_VERTICAL,
+		displayOptions:     getTfaMethodOptions("displayOption"),
+		options:            getTfaMethodOptions("options"),
+		inputId:            getTfaMethodOptions("inputId")
+	});
+
+	appCtxt.notifyZimlets("onZmPreferencesApp_registerPrefs", []);
 };
 
 // other

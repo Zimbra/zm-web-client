@@ -148,8 +148,6 @@ function() {
 	AjxUtil.foreach(elements, function(el) {
 		if (Dwt.hasClass(el, 'prefHeader')) {
 			var header = el;
-			header.setAttribute('role', 'heading');
-			header.setAttribute('aria-level', 1);
 			header.id = Dwt.getNextId('prefHeader')
 		} else if (Dwt.hasClass(el, 'ZOptionsSectionTable')) {
 			var sectiontable = el;
@@ -185,9 +183,6 @@ function() {
 			return;
 		}
 
-		label.setAttribute('role', 'heading');
-		label.setAttribute('aria-level', 2);
-
 		field.setAttribute('aria-labelledby',
 		                   Dwt.getId(label, 'ZOptionsLabel'));
 	});
@@ -206,6 +201,9 @@ function() {
 		var element = elements[i];
 		var control = DwtControl.fromElement(element);
 
+		if (control instanceof ZmFilterRulesView) {
+			continue;
+		} 
 		// add the child to our tab group
 		if (control && control.parent == this) {
 			this._tabGroup.addMember(control.getTabGroupMember());
@@ -248,9 +246,17 @@ function() {
 		if (!label.id) {
 			label.id = Dwt.getNextId();
 		}
+	}
 
-		label.setAttribute('role', 'heading');
-		label.setAttribute('aria-level', 2);
+	var currentEl = this.getHtmlElement();
+	var headerSections = currentEl.querySelector('.prefHeader')
+			? currentEl.querySelectorAll('.prefHeader')
+			: currentEl.querySelectorAll('.ZOptionsHeaderRow');
+
+	for(var i = 0; i < headerSections.length; i++) {
+		var header = headerSections[i];
+		header.setAttribute('role', 'heading');
+		header.setAttribute('aria-level', '3');
 	}
 };
 
@@ -327,6 +333,9 @@ function() {
 			}
 			else if (type == ZmPref.TYPE_SELECT) {
 				control = this._setupSelect(id, setup, value);
+				if (setup && setup.ariaLabel) {
+					control.setAriaLabel(setup.ariaLabel);
+				}
 			}
 			else if (type == ZmPref.TYPE_COMBOBOX) {
 				control = this._setupComboBox(id, setup, value);
@@ -646,6 +655,7 @@ function(templateId, data) {
 	if (AjxTemplate.require(templateId)) {
 		this.getContentHtmlElement().innerHTML = AjxTemplate.expand(templateId, data);
 	}
+	appCtxt.notifyZimlets("onZmPreferencesPage_createPageHtml", [this, templateId]);
 };
 
 /**
@@ -812,6 +822,8 @@ function(id, setup, value) {
 			}
 		}
 
+		appCtxt.notifyZimlets("onZmPreferencesPage_setupRadioGroup", [this, id, radioBtn]);
+
 		if (isHoriz) {
 			cell = row.insertCell(-1);
 			cell.className = "ZmRadioButtonGroupCell";
@@ -834,6 +846,8 @@ function(id, setup, value) {
 	var cboxLabel = ZmPreferencesPage.__formatLabel(text, value);
 	checkbox.setText(cboxLabel);
 	checkbox.setSelected(value);
+
+	appCtxt.notifyZimlets("onZmPreferencesPage_setupCheckbox", [this, id, checkbox]);
 
 	// TODO: Factor this out
 	if (id == ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED) {
@@ -1086,6 +1100,13 @@ function(ev) {
 	var item = ev.dwtObj;
 	var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
 	this._showLocale(item._localeId, button);
+
+	var result = { handled: false };
+	appCtxt.notifyZimlets("onZmPreferencesPage_localeSelectionListener", [this, item, result]);
+	if (result.handled) {
+		return;
+	}
+
     this._showComposeDirection(item._localeId);
 };
 

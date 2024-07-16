@@ -39,6 +39,7 @@ AjxPackage.require("ajax.util.AjxText");
 AjxPackage.require("ajax.util.AjxVector");
 AjxPackage.require("ajax.util.AjxStringUtil");
 AjxPackage.require("ajax.util.AjxTimedAction");
+AjxPackage.require("ajax.util.AjxEmailAddress");
 
 AjxPackage.require("ajax.dwt.core.Dwt");
 AjxPackage.require("ajax.dwt.core.DwtDraggable");
@@ -88,4 +89,5 @@ AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeException");
 AjxPackage.require("zimbra.csfe.ZmCsfeResult");
 
+AjxPackage.require("zimbraMail.share.model.ZmTwoFactorAuth");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmTwoFactorSetupDialog");

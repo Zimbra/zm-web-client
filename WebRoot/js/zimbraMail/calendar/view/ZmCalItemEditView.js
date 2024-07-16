@@ -749,7 +749,9 @@ function(width) {
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
 	// start/end date DwtCalendar's
+	this._startDateField = document.getElementById(this._htmlElId + "_startDateField");
 	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_startMiniCalBtn", dateButtonListener, dateCalSelectionListener, ZmMsg.startDate);
+	this._endDateField = document.getElementById(this._htmlElId + "_endDateField");
 	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId + "_endMiniCalBtn", dateButtonListener, dateCalSelectionListener, ZmMsg.endDate);
 	this._startDateButton.setSize("20");
 	this._startDateButton.setAttribute('aria-label', ZmMsg.startDate);
@@ -771,6 +773,7 @@ function(width) {
         // Fix for bug: 83100. Fix adapted from ZmReminderDialog::_createButtons
 		Dwt.setSize(reminderInputEl, "120px", "2rem");
 		reminderInputEl.onblur = AjxCallback.simpleClosure(this._handleReminderOnBlur, this, reminderInputEl);
+		appCtxt.notifyZimlets("onZmCalItemEditView_createWidgets", [reminderInputEl]);
 
 		var reminderButtonListener = new AjxListener(this, this._reminderButtonListener);
 		var reminderSelectionListener = new AjxListener(this, this._reminderSelectionListener);
@@ -790,6 +793,7 @@ function(width) {
         // NOTE: prefs app is launched.
         this._reminderConfigure.getHtmlElement().onclick = AjxCallback.simpleClosure(skin.gotoPrefs, skin, "NOTIFICATIONS");
         this._reminderConfigure.replaceElement(document.getElementById(this._htmlElId+"_reminderConfigure"));
+		Dwt.setHandler(this._reminderConfigure.getHtmlElement(), DwtEvent.ONKEYDOWN, ZmCalItemEditView._keyPressOnRemiderConfigure);
 		this._setEmailReminderControls();
 	    var settings = appCtxt.getSettings();
         var listener = new AjxListener(this, this._settingChangeListener);
@@ -802,6 +806,14 @@ function(width) {
 
     this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, null, this._htmlElId + "_notes");
     this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this.resize));
+};
+
+ZmCalItemEditView._keyPressOnRemiderConfigure =
+function(ev) {
+    var keyCode = DwtKeyEvent.getCharCode(ev);
+    if (keyCode === DwtKeyEvent.KEY_RETURN) {
+        ev.target.onclick();
+    }
 };
 
 ZmCalItemEditView.prototype._handleReminderOnBlur =

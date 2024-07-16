@@ -223,10 +223,10 @@
 	<div id='${id}_suggest_container' class='ZmSuggestContainer'>
 		<div class='ZmSuggestHeader'>
 			<div id='${id}_suggestion_name'			class='ZmSuggestLabel'>&nbsp;</div>
-			<div id='${id}_suggest_options_image'	class='ZmSuggestOptionsButton'>
+			<div id='${id}_suggest_options_image' tabindex='0' class='ZmSuggestOptionsButton'>
 				<$=AjxImg.getImageHtml("Options")$>
 			</div>
-			<div id='${id}_suggest_close'			class='ZmSuggestCloseButton'>
+			<div id='${id}_suggest_close'	tabindex='0' class='ZmSuggestCloseButton'>
 				<$=AjxImg.getImageHtml("CloseGray")$>
 			</div>
 		</div>
@@ -1134,7 +1134,7 @@
 
 
 <template id='calendar.Appointment#TimeSuggestion'>
-	<table role="presentation" id='${id}' width="100%" class="Row ZPropertySheet" cellspacing="6">
+	<table role="presentation" id='${id}' width="100%" tabindex="0" class="Row ZPropertySheet" cellspacing="6">
 		<tr>
 			<td width="16" ><$= AjxImg.getImageHtml(data.attendeeImage) $></td>
 			<td><$= data.timeLabel $></td>
@@ -1179,7 +1179,7 @@
 <template id='calendar.Appointment#TimeSuggestion-NoSuggestions'>
 	<div class='NoSuggestions'>
 		<div style='margin-bottom:2em;'>${message}</div>
-		<span class="FakeAnchor" id="${id}_showall"><$= ZmMsg.showTimesAnyway $></span>
+		<span class="FakeAnchor" tabindex="0" id="${id}_showall"><$= ZmMsg.showTimesAnyway $></span>
 	</div>
 </template>
 
@@ -1222,14 +1222,14 @@
         </tr>
         <tr>
             <td class="ZmFieldLabelRight"><$= ZmMsg.suggestionTimes $>:</td>
-            <td align="right"><input type="checkbox" id="${id}_my_working_hrs_pref"></td>
+            <td align="right"><input type="checkbox" tabindex="0" id="${id}_my_working_hrs_pref"></td>
             <td width="100%">
                 <label for="${id}_my_working_hrs_pref"><$= ZmMsg.schedulerPrefMyWorkingHours $></label>
             </td>
         </tr>
         <tr>
             <td>&nbsp;</td>
-            <td align="right"><input type="checkbox" id="${id}_others_working_hrs_pref"></td>
+            <td align="right"><input type="checkbox" tabindex="0" id="${id}_others_working_hrs_pref"></td>
             <td width="100%">
                 <label for="${id}_others_working_hrs_pref"><$= ZmMsg.schedulerPrefOtherWorkingHours $></label>
             </td>
@@ -1250,21 +1250,21 @@
         </tr>
         <tr>
             <td class='ZmFieldLabelRight'><$= ZmMsg._name $>:</td>
-            <td><input type="text" id="${id}_name" nowrap="" size="30" autocomplete="off"></td>
+            <td><input type="text" tabindex="0" id="${id}_name" nowrap="" size="30" autocomplete="off"></td>
             <td class='ZmFieldLabelRight' style='padding-left:2em;'><$= ZmMsg.site $>:</td>
-            <td><input type="text" id="${id}_site" nowrap="" size="30" autocomplete="off"></td>
+            <td><input type="text" tabindex="0" id="${id}_site" nowrap="" size="30" autocomplete="off"></td>
         </tr>
         <tr>
             <td class='ZmFieldLabelRight'><$= ZmMsg.minimumCapacity $>:</td>
-            <td><input type="text" id="${id}_capacity" nowrap="" size="30" autocomplete="off"></td>
+            <td><input type="text" tabindex="0" id="${id}_capacity" nowrap="" size="30" autocomplete="off"></td>
             <td class='ZmFieldLabelRight' style='padding-left:2em;'><$= ZmMsg.building $>:</td>
-            <td><input type="text" id="${id}_building" nowrap="" size="30" autocomplete="off"></td>
+            <td><input type="text" tabindex="0" id="${id}_building" nowrap="" size="30" autocomplete="off"></td>
         </tr>
         <tr>
             <td class='ZmFieldLabelRight'><$= ZmMsg.description $>:</td>
-            <td><input type="text" id="${id}_desc" nowrap="" size="30" autocomplete="off"></td>
+            <td><input type="text" tabindex="0" id="${id}_desc" nowrap="" size="30" autocomplete="off"></td>
             <td class='ZmFieldLabelRight' style='padding-left:2em;'><$= ZmMsg.floor $>:</td>
-            <td><input type="text" id="${id}_floor" nowrap="" size="30" autocomplete="off"></td>
+            <td><input type="text" tabindex="0" id="${id}_floor" nowrap="" size="30" autocomplete="off"></td>
         </tr>
         </tbody>
     </table>

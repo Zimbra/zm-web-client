@@ -132,10 +132,9 @@ function(parent, type, id) {
 		{
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		}
-		// "Empty" for Chats, Junk and Trash
+		// "Empty" for Junk and Trash
 		if (nId == ZmFolder.ID_SPAM  ||
-			nId == ZmFolder.ID_TRASH ||
-			nId == ZmFolder.ID_CHATS)
+			nId == ZmFolder.ID_TRASH)
 		{
 			if (nId == ZmFolder.ID_SPAM) {
 				emptyText = ZmMsg.emptyJunk;
@@ -171,6 +170,7 @@ function(parent, type, id) {
 	var op = parent.getOp(ZmOperation.EMPTY_FOLDER);
 	if (op) {
 		op.setText(emptyText);
+		appCtxt.notifyZimlets("onZmFolderTreeController_resetOperations", [op, nId]);
 	}
 
     var isTrash = (nId == ZmOrganizer.ID_TRASH);

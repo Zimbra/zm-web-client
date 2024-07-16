@@ -146,8 +146,8 @@ function(list, sortField) {
     ZmListView.prototype.set.apply(this, arguments);
 
     this.markDefaultSelection(list);
-};
 
+};
 
 ZmMailListView.prototype.markDefaultSelection =
 function(list) {
@@ -663,6 +663,7 @@ function(defaultColumnSort) {
 				}
 			}
 		}
+		this.addHeaderItemInTagGroup();
 	}
 
 	// Setting label on date column
@@ -729,7 +730,7 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 													  "DwtListView-Column'";
 		htmlArr[idx++] = " width='auto'><table role='presentation' width='100%'><tr><td id='";
 		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field);
-		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
+		htmlArr[idx++] = "' class='DwtListHeaderItem-label' tabindex='0'>";
 		htmlArr[idx++] = headerCol._label;
 		htmlArr[idx++] = "</td>";
 
@@ -1214,7 +1215,7 @@ function(ev) {
 	if ((!this.isMultiColumn() || appCtxt.get(ZmSetting.COLOR_MESSAGES))
 			&& (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL)) {
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: TAG");
-		this.redrawItem(item);
+		this.redrawItem(item, true);
         ZmListView.prototype._changeListener.call(this, ev);
         ev.handled = true;
 	}

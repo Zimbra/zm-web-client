@@ -26,7 +26,7 @@ ZmMailMsgListView = function(params) {
 	this._mode = params.mode;
 	this.view = params.view;
 	params.type = ZmItem.MSG;
-	params.listLabel = ZmMsg.messageList;
+	params.listLabel = ZmMsg.message;
 	this._controller = params.controller;
 	params.headerList = this._getHeaderList();
 	ZmMailListView.call(this, params);
@@ -219,14 +219,23 @@ function(item, colIdx) {
 			break;
 		}
 	}
-	// first row
-	htmlArr[idx++] = "<div class='TopRow " + selectionCssClass + "' ";
-	htmlArr[idx++] = "id='";
-	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
-	htmlArr[idx++] = "'>";
-	if (selectionCssClass) {
-		idx = ZmMailListView.prototype._getCellContents.apply(this, [htmlArr, idx, item, ZmItem.F_SELECTION, colIdx]);
+
+	var result = { value: null };
+	appCtxt.notifyZimlets("onZmMailMsgListView_getAbridgedContent", [this, item, colIdx, htmlArr, idx, selectionCssClass, result]);
+	if (result.value) {
+		htmlArr = result.value.htmlArr;
+		idx = result.value.idx;
+	} else {
+		// first row
+		htmlArr[idx++] = "<div class='TopRow " + selectionCssClass + "' ";
+		htmlArr[idx++] = "id='";
+		htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
+		htmlArr[idx++] = "'>";
+		if (selectionCssClass) {
+			idx = ZmMailListView.prototype._getCellContents.apply(this, [htmlArr, idx, item, ZmItem.F_SELECTION, colIdx]);
+		}
 	}
+
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_READ, colIdx, width);
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right", ["ZmMsgListDate"]);
