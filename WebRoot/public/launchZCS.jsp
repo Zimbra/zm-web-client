@@ -72,6 +72,10 @@
 
 <!DOCTYPE html>
 <zm:getUserAgent var="ua" session="false"/>
+<c:set var="mobileSupported" value="${ua.isMobile && ((ua.isOsWindows && (ua.isWindowsPhone || not ua.isWindowsNT))
+                                                       || (ua.isOsBlackBerry)
+                                                       || (ua.isOsAndroid)
+                                                       || (ua.isIos))}" />
 <!--
     For supporting web client offline mode in Firefox, Cache-control header has to be set for this page for offline usage. overrideCacheControl attribute is set in the session in offline.jsp
 -->
@@ -325,7 +329,7 @@
 	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
 	<c:if test="${param.client ne 'advanced'}">
 		enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
-		unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari4up);
+		unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || ${mobileSupported};
 		if (enforceMinDisplay && unsupported) {
 			switchClient();
 		}
