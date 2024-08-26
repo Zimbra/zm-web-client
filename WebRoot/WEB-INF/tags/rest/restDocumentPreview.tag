@@ -56,6 +56,7 @@
         %>
 
         <!-- Zimbra Variables -->
+        <c:set var="fileExtension" value=".zgz" scope="request"/>
         <c:if test="${not empty param.dev and param.dev eq '1'}">
             <c:set var="mode" value="mjsf" scope="request"/>
             <c:set var="gzip" value="false" scope="request"/>
@@ -69,6 +70,9 @@
         <c:set var="isDevMode" value="${not empty requestScope.mode and requestScope.mode eq 'mjsf'}" scope="request"/>
         <c:set var="isSkinDebugMode" value="${not empty requestScope.mode} and ${requestScope.mode eq 'skindebug'}" scope="request"/>
         <c:set var="ext" value="${requestScope.fileExtension}" scope="page"/>
+        <c:if test="${not empty requestScope.version}">
+            <c:set var="version" value="${fn:escapeXml(requestScope.version)}" scope="request"/>
+        </c:if>
         <c:set var="vers" value="${empty requestScope.version ? initParam.zimbraCacheBusterVersion : requestScope.version}" scope="page"/>
         <c:if test="${empty ext or isDevMode}">
             <c:set var="ext" value="" scope="page"/>
