@@ -26,7 +26,7 @@ If not, see <https://www.gnu.org/licenses/>.
     }
 
     String isDev = (String) request.getParameter("dev");
-    if (isDev != null) {
+    if (isDev != null && isDev.equals("1")) {
         request.setAttribute("mode", "mjsf");
     }
 
