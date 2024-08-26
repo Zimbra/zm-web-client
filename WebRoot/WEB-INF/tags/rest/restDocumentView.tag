@@ -32,6 +32,9 @@ response.setHeader("Pragma", "no-cache");
 
 <rest:handleError>
     <zm:getItemInfoJSON var="fileInfoJSON" authtoken="${requestScope.zimbra_authToken}" id="${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}"/>
+</rest:handleError>
+
+<c:set var="fileExtension" value=".zgz" scope="request"/>
 <c:if test="${not empty param.dev and param.dev eq '1'}">
     <c:set var="mode" value="mjsf" scope="request"/>
     <c:set var="gzip" value="false" scope="request"/>
@@ -52,6 +55,9 @@ response.setHeader("Pragma", "no-cache");
 <c:set var="pnames" value="${fn:split(packages,',')}" scope="request"/>
 
 <c:set var="ext" value="${requestScope.fileExtension}" scope="page"/>
+<c:if test="${not empty requestScope.version}">
+    <c:set var="version" value="${fn:escapeXml(requestScope.version)}" scope="request"/>
+</c:if>
 <c:set var="vers" value="${empty requestScope.version ? initParam.zimbraCacheBusterVersion : requestScope.version}" scope="page"/>
 
 <c:if test="${empty ext or isDevMode}">
@@ -71,7 +77,6 @@ response.setHeader("Pragma", "no-cache");
 </c:choose>
 <fmt:getLocale var="locale"/>    
 <c:set var="localeId" value="${not empty param.localeId ? param.localeId : (not empty requestScope.zimbra_target_account_prefLocale ? requestScope.zimbra_target_account_prefLocale : locale)}"/>
-</rest:handleError>
 <head>
     <c:set value="/img" var="iconPath" scope="request"/>
     <c:url var='cssurl' value='/css/images,common,dwt,msgview,login,zm,spellcheck,skin,docs.css'>
@@ -86,22 +91,12 @@ response.setHeader("Pragma", "no-cache");
         <jsp:param name="skin" value="${skin}" />
         <jsp:param name="localeId" value="${localeId}"/>
     </jsp:include>
+    <jsp:include page="/public/Boot.jsp" />
     <script type="text/javascript">
-        <jsp:include page="/js/Boot_all.js" />
-    </script>
-    <script type="text/javascript">
-        AjxPackage.setBasePath("${pageContext.request.contextPath}/js");
-        AjxPackage.setExtension("_all.js");
-        AjxPackage.setQueryString("v=${initParam.zimbraCacheBusterVersion}");
-
-        AjxTemplate.setBasePath("${pageContext.request.contextPath}/templates");
-        AjxTemplate.setExtension(".template.js");
-
         window.restView = true;
     </script>
 
     <script>
-        //AjxEnv.DEFAULT_LOCALE = "${localeId}";
         <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
 
         window.isRestView = true;
