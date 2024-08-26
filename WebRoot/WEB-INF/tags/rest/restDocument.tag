@@ -39,23 +39,6 @@
          <rest:documentPreview/>
     </c:when>
 
-    <%--Slides--%>
-    <c:when test="${(contentType eq 'application/x-zimbra-slides' and isEdit)}">
-        <rest:slideView/>
-    </c:when>
-    <c:when test="${(contentType eq 'application/x-zimbra-slides')}">
-        <rest:slidePreview/>
-    </c:when>
-
-
-    <%--Spreadsheet--%>
-    <c:when test="${(contentType eq 'application/x-zimbra-xls' and isEdit)}">
-        <rest:spreadsheetView/>
-    </c:when>
-    <c:when test="${(contentType eq 'application/x-zimbra-xls')}">
-        <rest:spreadsheetPreview/>
-    </c:when>
-
     <c:otherwise>
         <fmt:message key="unsupportedRestView"/>
     </c:otherwise>

@@ -38,11 +38,6 @@
     <tag-file>
         <name>document</name>
         <path>/WEB-INF/tags/rest/restDocument.tag</path>
-    </tag-file>    
-
-    <tag-file>
-        <name>slideView</name>
-        <path>/WEB-INF/tags/rest/restSlideView.tag</path>
     </tag-file>
 
     <tag-file>
@@ -55,21 +50,6 @@
         <path>/WEB-INF/tags/rest/restDocumentPreview.tag</path>
     </tag-file>
 
-    <tag-file>
-        <name>slidePreview</name>
-        <path>/WEB-INF/tags/rest/restSlidePreview.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>spreadsheetView</name>
-        <path>/WEB-INF/tags/rest/restSpreadsheetView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>spreadsheetPreview</name>
-        <path>/WEB-INF/tags/rest/restSpreadsheetPreview.tag</path>
-    </tag-file>
-  
     <tag-file>
         <name>handleError</name>
         <path>/WEB-INF/tags/rest/restHandleError.tag</path>
