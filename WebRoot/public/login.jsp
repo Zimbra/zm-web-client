@@ -183,7 +183,11 @@
             <c:when test="${authResult.twoFactorAuthRequired eq true}">
                 <c:set var="totpAuthRequired" value="true"/>
             </c:when>
-          <c:otherwise>
+            <c:when test="${authResult.resetPassword eq true}">
+                <c:set var="errorCode" value="account.CHANGE_PASSWORD"/>
+                <fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
+            </c:when>
+            <c:otherwise>
                 <c:set var="authtoken" value="${authResult.authToken.value}" />
                 <c:set var="refer" value="${authResult.refer}"/>
                 <c:set var="serverName" value="${pageContext.request.serverName}"/>
