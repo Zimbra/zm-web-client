@@ -196,7 +196,11 @@
                 <c:set var="trustedDevicesEnabled" value="${authResult.trustedDevicesEnabled}"/>
                 <zm:getTwoFactorAuthConfig authResult="${authResult}" varTFAMethodEnabled="tfaMethodEnabled" varMethod="tfaMethod" varMaskedEmailAddress="maskedEmailAddress"/>
             </c:when>
-          <c:otherwise>
+            <c:when test="${authResult.resetPassword eq true}">
+                <c:set var="errorCode" value="account.CHANGE_PASSWORD"/>
+                <fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
+            </c:when>
+            <c:otherwise>
                 <c:set var="authtoken" value="${authResult.authToken.value}" />
                 <c:set var="refer" value="${authResult.refer}"/>
                 <c:set var="serverName" value="${pageContext.request.serverName}"/>
