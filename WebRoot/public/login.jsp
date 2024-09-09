@@ -344,6 +344,13 @@
             <c:param name="tfaMethodAllowed" value="${tfaMethodAllowed}"/>
             <c:param name="isResetPasswordEnabled" value="${isResetPasswordEnabled}"/>
         </c:url>
+        <%
+            // Delete cookie
+            Cookie authtokenCookie = new Cookie("ZM_AUTH_TOKEN", "");
+            authtokenCookie.setMaxAge(0);
+            response.addCookie(authtokenCookie);
+            pageContext.setAttribute("authtokenCookie", "");
+        %>
         <%--Forward the user to the initial two factor authentication set up page--%>
         <jsp:forward page="${twoFactorSetupURL}" />
     </c:if>
