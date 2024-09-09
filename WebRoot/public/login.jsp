@@ -300,6 +300,13 @@
                 <c:param name="customerDomain"	value="${param.customerDomain}" />
             </c:if>
         </c:url>
+        <%
+            // Delete cookie
+            Cookie authtokenCookie = new Cookie("ZM_AUTH_TOKEN", "");
+            authtokenCookie.setMaxAge(0);
+            response.addCookie(authtokenCookie);
+            pageContext.setAttribute("authtokenCookie", "");
+        %>
         <%--Forward the user to the initial two factor authentication set up page--%>
         <jsp:forward page="${twoFactorSetupURL}" />
     </c:if>
