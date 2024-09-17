@@ -194,7 +194,7 @@ function() {
 	var folders = folderTree && folderTree.asList({remoteOnly:true});
 	this._mountedShareListView.set(AjxVector.fromArray([]));
 	var mountedShareComment = document.getElementById(this._pageId + "_mountedSharesComment");
-	var shareFolderMobileSyncEnabled = appCtxt.get(ZmSetting.SHARED_FOLDER_MOBILE_SYNC_ENABLED);
+	var shareFolderMobileSyncEnabled = appCtxt.get(ZmSetting.MOBILE_SYNC_ENABLED) && appCtxt.get(ZmSetting.SHARED_FOLDER_MOBILE_SYNC_ENABLED);
 
 	if (mountedShareComment) {
 		mountedShareComment.style.display = shareFolderMobileSyncEnabled ? 'block' : 'none';
@@ -824,7 +824,7 @@ function() {
 			headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_FOLDER, text:ZmMsg.sharingFolder, width:ZmMsg.COLUMN_WIDTH_FOLDER_SH}));
 		}
 		headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_WITH, text:ZmMsg.sharingWith, width:ZmMsg.COLUMN_WIDTH_WITH_SH}));
-		if (this.status === ZmSharingView.MOUNTED && appCtxt.get(ZmSetting.SHARED_FOLDER_MOBILE_SYNC_ENABLED)) {
+		if (this.status === ZmSharingView.MOUNTED && appCtxt.get(ZmSetting.MOBILE_SYNC_ENABLED) && appCtxt.get(ZmSetting.SHARED_FOLDER_MOBILE_SYNC_ENABLED)) {
 			headerList.push(new DwtListHeaderItem({field:ZmSharingView.F_SYNC, text:ZmMsg.syncToMobile, width:ZmMsg.COLUMN_WIDTH_SYNC_SH, align:"center" }));
 		}
 	} else {
@@ -908,6 +908,7 @@ function(params) {
 	if (
 		this.status === ZmSharingView.MOUNTED &&
 		params.ctrlKey &&
+		appCtxt.get(ZmSetting.MOBILE_SYNC_ENABLED) &&
 		appCtxt.get(ZmSetting.SHARED_FOLDER_MOBILE_SYNC_ENABLED)
 	) {
 		// handle selection of mobile sync checkbox using keyboard shortcut Ctrl + `.
@@ -954,7 +955,7 @@ function(ev) {
 					cell.innerHTML = this._getCellContents([], 0, share, ZmSharingView.F_ROLE, null, {returnText:true});
 				}
 
-				if (appCtxt.get(ZmSetting.SHARED_FOLDER_MOBILE_SYNC_ENABLED)) {
+				if (appCtxt.get(ZmSetting.MOBILE_SYNC_ENABLED) && appCtxt.get(ZmSetting.SHARED_FOLDER_MOBILE_SYNC_ENABLED)) {
 					var syncToMobileCell = document.getElementById(this._getCellId(share, ZmSharingView.F_SYNC));
 					if (syncToMobileCell) {
 						syncToMobileCell.innerHTML = this._getCellContents([], 0, share, ZmSharingView.F_SYNC, null, {returnText:true});
