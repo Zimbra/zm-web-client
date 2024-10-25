@@ -1298,7 +1298,7 @@ function(idoc) {
 			var src = img.src && unescape(img.src);
 			var dfsrc = img.getAttribute("dfsrc") || img.getAttribute("data-mce-src");
 			if (dfsrc && dfsrc.indexOf("cid:") === 0) {
-				return; //dfsrc already set so nothing to do
+				continue; //dfsrc already set so nothing to do
 			} else if (img.src && img.src.indexOf("cid:") === 0) {
 				cid = img.src;
 			} else if ( dfsrc && dfsrc.substring(0,4) === "doc:"){
