@@ -529,11 +529,11 @@ function(subs, sentBy, sentByAddr, obo) {
 	{
         var from = this._msg.getAddress(AjxEmailAddress.FROM) && this._msg.getAddress(AjxEmailAddress.FROM).getAddress();
         subs.counterInvMsg =  (!sentByAddr || sentByAddr == from) ?
-            AjxMessageFormat.format(ZmMsg.counterInviteMsg, [from]):AjxMessageFormat.format(ZmMsg.counterInviteMsgOnBehalfOf, [sentByAddr, from]);
+		AjxMessageFormat.format(ZmMsg.counterInviteMsg, [from]):AjxMessageFormat.format(ZmMsg.counterInviteMsgOnBehalfOf, [AjxStringUtil.htmlEncode(sentByAddr), from]);
 	}
 	// Fix for bug: 88052 and 77237. Display cancellation banner to organizer or attendee
 	else if (isInviteCancelled) {
-		var organizer = this._invite.getOrganizerName() || this._invite.getOrganizerEmail();
+		var organizer = AjxStringUtil.htmlEncode(this._invite.getOrganizerName() || this._invite.getOrganizerEmail());
 		subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgCancelled, organizer.split());
 		subs.ptstIcon = ZmCalItem.getParticipationStatusIcon(ZmCalBaseItem.PSTATUS_DECLINED);
 		subs.ptstClassName = "InviteStatusDecline";
