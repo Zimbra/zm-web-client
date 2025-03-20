@@ -2769,6 +2769,9 @@ function(ev, relogin) {
 
 	ZmZimbraMail._isLogOff = true;
 
+	//notify Zimlet
+	appCtxt.notifyZimlets("onLogoff", [this]);
+
 	// bug fix #36791 - reset the systray icon when returning to Account Setup
 	if (appCtxt.isOffline && AjxEnv.isWindows &&
 		appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE))
