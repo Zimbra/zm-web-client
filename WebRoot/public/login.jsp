@@ -957,6 +957,24 @@ function onLoad() {
         loginForm.totpcode.focus();
         updateTFAVerifyButtonStatus();
     }
+
+    // clearing indexdb cache on logout
+    var urlObject = new URLSearchParams(window.location.search);
+    var loginOp = urlObject.get('loginOp');
+
+    //tmp
+    console.log('onLoad', {urlObject, loginOp});
+
+    if (loginOp === "logout" || loginOp === "relogin") {
+        indexedDB.databases().then(function (dbs){
+            //tmp
+            console.log('indexedDB databases', dbs);
+            dbs.forEach(function (db){
+                indexedDB.deleteDatabase(db.name);
+            });
+        });
+    }
+
 }
 
 // show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
