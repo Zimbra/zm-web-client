@@ -74,6 +74,7 @@ function(msg, composeViewId, composeTabId, controller) {
     this._initializeToolBar();
 	this.resetToolbarOperations(this._toolbar);
 	this._view.showConfirmation(msg);
+	appCtxt.getAppViewMgr()._deactivateView(this._composeViewId);
 
 	if (appCtxt.isChildWindow) {
 		appCtxt.getAppViewMgr()._setViewVisible(ZmId.VIEW_LOADING, false);
