@@ -635,7 +635,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                             </div>
                                         </c:when>
                                     </c:choose>
-                                    <input tabindex="0" class="zLoginFieldInput" id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocomplete="off" onkeyup="updateTFAVerifyButtonStatus(this)"></td>
+                                    <input tabindex="0" class="zLoginFieldInput" id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocomplete="off" oninput="updateTFAVerifyButtonStatus(this)"></td>
                                 </div>
                                 <c:if test="${authResult.trustedDevicesEnabled eq true || trustedDevicesEnabled}">
                                     <div class="trustedDeviceDiv">
