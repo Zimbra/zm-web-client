@@ -101,7 +101,7 @@ function(list) {
 
 		// open button
 		var openBtn = this._openButtons[data.openBtnId] = new DwtLinkButton({id: "openBtn_" + id, parent: this, parentElement: data.openLinkId, noDropDown: true});
-		openBtn.setText(appt.getName());
+		openBtn.setText(AjxStringUtil.htmlEncode(appt.getName()));
 		openBtn.addSelectionListener(openListener);
 		openBtn.apptUid = uid;
 
@@ -146,11 +146,11 @@ function(html, idx, appt, data, noSep) {
 	var params = {
 		noSep: noSep,
 		rowId: data.rowId,
-		calName: calName,
+		calName: AjxStringUtil.htmlEncode(calName),
 		accountName: (appCtxt.multiAccounts && calendar && calendar.getAccount().getDisplayName()),
-		location: appt.getLocation(),
+		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		apptIconHtml: (AjxImg.getImageHtml(appt.otherAttendees ? "ApptMeeting" : "Appointment")),
-		organizer: appt.otherAtt ? appt.organizer : null,
+		organizer: appt.otherAtt ? AjxStringUtil.htmlEncode(appt.organizer) : null, // TODO: change appt.otherAtt to appt.otherAttendees
 		reminderName: (AjxStringUtil.htmlEncode(appt.name + apptLabel)),
 		durationText: (AjxStringUtil.trim(this._getDurationText(appt))),
 		deltaId: data.deltaId,
