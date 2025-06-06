@@ -116,7 +116,7 @@ function(call) {
 		caller: this._getCallerHtml(call), 
 		duration: AjxDateUtil.computeDuration(call.duration),
 		date: AjxDateUtil.computeDateTimeString(call.date),
-		location: location
+		location: AjxStringUtil.htmlEncode(location)
 	};
 	var html = AjxTemplate.expand("voicemail.Voicemail#CallTooltip", data);
 	return html;
