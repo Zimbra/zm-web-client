@@ -543,12 +543,12 @@ function(subs, sentBy, sentByAddr, obo) {
 		var attendee = this._invite.getAttendees()[0];
 		var ptst = attendee && attendee.ptst;
 		if (ptst) {
-            var names = [];
-			var dispName = attendee.d || attendee.a;
-            var sentBy = attendee.sentBy;
-            var ptstStr = null;
-            if (sentBy) names.push(attendee.sentBy);
-            names.push(dispName);
+			var names = [];
+			var dispName = AjxStringUtil.htmlEncode(attendee.d || attendee.a);
+			var sentBy = AjxStringUtil.htmlEncode(attendee.sentBy);
+			var ptstStr = null;
+			if (sentBy) names.push(AjxStringUtil.htmlEncode(attendee.sentBy));
+			names.push(dispName);
 			subs.ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
 			switch (ptst) {
 				case ZmCalBaseItem.PSTATUS_ACCEPT:

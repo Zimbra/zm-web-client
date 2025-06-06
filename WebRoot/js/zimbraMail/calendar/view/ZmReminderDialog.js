@@ -446,7 +446,7 @@ function(html, idx, appt, data) {
 		accountName: (appCtxt.multiAccounts && calendar && calendar.getAccount().getDisplayName()),
 		location: (AjxStringUtil.htmlEncode(appt.getReminderLocation())),
 		apptIconHtml: (AjxImg.getImageHtml(appt.otherAttendees ? "ApptMeeting" : "Appointment")),
-		organizer: appt.otherAtt ? appt.organizer : null,
+		organizer: appt.otherAtt ? AjxStringUtil.htmlEncode(appt.organizer) : null, // TODO: change appt.otherAtt to appt.otherAttendees
 		reminderName: (AjxStringUtil.htmlEncode(appt.getReminderName())),
 		durationText: (AjxStringUtil.trim(this._getDurationText(appt))),
 		deltaId: data.deltaId,
