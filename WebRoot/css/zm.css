@@ -2130,11 +2130,13 @@ INPUT[type="text"].search_input-expanded:focus {
 	color:#999;
 }
 
-.ZmOverduetask TD {
+.Row.ZmOverduetask TD,
+.RowDouble.ZmOverduetask TD {
 	color:red;
 }
 
-.ZmOverdueCompletedtask TD {
+.Row.ZmOverdueCompletedtask TD,
+.RowDouble.ZmOverdueCompletedtask TD {
 	text-decoration:line-through;
 	color:red;
 }
