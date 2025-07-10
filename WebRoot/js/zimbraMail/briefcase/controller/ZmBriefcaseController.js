@@ -733,10 +733,13 @@ function(ev) {
 		}
 		if (restUrl) {
             if(item.isDownloadable() && !this._alwaysOpenInNewWindow(item)) {
-                this._downloadFile(restUrl);
-            }else {
-			    window.open(restUrl, this._getWindowName(item.name), item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
-            }
+				if(item.contentType === ZmMimeTable.APP_ADOBE_PDF) {
+					restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "disp=a";
+				}
+				this._downloadFile(restUrl);
+			} else {
+				window.open(restUrl, this._getWindowName(item.name), item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
+			}
 		}
 	}
 };
@@ -744,15 +747,14 @@ function(ev) {
 ZmBriefcaseController.prototype._alwaysOpenInNewWindow =
 function(item){
 
-    return (item.contentType == ZmMimeTable.APP_ADOBE_PDF && this.hasPDFReader())
-            || (item.contentType == ZmMimeTable.TEXT_XML) || (item.contentType == ZmMimeTable.APP_XML);
+	return (item.contentType == ZmMimeTable.TEXT_XML) || (item.contentType == ZmMimeTable.APP_XML);
 
 };
 
 ZmBriefcaseController.prototype.hasPDFReader =
 function(){
-    if(AjxUtil.isUndefined(this._hasPDFReader)){
-        this._hasPDFReader = AjxPluginDetector.detectPDFReader();
+	if(AjxUtil.isUndefined(this._hasPDFReader)){
+		this._hasPDFReader = AjxPluginDetector.detectPDFReader();
     }
     return this._hasPDFReader;
 }
