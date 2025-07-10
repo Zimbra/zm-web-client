@@ -674,11 +674,15 @@ function(item, restUrl, response) {
 		restUrl = restUrl + ( restUrl.match(/\?/) ? '&' : '?' ) + "viewonly=1";
 	} else {
 		this._setupLoading();
-		restUrl = this._setupErrorCallback(restUrl);
-		restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "view=html";
+		if (item.contentType === ZmMimeTable.APP_ADOBE_PDF) {
+			restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "disp=a";
+		} else {
+			restUrl = this._setupErrorCallback(restUrl);
+			restUrl += (restUrl.match(/\?/) ? '&' : '?' ) + "view=html";
+		}
 	}
 
-	this._iframePreview.setSrc(restUrl);
+	this._handleIframeContent(item, restUrl);
 	Dwt.setLoadedTime("ZmBriefcaseItem"); //iframe src set but item may not be downloaded by browser
 };
 
@@ -725,9 +729,13 @@ ZmPreviewView.prototype.set = function (item) {
 			restUrl = restUrl + (restUrl.match(/\?/) ? "&" : "?") + "viewonly=1";
 		} else {
 			this._setupLoading();
-
-			restUrl = this._setupErrorCallback(restUrl);
-			restUrl += (restUrl.match(/\?/) ? "&" : "?") + "view=html";
+			
+			if (item.contentType === ZmMimeTable.APP_ADOBE_PDF) {
+				restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "disp=a";
+			} else {
+				restUrl = this._setupErrorCallback(restUrl);
+				restUrl += (restUrl.match(/\?/) ? '&' : '?' ) + "view=html";
+			}
 		}
 
 		this._handleIframeContent(item, restUrl);
@@ -821,11 +829,17 @@ function(){
 
 ZmPreviewView.prototype._handleIframeContent =
 function(item, restUrl){
-	if (item.contentType === 'application/pdf') {
-		this._iframePreview.getIframe().setAttribute('sandbox', '');
-		this._renderPreviewLink(ZmMsg.previewNewTabLink, restUrl);
+	if (item.contentType === ZmMimeTable.APP_ADOBE_PDF) {
+		const iframe = this._iframePreview.getIframe();
+		// Set blank src to ensure load event will fire
+		iframe.setAttribute('src', 'about:blank');
+
+		// Attach onload to inject HTML & update preview
+		iframe.onload = AjxCallback.simpleClosure(function() {
+			this._renderPreviewLink(ZmMsg.previewDownloadLink, restUrl);
+			this._updatePreview();
+		}, this);
 	} else {
-		this._iframePreview.getIframe().removeAttribute('sandbox');
 		this._iframePreview.setSrc(restUrl);
 	}
 };
