@@ -2102,7 +2102,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 				htmlArr[idx++] = ") ";
 			}
 			// convert to HTML
-			if (att.links.html && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
+			if (att.links.html && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED) && att.ct !== ZmMimeTable.APP_ADOBE_PDF) {
 				var params = {
 					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_HTML),
 					blankTarget:	true,
@@ -2344,10 +2344,15 @@ function(params) {
 	}
 	else {
 		// open non-JavaScript URLs in a blank target
-		if (params.att.url && params.att.url.indexOf('javascript:') !== 0) {
+		if (params.att.url && params.att.url.indexOf('javascript:') !== 0 && params.att.ct !== ZmMimeTable.APP_ADOBE_PDF) {
 			params1.blankTarget = true;
 		}
-		params1.href = params.att.url;
+		
+		if (params.att.ct === ZmMimeTable.APP_ADOBE_PDF) {
+			params1.href = params.att.url + "&disp=a";
+		} else {
+			params1.href = params.att.url;
+		}
 	}
 	return ZmMailMsgView.getAttachmentLinkHtml(params1);
 };

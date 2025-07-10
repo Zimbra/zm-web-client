@@ -215,8 +215,7 @@ ZmMimeTable.isRenderable =
 function(type, textOnly) {
 	return (type === ZmMimeTable.TEXT_HTML ||
 			type === ZmMimeTable.TEXT_PLAIN ||
-			(!textOnly && ZmMimeTable.isRenderableImage(type)) ||
-			(!textOnly && type === ZmMimeTable.APP_ADOBE_PDF));
+			(!textOnly && ZmMimeTable.isRenderableImage(type)));
 };
 
 ZmMimeTable.isTextType =
