@@ -2350,6 +2350,7 @@ function(params) {
 		
 		if (params.att.ct === ZmMimeTable.APP_ADOBE_PDF) {
 			params1.href = params.att.url + "&disp=a";
+			params1.download = true;
 		} else {
 			params1.href = params.att.url;
 		}
