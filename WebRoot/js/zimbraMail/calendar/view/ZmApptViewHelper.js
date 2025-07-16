@@ -835,7 +835,7 @@ function(calItem, attach, hasCheckbox, getLinkIdCallback) {
 	var hrefRoot = ["href='", msgFetchUrl, "&id=", calItem.invId, "&amp;part=", attach.part].join("");
 	html[i++] = "<td width=20>";
 	if (attach.ct === ZmMimeTable.APP_ADOBE_PDF) {
-		html[i++] = "<a class='AttLink' ";
+		html[i++] = "<a class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' ";
 	} else {
 		html[i++] = "<a target='_blank' class='AttLink' ";
 	}
@@ -854,7 +854,7 @@ function(calItem, attach, hasCheckbox, getLinkIdCallback) {
 
 	html[i++] = AjxImg.getImageHtml(icon);
 	if (attach.ct === ZmMimeTable.APP_ADOBE_PDF) {
-		html[i++] = "</a></td><td><a class='AttLink' ";
+		html[i++] = "</a></td><td><a class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' ";
 	} else {
 		html[i++] = "</a></td><td><a target='_blank' class='AttLink' ";
 	}
