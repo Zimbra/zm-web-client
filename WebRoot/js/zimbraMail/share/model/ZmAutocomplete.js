@@ -549,8 +549,7 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
  */
 ZmAutocompleteMatch.prototype.setContactGroupMembers =
 		function(groupId, callback) {
-			var ac = window.appCtxt;
-			var contactGroup = ac.cacheGet(groupId);
+			var contactGroup = appCtxt.getById(groupId);
 			if (contactGroup) {
 				var groups = contactGroup.getGroupMembers();
 				var addresses = (groups && groups.good && groups.good.getArray()) || [];
