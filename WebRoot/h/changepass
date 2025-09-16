@@ -34,7 +34,8 @@
                 <zm:changePassword username="${mailbox.name}" password="${param.password}"
                                    newpassword="${param.loginNewPassword}"
                                    rememberme="${param.zrememberme == '1'}"
-                                   csrfToken="${mailbox.csrfToken}"/>
+                                   csrfToken="${mailbox.csrfToken}"
+                                   varNewCsrfToken="newCsrfToken"/>
                 <c:set var="successfullLogin" value="true"/>
                 <fmt:message var="errorMessage" key="passwordChangeSucceededCloseWindow"/>
             </c:catch>
@@ -100,6 +101,13 @@
                 </div>
                 <div class="${successfullLogin ? 'infoMessage' : 'errorMessage'}" id="errorMessageDiv" style="display: ${errorMessage != null ? 'block' : 'none'}">
                     <c:out value="${errorMessage}"/>
+                    <c:if test="${not empty newCsrfToken}">
+                        <script>
+                            if (window.opener) {
+                                window.opener.csrfToken = "${newCsrfToken}";
+                            }
+                        </script>
+                    </c:if>
                 </div>
                 <form method='post' name="changePassForm" id="zLoginForm" action="" autocomplete="off" accept-charset="utf-8" onsubmit="return compareConfirmPass();">
                     <c:if test="${successfullLogin ne 'true'}">
