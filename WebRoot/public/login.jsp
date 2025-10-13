@@ -733,8 +733,9 @@ if (application.getInitParameter("offlineMode") != null) {
                                             String zimbraPasswordAllowedPunctuationChars = null;
 
                                             if (userName != null) {
+                                                String serverName = request.getServerName();
                                                 AccountSelector as = new AccountSelector(AccountBy.name, userName);
-                                                Account acct = Provisioning.getInstance().get(as);
+                                                Account acct = Provisioning.getInstance().get(as, serverName);
 
                                                 zimbraPasswordMinLength = acct.getPasswordMinLength();
                                                 zimbraPasswordMinUpperCaseChars = acct.getPasswordMinUpperCaseChars();
