@@ -733,7 +733,8 @@ function(ev) {
 		}
 		if (restUrl) {
             if(item.isDownloadable() && !this._alwaysOpenInNewWindow(item)) {
-                this._downloadFile(restUrl);
+                restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "disp=a";
+				this._downloadFile(restUrl);
             }else {
 			    window.open(restUrl, this._getWindowName(item.name), item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
             }
