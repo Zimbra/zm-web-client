@@ -329,6 +329,9 @@
 	<c:if test="${errorCode eq 'account.AUTH_FAILED' and not empty param.virtualacctdomain}">
 		<fmt:message bundle="${zhmsg}" var="errorMessage" key="account.EXTERNAL_AUTH_FAILED"/>
 	</c:if>
+	<c:if test="${errorCode eq 'account.AUTH_FAILED' and not empty param.loginNewPassword}">
+		<fmt:message bundle="${zhmsg}" var="errorMessage" key="account.AUTH_FAILED_passwordChangeFailed"/>
+	</c:if>
     <c:if test="${errorCode eq 'account.TWO_FACTOR_SETUP_REQUIRED'}">
         <zm:getTwoFactorAuthConfig exception="${error}" username="${fullUserName}" varTFAMethodAllowed="tfaMethodAllowed" varResetPasswordEnabled="isResetPasswordEnabled"/>
         <c:url value="TwoFactorSetup.jsp" var="twoFactorSetupURL">
@@ -686,6 +689,9 @@ if (application.getInitParameter("offlineMode") != null) {
                             <c:otherwise>
                                 <div class="loginSection">
                                     <c:choose>
+                                        <c:when test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
+                                            <input type="hidden" name="username" value="${fullUserName}"/>
+                                        </c:when>
                                         <c:when test="${not empty virtualacctdomain or not empty param.virtualacctdomain}">
                                             <%--External/Guest user login - *email* & password input fields--%>
                                             
@@ -719,53 +725,21 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <c:set var="zimbraPasswordAllowedChars" />
                                     <c:set var="zimbraPasswordAllowedPunctuationChars" />
                                     <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
-                                        <%
-                                            String userName = (String) request.getParameter("username");
-
-                                            int zimbraPasswordMinLength = 0;
-                                            int zimbraPasswordMinUpperCaseChars = 0;
-                                            int zimbraPasswordMinLowerCaseChars = 0;
-                                            int zimbraPasswordMinPunctuationChars = 0;
-                                            int zimbraPasswordMinNumericChars = 0;
-                                            int zimbraPasswordMinDigitsOrPuncs = 0;
-                                            boolean zimbraFeatureAllowUsernameInPassword = true;
-                                            String zimbraPasswordAllowedChars = null;
-                                            String zimbraPasswordAllowedPunctuationChars = null;
-
-                                            if (userName != null) {
-                                                String serverName = request.getServerName();
-                                                AccountSelector as = new AccountSelector(AccountBy.name, userName);
-                                                Account acct = Provisioning.getInstance().get(as, serverName);
-
-                                                zimbraPasswordMinLength = acct.getPasswordMinLength();
-                                                zimbraPasswordMinUpperCaseChars = acct.getPasswordMinUpperCaseChars();
-                                                zimbraPasswordMinLowerCaseChars = acct.getPasswordMinLowerCaseChars();
-                                                zimbraPasswordMinPunctuationChars = acct.getPasswordMinPunctuationChars();
-                                                zimbraPasswordMinNumericChars = acct.getPasswordMinNumericChars();
-                                                zimbraPasswordMinDigitsOrPuncs = acct.getPasswordMinDigitsOrPuncs();
-                                                zimbraFeatureAllowUsernameInPassword =  acct.isFeatureAllowUsernameInPassword();
-                                                zimbraPasswordAllowedChars = acct.getPasswordAllowedChars();
-                                                zimbraPasswordAllowedPunctuationChars = acct.getPasswordAllowedPunctuationChars();
-                                            }
-                                            application.setAttribute("zimbraPasswordMinLength", zimbraPasswordMinLength);
-                                            application.setAttribute("zimbraPasswordMinUpperCaseChars", zimbraPasswordMinUpperCaseChars);
-                                            application.setAttribute("zimbraPasswordMinLowerCaseChars", zimbraPasswordMinLowerCaseChars);
-                                            application.setAttribute("zimbraPasswordMinPunctuationChars", zimbraPasswordMinPunctuationChars);
-                                            application.setAttribute("zimbraPasswordMinNumericChars", zimbraPasswordMinNumericChars);
-                                            application.setAttribute("zimbraPasswordMinDigitsOrPuncs", zimbraPasswordMinDigitsOrPuncs);
-                                            application.setAttribute("zimbraFeatureAllowUsernameInPassword", zimbraFeatureAllowUsernameInPassword);
-                                            application.setAttribute("zimbraPasswordAllowedChars", zimbraPasswordAllowedChars);
-                                            application.setAttribute("zimbraPasswordAllowedPunctuationChars", zimbraPasswordAllowedPunctuationChars);
-                                        %>
-                                        <c:set var="zimbraPasswordMinLength" value="<%=zimbraPasswordMinLength%>" />
-                                        <c:set var="zimbraPasswordMinUpperCaseChars" value="<%=zimbraPasswordMinUpperCaseChars%>"/>
-                                        <c:set var="zimbraPasswordMinLowerCaseChars" value="<%=zimbraPasswordMinLowerCaseChars%>"/>
-                                        <c:set var="zimbraPasswordMinPunctuationChars" value="<%=zimbraPasswordMinPunctuationChars%>"/>
-                                        <c:set var="zimbraPasswordMinNumericChars" value="<%=zimbraPasswordMinNumericChars%>"/>
-                                        <c:set var="zimbraPasswordMinDigitsOrPuncs" value="<%=zimbraPasswordMinDigitsOrPuncs%>"/>
-                                        <c:set var="zimbraFeatureAllowUsernameInPassword" value="<%=zimbraFeatureAllowUsernameInPassword%>"/>
-                                        <c:set var="zimbraPasswordAllowedChars" value="<%=zimbraPasswordAllowedChars%>"/>
-                                        <c:set var="zimbraPasswordAllowedPunctuationChars" value="<%=zimbraPasswordAllowedChars%>"/>
+                                        <c:catch var="passwordChangeAuthFailure">
+                                            <zm:getPasswordConfig varConfig="passwordConfig" authResult="${authResult}" />
+                                        </c:catch>
+                                        <c:if test="${passwordChangeAuthFailure != null}">
+                                            <c:redirect url="/" />
+                                        </c:if>
+                                        <c:set var="zimbraPasswordMinLength" value="${passwordConfig.zimbraPasswordMinLength}" />
+                                        <c:set var="zimbraPasswordMinUpperCaseChars" value="${passwordConfig.zimbraPasswordMinUpperCaseChars}"/>
+                                        <c:set var="zimbraPasswordMinLowerCaseChars" value="${passwordConfig.zimbraPasswordMinLowerCaseChars}"/>
+                                        <c:set var="zimbraPasswordMinPunctuationChars" value="${passwordConfig.zimbraPasswordMinPunctuationChars}"/>
+                                        <c:set var="zimbraPasswordMinNumericChars" value="${passwordConfig.zimbraPasswordMinNumericChars}"/>
+                                        <c:set var="zimbraPasswordMinDigitsOrPuncs" value="${passwordConfig.zimbraPasswordMinDigitsOrPuncs}"/>
+                                        <c:set var="zimbraFeatureAllowUsernameInPassword" value="${passwordConfig.zimbraFeatureAllowUsernameInPassword}"/>
+                                        <c:set var="zimbraPasswordAllowedChars" value="${passwordConfig.zimbraPasswordAllowedChars}"/>
+                                        <c:set var="zimbraPasswordAllowedPunctuationChars" value="${passwordConfig.zimbraPasswordAllowedPunctuationChars}"/>
                                         <label for="newPassword" class="zLoginFieldLabel"><fmt:message key="passwordRecoveryResetNewLabel"/></label>
                                         <div class="passwordWrapper">
                                             <input id="newPassword" tabindex="3" autocomplete="off" class="zLoginFieldInput" name="loginNewPassword" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
