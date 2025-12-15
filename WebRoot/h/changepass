@@ -609,16 +609,11 @@
                         _jsns: "urn:zimbraAccount",
                         dryRun: "1"
                     }
-                },
-                Header: {
-                    context: {
-                        _jsns: "urn:zimbra",
-                        csrfToken: "${mailbox.csrfToken}"
-                    }
                 }
             };
             var xmlhttp=new XMLHttpRequest();
             xmlhttp.open("POST","/service/soap/ChangePasswordRequest",false);
+            xmlhttp.setRequestHeader("X-Zimbra-Csrf-Token", "${mailbox.csrfToken}");
             try {
                 xmlhttp.send(JSON.stringify(request));
             } catch (error) {
