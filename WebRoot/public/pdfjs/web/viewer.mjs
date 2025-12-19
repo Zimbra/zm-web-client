@@ -5489,7 +5489,7 @@ const defaultOptions = {
     kind: OptionKind.VIEWER + OptionKind.PREFERENCE
   },
   enableScripting: {
-    value: true,
+    value: false,
     kind: OptionKind.VIEWER + OptionKind.PREFERENCE
   },
   enableSignatureEditor: {
@@ -5621,7 +5621,7 @@ const defaultOptions = {
     kind: OptionKind.API
   },
   isEvalSupported: {
-    value: true,
+    value: false,
     kind: OptionKind.API
   },
   isOffscreenCanvasSupported: {
@@ -5664,7 +5664,7 @@ const defaultOptions = {
 };
 {
   defaultOptions.defaultUrl = {
-    value: "compressed.tracemonkey-pldi-09.pdf",
+    value: "",
     kind: OptionKind.VIEWER
   };
   defaultOptions.sandboxBundleSrc = {
@@ -22964,14 +22964,6 @@ function onKeyDown(evt) {
         });
         handled = true;
         break;
-      case 79:
-        {
-          eventBus.dispatch("openfile", {
-            source: window
-          });
-          handled = true;
-        }
-        break;
     }
   }
   if (cmd === 3 || cmd === 10) {
@@ -23102,9 +23094,6 @@ function onKeyDown(evt) {
         break;
       case 82:
         this.rotatePages(90);
-        break;
-      case 115:
-        this.pdfSidebar?.toggle();
         break;
     }
     if (turnPage !== 0 && (!turnOnlyIfPageFit || pdfViewer.currentScaleValue === "page-fit")) {
