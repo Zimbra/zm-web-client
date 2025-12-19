@@ -669,20 +669,26 @@ function(item, restUrl, response) {
 		return;
 	}
 	
+	var usePdfViewer = false;
 	restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
 	if (ZmMimeTable.isWebDoc(item.contentType)) {
 		restUrl = restUrl + ( restUrl.match(/\?/) ? '&' : '?' ) + "viewonly=1";
 	} else {
 		this._setupLoading();
 		if (item.contentType === ZmMimeTable.APP_ADOBE_PDF) {
-			restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "disp=a";
+			if (AjxEnv.isES6supported) {
+				restUrl = appCtxt.createPdfViewerLink(restUrl);
+				usePdfViewer = true;
+			} else {
+				restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "disp=a";
+			}
 		} else {
 			restUrl = this._setupErrorCallback(restUrl);
 			restUrl += (restUrl.match(/\?/) ? '&' : '?' ) + "view=html";
 		}
 	}
 
-	this._handleIframeContent(item, restUrl);
+	this._handleIframeContent(item, restUrl, usePdfViewer);
 	Dwt.setLoadedTime("ZmBriefcaseItem"); //iframe src set but item may not be downloaded by browser
 };
 
@@ -720,6 +726,7 @@ ZmPreviewView.prototype.set = function (item) {
 
 	this._setHeader(item);
 
+	var usePdfViewer = false;
 	var restUrl = item.getRestUrl();
 	if (item.folderId == ZmFolder.ID_FILE_SHARED_WITH_ME) {
 		AjxRpc.invoke("", restUrl, null, this._handlePreviewUrlResponse.bind(this, item, restUrl), true);
@@ -731,14 +738,19 @@ ZmPreviewView.prototype.set = function (item) {
 			this._setupLoading();
 			
 			if (item.contentType === ZmMimeTable.APP_ADOBE_PDF) {
-				restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "disp=a";
+				if (AjxEnv.isES6supported) {
+					restUrl = appCtxt.createPdfViewerLink(restUrl);
+					usePdfViewer = true;
+				} else {
+					restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "disp=a";
+				}
 			} else {
 				restUrl = this._setupErrorCallback(restUrl);
 				restUrl += (restUrl.match(/\?/) ? '&' : '?' ) + "view=html";
 			}
 		}
 
-		this._handleIframeContent(item, restUrl);
+		this._handleIframeContent(item, restUrl, usePdfViewer);
 		Dwt.setLoadedTime("ZmBriefcaseItem"); //iframe src set but item may not be downloaded by browser
 	}
 };
@@ -828,7 +840,7 @@ function(){
 
 
 ZmPreviewView.prototype._handleIframeContent =
-function(item, restUrl){
+function(item, restUrl, usePdfViewer){
 	if (item.contentType === ZmMimeTable.APP_ADOBE_PDF) {
 		const iframe = this._iframePreview.getIframe();
 		// Set blank src to ensure load event will fire
@@ -836,7 +848,7 @@ function(item, restUrl){
 
 		// Attach onload to inject HTML & update preview
 		iframe.onload = AjxCallback.simpleClosure(function() {
-			this._renderPreviewLink(ZmMsg.previewDownloadLink, restUrl);
+			this._renderPreviewLink(ZmMsg.previewDownloadLink, restUrl, usePdfViewer);
 			this._updatePreview();
 		}, this);
 	} else {
@@ -845,7 +857,11 @@ function(item, restUrl){
 };
 
 ZmPreviewView.prototype._renderPreviewLink = 
-function(msg, link){
+function(msg, link, usePdfViewer){
+	if (usePdfViewer) {
+		msg = ZmMsg.previewPdfLink;
+	}
+
 	this._iframePreview.setIframeContent([
 		"<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;font-family: \'Helvetica Neue\',Helvetica,Arial,\'Liberation Sans\',sans-serif;'>",
 		AjxMessageFormat.format(msg, link),

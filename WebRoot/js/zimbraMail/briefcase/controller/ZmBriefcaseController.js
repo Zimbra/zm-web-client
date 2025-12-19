@@ -734,7 +734,12 @@ function(ev) {
 		if (restUrl) {
             if(item.isDownloadable() && !this._alwaysOpenInNewWindow(item)) {
 				if(item.contentType === ZmMimeTable.APP_ADOBE_PDF) {
-					restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "disp=a";
+					if (AjxEnv.isES6supported) {
+						restUrl = appCtxt.openPdfViewer(restUrl);
+						return;
+					} else {
+						restUrl += ( restUrl.match(/\?/) ? '&' : '?' ) + "disp=a";
+					}
 				}
 				this._downloadFile(restUrl);
 			} else {
@@ -1050,6 +1055,8 @@ function(items){
 		if (item.isWebDoc()) {
 			//added for bug: 45150
 			restUrl += (restUrl.match(/\?/) ? "&" : "?") + "localeId=" + AjxEnv.DEFAULT_LOCALE;
+		} else if (item.contentType === ZmMimeTable.APP_ADOBE_PDF) {
+			restUrl = appCtxt.createPdfViewerLink(restUrl);
 		} else {
             // do not try to
             //ZD doesn't support ConvertD.

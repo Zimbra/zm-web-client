@@ -2344,13 +2344,21 @@ function(params) {
 	}
 	else {
 		// open non-JavaScript URLs in a blank target
-		if (params.att.url && params.att.url.indexOf('javascript:') !== 0 && params.att.ct !== ZmMimeTable.APP_ADOBE_PDF) {
-			params1.blankTarget = true;
+		if (params.att.url && params.att.url.indexOf('javascript:') !== 0) {
+			if (params.att.ct === ZmMimeTable.APP_ADOBE_PDF && !AjxEnv.isES6supported) {
+				params1.blankTarget = false;
+			} else {
+				params1.blankTarget = true;
+			}
 		}
 		
 		if (params.att.ct === ZmMimeTable.APP_ADOBE_PDF) {
-			params1.href = params.att.url + "&disp=a";
-			params1.download = true;
+			if (AjxEnv.isES6supported) {
+				params1.href = appCtxt.createPdfViewerLink(params.att.url);
+			} else {
+				params1.href = params.att.url + "&disp=a";
+				params1.download = true;
+			}
 		} else {
 			params1.href = params.att.url;
 		}
