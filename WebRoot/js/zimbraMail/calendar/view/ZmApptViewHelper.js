@@ -832,9 +832,15 @@ function(calItem, attach, hasCheckbox, getLinkIdCallback) {
 		}
 	}
 
-	var hrefRoot = ["href='", msgFetchUrl, "&id=", calItem.invId, "&amp;part=", attach.part].join("");
+	var pdfViewerLink;
+	if (attach.ct === ZmMimeTable.APP_ADOBE_PDF && AjxEnv.isES6supported) {
+		pdfViewerLink = [msgFetchUrl, "&id=", calItem.invId, "&part=", attach.part].join("");
+		pdfViewerLink = "href='" + appCtxt.createPdfViewerLink(pdfViewerLink);
+	}
+	var hrefRoot = ["href='", msgFetchUrl, "&amp;id=", calItem.invId, "&amp;part=", attach.part].join("");
+
 	html[i++] = "<td width=20>";
-	if (attach.ct === ZmMimeTable.APP_ADOBE_PDF) {
+	if (attach.ct === ZmMimeTable.APP_ADOBE_PDF && !AjxEnv.isES6supported) {
 		html[i++] = "<a class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' ";
 	} else {
 		html[i++] = "<a target='_blank' class='AttLink' ";
@@ -846,14 +852,14 @@ function(calItem, attach, hasCheckbox, getLinkIdCallback) {
 		html[i++] = imageLinkId;
 		html[i++] = "' ";
 	}
-	html[i++] = hrefRoot;
-	if (attach.ct === ZmMimeTable.APP_ADOBE_PDF) {
+	html[i++] = pdfViewerLink || hrefRoot;
+	if (attach.ct === ZmMimeTable.APP_ADOBE_PDF && !AjxEnv.isES6supported) {
 		html[i++] = "&disp=a"
 	}
 	html[i++] = "'>";
 
 	html[i++] = AjxImg.getImageHtml(icon);
-	if (attach.ct === ZmMimeTable.APP_ADOBE_PDF) {
+	if (attach.ct === ZmMimeTable.APP_ADOBE_PDF && !AjxEnv.isES6supported) {
 		html[i++] = "</a></td><td><a class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' ";
 	} else {
 		html[i++] = "</a></td><td><a target='_blank' class='AttLink' ";
@@ -868,8 +874,8 @@ function(calItem, attach, hasCheckbox, getLinkIdCallback) {
 		html[i++] = attach.part;
 		html[i++] = "\"); return false;'";
 	} else {
-		html[i++] = hrefRoot;
-		if (attach.ct === ZmMimeTable.APP_ADOBE_PDF) {
+		html[i++] = pdfViewerLink || hrefRoot;
+		if (attach.ct === ZmMimeTable.APP_ADOBE_PDF && !AjxEnv.isES6supported) {
 			html[i++] = "&disp=a"
 		}
 		html[i++] = "'";
