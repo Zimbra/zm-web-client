@@ -1615,6 +1615,34 @@ function(fullVersion, width, height, name, isCompose) {
 	}
 };
 
+ZmAppCtxt.prototype.createPdfViewerLink =
+function(fileUrl) {
+    if (!fileUrl) {
+        return;
+    }
+
+    // build url
+    var url = [];
+    var i = 0;
+    url[i++] = document.location.protocol;
+    url[i++] = "//";
+    url[i++] = location.hostname;
+    url[i++] = (!location.port || location.port == "80") ? "" : (":" + location.port);
+    url[i++] = appContextPath;
+    url[i++] = "/public/pdfjs/web/viewer.jsp?file=";
+    url[i++] = AjxStringUtil.urlComponentEncode(fileUrl);
+
+    return url.join("");
+};
+
+ZmAppCtxt.prototype.openPdfViewer =
+function(fileUrl) {
+    var link = this.createPdfViewerLink(fileUrl)
+
+    var newWin = window.open(link, "_blank");
+    this.handlePopupBlocker(newWin);
+};
+
 /**
  * Handle Popup bloker for a given window
  * @param {Object}	win  A Window object
