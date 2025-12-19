@@ -1,4 +1,71 @@
-﻿<!doctype html>
+﻿<%@ page import="java.net.URLEncoder" %>
+<%@ page import="java.net.URLDecoder" %>
+<%@ page import="java.net.URL" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<!--
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2025 Synacor, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the Apache License, Version 2.0
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * You should have received a copy of the Apache License, Version 2.0 along with this program.
+ * If not, see <http://www.apache.org/licenses/LICENSE-2.0>.
+ * ***** END LICENSE BLOCK *****
+-->
+
+<zm:getMailbox var="mailbox"/>
+
+<%!
+    static String getParameter(HttpServletRequest request, String pname, String defValue) {
+        String value = request.getParameter(pname);
+        return value != null ? value : defValue;
+    }
+%>
+<%
+    try {
+        String file = getParameter(request, "file", "");
+        if (file.length() == 0) {
+            throw new Exception("file not specified");
+        }
+
+        String requestScheme = request.getScheme();
+        String requestServerName = request.getServerName();
+        int requestPort = request.getServerPort();
+
+        String decoded = URLDecoder.decode(file, "UTF-8");
+        URL fileUrl = null;
+        fileUrl = new URL(decoded);
+
+        int targetPort = fileUrl.getPort();
+        if (targetPort == -1) {
+            targetPort = "https".equals(fileUrl.getProtocol()) ? 443 : 80;
+        }
+
+        if (!requestScheme.equals(fileUrl.getProtocol()) ||
+                !requestServerName.equals(fileUrl.getHost()) ||
+                requestPort != targetPort ||
+                !(fileUrl.getPath().startsWith("/home/") || fileUrl.getPath().startsWith("/service/home/"))) {
+            throw new Exception("invalid file specified");
+        }
+    } catch (Exception e) {
+        pageContext.setAttribute("error", true);
+    }
+%>
+
+<c:if test="${error}">
+    <jsp:forward page="/public/error.jsp">
+        <jsp:param name="errCode" value="400" />
+    </jsp:forward>
+</c:if>
+
+
+<!doctype html>
 <!--
 Copyright 2012 Mozilla Foundation
 
@@ -129,7 +196,7 @@ See https://github.com/adobe-type-tools/cmap-resources
               <div id="toolbarViewerLeft" class="toolbarHorizontalGroup">
                 <button
                   id="sidebarToggleButton"
-                  class="toolbarButton"
+                  class="toolbarButton hidden"
                   type="button"
                   tabindex="0"
                   data-l10n-id="pdfjs-toggle-sidebar-button"
@@ -139,7 +206,7 @@ See https://github.com/adobe-type-tools/cmap-resources
                 >
                   <span data-l10n-id="pdfjs-toggle-sidebar-button-label"></span>
                 </button>
-                <div class="toolbarButtonSpacer"></div>
+                <div class="toolbarButtonSpacer hidden"></div>
                 <div class="toolbarButtonWithContainer">
                   <button
                     id="viewFindButton"
@@ -318,10 +385,10 @@ See https://github.com/adobe-type-tools/cmap-resources
                       </div>
                     </div>
                   </div>
-                  <div id="editorHighlight" class="toolbarButtonWithContainer">
+                  <div id="editorHighlight" class="toolbarButtonWithContainer hidden">
                     <button
                       id="editorHighlightButton"
-                      class="toolbarButton"
+                      class="toolbarButton hidden"
                       type="button"
                       disabled="disabled"
                       aria-expanded="false"
@@ -374,10 +441,10 @@ See https://github.com/adobe-type-tools/cmap-resources
                       </div>
                     </div>
                   </div>
-                  <div id="editorFreeText" class="toolbarButtonWithContainer">
+                  <div id="editorFreeText" class="toolbarButtonWithContainer hidden">
                     <button
                       id="editorFreeTextButton"
-                      class="toolbarButton"
+                      class="toolbarButton hidden"
                       type="button"
                       disabled="disabled"
                       aria-expanded="false"
@@ -401,10 +468,10 @@ See https://github.com/adobe-type-tools/cmap-resources
                       </div>
                     </div>
                   </div>
-                  <div id="editorInk" class="toolbarButtonWithContainer">
+                  <div id="editorInk" class="toolbarButtonWithContainer hidden">
                     <button
                       id="editorInkButton"
-                      class="toolbarButton"
+                      class="toolbarButton hidden"
                       type="button"
                       disabled="disabled"
                       aria-expanded="false"
@@ -432,10 +499,10 @@ See https://github.com/adobe-type-tools/cmap-resources
                       </div>
                     </div>
                   </div>
-                  <div id="editorStamp" class="toolbarButtonWithContainer">
+                  <div id="editorStamp" class="toolbarButtonWithContainer hidden">
                     <button
                       id="editorStampButton"
-                      class="toolbarButton"
+                      class="toolbarButton hidden"
                       type="button"
                       disabled="disabled"
                       aria-expanded="false"
@@ -469,17 +536,17 @@ See https://github.com/adobe-type-tools/cmap-resources
                     <span data-l10n-id="pdfjs-print-button-label"></span>
                   </button>
 
-                  <button id="downloadButton" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-save-button">
+                  <button id="downloadButton" class="toolbarButton hidden" type="button" tabindex="0" data-l10n-id="pdfjs-save-button">
                     <span data-l10n-id="pdfjs-save-button-label"></span>
                   </button>
                 </div>
 
-                <div class="verticalToolbarSeparator hiddenMediumView"></div>
+                <div class="verticalToolbarSeparator hiddenMediumView hidden"></div>
 
-                <div id="secondaryToolbarToggle" class="toolbarButtonWithContainer">
+                <div id="secondaryToolbarToggle" class="toolbarButtonWithContainer hidden">
                   <button
                     id="secondaryToolbarToggleButton"
-                    class="toolbarButton"
+                    class="toolbarButton hidden"
                     type="button"
                     tabindex="0"
                     data-l10n-id="pdfjs-tools-button"
