@@ -3,3 +3,4 @@ build/
 .history
 .idea
 .classpath
+!WebRoot/public/pdfjs*/build/
