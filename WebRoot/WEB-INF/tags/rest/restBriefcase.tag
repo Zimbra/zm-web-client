@@ -71,7 +71,7 @@
 								<td>
 									<span class="pageName">${zm:cook(requestScope.zimbra_target_item_name)}</span><br>
 									<span class="owner">
-										<fmt:message key="by"/>&nbsp;${requestScope.zimbra_target_account_name}
+										<fmt:message key="by"/>&nbsp;${zm:cook(requestScope.zimbra_target_account_name)}
 									</span>
 									<br>
 								</td>
