@@ -41,11 +41,6 @@
     </tag-file>
 
     <tag-file>
-        <name>documentView</name>
-        <path>/WEB-INF/tags/rest/restDocumentView.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>documentPreview</name>
         <path>/WEB-INF/tags/rest/restDocumentPreview.tag</path>
     </tag-file>
