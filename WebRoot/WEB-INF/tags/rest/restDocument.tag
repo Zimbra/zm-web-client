@@ -26,15 +26,10 @@
 
 <zm:getDocument  var="doc" box="${mailbox}" id="${requestScope.zimbra_target_item_id}"/>
 
-<c:set var="isEdit" value="${not empty param.action and param.action eq 'edit'}" scope="request"/>
-
 <c:set var="contentType" value="${doc.contentType}"/>
 <c:choose>
 
     <%--Documents--%>
-    <c:when test="${(contentType eq 'application/x-zimbra-doc' and isEdit)}">
-        <rest:documentView/>
-    </c:when>
     <c:when test="${(contentType eq 'application/x-zimbra-doc')}">
          <rest:documentPreview/>
     </c:when>
