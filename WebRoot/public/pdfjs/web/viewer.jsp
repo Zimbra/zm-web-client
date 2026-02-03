@@ -34,22 +34,14 @@
             throw new Exception("file not specified");
         }
 
-        String requestScheme = request.getScheme();
         String requestServerName = request.getServerName();
-        int requestPort = request.getServerPort();
 
         String decoded = URLDecoder.decode(file, "UTF-8");
         URL fileUrl = null;
         fileUrl = new URL(decoded);
 
-        int targetPort = fileUrl.getPort();
-        if (targetPort == -1) {
-            targetPort = "https".equals(fileUrl.getProtocol()) ? 443 : 80;
-        }
-
-        if (!requestScheme.equals(fileUrl.getProtocol()) ||
+        if (!fileUrl.getProtocol().startsWith("http") ||
                 !requestServerName.equals(fileUrl.getHost()) ||
-                requestPort != targetPort ||
                 !(fileUrl.getPath().startsWith("/home/") || fileUrl.getPath().startsWith("/service/home/"))) {
             throw new Exception("invalid file specified");
         }
