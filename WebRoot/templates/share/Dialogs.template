@@ -696,8 +696,9 @@
 		</div>
 		<div id='${id}_email'>
 			<h4><$=ZmMsg.twoStepAuthEmail$></h4>
-			<p><$=ZmMsg.twoStepAuthEmailDescription$></p>
-			<div class="ZmTwoFactorSetupContainer">
+			<p style="margin-bottom:0px;"><$=ZmMsg.twoStepAuthEmailDescription$></p>
+			<div class="ZmTwoFactorSetupContainer ZmTwoFactorSetupAppKeyContainer">
+				<canvas id="${id}_qrcode" class="qrcode"></canvas>
 				<span id="${id}_email_key" class="email-key"></span>
 			</div>
 		</div>
@@ -773,7 +774,8 @@
 		<div id='${id}_email'>
 			<h2 class="ZmTwoFactorCustomTitleLoginPage"><$=ZmMsg.twoStepAuthEmail$></h2>
 			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthEmailDescription$></p>
-			<div class="ZmTwoFactorCustomSetupContainerLoginPage">
+			<div class="ZmTwoFactorCustomSetupContainerLoginPage ZmTwoFactorCustomSetupAppKeyContainer">
+				<div class="qrcode_wrapper"><canvas id="${id}_qrcode" class="qrcode"></canvas></div>
 				<span id="${id}_email_key" class="email-key"></span>
 			</div>
 		</div>
