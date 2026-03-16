@@ -1050,6 +1050,7 @@ ext = BeanUtils.cook(ext);
                                 <equals arg1="@{var}" arg2="${build.js.dir}/JQuery_all.js" />
                                 <equals arg1="@{var}" arg2="${build.js.dir}/Clipboard_all.js" />
                                 <equals arg1="@{var}" arg2="${build.js.dir}/TinyMCE_all.js" />
+                                <equals arg1="@{var}" arg2="${build.js.dir}/QRCode_all.js" />
                             </or>
                             <!-- we will not minify thirdparty libraries -->
                             <then>

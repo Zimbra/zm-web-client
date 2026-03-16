@@ -90,6 +90,7 @@ function(isFromLoginPage) {
 	this._codeTitleElementId = id + "_code_title";
 	this._codeErrorElementId = id + "_code_error";
 	this._successDivId = id + "_success";
+	this._qrcodeCanvasId = id + "_qrcode";
 
 	return isFromLoginPage ?
 		AjxTemplate.expand("share.Dialogs#ZmTwoFactorCustomLoginPage", {id : id, username : this.username}) :
@@ -102,6 +103,7 @@ function(isFromLoginPage) {
 	this._passwordInput = Dwt.getElement(id + "_password_input");
 	this._codeInput = Dwt.getElement(id + "_code_input");
 	this._keySpan = Dwt.getElement(id + "_email_key");
+	this._qrcodeCanvas = Dwt.getElement(this._qrcodeCanvasId);
 	this._emailAddressInput = Dwt.getElement(id + "_email_address_input");
 	this._resendCodeLink = Dwt.getElement(id + "_resend_code_link");
 	var keyupHandler = this._handleKeyUp.bind(this);
@@ -545,6 +547,21 @@ function(currentDivId, result) {
 			var secret = enableTwoFactorAuthResponse.secret;
 			if (secret && secret[0] && secret[0]._content) {
 				Dwt.setInnerHtml(this._keySpan, secret[0]._content);
+
+				var isQRCodeDrawn = false;
+				if (!this._ajaxQRCode) {
+					this._ajaxQRCode = (typeof appCtxt !== "undefined") ? appCtxt.getAjxQRCode() : new AjxQRCode();
+				}
+				var encodedIssuer = AjxStringUtil.urlComponentEncode(ZmMsg.twoFactorAuthQRCodeIssuer);
+				var encodedLabel = AjxStringUtil.urlComponentEncode(ZmMsg.twoFactorAuthQRCodeIssuer + ":" + this.username);
+				var otpUri = "otpauth://totp/" + encodedLabel + "?secret=" +  secret[0]._content + "&issuer=" + encodedIssuer;
+				isQRCodeDrawn = this._ajaxQRCode.drawQRCode(this._qrcodeCanvas, otpUri);
+				if (isQRCodeDrawn) {
+					Dwt.show(this._qrcodeCanvasId);
+				} else {
+					Dwt.hide(this._qrcodeCanvasId);
+				}
+
 				this._handleTwoFactorAuthSuccess(currentDivId);
 				return;
 			}

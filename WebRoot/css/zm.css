@@ -6057,6 +6057,18 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	margin: 3px 0;
 }
 
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupAppKeyContainer {
+	margin: 0 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupAppKeyContainer canvas.qrcode {
+	height: 135px !important;
+	width: 135px !important;
+}
+
 .ZmTwoFactorSetupCodeSubContainer {
 	width: 100%;
 }
@@ -6073,6 +6085,15 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	display: inline-block;
 	margin: 10px;
 	color: @gray-darker@;
+}
+
+.ZmTwoFactorCustomSetupContainerLoginPage.ZmTwoFactorCustomSetupAppKeyContainer div.qrcode_wrapper {
+	display: inline-block;
+}
+
+.ZmTwoFactorCustomSetupContainerLoginPage.ZmTwoFactorCustomSetupAppKeyContainer canvas.qrcode {
+	height: 180px !important;
+	width: 180px !important;
 }
 
 .ZmTwoFactorSetupContainer label {
