@@ -2384,3 +2384,15 @@ function(folder, type, result) {
         result.push(folder);
     }
 };
+
+/**
+ * Gets an instance of AjxQRcode
+ *
+ * @returns {AjxQRcode}
+ */
+ZmAppCtxt.prototype.getAjxQRCode = function() {
+	if (!this._qrcode) {
+		this._ajxQRCode = new AjxQRCode();
+	}
+	return this._ajxQRCode;
+};
