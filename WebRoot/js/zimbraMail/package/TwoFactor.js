@@ -41,6 +41,8 @@ AjxPackage.require("ajax.util.AjxStringUtil");
 AjxPackage.require("ajax.util.AjxTimedAction");
 AjxPackage.require("ajax.util.AjxEmailAddress");
 AjxPackage.require("ajax.util.AjxQRCode");
+AjxPackage.require("ajax.util.AjxClipboard");
+AjxPackage.require("ajax.core.AjxImg");
 
 AjxPackage.require("ajax.dwt.core.Dwt");
 AjxPackage.require("ajax.dwt.core.DwtDraggable");
