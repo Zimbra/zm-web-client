@@ -698,8 +698,19 @@
 			<h4><$=ZmMsg.twoStepAuthEmail$></h4>
 			<p style="margin-bottom:0px;"><$=ZmMsg.twoStepAuthEmailDescription$></p>
 			<div class="ZmTwoFactorSetupContainer ZmTwoFactorSetupAppKeyContainer">
-				<canvas id="${id}_qrcode" class="qrcode"></canvas>
-				<span id="${id}_email_key" class="email-key"></span>
+				<div>
+					<canvas id="${id}_qrcode" class="qrcode"></canvas>
+				</div>
+				<div>
+					<div class="ZmClipboardActionMessageContainer">
+						<span id="${id}_clipboard_action">&nbsp;</span>
+						<span id="${id}_clipboard_action_done" class="ZmClipboardActionMessage" style="display:none;" x-display='inline'><$=ZmMsg.twoFactorAuthCopyKeySuccess$></span>
+					</div>
+					<div id="${id}_email_key_container" class="ZmTwoFactorSetupEmailKeyContainer">
+						<span id="${id}_email_key" class="email-key"></span>
+					</div>
+					<div class="ZmClipboardActionMessageContainer">&nbsp;</div>
+				</div>
 			</div>
 		</div>
 		<div id='${id}_email_address'>
@@ -776,7 +787,15 @@
 			<p class="ZmTwoFactorCustomParaLoginPage"><$=ZmMsg.twoStepAuthEmailDescription$></p>
 			<div class="ZmTwoFactorCustomSetupContainerLoginPage ZmTwoFactorCustomSetupAppKeyContainer">
 				<div class="qrcode_wrapper"><canvas id="${id}_qrcode" class="qrcode"></canvas></div>
-				<span id="${id}_email_key" class="email-key"></span>
+				<div>
+					<div class="ZmClipboardActionMessageContainer">
+						<span id="${id}_clipboard_action">&nbsp;</span>
+						<span id="${id}_clipboard_action_done" class="ZmClipboardActionMessage" style="display:none;" x-display='inline'><$=ZmMsg.twoFactorAuthCopyKeySuccess$></span>
+					</div>
+					<div id="${id}_email_key_container" class="ZmTwoFactorSetupEmailKeyContainer">
+						<span id="${id}_email_key" class="email-key"></span>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div id='${id}_email_address'>

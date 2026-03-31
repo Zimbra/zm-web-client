@@ -6096,6 +6096,12 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	width: 180px !important;
 }
 
+.ZmTwoFactorCustomSetupContainerLoginPage.ZmTwoFactorCustomSetupAppKeyContainer .ZmTwoFactorSetupEmailKeyContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 .ZmTwoFactorSetupContainer label {
 	display:inline-block;
 	margin:10px;
@@ -6108,6 +6114,33 @@ h2.ZmTwoFactorCustomTitleLoginPage {
 	letter-spacing: 3px;
 	display:inline-block;
 	margin:10px
+}
+
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupAppKeyContainer .ZmTwoFactorSetupEmailKeyContainer div.ZButton,
+.ZmTwoFactorCustomSetupContainerLoginPage.ZmTwoFactorCustomSetupAppKeyContainer .ZmTwoFactorSetupEmailKeyContainer div.ZButton {
+	display: inline-block;
+	vertical-align: middle;
+	height: 2rem;
+	width: 2rem;
+}
+
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupAppKeyContainer .ZmTwoFactorSetupEmailKeyContainer td.ZLeftIcon>div,
+.ZmTwoFactorCustomSetupContainerLoginPage.ZmTwoFactorCustomSetupAppKeyContainer .ZmTwoFactorSetupEmailKeyContainer td.ZLeftIcon>div {
+	margin-left: 3px;
+}
+
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupAppKeyContainer .ZmClipboardActionMessageContainer {
+	text-align: right;
+}
+
+.ZmTwoFactorCustomSetupContainerLoginPage.ZmTwoFactorCustomSetupAppKeyContainer .ZmClipboardActionMessageContainer {
+	text-align: right;
+	padding: 0 40px;
+}
+
+.ZmTwoFactorSetupContainer.ZmTwoFactorSetupAppKeyContainer .ZmClipboardActionMessage,
+.ZmTwoFactorCustomSetupContainerLoginPage.ZmTwoFactorCustomSetupAppKeyContainer .ZmClipboardActionMessage {
+	background-color: @gray-lightest@;
 }
 
 .ZmTwoFactorSetupError {
