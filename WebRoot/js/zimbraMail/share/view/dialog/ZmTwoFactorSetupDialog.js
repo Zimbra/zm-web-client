@@ -43,6 +43,7 @@ ZmTwoFactorSetupDialog = function(params) {
 	var finishButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.FINISH_BUTTON, ZmMsg.twoStepAuthSuccessFinish, DwtDialog.ALIGN_RIGHT, this._finishButtonListener.bind(this));
 	var cancelButton = new DwtDialog_ButtonDescriptor(ZmTwoFactorSetupDialog.CANCEL_BUTTON, ZmMsg.cancel, DwtDialog.ALIGN_RIGHT, this._cancelButtonListener.bind(this));
 	var shell = typeof appCtxt !== "undefined" ? appCtxt.getShell() : new DwtShell({});
+	this.shell = shell;
 
 	var newParams = {
 		parent : shell,
@@ -91,6 +92,7 @@ function(isFromLoginPage) {
 	this._codeErrorElementId = id + "_code_error";
 	this._successDivId = id + "_success";
 	this._qrcodeCanvasId = id + "_qrcode";
+	this._clipboradButtonId = id + "_copy_button";
 
 	return isFromLoginPage ?
 		AjxTemplate.expand("share.Dialogs#ZmTwoFactorCustomLoginPage", {id : id, username : this.username}) :
@@ -102,9 +104,12 @@ function(isFromLoginPage) {
 	var id = this._htmlElId;
 	this._passwordInput = Dwt.getElement(id + "_password_input");
 	this._codeInput = Dwt.getElement(id + "_code_input");
+	this._keyContainerDiv = Dwt.getElement(id + "_email_key_container");
 	this._keySpan = Dwt.getElement(id + "_email_key");
 	this._qrcodeCanvas = Dwt.getElement(this._qrcodeCanvasId);
 	this._emailAddressInput = Dwt.getElement(id + "_email_address_input");
+	this._clipboardActionSpan = Dwt.getElement(id + "_clipboard_action");
+	this._clipboardActionDoneSpan = Dwt.getElement(id + "_clipboard_action_done");
 	this._resendCodeLink = Dwt.getElement(id + "_resend_code_link");
 	var keyupHandler = this._handleKeyUp.bind(this);
 
@@ -560,6 +565,52 @@ function(currentDivId, result) {
 					Dwt.show(this._qrcodeCanvasId);
 				} else {
 					Dwt.hide(this._qrcodeCanvasId);
+				}
+
+				// if clipboard instance has not been created
+				if (!this.clipboard) {
+					this.clipboard = AjxClipboard.isSupported() ? new AjxClipboard() : null;
+				}
+				// if clipboard is supported
+				if (this.clipboard) {
+					this.secretKey = secret[0]._content;
+					if (!this.copyToClipboardButton) {
+						var clipCopy = function(clipboard) {
+							clipboard.setText(this.secretKey);
+						};
+						var clipCopyComplete = function() {
+							this.copyToClipboardButton.setImage("Check");
+							Dwt.setInnerHtml(this._clipboardActionDoneSpan, ZmMsg.twoFactorAuthCopyKeySuccess);
+							Dwt.hide(this._clipboardActionSpan);
+							Dwt.show(this._clipboardActionDoneSpan);
+						};
+						var clipCopyFailure = function() {
+							this.copyToClipboardButton.setImage("Delete");
+							Dwt.setInnerHtml(this._clipboardActionDoneSpan, ZmMsg.twoFactorAuthCopyKeyFailure);
+							Dwt.hide(this._clipboardActionSpan);
+							Dwt.show(this._clipboardActionDoneSpan);
+						};
+						this.copyToClipboardButton = new DwtButton({ parent: this, id: this._clipboradButtonId });
+						this._keyContainerDiv.appendChild(this.copyToClipboardButton.getHtmlElement());
+
+						// Always enable tooltips for a case of 2FA setup from login.jsp and change it back after a tooltip content is set
+						var tooltipsEnabled = DwtControl.useBrowserTooltips;
+						DwtControl.useBrowserTooltips = true;
+						this.copyToClipboardButton.setToolTipContent(ZmMsg.twoFactorAuthCopyKey);
+						DwtControl.useBrowserTooltips = tooltipsEnabled;
+
+						this.clipboard.init(
+							this.copyToClipboardButton,
+							{
+								onMouseDown: clipCopy.bind(this),
+								onComplete:  clipCopyComplete.bind(this),
+								onFailure:   clipCopyFailure.bind(this)
+							}
+						);
+					}
+					this.copyToClipboardButton.setImage("Copy");
+					Dwt.hide(this._clipboardActionDoneSpan);
+					Dwt.show(this._clipboardActionSpan);
 				}
 
 				this._handleTwoFactorAuthSuccess(currentDivId);
