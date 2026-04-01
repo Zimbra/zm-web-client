@@ -337,6 +337,10 @@ function() {
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, AjxEmailAddress.isValid(this._emailAddressInput.value));
 		this._emailAddressInput.focus();
 	} else if (nextDivId === this._emailDivId) {
+		if (this.copyToClipboardButton) {
+			// Move focus to the button to make the copy function available on some browsers
+			this.copyToClipboardButton.focus();
+		}
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, true);
 	}
 };
@@ -376,6 +380,10 @@ function() {
 	} else if (nextDivId === this._authenticationDivId || nextDivId === this._emailDivId) {
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, true);
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.PREVIOUS_BUTTON, true);
+		if (nextDivId === this._emailDivId && this.copyToClipboardButton) {
+			// Move focus to the button to make the copy function available on some browsers
+			this.copyToClipboardButton.focus();
+		}
 	} else if (nextDivId === this._emailAddressDivId) {
 		this.setButtonEnabled(ZmTwoFactorSetupDialog.NEXT_BUTTON, AjxEmailAddress.isValid(this._emailAddressInput.value));
 		this._emailAddressInput.focus();
