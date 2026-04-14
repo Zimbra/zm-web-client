@@ -1,0 +1,243 @@
+version: 2
+
+############################################################################
+
+references:
+   default_environment_settings: &default_environment_settings
+      docker:
+        - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-22.04
+          auth:
+            username: $DOCKER_USER
+            password: $DOCKER_PASS
+      environment:
+        - ANT_OPTS: -Dzimbra.buildinfo.version=10.1.0_GA_1001
+        - BUILD: "/home/build"
+      working_directory: /home/build/zm-mailbox
+   default_attach_workspace: &default_attach_workspace
+         attach_workspace:
+            at: /home/build
+   filter_branches: &filter_branches
+     filters:
+       branches:
+         only:
+           - develop
+           - ZCS-18921-poc
+############################################################################
+
+jobs:
+  build:
+    <<: *default_environment_settings
+    steps:
+      - checkout
+      - run:
+          name: Install ant-contrib
+          command: sudo apt-get update; sudo apt-get install ant-contrib && mkdir -p ~/.ivy2/cache
+      - run:
+          name: Clone zm-timezones
+          command: |
+            cd "$BUILD"
+            git clone https://github.com/Zimbra/zm-timezones.git -b develop --single-branch || exit 1
+      - run:
+          name: Running ant compile in native directory
+          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant clean compile publish-local
+          working_directory: native
+      - run:
+          name: Running ant compile in common directory
+          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant clean compile publish-local
+          working_directory: common
+      - run:
+          name: Running ant compile in soap directory
+          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant clean compile publish-local
+          working_directory: soap
+      - run:
+          name: Running ant compile in client directory
+          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant clean compile publish-local
+          working_directory: client
+      - run:
+          name: Running ant compile in store directory
+          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant clean compile publish-local
+          working_directory: store
+      - run:
+          name: Compile validation completed
+          command: echo "Compile stage completed for develop branch."
+      - persist_to_workspace:
+          root: /home/build/
+          paths:
+            - zm-timezones
+            - zm-mailbox
+            - .ssh
+            - .zcs-deps
+  package_build:
+    <<: *default_environment_settings
+    steps:
+      - *default_attach_workspace
+      - run:
+          name: Prepare ant-contrib jar for root build.xml
+          command: |
+            sudo apt-get update; sudo apt-get install ant-contrib rpm dpkg-dev fakeroot lsb-release debhelper build-essential -y
+            mkdir -p ~/.ivy2/cache
+            mkdir -p ~/.zcs-deps
+            if [ -f /usr/share/java/ant-contrib.jar ]; then
+              cp -f /usr/share/java/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar
+            elif [ -f /usr/share/ant/lib/ant-contrib.jar ]; then
+              cp -f /usr/share/ant/lib/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar
+            else
+              echo "ant-contrib.jar not found on runner" && exit 1
+            fi
+            if [ ! -f /etc/lsb-release ] && [ -f /etc/os-release ]; then
+              . /etc/os-release
+              REL="${VERSION_ID%%.*}"
+              echo "DISTRIB_RELEASE=${REL}" | sudo tee /etc/lsb-release >/dev/null
+            fi
+      - run:
+          name: Validate package tooling
+          command: |
+            for b in perl rpmbuild rpm dpkg-deb fakeroot tar gzip; do
+              command -v "$b" >/dev/null 2>&1 || (echo "Missing required binary: $b" && exit 1)
+            done
+      - run:
+          name: Build mailbox OS packages
+          command: |
+            cd /home/build
+            if [ ! -d "zm-pkg-tool" ]; then
+              git clone -b develop --single-branch https://github.com/Zimbra/zm-pkg-tool.git
+            fi
+            [ -x /home/build/zm-pkg-tool/pkg-build.pl ] || chmod +x /home/build/zm-pkg-tool/pkg-build.pl
+            cd /home/build/zm-mailbox
+            JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant pkg
+      - persist_to_workspace:
+          root: /home/build/
+          paths:
+            - zm-mailbox
+            - zm-pkg-tool
+            - .zcs-deps
+  publish_packages:
+    <<: *default_environment_settings
+    circleci_ip_ranges: true
+    steps:
+      - *default_attach_workspace
+      - run:
+          name: Prepare ant-contrib jar for root build.xml
+          command: |
+            sudo apt-get update; sudo apt-get install ant-contrib -y
+            mkdir -p ~/.ivy2/cache
+            mkdir -p ~/.zcs-deps
+            if [ -f /usr/share/java/ant-contrib.jar ]; then
+              cp -f /usr/share/java/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar
+            elif [ -f /usr/share/ant/lib/ant-contrib.jar ]; then
+              cp -f /usr/share/ant/lib/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar
+            else
+              echo "ant-contrib.jar not found on runner" && exit 1
+            fi
+      - run:
+          name: Validate Nexus env variables
+          command: |
+            [ -n "$NEXUS_BASE_URL" ] || (echo "NEXUS_BASE_URL is required" && exit 1)
+            [ -n "$NEXUS_USER" ] || (echo "NEXUS_USER is required" && exit 1)
+            [ -n "$NEXUS_PASSWORD" ] || (echo "NEXUS_PASSWORD is required" && exit 1)
+      - run:
+          name: Publish built packages to Nexus APT/Yum
+          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant publish-remote-package
+  test:
+    <<: *default_environment_settings
+    steps:
+      - *default_attach_workspace
+      - run:
+          name: Ensure xml tooling for junit merge
+          command: sudo apt-get update && sudo apt-get install -y xmlstarlet
+      - run:
+          name: Create test report directory to hold junit tests
+          command: mkdir -p /tmp/junit/
+      - run:
+          name: Running ant test native
+          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant test
+          working_directory: native
+      - run:
+          name: Running ant test common
+          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant test
+          working_directory: common
+      - run:
+          name: Running ant test soap
+          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant test
+          working_directory: soap
+      - run:
+          name: Running ant test client
+          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant test
+          working_directory: client
+      - run:
+          name: Running ant test store
+          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant test
+          no_output_timeout: 1200s
+          working_directory: store
+      - run:
+          name: Finding test results
+          command: |
+            TEST_XMLS="$(find . -type f -regex '.*/build/test/report/.*xml')"
+            [ -n "$TEST_XMLS" ] || (echo "No junit xml files found" && exit 1)
+            python3 - <<'PY'
+            import glob
+            import xml.etree.ElementTree as ET
+
+            files = glob.glob("**/build/test/report/*.xml", recursive=True)
+            if not files:
+                raise SystemExit("No junit xml files found")
+
+            root = ET.Element("testsuites")
+            for f in files:
+                try:
+                    doc = ET.parse(f).getroot()
+                except Exception:
+                    continue
+                if doc.tag == "testsuite":
+                    root.append(doc)
+                elif doc.tag == "testsuites":
+                    for ts in list(doc):
+                        if ts.tag == "testsuite":
+                            root.append(ts)
+
+            ET.ElementTree(root).write("merged-test-results.xml", encoding="utf-8", xml_declaration=True)
+            PY
+      - run:
+          name: Copy test results to proper directory
+          command: cp merged-test-results.xml /tmp/junit/
+      - store_test_results:
+          path: /tmp/junit/
+############################################################################
+
+workflows:
+  version: 2
+  build_deploy:
+    jobs:
+      - build:
+          <<: *filter_branches
+          context:
+            - docker-dev-registry
+      - approve_package_build:
+          type: approval
+          requires:
+            - build
+          <<: *filter_branches
+      - package_build:
+          requires:
+            - approve_package_build
+          <<: *filter_branches
+          context:
+            - docker-dev-registry
+      - test:
+          requires:
+            - package_build
+          <<: *filter_branches
+          context:
+            - docker-dev-registry
+      - approve_package_publish:
+          type: approval
+          requires:
+            - test
+          <<: *filter_branches
+      - publish_packages:
+          requires:
+            - approve_package_publish
+          <<: *filter_branches
+          context:
+            - docker-dev-registry
+############################################################################
