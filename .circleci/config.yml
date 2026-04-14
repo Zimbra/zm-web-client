@@ -53,14 +53,7 @@ references:
               if [ -f build/zimbrataglib.jar ]; then
                 mkdir -p ~/.zcs-deps/zimbra/zm-taglib
                 cp -f build/zimbrataglib.jar ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-local.jar
-                cat > ~/.zcs-deps/zimbra/zm-taglib/ivy-local.xml <<'EOF'
-                <ivy-module version="2.0">
-                  <info organisation="zimbra" module="zm-taglib" revision="local" status="integration"/>
-                  <publications>
-                    <artifact name="zm-taglib" type="jar" ext="jar"/>
-                  </publications>
-                </ivy-module>
-              EOF
+                printf '%s\n' '<ivy-module version="2.0">' '  <info organisation="zimbra" module="zm-taglib" revision="local" status="integration"/>' '  <publications>' '    <artifact name="zm-taglib" type="jar" ext="jar"/>' '  </publications>' '</ivy-module>' > ~/.zcs-deps/zimbra/zm-taglib/ivy-local.xml
               fi
               cd ../zm-web-client
               chmod +x pkg-builder.pl
