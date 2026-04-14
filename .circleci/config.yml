@@ -50,6 +50,10 @@ references:
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
               cd ../zm-taglib
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
+              if [ -f build/zimbrataglib.jar ]; then
+                mkdir -p ~/.zcs-deps/zimbra/zm-taglib
+                cp -f build/zimbrataglib.jar ~/.zcs-deps/zimbra/zm-taglib/zm-taglib.jar
+              fi
               cd ../zm-web-client
               chmod +x pkg-builder.pl
               JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
