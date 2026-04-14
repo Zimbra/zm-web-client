@@ -52,13 +52,22 @@ references:
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
               if [ -f build/zimbrataglib.jar ]; then
                 mkdir -p ~/.zcs-deps/zimbra/zm-taglib
-                cp -f build/zimbrataglib.jar ~/.zcs-deps/zimbra/zm-taglib/zm-taglib.jar
+                cp -f build/zimbrataglib.jar ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-local.jar
+                cat > ~/.zcs-deps/zimbra/zm-taglib/ivy-local.xml <<'EOF'
+                <ivy-module version="2.0">
+                  <info organisation="zimbra" module="zm-taglib" revision="local" status="integration"/>
+                  <publications>
+                    <artifact name="zm-taglib" type="jar" ext="jar"/>
+                  </publications>
+                </ivy-module>
+              EOF
               fi
               cd ../zm-web-client
               chmod +x pkg-builder.pl
               JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
               export JAVA_HOME
               export PATH="$JAVA_HOME/bin:$PATH"
+              perl -0777 -i -pe 's#(<dependency org="zimbra" name="zm-taglib" rev=")latest\\.integration(")#${1}local${2}#g' ivy.xml ivy-jspc.xml
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean pkg
          - persist_to_workspace:
             root: ..
