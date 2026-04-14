@@ -13,6 +13,7 @@ references:
                git clone -b develop --single-branch https://github.com/Zimbra/zm-pkg-tool.git ~/zm-pkg-tool
                git clone -b ZCS-18921 --single-branch https://github.com/Zimbra/zm-zcs.git ~/zm-zcs
                git clone -b master --single-branch https://github.com/Zimbra/zimbra-package-stub.git ~/zimbra-package-stub
+               git clone -b develop --single-branch https://github.com/Zimbra/zm-mailbox.git ~/zm-mailbox
                echo "BUILD_NO=$CIRCLE_BUILD_NUM" > config.build
                mkdir -p ~/.zcs-deps
          - persist_to_workspace:
@@ -22,6 +23,7 @@ references:
                - zm-pkg-tool
                - zm-zcs
                - zimbra-package-stub
+               - zm-mailbox
                - .zcs-deps
 
    build_job_steps: &build_job_steps
@@ -35,6 +37,11 @@ references:
               sudo apt-get update
               sudo apt-get install -y ant-contrib rpm dpkg-dev fakeroot lsb-release debhelper build-essential
               cp /usr/share/java/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar || true
+              cd ../zm-mailbox
+              JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+              export JAVA_HOME
+              export PATH="$JAVA_HOME/bin:$PATH"
+              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local-all
               cd ../zm-web-client
               chmod +x pkg-builder.pl
               JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
@@ -58,6 +65,11 @@ references:
               mkdir -p /home/build/.ivy2/cache
               sudo apt-get update
               sudo DEBIAN_FRONTEND=noninteractive apt-get install -y curl
+              cd ../zm-mailbox
+              JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+              export JAVA_HOME
+              export PATH="$JAVA_HOME/bin:$PATH"
+              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local-all
               cd ../zm-web-client
               : "${NEXUS_BASE_URL:?NEXUS_BASE_URL is required}"
               : "${NEXUS_USER:?NEXUS_USER is required}"
