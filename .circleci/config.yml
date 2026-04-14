@@ -1,243 +1,206 @@
-version: 2
+version: 2.1
 
 ############################################################################
 
 references:
-   default_environment_settings: &default_environment_settings
-      docker:
-        - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-22.04
-          auth:
-            username: $DOCKER_USER
-            password: $DOCKER_PASS
-      environment:
-        - ANT_OPTS: -Dzimbra.buildinfo.version=10.1.0_GA_1001
-        - BUILD: "/home/build"
-      working_directory: /home/build/zm-mailbox
-   default_attach_workspace: &default_attach_workspace
-         attach_workspace:
-            at: /home/build
-   filter_branches: &filter_branches
-     filters:
-       branches:
-         only:
-           - develop
-           - ZCS-18921-poc
+   checkout_job_steps: &checkout_job_steps
+      steps:
+         - checkout:
+             method: full
+         - run:
+            name: Checking out dependencies.
+            command: |
+               git clone -b develop --single-branch https://github.com/Zimbra/zm-pkg-tool.git ~/zm-pkg-tool
+               git clone -b ZCS-18921 --single-branch https://github.com/Zimbra/zm-zcs.git ~/zm-zcs
+               git clone -b master --single-branch https://github.com/Zimbra/zimbra-package-stub.git ~/zimbra-package-stub
+               echo "BUILD_NO=$CIRCLE_BUILD_NUM" > config.build
+               mkdir -p ~/.zcs-deps
+         - persist_to_workspace:
+            root: ..
+            paths:
+               - zm-web-client
+               - zm-pkg-tool
+               - zm-zcs
+               - zimbra-package-stub
+               - .zcs-deps
+
+   build_job_steps: &build_job_steps
+      steps:
+         - attach_workspace:
+            at: ..
+         - run:
+            name: Creating package build
+            command: |
+              mkdir -p /home/build/.ivy2/cache
+              sudo apt-get update
+              sudo apt-get install -y ant-contrib rpm dpkg-dev fakeroot lsb-release debhelper build-essential
+              cp /usr/share/java/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar || true
+              cd ../zm-web-client
+              chmod +x pkg-builder.pl
+              JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+              export JAVA_HOME
+              export PATH="$JAVA_HOME/bin:$PATH"
+              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean pkg
+         - persist_to_workspace:
+            root: ..
+            paths:
+               - .ivy2
+               - .zcs-deps
+               - zm-web-client/build/dist
+
+   publish_job_steps: &publish_job_steps
+      steps:
+         - attach_workspace:
+            at: ..
+         - run:
+            name: Publish package artifacts to Nexus
+            command: |
+              mkdir -p /home/build/.ivy2/cache
+              sudo apt-get update
+              sudo DEBIAN_FRONTEND=noninteractive apt-get install -y curl
+              cd ../zm-web-client
+              : "${NEXUS_BASE_URL:?NEXUS_BASE_URL is required}"
+              : "${NEXUS_USER:?NEXUS_USER is required}"
+              : "${NEXUS_PASSWORD:?NEXUS_PASSWORD is required}"
+              ROOT="build/dist"
+              APT_REPO="package-repo-apt"
+              YUM_REPO="package-repo-yum"
+              MODULE_PATH="zimbra/zm-web-client/${CIRCLE_SHA1:-develop}"
+              RAW_BASE="$(printf '%s' "$NEXUS_BASE_URL" | sed 's/#.*$//' | sed 's:/*$::')"
+              API_BASE="$RAW_BASE/service/rest/v1/components"
+              PACKAGE_FILES="$(find "$ROOT" -type f \( -name '*.deb' -o -name '*.rpm' \))"
+              if [ -z "$PACKAGE_FILES" ]; then
+                echo "No package artifacts found in $ROOT"
+                exit 1
+              fi
+              package_list_file="$(mktemp)"
+              printf '%s\n' "$PACKAGE_FILES" > "$package_list_file"
+              while IFS= read -r f; do
+                [ -n "$f" ] || continue
+                rel="$(echo "$f" | sed "s|^$ROOT/||")"
+                dir="$(dirname "$rel")"
+                file_name="$(basename "$f")"
+                body_file="$(mktemp)"
+                header_file="$(mktemp)"
+                case "$f" in
+                  *.deb)
+                    repo="$APT_REPO"
+                    url="$API_BASE?repository=$repo"
+                    http_code="$(curl --silent --show-error --user "$NEXUS_USER:$NEXUS_PASSWORD" --request POST "$url" -F "apt.asset=@$f" --dump-header "$header_file" --output "$body_file" --write-out '%{http_code}' || true)"
+                    ;;
+                  *.rpm)
+                    repo="$YUM_REPO"
+                    yum_dir="$MODULE_PATH/$dir"
+                    url="$API_BASE?repository=$repo"
+                    http_code="$(curl --silent --show-error --user "$NEXUS_USER:$NEXUS_PASSWORD" --request POST "$url" -F "yum.directory=$yum_dir" -F "yum.asset=@$f" -F "yum.asset.filename=$file_name" --dump-header "$header_file" --output "$body_file" --write-out '%{http_code}' || true)"
+                    ;;
+                  *)
+                    rm -f "$body_file" "$header_file"
+                    continue
+                    ;;
+                esac
+                case "$http_code" in
+                  2??)
+                    echo "Upload successful: $file_name (HTTP $http_code)"
+                    ;;
+                  *)
+                    echo "Upload failed for $f (HTTP $http_code)"
+                    [ -s "$header_file" ] && sed -n '1,80p' "$header_file"
+                    [ -s "$body_file" ] && sed -n '1,120p' "$body_file"
+                    rm -f "$body_file" "$header_file"
+                    exit 1
+                    ;;
+                esac
+                rm -f "$body_file" "$header_file"
+              done < "$package_list_file"
+              rm -f "$package_list_file"
+
 ############################################################################
 
 jobs:
-  build:
-    <<: *default_environment_settings
-    steps:
-      - checkout
-      - run:
-          name: Install ant-contrib
-          command: sudo apt-get update; sudo apt-get install ant-contrib && mkdir -p ~/.ivy2/cache
-      - run:
-          name: Clone zm-timezones
-          command: |
-            cd "$BUILD"
-            git clone https://github.com/Zimbra/zm-timezones.git -b develop --single-branch || exit 1
-      - run:
-          name: Running ant compile in native directory
-          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant clean compile publish-local
-          working_directory: native
-      - run:
-          name: Running ant compile in common directory
-          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant clean compile publish-local
-          working_directory: common
-      - run:
-          name: Running ant compile in soap directory
-          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant clean compile publish-local
-          working_directory: soap
-      - run:
-          name: Running ant compile in client directory
-          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant clean compile publish-local
-          working_directory: client
-      - run:
-          name: Running ant compile in store directory
-          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant clean compile publish-local
-          working_directory: store
-      - run:
-          name: Compile validation completed
-          command: echo "Compile stage completed for develop branch."
-      - persist_to_workspace:
-          root: /home/build/
-          paths:
-            - zm-timezones
-            - zm-mailbox
-            - .ssh
-            - .zcs-deps
-  package_build:
-    <<: *default_environment_settings
-    steps:
-      - *default_attach_workspace
-      - run:
-          name: Prepare ant-contrib jar for root build.xml
-          command: |
-            sudo apt-get update; sudo apt-get install ant-contrib rpm dpkg-dev fakeroot lsb-release debhelper build-essential -y
-            mkdir -p ~/.ivy2/cache
-            mkdir -p ~/.zcs-deps
-            if [ -f /usr/share/java/ant-contrib.jar ]; then
-              cp -f /usr/share/java/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar
-            elif [ -f /usr/share/ant/lib/ant-contrib.jar ]; then
-              cp -f /usr/share/ant/lib/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar
-            else
-              echo "ant-contrib.jar not found on runner" && exit 1
-            fi
-            if [ ! -f /etc/lsb-release ] && [ -f /etc/os-release ]; then
-              . /etc/os-release
-              REL="${VERSION_ID%%.*}"
-              echo "DISTRIB_RELEASE=${REL}" | sudo tee /etc/lsb-release >/dev/null
-            fi
-      - run:
-          name: Validate package tooling
-          command: |
-            for b in perl rpmbuild rpm dpkg-deb fakeroot tar gzip; do
-              command -v "$b" >/dev/null 2>&1 || (echo "Missing required binary: $b" && exit 1)
-            done
-      - run:
-          name: Build mailbox OS packages
-          command: |
-            cd /home/build
-            if [ ! -d "zm-pkg-tool" ]; then
-              git clone -b develop --single-branch https://github.com/Zimbra/zm-pkg-tool.git
-            fi
-            [ -x /home/build/zm-pkg-tool/pkg-build.pl ] || chmod +x /home/build/zm-pkg-tool/pkg-build.pl
-            cd /home/build/zm-mailbox
-            JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant pkg
-      - persist_to_workspace:
-          root: /home/build/
-          paths:
-            - zm-mailbox
-            - zm-pkg-tool
-            - .zcs-deps
-  publish_packages:
-    <<: *default_environment_settings
-    circleci_ip_ranges: true
-    steps:
-      - *default_attach_workspace
-      - run:
-          name: Prepare ant-contrib jar for root build.xml
-          command: |
-            sudo apt-get update; sudo apt-get install ant-contrib -y
-            mkdir -p ~/.ivy2/cache
-            mkdir -p ~/.zcs-deps
-            if [ -f /usr/share/java/ant-contrib.jar ]; then
-              cp -f /usr/share/java/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar
-            elif [ -f /usr/share/ant/lib/ant-contrib.jar ]; then
-              cp -f /usr/share/ant/lib/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar
-            else
-              echo "ant-contrib.jar not found on runner" && exit 1
-            fi
-      - run:
-          name: Validate Nexus env variables
-          command: |
-            [ -n "$NEXUS_BASE_URL" ] || (echo "NEXUS_BASE_URL is required" && exit 1)
-            [ -n "$NEXUS_USER" ] || (echo "NEXUS_USER is required" && exit 1)
-            [ -n "$NEXUS_PASSWORD" ] || (echo "NEXUS_PASSWORD is required" && exit 1)
-      - run:
-          name: Publish built packages to Nexus APT/Yum
-          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant publish-remote-package
-  test:
-    <<: *default_environment_settings
-    steps:
-      - *default_attach_workspace
-      - run:
-          name: Ensure xml tooling for junit merge
-          command: sudo apt-get update && sudo apt-get install -y xmlstarlet
-      - run:
-          name: Create test report directory to hold junit tests
-          command: mkdir -p /tmp/junit/
-      - run:
-          name: Running ant test native
-          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant test
-          working_directory: native
-      - run:
-          name: Running ant test common
-          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant test
-          working_directory: common
-      - run:
-          name: Running ant test soap
-          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant test
-          working_directory: soap
-      - run:
-          name: Running ant test client
-          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant test
-          working_directory: client
-      - run:
-          name: Running ant test store
-          command: JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH ant test
-          no_output_timeout: 1200s
-          working_directory: store
-      - run:
-          name: Finding test results
-          command: |
-            TEST_XMLS="$(find . -type f -regex '.*/build/test/report/.*xml')"
-            [ -n "$TEST_XMLS" ] || (echo "No junit xml files found" && exit 1)
-            python3 - <<'PY'
-            import glob
-            import xml.etree.ElementTree as ET
+   checkout:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-22.04
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: small
+      <<: *checkout_job_steps
 
-            files = glob.glob("**/build/test/report/*.xml", recursive=True)
-            if not files:
-                raise SystemExit("No junit xml files found")
+   build:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-22.04
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: medium
+      <<: *build_job_steps
 
-            root = ET.Element("testsuites")
-            for f in files:
-                try:
-                    doc = ET.parse(f).getroot()
-                except Exception:
-                    continue
-                if doc.tag == "testsuite":
-                    root.append(doc)
-                elif doc.tag == "testsuites":
-                    for ts in list(doc):
-                        if ts.tag == "testsuite":
-                            root.append(ts)
+   publish:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      circleci_ip_ranges: true
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-22.04
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: small
+      <<: *publish_job_steps
 
-            ET.ElementTree(root).write("merged-test-results.xml", encoding="utf-8", xml_declaration=True)
-            PY
-      - run:
-          name: Copy test results to proper directory
-          command: cp merged-test-results.xml /tmp/junit/
-      - store_test_results:
-          path: /tmp/junit/
 ############################################################################
 
 workflows:
-  version: 2
-  build_deploy:
-    jobs:
-      - build:
-          <<: *filter_branches
-          context:
-            - docker-dev-registry
-      - approve_package_build:
-          type: approval
-          requires:
-            - build
-          <<: *filter_branches
-      - package_build:
-          requires:
-            - approve_package_build
-          <<: *filter_branches
-          context:
-            - docker-dev-registry
-      - test:
-          requires:
-            - package_build
-          <<: *filter_branches
-          context:
-            - docker-dev-registry
-      - approve_package_publish:
-          type: approval
-          requires:
-            - test
-          <<: *filter_branches
-      - publish_packages:
-          requires:
-            - approve_package_publish
-          <<: *filter_branches
-          context:
-            - docker-dev-registry
-############################################################################
+   version: 2
+   main:
+      jobs:
+         - checkout:
+            context:
+               - docker-dev-registry
+            filters:
+               branches:
+                  only:
+                    - develop
+                    - publish-nexus-package-poc
+         - approve_package_build:
+            type: approval
+            requires:
+               - checkout
+            filters:
+               branches:
+                  only:
+                    - develop
+                    - publish-nexus-package-poc
+         - build:
+            context:
+               - docker-dev-registry
+            requires:
+               - approve_package_build
+            filters:
+               branches:
+                  only:
+                    - develop
+                    - publish-nexus-package-poc
+         - approve_package_publish:
+            type: approval
+            requires:
+               - build
+            filters:
+               branches:
+                  only:
+                    - develop
+                    - publish-nexus-package-poc
+         - publish:
+            context:
+               - docker-dev-registry
+            requires:
+               - approve_package_publish
+            filters:
+               branches:
+                 only:
+                   - develop
+                   - publish-nexus-package-poc
