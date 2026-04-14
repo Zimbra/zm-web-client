@@ -14,6 +14,8 @@ references:
                git clone -b ZCS-18921 --single-branch https://github.com/Zimbra/zm-zcs.git ~/zm-zcs
                git clone -b master --single-branch https://github.com/Zimbra/zimbra-package-stub.git ~/zimbra-package-stub
                git clone -b develop --single-branch https://github.com/Zimbra/zm-mailbox.git ~/zm-mailbox
+               git clone -b develop --single-branch https://github.com/Zimbra/zm-ajax.git ~/zm-ajax
+               git clone -b develop --single-branch https://github.com/Zimbra/zm-taglib.git ~/zm-taglib
                echo "BUILD_NO=$CIRCLE_BUILD_NUM" > config.build
                mkdir -p ~/.zcs-deps
          - persist_to_workspace:
@@ -24,6 +26,8 @@ references:
                - zm-zcs
                - zimbra-package-stub
                - zm-mailbox
+               - zm-ajax
+               - zm-taglib
                - .zcs-deps
 
    build_job_steps: &build_job_steps
@@ -42,6 +46,10 @@ references:
               export JAVA_HOME
               export PATH="$JAVA_HOME/bin:$PATH"
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local-all
+              cd ../zm-ajax
+              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
+              cd ../zm-taglib
+              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
               cd ../zm-web-client
               chmod +x pkg-builder.pl
               JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
