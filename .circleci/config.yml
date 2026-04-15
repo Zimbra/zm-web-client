@@ -99,7 +99,35 @@ references:
             command: |
               mkdir -p /home/build/.ivy2/cache
               sudo apt-get update
-              sudo DEBIAN_FRONTEND=noninteractive apt-get install -y curl
+              sudo DEBIAN_FRONTEND=noninteractive apt-get install -y curl ant-contrib rpm dpkg-dev fakeroot lsb-release debhelper build-essential
+              cp /usr/share/java/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar || true
+              cd ../zm-ajax
+              JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+              export JAVA_HOME
+              export PATH="$JAVA_HOME/bin:$PATH"
+              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
+              AJAX_PUB="$(find ~/.zcs-deps/zimbra/zm-ajax -maxdepth 1 -type f -name 'zm-ajax-*.jar' ! -name 'zm-ajax-latest.integration.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
+              if [ -n "$AJAX_PUB" ] && [ -f "$AJAX_PUB" ]; then
+                mkdir -p ~/.zcs-deps/zimbra/zm-ajax
+                cp -f "$AJAX_PUB" ~/.zcs-deps/zimbra/zm-ajax/zm-ajax-latest.integration.jar
+                cp -f "$AJAX_PUB" ~/.zcs-deps/zimbra/zm-ajax/zm-ajax-local.jar
+              fi
+              cd ../zm-taglib
+              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
+              TAGLIB_PUB="$(find ~/.zcs-deps/zimbra/zm-taglib -maxdepth 1 -type f -name 'zm-taglib-*.jar' ! -name 'zm-taglib-latest.integration.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
+              if [ -z "$TAGLIB_PUB" ] || [ ! -f "$TAGLIB_PUB" ]; then
+                TAGLIB_PUB="$(find build -maxdepth 1 -type f -name 'zm-taglib-*.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
+              fi
+              if [ -n "$TAGLIB_PUB" ] && [ -f "$TAGLIB_PUB" ]; then
+                mkdir -p ~/.zcs-deps/zimbra/zm-taglib
+                cp -f "$TAGLIB_PUB" ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-latest.integration.jar
+                cp -f "$TAGLIB_PUB" ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-local.jar
+              else
+                echo "ERROR: could not locate zm-taglib jar after publish-local (expected ~/.zcs-deps/.../zm-taglib-*.jar or build/zm-taglib-*.jar)"
+                ls -la ~/.zcs-deps/zimbra/zm-taglib 2>/dev/null || true
+                ls -la build 2>/dev/null || true
+                exit 1
+              fi
               cd ../zm-mailbox
               JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
               export JAVA_HOME
