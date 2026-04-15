@@ -48,19 +48,24 @@ references:
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local-all
               cd ../zm-ajax
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
+              # build.xml uses ivy:install revision="latest.integration"; publish-local uses dev.version.
+              # Mirror published jars so filesystem resolver satisfies hardcoded latest.integration.
+              AJAX_PUB="$(find ~/.zcs-deps/zimbra/zm-ajax -maxdepth 1 -type f -name 'zm-ajax-*.jar' ! -name 'zm-ajax-latest.integration.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
+              if [ -n "$AJAX_PUB" ] && [ -f "$AJAX_PUB" ]; then
+                mkdir -p ~/.zcs-deps/zimbra/zm-ajax
+                cp -f "$AJAX_PUB" ~/.zcs-deps/zimbra/zm-ajax/zm-ajax-latest.integration.jar
+              fi
               cd ../zm-taglib
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
               if [ -f build/zimbrataglib.jar ]; then
                 mkdir -p ~/.zcs-deps/zimbra/zm-taglib
-                cp -f build/zimbrataglib.jar ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-local.jar
-                printf '%s\n' '<ivy-module version="2.0">' '  <info organisation="zimbra" module="zm-taglib" revision="local" status="integration"/>' '  <publications>' '    <artifact name="zm-taglib" type="jar" ext="jar"/>' '  </publications>' '</ivy-module>' > ~/.zcs-deps/zimbra/zm-taglib/ivy-local.xml
+                cp -f build/zimbrataglib.jar ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-latest.integration.jar
               fi
               cd ../zm-web-client
               chmod +x pkg-builder.pl
               JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
               export JAVA_HOME
               export PATH="$JAVA_HOME/bin:$PATH"
-              perl -0777 -i -pe 's#(<dependency org="zimbra" name="zm-taglib" rev=")latest\\.integration(")#${1}local${2}#g' ivy.xml ivy-jspc.xml
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean pkg
          - persist_to_workspace:
             root: ..
