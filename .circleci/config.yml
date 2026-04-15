@@ -54,6 +54,7 @@ references:
               if [ -n "$AJAX_PUB" ] && [ -f "$AJAX_PUB" ]; then
                 mkdir -p ~/.zcs-deps/zimbra/zm-ajax
                 cp -f "$AJAX_PUB" ~/.zcs-deps/zimbra/zm-ajax/zm-ajax-latest.integration.jar
+                cp -f "$AJAX_PUB" ~/.zcs-deps/zimbra/zm-ajax/zm-ajax-local.jar
               fi
               cd ../zm-taglib
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
@@ -65,6 +66,7 @@ references:
               if [ -n "$TAGLIB_PUB" ] && [ -f "$TAGLIB_PUB" ]; then
                 mkdir -p ~/.zcs-deps/zimbra/zm-taglib
                 cp -f "$TAGLIB_PUB" ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-latest.integration.jar
+                cp -f "$TAGLIB_PUB" ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-local.jar
               else
                 echo "ERROR: could not locate zm-taglib jar after publish-local (expected ~/.zcs-deps/.../zm-taglib-*.jar or build/zm-taglib-*.jar)"
                 ls -la ~/.zcs-deps/zimbra/zm-taglib 2>/dev/null || true
@@ -76,6 +78,10 @@ references:
               JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
               export JAVA_HOME
               export PATH="$JAVA_HOME/bin:$PATH"
+              # ivy:resolve reads ivy.xml/ivy-jspc.xml and fails on dynamic latest.integration for local-only modules.
+              perl -0777 -i -pe 's#(<dependency org="zimbra" name="zm-ajax" rev=")latest\.integration("\s*/>)#${1}local${2}#g; s#(<dependency org="zimbra" name="zm-taglib" rev=")latest\.integration("\s*/>)#${1}local${2}#g' ivy.xml ivy-jspc.xml
+              echo "Resolved local ivy deps:"
+              perl -ne 'print if /name="zm-ajax"|name="zm-taglib"/' ivy.xml ivy-jspc.xml
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean pkg
          - persist_to_workspace:
             root: ..
@@ -207,39 +213,16 @@ workflows:
                   only:
                     - develop
                     - publish-nexus-package-poc
-         - approve_package_build:
-            type: approval
-            requires:
-               - checkout
-            filters:
-               branches:
-                  only:
-                    - develop
-                    - publish-nexus-package-poc
          - build:
             context:
                - docker-dev-registry
             requires:
-               - approve_package_build
-            filters:
-               branches:
-                  only:
-                    - develop
-                    - publish-nexus-package-poc
-         - approve_package_publish:
-            type: approval
-            requires:
-               - build
-            filters:
-               branches:
-                  only:
-                    - develop
-                    - publish-nexus-package-poc
+               - checkout
          - publish:
             context:
                - docker-dev-registry
             requires:
-               - approve_package_publish
+               - build
             filters:
                branches:
                  only:
