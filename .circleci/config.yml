@@ -41,12 +41,10 @@ references:
               sudo apt-get update
               sudo apt-get install -y ant-contrib rpm dpkg-dev fakeroot lsb-release debhelper build-essential
               cp /usr/share/java/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar || true
-              cd ../zm-mailbox
+              cd ../zm-ajax
               JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
               export JAVA_HOME
               export PATH="$JAVA_HOME/bin:$PATH"
-              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local-all
-              cd ../zm-ajax
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
               # build.xml uses ivy:install revision="latest.integration"; publish-local uses dev.version.
               # Mirror published jars so filesystem resolver satisfies hardcoded latest.integration.
@@ -58,21 +56,30 @@ references:
               fi
               cd ../zm-taglib
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
-              # zm-taglib publishes zm-taglib-<dev.version>.jar, not zimbrataglib.jar; ivy.xml still asks for latest.integration.
-              TAGLIB_PUB="$(find ~/.zcs-deps/zimbra/zm-taglib -maxdepth 1 -type f -name 'zm-taglib-*.jar' ! -name 'zm-taglib-latest.integration.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
+              echo "Listing taglib publish outputs before aliasing"
+              ls -la ~/.zcs-deps/zimbra/zm-taglib 2>/dev/null || true
+              ls -la build 2>/dev/null || true
+              TAGLIB_PUB="$(find ~/.zcs-deps/zimbra/zm-taglib -maxdepth 1 -type f -name '*.jar' ! -name 'zm-taglib-latest.integration.jar' ! -name 'zm-taglib-local.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
               if [ -z "$TAGLIB_PUB" ] || [ ! -f "$TAGLIB_PUB" ]; then
-                TAGLIB_PUB="$(find build -maxdepth 1 -type f -name 'zm-taglib-*.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
+                TAGLIB_PUB="$(find build -maxdepth 1 -type f -name '*.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
               fi
               if [ -n "$TAGLIB_PUB" ] && [ -f "$TAGLIB_PUB" ]; then
                 mkdir -p ~/.zcs-deps/zimbra/zm-taglib
                 cp -f "$TAGLIB_PUB" ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-latest.integration.jar
                 cp -f "$TAGLIB_PUB" ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-local.jar
+                echo "Aliased taglib jar: $TAGLIB_PUB"
+                ls -la ~/.zcs-deps/zimbra/zm-taglib
               else
-                echo "ERROR: could not locate zm-taglib jar after publish-local (expected ~/.zcs-deps/.../zm-taglib-*.jar or build/zm-taglib-*.jar)"
+                echo "ERROR: could not locate any zm-taglib jar after publish-local"
                 ls -la ~/.zcs-deps/zimbra/zm-taglib 2>/dev/null || true
                 ls -la build 2>/dev/null || true
                 exit 1
               fi
+              cd ../zm-mailbox
+              JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+              export JAVA_HOME
+              export PATH="$JAVA_HOME/bin:$PATH"
+              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local-all
               cd ../zm-web-client
               chmod +x pkg-builder.pl
               JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
@@ -114,16 +121,21 @@ references:
               fi
               cd ../zm-taglib
               ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
-              TAGLIB_PUB="$(find ~/.zcs-deps/zimbra/zm-taglib -maxdepth 1 -type f -name 'zm-taglib-*.jar' ! -name 'zm-taglib-latest.integration.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
+              echo "Listing taglib publish outputs before aliasing"
+              ls -la ~/.zcs-deps/zimbra/zm-taglib 2>/dev/null || true
+              ls -la build 2>/dev/null || true
+              TAGLIB_PUB="$(find ~/.zcs-deps/zimbra/zm-taglib -maxdepth 1 -type f -name '*.jar' ! -name 'zm-taglib-latest.integration.jar' ! -name 'zm-taglib-local.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
               if [ -z "$TAGLIB_PUB" ] || [ ! -f "$TAGLIB_PUB" ]; then
-                TAGLIB_PUB="$(find build -maxdepth 1 -type f -name 'zm-taglib-*.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
+                TAGLIB_PUB="$(find build -maxdepth 1 -type f -name '*.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
               fi
               if [ -n "$TAGLIB_PUB" ] && [ -f "$TAGLIB_PUB" ]; then
                 mkdir -p ~/.zcs-deps/zimbra/zm-taglib
                 cp -f "$TAGLIB_PUB" ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-latest.integration.jar
                 cp -f "$TAGLIB_PUB" ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-local.jar
+                echo "Aliased taglib jar: $TAGLIB_PUB"
+                ls -la ~/.zcs-deps/zimbra/zm-taglib
               else
-                echo "ERROR: could not locate zm-taglib jar after publish-local (expected ~/.zcs-deps/.../zm-taglib-*.jar or build/zm-taglib-*.jar)"
+                echo "ERROR: could not locate any zm-taglib jar after publish-local"
                 ls -la ~/.zcs-deps/zimbra/zm-taglib 2>/dev/null || true
                 ls -la build 2>/dev/null || true
                 exit 1
