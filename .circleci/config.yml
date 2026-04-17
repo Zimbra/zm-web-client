@@ -14,9 +14,9 @@ references:
                git clone -b ZCS-18921 --single-branch https://github.com/Zimbra/zm-zcs.git ~/zm-zcs
                git clone -b master --single-branch https://github.com/Zimbra/zimbra-package-stub.git ~/zimbra-package-stub
                git clone -b develop --single-branch https://github.com/Zimbra/zm-mailbox.git ~/zm-mailbox
+               git clone -b develop --single-branch https://github.com/Zimbra/zm-timezones.git ~/zm-timezones
                git clone -b develop --single-branch https://github.com/Zimbra/zm-ajax.git ~/zm-ajax
                git clone -b develop --single-branch https://github.com/Zimbra/zm-taglib.git ~/zm-taglib
-               echo "BUILD_NO=$CIRCLE_BUILD_NUM" > config.build
                mkdir -p ~/.zcs-deps
          - persist_to_workspace:
             root: ..
@@ -26,11 +26,12 @@ references:
                - zm-zcs
                - zimbra-package-stub
                - zm-mailbox
+               - zm-timezones
                - zm-ajax
                - zm-taglib
                - .zcs-deps
 
-   build_job_steps: &build_job_steps
+   build_job_steps_ubuntu: &build_job_steps_ubuntu
       steps:
          - attach_workspace:
             at: ..
@@ -38,77 +39,84 @@ references:
             name: Creating package build
             command: |
               mkdir -p /home/build/.ivy2/cache
-              sudo apt-get update
-              sudo apt-get install -y ant-contrib rpm dpkg-dev fakeroot lsb-release debhelper build-essential
+              sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ant-contrib
               cp /usr/share/java/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar || true
-              cd ../zm-ajax
-              JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-              export JAVA_HOME
+              export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
               export PATH="$JAVA_HOME/bin:$PATH"
-              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
-              # build.xml uses ivy:install revision="latest.integration"; publish-local uses dev.version.
-              # Mirror published jars so filesystem resolver satisfies hardcoded latest.integration.
-              AJAX_PUB="$(find ~/.zcs-deps/zimbra/zm-ajax -maxdepth 1 -type f -name 'zm-ajax-*.jar' ! -name 'zm-ajax-latest.integration.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
-              if [ -n "$AJAX_PUB" ] && [ -f "$AJAX_PUB" ]; then
-                mkdir -p ~/.zcs-deps/zimbra/zm-ajax
-                cp -f "$AJAX_PUB" ~/.zcs-deps/zimbra/zm-ajax/zm-ajax-latest.integration.jar
-                cp -f "$AJAX_PUB" ~/.zcs-deps/zimbra/zm-ajax/zm-ajax-local.jar
-              fi
-              cd ../zm-taglib
-              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
-              echo "Listing taglib publish outputs before aliasing"
-              ls -la ~/.zcs-deps/zimbra/zm-taglib 2>/dev/null || true
-              ls -la build 2>/dev/null || true
-              TAGLIB_PUB="$(find ~/.zcs-deps/zimbra/zm-taglib -maxdepth 1 -type f -name '*.jar' ! -name 'zm-taglib-latest.integration.jar' ! -name 'zm-taglib-local.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
-              if [ -z "$TAGLIB_PUB" ] || [ ! -f "$TAGLIB_PUB" ]; then
-                TAGLIB_PUB="$(find build -maxdepth 1 -type f -name '*.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
-              fi
-              if [ -n "$TAGLIB_PUB" ] && [ -f "$TAGLIB_PUB" ]; then
-                mkdir -p ~/.zcs-deps/zimbra/zm-taglib
-                cp -f "$TAGLIB_PUB" ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-latest.integration.jar
-                cp -f "$TAGLIB_PUB" ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-local.jar
-                echo "Aliased taglib jar: $TAGLIB_PUB"
-                ls -la ~/.zcs-deps/zimbra/zm-taglib
-              else
-                echo "ERROR: could not locate any zm-taglib jar after publish-local"
-                ls -la ~/.zcs-deps/zimbra/zm-taglib 2>/dev/null || true
-                ls -la build 2>/dev/null || true
-                exit 1
-              fi
+              BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NO%_}"
+              BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NUMBER%_GA}"
+              export PKG_RELEASE="1~develop-snapshot"
+              BUILDINFO_REVISION="1~develop-snapshot"
               cd ../zm-mailbox
-              JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-              export JAVA_HOME
-              export PATH="$JAVA_HOME/bin:$PATH"
-              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local-all
-              for MODULE in zm-native zm-common zm-soap zm-client zm-store; do
-                PUB_DIR="$HOME/.zcs-deps/zimbra/$MODULE"
-                PUB_JAR="$(find "$PUB_DIR" -maxdepth 1 -type f -name '*.jar' ! -name "${MODULE}-latest.integration.jar" ! -name "${MODULE}-local.jar" -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
-                if [ -n "$PUB_JAR" ] && [ -f "$PUB_JAR" ]; then
-                  cp -f "$PUB_JAR" "$PUB_DIR/${MODULE}-latest.integration.jar"
-                  cp -f "$PUB_JAR" "$PUB_DIR/${MODULE}-local.jar"
-                  echo "Aliased mailbox module $MODULE => $PUB_JAR"
-                else
-                  echo "ERROR: could not locate published jar for $MODULE in $PUB_DIR"
-                  ls -la "$PUB_DIR" 2>/dev/null || true
-                  exit 1
-                fi
-              done
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" clean publish-local-all
+              cd ../zm-timezones
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.revision="${BUILDINFO_REVISION}" clean pkg
+              cd ../zm-taglib
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" clean publish-local
+              cd ../zm-ajax
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" clean publish-local
               cd ../zm-web-client
-              chmod +x pkg-builder.pl
-              JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-              export JAVA_HOME
-              export PATH="$JAVA_HOME/bin:$PATH"
-              # ivy:resolve reads ivy.xml/ivy-jspc.xml and fails on dynamic latest.integration for local-only modules.
-              perl -0777 -i -pe 's#(<dependency org="zimbra" name="zm-ajax" rev=")latest\.integration("\s*/>)#${1}local${2}#g; s#(<dependency org="zimbra" name="zm-taglib" rev=")latest\.integration("\s*/>)#${1}local${2}#g' ivy.xml ivy-jspc.xml
-              echo "Resolved local ivy deps:"
-              perl -ne 'print if /name="zm-ajax"|name="zm-taglib"/' ivy.xml ivy-jspc.xml
-              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean pkg
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.revision="${BUILDINFO_REVISION}" -Dwclient.ext.patch.version="${BUILD_RELEASE_NUMBER}" -Dwclient.ext.patch.revision="${PKG_RELEASE}" clean pkg
+              JOB_OUT_DIR="build/dist/${CIRCLE_JOB}"
+              mkdir -p "$JOB_OUT_DIR"
+              find build/dist -maxdepth 1 -type f \( -name '*.deb' -o -name '*.rpm' \) -exec mv -f {} "$JOB_OUT_DIR"/ \;
+              rm -rf build/dist/jetty
+         - store_artifacts:
+            path: build/dist
          - persist_to_workspace:
             root: ..
-            paths:
-               - .ivy2
-               - .zcs-deps
-               - zm-web-client/build/dist
+            paths: zm-web-client/build/dist/*
+
+   build_job_steps_centos: &build_job_steps_centos
+      steps:
+         - attach_workspace:
+            at: ..
+         - run:
+            name: Creating package build
+            command: |
+              mkdir -p /home/build/.ivy2/cache
+              if command -v yum >/dev/null 2>&1; then
+                command -v ant >/dev/null 2>&1 || sudo yum install -y ant
+              elif command -v dnf >/dev/null 2>&1; then
+                command -v ant >/dev/null 2>&1 || sudo dnf install -y ant
+              else
+                exit 1
+              fi
+              if [ -f /usr/share/java/ant-contrib.jar ]; then
+                cp /usr/share/java/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar
+              elif [ -f /usr/share/ant/lib/ant-contrib.jar ]; then
+                cp /usr/share/ant/lib/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar
+              else
+                curl --fail --location --silent --show-error \
+                  "https://files.zimbra.com/repository/ant-contrib/ant-contrib-1.0b1.jar" \
+                  --output ~/.zcs-deps/ant-contrib-1.0b1.jar
+              fi
+              DETECTED_JAVAC="$(command -v javac)"
+              export JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$DETECTED_JAVAC")")")"
+              export PATH="$JAVA_HOME/bin:$PATH"
+              BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NO%_}"
+              BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NUMBER%_GA}"
+              export PKG_RELEASE="1_develop_snapshot"
+              BUILDINFO_REVISION="1_develop_snapshot"
+              cd ../zm-mailbox
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" clean publish-local-all
+              cd ../zm-timezones
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.revision="${BUILDINFO_REVISION}" clean pkg
+              cd ../zm-taglib
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" clean publish-local
+              cd ../zm-ajax
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" clean publish-local
+              cd ../zm-web-client
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.revision="${BUILDINFO_REVISION}" -Dwclient.ext.patch.version="${BUILD_RELEASE_NUMBER}" -Dwclient.ext.patch.revision="${PKG_RELEASE}" clean pkg
+              JOB_OUT_DIR="build/dist/${CIRCLE_JOB}"
+              mkdir -p "$JOB_OUT_DIR"
+              find build/dist -maxdepth 1 -type f \( -name '*.deb' -o -name '*.rpm' \) -exec mv -f {} "$JOB_OUT_DIR"/ \;
+              rm -rf build/dist/jetty
+         - store_artifacts:
+            path: build/dist
+         - persist_to_workspace:
+            root: ..
+            paths: zm-web-client/build/dist/*
 
    publish_job_steps: &publish_job_steps
       steps:
@@ -118,79 +126,25 @@ references:
             name: Publish package artifacts to Nexus
             command: |
               mkdir -p /home/build/.ivy2/cache
-              sudo apt-get update
-              sudo DEBIAN_FRONTEND=noninteractive apt-get install -y curl ant-contrib rpm dpkg-dev fakeroot lsb-release debhelper build-essential
-              cp /usr/share/java/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar || true
-              cd ../zm-ajax
-              JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-              export JAVA_HOME
-              export PATH="$JAVA_HOME/bin:$PATH"
-              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
-              AJAX_PUB="$(find ~/.zcs-deps/zimbra/zm-ajax -maxdepth 1 -type f -name 'zm-ajax-*.jar' ! -name 'zm-ajax-latest.integration.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
-              if [ -n "$AJAX_PUB" ] && [ -f "$AJAX_PUB" ]; then
-                mkdir -p ~/.zcs-deps/zimbra/zm-ajax
-                cp -f "$AJAX_PUB" ~/.zcs-deps/zimbra/zm-ajax/zm-ajax-latest.integration.jar
-                cp -f "$AJAX_PUB" ~/.zcs-deps/zimbra/zm-ajax/zm-ajax-local.jar
-              fi
-              cd ../zm-taglib
-              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local
-              echo "Listing taglib publish outputs before aliasing"
-              ls -la ~/.zcs-deps/zimbra/zm-taglib 2>/dev/null || true
-              ls -la build 2>/dev/null || true
-              TAGLIB_PUB="$(find ~/.zcs-deps/zimbra/zm-taglib -maxdepth 1 -type f -name '*.jar' ! -name 'zm-taglib-latest.integration.jar' ! -name 'zm-taglib-local.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
-              if [ -z "$TAGLIB_PUB" ] || [ ! -f "$TAGLIB_PUB" ]; then
-                TAGLIB_PUB="$(find build -maxdepth 1 -type f -name '*.jar' -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
-              fi
-              if [ -n "$TAGLIB_PUB" ] && [ -f "$TAGLIB_PUB" ]; then
-                mkdir -p ~/.zcs-deps/zimbra/zm-taglib
-                cp -f "$TAGLIB_PUB" ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-latest.integration.jar
-                cp -f "$TAGLIB_PUB" ~/.zcs-deps/zimbra/zm-taglib/zm-taglib-local.jar
-                echo "Aliased taglib jar: $TAGLIB_PUB"
-                ls -la ~/.zcs-deps/zimbra/zm-taglib
-              else
-                echo "ERROR: could not locate any zm-taglib jar after publish-local"
-                ls -la ~/.zcs-deps/zimbra/zm-taglib 2>/dev/null || true
-                ls -la build 2>/dev/null || true
-                exit 1
-              fi
-              cd ../zm-mailbox
-              JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-              export JAVA_HOME
-              export PATH="$JAVA_HOME/bin:$PATH"
-              ant -Dzimbra.buildinfo.version=10.1.0_GA_1001 clean publish-local-all
-              for MODULE in zm-native zm-common zm-soap zm-client zm-store; do
-                PUB_DIR="$HOME/.zcs-deps/zimbra/$MODULE"
-                PUB_JAR="$(find "$PUB_DIR" -maxdepth 1 -type f -name '*.jar' ! -name "${MODULE}-latest.integration.jar" ! -name "${MODULE}-local.jar" -printf '%T@\t%p\n' 2>/dev/null | sort -t "$(printf '\t')" -k1,1rn | head -1 | cut -f2-)"
-                if [ -n "$PUB_JAR" ] && [ -f "$PUB_JAR" ]; then
-                  cp -f "$PUB_JAR" "$PUB_DIR/${MODULE}-latest.integration.jar"
-                  cp -f "$PUB_JAR" "$PUB_DIR/${MODULE}-local.jar"
-                  echo "Aliased mailbox module $MODULE => $PUB_JAR"
-                else
-                  echo "ERROR: could not locate published jar for $MODULE in $PUB_DIR"
-                  ls -la "$PUB_DIR" 2>/dev/null || true
-                  exit 1
-                fi
-              done
-              cd ../zm-web-client
-              : "${NEXUS_BASE_URL:?NEXUS_BASE_URL is required}"
+              sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y curl
+              : "${NEXUS_HOST:?NEXUS_HOST is required}"
               : "${NEXUS_USER:?NEXUS_USER is required}"
               : "${NEXUS_PASSWORD:?NEXUS_PASSWORD is required}"
               ROOT="build/dist"
               APT_REPO="package-repo-apt"
               YUM_REPO="package-repo-yum"
-              MODULE_PATH="zimbra/zm-web-client/${CIRCLE_SHA1:-develop}"
-              RAW_BASE="$(printf '%s' "$NEXUS_BASE_URL" | sed 's/#.*$//' | sed 's:/*$::')"
+              MODULE_PATH="zimbra"
+              RAW_BASE="$(printf '%s' "${NEXUS_BASE_URL:-$NEXUS_HOST}" | sed 's/#.*$//' | sed 's:/$::')"
               API_BASE="$RAW_BASE/service/rest/v1/components"
               PACKAGE_FILES="$(find "$ROOT" -type f \( -name '*.deb' -o -name '*.rpm' \))"
               if [ -z "$PACKAGE_FILES" ]; then
-                echo "No package artifacts found in $ROOT"
                 exit 1
               fi
               package_list_file="$(mktemp)"
               printf '%s\n' "$PACKAGE_FILES" > "$package_list_file"
               while IFS= read -r f; do
                 [ -n "$f" ] || continue
-                rel="$(echo "$f" | sed "s|^$ROOT/||")"
+                rel="$(printf '%s\n' "$f" | sed "s|^$ROOT/||")"
                 dir="$(dirname "$rel")"
                 file_name="$(basename "$f")"
                 body_file="$(mktemp)"
@@ -214,10 +168,8 @@ references:
                 esac
                 case "$http_code" in
                   2??)
-                    echo "Upload successful: $file_name (HTTP $http_code)"
                     ;;
                   *)
-                    echo "Upload failed for $f (HTTP $http_code)"
                     [ -s "$header_file" ] && sed -n '1,80p' "$header_file"
                     [ -s "$body_file" ] && sed -n '1,120p' "$body_file"
                     rm -f "$body_file" "$header_file"
@@ -242,7 +194,18 @@ jobs:
       resource_class: small
       <<: *checkout_job_steps
 
-   build:
+   build_u24:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-24.04
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: medium
+      <<: *build_job_steps_ubuntu
+
+   build_u22:
       working_directory: ~/zm-web-client
       shell: /bin/bash -eo pipefail
       docker:
@@ -251,7 +214,51 @@ jobs:
           username: $DOCKER_USER
           password: $DOCKER_PASS
       resource_class: medium
-      <<: *build_job_steps
+      <<: *build_job_steps_ubuntu
+
+   build_u20:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-20.04
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: medium
+      <<: *build_job_steps_ubuntu
+
+   build_u18:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-18.04
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: medium
+      <<: *build_job_steps_ubuntu
+
+   build_c9:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-centos-9
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: medium
+      <<: *build_job_steps_centos
+
+   build_c8:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-centos-8
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: medium
+      <<: *build_job_steps_centos
 
    publish:
       working_directory: ~/zm-web-client
@@ -274,23 +281,92 @@ workflows:
          - checkout:
             context:
                - docker-dev-registry
+               - build-number
             filters:
                branches:
                   only:
-                    - develop
+                    - develop-snapshot
                     - publish-nexus-package-poc
-         - build:
+         - build_u24:
             context:
                - docker-dev-registry
+               - build-number
             requires:
                - checkout
+            filters:
+               branches:
+                  only:
+                    - develop-snapshot
+                    - publish-nexus-package-poc
+         - build_u22:
+            context:
+               - docker-dev-registry
+               - build-number
+            requires:
+               - checkout
+            filters:
+               branches:
+                  only:
+                    - develop-snapshot
+                    - publish-nexus-package-poc
+         - build_u20:
+            context:
+               - docker-dev-registry
+               - build-number
+            requires:
+               - checkout
+            filters:
+               branches:
+                  only:
+                    - develop-snapshot
+                    - publish-nexus-package-poc
+         - build_u18:
+            context:
+               - docker-dev-registry
+               - build-number
+            requires:
+               - checkout
+            filters:
+               branches:
+                  only:
+                    - develop-snapshot
+                    - publish-nexus-package-poc
+         - build_c9:
+            context:
+               - docker-dev-registry
+               - build-number
+            requires:
+               - checkout
+            filters:
+               branches:
+                  only:
+                    - develop-snapshot
+                    - publish-nexus-package-poc
+         - build_c8:
+            context:
+               - docker-dev-registry
+               - build-number
+            requires:
+               - checkout
+            filters:
+               branches:
+                  only:
+                    - develop-snapshot
+                    - publish-nexus-package-poc
          - publish:
             context:
                - docker-dev-registry
+               - build-number
+               - nexus-artifactory
             requires:
-               - build
+               - build_u24
+               - build_u22
+               - build_u20
+               - build_u18
+               - build_c9
+               - build_c8
             filters:
                branches:
                  only:
-                   - develop
+                   - develop-snapshot
                    - publish-nexus-package-poc

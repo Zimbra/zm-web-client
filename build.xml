@@ -96,7 +96,7 @@
     <property name="tinymce.custom.dir" value="tiny_mce/custom"/>
 
     <!-- Accepting version from variables -->
-    <property name="wclient.ext.patch.revision" value="1" />
+    <property name="wclient.ext.patch.revision" value="${zimbra.buildinfo.revision}" />
     <property name="wclient.ext.patch.version"
         value="${zimbra.buildinfo.majorversion}.${zimbra.buildinfo.minorversion}.${zimbra.buildinfo.microversion}"/>
 
