@@ -47,6 +47,11 @@ references:
               export PATH="$JAVA_HOME/bin:$PATH"
               BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NO%_}"
               BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NUMBER%_GA}"
+              # ant-global propertyregex needs major.minor.micro; two-part values leave
+              # zimbra.buildinfo.microversion unset and Ivy publishes broken revisions.
+              if [[ "$BUILD_RELEASE_NUMBER" =~ ^[0-9]+\.[0-9]+$ ]]; then
+                BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NUMBER}.0"
+              fi
               export PKG_RELEASE="1~develop-snapshot"
               BUILDINFO_REVISION="1~develop-snapshot"
               cd ../zm-mailbox
@@ -98,6 +103,9 @@ references:
               export PATH="$JAVA_HOME/bin:$PATH"
               BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NO%_}"
               BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NUMBER%_GA}"
+              if [[ "$BUILD_RELEASE_NUMBER" =~ ^[0-9]+\.[0-9]+$ ]]; then
+                BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NUMBER}.0"
+              fi
               export PKG_RELEASE="1_develop_snapshot"
               BUILDINFO_REVISION="1_develop_snapshot"
               cd ../zm-mailbox
