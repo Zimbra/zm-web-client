@@ -255,7 +255,6 @@ workflows:
          - checkout:
             context:
                - docker-dev-registry
-               - build-number
                - build-info
             filters:
                branches:
@@ -265,7 +264,6 @@ workflows:
          - build_u24:
             context:
                - docker-dev-registry
-               - build-number
                - build-info
             requires:
                - checkout
@@ -277,7 +275,6 @@ workflows:
          - build_u22:
             context:
                - docker-dev-registry
-               - build-number
                - build-info
             requires:
                - checkout
@@ -289,7 +286,6 @@ workflows:
          - build_u20:
             context:
                - docker-dev-registry
-               - build-number
                - build-info
             requires:
                - checkout
@@ -301,7 +297,6 @@ workflows:
          - build_u18:
             context:
                - docker-dev-registry
-               - build-number
                - build-info
             requires:
                - checkout
@@ -313,7 +308,6 @@ workflows:
          - build_c9:
             context:
                - docker-dev-registry
-               - build-number
                - build-info
             requires:
                - checkout
@@ -325,7 +319,6 @@ workflows:
          - build_c8:
             context:
                - docker-dev-registry
-               - build-number
                - build-info
             requires:
                - checkout
@@ -337,9 +330,8 @@ workflows:
          - publish:
             context:
                - docker-dev-registry
-               - build-number
                - build-info
-               - nexus-artifactory
+               - nexus-dev-artifactory
             requires:
                - checkout
                - build_u24
