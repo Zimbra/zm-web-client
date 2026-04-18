@@ -55,7 +55,7 @@ references:
                 BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NUMBER}.0"
               fi
               if [[ ! "$BUILD_RELEASE_NUMBER" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-                printf '%s\n' "BUILD_RELEASE_NO must normalize to major.minor.micro (got '${BUILD_RELEASE_NUMBER}')." >&2
+                printf '%s\n' "BUILD_RELEASE_NO is unset or invalid after normalize (got '${BUILD_RELEASE_NUMBER}'). Set BUILD_RELEASE_NO in CircleCI (e.g. context build-info) to a value like 8.7.0_GA_." >&2
                 exit 1
               fi
               rm -rf ~/.zcs-deps/zimbra
@@ -117,7 +117,7 @@ references:
                 BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NUMBER}.0"
               fi
               if [[ ! "$BUILD_RELEASE_NUMBER" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-                printf '%s\n' "BUILD_RELEASE_NO must normalize to major.minor.micro (got '${BUILD_RELEASE_NUMBER}')." >&2
+                printf '%s\n' "BUILD_RELEASE_NO is unset or invalid after normalize (got '${BUILD_RELEASE_NUMBER}'). Set BUILD_RELEASE_NO in CircleCI (e.g. context build-info) to a value like 8.7.0_GA_." >&2
                 exit 1
               fi
               rm -rf ~/.zcs-deps/zimbra
@@ -256,6 +256,7 @@ workflows:
             context:
                - docker-dev-registry
                - build-number
+               - build-info
             filters:
                branches:
                   only:
@@ -265,6 +266,7 @@ workflows:
             context:
                - docker-dev-registry
                - build-number
+               - build-info
             requires:
                - checkout
             filters:
@@ -276,6 +278,7 @@ workflows:
             context:
                - docker-dev-registry
                - build-number
+               - build-info
             requires:
                - checkout
             filters:
@@ -287,6 +290,7 @@ workflows:
             context:
                - docker-dev-registry
                - build-number
+               - build-info
             requires:
                - checkout
             filters:
@@ -298,6 +302,7 @@ workflows:
             context:
                - docker-dev-registry
                - build-number
+               - build-info
             requires:
                - checkout
             filters:
@@ -309,6 +314,7 @@ workflows:
             context:
                - docker-dev-registry
                - build-number
+               - build-info
             requires:
                - checkout
             filters:
@@ -320,6 +326,7 @@ workflows:
             context:
                - docker-dev-registry
                - build-number
+               - build-info
             requires:
                - checkout
             filters:
@@ -331,6 +338,7 @@ workflows:
             context:
                - docker-dev-registry
                - build-number
+               - build-info
                - nexus-artifactory
             requires:
                - checkout
