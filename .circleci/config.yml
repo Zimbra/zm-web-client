@@ -323,5 +323,5 @@ workflows:
             filters:
                branches:
                  only:
-                   - develop-snapshot
-                   - publish-nexus-package-poc
+                   - ZCS-18921
+                   - develop
