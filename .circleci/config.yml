@@ -1,0 +1,319 @@
+version: 2.1
+
+############################################################################
+
+references:
+   checkout_job_steps: &checkout_job_steps
+      steps:
+         - checkout
+         - run:
+            name: Checking out dependencies.
+            command: |
+               git clone -b develop --single-branch https://github.com/Zimbra/zm-pkg-tool.git ~/zm-pkg-tool
+               git clone -b develop --single-branch https://github.com/Zimbra/zm-zcs.git ~/zm-zcs
+               git clone -b master --single-branch https://github.com/Zimbra/zimbra-package-stub.git ~/zimbra-package-stub
+               git clone -b develop --single-branch https://github.com/Zimbra/zm-mailbox.git ~/zm-mailbox
+               git clone -b master --single-branch https://$GITHUB_ACCESS_TOKEN@github.com/Zimbra/zm-nexus.git ~/zm-nexus
+               git clone -b develop --single-branch https://github.com/Zimbra/zm-timezones.git ~/zm-timezones
+               git clone -b develop --single-branch https://github.com/Zimbra/zm-ajax.git ~/zm-ajax
+               git clone -b develop --single-branch https://github.com/Zimbra/zm-taglib.git ~/zm-taglib
+               mkdir -p ~/.zcs-deps
+         - persist_to_workspace:
+            root: ..
+            paths:
+               - zm-web-client
+               - zm-pkg-tool
+               - zm-zcs
+               - zimbra-package-stub
+               - zm-mailbox
+               - zm-nexus
+               - zm-timezones
+               - zm-ajax
+               - zm-taglib
+               - .zcs-deps
+
+   build_job_steps_ubuntu: &build_job_steps_ubuntu
+      steps:
+         - attach_workspace:
+            at: ..
+         - run:
+            name: Creating package build
+            command: |
+              mkdir -p /home/build/.ivy2/cache
+              sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ant-contrib
+              cp /usr/share/java/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar || true
+              export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+              export PATH="$JAVA_HOME/bin:$PATH"
+              BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NO%_}"
+              BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NUMBER%_GA}"
+              MAJOR_VERSION=$(echo "$BUILD_RELEASE_NUMBER" | cut -d'.' -f1)
+              MINOR_VERSION=$(echo "$BUILD_RELEASE_NUMBER" | cut -d'.' -f2)
+              MICRO_TAG=$(echo "$BUILD_RELEASE_NUMBER" | cut -d'.' -f3)
+              BUILDINFO_REVISION="1~develop-snapshot"
+              cd ../zm-mailbox
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.majorversion="${MAJOR_VERSION}" -Dzimbra.buildinfo.minorversion="${MINOR_VERSION}" -Dzimbra.buildinfo.microtag="${MICRO_TAG}" clean publish-local-all
+              cd ../zm-timezones
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.majorversion="${MAJOR_VERSION}" -Dzimbra.buildinfo.minorversion="${MINOR_VERSION}" -Dzimbra.buildinfo.microtag="${MICRO_TAG}" -Dzimbra.buildinfo.revision="${BUILDINFO_REVISION}" clean pkg
+              cd ../zm-taglib
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.majorversion="${MAJOR_VERSION}" -Dzimbra.buildinfo.minorversion="${MINOR_VERSION}" -Dzimbra.buildinfo.microtag="${MICRO_TAG}" clean publish-local
+              cd ../zm-ajax
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.majorversion="${MAJOR_VERSION}" -Dzimbra.buildinfo.minorversion="${MINOR_VERSION}" -Dzimbra.buildinfo.microtag="${MICRO_TAG}" clean publish-local
+              cd ../zm-web-client
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.majorversion="${MAJOR_VERSION}" -Dzimbra.buildinfo.minorversion="${MINOR_VERSION}" -Dzimbra.buildinfo.microtag="${MICRO_TAG}" -Dzimbra.buildinfo.revision="${BUILDINFO_REVISION}" -Dwclient.ext.patch.revision="${BUILDINFO_REVISION}" clean pkg
+              JOB_OUT_DIR="build/dist/${CIRCLE_JOB}"
+              mkdir -p "$JOB_OUT_DIR"
+              find build/dist -maxdepth 1 -type f \( -name '*.deb' -o -name '*.rpm' \) -exec mv -f {} "$JOB_OUT_DIR"/ \;
+              rm -rf build/dist/jetty
+         - store_artifacts:
+            path: build/dist
+         - persist_to_workspace:
+            root: ..
+            paths: zm-web-client/build/dist/*
+
+   build_job_steps_centos: &build_job_steps_centos
+      steps:
+         - attach_workspace:
+            at: ..
+         - run:
+            name: Creating package build
+            command: |
+              mkdir -p /home/build/.ivy2/cache
+              if command -v yum >/dev/null 2>&1; then
+                command -v ant >/dev/null 2>&1 || sudo yum install -y ant
+              elif command -v dnf >/dev/null 2>&1; then
+                command -v ant >/dev/null 2>&1 || sudo dnf install -y ant
+              else
+                exit 1
+              fi
+              if [ -f /usr/share/java/ant-contrib.jar ]; then
+                cp /usr/share/java/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar
+              elif [ -f /usr/share/ant/lib/ant-contrib.jar ]; then
+                cp /usr/share/ant/lib/ant-contrib.jar ~/.zcs-deps/ant-contrib-1.0b1.jar
+              else
+                curl --fail --location --silent --show-error \
+                  "https://files.zimbra.com/repository/ant-contrib/ant-contrib-1.0b1.jar" \
+                  --output ~/.zcs-deps/ant-contrib-1.0b1.jar
+              fi
+              DETECTED_JAVAC="$(command -v javac)"
+              export JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$DETECTED_JAVAC")")")"
+              export PATH="$JAVA_HOME/bin:$PATH"
+              BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NO%_}"
+              BUILD_RELEASE_NUMBER="${BUILD_RELEASE_NUMBER%_GA}"
+              MAJOR_VERSION=$(echo "$BUILD_RELEASE_NUMBER" | cut -d'.' -f1)
+              MINOR_VERSION=$(echo "$BUILD_RELEASE_NUMBER" | cut -d'.' -f2)
+              MICRO_TAG=$(echo "$BUILD_RELEASE_NUMBER" | cut -d'.' -f3)
+              BUILDINFO_REVISION="1_develop_snapshot"
+              cd ../zm-mailbox
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.majorversion="${MAJOR_VERSION}" -Dzimbra.buildinfo.minorversion="${MINOR_VERSION}" -Dzimbra.buildinfo.microtag="${MICRO_TAG}" clean publish-local-all
+              cd ../zm-timezones
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.majorversion="${MAJOR_VERSION}" -Dzimbra.buildinfo.minorversion="${MINOR_VERSION}" -Dzimbra.buildinfo.microtag="${MICRO_TAG}" -Dzimbra.buildinfo.revision="${BUILDINFO_REVISION}" clean pkg
+              cd ../zm-taglib
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.majorversion="${MAJOR_VERSION}" -Dzimbra.buildinfo.minorversion="${MINOR_VERSION}" -Dzimbra.buildinfo.microtag="${MICRO_TAG}" clean publish-local
+              cd ../zm-ajax
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.majorversion="${MAJOR_VERSION}" -Dzimbra.buildinfo.minorversion="${MINOR_VERSION}" -Dzimbra.buildinfo.microtag="${MICRO_TAG}" clean publish-local
+              cd ../zm-web-client
+              ant -Dzimbra.buildinfo.version="${BUILD_RELEASE_NUMBER}_${CIRCLE_BUILD_NUM}" -Dzimbra.buildinfo.majorversion="${MAJOR_VERSION}" -Dzimbra.buildinfo.minorversion="${MINOR_VERSION}" -Dzimbra.buildinfo.microtag="${MICRO_TAG}" -Dzimbra.buildinfo.revision="${BUILDINFO_REVISION}" -Dwclient.ext.patch.revision="${BUILDINFO_REVISION}" clean pkg
+              JOB_OUT_DIR="build/dist/${CIRCLE_JOB}"
+              mkdir -p "$JOB_OUT_DIR"
+              find build/dist -maxdepth 1 -type f \( -name '*.deb' -o -name '*.rpm' \) -exec mv -f {} "$JOB_OUT_DIR"/ \;
+              rm -rf build/dist/jetty
+         - store_artifacts:
+            path: build/dist
+         - persist_to_workspace:
+            root: ..
+            paths: zm-web-client/build/dist/*
+
+   publish_job_steps: &publish_job_steps
+      steps:
+         - attach_workspace:
+            at: ..
+         - run:
+            name: Publish package artifacts to Nexus
+            command: |
+              mkdir -p /home/build/.ivy2/cache
+              sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y curl
+              bash ../zm-nexus/scripts/publish-packages-to-nexus.sh "build/dist"
+
+############################################################################
+
+jobs:
+   checkout:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-22.04
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: small
+      <<: *checkout_job_steps
+
+   build_u24:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-24.04
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: medium
+      <<: *build_job_steps_ubuntu
+
+   build_u22:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-22.04
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: medium
+      <<: *build_job_steps_ubuntu
+
+   build_u20:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-20.04
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: medium
+      <<: *build_job_steps_ubuntu
+
+   build_u18:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-18.04
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: medium
+      <<: *build_job_steps_ubuntu
+
+   build_c9:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-centos-9
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: medium
+      <<: *build_job_steps_centos
+
+   build_c8:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-centos-8
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: medium
+      <<: *build_job_steps_centos
+
+   publish:
+      working_directory: ~/zm-web-client
+      shell: /bin/bash -eo pipefail
+      circleci_ip_ranges: true
+      docker:
+      - image: $DOCKER_REGISTRY/zm-base-os:devcore-ubuntu-22.04
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
+      resource_class: small
+      <<: *publish_job_steps
+
+############################################################################
+
+workflows:
+   version: 2
+   main:
+      jobs:
+         - checkout:
+            context:
+               - docker-dev-registry
+               - build-info
+            filters:
+               branches:
+                  only:
+                    - develop
+         - build_u24:
+            context:
+               - docker-dev-registry
+               - build-info
+            requires:
+               - checkout
+            filters:
+               branches:
+                  only:
+                    - develop
+         - build_u22:
+            context:
+               - docker-dev-registry
+               - build-info
+            requires:
+               - checkout
+            filters:
+               branches:
+                  only:
+                    - develop
+         - build_u20:
+            context:
+               - docker-dev-registry
+               - build-info
+            requires:
+               - checkout
+            filters:
+               branches:
+                  only:
+                    - develop
+         - build_u18:
+            context:
+               - docker-dev-registry
+               - build-info
+            requires:
+               - checkout
+            filters:
+               branches:
+                  only:
+                    - develop
+         - build_c9:
+            context:
+               - docker-dev-registry
+               - build-info
+            requires:
+               - checkout
+            filters:
+               branches:
+                  only:
+                    - develop
+         - build_c8:
+            context:
+               - docker-dev-registry
+               - build-info
+            requires:
+               - checkout
+            filters:
+               branches:
+                  only:
+                    - develop
+         - publish:
+            context:
+               - docker-dev-registry
+               - build-info
+               - nexus-dev-artifactory
+            requires:
+               - checkout
+               - build_u24
+               - build_u22
+               - build_u20
+               - build_u18
+               - build_c9
+               - build_c8
+            filters:
+               branches:
+                 only:
+                   - develop
