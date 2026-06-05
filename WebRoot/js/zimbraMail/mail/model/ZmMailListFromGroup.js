@@ -63,7 +63,7 @@ function(msg, itemHtml){
     if (!fromParticipant) {
 		return null;
 	}
-	var section = fromParticipant.getText();
+	var section = AjxStringUtil.htmlEncode(fromParticipant.getText());
 	if (!this._section.hasOwnProperty(section)) {
 		this._section[section] = [];
 		this._sectionList.push(section);
