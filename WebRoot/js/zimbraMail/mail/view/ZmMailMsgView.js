@@ -2059,7 +2059,7 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
 
 		if (appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
 			// if attachments are blocked, just show the label
-			htmlArr[idx++] = att.label;
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(att.label);
 		} else {
 			// main link for the att name
 			var linkArr = [];
