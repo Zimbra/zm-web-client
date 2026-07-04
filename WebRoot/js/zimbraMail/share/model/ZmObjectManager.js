@@ -448,7 +448,7 @@ ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 						// tricky.
 						var txt = isMailToLink ? href :RegExp.$1 ;
 						tmp = doc.createElement("div");
-						tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(txt));
+						tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(txt), true);
 						tmp = tmp.firstChild;
 						if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
 							// probably no objects were found.  A warning would be OK here
@@ -567,7 +567,7 @@ function(node, re_discard, re_allow, callbacks) {
 						// tricky.
 						var txt = RegExp.$1;
 						tmp = doc.createElement("div");
-						tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1));
+						tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1), true);
 						tmp = tmp.firstChild;
 						if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
 							// probably no objects were found.  A warning would be OK here
