@@ -2246,6 +2246,16 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				useCL = attach.contentLocation && true;
 			}
 
+			if (useCL && attach.contentLocation) {
+				var rawUrl = String(attach.contentLocation).trim();
+
+				// check the string explicitly starts with http:// or https://
+				if (!/^https?:\/\//i.test(rawUrl)) {
+					useCL = false;
+					attach.contentLocation = null; // Discard the dangerous sender-supplied value
+				}
+			}
+
 			// see if rfc822 is an invite
 			if (attach.contentType == ZmMimeTable.MSG_RFC822) {
 				props.rfc822Part = attach.part;
