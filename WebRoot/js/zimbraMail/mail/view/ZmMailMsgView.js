@@ -2300,6 +2300,21 @@ ZmMailMsgView.prototype._setAttachmentLinks = function(isTextMsg) {
  */
 ZmMailMsgView.getAttachmentLinkHtml =
 function(params) {
+	if (params && params.href) {
+		var normalizedUri = String(params.href).trim();
+
+		var startsWithAllowedWebScheme = /^https?:\/\//i.test(normalizedUri);
+		var containsUnsafeScheme = /javascript:|data:|vbscript:|file:/i.test(normalizedUri);
+
+		// Allow secure internal, same-origin relative URLs
+		var isRelativePath = normalizedUri.charAt(0) === '/' && normalizedUri.charAt(1) !== '/';
+
+		// Strictly enforcing the allowlist before rendering
+		if (containsUnsafeScheme || (!startsWithAllowedWebScheme && !isRelativePath)) {
+			params.href = null;
+		}
+	}
+
 	var html = [], i = 0;
 	html[i++] = "<a class='AttLink' ";
 	html[i++] = params.id ? "id='" + params.id + "' " : "";
