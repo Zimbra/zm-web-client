@@ -2435,7 +2435,7 @@ function(mode, params) {
 		var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 		var fromName = fromAddr && fromAddr.getName();
 		var fromEmail = fromAddr && fromAddr.getAddress();
-		var address = fromName;
+		var address = htmlMode ? AjxStringUtil.htmlEncode(fromName) : fromName;
 		if (fromEmail) {
 			fromEmail = htmlMode ? AjxStringUtil.htmlEncode("<" + fromEmail + ">") : fromEmail;
 			address = [address, fromEmail].join(" "); 
