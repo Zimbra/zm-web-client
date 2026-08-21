@@ -805,7 +805,8 @@ ZmSharingListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 
 	if (field == ZmSharingView.F_OWNER) {
-		html[idx++] = AjxStringUtil.htmlEncode(item.grantor.name) || item.grantor.email;
+		var grantorDisplay = item.grantor.name || item.grantor.email || "";
+		html[idx++] = AjxStringUtil.htmlEncode(grantorDisplay);
 	} else if (field == ZmSharingView.F_WITH) {
 		var type = item.grantee.type;
 		if (type == ZmShare.TYPE_PUBLIC) {
