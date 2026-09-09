@@ -529,6 +529,7 @@ function(subs, sentBy, sentByAddr, obo) {
 		this._msg.folderId != ZmFolder.ID_SENT)
 	{
         var from = this._msg.getAddress(AjxEmailAddress.FROM) && this._msg.getAddress(AjxEmailAddress.FROM).getAddress();
+        from = AjxStringUtil.htmlEncode(from);
         subs.counterInvMsg =  (!sentByAddr || sentByAddr == from) ?
 		AjxMessageFormat.format(ZmMsg.counterInviteMsg, [from]):AjxMessageFormat.format(ZmMsg.counterInviteMsgOnBehalfOf, [AjxStringUtil.htmlEncode(sentByAddr), from]);
 	}
