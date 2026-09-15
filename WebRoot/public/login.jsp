@@ -724,6 +724,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <c:set var="zimbraPasswordMinDigitsOrPuncs" value="0"/>
                                     <c:set var="zimbraPasswordAllowedChars" />
                                     <c:set var="zimbraPasswordAllowedPunctuationChars" />
+                                    <c:set var="zimbraPasswordEnforceHistory" value="0"/>
+                                    <c:set var="zimbraPasswordBlockCommonEnabled" value="false"/>
                                     <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword}">
                                         <c:catch var="passwordChangeAuthFailure">
                                             <zm:getPasswordConfig varConfig="passwordConfig" authResult="${authResult}" />
@@ -740,6 +742,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                         <c:set var="zimbraFeatureAllowUsernameInPassword" value="${passwordConfig.zimbraFeatureAllowUsernameInPassword}"/>
                                         <c:set var="zimbraPasswordAllowedChars" value="${passwordConfig.zimbraPasswordAllowedChars}"/>
                                         <c:set var="zimbraPasswordAllowedPunctuationChars" value="${passwordConfig.zimbraPasswordAllowedPunctuationChars}"/>
+                                        <c:set var="zimbraPasswordEnforceHistory" value="${passwordConfig.zimbraPasswordEnforceHistory}"/>
+                                        <c:set var="zimbraPasswordBlockCommonEnabled" value="${passwordConfig.zimbraPasswordBlockCommonEnabled}"/>
                                         <label for="newPassword" class="zLoginFieldLabel"><fmt:message key="passwordRecoveryResetNewLabel"/></label>
                                         <div class="passwordWrapper">
                                             <input id="newPassword" tabindex="3" autocomplete="off" class="zLoginFieldInput" name="loginNewPassword" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
@@ -807,6 +811,22 @@ if (application.getInitParameter("offlineMode") != null) {
                                                     <img src="/img/zimbra/ImgCloseGrayModern.png" id="allowUsernameCloseImg" style="display: inline;"/>
                                                     <img src="/img/zimbra/ImgCheckModern.png" id="allowUsernameCheckImg" style="display: none;"/>
                                                     <fmt:message key="zimbraPasswordAllowUsername"></fmt:message>
+                                                </li>
+                                            </c:if>
+                                            <c:if test="${zimbraPasswordEnforceHistory ne 0}">
+                                                <li>
+                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="enforceHistoryCloseImg" style="display: inline;"/>
+                                                    <img src="/img/zimbra/ImgCheckModern.png" id="enforceHistoryCheckImg" style="display: none;"/>
+                                                    <fmt:message key="zimbraPasswordEnforceHistory">
+                                                        <fmt:param value="${zimbraPasswordEnforceHistory}"/>
+                                                    </fmt:message>
+                                                </li>
+                                            </c:if>
+                                            <c:if test="${zm:boolean(zimbraPasswordBlockCommonEnabled)}">
+                                                <li>
+                                                    <img src="/img/zimbra/ImgCloseGrayModern.png" id="blockCommonCloseImg" style="display: inline;"/>
+                                                    <img src="/img/zimbra/ImgCheckModern.png" id="blockCommonCheckImg" style="display: none;"/>
+                                                    <fmt:message key="zimbraPasswordBlockCommonEnabled"/>
                                                 </li>
                                             </c:if>
                                         </ul>
@@ -1000,6 +1020,10 @@ function clientChange(selectValue) {
     }
 
     var enabledRules = [];
+    var enabledRemoteRules = [];
+    var matchedRemoteRules = [];
+    var debounceTimer;
+    var awaitingResponse = false;
     var supportedRules = [
         {
             type : "zimbraPasswordMinLength",
@@ -1035,6 +1059,16 @@ function clientChange(selectValue) {
             type : "zimbraPasswordAllowUsername",
             checkImg : getElement("allowUsernameCheckImg"),
             closeImg : getElement("allowUsernameCloseImg")
+        },
+        {
+            type : "zimbraPasswordEnforceHistory",
+            checkImg : getElement("enforceHistoryCheckImg"),
+            closeImg : getElement("enforceHistoryCloseImg")
+        },
+        {
+            type : "zimbraPasswordBlockCommonEnabled",
+            checkImg : getElement("blockCommonCheckImg"),
+            closeImg : getElement("blockCommonCloseImg")
         }
     ];
 
@@ -1064,6 +1098,124 @@ function clientChange(selectValue) {
 
     if (${!zimbraFeatureAllowUsernameInPassword}) {
         enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordAllowUsername"}));
+    }
+
+    if (${zimbraPasswordEnforceHistory}) {
+        enabledRemoteRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordEnforceHistory"}));
+    }
+
+    if ("${zimbraPasswordBlockCommonEnabled}" === "TRUE") {
+        enabledRemoteRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordBlockCommonEnabled"}));
+    }
+
+    function findRule(ruleType) {
+        if (!Array.prototype.find) {
+            var matchingRule;
+            supportedRules.forEach(function(rule){ if(rule.type === ruleType) { matchingRule = rule; } });
+            return matchingRule;
+        } else {
+            return supportedRules.find(function(rule){ return rule.type === ruleType });
+        }
+    }
+
+    function removeRule(ruleType) {
+        for (var i = 0; i < matchedRemoteRules.length; i++) {
+            if (matchedRemoteRules[i].type === ruleType) { 
+                matchedRemoteRules.splice(i, 1);
+                break;
+            }
+        }
+    }
+
+    function debounce(func, delay) {
+        const context = this;
+        const args = arguments;
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function(){ func.apply(context, args) }, delay);
+    }
+
+    function compareMatchedRemoteRules(matchedRule) {
+        enabledRemoteRules.forEach(function(rule) {
+            if (matchedRule.findIndex(function(mRule) { return mRule.type === rule.type}) >= 0) {
+                check(rule.checkImg, rule.closeImg);
+            } else {
+                unCheck(rule.checkImg, rule.closeImg);
+            }
+        })
+    }
+
+    function dryRun() {
+        matchedRemoteRules = enabledRemoteRules.slice();
+        var request = {
+            Body: {
+                ChangePasswordRequest:{
+                    account: {
+                        by : "name",
+                        _content : "${fullUserName}"
+                    },
+                    oldPassword: getElement("password").value,
+                    password: getElement("newPassword").value,
+                    _jsns: "urn:zimbraAccount",
+                    dryRun: "1"
+                }
+            }
+        };
+
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("POST", "/service/soap/ChangePasswordRequest", false);
+        xmlhttp.setRequestHeader("X-Zimbra-Csrf-Token", "${login_csrf}");
+
+        try {
+            xmlhttp.send(JSON.stringify(request));
+        } catch (error) {
+            console.error(error);
+            awaitingResponse = false;
+            return;
+        }
+
+        if (xmlhttp.status == 200 || xmlhttp.status == 201) {
+            try {
+                var jsonResponse = JSON.parse(xmlhttp.responseText);
+                compareMatchedRemoteRules(matchedRemoteRules);
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            try {
+                var jsonResponse = JSON.parse(xmlhttp.responseText);
+                var errorDetails = jsonResponse.Body.Fault.Detail.Error;
+                if (errorDetails.Code == "account.PASSWORD_RECENTLY_USED") {
+                    removeRule("zimbraPasswordEnforceHistory");
+                } else if (errorDetails.Code == "account.INVALID_PASSWORD") {
+                    if (errorDetails.a && errorDetails.a[0].n == "zimbraPasswordBlockCommonEnabled") {
+                        removeRule("zimbraPasswordBlockCommonEnabled");
+                    }
+                }
+                compareMatchedRemoteRules(matchedRemoteRules);
+            } catch(error) {
+                console.error(error);
+            }
+        }
+        awaitingResponse = false;
+        updatePasswordChangeButtonStatus();
+    }
+
+    function updatePasswordChangeButtonStatus() {
+        var totalEnabledRules = (enabledRules.length + enabledRemoteRules.length);
+        var totalMatchedRules = (enabledRules.filter(function(r) { 
+            return supportedRules.find(function(sr) { return sr.type === r.type && sr.checkImg.style.display === "inline"; }); 
+        }).length + matchedRemoteRules.length);
+
+        if (awaitingResponse || totalEnabledRules !== totalMatchedRules) {
+            loginButton.disabled = true;
+        } else {
+            if (getElement("confirm") && getElement("newPassword") && 
+            getElement("confirm").value === getElement("newPassword").value && 
+            getElement("newPassword").value !== "" &&
+            oldPasswordInput.value !== "") {
+                loginButton.disabled = false;
+            }
+        }
     }
 
     function compareConfirmPass() {
@@ -1234,12 +1386,6 @@ function clientChange(selectValue) {
             }
         }
 
-        if(matchedRule.length >= enabledRules.length){
-            allRulesMatched = true;
-        } else {
-            allRulesMatched = false;
-        }
-
         compareMatchedRules(matchedRule);
 
         if (parsedChars.invalidChars.length > 0) {
@@ -1249,15 +1395,29 @@ function clientChange(selectValue) {
             errorMessageDiv.style.display = "none";
         }
 
+    // Trigger dry-run only if local rules pass AND valid characters AND old password is entered
+        if(enabledRules.length === matchedRule.length && 
+        parsedChars.invalidChars.length === 0 &&
+        getElement("password").value !== "") {
+            awaitingResponse = true;
+            debounce(dryRun, 2000);
+        } else {
+            awaitingResponse = false;
+            matchedRemoteRules = [];
+            compareMatchedRemoteRules([]);
+        }
+
+        updatePasswordChangeButtonStatus();
+
         if(newPasswordInput.value !== "") {
             resetImg(confirmPasswordInput.value === newPasswordInput.value, getElement("mustMatchCheckImg"), getElement("mustMatchCloseImg"));
-            setloginButtonDisabled(!allRulesMatched || confirmPasswordInput.value !== newPasswordInput.value);
         }
     };
 
+
     function handleConfirmPasswordChange() {
         resetImg(confirmPasswordInput.value === newPasswordInput.value, getElement("mustMatchCheckImg"), getElement("mustMatchCloseImg"));
-        setloginButtonDisabled(!allRulesMatched || confirmPasswordInput.value !== newPasswordInput.value);
+        updatePasswordChangeButtonStatus();
     };
 
     function handleOldPasswordChange() {
