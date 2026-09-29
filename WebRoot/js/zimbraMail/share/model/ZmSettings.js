@@ -636,13 +636,18 @@ ZmSettings.prototype._handleResponseGetAllLocales =
 function(response) {
 	var locales = response._data.GetAvailableLocalesResponse.locale;
 	if (locales && locales.length) {
+		var visibleLocaleCount = 0;
 		for (var i = 0, count = locales.length; i < count; i++) {
 			var locale = locales[i];
 			// bug: 38038
 			locale.id = locale.id.replace(/^in/,"id");
+			if (Object.prototype.hasOwnProperty.call(ZmLocale.HIDDEN_LOCALES, locale.id)) {
+				continue;
+			}
 			ZmLocale.create(locale.id, locale.name, ZmMsg["localeName_" + locale.id] || locale.localName);
+			visibleLocaleCount++;
 		}
-        if (locales.length === 1) {
+        if (visibleLocaleCount === 1) {
             //Fix for bug# 80762 - Set the value to always true in case of only one language/locale present
             this.set(ZmSetting.LOCALE_CHANGE_ENABLED, true);
         }
