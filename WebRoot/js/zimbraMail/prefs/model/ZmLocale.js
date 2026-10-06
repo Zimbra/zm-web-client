@@ -54,6 +54,7 @@ ZmLocale.HIDDEN_LOCALES = {
 	ig: true,
 	om: true,
 	pcm: true,
+	so: true,
 	sw: true,
 	yo: true
 };
