@@ -49,6 +49,7 @@ ZmLocale.RTLLANGUAGES = {
 // Available to Modern UI through the API, but not translated for Classic UI.
 ZmLocale.HIDDEN_LOCALES = {
 	fil: true,
+	ha: true,
 	pcm: true,
 	sw: true
 };
