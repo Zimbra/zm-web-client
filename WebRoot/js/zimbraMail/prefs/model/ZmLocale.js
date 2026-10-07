@@ -56,7 +56,8 @@ ZmLocale.HIDDEN_LOCALES = {
 	pcm: true,
 	so: true,
 	sw: true,
-	yo: true
+	yo: true,
+	zu: true
 };
 
 ZmLocale.localeMap = {};
