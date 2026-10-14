@@ -53,6 +53,7 @@ ZmLocale.HIDDEN_LOCALES = {
 	fil: true,
 	ha: true,
 	ig: true,
+	lg: true,
 	mg: true,
 	nr_ZA: true,
 	nso: true,
