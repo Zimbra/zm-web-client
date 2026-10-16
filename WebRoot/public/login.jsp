@@ -530,7 +530,7 @@ if (application.getInitParameter("offlineMode") != null) {
 
 </head>
 <c:set value="/img" var="iconPath" scope="request"/>
-<body onload="onLoad();">
+<body>
 
 	<div id="modifiedLogin" class="LoginScreen" >
 		<div class="modernCenter" >
@@ -557,19 +557,6 @@ if (application.getInitParameter("offlineMode") != null) {
 									<input type="hidden" id="maskedEmailAddress" name="maskedEmailAddress" value="${maskedEmailAddress}"/>
 									<input type="hidden" id="chooseMethod" name="chooseMethod"/>
 									<input type="hidden" id="isResent" name="isResent" value="${isResent}"/>
-									<script>
-										function showTFAMethods(showChooseMethod, previousMethod) {
-											document.getElementById('chooseMethod').value = showChooseMethod;
-											if (showChooseMethod) {
-												document.getElementById('totpcode').value = "";
-											}
-											if (previousMethod) {
-												document.getElementById("tfaMethod_" + previousMethod).checked = true;
-											}
-											document.getElementById('zLoginForm').submit();
-											return false;
-										}
-									</script>
 								</c:if>
 					</c:otherwise>
 				</c:choose>
@@ -593,8 +580,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <input type="hidden" id="ztrusteddevice" name="ztrusteddevice" value="${zm:cook(param.ztrusteddevice)}"/>
                             </c:if>
                             <div class="verifyButtonWrapper">
-                                <button id="nextButton" class="loginButton ZLoginButton DwtButton" tabindex="2" type="submit" onclick='showTFAMethods(false);'><fmt:message key='next'/></button>
-                                <button id="backButton" class="loginButton ZLoginButton DwtButton" tabindex="3" type="submit" onclick='showTFAMethods(false, "${tfaMethod}");'><fmt:message key='back'/></button>
+                                <button id="nextButton" class="loginButton ZLoginButton DwtButton" tabindex="2" type="submit" data-login-action="tfaNext"><fmt:message key='next'/></button>
+                                <button id="backButton" class="loginButton ZLoginButton DwtButton" tabindex="3" type="submit" data-login-action="tfaBack" data-tfa-method="${fn:escapeXml(tfaMethod)}"><fmt:message key='back'/></button>
                             </div>
                         </div>
                     </c:when>
@@ -619,17 +606,9 @@ if (application.getInitParameter("offlineMode") != null) {
                                     <label  class="zLoginFieldLabel twoFactorAuthCodeLabel" for="totpcode" style="float: left;"><fmt:message key="twoFactorAuthCodeLabel_${tfaMethod}"/></label>
                                     <c:choose>
                                         <c:when test="${(tfaMethod eq 'email') and (not isResent)}">
-                                            <script>
-                                                function resendEmail() {
-                                                    document.getElementById('totpcode').value = "";
-                                                    document.getElementById('actionResend').value = "true";
-                                                    document.getElementById('zLoginForm').submit();
-                                                    return false;
-                                                }
-                                            </script>
                                             <div class="resendCode">
                                                 <input type="hidden" id="actionResend" name="actionResend"/>
-                                                <a href="#" onclick="resendEmail()" ><fmt:message key="twoFactorAuthResendEmail"/></a>
+                                                <a href="#" data-login-action="resendEmail" ><fmt:message key="twoFactorAuthResendEmail"/></a>
                                             </div>
                                         </c:when>
                                         <c:when test="${(tfaMethod eq 'email') and isResent}">
@@ -638,7 +617,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                             </div>
                                         </c:when>
                                     </c:choose>
-                                    <input tabindex="0" class="zLoginFieldInput" id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocomplete="off" oninput="updateTFAVerifyButtonStatus(this)"></td>
+                                    <input tabindex="0" class="zLoginFieldInput" id="totpcode" class="zLoginField" name="totpcode" type="text" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}" autocomplete="off"></td>
                                 </div>
                                 <c:if test="${authResult.trustedDevicesEnabled eq true || trustedDevicesEnabled}">
                                     <div class="trustedDeviceDiv">
@@ -648,27 +627,12 @@ if (application.getInitParameter("offlineMode") != null) {
                                 </c:if>
                                 <c:if test="${fn:contains(tfaMethodEnabled, ',')}">
                                     <div class="chooseTFAMethod">
-                                        <a href="#" onclick="showTFAMethods(true);" ><fmt:message key="twoFactorAuthChooseOtherMethod"/></a>
+                                        <a href="#" data-login-action="tfaChooseOther" ><fmt:message key="twoFactorAuthChooseOtherMethod"/></a>
                                     </div>
                                 </c:if>
                                 <div class="verifyButtonWrapper">
-                                    <script>
-                                        function doTFALogin(isVerify) {
-                                            var totpCode = document.getElementById('totpcode').value;
-                                            if (!isVerify || !totpCode) {
-                                                // do cancel action
-                                                // remove some parameters for secure
-                                                document.getElementById('tfaMethod').value = "cancel";
-                                                document.getElementById('zrememberme').value = "";
-                                                document.getElementById('maskedEmailAddress').value = "";
-                                                document.getElementById('totpcode').value = "";
-	                                        }
-                                            document.getElementById('zLoginForm').submit();
-                                            return false;
-                                        }
-                                    </script>
-                                    <button id="verifyButton" class="loginButton ZLoginButton DwtButton" tabindex="2" type="submit" onclick='doTFALogin(true)'><fmt:message key='twoFactorAuthVerifyCode'/></button>
-                                    <button id="cancelButton" class="loginButton ZLoginButton DwtButton" tabindex="3" type="submit" onclick='doTFALogin(false)'><fmt:message key='cancel'/></button>
+                                    <button id="verifyButton" class="loginButton ZLoginButton DwtButton" tabindex="2" type="submit" data-login-action="tfaVerify"><fmt:message key='twoFactorAuthVerifyCode'/></button>
+                                    <button id="cancelButton" class="loginButton ZLoginButton DwtButton" tabindex="3" type="submit" data-login-action="tfaCancel"><fmt:message key='cancel'/></button>
                                 </div>
                         </div>
                     </c:when>
@@ -709,12 +673,12 @@ if (application.getInitParameter("offlineMode") != null) {
                                 
                                     <label for="password" class="zLoginFieldLabel"><fmt:message key="password"/></label>
                                     <c:if test="${domainInfo.attrs.zimbraFeatureResetPasswordStatus eq 'enabled'}">
-                                        <a href="#" onclick="forgotPassword();" id="ZLoginForgotPassword" tabindex="7" aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
+                                        <a href="#" data-login-action="forgotPassword" id="ZLoginForgotPassword" tabindex="7" aria-controls="ZLoginForgotPassword" aria-expanded="false"><fmt:message key="forgotPassword"/></a>
                                     </c:if>
                                     <div class="passwordWrapper">
                                         <input id="password" tabindex="2" autocomplete="off" class="zLoginFieldInput" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
-                                        <span toggle="#password" onClick="showPassword();" id="showSpan" style="display: block;"><fmt:message key="show"/></span>
-                                        <span toggle="#password" onClick="showPassword();" id="hideSpan" style="display: none;"><fmt:message key="hide"/></span>
+                                        <span toggle="#password" data-login-action="showPassword" id="showSpan" style="display: block;"><fmt:message key="show"/></span>
+                                        <span toggle="#password" data-login-action="showPassword" id="hideSpan" style="display: none;"><fmt:message key="hide"/></span>
                                     </div>
                                     <c:set var="zimbraPasswordMinLength" value="0" />
                                     <c:set var="zimbraPasswordMinUpperCaseChars" value="0"/>
@@ -743,8 +707,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                         <label for="newPassword" class="zLoginFieldLabel"><fmt:message key="passwordRecoveryResetNewLabel"/></label>
                                         <div class="passwordWrapper">
                                             <input id="newPassword" tabindex="3" autocomplete="off" class="zLoginFieldInput" name="loginNewPassword" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
-                                            <span toggle="#newPassword" onClick="showNewPassword();" id="newPasswordShowSpan" style="display: block;"><fmt:message key="show"/></span>
-                                            <span toggle="#newPassword" onClick="showNewPassword();" id="newPasswordHideSpan" style="display: none;"><fmt:message key="hide"/></span>
+                                            <span toggle="#newPassword" data-login-action="showNewPassword" id="newPasswordShowSpan" style="display: block;"><fmt:message key="show"/></span>
+                                            <span toggle="#newPassword" data-login-action="showNewPassword" id="newPasswordHideSpan" style="display: none;"><fmt:message key="hide"/></span>
                                         </div>
                                         <fmt:message key="zimbraPasswordAllowedChars" var="allowedCharsMsg"></fmt:message>
                                         <ul class="passwordRuleList">
@@ -813,8 +777,8 @@ if (application.getInitParameter("offlineMode") != null) {
                                         <label for="confirm" class="zLoginFieldLabel"><fmt:message key="passwordRecoveryResetConfirmLabel"/></label>
                                         <div class="passwordWrapper">
                                             <input id="confirm" tabindex="4" autocomplete="off" class="zLoginFieldInput" name="loginConfirmNewPassword" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
-                                            <span toggle="#confirm" onClick="showConfirmPassword();" id="confirmShowSpan" style="display: block;"><fmt:message key="show"/></span>
-                                            <span toggle="#confirm" onClick="showConfirmPassword();" id="confirmHideSpan" style="display: none;"><fmt:message key="hide"/></span>
+                                            <span toggle="#confirm" data-login-action="showConfirmPassword" id="confirmShowSpan" style="display: block;"><fmt:message key="show"/></span>
+                                            <span toggle="#confirm" data-login-action="showConfirmPassword" id="confirmHideSpan" style="display: none;"><fmt:message key="hide"/></span>
                                         </div>
                                         <ul class="passwordRuleList">
                                             <li>
@@ -848,7 +812,7 @@ if (application.getInitParameter("offlineMode") != null) {
                                 <div class="versionBlock">
                                     <label for="client"><fmt:message key="versionHeaderLabel"/></label>
                                     <div style="position: relative;">
-                                        <select id="client" name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
+                                        <select id="client" name="client">
                                             <option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
                                             <c:if test="${isClassicWebClientSupported}">
                                                 <option value="advanced" <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
@@ -857,12 +821,12 @@ if (application.getInitParameter("offlineMode") != null) {
                                                 <option value="modern" <c:if test="${client eq 'modern'}">selected</c:if>> <fmt:message key="clientModern"/></option>
                                             </c:if>
                                         </select>
-                                        <input type="button" class="alignWhatsThis" onclick="showTooltip();" id='ZLoginWhatsThisButton' />
+                                        <input type="button" class="alignWhatsThis" data-login-action="showTooltip" id='ZLoginWhatsThisButton' />
                                     </div>
 
                                     <div id="ZLoginWhatsThis">
                                         <div class="ZLoginInfo">
-                                            <span id="dialogCloseButton" onclick="hideTooltip();">&times;</span>
+                                            <span id="dialogCloseButton" data-login-action="hideTooltip">&times;</span>
                                             <fmt:message key="clientWhatsThisMessageWithoutTablet"/>
                                         </div>
                                     </div>
@@ -883,391 +847,39 @@ if (application.getInitParameter("offlineMode") != null) {
 		</div>
 		<div class="decor2"></div>
 	</div>
-<script>
-
-<jsp:include page="/js/skin.js">
-	<jsp:param name="templates" value="false" />
-	<jsp:param name="client" value="advanced" />
-	<jsp:param name='servlet-path' value='/js/skin.js' />
-</jsp:include>
-var link = getElement("bannerLink");
-if (link) {
-    link.href = skin.hints.banner.url;
-}
-
-<c:if test="${smallScreen && ua.isIE}">		/*HACK FOR IE*/
-    var resizeLoginPanel = function(){
-        var panelElem = getElement('ZLoginPanel');
-        if(panelElem && !panelElem.style.maxWidth) { if(document.body.clientWidth >= 500) { panelElem.style.width="500px";}else{panelElem.style.width="90%";} }
-    }
-    resizeLoginPanel();
-    if(window.attachEvent){ window.attachEvent("onresize",resizeLoginPanel);}
-</c:if>
-
-function getElement(id) {
-    return document.getElementById(id);
-}
-
-function updateTFAVerifyButtonStatus(input) {
-    var button = getElement('verifyButton');
-    if (input && input.value) {
-        button.disabled = false;
-    } else {
-        button.disabled = true;
-    }
-}
-
-function onLoad() {
-    var loginForm = document.loginForm;
-    if (loginForm.username) {
-        if (loginForm.username.value != "") {
-            loginForm.password.focus(); //if username set, focus on password
-        }
-        else {
-            loginForm.username.focus();
-        }
-    }
-    clientChange("${zm:cook(client)}");
-    if (${totpAuthRequired} && loginForm.totpcode) {
-        loginForm.totpcode.focus();
-        updateTFAVerifyButtonStatus();
-    }
-}
-
-// show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
-function clientChange(selectValue) {
-    var div = getElement("ZLoginUnsupported");
-    if (div) {
-        div.style.display = 'none';
-    }
-}
-
-<c:if test="${not totpAuthRequired}">
-    function forgotPassword() {
-        var accountInput = getElement("username").value;
-        var queryParams = encodeURI("account=" + accountInput);
-        var url = "/public/PasswordRecovery.jsp?" + location.search;
-
-        if (accountInput !== '') {
-            url += (location.search !== '' ? '&' : '') + encodeURI("account=" + accountInput);
-        }
-
-        window.location.href = url;
-    }
-
-    function hideTooltip() {
-        getElement('ZLoginWhatsThis').style.display='none';
-    }
-    function showTooltip(){
-        getElement('ZLoginWhatsThis').style.display="block"
-    }
-
-    function showPassword() {
-        showHidePasswordFields(getElement("password"), getElement("showSpan"), getElement("hideSpan"))
-    }
-    function showNewPassword() {
-        showHidePasswordFields(getElement("newPassword"), getElement("newPasswordShowSpan"), getElement("newPasswordHideSpan"));
-    }
-    function showConfirmPassword() {
-        showHidePasswordFields(getElement("confirm"), getElement("confirmShowSpan"), getElement("confirmHideSpan"));
-    }
-
-    function showHidePasswordFields(passElem, showSpanElem, hideSpanElem) {
-        if (passElem.type === "password") {
-            passElem.type = "text";
-            showSpanElem.style.display = "none";
-            hideSpanElem.style.display = "block";
-        } else {
-            passElem.type = "password";
-            showSpanElem.style.display = "block";
-            hideSpanElem.style.display = "none";
-        }
-    }
-
-    var oldPasswordInput = getElement("password");
-    var newPasswordInput = getElement("newPassword");
-    var confirmPasswordInput = getElement("confirm");
-    var loginButton = getElement("loginButton");
-    var errorMessageDiv = getElement("errorMessageDiv");
-    var allRulesMatched = false;
-
-    if(newPasswordInput) {
-        loginButton.disabled = true;
-    }
-
-    if("${errorCode}" === ""){
-        errorMessageDiv.style.display = "none";
-    }
-
-    var enabledRules = [];
-    var supportedRules = [
-        {
-            type : "zimbraPasswordMinLength",
-            checkImg : getElement("minLengthCheckImg"),
-            closeImg : getElement("minLengthCloseImg")
-        },
-        {
-            type : "zimbraPasswordMinUpperCaseChars",
-            checkImg : getElement("minUpperCaseCheckImg"),
-            closeImg : getElement("minUpperCaseCloseImg")
-        },
-        {
-            type : "zimbraPasswordMinLowerCaseChars",
-            checkImg : getElement("minLowerCaseCheckImg"),
-            closeImg : getElement("minLowerCaseCloseImg")
-        },
-        {
-            type : "zimbraPasswordMinNumericChars",
-            checkImg : getElement("minNumericCharsCheckImg"),
-            closeImg : getElement("minNumericCharsCloseImg")
-        },
-        {
-            type : "zimbraPasswordMinPunctuationChars",
-            checkImg : getElement("minPunctuationCharsCheckImg"),
-            closeImg : getElement("minPunctuationCharsCloseImg")
-        },
-        {
-            type : "zimbraPasswordMinDigitsOrPuncs",
-            checkImg : getElement("minDigitsOrPuncsCheckImg"),
-            closeImg : getElement("minDigitsOrPuncsCloseImg")
-        },
-        {
-            type : "zimbraPasswordAllowUsername",
-            checkImg : getElement("allowUsernameCheckImg"),
-            closeImg : getElement("allowUsernameCloseImg")
-        }
-    ];
-
-    if (${zimbraPasswordMinLength}){
-        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinLength"}));
-    }
-
-    if (${zimbraPasswordMinUpperCaseChars}) {
-        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinUpperCaseChars"}));
-    }
-
-    if (${zimbraPasswordMinLowerCaseChars}) {
-        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinLowerCaseChars"}));
-    }
-
-    if (${zimbraPasswordMinNumericChars}) {
-        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinNumericChars"}));
-    }
-
-    if (${zimbraPasswordMinPunctuationChars}) {
-        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinPunctuationChars"}));
-    }
-
-    if (${zimbraPasswordMinDigitsOrPuncs}) {
-        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordMinDigitsOrPuncs"}));
-    }
-
-    if (${!zimbraFeatureAllowUsernameInPassword}) {
-        enabledRules.push(supportedRules.find(function(rule){ return rule.type === "zimbraPasswordAllowUsername"}));
-    }
-
-    function compareConfirmPass() {
-        if (getElement("newPassword").value === getElement("confirm").value) {
-            errorMessageDiv.style.display = "none";
-            return true;
-        } else {
-            event.preventDefault();
-            errorMessageDiv.style.display = "block";
-            errorMessageDiv.innerHTML = "${bothPasswordsMustMatchMsg}";
-            return false;
-        }
-    }
-
-    function check(checkImg, closeImg) {
-        closeImg.style.display = "none";
-        checkImg.style.display = "inline";
-    }
-    function unCheck(checkImg, closeImg) {
-        closeImg.style.display = "inline";
-        checkImg.style.display = "none";
-    }
-    function resetImg(condition, checkImg, closeImg){
-        condition ? check(checkImg, closeImg) : unCheck(checkImg, closeImg);
-    }
-    function compareMatchedRules(matchedRule) {
-        enabledRules.forEach(function(rule) {
-            if (matchedRule.findIndex(function(mRule) { return mRule.type === rule.type}) >= 0) {
-                check(rule.checkImg, rule.closeImg);
-            } else {
-                unCheck(rule.checkImg, rule.closeImg);
-            }
-        })
-    }
-
-    function setloginButtonDisabled(condition) {
-        if (condition) {
-            loginButton.disabled = true;
-        } else {
-            if (oldPasswordInput.value !== "") {
-                loginButton.disabled = false;
-            }
-        }
-    }
-
-    // Function to encode XML characters
-    function escapeXml(xmlString) {
-    return xmlString.replace(/[<>&'"]/g, function (char) {
-        switch (char) {
-        case '<': return '&lt;';
-        case '>': return '&gt;';
-        case '&': return '&amp;';
-        case "'": return '&apos;';
-        case '"': return '&quot;';
-        }
-    });
-    }
-
-    // Function to check special character
-    function isAsciiPunc(ch) {
-        return (ch >= 33 && ch <= 47) || // ! " # $ % & ' ( ) * + , - . /
-        (ch >= 58 && ch <= 64) || // : ; < = > ? @
-        (ch >= 91 && ch <= 96) || // [ \ ] ^ _ `
-        (ch >= 123 && ch <= 126); // { | } ~
-    }
-
-    function parseCharsFromPassword(passwordString) {
-        const uppers = [],
-            lowers = [],
-            numbers = [],
-            punctuations = [],
-            invalidChars = [],
-            invalidPuncs = [];
-
-        const chars = passwordString.split('');
-
-        chars.forEach(function (char) {
-            const charCode = char.charCodeAt(0);
-            let isInvalid = false;
-
-            if ("${zimbraPasswordAllowedChars}") {
-                try {
-                    if (!char.match(new RegExp("${zimbraPasswordAllowedChars}", 'g'))) {
-                        invalidChars.push(char);
-                        isInvalid = true;
-                    }
-                } catch (error) {
-                    console.error(error);
-                }
-            }
-
-            if (!isInvalid) {
-                if (charCode >= 65 && charCode <= 90) {
-                    uppers.push(char);
-                } else if (charCode >= 97 && charCode <= 122) {
-                    lowers.push(char);
-                } else if (charCode >= 48 && charCode <= 57) {
-                    numbers.push(char);
-                } else if ("${zimbraPasswordAllowedPunctuationChars}") {
-                    try {
-                        char.match(new RegExp("${zimbraPasswordAllowedPunctuationChars}", 'g'))
-                            ? punctuations.push(char)
-                            : invalidPuncs.push(char);
-                    } catch (error) {
-                        console.error(error);
-                    }
-                } else if (isAsciiPunc(charCode)) {
-                    punctuations.push(char);
-                }
-            }
-        });
-
-        return {
-            uppers: uppers,
-            lowers: lowers,
-            numbers: numbers,
-            punctuations: punctuations,
-            invalidChars: invalidChars,
-            invalidPuncs: invalidPuncs
-        };
-    };
-
-    function handleNewPasswordChange() {
-        var currentValue = newPasswordInput.value;
-        var encodedPwd = escapeXml(currentValue);
-        var parsedChars = parseCharsFromPassword(currentValue);
-        var matchedRule = [];
-
-        if (${zimbraPasswordMinLength}){
-            if (currentValue.length >= ${zimbraPasswordMinLength}) {
-                matchedRule.push({type : "zimbraPasswordMinLength"});
-            }
-        }
-
-        if (${zimbraPasswordMinUpperCaseChars}) {
-            if (parsedChars.uppers.length >= ${zimbraPasswordMinUpperCaseChars}) {
-                matchedRule.push({type : "zimbraPasswordMinUpperCaseChars"});
-            }
-        }
-
-        if (${zimbraPasswordMinLowerCaseChars}) {
-            if (parsedChars.lowers.length >= ${zimbraPasswordMinLowerCaseChars}) {
-                matchedRule.push({type : "zimbraPasswordMinLowerCaseChars"});
-            }
-        }
-
-        if (${zimbraPasswordMinNumericChars}) {
-            if (parsedChars.numbers.length >= ${zimbraPasswordMinNumericChars}) {
-                matchedRule.push({type : "zimbraPasswordMinNumericChars"});
-            }
-        }
-
-        if (${zimbraPasswordMinPunctuationChars}) {
-            if (parsedChars.punctuations.length >= ${zimbraPasswordMinPunctuationChars}) {
-                matchedRule.push({type : "zimbraPasswordMinPunctuationChars"});
-            }
-        }
-
-        if (${zimbraPasswordMinDigitsOrPuncs}) {
-            if (parsedChars.punctuations.length + parsedChars.numbers.length >= ${zimbraPasswordMinDigitsOrPuncs}) {
-                matchedRule.push({type : "zimbraPasswordMinDigitsOrPuncs"});
-            }
-        }
-
-        if (${!zimbraFeatureAllowUsernameInPassword}) {
-            if (!encodedPwd.includes("${encodedUserName.split('@')[0]}")) {
-                matchedRule.push({type : "zimbraPasswordAllowUsername"});
-            }
-        }
-
-        if(matchedRule.length >= enabledRules.length){
-            allRulesMatched = true;
-        } else {
-            allRulesMatched = false;
-        }
-
-        compareMatchedRules(matchedRule);
-
-        if (parsedChars.invalidChars.length > 0) {
-            errorMessageDiv.style.display = "block";
-            errorMessageDiv.innerHTML = parsedChars.invalidChars.join(", ") + " ${allowedCharsMsg}";
-        } else {
-            errorMessageDiv.style.display = "none";
-        }
-
-        if(newPasswordInput.value !== "") {
-            resetImg(confirmPasswordInput.value === newPasswordInput.value, getElement("mustMatchCheckImg"), getElement("mustMatchCloseImg"));
-            setloginButtonDisabled(!allRulesMatched || confirmPasswordInput.value !== newPasswordInput.value);
-        }
-    };
-
-    function handleConfirmPasswordChange() {
-        resetImg(confirmPasswordInput.value === newPasswordInput.value, getElement("mustMatchCheckImg"), getElement("mustMatchCloseImg"));
-        setloginButtonDisabled(!allRulesMatched || confirmPasswordInput.value !== newPasswordInput.value);
-    };
-
-    function handleOldPasswordChange() {
-        setloginButtonDisabled(!allRulesMatched || newPasswordInput.value === "" || oldPasswordInput.value === "" || confirmPasswordInput.value !== newPasswordInput.value)
-    }
-
-    newPasswordInput && oldPasswordInput && oldPasswordInput.addEventListener("input", handleOldPasswordChange, null);
-    newPasswordInput && newPasswordInput.addEventListener("input", handleNewPasswordChange, null);
-    confirmPasswordInput && confirmPasswordInput.addEventListener("input", handleConfirmPasswordChange, null);
-</c:if>
-</script>
+<%-- Inline scripts and handlers are blocked by CSP: server values are passed as data-* attributes and the
+     logic lives in /public/js/login.js. --%>
+<div id="zLoginConfig" hidden="hidden"
+    data-client="${fn:escapeXml(zm:cook(client))}"
+    data-totp-auth-required="${totpAuthRequired}"
+    data-error-code="${fn:escapeXml(errorCode)}"
+    data-ie-resize-hack="${smallScreen && ua.isIE}"
+    data-min-length="${zimbraPasswordMinLength}"
+    data-min-upper-case-chars="${zimbraPasswordMinUpperCaseChars}"
+    data-min-lower-case-chars="${zimbraPasswordMinLowerCaseChars}"
+    data-min-numeric-chars="${zimbraPasswordMinNumericChars}"
+    data-min-punctuation-chars="${zimbraPasswordMinPunctuationChars}"
+    data-min-digits-or-puncs="${zimbraPasswordMinDigitsOrPuncs}"
+    data-username-rule-enabled="${!zimbraFeatureAllowUsernameInPassword}"
+    data-allowed-chars="${fn:escapeXml(zimbraPasswordAllowedChars)}"
+    data-allowed-punctuation-chars="${fn:escapeXml(zimbraPasswordAllowedPunctuationChars)}"
+    data-allowed-chars-msg="${fn:escapeXml(allowedCharsMsg)}"
+    data-both-passwords-must-match-msg="${fn:escapeXml(bothPasswordsMustMatchMsg)}"
+    data-username-prefix="${fn:escapeXml(encodedUserName.split('@')[0])}"></div>
+<script src="<c:url value='/js/skin.js'>
+    <c:param name='templates' value='false' />
+    <c:param name='client' value='advanced' />
+    <c:param name='skin' value='${skin}' />
+    <c:param name='v' value='${version}' />
+    <c:if test="${not empty param.debug}">
+        <c:param name='debug' value='${param.debug}' />
+    </c:if>
+    <c:if test="${not empty param.customerDomain}">
+        <c:param name='customerDomain' value='${param.customerDomain}' />
+    </c:if>
+</c:url>"></script>
+<script src="<c:url value='/public/js/login.js'>
+    <c:param name='v' value='${version}' />
+</c:url>"></script>
 </body>
 </html>
