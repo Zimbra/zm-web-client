@@ -22,6 +22,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%!
 	static String getParameter(HttpServletRequest request, String pname, String defValue) {
 		String value = request.getParameter(pname);
@@ -50,6 +51,8 @@
 
 	boolean isDevMode = getParameter(request, "dev", "0").equals("1");
 	pageContext.setAttribute("isDevMode", isDevMode);
+	request.setAttribute("bootExternalScripts", Boolean.TRUE);
+	pageContext.setAttribute("accountInputValue", String.valueOf(accountInput));
 %>
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
@@ -93,20 +96,9 @@
 	<% } %>
 </head>
 <body class="user_font_modern">
-	<script>
-		if(!window.DBG) {
-			DBG = new AjxDebug(AjxDebug.NONE, null, false);
-		}
-		var params = {
-			accountInput : "<%=accountInput%>"
-		};
-		new ZmPasswordRecoveryDialog(params).popup();
-		var changeTag = document.getElementsByClassName("DwtDialogTitle")[0];
-		changeTag.outerHTML = "";
-		changeTag = document.getElementsByClassName("horizSep")[0];
-		changeTag.outerHTML = "";
-
-	</script>
+	<%-- Inline scripts are blocked by CSP: the account is passed as data and the logic lives in /public/js/password-recovery.js --%>
+	<div id="zPasswordRecoveryConfig" hidden="hidden" data-account-input="${fn:escapeXml(accountInputValue)}"></div>
+	<script src="<c:url value='/public/js/password-recovery.js'><c:param name='v' value='${version}' /></c:url>"></script>
 	<style type="text/css" rel="stylesheet">
 		.DwtDialog[role="dialog"] {
 			top: 50% !important;

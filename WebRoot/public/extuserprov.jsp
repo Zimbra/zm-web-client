@@ -62,7 +62,7 @@
 				<span class="ImgLoginBanner"></span>
 			</a></div>
 
-			<form id="zLoginForm" action="/service/extuserprov/" method="post" onsubmit="return checkPasswords();">
+			<form id="zLoginForm" action="/service/extuserprov/" method="post">
 
 			<div class="errorMessage" style="${not empty validationErrorCode ? 'display:block': 'display:none'}">
 				<table>
@@ -137,26 +137,12 @@
 			</div>
 		</div>
 	</div>
-<script>
-	document.getElementById("confirmPassword").style.display= "table-row";
-	function checkPasswords() {
-		var password = document.getElementById("password").value;
-		var password2 = document.getElementById("password2").value;
-		var isError = false;
-		var emptyPass = "<fmt:message bundle="${zhmsg}" key='emptyPassword'/>";
-		var bothPassMustMatch = "<fmt:message bundle="${zhmsg}" key='bothPasswordsMustMatch'/>";
-		if (password == '' || password2 == '') {
-			document.getElementById("errorMessage").innerHTML = emptyPass;
-			isError = true;
-		}
-		if(password != password2){
-			document.getElementById("errorMessage").innerHTML = bothPassMustMatch;
-			isError = true;
-		}
-		if (isError)
-			document.getElementById("ZLoginErrorPanel").style.display = "block";
-		return !isError;
-	}
-</script>
+<%-- Inline scripts and handlers are blocked by CSP: messages are passed as data and the logic lives in /public/js/extuserprov.js --%>
+<fmt:message bundle="${zhmsg}" key='emptyPassword' var="emptyPasswordMsg"/>
+<fmt:message bundle="${zhmsg}" key='bothPasswordsMustMatch' var="bothPasswordsMustMatchMsg"/>
+<div id="zExtUserProvConfig" hidden="hidden"
+	data-empty-password-msg="${fn:escapeXml(emptyPasswordMsg)}"
+	data-both-passwords-must-match-msg="${fn:escapeXml(bothPasswordsMustMatchMsg)}"></div>
+<script src="<c:url value='/public/js/extuserprov.js'><c:param name='v' value='${version}' /></c:url>"></script>
 </body>
 </html>

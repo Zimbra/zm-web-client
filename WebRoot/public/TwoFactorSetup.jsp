@@ -21,6 +21,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <%
@@ -37,6 +38,8 @@
 	if (contextPath.equals("/")) {
 		contextPath = "";
 	}
+	request.setAttribute("bootExternalScripts", Boolean.TRUE);
+	pageContext.setAttribute("userNameValue", String.valueOf(userName));
 %>
 <!DOCTYPE html>
 <html class="user_font_size_normal" data-istwofactorsetuppage="true">
@@ -75,26 +78,13 @@
 	<% } %>
 </head>
 <body class="user_font_modern">
-	<script>
-		if(!window.DBG) {
-			DBG = new AjxDebug(AjxDebug.NONE, null, false);
-		}
-		var params = {
-			userName : "<%=userName%>",
-			isFromLoginPage : true,
-			tfaMethodAllowed : "${zm:cook(param.tfaMethodAllowed)}",
-			isResetPasswordEnabled : ${zm:boolean(param.isResetPasswordEnabled)},
-			client : "${zm:cook(param.client)}"
-		};
-		new ZmTwoFactorSetupDialog(params).popup();
-		var changeTag = document.getElementsByClassName("DwtDialogTitle")[0];
-		changeTag.outerHTML = "";
-		changeTag = document.getElementsByClassName("horizSep")[0];
-		changeTag.outerHTML = "";
-		changeTag = document.querySelectorAll('[align=right]');
-		changeTag[0].align="left";
-
-	</script>
+	<%-- Inline scripts are blocked by CSP: values are passed as data and the logic lives in /public/js/two-factor-setup.js --%>
+	<div id="zTwoFactorSetupConfig" hidden="hidden"
+		data-user-name="${fn:escapeXml(userNameValue)}"
+		data-tfa-method-allowed="${fn:escapeXml(zm:cook(param.tfaMethodAllowed))}"
+		data-reset-password-enabled="${zm:boolean(param.isResetPasswordEnabled)}"
+		data-client="${fn:escapeXml(zm:cook(param.client))}"></div>
+	<script src="<c:url value='/public/js/two-factor-setup.js'><c:param name='v' value='${version}' /></c:url>"></script>
 
 	<style type="text/css" rel="stylesheet">
 		.DwtDialog[role="dialog"] {

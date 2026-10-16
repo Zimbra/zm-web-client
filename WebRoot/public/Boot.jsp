@@ -1,4 +1,5 @@
 <%@ page session="false" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%--
 ***** BEGIN LICENSE BLOCK *****
 Zimbra Collaboration Suite Web Client
@@ -42,10 +43,18 @@ If not, see <https://www.gnu.org/licenses/>.
     if (offline == null) offline = application.getInitParameter("offlineMode");
     boolean isOfflineMode = offline != null && offline.equals("true");
 
+    // Pages that must not contain inline scripts (e.g. under a CSP) set this attribute before including Boot.jsp.
+    boolean externalScripts = Boolean.TRUE.equals(request.getAttribute("bootExternalScripts"));
+    pageContext.setAttribute("bootContextPath", contextPath);
+    pageContext.setAttribute("bootPackageExtension", (isDevMode ? "" : "_all") + ".js" + ext);
+    pageContext.setAttribute("bootVersion", vers);
+
 %>
 <!-- bootstrap classes -->
 <% if (isDevMode) { %>
 	<jsp:include page="jsp/Boot.jsp" />
+<% } else if (externalScripts) { %>
+	<script type="text/javascript" src="<%=contextPath%>/js/Boot_all.js<%=ext%>?v=<%=vers%>"></script>
 <% } else { %>
 	<script type="text/javascript">
 	<jsp:include>
@@ -54,6 +63,13 @@ If not, see <https://www.gnu.org/licenses/>.
 	</script>
 <% } %>
 
+<% if (externalScripts) { %>
+<meta id="zBootConfig" name="zimbra-boot-config" content=""
+	data-context-path="${fn:escapeXml(bootContextPath)}"
+	data-package-extension="${fn:escapeXml(bootPackageExtension)}"
+	data-version="${fn:escapeXml(bootVersion)}">
+<script type="text/javascript" src="<%=contextPath%>/public/js/boot-config.js?v=<%=vers%>"></script>
+<% } else { %>
 <script type="text/javascript">
 AjxPackage.setBasePath("<%=contextPath%>/js");
 AjxPackage.setExtension("<%= isDevMode ? "" : "_all" %>.js<%=ext%>");
@@ -62,3 +78,4 @@ AjxPackage.setQueryString("v=<%=vers%>");
 AjxTemplate.setBasePath("<%=contextPath%>/templates");
 AjxTemplate.setExtension(".template.js");
 </script>
+<% } %>
