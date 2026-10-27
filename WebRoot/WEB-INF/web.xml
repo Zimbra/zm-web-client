@@ -190,6 +190,17 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
+  <!-- Must stay after the Set Header Filter: it replaces the cache headers of the Modern UI page. -->
+  <filter>
+    <filter-name>ModernCSPFilter</filter-name>
+    <filter-class>com.zimbra.cs.servlet.ModernCSPFilter</filter-class>
+    <async-supported>true</async-supported>
+  </filter>
+  <filter-mapping>
+    <filter-name>ModernCSPFilter</filter-name>
+    <url-pattern>/modern/*</url-pattern>
+  </filter-mapping>
+
   <filter>
     <filter-name>StandardRedirectHelp</filter-name>
     <filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
